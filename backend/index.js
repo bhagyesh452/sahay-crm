@@ -43,7 +43,12 @@ mongoose
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
 console.log(secretKey);
 
-app.post("/admin/login-admin", async (req, res) => {
+app.get('/api',(req,res)=>{
+  console.log(req.url)
+  res.send('hello from backend!')
+})
+
+app.post("/api/admin/login-admin", async (req, res) => {
   const { username, password } = req.body;
   console.log(username, password);
   // Simulate user authentication (replace with actual authentication logic)
@@ -68,7 +73,7 @@ app.post("/admin/login-admin", async (req, res) => {
 
 // Login for employee
 
-app.post("/employeelogin", async (req, res) => {
+app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
 
   // Replace this with your actual Employee authentication logic
@@ -144,7 +149,7 @@ app.post("/api/manual", async (req, res) => {
   }
 });
 
-app.post("/update-status/:id", async (req, res) => {
+app.post("/api/update-status/:id", async (req, res) => {
   const { id } = req.params;
   const { newStatus } = req.body;
 
@@ -159,7 +164,7 @@ app.post("/update-status/:id", async (req, res) => {
   }
 });
 
-app.post("/update-remarks/:id", async (req, res) => {
+app.post("/api/update-remarks/:id", async (req, res) => {
   const { id } = req.params;
   const { Remarks } = req.body;
 
@@ -174,7 +179,7 @@ app.post("/update-remarks/:id", async (req, res) => {
   }
 });
 
-app.post("/einfo", async (req, res) => {
+app.post("/api/einfo", async (req, res) => {
   try {
     console.log(req.body);
 
@@ -187,7 +192,7 @@ app.post("/einfo", async (req, res) => {
   }
 });
 
-app.get("/einfo", async (req, res) => {
+app.get("/api/einfo", async (req, res) => {
   try {
     const data = await adminModel.find();
     res.json(data);
@@ -372,7 +377,7 @@ app.get("/api/employees/:ename", async (req, res) => {
 });
 
 // for inserting more values to einfo
-app.put("/neweinfo/:id", async (req, res) => {
+app.put("/api/neweinfo/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -420,7 +425,7 @@ app.put("/neweinfo/:id", async (req, res) => {
   }
 });
 
-app.put("/newcompanyname/:id", async (req, res) => {
+app.put("/api/newcompanyname/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const { ename } = req.body;
@@ -569,7 +574,7 @@ app.put("/api/requestgData/:id", async (req, res) => {
   }
 });
 
-app.delete("/newcompanynamedelete/:id", async (req, res) => {
+app.delete("/api/newcompanynamedelete/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -603,7 +608,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.post(
-  "/lead-form",
+  "/api/lead-form",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },
