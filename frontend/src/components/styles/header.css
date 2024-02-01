@@ -1,0 +1,23 @@
+.notification-icon {
+    /* Add your styles for the notification icon container */
+  }
+  
+  .dropdown{
+    /* Add your styles for the dropdown container */
+  }
+  
+  .notification-box {
+    /* Add your styles for the notification box */
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+  }
+  
+  .notification-item {
+    /* Add your styles for individual notification items */
+    margin-bottom: 5px;
+  }
+  

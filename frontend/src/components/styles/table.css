@@ -1,0 +1,28 @@
+.heightAdjust{
+    height: fit-content;
+}
+td {
+    padding: 0px 10px !important;
+    border: 1px solid #ddd !important;
+    text-align: center;
+}
+tbody, td, tfoot, th, thead, tr {
+    /* border-color: inherit;
+    border-style: solid;
+    border-width: 0; */
+    font-size: 12px !important;
+    height: auto !important;
+    line-height: normal;
+    padding: 10px;
+    
+}
+th{
+    border:1px solid #ddd;
+    text-align: center;
+}
+
+.pad{
+    padding: 10px !important;
+}
+
+

@@ -1,0 +1,41 @@
+.heightAdjust{
+    height: fit-content;
+}
+td {
+    padding: 0px 7px !important;
+    border: 1px solid #ddd !important;
+}
+tbody, td, tfoot, th, thead, tr {
+    /* border-color: inherit;
+    border-style: solid;
+    border-width: 0; */
+    font-size: 12px !important;
+    height: auto !important;
+    line-height: normal;
+    padding: 10px;
+    
+}
+th{
+    border:1px solid #ddd;
+}
+
+
+td select {
+    padding: 0 !important;
+    border: none !important;
+}
+td textarea {
+    /* padding: 0 !important; */
+    border: none !important;
+}
+.save:disabled,
+.save[disabled]{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+
+@media only screen and (max-width: 600px) {
+    /* Adjust styles for smaller screens */
+ 
+  }
