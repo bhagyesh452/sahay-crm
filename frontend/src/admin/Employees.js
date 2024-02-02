@@ -73,19 +73,21 @@ function Employees({ onEyeButtonClick }) {
             console.log(`Deleted name for ${item._id}`);
           })
         );
+        Swal.fire({
+          title: "Data Deleted!",
+          text: "You have successfully Deleted the data!",
+          icon: "success",
+        });
   
         console.log("All ename updates completed successfully");
       } catch (error) {
         console.error("Error updating enames:", error.message);
+        Swal.fire("Error deleting the employee");
         // Handle the error as needed
       }
     }
   
-    Swal.fire({
-      title: "Data Deleted!",
-      text: "You have successfully Deleted the data!",
-      icon: "success",
-    });
+  
 
   }
 
@@ -193,8 +195,21 @@ function Employees({ onEyeButtonClick }) {
       await axios.delete(`${secretKey}/einfo/${id}`);
       // Refresh the data after successful deletion
       fetchData();
+      Swal.fire({
+        title: "Employee Removed!",
+        text: "You have successfully removed the employee!",
+        icon: "success",
+      });
+
     } catch (error) {
       console.error("Error deleting data:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please try again later!",
+        
+      });
+
     }
   };
   useEffect(() => {
@@ -207,7 +222,7 @@ function Employees({ onEyeButtonClick }) {
 
   const fetchCData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/api/leads`);
+      const response = await axios.get(`${secretKey}/leads`);
 
       // Set the retrieved data in the state
 
@@ -241,6 +256,11 @@ function Employees({ onEyeButtonClick }) {
           `${secretKey}/einfo/${selectedDataId}`,
           dataToSend
         );
+        Swal.fire({
+          title: "Name Updated!",
+          text: "You have successfully updated the name!",
+          icon: "success",
+        });
 
         if (companyData && companyData.length !== 0) {
           // Assuming ename is part of dataToSend
@@ -253,9 +273,11 @@ function Employees({ onEyeButtonClick }) {
                   `${secretKey}/newcompanyname/${item._id}`,
                   { ename }
                 );
+                
                 console.log(`Updated ename for ${item._id}`);
               })
             );
+           
 
             console.log("All ename updates completed successfully");
           } catch (error) {
@@ -264,13 +286,15 @@ function Employees({ onEyeButtonClick }) {
           }
         }
 
-        Swal.fire({
-          title: "Data Updated!",
-          text: "You have successfully updated the data!",
-          icon: "success",
-        });
+      
       } else {
         await axios.post(`${secretKey}/einfo`, dataToSend);
+        Swal.fire({
+          title: "Data Added!",
+          text: "You have successfully added the data!",
+          icon: "success",
+        });
+
       }
 
       setEmail("");

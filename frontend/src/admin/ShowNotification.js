@@ -13,7 +13,7 @@ function ShowNotification() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const fetchRequestDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/api/requestData`);
+      const response = await axios.get(`${secretKey}/requestData`);
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -22,7 +22,7 @@ function ShowNotification() {
   const fetchRequestGDetails = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/api/requestgData`
+        `${secretKey}/requestgData`
       );
       setRequestGData(response.data);
     } catch (error) {

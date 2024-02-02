@@ -63,7 +63,7 @@ function EmployeePanel() {
   const fetchNewData = async (status) => {
     try {
       const response = await axios.get(
-        `${secretKey}/api/employees/${data.ename}`
+        `${secretKey}/employees/${data.ename}`
       );
       const tempData = response.data;
       setmoreEmpData(response.data);
@@ -283,9 +283,7 @@ function EmployeePanel() {
       // Check if the API call was successful
       if (response.status === 200) {
         // If successful, update the employeeData state or fetch data again to reflect changes
-        fetchData(); // Assuming fetchData is a function to fetch updated employee data
-
-        window.location.reload();
+        fetchData(); // Assuming fetchData is a function to fetch updated employee data       
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);
@@ -372,7 +370,8 @@ function EmployeePanel() {
       try {
         // Make API call using Axios
         const response = await axios.post(
-          `${secretKey}/api/requestData`,
+          `${secretKey}/requestData`,
+
           {
             selectedYear,
             companyType,
@@ -394,7 +393,7 @@ function EmployeePanel() {
       try {
         // Make API call using Axios
         const response = await axios.post(
-          `${secretKey}/api/requestgData`,
+          `${secretKey}/requestgData`,
           {
             numberOfData,
             name,

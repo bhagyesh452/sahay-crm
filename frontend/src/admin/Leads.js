@@ -71,17 +71,17 @@ function Leads() {
   // Requested Details
   const [requestData, setRequestData] = useState([]);
   const [requestGData, setRequestGData] = useState([]);
-  const [mainData, setmainData] = useState([])
+  const [mainData, setmainData] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   //fetch data
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/api/leads`);
+      const response = await axios.get(`${secretKey}/leads`);
 
       // Set the retrieved data in the state
 
       setData(response.data);
-      setmainData(response.data.filter(item => item.ename === "Not Alloted"))
+      setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -342,15 +342,12 @@ function Leads() {
     if (selectedOption === "someoneElse") {
       if (csvdata.length !== 0 && newemployeeSelection !== "") {
         for (const obj of csvdata) {
-          if (!obj.ename) {
+          if (!obj.ename && obj.ename !== "Not Alloted") {
             try {
-              const response = await axios.post(
-                `${secretKey}/api/company`,
-                {
-                  newemployeeSelection,
-                  csvdata,
-                }
-              );
+              const response = await axios.post(`${secretKey}/company`, {
+                newemployeeSelection,
+                csvdata,
+              });
               Swal.fire({
                 title: "Data Send!",
                 text: "Data successfully sent to the Employee",
@@ -371,13 +368,10 @@ function Leads() {
             if (userConfirmed) {
               // If user confirms, perform the assignation
               try {
-                const response = await axios.post(
-                  `${secretKey}/api/postData`,
-                  {
-                    newemployeeSelection,
-                    csvdata,
-                  }
-                );
+                const response = await axios.post(`${secretKey}/postData`, {
+                  newemployeeSelection,
+                  csvdata,
+                });
                 window.location.reload();
                 console.log("Data posted successfully");
               } catch (err) {
@@ -396,7 +390,7 @@ function Leads() {
       console.log("Assigning Normally");
       if (csvdata.length !== 0) {
         try {
-          await axios.post(`${secretKey}/api/leads`, csvdata);
+          await axios.post(`${secretKey}/leads`, csvdata);
           console.log("Data sent successfully");
           Swal.fire({
             title: "Data Send!",
@@ -431,7 +425,7 @@ function Leads() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${secretKey}/api/leads/${id}`);
+      await axios.delete(`${secretKey}/leads/${id}`);
       // Refresh the data after successful deletion
       fetchData();
     } catch (error) {
@@ -461,7 +455,7 @@ function Leads() {
   const handleSubmitData = (e) => {
     e.preventDefault();
     axios
-      .post(`${secretKey}/api/manual`, {
+      .post(`${secretKey}/manual`, {
         "Company Name": cname,
         "Company Number": cnumber,
         "Company Email": cemail,
@@ -550,12 +544,14 @@ function Leads() {
       Swal.fire("Empty Data!");
       closepopupEmp();
     }
-    console.log(selectedObjects, employeeSelection);
+   
     for (const obj of selectedObjects) {
-      if (!obj.ename) {
+      if (!obj.ename || obj.ename === "Not Alloted") {
         handleAssignData();
+        setEmployeeSelection("");
       } else {
         // If ename is present, show a confirmation dialog
+        console.log(obj.ename)
         const userConfirmed = window.confirm(
           `Data is already assigned to: ${obj.ename}. Do you want to continue?`
         );
@@ -579,14 +575,16 @@ function Leads() {
     // console.log(selectedObjects, employeeSelection);
 
     try {
-      const response = await axios.post(`${secretKey}/api/postData`, {
+      const response = await axios.post(`${secretKey}/postData`, {
         employeeSelection,
         selectedObjects,
       });
-      window.location.reload();
+      Swal.fire("Data Assigned");
+      fetchData();
       console.log("Data posted successfully");
     } catch (err) {
       console.log("Internal server Error", err);
+      Swal.fire("Error Assigning Data")
     }
 
     // const selectedempData = selectedRows.find(
@@ -706,7 +704,7 @@ function Leads() {
   const handleDeleteSelection = async () => {
     if (selectedRows.length !== 0) {
       try {
-        await axios.delete(`${secretKey}/api/delete-rows`, {
+        await axios.delete(`${secretKey}/delete-rows`, {
           data: { selectedRows }, // Pass selected rows to the server
         });
         // After deletion, fetch updated data
@@ -741,7 +739,7 @@ function Leads() {
 
   const fetchRequestDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/api/requestData`);
+      const response = await axios.get(`${secretKey}/requestData`);
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -749,9 +747,7 @@ function Leads() {
   };
   const fetchRequestGDetails = async () => {
     try {
-      const response = await axios.get(
-        `${secretKey}/api/requestgData`
-      );
+      const response = await axios.get(`${secretKey}/requestgData`);
       setRequestGData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -790,6 +786,7 @@ function Leads() {
         style={{
           overlay: {
             backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 9,
           },
           content: {
             width: "fit-content",
@@ -1607,13 +1604,18 @@ function Leads() {
                     <li class="nav-item data-heading">
                       <a
                         href="#tabs-home-5"
-                        className={dataStatus==="Unassigned" ? "nav-link active item-act" : "nav-link"}
+                        className={
+                          dataStatus === "Unassigned"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
                         data-bs-toggle="tab"
-                        onClick={()=>{
+                        onClick={() => {
                           setDataStatus("Unassigned");
-                          setmainData(data.filter(item => item.ename === "Not Alloted"));
+                          setmainData(
+                            data.filter((item) => item.ename === "Not Alloted")
+                          );
                         }}
-
                       >
                         UnAssigned
                       </a>
@@ -1621,20 +1623,24 @@ function Leads() {
                     <li class="nav-item data-heading">
                       <a
                         href="#tabs-home-5"
-                        className={dataStatus==="Assigned" ? "nav-link active item-act" : "nav-link"}
+                        className={
+                          dataStatus === "Assigned"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
                         data-bs-toggle="tab"
-                        onClick={()=>{
-                          setDataStatus("Assigned")
-                          setmainData(data.filter(item => item.ename !== "Not Alloted"));
+                        onClick={() => {
+                          setDataStatus("Assigned");
+                          setmainData(
+                            data.filter((item) => item.ename !== "Not Alloted")
+                          );
                         }}
-                        
                       >
                         Assigned
                       </a>
                     </li>
                   </ul>
                 </div>
-
               </div>
               <div id="table-default" className="table-responsive">
                 <table className="table table-vcenter table-nowrap">
@@ -1819,44 +1825,46 @@ function Leads() {
                   <tbody className="table-tbody"></tbody>
                 </table>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  margin: "10px",
-                }}
-                className="pagination"
-              >
-                <IconButton
-                  onClick={() =>
-                    setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))
-                  }
-                  disabled={currentPage === 0}
+              {currentData.length !== 0 && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    margin: "10px",
+                  }}
+                  className="pagination"
                 >
-                  <IconChevronLeft />
-                </IconButton>
-                <span>
-                  Page {currentPage + 1} of{" "}
-                  {Math.ceil(filteredData.length / itemsPerPage)}
-                </span>
+                  <IconButton
+                    onClick={() =>
+                      setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))
+                    }
+                    disabled={currentPage === 0}
+                  >
+                    <IconChevronLeft />
+                  </IconButton>
+                  <span>
+                    Page {currentPage + 1} of{" "}
+                    {Math.ceil(filteredData.length / itemsPerPage)}
+                  </span>
 
-                <IconButton
-                  onClick={() =>
-                    setCurrentPage((prevPage) =>
-                      Math.min(
-                        prevPage + 1,
-                        Math.ceil(filteredData.length / itemsPerPage) - 1
+                  <IconButton
+                    onClick={() =>
+                      setCurrentPage((prevPage) =>
+                        Math.min(
+                          prevPage + 1,
+                          Math.ceil(filteredData.length / itemsPerPage) - 1
+                        )
                       )
-                    )
-                  }
-                  disabled={
-                    currentPage ===
-                    Math.ceil(filteredData.length / itemsPerPage) - 1
-                  }
-                >
-                  <IconChevronRight />
-                </IconButton>
-              </div>
+                    }
+                    disabled={
+                      currentPage ===
+                      Math.ceil(filteredData.length / itemsPerPage) - 1
+                    }
+                  >
+                    <IconChevronRight />
+                  </IconButton>
+                </div>
+              )}
             </div>
           </div>
         </div>
