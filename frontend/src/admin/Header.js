@@ -49,7 +49,7 @@ function Header({ name, designation}) {
 
   const fetchRequestDetails = async () => {
     try {
-      const response = await axios.get(`${secretKey}/api/requestData`);
+      const response = await axios.get(`${secretKey}/requestData`);
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -58,7 +58,7 @@ function Header({ name, designation}) {
   const fetchRequestGDetails = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/api/requestgData`
+        `${secretKey}/requestgData`
       );
       setRequestGData(response.data);
     } catch (error) {

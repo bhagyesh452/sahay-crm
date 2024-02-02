@@ -79,9 +79,3 @@ function App() {
 }
 
 export default App;
-
-{
-  /* <Route path='/login' element={<LoginAdmin/>}/>
-          <Route path='/' element={<Dashboard/>}/>
-          <Route path='/employees' element={<Employees/>}/> */
-}

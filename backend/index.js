@@ -211,7 +211,7 @@ app.get("/api/leads", async (req, res) => {
   }
 });
 
-app.delete("/einfo/:id", async (req, res) => {
+app.delete("/api/einfo/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -262,7 +262,7 @@ app.delete("/api/delete-rows", async (req, res) => {
   }
 });
 
-app.put("/einfo/:id", async (req, res) => {
+app.put("/api/einfo/:id", async (req, res) => {
   const id = req.params.id;
 
   try {

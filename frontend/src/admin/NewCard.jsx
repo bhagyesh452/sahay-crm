@@ -38,7 +38,7 @@ export default function NewCard({id, name, year, ctype, damount,assignStatus }) 
   };
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/api/leads`);
+      const response = await axios.get(`${secretKey}/leads`);
 
       // Set the retrieved data in the state
       const filteredData = response.data.filter(
@@ -103,14 +103,14 @@ export default function NewCard({id, name, year, ctype, damount,assignStatus }) 
       for (const obj of selectedObjects) {
         try {
           const response = await axios.post(
-            "${secretKey}/api/postData",
+            `${secretKey}/postData`,
             {
               employeeSelection,
               selectedObjects,
             }
           );
           fetchData();
-          await axios.put(`${secretKey}/api/requestData/${id}`, {
+          await axios.put(`${secretKey}/requestData/${id}`, {
           read: true,
           assigned:true
         })

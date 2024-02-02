@@ -38,7 +38,7 @@ export default function NewGCard({ id, name, damount, assignStatus }) {
   };
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/api/leads`);
+      const response = await axios.get(`${secretKey}/leads`);
 
       // Set the retrieved data in the state
       const filteredData = response.data.filter(
@@ -102,13 +102,13 @@ export default function NewGCard({ id, name, damount, assignStatus }) {
       for (const obj of selectedObjects) {
         try {
           const response = await axios.post(
-            `${secretKey}/api/postData`,
+            `${secretKey}/postData`,
             {
               employeeSelection,
               selectedObjects,
             }
           );
-          await axios.put(`${secretKey}/api/requestgData/${id}`, {
+          await axios.put(`${secretKey}/requestgData/${id}`, {
             read: true,
             assigned: true,
           });

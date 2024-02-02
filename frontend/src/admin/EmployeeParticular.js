@@ -40,7 +40,7 @@ function EmployeeParticular() {
   // Function to fetch new data based on employee name
   const fetchNewData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/api/employees/${employeeName}`);
+      const response = await axios.get(`${secretKey}/employees/${employeeName}`);
       setEmployeeData(response.data);
     } catch (error) {
       console.error('Error fetching new data:', error);
@@ -83,7 +83,7 @@ console.log(employeeData);
               
               <div  className="col d-flex">
                 {/* <!-- Page pre-title --> */}
-                <Link to={`/employees`}>
+                <Link to={`/admin/employees`}>
                     <IconButton>
                       <IconChevronLeft />
                     </IconButton>
