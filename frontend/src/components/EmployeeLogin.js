@@ -57,7 +57,14 @@ console.log(frontendkey,secretKey)
       setnewToken(newtoken);
       localStorage.setItem("newtoken", newtoken);
       localStorage.setItem("userId", userId);
-      window.location.replace(`${frontendkey}/employee-data/${userId}`);
+      // const currentPath = window.location.pathname;
+
+      // // Construct the new path by appending "/employee-data/user-id"
+      // const newPath = `${currentPath}/employee-data/${userId}`;
+      
+      // Update the browser's history to reflect the new path
+      window.location.replace(`/employee-data/${userId}`);
+      // window.location.href = `${window.location.origin}${window.location.pathname}employee-data/${userId}`;
     } catch (error) {
       console.error("Login failed:", error.message);
       setErrorMessage("Incorrect Credentials");

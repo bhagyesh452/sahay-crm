@@ -17,6 +17,8 @@ function ConveertedLeads() {
   const [unames, setUnames] = useState([]);
   const [paymentCount, setpaymentCount] = useState(0);
   const [otherName, setotherName] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  // const [currentData, setCurrentData] = useState([]);
   const [leadData, setLeadData] = useState({
     // Initialize properties with default values if needed
     bdmName: "",
@@ -47,13 +49,13 @@ function ConveertedLeads() {
     extraNotes: "",
     otherDocs: null,
   });
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const { userId } = useParams();
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/einfo`);
 
-      // Set the retrieved data in the state
       const tempData = response.data;
       setUnames(tempData);
 
@@ -64,10 +66,26 @@ function ConveertedLeads() {
       console.error("Error fetching data:", error.message);
     }
   };
+  const fetchNewData = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/employees/${data.ename}`);
+      const tempData = response.data;
+      console.log(tempData);
+      // console.log(response.data)
+      setFilteredData(response.data);
+      // setmoreEmpData(response.data);
 
+      // setEmployeeData(tempData.filter(obj => obj.Status === "Busy" || obj.Status === "Not Picked Up" || obj.Status === "Untouched"))
+    } catch (error) {
+      console.error("Error fetching new data:", error);
+    }
+  };
+
+  const currentData = filteredData.filter((obj) => obj.Status === "Matured");
   useEffect(() => {
     fetchData();
-  }, [userId]);
+    fetchNewData();
+  }, []);
 
   const [open, openchange] = useState(false);
   const functionopenpopup = () => {
@@ -140,10 +158,7 @@ function ConveertedLeads() {
 
         return true;
       }
-      const response = await axios.post(
-        `${secretKey}/lead-form`,
-        formData
-      );
+      const response = await axios.post(`${secretKey}/lead-form`, formData);
       setLeadData({
         // Initialize properties with default values if needed
         bdmName: "",
@@ -1047,7 +1062,7 @@ function ConveertedLeads() {
 
       <Header name={data.ename} designation={data.designation} />
       <EmpNav userId={userId} />
-      
+
       <div className="page-wrapper">
         <div className="page-header d-print-none">
           <div
@@ -1065,38 +1080,38 @@ function ConveertedLeads() {
             <div className="request">
               {formOpen ? (
                 <>
-                <div className="btn-list">
-                <button 
-                 onClick={() => {
-                  setformOpen(false);
-                }}
-                className="btn btn-primary d-none d-sm-inline-block">
-                    Leads
-                </button>
-                </div>
+                  <div className="btn-list">
+                    <button
+                      onClick={() => {
+                        setformOpen(false);
+                      }}
+                      className="btn btn-primary d-none d-sm-inline-block"
+                    >
+                      Leads
+                    </button>
+                  </div>
                 </>
-              ): (
+              ) : (
                 <div className="btn-list">
-                <button
-                  onClick={() => {
-                    setformOpen(true);
-                  }}
-                  className="btn btn-primary d-none d-sm-inline-block"
-                >
-                  ADD Leads
-                </button>
-                <a
-                  href="#"
-                  className="btn btn-primary d-sm-none btn-icon"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modal-report"
-                  aria-label="Create new report"
-                >
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                </a>
-              </div>
+                  <button
+                    onClick={() => {
+                      setformOpen(true);
+                    }}
+                    className="btn btn-primary d-none d-sm-inline-block"
+                  >
+                    ADD Leads
+                  </button>
+                  <a
+                    href="#"
+                    className="btn btn-primary d-sm-none btn-icon"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-report"
+                    aria-label="Create new report"
+                  >
+                    {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                  </a>
+                </div>
               )}
-              
             </div>
           </div>
         </div>
@@ -1107,7 +1122,143 @@ function ConveertedLeads() {
           className="page-body m-0"
         >
           <div className="container-xl">
-            {formOpen && <Form employeeName={data.ename} employeeEmail={data.email}/>}
+            {formOpen ? (
+              <Form employeeName={data.ename} employeeEmail={data.email} />
+            ) : (
+              <div className="card mt-2">
+                <div className="card-body p-0">
+                  <div style={{ overflowX: "auto" }}>
+                    <table
+                      style={{
+                        width: "100%",
+                        borderCollapse: "collapse",
+                        border: "1px solid #ddd",
+                      }}
+                      className="table-vcenter table-nowrap"
+                    >
+                      <thead>
+                        <tr style={{ backgroundColor: "#f2f2f2" }}>
+                          <th
+                            style={{
+                              position: "sticky",
+                              left: "0px",
+                              zIndex: 1,
+                            }}
+                          >
+                            Sr.No
+                          </th>
+                          <th
+                            style={{
+                              position: "sticky",
+                              left: "80px",
+                              zIndex: 1,
+                            }}
+                          >
+                            Company Name
+                          </th>
+                          <th>Company Number</th>
+                          <th>Company Email</th>
+                          <th>Incorporation Date</th>
+                          <th>City</th>
+                          <th>State</th>
+                          <th>Status</th>
+                          <th>Remarks</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      {currentData ? (
+                        <tbody>
+                          <tr>
+                            <td colSpan="10" style={{ textAlign: "center" }}>
+                              No data available
+                            </td>
+                          </tr>
+                        </tbody>
+                      ) : (
+                        <tbody>
+                          {currentData &&
+                            currentData.map((company, index) => (
+                              <tr
+                                key={index}
+                                style={{ border: "1px solid #ddd" }}
+                              >
+                                <td
+                                  style={{
+                                    position: "sticky",
+                                    left: "0px",
+                                    zIndex: 1,
+                                    background: "white",
+                                  }}
+                                >
+                                  {index + 1}
+                                </td>
+                                <td
+                                  style={{
+                                    position: "sticky",
+                                    left: "0px",
+                                    zIndex: 1,
+                                    background: "white",
+                                  }}
+                                >
+                                  {company["Company Name"]}
+                                </td>
+                                <td>{company["Company Number"]}</td>
+                                <td>{company["Company Email"]}</td>
+                                <td>
+                                  {company["Company Incorporation Date  "]}
+                                </td>
+                                <td>{company["City"]}</td>
+                                <td>{company["State"]}</td>
+                                <td>Matured</td>
+
+                                <td>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                    }}
+                                  >
+                                    <textarea
+                                      defaultValue={company["Remarks"]}
+                                      type="text"
+                                      style={{
+                                        padding: ".4375rem .75rem",
+                                        border:
+                                          " var(--tblr-border-width) solid var(--tblr-border-color)",
+                                        borderRadius:
+                                          "var(--tblr-border-radius)",
+                                        boxShadow: "0 0 transparent",
+                                        transition:
+                                          "border-color .15s ease-in-out,box-shadow .15s ease-in-out",
+                                        height: "34px",
+                                      }}
+                                    />
+                                  </div>
+                                </td>
+
+                                <td>
+                                  <button
+                                    style={{
+                                      padding: "5px",
+                                      fontSize: "12px",
+                                      backgroundColor: "lightblue",
+                                      // Additional styles for the "View" button
+                                    }}
+                                    className="btn btn-primary d-none d-sm-inline-block"
+                                  >
+                                    View
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      )}
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

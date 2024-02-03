@@ -348,13 +348,7 @@ function Leads() {
                 newemployeeSelection,
                 csvdata,
               });
-              Swal.fire({
-                title: "Data Send!",
-                text: "Data successfully sent to the Employee",
-                icon: "success",
-              });
-              fetchData();
-              closepopup();
+             
               console.log("Data posted successfully");
             } catch (err) {
               console.log("Internal server Error", err);
@@ -383,6 +377,13 @@ function Leads() {
             }
           }
         }
+        Swal.fire({
+          title: "Data Send!",
+          text: "Data successfully sent to the Employee",
+          icon: "success",
+        });
+        fetchData();
+        closepopup();
       } else {
         Swal.fire("Please Select a file");
       }
