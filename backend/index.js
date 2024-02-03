@@ -167,12 +167,12 @@ app.post("/api/update-status/:id", async (req, res) => {
 app.post("/api/update-remarks/:id", async (req, res) => {
   const { id } = req.params;
   const { Remarks } = req.body;
-
+  console.log(Remarks)
   try {
     // Update the status field in the database based on the employee id
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
     console.log("Data Updated");
-    res.status(200).json({ message: "Status updated successfully" });
+    res.status(200).json({ message: "Remarks updated successfully" });
   } catch (error) {
     console.error("Error updating status:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -581,7 +581,7 @@ app.delete("/api/newcompanynamedelete/:id", async (req, res) => {
     // Find the document by id and update the ename field to null or an empty string
     const updatedData = await CompanyModel.findByIdAndUpdate(
       id,
-      { ename: null },
+      { ename: "Not Alloted" },
       { new: true }
     );
 
@@ -637,6 +637,7 @@ app.post(
         secondPayment,
         thirdPayment,
         fourthPayment,
+        paymentRemarks,
         bookingSource,
         cPANorGSTnum,
         incoDate,
@@ -672,6 +673,7 @@ app.post(
         secondPayment,
         thirdPayment,
         fourthPayment,
+        paymentRemarks,
         bookingSource,
         cPANorGSTnum,
         incoDate,

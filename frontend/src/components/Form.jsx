@@ -153,6 +153,7 @@ function Form({
     secondPayment: 0,
     thirdPayment: 0,
     fourthPayment: 0,
+    paymentRemarks:"",
     paymentReciept: null,
     bookingSource: "",
     cPANorGSTnum: 0,
@@ -217,6 +218,7 @@ function Form({
     formData.append("caNumber", leadData.caNumber);
     formData.append("caEmail", leadData.caEmail);
     formData.append("caCommission", leadData.caCommission);
+
     formData.append("empName", employeeName);
     formData.append("empEmail", employeeEmail);
     {
@@ -240,6 +242,7 @@ function Form({
     formData.append("secondPayment", leadData.secondPayment);
     formData.append("thirdPayment", leadData.thirdPayment);
     formData.append("fourthPayment", leadData.fourthPayment);
+    formData.append("paymentRemarks", leadData.paymentRemarks);
     formData.append("bookingSource", leadData.bookingSource);
     formData.append("cPANorGSTnum", leadData.cPANorGSTnum);
     if (matured) {
@@ -269,10 +272,7 @@ function Form({
 
         return true;
       }
-      const response = await axios.post(
-        `${secretKey}/lead-form`,
-        formData
-      );
+      const response = await axios.post(`${secretKey}/lead-form`, formData);
       setLeadData({
         // Initialize properties with default values if needed
         bdmName: "",
@@ -324,8 +324,6 @@ function Form({
     const formattedDate = `${year}-${month}-${day}`;
     return formattedDate;
   };
-
-
 
   const handleRemoveFile = (index) => {
     setLeadData((prevLeadData) => {
@@ -740,14 +738,16 @@ function Form({
               <div
                 style={{
                   borderRadius: "5px 0px 0px 5px",
-                 
                 }}
-                className={parseInt(leadData.firstPayment) +
-                  parseInt(leadData.secondPayment) +
-                  parseInt(leadData.thirdPayment) +
-                  parseInt(leadData.fourthPayment) !==
-                parseInt(leadData.totalPayment) ? "form-control error-border" : "form-control"}
-                
+                className={
+                  parseInt(leadData.firstPayment) +
+                    parseInt(leadData.secondPayment) +
+                    parseInt(leadData.thirdPayment) +
+                    parseInt(leadData.fourthPayment) !==
+                  parseInt(leadData.totalPayment)
+                    ? "form-control error-border"
+                    : "form-control"
+                }
               >
                 {leadData.totalPayment ? leadData.totalPayment : 0}
               </div>
@@ -825,7 +825,9 @@ function Form({
                         setLeadData((prevLeadData) => ({
                           ...prevLeadData,
                           firstPayment: e.target.value,
-                          secondPayment: paymentCount === 2 && leadData.totalPayment - e.target.value 
+                          secondPayment:
+                            paymentCount === 2 &&
+                            leadData.totalPayment - e.target.value,
                         }));
                       }}
                     />
@@ -870,10 +872,10 @@ function Form({
                             setpaymentCount(3);
                             setLeadData((prevLeadData) => ({
                               ...prevLeadData,
-                              firstPayment: 0, 
-                              secondPayment: 0, 
-                              thirdPayment: 0, 
-                            }))
+                              firstPayment: 0,
+                              secondPayment: 0,
+                              thirdPayment: 0,
+                            }));
                           }}
                           type="button"
                           style={{ marginLeft: "5px" }}
@@ -904,7 +906,10 @@ function Form({
                             setLeadData((prevLeadData) => ({
                               ...prevLeadData,
                               secondPayment: e.target.value,
-                              thirdPayment:parseInt(leadData.totalPayment) - parseInt(leadData.firstPayment) - parseInt(e.target.value)
+                              thirdPayment:
+                                parseInt(leadData.totalPayment) -
+                                parseInt(leadData.firstPayment) -
+                                parseInt(e.target.value),
                             }));
                           }}
                         />
@@ -925,7 +930,8 @@ function Form({
                           placeholder="Third Payment"
                           className={
                             parseInt(leadData.firstPayment) +
-                              parseInt(leadData.secondPayment) + parseInt(leadData.thirdPayment) !==
+                              parseInt(leadData.secondPayment) +
+                              parseInt(leadData.thirdPayment) !==
                             parseInt(leadData.totalPayment)
                               ? "form-control error-border"
                               : "form-control"
@@ -946,8 +952,8 @@ function Form({
                             setLeadData((prevLeadData) => ({
                               ...prevLeadData,
                               thirdPayment: 0,
-                              firstPayment:0,
-                              secondPayment:0
+                              firstPayment: 0,
+                              secondPayment: 0,
                             }));
                           }}
                           type="button"
@@ -962,9 +968,9 @@ function Form({
                             setLeadData((prevLeadData) => ({
                               ...prevLeadData,
                               thirdPayment: 0,
-                              firstPayment:0,
-                              secondPayment:0,
-                              fourthPayment:0
+                              firstPayment: 0,
+                              secondPayment: 0,
+                              fourthPayment: 0,
                             }));
                           }}
                           type="button"
@@ -1018,7 +1024,11 @@ function Form({
                             setLeadData((prevLeadData) => ({
                               ...prevLeadData,
                               thirdPayment: e.target.value,
-                              fourthPayment:parseInt(leadData.totalPayment) - parseInt(leadData.firstPayment) - parseInt(leadData.secondPayment) -  parseInt(e.target.value)
+                              fourthPayment:
+                                parseInt(leadData.totalPayment) -
+                                parseInt(leadData.firstPayment) -
+                                parseInt(leadData.secondPayment) -
+                                parseInt(e.target.value),
                             }));
                           }}
                         />
@@ -1039,7 +1049,9 @@ function Form({
                           placeholder="Fourth Payment"
                           className={
                             parseInt(leadData.firstPayment) +
-                              parseInt(leadData.secondPayment) + parseInt(leadData.thirdPayment) + parseInt(leadData.fourthPayment) !==
+                              parseInt(leadData.secondPayment) +
+                              parseInt(leadData.thirdPayment) +
+                              parseInt(leadData.fourthPayment) !==
                             parseInt(leadData.totalPayment)
                               ? "form-control error-border"
                               : "form-control"
@@ -1060,9 +1072,9 @@ function Form({
                             setLeadData((prevLeadData) => ({
                               ...prevLeadData,
                               fourthPayment: 0,
-                              firstPayment:0,
-                              secondPayment:0,
-                              thirdPayment:0
+                              firstPayment: 0,
+                              secondPayment: 0,
+                              thirdPayment: 0,
                             }));
                           }}
                           type="button"
@@ -1084,9 +1096,10 @@ function Form({
                       parseInt(leadData.fourthPayment) !==
                     parseInt(leadData.totalPayment)
                       ? "Wrong Payment"
-                      : `${
-                          ((leadData.firstPayment * 100) / leadData.totalPayment).toFixed(2)
-                        } % Amount`}
+                      : `${(
+                          (leadData.firstPayment * 100) /
+                          leadData.totalPayment
+                        ).toFixed(2)} % Amount`}
                   </small>
                 </div>
                 <div className="details-payment-2 col">
@@ -1097,9 +1110,10 @@ function Form({
                       parseInt(leadData.fourthPayment) !==
                     parseInt(leadData.totalPayment)
                       ? "Wrong Payment"
-                      : `${
-                          ((leadData.secondPayment * 100) / leadData.totalPayment).toFixed(2)
-                        } % Amount`}
+                      : `${(
+                          (leadData.secondPayment * 100) /
+                          leadData.totalPayment
+                        ).toFixed(2)} % Amount`}
                   </small>
                 </div>
                 {paymentCount >= 3 && (
@@ -1111,10 +1125,10 @@ function Form({
                         parseInt(leadData.fourthPayment) !==
                       parseInt(leadData.totalPayment)
                         ? "Wrong Payment"
-                        : `${
-                            ((leadData.thirdPayment * 100) /
-                            leadData.totalPayment).toFixed(2)
-                          } % Amount`}
+                        : `${(
+                            (leadData.thirdPayment * 100) /
+                            leadData.totalPayment
+                          ).toFixed(2)} % Amount`}
                     </small>
                   </div>
                 )}
@@ -1128,13 +1142,29 @@ function Form({
                         parseInt(leadData.fourthPayment) !==
                       parseInt(leadData.totalPayment)
                         ? "Wrong Payment"
-                        : `${
-                            ((leadData.fourthPayment * 100) /
-                            leadData.totalPayment).toFixed(2)
-                          } % Amount`}
+                        : `${(
+                            (leadData.fourthPayment * 100) /
+                            leadData.totalPayment
+                          ).toFixed(2)} % Amount`}
                     </small>
                   </div>
                 )}
+              </div>
+              <div className="payment-remarks col">
+                <label class="form-label">Payment Remarks</label>
+                <input
+                  type="text"
+                  name="payment-remarks"
+                  id="payment-remarks"
+                  placeholder="Please add remarks if any"
+                  className="form-control"
+                  onChange={(e) => {
+                    setLeadData((prevLeadData) => ({
+                      ...prevLeadData,
+                      paymentRemarks: e.target.value,
+                    }));
+                  }}
+                />
               </div>
             </>
           )}

@@ -13,6 +13,8 @@ import Swal from "sweetalert2";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
 import Form from "../components/Form.jsx";
+import "../components/styles/table.css";
+import "../components/styles/main.css";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -30,7 +32,7 @@ function EmployeePanel() {
   const [currentPage, setCurrentPage] = useState(0);
   const [month, setMonth] = useState(0);
   const [updateData, setUpdateData] = useState({});
-  const itemsPerPage = 10;
+  const itemsPerPage = 100;
   const [year, setYear] = useState(0);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -62,9 +64,7 @@ function EmployeePanel() {
 
   const fetchNewData = async (status) => {
     try {
-      const response = await axios.get(
-        `${secretKey}/employees/${data.ename}`
-      );
+      const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
       setmoreEmpData(response.data);
       setEmployeeData(
@@ -84,6 +84,14 @@ function EmployeePanel() {
           )
         );
         setdataStatus("NotInterested");
+      }
+      if (status === "FollowUp") {
+        setEmployeeData(
+          tempData.filter(
+            (obj) => obj.Status === "FollowUp"
+          )
+        );
+        setdataStatus("FollowUp");
       }
       if (status === "Interested") {
         setEmployeeData(tempData.filter((obj) => obj.Status === "Interested"));
@@ -200,6 +208,7 @@ function EmployeePanel() {
   const [companyInco, setCompanyInco] = useState(null);
   const [companyId, setCompanyId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
+  
 
   console.log(companyName, companyInco);
 
@@ -250,12 +259,12 @@ function EmployeePanel() {
     }
   };
 
-  const handlenewFieldChange = (companyId, field, value) => {
+  const handlenewFieldChange = (companyId, value) => {
     setUpdateData((prevData) => ({
       ...prevData,
       [companyId]: {
         ...prevData[companyId],
-        [field]: value,
+        Remarks: value,
         isButtonEnabled: true, // Enable the button when any field changes
       },
     }));
@@ -265,7 +274,9 @@ function EmployeePanel() {
     return updateData[companyId]?.isButtonEnabled || false;
   };
 
-  const handleUpdate = async (companyId) => {
+  const [changeRemarks, setChangeRemarks] = useState("");
+
+  const handleUpdate = async (companyId , status) => {
     const { Remarks } = updateData[companyId];
 
     // Now you have the updated Status and Remarks, perform the update logic
@@ -283,7 +294,7 @@ function EmployeePanel() {
       // Check if the API call was successful
       if (response.status === 200) {
         // If successful, update the employeeData state or fetch data again to reflect changes
-        fetchData(); // Assuming fetchData is a function to fetch updated employee data       
+        fetchNewData(status); // Assuming fetchData is a function to fetch updated employee data
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);
@@ -392,15 +403,12 @@ function EmployeePanel() {
     } else {
       try {
         // Make API call using Axios
-        const response = await axios.post(
-          `${secretKey}/requestgData`,
-          {
-            numberOfData,
-            name,
-            cTime,
-            cDate,
-          }
-        );
+        const response = await axios.post(`${secretKey}/requestgData`, {
+          numberOfData,
+          name,
+          cTime,
+          cDate,
+        });
 
         console.log("Data sent successfully:", response.data);
         Swal.fire("Request sent!");
@@ -441,7 +449,7 @@ function EmployeePanel() {
                     <div style={{ display: "flex" }} className="feature1">
                       <div
                         className="form-control"
-                        style={{ height: "fit-content", width: "15vw" }}
+                        style={{ height: "fit-content", width: "auto" }}
                       >
                         <select
                           style={{
@@ -530,17 +538,18 @@ function EmployeePanel() {
                             margin: "0px 10px",
                             display: visibilityOthernew,
                           }}
-                          className="input-icon form-control"
+                          className="input-icon"
                         >
                           <select
                             value={searchText}
                             onChange={(e) => {
                               setSearchText(e.target.value);
                             }}
+                            className="form-select"
                           >
                             <option value="All">All </option>
-                            <option value="Busy ">Busy </option>
-                            <option value="Not Picked Up ">
+                            <option value="Busy">Busy </option>
+                            <option value="Not Picked Up">
                               Not Picked Up{" "}
                             </option>
                             <option value="Junk">Junk</option>
@@ -700,6 +709,7 @@ function EmployeePanel() {
                         href="#tabs-home-5"
                         onClick={() => {
                           setdataStatus("All");
+                          setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData.filter(
                               (obj) =>
@@ -716,10 +726,17 @@ function EmployeePanel() {
                         }
                         data-bs-toggle="tab"
                       >
-                        General {dataStatus === "All" && (
-                          <span style={{marginLeft: "5px",
-                            color: "#59cd59",
-                            fontWeight:"bold"}}>..{employeeData.length}</span>
+                        General{" "}
+                        {dataStatus === "All" && (
+                          <span
+                            style={{
+                              marginLeft: "5px",
+                              color: "#59cd59",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            ..{employeeData.length}
+                          </span>
                         )}
                       </a>
                     </li>
@@ -728,7 +745,41 @@ function EmployeePanel() {
                       <a
                         href="#tabs-activity-5"
                         onClick={() => {
+                          setdataStatus("FollowUp");
+                          setCurrentPage(0);
+                          setEmployeeData(
+                            moreEmpData.filter(
+                              (obj) => obj.Status === "FollowUp"
+                            )
+                          );
+                        }}
+                        className={
+                          dataStatus === "FollowUp"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        Follow Up{" "}
+                        {dataStatus === "FollowUp" && (
+                          <span
+                            style={{
+                              marginLeft: "5px",
+                              color: "#59cd59",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            ..{employeeData.length}
+                          </span>
+                        )}
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
                           setdataStatus("Interested");
+                          setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData.filter(
                               (obj) => obj.Status === "Interested"
@@ -742,10 +793,17 @@ function EmployeePanel() {
                         }
                         data-bs-toggle="tab"
                       >
-                        Interested {dataStatus === "Interested" && (
-                          <span style={{marginLeft: "5px",
-                            color: "#59cd59",
-                            fontWeight:"bold"}}>..{employeeData.length}</span>
+                        Interested{" "}
+                        {dataStatus === "Interested" && (
+                          <span
+                            style={{
+                              marginLeft: "5px",
+                              color: "#59cd59",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            ..{employeeData.length}
+                          </span>
                         )}
                       </a>
                     </li>
@@ -754,6 +812,7 @@ function EmployeePanel() {
                         href="#tabs-activity-5"
                         onClick={() => {
                           setdataStatus("Matured");
+                          setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData.filter(
                               (obj) => obj.Status === "Matured"
@@ -767,10 +826,17 @@ function EmployeePanel() {
                         }
                         data-bs-toggle="tab"
                       >
-                        Matured {dataStatus === "Matured" && (
-                          <span style={{marginLeft: "5px",
-                            color: "#59cd59",
-                            fontWeight:"bold"}}>..{employeeData.length}</span>
+                        Matured{" "}
+                        {dataStatus === "Matured" && (
+                          <span
+                            style={{
+                              marginLeft: "5px",
+                              color: "#59cd59",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            ..{employeeData.length}
+                          </span>
                         )}
                       </a>
                     </li>
@@ -779,6 +845,7 @@ function EmployeePanel() {
                         href="#tabs-activity-5"
                         onClick={() => {
                           setdataStatus("NotInterested");
+                          setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData.filter(
                               (obj) =>
@@ -794,10 +861,17 @@ function EmployeePanel() {
                         }
                         data-bs-toggle="tab"
                       >
-                        Not-Interested {dataStatus === "NotInterested" && (
-                          <span style={{marginLeft: "5px",
-                            color: "#59cd59",
-                            fontWeight:"bold"}}>..{employeeData.length}</span>
+                        Not-Interested{" "}
+                        {dataStatus === "NotInterested" && (
+                          <span
+                            style={{
+                              marginLeft: "5px",
+                              color: "#59cd59",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            ..{employeeData.length}
+                          </span>
                         )}
                       </a>
                     </li>
@@ -805,7 +879,13 @@ function EmployeePanel() {
                 </div>
                 <div className="card">
                   <div className="card-body p-0">
-                    <div style={{ overflowX: "auto" }}>
+                    <div
+                      style={{
+                        overflowX: "auto",
+                        overflowY: "auto",
+                        maxHeight: "48vh",
+                      }}
+                    >
                       <table
                         style={{
                           width: "100%",
@@ -815,22 +895,23 @@ function EmployeePanel() {
                         className="table-vcenter table-nowrap"
                       >
                         <thead>
-                          <tr style={{ backgroundColor: "#f2f2f2" }}>
+                          <tr
+                            style={{
+                              position: "sticky",
+                              top: "0px",
+                              zIndex: 1,
+                              background: "#f2f2f2",
+                            }}
+                          >
+                            <th>Sr.No</th>
                             <th
-                              style={{
-                                position: "sticky",
-                                left: "0px",
-                                zIndex: 1,
-                              }}
-                            >
-                              Sr.No
-                            </th>
-                            <th
-                              style={{
-                                position: "sticky",
-                                left: "80px",
-                                zIndex: 1,
-                              }}
+                             style={{
+                              position: "sticky",
+                              left: "0px",
+                              top:"0px",
+                              zIndex: 1,
+                              background: "#f2f2f2",
+                            }}
                             >
                               Company Name
                             </th>
@@ -859,20 +940,12 @@ function EmployeePanel() {
                                 key={index}
                                 style={{ border: "1px solid #ddd" }}
                               >
+                                <td>{startIndex + index + 1}</td>
                                 <td
                                   style={{
                                     position: "sticky",
                                     left: "0px",
-                                    zIndex: 1,
-                                    background: "white",
-                                  }}
-                                >
-                                  {startIndex + index + 1}
-                                </td>
-                                <td
-                                  style={{
-                                    position: "sticky",
-                                    left: "0px",
+                                    top:"30px",
                                     zIndex: 1,
                                     background: "white",
                                   }}
@@ -894,7 +967,7 @@ function EmployeePanel() {
                                   ) : (
                                     <select
                                       style={{
-                                        width: "100%",
+                                        width: "100px",
                                         padding: ".4375rem .75rem",
                                         border:
                                           "1px solid var(--tblr-border-color)",
@@ -917,6 +990,7 @@ function EmployeePanel() {
                                       <option value="Untouched">
                                         Untouched{" "}
                                       </option>
+                                      <option value="FollowUp">Follow Up </option>
                                       <option value="Busy">Busy </option>
                                       <option value="Not Picked Up">
                                         Not Picked Up
@@ -935,6 +1009,7 @@ function EmployeePanel() {
 
                                 <td>
                                   <div
+                                  key={company._id}
                                     style={{
                                       display: "flex",
                                       alignItems: "center",
@@ -942,11 +1017,13 @@ function EmployeePanel() {
                                     }}
                                   >
                                     <textarea
-                                      defaultValue={company["Remarks"]}
+                                      defaultValue={company.Remarks}
+                                      placeholder="No Remarks Added"
+                                      key={company._id}
                                       onChange={(e) =>
                                         handlenewFieldChange(
                                           company._id,
-                                          "Remarks",
+                                          
                                           e.target.value
                                         )
                                       }
@@ -964,28 +1041,37 @@ function EmployeePanel() {
                                       }}
                                     />
                                     <IconButton
-                                      onClick={() => handleUpdate(company._id)}
+                                      onClick={() => handleUpdate(company._id , company.Status)}
                                       disabled={
                                         !isUpdateButtonEnabled(company._id)
                                       }
                                     >
-                                      <SaveIcon className="save" style={{ color: "#ffb900" }} />
+                                      <SaveIcon
+                                        className="save"
+                                        style={
+                                          !isUpdateButtonEnabled(company._id)
+                                            ? { color: "grey" }
+                                            : { color: "#ffb900" }
+                                        }
+                                      />
                                     </IconButton>
                                   </div>
                                 </td>
-                                {dataStatus==="Matured" && <td>
-                                  <button
-                                    style={{
-                                      padding: "5px",
-                                      fontSize: "12px",
-                                      backgroundColor: "lightblue",
-                                      // Additional styles for the "View" button
-                                    }}
-                                    className="btn btn-primary d-none d-sm-inline-block"
-                                  >
-                                    View
-                                  </button>
-                                </td>}
+                                {dataStatus === "Matured" && (
+                                  <td>
+                                    <button
+                                      style={{
+                                        padding: "5px",
+                                        fontSize: "12px",
+                                        backgroundColor: "lightblue",
+                                        // Additional styles for the "View" button
+                                      }}
+                                      className="btn btn-primary d-none d-sm-inline-block"
+                                    >
+                                      View
+                                    </button>
+                                  </td>
+                                )}
                               </tr>
                             ))}
                           </tbody>

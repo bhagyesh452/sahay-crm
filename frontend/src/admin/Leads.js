@@ -31,6 +31,7 @@ import { json } from "react-router-dom";
 
 function Leads() {
   const [open, openchange] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [month, setMonth] = useState(0);
   const [year, setYear] = useState();
   const [openNew, openchangeNew] = useState(false);
@@ -344,6 +345,7 @@ function Leads() {
         for (const obj of csvdata) {
           if (!obj.ename && obj.ename !== "Not Alloted") {
             try {
+              setLoading(true);
               const response = await axios.post(`${secretKey}/company`, {
                 newemployeeSelection,
                 csvdata,
@@ -1220,6 +1222,12 @@ function Leads() {
         </div>
       )}
       {/* Main Page Starts from here */}
+      {loading && (
+        // Your loading screen component or message
+        <div className="loading-screen">
+          <p>Loading...</p>
+        </div>
+      )}
       <div className="page-wrapper">
         <div className="page-header d-print-none">
           <div className="container-xl">

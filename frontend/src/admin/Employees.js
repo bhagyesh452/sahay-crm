@@ -200,7 +200,6 @@ function Employees({ onEyeButtonClick }) {
         text: "You have successfully removed the employee!",
         icon: "success",
       });
-
     } catch (error) {
       console.error("Error deleting data:", error);
       Swal.fire({

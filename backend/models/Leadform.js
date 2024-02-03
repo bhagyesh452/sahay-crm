@@ -28,6 +28,7 @@ const leadSchema = new mongoose.Schema({
     secondPayment: Number,
     thirdPayment: Number,
     fourthPayment: Number,
+    paymentRemarks:String,
     paymentReceipt: String,
     bookingSource: String,
     cPANorGSTnum: Number,
