@@ -12,11 +12,11 @@ function EmpNav({userId}) {
     const frontendkey = process.env.REACT_APP_FRONTEND_KEY;
     const handleConvertedLeadsClick = () => {
       // Navigate to the /employee-data/:userId/converted-leads route
-      window.location.replace(`${frontendkey}/converted-leads/${userId}`);
+      window.location.replace(`/converted-leads/${userId}`);
     };
     const handleConvertedLeadsClicksame = () => {
       // Navigate to the /employee-data/:userId/converted-leads route
-      window.location.replace(`${frontendkey}/employee-data/${userId}`);
+      window.location.replace(`/employee-data/${userId}`);
     };
     
   return (

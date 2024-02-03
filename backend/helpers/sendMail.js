@@ -6,13 +6,13 @@ const transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-    user: "aakashseth452@gmail.com",
-    pass: "jywhpjugzmoummid",
+    user: "nimesh@incscale.in",
+    pass: "jipaefozdbqwzlhu",
   },
 });
 
 // async..await is not allowed in global scope, must use a wrapper
-async function sendMail(to, subject, text, html, otherDocs, paymentReceipt) {
+async function sendMail(recipients, subject, text, html, otherDocs, paymentReceipt) {
   const attachments = [];
 
   const processAttachments = (files, prefix) => {
@@ -38,8 +38,9 @@ async function sendMail(to, subject, text, html, otherDocs, paymentReceipt) {
   processAttachments(paymentReceipt, 'paymentReceipt');
 
   const info = await transporter.sendMail({
-    from: 'aakashseth452@gmail.com', // sender address
-    to,
+    from: 'nimesh@incscale.in', // sender address
+    to:recipients.join(', '),
+    replyTo: 'bookings@startupsahay.com',
     subject, // Subject line
     text, // plain text body
     html, // html body

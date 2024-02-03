@@ -19,7 +19,7 @@ const multer = require("multer");
 require("dotenv").config();
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 app.use(cors())
 var http = require ("http") .createServer (app);
 var socketIO = require ("socket.io") (http, {
@@ -682,8 +682,9 @@ app.post(
       const displayPayment = paymentTerms === "Full Advanced" ? "none" : "flex";
 
       const savedEmployee = await employee.save();
+      const recipients= ['bookings@startupsahay.com', 'documents@startupsahay.com' ,`${bdmEmail}`,`${empEmail}`]
       
-      sendMail("bhagyesh@startupsahay.com","Mail received",``,`<div style="width: 80%; margin: 50px auto;">
+      sendMail(recipients,"Mail received",``,`<div style="width: 80%; margin: 50px auto;">
       <h2 style="text-align: center;">Lead Information</h2>
       <div style="display: flex;">
           <div style="width: 48%;">
