@@ -39,7 +39,6 @@ td textarea {
     display: -webkit-box;
     max-width: 100%;
     text-align: left;
-    font-size: 14px;
     line-height: 1.5;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;

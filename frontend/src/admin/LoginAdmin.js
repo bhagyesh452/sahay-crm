@@ -59,7 +59,7 @@ function LoginAdmin({ setToken }) {
               <img src="./static/logo.svg" height="36" alt="" />
             </a>
           </div>
-          <div className="card card-md">
+          <div className="card card-md login-card">
             <div className="card-body">
               <h2 className="h2 text-center mb-4">Admin Login</h2>
               <form action="./" method="get" autocomplete="off" novalidate>

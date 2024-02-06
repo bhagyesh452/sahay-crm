@@ -49,9 +49,9 @@ function Leads() {
   const [searchText, setSearchText] = useState("");
   const [citySearch, setcitySearch] = useState("");
   const [selectedField, setSelectedField] = useState("Company Name");
-  const [employeeSelection, setEmployeeSelection] = useState("Select Employee");
+  const [employeeSelection, setEmployeeSelection] = useState("Not Alloted");
   const [newemployeeSelection, setnewEmployeeSelection] =
-    useState("Select Employee");
+    useState("Not Alloted");
   const [newempData, setnewEmpData] = useState([]);
   // const [currentData, setCurrentData] = useState([]);
 
@@ -343,53 +343,40 @@ function Leads() {
 
   const handleUploadData = async (e) => {
     if (selectedOption === "someoneElse") {
-      if (csvdata.length !== 0 && newemployeeSelection !== "") {
+      const updatedCsvdata = csvdata.map(data => ({
+        ...data,
+        ename:newemployeeSelection
+      }));
+      if (updatedCsvdata.length !== 0) {
         setLoading(true); // Move setLoading outside of the loop
 
-        for (const obj of csvdata) {
-          if (!obj.ename && obj.ename !== "Not Alloted") {
-            try {
-              const response = await axios.post(`${secretKey}/company`, {
-                newemployeeSelection,
-                csvdata,
-              });
-              console.log("Data posted successfully");
-            } catch (err) {
-              console.log("Internal server Error", err);
-            }
-          } else {
-            const userConfirmed = window.confirm(
-              `Data is already assigned to: ${obj.ename}. Do you want to continue?`
-            );
+        try {
+          await axios.post(`${secretKey}/leads`, updatedCsvdata);
+          console.log("Data sent successfully");
+          Swal.fire({
+            title: "Data Send!",
+            text: "Data successfully sent to the Employee",
+            icon: "success",
+          });
 
-            if (userConfirmed) {
-              try {
-                const response = await axios.post(`${secretKey}/postData`, {
-                  newemployeeSelection,
-                  csvdata,
-                });
-                window.location.reload();
-                console.log("Data posted successfully");
-              } catch (err) {
-                console.log("Internal server Error", err);
-              }
-            } else {
-              console.log("User canceled the assignation.");
-            }
+          fetchData();
+          closepopup();
+        } catch (error) {
+          if (error.response.status !== 500) {
+            setErrorMessage(error.response.data.error);
+            Swal.fire("Some of the data are not unique");
+          } else {
+            setErrorMessage("An error occurred. Please try again.");
+            Swal.fire("Please upload unique data");
           }
+          console.log("Error:", error);
         }
 
         setLoading(false); // Move setLoading outside of the loop
 
-        Swal.fire({
-          title: "Data Send!",
-          text: "Data successfully sent to the Employee",
-          icon: "success",
-        });
-        fetchData();
-        closepopup();
+        setCsvData([]);
       } else {
-        Swal.fire("Please Select a file");
+        Swal.fire("Please upload data");
       }
     } else {
       console.log("Assigning Normally");
@@ -435,6 +422,7 @@ function Leads() {
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
 
   const handleDelete = async (id) => {
+
     try {
       await axios.delete(`${secretKey}/leads/${id}`);
       // Refresh the data after successful deletion
@@ -712,22 +700,37 @@ function Leads() {
 
   // delete selection
 
-  const handleDeleteSelection = async () => {
-    if (selectedRows.length !== 0) {
-      try {
-        await axios.delete(`${secretKey}/delete-rows`, {
-          data: { selectedRows }, // Pass selected rows to the server
-        });
-        // After deletion, fetch updated data
-        fetchData();
-        setSelectedRows([]); // Clear selectedRows state
-      } catch (error) {
-        console.error("Error deleting rows:", error.message);
+const handleDeleteSelection = async () => {
+  if (selectedRows.length !== 0) {
+    // Show confirmation dialog using SweetAlert2
+    Swal.fire({
+      title: 'Confirm Deletion',
+      text: 'Are you sure you want to delete the selected rows?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete',
+      cancelButtonText: 'No, cancel',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          // If user confirms, proceed with deletion
+          await axios.delete(`${secretKey}/delete-rows`, {
+            data: { selectedRows }, // Pass selected rows to the server
+          });
+          // After deletion, fetch updated data
+          fetchData();
+          setSelectedRows([]); // Clear selectedRows state
+        } catch (error) {
+          console.error("Error deleting rows:", error.message);
+        }
       }
-    } else {
-      Swal.fire("Select some rows first!");
-    }
-  };
+    });
+  } else {
+    // If no rows are selected, show an alert
+    Swal.fire("Select some rows first!");
+  }
+};
+
 
   function formatDate(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -937,7 +940,7 @@ function Leads() {
                         setEmployeeSelection(e.target.value);
                       }}
                     >
-                      <option value="Select Employee" disabled>
+                      <option value="Not Alloted" disabled>
                         Select employee
                       </option>
                       {newempData.map((item) => (
@@ -1205,7 +1208,7 @@ function Leads() {
                                 setnewEmployeeSelection(e.target.value);
                               }}
                             >
-                              <option value="Select Employee" disabled>
+                              <option value="Not Alloted" disabled>
                                 Select employee
                               </option>
                               {newempData.map((item) => (

@@ -79,7 +79,7 @@ console.log(frontendkey,secretKey)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(locationAccess){
+   
       try {
         const response = await axios.post(`${secretKey}/employeelogin`, {
           email,
@@ -103,11 +103,11 @@ console.log(frontendkey,secretKey)
         setErrorMessage("Incorrect Credentials");
         // setErrorMessage("Incorrect Credentials!");
       }
-    }else{
-      Swal.fire("Improper location, Access Denied!");
-      localStorage.removeItem("newtoken");
-      localStorage.removeItem("userId");
-    }
+    // }else{
+    //   Swal.fire("Improper location, Access Denied!");
+    //   localStorage.removeItem("newtoken");
+    //   localStorage.removeItem("userId");
+    // }
    
   };
 
@@ -120,7 +120,7 @@ console.log(frontendkey,secretKey)
               <img src="./static/logo.svg" height="36" alt="" />
             </a>
           </div>
-          <div className="card card-md">
+          <div className="login-card card card-md">
             <div className="card-body">
               <h2 className="h2 text-center mb-4">Employee Login</h2>
               <form action="#" method="get" autocomplete="off" novalidate>

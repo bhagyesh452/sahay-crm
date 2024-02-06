@@ -325,6 +325,29 @@ app.post("/api/postData", async (req, res) => {
 
   res.json({ message: "Data posted successfully" });
 });
+app.post("/api/assign-new", async (req, res) => {
+  const { newemployeeSelection, csvdata } = req.body;
+  // Check if data is already assigned
+  // if (selectedObjects.every((obj) => obj.ename === employeeSelection)) {
+  //   return res.status(400).json({ error: `Data is already assigned to ${employeeSelection}` });
+  // }
+
+  // If not assigned, post data to MongoDB or perform any desired action
+  const updatePromises = csvdata.map((obj) => {
+    // Add AssignData property with the current date
+    const updatedObj = {
+      ...obj,
+      ename: newemployeeSelection,
+      AssignDate: new Date(),
+    };
+    return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
+  });
+
+  // Execute all update promises
+  await Promise.all(updatePromises);
+
+  res.json({ message: "Data posted successfully" });
+});
 
 app.post("/api/company", async (req, res) => {
   const { newemployeeSelection, csvdata } = req.body;

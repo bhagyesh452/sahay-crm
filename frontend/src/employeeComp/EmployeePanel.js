@@ -32,6 +32,12 @@ function EmployeePanel() {
   const [visibilityOthernew, setVisibilityOthernew] = useState("none");
   const [subFilterValue, setSubFilterValue] = useState("");
   const [selectedField, setSelectedField] = useState("Company Name");
+  const [cname, setCname] = useState("");
+  const [cemail, setCemail] = useState("");
+  const [cnumber, setCnumber] = useState(0);
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [cidate, setCidate] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [month, setMonth] = useState(0);
   const [updateData, setUpdateData] = useState({});
@@ -57,9 +63,18 @@ function EmployeePanel() {
     setcid(companyID);
     setCstat(companyStatus);
   };
+  
+  const [openNew, openchangeNew] = useState(false);
+  const functionopenpopupNew = () => {
+    openchangeNew(true);
+  };
+
 
   const closepopup = () => {
     openchange(false);
+  };
+  const closepopupNew = () => {
+    openchangeNew(false);
   };
   const closepopupRemarks = () => {
     openchangeRemarks(false);
@@ -375,10 +390,11 @@ function EmployeePanel() {
       // Check if the API call was successful
       if (response.status === 200) {
         Swal.fire("Remarks updated!");
+        
         // If successful, update the employeeData state or fetch data again to reflect changes
-        fetchNewData();
+        fetchNewData(cstat);
         fetchRemarksHistory();
-        setCstat("");
+        // setCstat("");
         closepopupRemarks(); // Assuming fetchData is a function to fetch updated employee data
       } else {
         // Handle the case where the API call was not successful
@@ -509,6 +525,34 @@ function EmployeePanel() {
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
+  };
+
+  const handleSubmitData = (e) => {
+    e.preventDefault();
+    axios
+      .post(`${secretKey}/manual`, {
+        "Company Name": cname,
+        "Company Number": cnumber,
+        "Company Email": cemail,
+        "Company Incorporation Date  ": cidate,
+        City: city,
+        State: state,
+        ename:data.ename,
+        AssignDate: new Date(),
+      })
+      .then((response) => {
+        console.log("Data sent Successfully");
+        Swal.fire({
+          title: "Data Added!",
+          text: "Successfully added new Data!",
+          icon: "success",
+        });
+        fetchNewData();
+        closepopupNew();
+      })
+      .catch((error) => {
+        Swal.fire("Please Enter Unique data!");
+      });
   };
 
   return (
@@ -747,13 +791,32 @@ function EmployeePanel() {
                           </div>
                         </>
                       )}
-                      <div className="request">
+                      <div className="request" style={{marginRight:'15px'}}>
                         <div className="btn-list">
                           <button
                             onClick={functionopenpopup}
                             className="btn btn-primary d-none d-sm-inline-block"
                           >
                             Request Data
+                          </button>
+                          <a
+                            href="#"
+                            className="btn btn-primary d-sm-none btn-icon"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-report"
+                            aria-label="Create new report"
+                          >
+                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                          </a>
+                        </div>
+                      </div>
+                      <div className="request">
+                        <div className="btn-list">
+                          <button
+                            onClick={functionopenpopupNew}
+                            className="btn btn-primary d-none d-sm-inline-block"
+                          >
+                           ADD Leads
                           </button>
                           <a
                             href="#"
@@ -780,7 +843,7 @@ function EmployeePanel() {
               className="page-body"
             >
               <div className="container-xl">
-                <div class="card-header">
+                <div class="card-header my-tab">
                   <ul
                     class="nav nav-tabs card-header-tabs nav-fill p-0"
                     data-bs-toggle="tabs"
@@ -808,13 +871,16 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         General{" "}
-                        {dataStatus === "All" && (
-                          <span
+                        <span
                             className="no_badge"
                           >
-                            {employeeData.length}
+                            {moreEmpData.filter(
+                              (obj) =>
+                                obj.Status === "Busy" ||
+                                obj.Status === "Not Picked Up" ||
+                                obj.Status === "Untouched"
+                            ).length}
                           </span>
-                        )}
                       </a>
                     </li>
                     <li class="nav-item">
@@ -837,13 +903,15 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Interested{" "}
-                        {dataStatus === "Interested" && (
+                       
                           <span
                             className="no_badge"
                           >
-                            {employeeData.length}
+                            {moreEmpData.filter(
+                              (obj) => obj.Status === "Interested"
+                            ).length}
                           </span>
-                        )}
+                       
                       </a>
                     </li>
 
@@ -867,13 +935,13 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Follow Up{" "}
-                        {dataStatus === "FollowUp" && (
-                          <span
+                        <span
                             className="no_badge"
                           >
-                            {employeeData.length}
+                            {moreEmpData.filter(
+                              (obj) => obj.Status === "FollowUp"
+                            ).length}
                           </span>
-                        )}
                       </a>
                     </li>
                     
@@ -897,13 +965,14 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Matured{" "}
-                        {dataStatus === "Matured" && (
-                          <span
+                        <span
                             className="no_badge"
                           >
-                            {employeeData.length}
+                            {moreEmpData.filter(
+                            
+                              (obj) => obj.Status === "Matured"
+                            ).length}
                           </span>
-                        )}
                       </a>
                     </li>
                     <li class="nav-item">
@@ -928,13 +997,15 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Not-Interested{" "}
-                        {dataStatus === "NotInterested" && (
-                          <span
+                        <span
                             className="no_badge"
                           >
-                            {employeeData.length}
+                            {moreEmpData.filter(
+                              (obj) =>
+                              obj.Status === "Not Interested" ||
+                              obj.Status === "Junk"
+                            ).length}
                           </span>
-                        )}
                       </a>
                     </li>
                   </ul>
@@ -945,7 +1016,7 @@ function EmployeePanel() {
                       style={{
                         overflowX: "auto",
                         overflowY: "auto",
-                        maxHeight: "60vh",
+                        maxHeight: "62vh",
                       }}
                     >
                       <table
@@ -1046,24 +1117,25 @@ function EmployeePanel() {
                                     </select>
                                   )}
                                 </td>
-                                <td>
+                                <td >
                                   <div
                                     key={company._id}
                                     style={{
                                       display: "flex",
                                       alignItems: "center",
                                       justifyContent: "space-between",
+                                      width:"100px"
                                     }}
                                   >
                                     <p
                                       className="rematkText text-wrap m-0"
                                       title={company.Remarks}
                                     >
-                                      {company.Remarks}
+                                      {!company["Remarks"]? "No Remarks" : company.Remarks }
                                     </p>
 
                                     <IconButton>
-                                      <EditIcon style={{width:'15px', height:'15px'}}
+                                      <EditIcon style={{width:'12px', height:'12px'}}
                                         onClick={() => {
                                           functionopenpopupremarks(
                                             company._id,
@@ -1447,7 +1519,104 @@ function EmployeePanel() {
         </DialogContent>
       </Dialog>
 
-      {/* Main Page Starts from here */}
+      {/* ADD Leads starts here */}
+      <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="sm">
+        <DialogTitle>
+          Company Info{" "}
+          <IconButton onClick={closepopupNew} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="modal-dialog modal-lg" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Company Name</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="Your Company Name"
+                    onChange={(e) => {
+                      setCname(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Company Email</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="example@gmail.com"
+                    onChange={(e) => {
+                      setCemail(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">Company Number</label>
+                      <input
+                        type="number"
+                        onChange={(e) => {
+                          setCnumber(e.target.value);
+                        }}
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Company Incorporation Date
+                      </label>
+                      <input
+                        onChange={(e) => {
+                          setCidate(e.target.value);
+                        }}
+                        type="date"
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">City</label>
+                      <input
+                        onChange={(e) => {
+                          setCity(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">State</label>
+                      <input
+                        onChange={(e) => {
+                          setState(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <button onClick={handleSubmitData} className="btn btn-primary">
+          Submit
+        </button>
+      </Dialog>
     </div>
   );
 }

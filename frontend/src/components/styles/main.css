@@ -197,7 +197,7 @@ tr:focus{
 .tr-sticky
 {
     position: sticky;
-    top: 0px;
+    top: -1px;
     z-index: 99;
     background: #f2f2f2;
 }
@@ -225,8 +225,8 @@ tr:focus{
 {
     position: sticky;
     left: 0px;
-    top: 37px;
-    z-index: 99;
+    top: auto;
+    z-index: 98;
     background: white;
     border-right: 1px solid #eee !important;
     box-shadow: 1px 1px 10px 42px #000 !important;
@@ -235,8 +235,8 @@ tr:focus{
 {
     position: sticky;
     left: 52px;
-    top: 37px;
-    z-index: 99;
+    top: auto;
+    z-index: 98;
     background: white;
     border-right: 1px solid #eee !important;
     box-shadow: 1px 1px 10px 42px #000 !important;
@@ -244,12 +244,12 @@ tr:focus{
 tr:hover .td-sticky
 {
     background: #eee !important;
-    z-index: 99;
+    z-index: 98;
 }
 tr:hover .td-sticky1
 {
     background: #eee !important;
-    z-index: 99;
+    z-index: 98;
 }
 .pagination button
 {
@@ -276,4 +276,13 @@ pre
 }
 th{
     padding: 4px 10px !important;
+}
+.login-card
+{
+    width: 400px;
+    margin: 0 auto;
+}
+.my-tab .nav-fill .nav-item .nav-link {
+    justify-content: center;
+    padding: 4px 10px;
 }
