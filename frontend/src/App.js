@@ -36,7 +36,7 @@ function App() {
           <Route
             path="/employee-data/:userId/"
             element={
-              newtoken ? <EmployeePanel /> : <Navigate to="/employeelogin" />
+              newtoken ? <EmployeePanel /> : <Navigate to="/" />
             }
           ></Route>
           <Route

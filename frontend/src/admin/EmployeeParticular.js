@@ -4,8 +4,11 @@ import Navbar from "./Navbar";
 import Header from "./Header";
 import { useParams } from "react-router-dom";
 import { IconBoxPadding, IconChevronLeft } from "@tabler/icons-react";
+import { IconChevronRight } from "@tabler/icons-react";
 import { IconButton } from "@mui/material";
 import { Link } from 'react-router-dom';
+import '../components/styles/main.css'
+import '../employeeComp/panel.css'
 // import "./styles/table.css";
 
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -15,7 +18,32 @@ function EmployeeParticular() {
   const { id } = useParams();
   const [employeeData, setEmployeeData] = useState([]);
   const [employeeName, setEmployeeName] = useState('');
+  const [dataStatus, setdataStatus] = useState("All");
+  const [moreEmpData, setmoreEmpData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 100;
+  const startIndex = currentPage * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const [searchText, setSearchText] = useState("");
+  const [citySearch, setcitySearch] = useState("");
+  const [visibility, setVisibility] = useState("none");
+  const [visibilityOther, setVisibilityOther] = useState("block");
+  const [visibilityOthernew, setVisibilityOthernew] = useState("none");
+  const [subFilterValue, setSubFilterValue] = useState("");
+  const [selectedField, setSelectedField] = useState("Company Name");
 
+  const [month, setMonth] = useState(0);
+  // const [updateData, setUpdateData] = useState({});
+
+  const [year, setYear] = useState(0);
+  function formatDate(inputDate) {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    const formattedDate = new Date(inputDate).toLocaleDateString(
+      "en-US",
+      options
+    );
+    return formattedDate;
+  }
   // Function to fetch employee details by id
   const fetchEmployeeDetails = async () => {
     try {
@@ -41,7 +69,14 @@ function EmployeeParticular() {
   const fetchNewData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employees/${employeeName}`);
-      setEmployeeData(response.data);
+      
+      setmoreEmpData(response.data);
+      setEmployeeData(response.data.filter(
+        (obj) =>
+          obj.Status === "Busy" ||
+          obj.Status === "Not Picked Up" ||
+          obj.Status === "Untouched"
+      ))
     } catch (error) {
       console.error('Error fetching new data:', error);
     }
@@ -63,6 +98,90 @@ useEffect(()=>{
   
 
 console.log(employeeData);
+  const filteredData = employeeData.filter((company) => {
+    const fieldValue = company[selectedField];
+
+    if (selectedField === "State" && citySearch) {
+      // Handle filtering by both State and City
+      const stateMatches = fieldValue
+        .toLowerCase()
+        .includes(searchText.toLowerCase());
+      const cityMatches = company.City.toLowerCase().includes(
+        citySearch.toLowerCase()
+      );
+      return stateMatches && cityMatches;
+    } else if (selectedField === "Company Incorporation Date  ") {
+      // Assuming you have the month value in a variable named `month`
+      if (month == 0) {
+        return fieldValue.includes(searchText);
+      } else if (year == 0) {
+        return fieldValue.includes(searchText);
+      }
+      const selectedDate = new Date(fieldValue);
+      const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+      const selectedYear = selectedDate.getFullYear();
+
+      // Use the provided month variable in the comparison
+      return (
+        selectedMonth.toString().includes(month) &&
+        selectedYear.toString().includes(year)
+      );
+    } else if (selectedField === "Status" && searchText === "All") {
+      // Display all data when Status is "All"
+      return true;
+    } else {
+      // Your existing filtering logic for other fields
+      if (typeof fieldValue === "string") {
+        return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+      } else if (typeof fieldValue === "number") {
+        return fieldValue.toString().includes(searchText);
+      } else if (fieldValue instanceof Date) {
+        // Handle date fields
+        return fieldValue.includes(searchText);
+      }
+
+      return false;
+    }
+  });
+  const handleFieldChange = (event) => {
+    if (event.target.value === "Company Incorporation Date  ") {
+      setSelectedField(event.target.value);
+      setVisibility("block");
+      setVisibilityOther("none");
+      setSubFilterValue("");
+      setVisibilityOthernew("none");
+    } else if (event.target.value === "Status") {
+      setSelectedField(event.target.value);
+      setVisibility("none");
+      setVisibilityOther("none");
+      setSubFilterValue("");
+      setVisibilityOthernew("block");
+    } else {
+      setSelectedField(event.target.value);
+      setVisibility("none");
+      setVisibilityOther("block");
+      setSubFilterValue("");
+      setVisibilityOthernew("none");
+    }
+
+    console.log(selectedField);
+  };
+
+  const handleDateChange = (e) => {
+    const dateValue = e.target.value;
+    setCurrentPage(0);
+
+    // Check if the dateValue is not an empty string
+    if (dateValue) {
+      const dateObj = new Date(dateValue);
+      const formattedDate = dateObj.toISOString().split("T")[0];
+      setSearchText(formattedDate);
+    } else {
+      // Handle the case when the date is cleared
+      setSearchText("");
+    }
+  };
+  const currentData = filteredData.slice(startIndex, endIndex);
 
   // useEffect(() => {
   //   // Fetch new data based on employee name when the name changes
@@ -77,7 +196,11 @@ console.log(employeeData);
       <Header />
       <Navbar />
       <div className="page-wrapper">
-        <div className="page-header d-print-none">
+        <div style={
+          {
+            margin: "3px 0px 1px 0px"
+          }
+        } className="page-header d-print-none">
           <div className="container-xl">
             <div className="row g-2 align-items-center">
               
@@ -89,7 +212,7 @@ console.log(employeeData);
                     </IconButton>
                   </Link>
                 
-                <h2 className="page-title">Employee  {">" + employeeName}</h2>
+                <h2 className="page-title">{ employeeName}</h2>
               </div>
 
               {/* <!-- Page title actions --> */}
@@ -113,106 +236,559 @@ console.log(employeeData);
         </div>
         <div onCopy={(e)=>{
           e.preventDefault();
-        }} className="page-body">
+        }} className="page-body" style={{marginTop:'0px '}}>
         <div className="container-xl">
-          <div className="card">
-            <div className="card-body p-0">
-              <div id="table-default" className="table-responsive">
-                <table className="table table-vcenter table-nowrap">
-                  <thead>
-                    <tr>
-                      
-                      <th>
-                        <button className="table-sort" data-sort="sort-name pad">
-                          Sr.No
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-city">
-                          Company Name
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-type">
-                          Company Number
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-score">
-                          Company Email
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          Company Incorporation Date
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          City
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          State
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          Status
-                        </button>
-                      </th>
-                      <th>
-                        <button  className="table-sort" data-sort="sort-date">
-                          Remarks
-                        </button>
-                      </th>
-                      
-                    </tr>
-                  </thead>
-                  {employeeData.length == 0 ? (
-                    <tbody>
-                    <tr>
-                      <td colSpan="10" style={{ textAlign: "center" }}>
-                        No data available
-                      </td>
-                    </tr>
-                  </tbody>
-                  ) : (
-                    employeeData.map((company, index) => (
-                      <tbody>
-                        <tr style={{padding:"10px"}}>
-                          
-                          <td className="sort-name pad">
-                            {index+1}
-                          </td>
-                          <td className="sort-name pad">
-                            {company["Company Name"]}
-                          </td>
-                          <td className="sort-name pad">
-                            {company["Company Number"]}
-                          </td>
-                          <td className="sort-name pad">
-                            {company["Company Email"]}
-                          </td>
-                          <td className="sort-name pad">
-                            {company["Company Incorporation Date  "]}
-                          </td>
-                          <td className="sort-name pad">{company["City"]}</td>
-                          <td className="sort-name pad">{company["State"]}</td>
-                          <td className="sort-name pad">{company["Status"]}</td>
-                          <td className="sort-name pad">{company["Remarks"]}</td>
-                         
-                        </tr>
-                      </tbody>
-                    ))
-                  )}
-                  <tbody className="table-tbody"></tbody>
-                </table>
-              </div>
-              
-            </div>
-          </div>
+        <div className="row g-2 align-items-center">
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                    className="features"
+                  >
+                    <div style={{ display: "flex" }} className="feature1 mb-2">
+                      <div
+                        className="form-control"
+                        style={{ height: "fit-content", width: "auto" }}
+                      >
+                        <select
+                          style={{
+                            border: "none",
+                            outline: "none",
+                            width: "fit-content",
+                          }}
+                          value={selectedField}
+                          onChange={handleFieldChange}
+                        >
+                          <option value="Company Name">Company Name</option>
+                          <option value="Company Number">Company Number</option>
+                          <option value="Company Email">Company Email</option>
+                          <option value="Company Incorporation Date  ">
+                            Company Incorporation Date
+                          </option>
+                          <option value="City">City</option>
+                          <option value="State">State</option>
+                          <option value="Status">Status</option>
+                        </select>
+                      </div>
+                      {visibility === "block" ? (
+                        <div>
+                          <input
+                            onChange={handleDateChange}
+                            style={{ display: visibility }}
+                            type="date"
+                            className="form-control"
+                          />
+                        </div>
+                      ) : (
+                        <div></div>
+                      )}
+
+                      {visibilityOther === "block" ? (
+                        <div
+                          style={{
+                            width: "20vw",
+                            margin: "0px 10px",
+                            display: visibilityOther,
+                          }}
+                          className="input-icon"
+                        >
+                          <span className="input-icon-addon">
+                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="icon"
+                              width="20"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              stroke-width="2"
+                              stroke="currentColor"
+                              fill="none"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            >
+                              <path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                              />
+                              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                              <path d="M21 21l-6 -6" />
+                            </svg>
+                          </span>
+                          <input
+                            type="text"
+                            value={searchText}
+                            onChange={(e) => {
+                              setSearchText(e.target.value);
+                              setCurrentPage(0);
+                            }}
+                            className="form-control"
+                            placeholder="Search…"
+                            aria-label="Search in website"
+                          />
+                        </div>
+                      ) : (
+                        <div></div>
+                      )}
+                      {visibilityOthernew === "block" ? (
+                        <div
+                          style={{
+                            width: "20vw",
+                            margin: "0px 10px",
+                            display: visibilityOthernew,
+                          }}
+                          className="input-icon"
+                        >
+                          <select
+                            value={searchText}
+                            onChange={(e) => {
+                              setSearchText(e.target.value);
+                            }}
+                            className="form-select"
+                          >
+                            <option value="All">All </option>
+                            <option value="Busy">Busy </option>
+                            <option value="Not Picked Up">
+                              Not Picked Up{" "}
+                            </option>
+                            <option value="Junk">Junk</option>
+                            <option value="Interested">Interested</option>
+                            <option value="Not Interested">
+                              Not Interested
+                            </option>
+                          </select>
+                        </div>
+                      ) : (
+                        <div></div>
+                      )}
+                      {searchText !== "" ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            fontSize: "16px",
+                            fontFamily: "sans-serif",
+                          }}
+                          className="results"
+                        >
+                          {filteredData.length} results found
+                        </div>
+                      ) : (
+                        <div></div>
+                      )}
+                    </div>
+                    <div
+                      style={{ display: "flex", alignItems: "center" }}
+                      className="feature2"
+                    >
+                      {selectedField === "State" && (
+                        <div style={{ width: "15vw" }} className="input-icon">
+                          <span className="input-icon-addon">
+                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="icon"
+                              width="20"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              stroke-width="2"
+                              stroke="currentColor"
+                              fill="none"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            >
+                              <path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                              />
+                              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                              <path d="M21 21l-6 -6" />
+                            </svg>
+                          </span>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={citySearch}
+                            onChange={(e) => {
+                              setcitySearch(e.target.value);
+                              setCurrentPage(0);
+                            }}
+                            placeholder="Search City"
+                            aria-label="Search in website"
+                          />
+                        </div>
+                      )}
+                      {selectedField === "Company Incorporation Date  " && (
+                        <>
+                          <div
+                            style={{ width: "fit-content" }}
+                            className="form-control"
+                          >
+                            <select
+                              style={{ border: "none", outline: "none" }}
+                              onChange={(e) => {
+                                setMonth(e.target.value);
+                                setCurrentPage(0);
+                              }}
+                            >
+                              <option value="" disabled selected>
+                                Select Month
+                              </option>
+                              <option value="12">December</option>
+                              <option value="11">November</option>
+                              <option value="10">October</option>
+                              <option value="9">September</option>
+                              <option value="8">August</option>
+                              <option value="7">July</option>
+                              <option value="6">June</option>
+                              <option value="5">May</option>
+                              <option value="4">April</option>
+                              <option value="3">March</option>
+                              <option value="2">February</option>
+                              <option value="1">January</option>
+                            </select>
+                          </div>
+                          <div className="input-icon">
+                            <input
+                              type="number"
+                              value={year}
+                              defaultValue="Select Year"
+                              className="form-control"
+                              placeholder="Select Year.."
+                              onChange={(e) => {
+                                setYear(e.target.value);
+                              }}
+                              aria-label="Search in website"
+                            />
+                          </div>
+                        </>
+                      )}
+                    
+                    </div>
+                  </div>
+
+                  {/* <!-- Page title actions --> */}
+                </div>
+        <div class="card-header">
+                  <ul
+                    class="nav nav-tabs card-header-tabs nav-fill p-0"
+                    data-bs-toggle="tabs"
+                  >
+                    <li class="nav-item data-heading">
+                      <a
+                        href="#tabs-home-5"
+                        onClick={() => {
+                          setdataStatus("All");
+                          setCurrentPage(0);
+                          setEmployeeData(
+                            moreEmpData.filter(
+                              (obj) =>
+                                obj.Status === "Busy" ||
+                                obj.Status === "Not Picked Up" ||
+                                obj.Status === "Untouched"
+                            )
+                          );
+                        }}
+                        className={
+                          dataStatus === "All"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        General{" "}
+                        {dataStatus === "All" && (
+                          <span
+                            className="no_badge"
+                          >
+                            {employeeData.length}
+                          </span>
+                        )}
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("Interested");
+                          setCurrentPage(0);
+                          setEmployeeData(
+                            moreEmpData.filter(
+                              (obj) => obj.Status === "Interested"
+                            )
+                          );
+                        }}
+                        className={
+                          dataStatus === "Interested"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        Interested{" "}
+                        {dataStatus === "Interested" && (
+                          <span
+                            className="no_badge"
+                          >
+                            {employeeData.length}
+                          </span>
+                        )}
+                      </a>
+                    </li>
+
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("FollowUp");
+                          setCurrentPage(0);
+                          setEmployeeData(
+                            moreEmpData.filter(
+                              (obj) => obj.Status === "FollowUp"
+                            )
+                          );
+                        }}
+                        className={
+                          dataStatus === "FollowUp"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        Follow Up{" "}
+                        {dataStatus === "FollowUp" && (
+                          <span
+                            className="no_badge"
+                          >
+                            {employeeData.length}
+                          </span>
+                        )}
+                      </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("Matured");
+                          setCurrentPage(0);
+                          setEmployeeData(
+                            moreEmpData.filter(
+                              (obj) => obj.Status === "Matured"
+                            )
+                          );
+                        }}
+                        className={
+                          dataStatus === "Matured"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        Matured{" "}
+                        {dataStatus === "Matured" && (
+                          <span
+                            className="no_badge"
+                          >
+                            {employeeData.length}
+                          </span>
+                        )}
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("NotInterested");
+                          setCurrentPage(0);
+                          setEmployeeData(
+                            moreEmpData.filter(
+                              (obj) =>
+                                obj.Status === "Not Interested" ||
+                                obj.Status === "Junk"
+                            )
+                          );
+                        }}
+                        className={
+                          dataStatus === "NotInterested"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        Not-Interested{" "}
+                        {dataStatus === "NotInterested" && (
+                          <span
+                            className="no_badge"
+                          >
+                            {employeeData.length}
+                          </span>
+                        )}
+                      </a>
+                    </li>
+                  </ul>
+                 </div>
+                 <div className="card">
+                  <div className="card-body p-0">
+                    <div
+                      style={{
+                        overflowX: "auto",
+                        overflowY: "auto",
+                        maxHeight: "60vh",
+                      }}
+                    >
+                      <table
+                        style={{
+                          width: "100%",
+                          borderCollapse: "collapse",
+                          border: "1px solid #ddd",
+                        }}
+                        className="table-vcenter table-nowrap"
+                      >
+                        <thead>
+                          <tr
+                            className="tr-sticky"
+                          >
+                            <th className="th-sticky" >Sr.No</th>
+                            <th
+                              className="th-sticky1"
+                            >
+                              Company Name
+                            </th>
+                            <th>Company Number</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                            <th>Company Email</th>
+                            <th>Incorporation Date</th>
+                            <th>City</th>
+                            <th>State</th>
+                           
+                            {dataStatus === "Matured" && <th>Action</th>}
+                          </tr>
+                        </thead>
+                        {currentData.length === 0 ? (
+                          <tbody>
+                            <tr>
+                              <td colSpan="10" style={{ textAlign: "center" }}>
+                                No data available
+                              </td>
+                            </tr>
+                          </tbody>
+                        ) : (
+                          <tbody>
+                            {currentData.map((company, index) => (
+                              <tr
+                                key={index}
+                                style={{ border: "1px solid #ddd" }}
+                              >
+                                <td className="td-sticky">{startIndex + index + 1}</td>
+                                <td
+                                  className="td-sticky1"
+                                >
+                                  {company["Company Name"]}
+                                </td>
+                                <td>{company["Company Number"]}</td>
+                                <td>
+                                 
+                                    <span>{company["Status"]}</span>
+                                 
+                                </td>
+                                <td>
+                                  <div
+                                    key={company._id}
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                    }}
+                                  >
+                                    <p
+                                      className="rematkText text-wrap m-0"
+                                      title={company.Remarks}
+                                    >
+                                      {company.Remarks}
+                                    </p>
+
+                                  
+                                  </div>
+                                </td>
+                                <td>{company["Company Email"]}</td>
+                                <td>
+                                  {formatDate(
+                                    company["Company Incorporation Date  "]
+                                  )}
+                                </td>
+                                <td>{company["City"]}</td>
+                                <td>{company["State"]}</td>
+                               
+
+                                
+                                {dataStatus === "Matured" && (
+                                  <td>
+                                    <button
+                                      style={{
+                                        padding: "5px",
+                                        fontSize: "12px",
+                                        backgroundColor: "lightblue",
+                                        // Additional styles for the "View" button
+                                      }}
+                                      className="btn btn-primary d-none d-sm-inline-block"
+                                    >
+                                      View
+                                    </button>
+                                  </td>
+                                )}
+                              </tr>
+                            ))}
+                          </tbody>
+                        )}
+                      </table>
+                    </div>
+                    {currentData.length !== 0 && (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems:"center",
+                        }}
+                        className="pagination"
+                      >
+                        <IconButton
+                          onClick={() =>
+                            setCurrentPage((prevPage) =>
+                              Math.max(prevPage - 1, 0)
+                            )
+                          }
+                          disabled={currentPage === 0}
+                        >
+                          <IconChevronLeft />
+                        </IconButton>
+                        <span>
+                          Page {currentPage + 1} of{" "}
+                          {Math.ceil(filteredData.length / itemsPerPage)}
+                        </span>
+
+                        <IconButton
+                          onClick={() =>
+                            setCurrentPage((prevPage) =>
+                              Math.min(
+                                prevPage + 1,
+                                Math.ceil(filteredData.length / itemsPerPage) -
+                                  1
+                              )
+                            )
+                          }
+                          disabled={
+                            currentPage ===
+                            Math.ceil(filteredData.length / itemsPerPage) - 1
+                          }
+                        >
+                          <IconChevronRight />
+                        </IconButton>
+                      </div>
+                    )}
+                  </div>
+                </div>
         </div>
       </div>
       </div>

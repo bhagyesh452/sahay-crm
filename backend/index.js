@@ -14,24 +14,25 @@ const LeadModel = require("./models/Leadform");
 const { sendMail } = require("./helpers/sendMail");
 const { mailFormat } = require("./helpers/mailFormat");
 const multer = require("multer");
+const RemarksHistory = require("./models/RemarksHistory");
 // const http = require('http');
 // const socketIo = require('socket.io');
 require("dotenv").config();
 
 const app = express();
-app.use(express.json({ limit: '50mb' }));
-app.use(cors())
-var http = require ("http") .createServer (app);
-var socketIO = require ("socket.io") (http, {
-     cors: {
-         origin:
-                 " * "
-     }
-    });
+app.use(express.json({ limit: "50mb" }));
+app.use(cors());
+var http = require("http").createServer(app);
+var socketIO = require("socket.io")(http, {
+  cors: {
+    origin: " * ",
+  },
+});
 // const server = http.createServer(app);
 // const io = socketIo(server);
 
 mongoose
+
   .connect(process.env.MONGO_URL)
   .then(() => {
     console.log("MongoDB is connected");
@@ -43,10 +44,10 @@ mongoose
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
 console.log(secretKey);
 
-app.get('/api',(req,res)=>{
-  console.log(req.url)
-  res.send('hello from backend!')
-})
+app.get("/api", (req, res) => {
+  console.log(req.url);
+  res.send("hello from backend!");
+});
 
 app.post("/api/admin/login-admin", async (req, res) => {
   const { username, password } = req.body;
@@ -167,7 +168,7 @@ app.post("/api/update-status/:id", async (req, res) => {
 app.post("/api/update-remarks/:id", async (req, res) => {
   const { id } = req.params;
   const { Remarks } = req.body;
-  console.log(Remarks)
+  console.log(Remarks);
   try {
     // Update the status field in the database based on the employee id
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
@@ -332,9 +333,9 @@ app.post("/api/company", async (req, res) => {
     const insertedCompanies = [];
 
     for (const company of csvdata) {
-      // Check for duplicate based on some unique identifier, like companyNumber
+      // Check for duplicate based on some unique identifier, like company name
       const isDuplicate = await CompanyModel.exists({
-        "Company Name": company["Company Name"],
+        "Company Name": company["Company Name"].trim().toLowerCase(),
       });
 
       if (!isDuplicate) {
@@ -349,7 +350,7 @@ app.post("/api/company", async (req, res) => {
         insertedCompanies.push(insertedCompany);
       } else {
         console.log(
-          `Duplicate entry found for companyNumber: ${company["Company Name"]}. Skipped.`
+          `Duplicate entry found for company name: ${company["Company Name"]}. Skipped.`
         );
       }
     }
@@ -483,7 +484,7 @@ app.post("/api/requestData", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.post('/api/requestgData', async (req, res) => {
+app.post("/api/requestgData", async (req, res) => {
   const { numberOfData, name, cTime, cDate } = req.body;
 
   try {
@@ -492,7 +493,7 @@ app.post('/api/requestgData', async (req, res) => {
       dAmount: numberOfData,
       ename: name,
       cTime: cTime,
-      cDate: cDate
+      cDate: cDate,
     });
 
     // Save the data to MongoDB
@@ -504,7 +505,7 @@ app.post('/api/requestgData', async (req, res) => {
     res.json(savedRequest);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -591,6 +592,53 @@ app.delete("/api/newcompanynamedelete/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+app.post("/api/remarks-history/:companyId", async (req, res) => {
+  const { companyId } = req.params;
+  const { Remarks } = req.body;
+
+  // Get the current date and time
+  const currentDate = new Date();
+  const time = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+  const date = currentDate.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
+console.log(companyId,Remarks,time,date)
+  try {
+    // Create a new RemarksHistory instance
+    const newRemarksHistory = new RemarksHistory({
+      time,
+      date,
+      companyID: companyId,
+      remarks : Remarks,
+    });
+
+    // Save the new entry to MongoDB
+    await newRemarksHistory.save();
+
+    res.json({ success: true, message: "Remarks history added successfully" });
+  } catch (error) {
+    console.error("Error adding remarks history:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
+app.get('/api/remarks-history', async (req, res) => {
+  try {
+    const remarksHistory = await RemarksHistory.find();
+    res.json(remarksHistory);
+  } catch (error) {
+    console.error('Error fetching remarks history:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+app.delete('/api/remarks-history/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await RemarksHistory.findByIdAndDelete(id);
+    res.json({ success: true, message: 'Remarks deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting remark:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -643,11 +691,11 @@ app.post(
         incoDate,
         extraNotes,
         empName,
-        empEmail
+        empEmail,
       } = req.body;
 
-      const otherDocs = req.files['otherDocs'] || [];
-  const paymentReceipt = req.files['paymentReceipt'] || [];// Array of files for 'file2'
+      const otherDocs = req.files["otherDocs"] || [];
+      const paymentReceipt = req.files["paymentReceipt"] || []; // Array of files for 'file2'
 
       // Your processing logic here
 
@@ -679,14 +727,23 @@ app.post(
         incoDate,
         extraNotes,
       });
-      
+
       const display = caCase === "No" ? "none" : "flex";
       const displayPayment = paymentTerms === "Full Advanced" ? "none" : "flex";
 
       const savedEmployee = await employee.save();
-      const recipients= ['bookings@startupsahay.com', 'documents@startupsahay.com' ,`${bdmEmail}`,`${empEmail}`]
-      
-      sendMail(recipients,"Mail received",``,`<div style="width: 80%; margin: 50px auto;">
+      const recipients = [
+        "bookings@startupsahay.com",
+        "documents@startupsahay.com",
+        `${bdmEmail}`,
+        `${empEmail}`,
+      ];
+
+      sendMail(
+        recipients,
+        "Mail received",
+        ``,
+        `<div style="width: 80%; margin: 50px auto;">
       <h2 style="text-align: center;">Lead Information</h2>
       <div style="display: flex;">
           <div style="width: 48%;">
@@ -894,7 +951,7 @@ app.post(
               color: rgb(63, 66, 21);
               display: inline-block;
               border-radius: 4px;">
-              ${firstPayment*100/totalPayment}% Amount
+              ${(firstPayment * 100) / totalPayment}% Amount
               </small>
           </div>
           <div style="width: 24%;  margin-left: 10px;">
@@ -912,7 +969,7 @@ app.post(
               color: rgb(63, 66, 21);
               display: inline-block;
               border-radius: 4px;">
-              ${secondPayment*100/totalPayment}% Amount
+              ${(secondPayment * 100) / totalPayment}% Amount
               </small>
           </div>
           <div style="width: 24%;  margin-left: 10px;">
@@ -930,7 +987,7 @@ app.post(
               color: rgb(63, 66, 21);
               display: inline-block;
               border-radius: 4px;">
-              ${thirdPayment*100/totalPayment}% Amount
+              ${(thirdPayment * 100) / totalPayment}% Amount
               </small>
           </div>
           <div style="width: 24%;  margin-left: 10px;">
@@ -948,12 +1005,25 @@ app.post(
               color: rgb(63, 66, 21);
               display: inline-block;
               border-radius: 4px;">
-              ${fourthPayment*100/totalPayment}% Amount
+              ${(fourthPayment * 100) / totalPayment}% Amount
               </small>
           </div>
 
 
       </div>
+      <div style="display: flex; margin-top: 20px;">
+      <div style="width: 33%; ">
+              <label>Payment Remarks:</label>
+              <div style=" padding: 8px 10px;
+                  background: #fff7e8;
+                  margin-top: 10px;
+                  border-radius: 6px;
+                  color: #724f0d;">
+                  ${paymentRemarks}
+              </div>
+          </div>
+
+ </div>
       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
       </div>
 
@@ -1020,7 +1090,10 @@ app.post(
 
   </div>
   
-  `,otherDocs, paymentReceipt)
+  `,
+        otherDocs,
+        paymentReceipt
+      );
 
       console.log("Data sent");
       res
@@ -1041,12 +1114,11 @@ app.post(
 //     console.log('User disconnected');
 //   });
 // });
-http. listen (3001, function () {
-  console. log ("Server started...");
- socketIO.on ("connection", function (socket) {
-      console. log ("User connected: "+socket.id);
-      
- });                           
+http.listen(3001, function () {
+  console.log("Server started...");
+  socketIO.on("connection", function (socket) {
+    console.log("User connected: " + socket.id);
+  });
 });
 
 // app.listen(3001,(req,res)=>{

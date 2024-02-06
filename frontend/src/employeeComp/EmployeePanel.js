@@ -6,6 +6,8 @@ import axios from "axios";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import "./panel.css";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
@@ -20,6 +22,7 @@ function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
   const [open, openchange] = useState(false);
+  const [openRemarks, openchangeRemarks] = useState(false);
   const [data, setData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -42,8 +45,25 @@ function EmployeePanel() {
   const functionopenpopup = () => {
     openchange(true);
   };
+  const [cid, setcid] = useState("");
+  const [cstat, setCstat] = useState("");
+  const functionopenpopupremarks = (companyID, companyStatus) => {
+    openchangeRemarks(true);
+    setFilteredRemarks(
+      remarksHistory.filter((obj) => obj.companyID === companyID)
+    );
+    // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+
+    setcid(companyID);
+    setCstat(companyStatus);
+  };
+
   const closepopup = () => {
     openchange(false);
+  };
+  const closepopupRemarks = () => {
+    openchangeRemarks(false);
+    setFilteredRemarks([]);
   };
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const fetchData = async () => {
@@ -86,11 +106,7 @@ function EmployeePanel() {
         setdataStatus("NotInterested");
       }
       if (status === "FollowUp") {
-        setEmployeeData(
-          tempData.filter(
-            (obj) => obj.Status === "FollowUp"
-          )
-        );
+        setEmployeeData(tempData.filter((obj) => obj.Status === "FollowUp"));
         setdataStatus("FollowUp");
       }
       if (status === "Interested") {
@@ -154,8 +170,60 @@ function EmployeePanel() {
   useEffect(() => {
     fetchData();
   }, [userId]);
+  const [remarksHistory, setRemarksHistory] = useState([]);
+  const [filteredRemarks, setFilteredRemarks] = useState([]);
+  const fetchRemarksHistory = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/remarks-history`);
+      setRemarksHistory(response.data);
+      setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
-  console.log(employeeData);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching remarks history:", error);
+    }
+  };
+  // const [locationAccess, setLocationAccess] = useState(false);
+  useEffect(() => {
+    fetchRemarksHistory();
+    // let watchId;
+    // const successCallback = (position) => {
+    //   const userLatitude = position.coords.latitude;
+    //   const userLongitude = position.coords.longitude;
+
+    //   // console.log("User Location:", userLatitude, userLongitude);
+    //   if (
+    //     Number(userLatitude.toFixed(3)) === 23.114 &&
+    //     Number(userLongitude.toFixed(3)) === 72.541
+    //   ) {
+    //     setLocationAccess(true);
+    //     // console.log("Location accessed")
+    //   }
+    //   // Now you can send these coordinates to your server for further processing
+    // };
+    // // console.log(localStorage.getItem("newtoken"), locationAccess);
+    if (userId !== localStorage.getItem("userId")) {
+      localStorage.removeItem("newtoken");
+      window.location.replace("/");
+    }
+    // const errorCallback = (error) => {
+    //   console.error("Geolocation error:", error.message);
+    //   setLocationAccess(false);
+    //   // Handle the error, e.g., show a message to the user
+    // };
+
+    // navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+
+    // // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
+
+    // // Cleanup function to clear the watch if the component unmounts
+    // return () => {
+    //   navigator.geolocation.clearWatch(watchId);
+    // };
+  }, []);
+  // console.log(locationAccess);
+
+  // console.log(employeeData);
 
   const filteredData = employeeData.filter((company) => {
     const fieldValue = company[selectedField];
@@ -208,7 +276,6 @@ function EmployeePanel() {
   const [companyInco, setCompanyInco] = useState(null);
   const [companyId, setCompanyId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
-  
 
   console.log(companyName, companyInco);
 
@@ -270,22 +337,36 @@ function EmployeePanel() {
     }));
   };
 
+  const handleDeleteRemarks = async (remarks_id) => {
+    console.log("Deleting Remarks with", remarks_id);
+    try {
+      // Send a delete request to the backend to delete the item with the specified ID
+      await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
+      // Set the deletedItemId state to trigger re-fetching of remarks history
+      Swal.fire("Remarks Deleted");
+      fetchRemarksHistory();
+    } catch (error) {
+      console.error("Error deleting remarks:", error);
+    }
+  };
   const isUpdateButtonEnabled = (companyId) => {
     return updateData[companyId]?.isButtonEnabled || false;
   };
 
   const [changeRemarks, setChangeRemarks] = useState("");
 
-  const handleUpdate = async (companyId , status) => {
-    const { Remarks } = updateData[companyId];
-
+  const handleUpdate = async () => {
     // Now you have the updated Status and Remarks, perform the update logic
-    console.log(Remarks);
+    console.log(cid, cstat, changeRemarks);
+    const Remarks = changeRemarks;
 
     try {
       // Make an API call to update the employee status in the database
-      const response = await axios.post(
-        `${secretKey}/update-remarks/${companyId}`,
+      const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+        Remarks,
+      });
+      const response2 = await axios.post(
+        `${secretKey}/remarks-history/${cid}`,
         {
           Remarks,
         }
@@ -293,8 +374,12 @@ function EmployeePanel() {
 
       // Check if the API call was successful
       if (response.status === 200) {
+        Swal.fire("Remarks updated!");
         // If successful, update the employeeData state or fetch data again to reflect changes
-        fetchNewData(status); // Assuming fetchData is a function to fetch updated employee data
+        fetchNewData();
+        fetchRemarksHistory();
+        setCstat("");
+        closepopupRemarks(); // Assuming fetchData is a function to fetch updated employee data
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);
@@ -438,10 +523,6 @@ function EmployeePanel() {
             <div className="page-header d-print-none">
               <div className="container-xl">
                 <div className="row g-2 align-items-center">
-                  <div className="col">
-                    {/* <!-- Page pre-title --> */}
-                    <h2 className="page-title">{data.ename}</h2>
-                  </div>
                   <div
                     style={{ display: "flex", justifyContent: "space-between" }}
                     className="features"
@@ -729,13 +810,38 @@ function EmployeePanel() {
                         General{" "}
                         {dataStatus === "All" && (
                           <span
-                            style={{
-                              marginLeft: "5px",
-                              color: "#59cd59",
-                              fontWeight: "bold",
-                            }}
+                            className="no_badge"
                           >
-                            ..{employeeData.length}
+                            {employeeData.length}
+                          </span>
+                        )}
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("Interested");
+                          setCurrentPage(0);
+                          setEmployeeData(
+                            moreEmpData.filter(
+                              (obj) => obj.Status === "Interested"
+                            )
+                          );
+                        }}
+                        className={
+                          dataStatus === "Interested"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        Interested{" "}
+                        {dataStatus === "Interested" && (
+                          <span
+                            className="no_badge"
+                          >
+                            {employeeData.length}
                           </span>
                         )}
                       </a>
@@ -763,50 +869,14 @@ function EmployeePanel() {
                         Follow Up{" "}
                         {dataStatus === "FollowUp" && (
                           <span
-                            style={{
-                              marginLeft: "5px",
-                              color: "#59cd59",
-                              fontWeight: "bold",
-                            }}
+                            className="no_badge"
                           >
-                            ..{employeeData.length}
+                            {employeeData.length}
                           </span>
                         )}
                       </a>
                     </li>
-                    <li class="nav-item">
-                      <a
-                        href="#tabs-activity-5"
-                        onClick={() => {
-                          setdataStatus("Interested");
-                          setCurrentPage(0);
-                          setEmployeeData(
-                            moreEmpData.filter(
-                              (obj) => obj.Status === "Interested"
-                            )
-                          );
-                        }}
-                        className={
-                          dataStatus === "Interested"
-                            ? "nav-link active item-act"
-                            : "nav-link"
-                        }
-                        data-bs-toggle="tab"
-                      >
-                        Interested{" "}
-                        {dataStatus === "Interested" && (
-                          <span
-                            style={{
-                              marginLeft: "5px",
-                              color: "#59cd59",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            ..{employeeData.length}
-                          </span>
-                        )}
-                      </a>
-                    </li>
+                    
                     <li class="nav-item">
                       <a
                         href="#tabs-activity-5"
@@ -829,13 +899,9 @@ function EmployeePanel() {
                         Matured{" "}
                         {dataStatus === "Matured" && (
                           <span
-                            style={{
-                              marginLeft: "5px",
-                              color: "#59cd59",
-                              fontWeight: "bold",
-                            }}
+                            className="no_badge"
                           >
-                            ..{employeeData.length}
+                            {employeeData.length}
                           </span>
                         )}
                       </a>
@@ -864,26 +930,22 @@ function EmployeePanel() {
                         Not-Interested{" "}
                         {dataStatus === "NotInterested" && (
                           <span
-                            style={{
-                              marginLeft: "5px",
-                              color: "#59cd59",
-                              fontWeight: "bold",
-                            }}
+                            className="no_badge"
                           >
-                            ..{employeeData.length}
+                            {employeeData.length}
                           </span>
                         )}
                       </a>
                     </li>
                   </ul>
-                </div>
-                <div className="card">
+                 </div>
+                 <div className="card">
                   <div className="card-body p-0">
                     <div
                       style={{
                         overflowX: "auto",
                         overflowY: "auto",
-                        maxHeight: "48vh",
+                        maxHeight: "60vh",
                       }}
                     >
                       <table
@@ -896,32 +958,22 @@ function EmployeePanel() {
                       >
                         <thead>
                           <tr
-                            style={{
-                              position: "sticky",
-                              top: "0px",
-                              zIndex: 1,
-                              background: "#f2f2f2",
-                            }}
+                            className="tr-sticky"
                           >
-                            <th>Sr.No</th>
+                            <th className="th-sticky" >Sr.No</th>
                             <th
-                             style={{
-                              position: "sticky",
-                              left: "0px",
-                              top:"0px",
-                              zIndex: 1,
-                              background: "#f2f2f2",
-                            }}
+                              className="th-sticky1"
                             >
                               Company Name
                             </th>
                             <th>Company Number</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
                             <th>Company Email</th>
                             <th>Incorporation Date</th>
                             <th>City</th>
                             <th>State</th>
-                            <th>Status</th>
-                            <th>Remarks</th>
+                           
                             {dataStatus === "Matured" && <th>Action</th>}
                           </tr>
                         </thead>
@@ -940,27 +992,13 @@ function EmployeePanel() {
                                 key={index}
                                 style={{ border: "1px solid #ddd" }}
                               >
-                                <td>{startIndex + index + 1}</td>
+                                <td className="td-sticky">{startIndex + index + 1}</td>
                                 <td
-                                  style={{
-                                    position: "sticky",
-                                    left: "0px",
-                                    top:"30px",
-                                    zIndex: 1,
-                                    background: "white",
-                                  }}
+                                  className="td-sticky1"
                                 >
                                   {company["Company Name"]}
                                 </td>
                                 <td>{company["Company Number"]}</td>
-                                <td>{company["Company Email"]}</td>
-                                <td>
-                                  {formatDate(
-                                    company["Company Incorporation Date  "]
-                                  )}
-                                </td>
-                                <td>{company["City"]}</td>
-                                <td>{company["State"]}</td>
                                 <td>
                                   {company["Status"] === "Matured" ? (
                                     <span>{company["Status"]}</span>
@@ -990,7 +1028,9 @@ function EmployeePanel() {
                                       <option value="Untouched">
                                         Untouched{" "}
                                       </option>
-                                      <option value="FollowUp">Follow Up </option>
+                                      <option value="FollowUp">
+                                        Follow Up{" "}
+                                      </option>
                                       <option value="Busy">Busy </option>
                                       <option value="Not Picked Up">
                                         Not Picked Up
@@ -1006,57 +1046,45 @@ function EmployeePanel() {
                                     </select>
                                   )}
                                 </td>
-
                                 <td>
                                   <div
-                                  key={company._id}
+                                    key={company._id}
                                     style={{
                                       display: "flex",
                                       alignItems: "center",
                                       justifyContent: "space-between",
                                     }}
                                   >
-                                    <textarea
-                                      defaultValue={company.Remarks}
-                                      placeholder="No Remarks Added"
-                                      key={company._id}
-                                      onChange={(e) =>
-                                        handlenewFieldChange(
-                                          company._id,
-                                          
-                                          e.target.value
-                                        )
-                                      }
-                                      type="text"
-                                      style={{
-                                        padding: ".4375rem .75rem",
-                                        border:
-                                          " var(--tblr-border-width) solid var(--tblr-border-color)",
-                                        borderRadius:
-                                          "var(--tblr-border-radius)",
-                                        boxShadow: "0 0 transparent",
-                                        transition:
-                                          "border-color .15s ease-in-out,box-shadow .15s ease-in-out",
-                                        height: "34px",
-                                      }}
-                                    />
-                                    <IconButton
-                                      onClick={() => handleUpdate(company._id , company.Status)}
-                                      disabled={
-                                        !isUpdateButtonEnabled(company._id)
-                                      }
+                                    <p
+                                      className="rematkText text-wrap m-0"
+                                      title={company.Remarks}
                                     >
-                                      <SaveIcon
-                                        className="save"
-                                        style={
-                                          !isUpdateButtonEnabled(company._id)
-                                            ? { color: "grey" }
-                                            : { color: "#ffb900" }
-                                        }
+                                      {company.Remarks}
+                                    </p>
+
+                                    <IconButton>
+                                      <EditIcon style={{width:'15px', height:'15px'}}
+                                        onClick={() => {
+                                          functionopenpopupremarks(
+                                            company._id,
+                                            company.Status
+                                          );
+                                        }}
                                       />
                                     </IconButton>
                                   </div>
                                 </td>
+                                <td>{company["Company Email"]}</td>
+                                <td>
+                                  {formatDate(
+                                    company["Company Incorporation Date  "]
+                                  )}
+                                </td>
+                                <td>{company["City"]}</td>
+                                <td>{company["State"]}</td>
+                               
+
+                                
                                 {dataStatus === "Matured" && (
                                   <td>
                                     <button
@@ -1083,7 +1111,7 @@ function EmployeePanel() {
                         style={{
                           display: "flex",
                           justifyContent: "space-between",
-                          margin: "10px",
+                          alignItems:"center",
                         }}
                         className="pagination"
                       >
@@ -1339,6 +1367,82 @@ function EmployeePanel() {
                 </button>
               </div>
             </form>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Remarks edit icon pop up*/}
+      <Dialog
+        open={openRemarks}
+        onClose={closepopupRemarks}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Remarks
+          <IconButton onClick={closepopupRemarks} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="remarks-content">
+            {filteredRemarks.length !== 0 ? (
+              filteredRemarks.slice().reverse().map((historyItem) => (
+                <div className="col-sm-12" key={historyItem._id}>
+                  <div className="card RemarkCard position-relative">
+                    <div className="d-flex justify-content-between">
+                      <div className="reamrk-card-innerText">
+                        <pre>{historyItem.remarks}</pre>
+                      </div>
+                      <div className="dlticon">
+                        <DeleteIcon
+                          className=""
+                          style={{
+                            cursor: "pointer",
+                            color: "#f70000",
+                            width: "14px ",
+                          }}
+                          onClick={() => {
+                            handleDeleteRemarks(historyItem._id);
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="d-flex card-dateTime justify-content-between">
+                      <div className="date">{historyItem.date}</div>
+                      <div className="time">{historyItem.time}</div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center overflow-hidden">
+                No Remarks History
+              </div>
+            )}
+          </div>
+
+          <div class="card-footer">
+            <div class="mb-3 remarks-input">
+              <textarea
+                placeholder="Add Remarks Here...  "
+                class="form-control"
+                id="remarks-input"
+                rows="3"
+                onChange={(e) => {
+                  setChangeRemarks(e.target.value);
+                }}
+              ></textarea>
+            </div>
+            <button
+              onClick={handleUpdate}
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: "100%" }}
+            >
+              Submit
+            </button>
           </div>
         </DialogContent>
       </Dialog>

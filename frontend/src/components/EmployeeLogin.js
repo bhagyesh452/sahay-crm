@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 function EmployeeLogin({ setnewToken }) {
   const [email, setEmail] = useState("");
@@ -33,8 +34,39 @@ function EmployeeLogin({ setnewToken }) {
 
   useEffect(() => {
     fetchData();
+   
   }, []);
+const [locationAccess, setLocationAccess] = useState(false);
+  useEffect(() => {
+    let watchId;
+    const successCallback = (position) => {
+      const userLatitude = position.coords.latitude;
+      const userLongitude = position.coords.longitude;
 
+      console.log('User Location:', userLatitude, userLongitude);
+      if(Number(userLatitude.toFixed(3)) === 23.114 && Number(userLongitude.toFixed(3)) === 72.541){
+        setLocationAccess(true);
+        // console.log("Location accessed")
+      }
+      // Now you can send these coordinates to your server for further processing
+    };
+
+    const errorCallback = (error) => {
+      console.error('Geolocation error:', error.message);
+      setLocationAccess(false);
+      // Handle the error, e.g., show a message to the user
+    };
+
+    navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+
+    // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
+
+    // Cleanup function to clear the watch if the component unmounts
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
+  }, []);
+  console.log(locationAccess);
   // Trigger the findUserId function when email or password changes
   useEffect(() => {
     findUserId();
@@ -47,29 +79,36 @@ console.log(frontendkey,secretKey)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post(`${secretKey}/employeelogin`, {
-        email,
-        password,
-      });
-
-      const { newtoken } = response.data;
-      setnewToken(newtoken);
-      localStorage.setItem("newtoken", newtoken);
-      localStorage.setItem("userId", userId);
-      // const currentPath = window.location.pathname;
-
-      // // Construct the new path by appending "/employee-data/user-id"
-      // const newPath = `${currentPath}/employee-data/${userId}`;
-      
-      // Update the browser's history to reflect the new path
-      window.location.replace(`/employee-data/${userId}`);
-      // window.location.href = `${window.location.origin}${window.location.pathname}employee-data/${userId}`;
-    } catch (error) {
-      console.error("Login failed:", error.message);
-      setErrorMessage("Incorrect Credentials");
-      // setErrorMessage("Incorrect Credentials!");
+    if(locationAccess){
+      try {
+        const response = await axios.post(`${secretKey}/employeelogin`, {
+          email,
+          password,
+        });
+  
+        const { newtoken } = response.data;
+        setnewToken(newtoken);
+        localStorage.setItem("newtoken", newtoken);
+        localStorage.setItem("userId", userId);
+        // const currentPath = window.location.pathname;
+  
+        // // Construct the new path by appending "/employee-data/user-id"
+        // const newPath = `${currentPath}/employee-data/${userId}`;
+        
+        // Update the browser's history to reflect the new path
+        window.location.replace(`/employee-data/${userId}`);
+        // window.location.href = `${window.location.origin}${window.location.pathname}employee-data/${userId}`;
+      } catch (error) {
+        console.error("Login failed:", error.message);
+        setErrorMessage("Incorrect Credentials");
+        // setErrorMessage("Incorrect Credentials!");
+      }
+    }else{
+      Swal.fire("Improper location, Access Denied!");
+      localStorage.removeItem("newtoken");
+      localStorage.removeItem("userId");
     }
+   
   };
 
   return (

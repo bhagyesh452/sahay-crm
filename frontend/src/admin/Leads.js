@@ -5,6 +5,8 @@ import Navbar from "./Navbar";
 import axios from "axios";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 import { IconEye } from "@tabler/icons-react";
 import { useRef, useState, useEffect } from "react";
 import * as XLSX from "xlsx";
@@ -342,27 +344,25 @@ function Leads() {
   const handleUploadData = async (e) => {
     if (selectedOption === "someoneElse") {
       if (csvdata.length !== 0 && newemployeeSelection !== "") {
+        setLoading(true); // Move setLoading outside of the loop
+
         for (const obj of csvdata) {
           if (!obj.ename && obj.ename !== "Not Alloted") {
             try {
-              setLoading(true);
               const response = await axios.post(`${secretKey}/company`, {
                 newemployeeSelection,
                 csvdata,
               });
-             
               console.log("Data posted successfully");
             } catch (err) {
               console.log("Internal server Error", err);
             }
           } else {
-            // If ename is present, show a confirmation dialog
             const userConfirmed = window.confirm(
               `Data is already assigned to: ${obj.ename}. Do you want to continue?`
             );
 
             if (userConfirmed) {
-              // If user confirms, perform the assignation
               try {
                 const response = await axios.post(`${secretKey}/postData`, {
                   newemployeeSelection,
@@ -374,11 +374,13 @@ function Leads() {
                 console.log("Internal server Error", err);
               }
             } else {
-              // If user cancels, you can handle it as needed (e.g., show a message)
               console.log("User canceled the assignation.");
             }
           }
         }
+
+        setLoading(false); // Move setLoading outside of the loop
+
         Swal.fire({
           title: "Data Send!",
           text: "Data successfully sent to the Employee",
@@ -392,6 +394,8 @@ function Leads() {
     } else {
       console.log("Assigning Normally");
       if (csvdata.length !== 0) {
+        setLoading(true); // Move setLoading outside of the loop
+
         try {
           await axios.post(`${secretKey}/leads`, csvdata);
           console.log("Data sent successfully");
@@ -413,12 +417,16 @@ function Leads() {
           }
           console.log("Error:", error);
         }
+
+        setLoading(false); // Move setLoading outside of the loop
+
         setCsvData([]);
       } else {
         Swal.fire("Please upload data");
       }
     }
   };
+
   // const handleUploadClick = () => {
   //   fileInputRef.current.click();
   // };
@@ -547,14 +555,14 @@ function Leads() {
       Swal.fire("Empty Data!");
       closepopupEmp();
     }
-   
+
     for (const obj of selectedObjects) {
       if (!obj.ename || obj.ename === "Not Alloted") {
         handleAssignData();
         setEmployeeSelection("");
       } else {
         // If ename is present, show a confirmation dialog
-        console.log(obj.ename)
+        console.log(obj.ename);
         const userConfirmed = window.confirm(
           `Data is already assigned to: ${obj.ename}. Do you want to continue?`
         );
@@ -587,7 +595,7 @@ function Leads() {
       console.log("Data posted successfully");
     } catch (err) {
       console.log("Internal server Error", err);
-      Swal.fire("Error Assigning Data")
+      Swal.fire("Error Assigning Data");
     }
 
     // const selectedempData = selectedRows.find(
@@ -1056,6 +1064,7 @@ function Leads() {
           Submit
         </button>
       </Dialog>
+      {/* Loading Screen */}
 
       {/* ----------------------------ADD-Lead Ends here------------------------------------------------------------------------  */}
 
@@ -1224,9 +1233,10 @@ function Leads() {
       {/* Main Page Starts from here */}
       {loading && (
         // Your loading screen component or message
-        <div className="loading-screen">
-          <p>Loading...</p>
-        </div>
+        <Box style={{zIndex:"999999999"}} sx={{ display: "flex" }}>
+          <CircularProgress />
+        </Box>
+
       )}
       <div className="page-wrapper">
         <div className="page-header d-print-none">

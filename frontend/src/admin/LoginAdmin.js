@@ -42,6 +42,7 @@ function LoginAdmin({ setToken }) {
       console.log(token);
       setToken(token);
       localStorage.setItem("token", token);
+     
       window.location.replace("/admin/dashboard");
     } catch (error) {
       console.error("Login failed:", error.message);
