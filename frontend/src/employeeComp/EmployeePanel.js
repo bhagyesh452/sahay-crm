@@ -17,6 +17,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Form from "../components/Form.jsx";
 import "../components/styles/table.css";
 import "../components/styles/main.css";
+import Nodata from "../components/Nodata.jsx";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -63,12 +64,11 @@ function EmployeePanel() {
     setcid(companyID);
     setCstat(companyStatus);
   };
-  
+
   const [openNew, openchangeNew] = useState(false);
   const functionopenpopupNew = () => {
     openchangeNew(true);
   };
-
 
   const closepopup = () => {
     openchange(false);
@@ -289,6 +289,7 @@ function EmployeePanel() {
   const [companyName, setCompanyName] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
   const [companyInco, setCompanyInco] = useState(null);
+  const [companyNumber, setCompanyNumber] = useState(0);
   const [companyId, setCompanyId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
 
@@ -301,13 +302,15 @@ function EmployeePanel() {
     newStatus,
     cname,
     cemail,
-    cindate
+    cindate,
+    cnum
   ) => {
     if (newStatus === "Matured") {
       setCompanyName(cname);
       setCompanyEmail(cemail);
       setCompanyInco(cindate);
       setCompanyId(employeeId);
+      setCompanyNumber(cnum);
       setFormOpen(true);
       return true;
     }
@@ -390,7 +393,7 @@ function EmployeePanel() {
       // Check if the API call was successful
       if (response.status === 200) {
         Swal.fire("Remarks updated!");
-        
+
         // If successful, update the employeeData state or fetch data again to reflect changes
         fetchNewData(cstat);
         fetchRemarksHistory();
@@ -537,7 +540,7 @@ function EmployeePanel() {
         "Company Incorporation Date  ": cidate,
         City: city,
         State: state,
-        ename:data.ename,
+        ename: data.ename,
         AssignDate: new Date(),
       })
       .then((response) => {
@@ -791,7 +794,7 @@ function EmployeePanel() {
                           </div>
                         </>
                       )}
-                      <div className="request" style={{marginRight:'15px'}}>
+                      <div className="request" style={{ marginRight: "15px" }}>
                         <div className="btn-list">
                           <button
                             onClick={functionopenpopup}
@@ -816,7 +819,7 @@ function EmployeePanel() {
                             onClick={functionopenpopupNew}
                             className="btn btn-primary d-none d-sm-inline-block"
                           >
-                           ADD Leads
+                            ADD Leads
                           </button>
                           <a
                             href="#"
@@ -871,16 +874,16 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         General{" "}
-                        <span
-                            className="no_badge"
-                          >
-                            {moreEmpData.filter(
+                        <span className="no_badge">
+                          {
+                            moreEmpData.filter(
                               (obj) =>
                                 obj.Status === "Busy" ||
                                 obj.Status === "Not Picked Up" ||
                                 obj.Status === "Untouched"
-                            ).length}
-                          </span>
+                            ).length
+                          }
+                        </span>
                       </a>
                     </li>
                     <li class="nav-item">
@@ -903,15 +906,13 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Interested{" "}
-                       
-                          <span
-                            className="no_badge"
-                          >
-                            {moreEmpData.filter(
+                        <span className="no_badge">
+                          {
+                            moreEmpData.filter(
                               (obj) => obj.Status === "Interested"
-                            ).length}
-                          </span>
-                       
+                            ).length
+                          }
+                        </span>
                       </a>
                     </li>
 
@@ -935,16 +936,16 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Follow Up{" "}
-                        <span
-                            className="no_badge"
-                          >
-                            {moreEmpData.filter(
+                        <span className="no_badge">
+                          {
+                            moreEmpData.filter(
                               (obj) => obj.Status === "FollowUp"
-                            ).length}
-                          </span>
+                            ).length
+                          }
+                        </span>
                       </a>
                     </li>
-                    
+
                     <li class="nav-item">
                       <a
                         href="#tabs-activity-5"
@@ -965,14 +966,13 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Matured{" "}
-                        <span
-                            className="no_badge"
-                          >
-                            {moreEmpData.filter(
-                            
+                        <span className="no_badge">
+                          {
+                            moreEmpData.filter(
                               (obj) => obj.Status === "Matured"
-                            ).length}
-                          </span>
+                            ).length
+                          }
+                        </span>
                       </a>
                     </li>
                     <li class="nav-item">
@@ -997,26 +997,26 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Not-Interested{" "}
-                        <span
-                            className="no_badge"
-                          >
-                            {moreEmpData.filter(
+                        <span className="no_badge">
+                          {
+                            moreEmpData.filter(
                               (obj) =>
-                              obj.Status === "Not Interested" ||
-                              obj.Status === "Junk"
-                            ).length}
-                          </span>
+                                obj.Status === "Not Interested" ||
+                                obj.Status === "Junk"
+                            ).length
+                          }
+                        </span>
                       </a>
                     </li>
                   </ul>
-                 </div>
-                 <div className="card">
+                </div>
+                <div className="card">
                   <div className="card-body p-0">
                     <div
                       style={{
                         overflowX: "auto",
                         overflowY: "auto",
-                        maxHeight: "62vh",
+                        maxHeight: "66vh",
                       }}
                     >
                       <table
@@ -1028,15 +1028,9 @@ function EmployeePanel() {
                         className="table-vcenter table-nowrap"
                       >
                         <thead>
-                          <tr
-                            className="tr-sticky"
-                          >
-                            <th className="th-sticky" >Sr.No</th>
-                            <th
-                              className="th-sticky1"
-                            >
-                              Company Name
-                            </th>
+                          <tr className="tr-sticky">
+                            <th className="th-sticky">Sr.No</th>
+                            <th className="th-sticky1">Company Name</th>
                             <th>Company Number</th>
                             <th>Status</th>
                             <th>Remarks</th>
@@ -1044,15 +1038,15 @@ function EmployeePanel() {
                             <th>Incorporation Date</th>
                             <th>City</th>
                             <th>State</th>
-                           
+
                             {dataStatus === "Matured" && <th>Action</th>}
                           </tr>
                         </thead>
                         {currentData.length === 0 ? (
                           <tbody>
-                            <tr>
+                            <tr className="particular">
                               <td colSpan="10" style={{ textAlign: "center" }}>
-                                No data available
+                                <Nodata/>
                               </td>
                             </tr>
                           </tbody>
@@ -1063,10 +1057,10 @@ function EmployeePanel() {
                                 key={index}
                                 style={{ border: "1px solid #ddd" }}
                               >
-                                <td className="td-sticky">{startIndex + index + 1}</td>
-                                <td
-                                  className="td-sticky1"
-                                >
+                                <td className="td-sticky">
+                                  {startIndex + index + 1}
+                                </td>
+                                <td className="td-sticky1">
                                   {company["Company Name"]}
                                 </td>
                                 <td>{company["Company Number"]}</td>
@@ -1092,7 +1086,8 @@ function EmployeePanel() {
                                           company["Company Email"],
                                           company[
                                             "Company Incorporation Date  "
-                                          ]
+                                          ],
+                                          company["Company Number"]
                                         )
                                       }
                                     >
@@ -1117,25 +1112,31 @@ function EmployeePanel() {
                                     </select>
                                   )}
                                 </td>
-                                <td >
+                                <td>
                                   <div
                                     key={company._id}
                                     style={{
                                       display: "flex",
                                       alignItems: "center",
                                       justifyContent: "space-between",
-                                      width:"100px"
+                                      width: "100px",
                                     }}
                                   >
                                     <p
                                       className="rematkText text-wrap m-0"
                                       title={company.Remarks}
                                     >
-                                      {!company["Remarks"]? "No Remarks" : company.Remarks }
+                                      {!company["Remarks"]
+                                        ? "No Remarks"
+                                        : company.Remarks}
                                     </p>
 
                                     <IconButton>
-                                      <EditIcon style={{width:'12px', height:'12px'}}
+                                      <EditIcon
+                                        style={{
+                                          width: "12px",
+                                          height: "12px",
+                                        }}
                                         onClick={() => {
                                           functionopenpopupremarks(
                                             company._id,
@@ -1154,9 +1155,7 @@ function EmployeePanel() {
                                 </td>
                                 <td>{company["City"]}</td>
                                 <td>{company["State"]}</td>
-                               
 
-                                
                                 {dataStatus === "Matured" && (
                                   <td>
                                     <button
@@ -1177,13 +1176,14 @@ function EmployeePanel() {
                           </tbody>
                         )}
                       </table>
+
                     </div>
                     {currentData.length !== 0 && (
                       <div
                         style={{
                           display: "flex",
                           justifyContent: "space-between",
-                          alignItems:"center",
+                          alignItems: "center",
                         }}
                         className="pagination"
                       >
@@ -1276,6 +1276,7 @@ function EmployeePanel() {
                   companysId={companyId}
                   companysName={companyName}
                   companysEmail={companyEmail}
+                  companyNumber={companyNumber}
                   companysInco={companyInco}
                   employeeName={data.ename}
                   employeeEmail={data.email}
@@ -1296,7 +1297,7 @@ function EmployeePanel() {
         </DialogTitle>
         <DialogContent>
           <div className="container">
-            <form onSubmit={handleSubmit}>
+            
               <div className="con2 row mb-3">
                 <div
                   style={
@@ -1433,14 +1434,18 @@ function EmployeePanel() {
                   required
                 />
               </div>
-              <div class="card-footer text-end">
-                <button type="submit" className="btn btn-primary">
-                  Submit
-                </button>
-              </div>
-            </form>
+            
           </div>
         </DialogContent>
+        <div class="card-footer">
+          <button
+            style={{ width: "100%" }}
+            onClick={handleSubmit}
+            className="btn btn-primary"
+          >
+            Submit
+          </button>
+        </div>
       </Dialog>
 
       {/* Remarks edit icon pop up*/}
@@ -1459,35 +1464,38 @@ function EmployeePanel() {
         <DialogContent>
           <div className="remarks-content">
             {filteredRemarks.length !== 0 ? (
-              filteredRemarks.slice().reverse().map((historyItem) => (
-                <div className="col-sm-12" key={historyItem._id}>
-                  <div className="card RemarkCard position-relative">
-                    <div className="d-flex justify-content-between">
-                      <div className="reamrk-card-innerText">
-                        <pre>{historyItem.remarks}</pre>
+              filteredRemarks
+                .slice()
+                .reverse()
+                .map((historyItem) => (
+                  <div className="col-sm-12" key={historyItem._id}>
+                    <div className="card RemarkCard position-relative">
+                      <div className="d-flex justify-content-between">
+                        <div className="reamrk-card-innerText">
+                          <pre>{historyItem.remarks}</pre>
+                        </div>
+                        <div className="dlticon">
+                          <DeleteIcon
+                            
+                            style={{
+                              cursor: "pointer",
+                              color: "#f70000",
+                              width: "14px ",
+                            }}
+                            onClick={() => {
+                              handleDeleteRemarks(historyItem._id);
+                            }}
+                          />
+                        </div>
                       </div>
-                      <div className="dlticon">
-                        <DeleteIcon
-                          className=""
-                          style={{
-                            cursor: "pointer",
-                            color: "#f70000",
-                            width: "14px ",
-                          }}
-                          onClick={() => {
-                            handleDeleteRemarks(historyItem._id);
-                          }}
-                        />
-                      </div>
-                    </div>
 
-                    <div className="d-flex card-dateTime justify-content-between">
-                      <div className="date">{historyItem.date}</div>
-                      <div className="time">{historyItem.time}</div>
+                      <div className="d-flex card-dateTime justify-content-between">
+                        <div className="date">{historyItem.date}</div>
+                        <div className="time">{historyItem.time}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                ))
             ) : (
               <div className="text-center overflow-hidden">
                 No Remarks History

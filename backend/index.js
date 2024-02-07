@@ -15,6 +15,7 @@ const { sendMail } = require("./helpers/sendMail");
 const { mailFormat } = require("./helpers/mailFormat");
 const multer = require("multer");
 const RemarksHistory = require("./models/RemarksHistory");
+const LoginDetails = require("./models/loginDetails");
 // const http = require('http');
 // const socketIo = require('socket.io');
 require("dotenv").config();
@@ -1137,6 +1138,31 @@ app.post(
 //     console.log('User disconnected');
 //   });
 // });
+app.post('/api/loginDetails', (req, res) => {
+  const { ename, date, time, address } = req.body;
+  const newLoginDetails = new LoginDetails({ ename, date, time,address });
+  newLoginDetails.save()
+      .then(savedLoginDetails => {
+          console.log('Login details saved to database:', savedLoginDetails);
+          res.json(savedLoginDetails);
+      })
+      .catch(error => {
+          console.error('Failed to save login details to database:', error);
+          res.status(500).json({ error: 'Failed to save login details' });
+      });
+});
+
+app.get('/api/loginDetails', (req, res) => {
+  LoginDetails.find()
+      .then(loginDetails => {
+          res.json(loginDetails);
+      })
+      .catch(error => {
+          console.error('Failed to fetch login details from database:', error);
+          res.status(500).json({ error: 'Failed to fetch login details' });
+      });
+});
+
 http.listen(3001, function () {
   console.log("Server started...");
   socketIO.on("connection", function (socket) {

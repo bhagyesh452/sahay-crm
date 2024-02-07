@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import Swal from "sweetalert2";
 
@@ -8,6 +10,7 @@ function EmployeeLogin({ setnewToken }) {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [userId, setUserId] = useState(null);
+  const [address, setAddress] = useState('');
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -34,25 +37,50 @@ function EmployeeLogin({ setnewToken }) {
 
   useEffect(() => {
     fetchData();
-   
   }, []);
-const [locationAccess, setLocationAccess] = useState(false);
+  async function getLocationInfo(latitude, longitude) {
+    try {
+      // Fetch location information from OpenStreetMap Nominatim API
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+      );
+      const data = await response.json();
+
+      // Extract relevant location information
+      const { display_name, address } = data;
+    
+      setAddress(`${address.suburb} ,${address.state_district}`);
+
+      // Log the location information
+    } catch (error) {
+      console.log("Error fetching location");
+    }
+  }
+  const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
     let watchId;
     const successCallback = (position) => {
       const userLatitude = position.coords.latitude;
-      const userLongitude = position.coords.longitude;
+      const userLongtitude = position.coords.longitude;
+      getLocationInfo(userLatitude, userLongtitude);
+      // Define a polygon representing an area
+      // const areaCoordinates = [
+      //   { lat: userLatitude, lng: userLongitude }, // Coordinates provided
+      //   // Add more coordinates if necessary...
+      // ];
 
-      console.log('User Location:', userLatitude, userLongitude);
-      if(Number(userLatitude.toFixed(3)) === 23.114 && Number(userLongitude.toFixed(3)) === 72.541){
-        setLocationAccess(true);
-        // console.log("Location accessed")
-      }
+      // // Calculate area of the polygon
+      // const area = window.google.maps.geometry.spherical.computeArea(areaCoordinates);
+      // console.log('Area of the polygon (in square meters):', area);
+      // if(Number(userLatitude.toFixed(3)) === 23.114 && Number(userLongitude.toFixed(3)) === 72.541){
+      //   setLocationAccess(true);
+      //   // console.log("Location accessed")
+      // }
       // Now you can send these coordinates to your server for further processing
     };
 
     const errorCallback = (error) => {
-      console.error('Geolocation error:', error.message);
+      console.error("Geolocation error:", error.message);
       setLocationAccess(false);
       // Handle the error, e.g., show a message to the user
     };
@@ -66,7 +94,7 @@ const [locationAccess, setLocationAccess] = useState(false);
       navigator.geolocation.clearWatch(watchId);
     };
   }, []);
-  console.log(locationAccess);
+
   // Trigger the findUserId function when email or password changes
   useEffect(() => {
     findUserId();
@@ -75,40 +103,62 @@ const [locationAccess, setLocationAccess] = useState(false);
   console.log(userId);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendkey = process.env.REACT_APP_FRONTEND_KEY;
-console.log(frontendkey,secretKey)
+  console.log(frontendkey, secretKey);
+  const getCurrentTime = () => {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const seconds = now.getSeconds().toString().padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  };
+
+  // Get current date in string format
+  const getCurrentDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, "0"); // Month is zero-based
+    const day = now.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-   
-      try {
-        const response = await axios.post(`${secretKey}/employeelogin`, {
-          email,
-          password,
-        });
-  
-        const { newtoken } = response.data;
-        setnewToken(newtoken);
-        localStorage.setItem("newtoken", newtoken);
-        localStorage.setItem("userId", userId);
-        // const currentPath = window.location.pathname;
-  
-        // // Construct the new path by appending "/employee-data/user-id"
-        // const newPath = `${currentPath}/employee-data/${userId}`;
-        
-        // Update the browser's history to reflect the new path
-        window.location.replace(`/employee-data/${userId}`);
-        // window.location.href = `${window.location.origin}${window.location.pathname}employee-data/${userId}`;
-      } catch (error) {
-        console.error("Login failed:", error.message);
-        setErrorMessage("Incorrect Credentials");
-        // setErrorMessage("Incorrect Credentials!");
-      }
+const date = getCurrentDate();
+const time = getCurrentTime();
+console.log(address)
+const ename = email;
+    try {
+      const response = await axios.post(`${secretKey}/employeelogin`, {
+        email,
+        password,
+      });
+
+      const response2 = await axios.post(`${secretKey}/loginDetails`, {
+        ename,date,time,address
+      });
+
+      const { newtoken } = response.data;
+      setnewToken(newtoken);
+      localStorage.setItem("newtoken", newtoken);
+      localStorage.setItem("userId", userId);
+      // const currentPath = window.location.pathname;
+
+      // // Construct the new path by appending "/employee-data/user-id"
+      // const newPath = `${currentPath}/employee-data/${userId}`;
+
+      // Update the browser's history to reflect the new path
+      window.location.replace(`/employee-data/${userId}`);
+      // window.location.href = `${window.location.origin}${window.location.pathname}employee-data/${userId}`;
+    } catch (error) {
+      console.error("Login failed:", error.message);
+      setErrorMessage("Incorrect Credentials");
+      // setErrorMessage("Incorrect Credentials!");
+    }
     // }else{
     //   Swal.fire("Improper location, Access Denied!");
     //   localStorage.removeItem("newtoken");
     //   localStorage.removeItem("userId");
     // }
-   
   };
 
   return (

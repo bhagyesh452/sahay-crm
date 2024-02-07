@@ -5,11 +5,7 @@ import Header from "./Header";
 import { useParams } from "react-router-dom";
 import { IconBoxPadding, IconChevronLeft } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
-import { IconButton,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  } from "@mui/material";
+import { IconButton, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link } from "react-router-dom";
 import "../components/styles/main.css";
@@ -18,11 +14,14 @@ import "../employeeComp/panel.css";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
+import LoginDetails from "../components/LoginDetails";
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 function EmployeeParticular() {
   const { id } = useParams();
   const [openAssign, openchangeAssign] = useState(false);
+  const [openlocation, openchangelocation] = useState(false);
+  const [loginDetails, setLoginDetails] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [employeeName, setEmployeeName] = useState("");
   const [dataStatus, setdataStatus] = useState("All");
@@ -39,6 +38,7 @@ function EmployeeParticular() {
   const [subFilterValue, setSubFilterValue] = useState("");
   const [selectedField, setSelectedField] = useState("Company Name");
   const [newempData, setnewEmpData] = useState([]);
+  const [openLogin, setOpenLogin] = useState(false);
 
   const [month, setMonth] = useState(0);
   // const [updateData, setUpdateData] = useState({});
@@ -98,7 +98,16 @@ function EmployeeParticular() {
     // Fetch employee details and related data when the component mounts or id changes
     fetchEmployeeDetails();
     fetchnewData();
-  },[]);
+    axios
+      .get(`${secretKey}/loginDetails`)
+      .then((response) => {
+        // Update state with fetched login details
+        setLoginDetails(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching login details:", error);
+      });
+  }, []);
   useEffect(() => {
     if (employeeName) {
       console.log("Employee found");
@@ -244,6 +253,12 @@ function EmployeeParticular() {
   const closepopupAssign = () => {
     openchangeAssign(false);
   };
+  const functionopenlocation = () => {
+    openchangelocation(true);
+  };
+  const closepopuplocation = () => {
+    openchangelocation(false);
+  };
   const [selectedOption, setSelectedOption] = useState("direct");
 
   const handleOptionChange = (event) => {
@@ -251,21 +266,23 @@ function EmployeeParticular() {
   };
 
   const handleUploadData = async (e) => {
-   console.log("Uploading data");
+    console.log("Uploading data");
 
-  const csvdata = employeeData.filter(employee => selectedRows.includes(employee._id));
+    const csvdata = employeeData
+      .filter((employee) => selectedRows.includes(employee._id))
+      .map((employee) => ({ ...employee, Status: "Untouched" }));
 
-  
     console.log(newemployeeSelection);
-   for(const obj of csvdata){
-    try {
-      const response = await axios.post(`${secretKey}/assign-new`, {
-        newemployeeSelection,
-        csvdata,
-      });
-      console.log("Data posted successfully");
-    } catch (err) {
-      console.log("Internal server Error", err);
+    for (const obj of csvdata) {
+      try {
+        const response = await axios.post(`${secretKey}/assign-new`, {
+          newemployeeSelection,
+          csvdata,
+        });
+        console.log("Data posted successfully");
+      } catch (err) {
+        console.log("Internal server Error", err);
+      }
     }
     Swal.fire({
       title: "Data Send!",
@@ -275,52 +292,49 @@ function EmployeeParticular() {
     fetchEmployeeDetails();
     fetchNewData();
     closepopupAssign();
-   }
-  //  for (const obj of csvdata) {
-  //   if (!obj.ename && obj.ename !== "Not Alloted") {
-      // try {
-      //   const response = await axios.post(`${secretKey}/company`, {
-      //     newemployeeSelection,
-      //     csvdata,
-      //   });
-      //   console.log("Data posted successfully");
-      // } catch (err) {
-      //   console.log("Internal server Error", err);
-      // }
-  //   } else {
-  //     const userConfirmed = window.confirm(
-  //       `Data is already assigned to: ${obj.ename}. Do you want to continue?`
-  //     );
+    //  for (const obj of csvdata) {
+    //   if (!obj.ename && obj.ename !== "Not Alloted") {
+    // try {
+    //   const response = await axios.post(`${secretKey}/company`, {
+    //     newemployeeSelection,
+    //     csvdata,
+    //   });
+    //   console.log("Data posted successfully");
+    // } catch (err) {
+    //   console.log("Internal server Error", err);
+    // }
+    //   } else {
+    //     const userConfirmed = window.confirm(
+    //       `Data is already assigned to: ${obj.ename}. Do you want to continue?`
+    //     );
 
-  //     if (userConfirmed) {
-  //       try {
-  //         const response = await axios.post(`${secretKey}/postData`, {
-  //           newemployeeSelection,
-  //           csvdata,
-  //         });
-  //         window.location.reload();
-  //         console.log("Data posted successfully");
-  //       } catch (err) {
-  //         console.log("Internal server Error", err);
-  //       }
-  //     } else {
-  //       console.log("User canceled the assignation.");
-  //     }
-  //   }
-  // }
+    //     if (userConfirmed) {
+    //       try {
+    //         const response = await axios.post(`${secretKey}/postData`, {
+    //           newemployeeSelection,
+    //           csvdata,
+    //         });
+    //         window.location.reload();
+    //         console.log("Data posted successfully");
+    //       } catch (err) {
+    //         console.log("Internal server Error", err);
+    //       }
+    //     } else {
+    //       console.log("User canceled the assignation.");
+    //     }
+    //   }
+    // }
 
-  // setLoading(false); // Move setLoading outside of the loop
+    // setLoading(false); // Move setLoading outside of the loop
 
-  // Swal.fire({
-  //   title: "Data Send!",
-  //   text: "Data successfully sent to the Employee",
-  //   icon: "success",
-  // });
-  
-
+    // Swal.fire({
+    //   title: "Data Send!",
+    //   text: "Data successfully sent to the Employee",
+    //   icon: "success",
+    // });
   };
 
-
+  console.log(loginDetails);
   return (
     <div>
       <Header />
@@ -362,13 +376,13 @@ function EmployeeParticular() {
             </div>
           </div>
         </div>
-        <div
+        {!openLogin && <div
           onCopy={(e) => {
             e.preventDefault();
           }}
           className="page-body"
           style={{ marginTop: "0px " }}
-        >
+         >
           <div className="container-xl">
             <div className="row g-2 align-items-center">
               <div
@@ -583,25 +597,48 @@ function EmployeeParticular() {
                       </div>
                     </>
                   )}
-                 {selectedRows.length !== 0 && <div className="request">
-                    <div className="btn-list">
-                      <button
-                        onClick={functionOpenAssign}
-                        className="btn btn-primary d-none d-sm-inline-block"
-                      >
-                        Assign Data
-                      </button>
-                      <a
-                        href="#"
-                        className="btn btn-primary d-sm-none btn-icon"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-report"
-                        aria-label="Create new report"
-                      >
-                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                      </a>
+                  {selectedRows.length !== 0 && (
+                    <div className="request">
+                      <div className="btn-list">
+                        <button
+                          onClick={functionOpenAssign}
+                          className="btn btn-primary d-none d-sm-inline-block"
+                        >
+                          Assign Data
+                        </button>
+                        <a
+                          href="#"
+                          className="btn btn-primary d-sm-none btn-icon"
+                          data-bs-toggle="modal"
+                          data-bs-target="#modal-report"
+                          aria-label="Create new report"
+                        >
+                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                        </a>
+                      </div>
                     </div>
-                  </div>}
+                  )}
+                  <div className="request">
+                      <div className="btn-list">
+                        <button
+                          onClick={()=>{
+                            setOpenLogin(true)
+                          }}
+                          className="btn btn-primary d-none d-sm-inline-block"
+                        >
+                         Login Details
+                        </button>
+                        <a
+                          href="#"
+                          className="btn btn-primary d-sm-none btn-icon"
+                          data-bs-toggle="modal"
+                          data-bs-target="#modal-report"
+                          aria-label="Create new report"
+                        >
+                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                        </a>
+                      </div>
+                    </div>
                 </div>
               </div>
 
@@ -781,17 +818,16 @@ function EmployeeParticular() {
                   >
                     <thead>
                       <tr className="tr-sticky">
-                        {dataStatus === "NotInterested" && (
-                          <th>
-                            <input
-                              type="checkbox"
-                              checked={
-                                selectedRows.length === filteredData.length
-                              }
-                              onChange={() => handleCheckboxChange("all")}
-                            />
-                          </th>
-                        )}
+                        <th>
+                          <input
+                            type="checkbox"
+                            checked={
+                              selectedRows.length === filteredData.length
+                            }
+                            onChange={() => handleCheckboxChange("all")}
+                          />
+                        </th>
+
                         <th className="th-sticky">Sr.No</th>
                         <th className="th-sticky1">Company Name</th>
                         <th>Company Number</th>
@@ -817,24 +853,23 @@ function EmployeeParticular() {
                       <tbody>
                         {currentData.map((company, index) => (
                           <tr key={index} style={{ border: "1px solid #ddd" }}>
-                            {dataStatus === "NotInterested" && (
-                              <td
-                                style={{
-                                  position: "sticky",
-                                  left: 0,
-                                  zIndex: 1,
-                                  background: "white",
-                                }}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={selectedRows.includes(company._id)}
-                                  onChange={() =>
-                                    handleCheckboxChange(company._id)
-                                  }
-                                />
-                              </td>
-                            )}
+                            <td
+                              style={{
+                                position: "sticky",
+                                left: 0,
+                                zIndex: 1,
+                                background: "white",
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selectedRows.includes(company._id)}
+                                onChange={() =>
+                                  handleCheckboxChange(company._id)
+                                }
+                              />
+                            </td>
+
                             <td className="td-sticky">
                               {startIndex + index + 1}
                             </td>
@@ -935,85 +970,97 @@ function EmployeeParticular() {
               </div>
             </div>
           </div>
-        </div>
+        </div>}
+
+{/* Login Details */}
+                      {openLogin && <>
+                        <LoginDetails loginDetails={loginDetails} />
+                      </>}
+          
+
+
       </div>
       {/* ------------------------------- Assign data -------------------------- */}
-      <Dialog open={openAssign} onClose={closepopupAssign} fullWidth maxWidth="sm">
-            <DialogTitle>
-              Import CSV DATA{" "}
-              <IconButton onClick={closepopupAssign} style={{ float: "right" }}>
-                <CloseIcon color="primary"></CloseIcon>
-              </IconButton>{" "}
-            </DialogTitle>
-            <DialogContent>
-              <div className="maincon">
-                
-                <div className="con2 d-flex">
-                  <div
-                    style={
-                      selectedOption === "direct"
-                        ? {
-                            backgroundColor: "#e9eae9",
-                            margin: "10px 10px 0px 0px",
-                            cursor: "pointer",
-                          }
-                        : {
-                            backgroundColor: "white",
-                            margin: "10px 10px 0px 0px",
-                            cursor: "pointer",
-                          }
-                    }
-                    onClick={() => {
-                      setSelectedOption("direct");
-                    }}
-                    className="direct form-control"
-                  >
-                    <input
-                      type="radio"
-                      id="direct"
-                      value="direct"
-                      style={{
-                        display: "none",
-                      }}
-                      checked={selectedOption === "direct"}
-                      onChange={handleOptionChange}
-                    />
-                    <label htmlFor="direct">Move In General Data</label>
-                  </div>
-                  <div
-                    style={
-                      selectedOption === "someoneElse"
-                        ? {
-                            backgroundColor: "#e9eae9",
-                            margin: "10px 0px 0px 0px",
-                            cursor: "pointer",
-                          }
-                        : {
-                            backgroundColor: "white",
-                            margin: "10px 0px 0px 0px",
-                            cursor: "pointer",
-                          }
-                    }
-                    className="indirect form-control"
-                    onClick={() => {
-                      setSelectedOption("someoneElse");
-                    }}
-                  >
-                    <input
-                      type="radio"
-                      id="someoneElse"
-                      value="someoneElse"
-                      style={{
-                        display: "none",
-                      }}
-                      checked={selectedOption === "someoneElse"}
-                      onChange={handleOptionChange}
-                    />
-                    <label htmlFor="someoneElse">Assign to Employee</label>
-                  </div>
-                </div>
+      <Dialog
+        open={openAssign}
+        onClose={closepopupAssign}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Import CSV DATA{" "}
+          <IconButton onClick={closepopupAssign} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="maincon">
+            <div className="con2 d-flex">
+              <div
+                style={
+                  selectedOption === "direct"
+                    ? {
+                        backgroundColor: "#e9eae9",
+                        margin: "10px 10px 0px 0px",
+                        cursor: "pointer",
+                      }
+                    : {
+                        backgroundColor: "white",
+                        margin: "10px 10px 0px 0px",
+                        cursor: "pointer",
+                      }
+                }
+                onClick={() => {
+                  setSelectedOption("direct");
+                }}
+                className="direct form-control"
+              >
+                <input
+                  type="radio"
+                  id="direct"
+                  value="direct"
+                  style={{
+                    display: "none",
+                  }}
+                  checked={selectedOption === "direct"}
+                  onChange={handleOptionChange}
+                />
+                <label htmlFor="direct">Move In General Data</label>
               </div>
-              {/* <input
+              <div
+                style={
+                  selectedOption === "someoneElse"
+                    ? {
+                        backgroundColor: "#e9eae9",
+                        margin: "10px 0px 0px 0px",
+                        cursor: "pointer",
+                      }
+                    : {
+                        backgroundColor: "white",
+                        margin: "10px 0px 0px 0px",
+                        cursor: "pointer",
+                      }
+                }
+                className="indirect form-control"
+                onClick={() => {
+                  setSelectedOption("someoneElse");
+                }}
+              >
+                <input
+                  type="radio"
+                  id="someoneElse"
+                  value="someoneElse"
+                  style={{
+                    display: "none",
+                  }}
+                  checked={selectedOption === "someoneElse"}
+                  onChange={handleOptionChange}
+                />
+                <label htmlFor="someoneElse">Assign to Employee</label>
+              </div>
+            </div>
+          </div>
+          {/* <input
                 type="file"
                 ref={fileInputRef}
                 style={{ display: "none" }}
@@ -1021,58 +1068,98 @@ function EmployeeParticular() {
               />
               <button onClick={handleButtonClick}>Choose File</button> */}
 
-              {selectedOption === "someoneElse" && (
-                <div>
-                  {newempData.length !== 0 ? (
-                    <>
-                      <div className="dialogAssign">
-                        <div
+          {selectedOption === "someoneElse" && (
+            <div>
+              {newempData.length !== 0 ? (
+                <>
+                  <div className="dialogAssign">
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                        margin: " 10px 0px 0px 0px",
+                      }}
+                      className="selector"
+                    >
+                      <label>Select an Employee</label>
+                      <div className="form-control">
+                        <select
                           style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "space-between",
-                            margin: " 10px 0px 0px 0px",
+                            width: "inherit",
+                            border: "none",
+                            outline: "none",
                           }}
-                          className="selector"
+                          value={newemployeeSelection}
+                          onChange={(e) => {
+                            setnewEmployeeSelection(e.target.value);
+                          }}
                         >
-                          <label>Select an Employee</label>
-                          <div className="form-control">
-                            <select
-                              style={{
-                                width: "inherit",
-                                border: "none",
-                                outline: "none",
-                              }}
-                              value={newemployeeSelection}
-                              onChange={(e) => {
-                                setnewEmployeeSelection(e.target.value);
-                              }}
-                            >
-                              <option value="Not Alloted" disabled>
-                                Select employee
-                              </option>
-                              {newempData.map((item) => (
-                                <option value={item.ename}>{item.ename}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
+                          <option value="Not Alloted" disabled>
+                            Select employee
+                          </option>
+                          {newempData.map((item) => (
+                            <option value={item.ename}>{item.ename}</option>
+                          ))}
+                        </select>
                       </div>
-                    </>
-                  ) : (
-                    <div>
-                      <h1>No Employees Found</h1>
                     </div>
-                  )}
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <h1>No Employees Found</h1>
                 </div>
               )}
-            </DialogContent>
-            <button onClick={handleUploadData} className="btn btn-primary">
-              Submit
-            </button>
-          </Dialog>
-    </div>
+            </div>
+          )}
+        </DialogContent>
+        <button onClick={handleUploadData} className="btn btn-primary">
+          Submit
+        </button>
+      </Dialog>
 
+      {/* Dialog for location details */}
+      <Dialog
+        open={openlocation}
+        onClose={closepopuplocation}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Location Details{" "}
+          <IconButton onClick={closepopuplocation} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+         
+         
+        <table className="table table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Address</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loginDetails.map((details, index) => (
+                  <tr key={index}>
+                    <td>{details.ename}</td>
+                    <td>{details.date}</td>
+                    <td>{details.time}</td>
+                    <td>{details.address}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          
+        </DialogContent>
+       
+      </Dialog>
+    </div>
   );
 }
 

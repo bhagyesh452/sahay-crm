@@ -615,7 +615,7 @@ function Form({
             <div className="position-relative">
             <input
               type="number"
-              defaultValue={companyNumber}
+              defaultValue={matured ? companyNumber : leadData.companyNumber}
               name="company-contact"
               id="company-contact"
               placeholder="Enter Contact Number"

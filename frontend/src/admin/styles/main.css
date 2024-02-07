@@ -45,3 +45,7 @@ background-color: #f6df9f !important;
     flex-direction: column;
     align-items: flex-end;
 }
+th {
+
+    font-weight: 500;
+}

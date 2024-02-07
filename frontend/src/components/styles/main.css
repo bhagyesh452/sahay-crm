@@ -243,12 +243,12 @@ tr:focus{
 }
 tr:hover .td-sticky
 {
-    background: #eee !important;
+    background: #eee;
     z-index: 98;
 }
 tr:hover .td-sticky1
 {
-    background: #eee !important;
+    background: #eee;
     z-index: 98;
 }
 .pagination button
@@ -265,10 +265,11 @@ pre
 }
 .no_badge
 {
+    width: -moz-fit-content;
     width: fit-content;
     padding: 2px 5px;
-    color: #000;
-    background: #ffb900;
+    color: #efad00;
+    background: #fff4d6;
     margin-left: 8px;
     font-weight: bold;
     font-size: 10px;
@@ -283,6 +284,46 @@ th{
     margin: 0 auto;
 }
 .my-tab .nav-fill .nav-item .nav-link {
-    justify-content: center;
+    justify-content: space-between;;
     padding: 4px 10px;
+    color: #494949;
+    font-weight: 600;
+    border: 1px solid #eee;
+}
+.nav-link.active
+{
+    color: #000 !important;
+    border: 1px solid #dddddd !important;
+}
+th {
+    font-weight: 500 !important;
+}
+.page-wrapper .page-header
+{
+    margin: 10px 0px 0px 0px !important;
+}
+.page-body
+{
+    margin: 10px 0px 0px 0px !important;
+}
+.NoData
+{
+    padding: 100px;
+}
+.noDataImg
+{
+    width: 70px;
+    margin: 20px 0px;
+}
+.NoDataText
+{
+    font-weight: bold;
+    font-size: 18px;
+    color: #505050;
+}
+.particular:hover{
+    background-color: white !important;
+}
+.particular:focus{
+    background-color: white !important;
 }
