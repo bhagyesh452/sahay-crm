@@ -26,6 +26,65 @@ background-color: #f6df9f !important;
 }
 .css-13cymwt-control{
     border: 1px solid #ffb900 !important;
+    
+}
+.hr-1
+{
+    width: 100%;
+    height: 1px;
+    background: #ccc;
+    margin: 10px 0px;
+}
+.hr-2
+{
+    width: 100%;
+    height: 1px;
+    background: #e4e4e4;
+    margin: 9px 0px;
+}
+.cont-info{
+    margin: 0px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.timing{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+th {
+
+    font-weight: 500;
+}
+.form-control{
+    border: 1px solid #ffb900 !important;
+}
+.form-select{
+    border: 1px solid #ffb900 !important;
+}
+.form-check-input:checked{
+    background-color: #ffb900 !important;
+}
+.swal2-container{
+    z-index: 10000000 !important;
+}
+.btn-primary{
+    --tblr-btn-bg: #ffb900 !important;;
+    --tblr-btn-hover-color: #ffb900 !important;;
+}
+.btn-primary:hover{
+background-color: #f6df9f !important;
+}
+.rupees-sym{
+    background-color: #ffb900;
+    display: flex;
+    align-items: center;
+    padding: 0px 20px;
+    border-radius: 0px 5px 5px 0px;
+}
+.css-13cymwt-control{
+    border: 1px solid #ffb900 !important;
 }
 .hr-1
 {
@@ -327,3 +386,29 @@ th {
 .particular:focus{
     background-color: white !important;
 }
+.request-list{
+    border-bottom: 1px solid #ccc !important;
+}
+.notification-icon {
+    /* Add your styles for the notification icon container */
+  }
+  
+  .dropdown{
+    /* Add your styles for the dropdown container */
+  }
+  
+  .notification-box {
+    /* Add your styles for the notification box */
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+  }
+  
+  .notification-item {
+    /* Add your styles for individual notification items */
+    margin-bottom: 5px;
+  }
+  

@@ -8,16 +8,16 @@ import { IconChevronRight } from "@tabler/icons-react";
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import "./panel.css";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import Swal from "sweetalert2";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
 import Form from "../components/Form.jsx";
-import "../components/styles/table.css";
-import "../components/styles/main.css";
+import "../assets/table.css";
+import "../assets/styles.css";
 import Nodata from "../components/Nodata.jsx";
+
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);

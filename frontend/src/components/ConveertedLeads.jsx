@@ -7,7 +7,7 @@ import axios from "axios";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import Swal from "sweetalert2";
 import { IconButton } from "@mui/material";
-import "./styles/main.css";
+import "../assets/styles.css";
 import CloseIcon from "@mui/icons-material/Close";
 import Form from "./Form";
 import Nodata from "./Nodata";

@@ -5,7 +5,7 @@ import axios from "axios";
 
 import Swal from "sweetalert2";
 
-import "./styles/main.css";
+import "../assets/styles.css";
 import Select from "react-select";
 import { IconX } from "@tabler/icons-react";
 import { parse } from "papaparse";

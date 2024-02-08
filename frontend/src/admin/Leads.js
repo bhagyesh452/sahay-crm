@@ -13,11 +13,8 @@ import { useRef, useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "../components/styles/table.css";
-
-import "./styles/main.css";
+import "../assets/styles.css";
 import Swal from "sweetalert2";
-
 
 import {
   Button,
@@ -1278,7 +1275,7 @@ function Leads() {
                   }}
                   className="feature2"
                 >
-                  <div style={{ margin: "0px 10px" }} className="undoDelete">
+                  <div style={{ margin: "0px 10px" , display:"none" }} className="undoDelete">
                     <div className="btn-list">
                       <button
                         onClick={handleUndo}
@@ -1641,65 +1638,59 @@ function Leads() {
       {/* table body */}
       <div className="page-body">
         <div className="container-xl">
+          <div class="card-header  my-tab">
+            <ul
+              class="nav nav-tabs card-header-tabs nav-fill p-0"
+              data-bs-toggle="tabs"
+            >
+              <li class="nav-item data-heading">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataStatus === "Unassigned"
+                      ? "nav-link active item-act"
+                      : "nav-link"
+                  }
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataStatus("Unassigned");
+                    setmainData(
+                      data.filter((item) => item.ename === "Not Alloted")
+                    );
+                  }}
+                >
+                  UnAssigned
+                  <span className="no_badge">
+                    {data.filter((item) => item.ename === "Not Alloted").length}
+                  </span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  href="#tabs-home-5"
+                  className={
+                    dataStatus === "Assigned"
+                      ? "nav-link active item-act"
+                      : "nav-link"
+                  }
+                  data-bs-toggle="tab"
+                  onClick={() => {
+                    setDataStatus("Assigned");
+                    setmainData(
+                      data.filter((item) => item.ename !== "Not Alloted")
+                    );
+                  }}
+                >
+                  Assigned
+                  <span className="no_badge">
+                    {data.filter((item) => item.ename !== "Not Alloted").length}
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </div>
           <div className="card">
             <div className="card-body p-0">
-              <div className="container-xl">
-                <div class="card-header">
-                  <ul
-                    class="nav nav-tabs card-header-tabs nav-fill p-0"
-                    data-bs-toggle="tabs"
-                  >
-                    <li class="nav-item ">
-                      <a
-                        href="#tabs-home-5"
-                        className={
-                          dataStatus === "Unassigned"
-                            ? "nav-link active item-act"
-                            : "nav-link"
-                        }
-                        data-bs-toggle="tab"
-                        onClick={() => {
-                          setDataStatus("Unassigned");
-                          setmainData(
-                            data.filter((item) => item.ename === "Not Alloted")
-                          );
-                        }}
-                      >
-                        UnAssigned
-                        <span className="no_badge">
-                        {
-                          data.filter((item) => item.ename === "Not Alloted").length
-                        }
-                      </span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a
-                        href="#tabs-home-5"
-                        className={
-                          dataStatus === "Assigned"
-                            ? "nav-link active item-act"
-                            : "nav-link"
-                        }
-                        data-bs-toggle="tab"
-                        onClick={() => {
-                          setDataStatus("Assigned");
-                          setmainData(
-                            data.filter((item) => item.ename !== "Not Alloted")
-                          );
-                        }}
-                      >
-                        Assigned
-                        <span className="no_badge">
-                        {
-                          data.filter((item) => item.ename !== "Not Alloted").length
-                        }
-                      </span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
               <div
                 id="table-default"
                 style={{
@@ -1794,47 +1785,47 @@ function Leads() {
                   )}
                 </table>
               </div>
-              {currentData.length !== 0 && (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    margin: "10px",
-                  }}
-                  className="pagination"
-                >
-                  <IconButton
-                    onClick={() =>
-                      setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))
-                    }
-                    disabled={currentPage === 0}
-                  >
-                    <IconChevronLeft />
-                  </IconButton>
-                  <span>
-                    Page {currentPage + 1} of{" "}
-                    {Math.ceil(filteredData.length / itemsPerPage)}
-                  </span>
-
-                  <IconButton
-                    onClick={() =>
-                      setCurrentPage((prevPage) =>
-                        Math.min(
-                          prevPage + 1,
-                          Math.ceil(filteredData.length / itemsPerPage) - 1
-                        )
-                      )
-                    }
-                    disabled={
-                      currentPage ===
-                      Math.ceil(filteredData.length / itemsPerPage) - 1
-                    }
-                  >
-                    <IconChevronRight />
-                  </IconButton>
-                </div>
-              )}
             </div>
+            {currentData.length !== 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  margin: "10px",
+                }}
+                className="pagination"
+              >
+                <IconButton
+                  onClick={() =>
+                    setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))
+                  }
+                  disabled={currentPage === 0}
+                >
+                  <IconChevronLeft />
+                </IconButton>
+                <span>
+                  Page {currentPage + 1} of{" "}
+                  {Math.ceil(filteredData.length / itemsPerPage)}
+                </span>
+
+                <IconButton
+                  onClick={() =>
+                    setCurrentPage((prevPage) =>
+                      Math.min(
+                        prevPage + 1,
+                        Math.ceil(filteredData.length / itemsPerPage) - 1
+                      )
+                    )
+                  }
+                  disabled={
+                    currentPage ===
+                    Math.ceil(filteredData.length / itemsPerPage) - 1
+                  }
+                >
+                  <IconChevronRight />
+                </IconButton>
+              </div>
+            )}
           </div>
         </div>
       </div>
