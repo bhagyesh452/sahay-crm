@@ -6,6 +6,8 @@ import axios from "axios";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import "./panel.css";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
@@ -15,11 +17,13 @@ import CloseIcon from "@mui/icons-material/Close";
 import Form from "../components/Form.jsx";
 import "../components/styles/table.css";
 import "../components/styles/main.css";
+import Nodata from "../components/Nodata.jsx";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
   const [open, openchange] = useState(false);
+  const [openRemarks, openchangeRemarks] = useState(false);
   const [data, setData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -29,6 +33,12 @@ function EmployeePanel() {
   const [visibilityOthernew, setVisibilityOthernew] = useState("none");
   const [subFilterValue, setSubFilterValue] = useState("");
   const [selectedField, setSelectedField] = useState("Company Name");
+  const [cname, setCname] = useState("");
+  const [cemail, setCemail] = useState("");
+  const [cnumber, setCnumber] = useState(0);
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [cidate, setCidate] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [month, setMonth] = useState(0);
   const [updateData, setUpdateData] = useState({});
@@ -42,8 +52,33 @@ function EmployeePanel() {
   const functionopenpopup = () => {
     openchange(true);
   };
+  const [cid, setcid] = useState("");
+  const [cstat, setCstat] = useState("");
+  const functionopenpopupremarks = (companyID, companyStatus) => {
+    openchangeRemarks(true);
+    setFilteredRemarks(
+      remarksHistory.filter((obj) => obj.companyID === companyID)
+    );
+    // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+
+    setcid(companyID);
+    setCstat(companyStatus);
+  };
+
+  const [openNew, openchangeNew] = useState(false);
+  const functionopenpopupNew = () => {
+    openchangeNew(true);
+  };
+
   const closepopup = () => {
     openchange(false);
+  };
+  const closepopupNew = () => {
+    openchangeNew(false);
+  };
+  const closepopupRemarks = () => {
+    openchangeRemarks(false);
+    setFilteredRemarks([]);
   };
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const fetchData = async () => {
@@ -86,11 +121,7 @@ function EmployeePanel() {
         setdataStatus("NotInterested");
       }
       if (status === "FollowUp") {
-        setEmployeeData(
-          tempData.filter(
-            (obj) => obj.Status === "FollowUp"
-          )
-        );
+        setEmployeeData(tempData.filter((obj) => obj.Status === "FollowUp"));
         setdataStatus("FollowUp");
       }
       if (status === "Interested") {
@@ -154,8 +185,60 @@ function EmployeePanel() {
   useEffect(() => {
     fetchData();
   }, [userId]);
+  const [remarksHistory, setRemarksHistory] = useState([]);
+  const [filteredRemarks, setFilteredRemarks] = useState([]);
+  const fetchRemarksHistory = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/remarks-history`);
+      setRemarksHistory(response.data);
+      setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
-  console.log(employeeData);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching remarks history:", error);
+    }
+  };
+  // const [locationAccess, setLocationAccess] = useState(false);
+  useEffect(() => {
+    fetchRemarksHistory();
+    // let watchId;
+    // const successCallback = (position) => {
+    //   const userLatitude = position.coords.latitude;
+    //   const userLongitude = position.coords.longitude;
+
+    //   // console.log("User Location:", userLatitude, userLongitude);
+    //   if (
+    //     Number(userLatitude.toFixed(3)) === 23.114 &&
+    //     Number(userLongitude.toFixed(3)) === 72.541
+    //   ) {
+    //     setLocationAccess(true);
+    //     // console.log("Location accessed")
+    //   }
+    //   // Now you can send these coordinates to your server for further processing
+    // };
+    // // console.log(localStorage.getItem("newtoken"), locationAccess);
+    if (userId !== localStorage.getItem("userId")) {
+      localStorage.removeItem("newtoken");
+      window.location.replace("/");
+    }
+    // const errorCallback = (error) => {
+    //   console.error("Geolocation error:", error.message);
+    //   setLocationAccess(false);
+    //   // Handle the error, e.g., show a message to the user
+    // };
+
+    // navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+
+    // // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
+
+    // // Cleanup function to clear the watch if the component unmounts
+    // return () => {
+    //   navigator.geolocation.clearWatch(watchId);
+    // };
+  }, []);
+  // console.log(locationAccess);
+
+  // console.log(employeeData);
 
   const filteredData = employeeData.filter((company) => {
     const fieldValue = company[selectedField];
@@ -206,9 +289,9 @@ function EmployeePanel() {
   const [companyName, setCompanyName] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
   const [companyInco, setCompanyInco] = useState(null);
+  const [companyNumber, setCompanyNumber] = useState(0);
   const [companyId, setCompanyId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
-  
 
   console.log(companyName, companyInco);
 
@@ -219,13 +302,15 @@ function EmployeePanel() {
     newStatus,
     cname,
     cemail,
-    cindate
+    cindate,
+    cnum
   ) => {
     if (newStatus === "Matured") {
       setCompanyName(cname);
       setCompanyEmail(cemail);
       setCompanyInco(cindate);
       setCompanyId(employeeId);
+      setCompanyNumber(cnum);
       setFormOpen(true);
       return true;
     }
@@ -270,22 +355,36 @@ function EmployeePanel() {
     }));
   };
 
+  const handleDeleteRemarks = async (remarks_id) => {
+    console.log("Deleting Remarks with", remarks_id);
+    try {
+      // Send a delete request to the backend to delete the item with the specified ID
+      await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
+      // Set the deletedItemId state to trigger re-fetching of remarks history
+      Swal.fire("Remarks Deleted");
+      fetchRemarksHistory();
+    } catch (error) {
+      console.error("Error deleting remarks:", error);
+    }
+  };
   const isUpdateButtonEnabled = (companyId) => {
     return updateData[companyId]?.isButtonEnabled || false;
   };
 
   const [changeRemarks, setChangeRemarks] = useState("");
 
-  const handleUpdate = async (companyId , status) => {
-    const { Remarks } = updateData[companyId];
-
+  const handleUpdate = async () => {
     // Now you have the updated Status and Remarks, perform the update logic
-    console.log(Remarks);
+    console.log(cid, cstat, changeRemarks);
+    const Remarks = changeRemarks;
 
     try {
       // Make an API call to update the employee status in the database
-      const response = await axios.post(
-        `${secretKey}/update-remarks/${companyId}`,
+      const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+        Remarks,
+      });
+      const response2 = await axios.post(
+        `${secretKey}/remarks-history/${cid}`,
         {
           Remarks,
         }
@@ -293,8 +392,13 @@ function EmployeePanel() {
 
       // Check if the API call was successful
       if (response.status === 200) {
+        Swal.fire("Remarks updated!");
+
         // If successful, update the employeeData state or fetch data again to reflect changes
-        fetchNewData(status); // Assuming fetchData is a function to fetch updated employee data
+        fetchNewData(cstat);
+        fetchRemarksHistory();
+        // setCstat("");
+        closepopupRemarks(); // Assuming fetchData is a function to fetch updated employee data
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);
@@ -426,6 +530,34 @@ function EmployeePanel() {
     setSelectedOption(event.target.value);
   };
 
+  const handleSubmitData = (e) => {
+    e.preventDefault();
+    axios
+      .post(`${secretKey}/manual`, {
+        "Company Name": cname,
+        "Company Number": cnumber,
+        "Company Email": cemail,
+        "Company Incorporation Date  ": cidate,
+        City: city,
+        State: state,
+        ename: data.ename,
+        AssignDate: new Date(),
+      })
+      .then((response) => {
+        console.log("Data sent Successfully");
+        Swal.fire({
+          title: "Data Added!",
+          text: "Successfully added new Data!",
+          icon: "success",
+        });
+        fetchNewData();
+        closepopupNew();
+      })
+      .catch((error) => {
+        Swal.fire("Please Enter Unique data!");
+      });
+  };
+
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
@@ -438,10 +570,6 @@ function EmployeePanel() {
             <div className="page-header d-print-none">
               <div className="container-xl">
                 <div className="row g-2 align-items-center">
-                  <div className="col">
-                    {/* <!-- Page pre-title --> */}
-                    <h2 className="page-title">{data.ename}</h2>
-                  </div>
                   <div
                     style={{ display: "flex", justifyContent: "space-between" }}
                     className="features"
@@ -666,13 +794,32 @@ function EmployeePanel() {
                           </div>
                         </>
                       )}
-                      <div className="request">
+                      <div className="request" style={{ marginRight: "15px" }}>
                         <div className="btn-list">
                           <button
                             onClick={functionopenpopup}
                             className="btn btn-primary d-none d-sm-inline-block"
                           >
                             Request Data
+                          </button>
+                          <a
+                            href="#"
+                            className="btn btn-primary d-sm-none btn-icon"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-report"
+                            aria-label="Create new report"
+                          >
+                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                          </a>
+                        </div>
+                      </div>
+                      <div className="request">
+                        <div className="btn-list">
+                          <button
+                            onClick={functionopenpopupNew}
+                            className="btn btn-primary d-none d-sm-inline-block"
+                          >
+                            ADD Leads
                           </button>
                           <a
                             href="#"
@@ -699,7 +846,7 @@ function EmployeePanel() {
               className="page-body"
             >
               <div className="container-xl">
-                <div class="card-header">
+                <div class="card-header my-tab">
                   <ul
                     class="nav nav-tabs card-header-tabs nav-fill p-0"
                     data-bs-toggle="tabs"
@@ -727,17 +874,45 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         General{" "}
-                        {dataStatus === "All" && (
-                          <span
-                            style={{
-                              marginLeft: "5px",
-                              color: "#59cd59",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            ..{employeeData.length}
-                          </span>
-                        )}
+                        <span className="no_badge">
+                          {
+                            moreEmpData.filter(
+                              (obj) =>
+                                obj.Status === "Busy" ||
+                                obj.Status === "Not Picked Up" ||
+                                obj.Status === "Untouched"
+                            ).length
+                          }
+                        </span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("Interested");
+                          setCurrentPage(0);
+                          setEmployeeData(
+                            moreEmpData.filter(
+                              (obj) => obj.Status === "Interested"
+                            )
+                          );
+                        }}
+                        className={
+                          dataStatus === "Interested"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        Interested{" "}
+                        <span className="no_badge">
+                          {
+                            moreEmpData.filter(
+                              (obj) => obj.Status === "Interested"
+                            ).length
+                          }
+                        </span>
                       </a>
                     </li>
 
@@ -761,52 +936,16 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Follow Up{" "}
-                        {dataStatus === "FollowUp" && (
-                          <span
-                            style={{
-                              marginLeft: "5px",
-                              color: "#59cd59",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            ..{employeeData.length}
-                          </span>
-                        )}
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a
-                        href="#tabs-activity-5"
-                        onClick={() => {
-                          setdataStatus("Interested");
-                          setCurrentPage(0);
-                          setEmployeeData(
+                        <span className="no_badge">
+                          {
                             moreEmpData.filter(
-                              (obj) => obj.Status === "Interested"
-                            )
-                          );
-                        }}
-                        className={
-                          dataStatus === "Interested"
-                            ? "nav-link active item-act"
-                            : "nav-link"
-                        }
-                        data-bs-toggle="tab"
-                      >
-                        Interested{" "}
-                        {dataStatus === "Interested" && (
-                          <span
-                            style={{
-                              marginLeft: "5px",
-                              color: "#59cd59",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            ..{employeeData.length}
-                          </span>
-                        )}
+                              (obj) => obj.Status === "FollowUp"
+                            ).length
+                          }
+                        </span>
                       </a>
                     </li>
+
                     <li class="nav-item">
                       <a
                         href="#tabs-activity-5"
@@ -827,17 +966,13 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Matured{" "}
-                        {dataStatus === "Matured" && (
-                          <span
-                            style={{
-                              marginLeft: "5px",
-                              color: "#59cd59",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            ..{employeeData.length}
-                          </span>
-                        )}
+                        <span className="no_badge">
+                          {
+                            moreEmpData.filter(
+                              (obj) => obj.Status === "Matured"
+                            ).length
+                          }
+                        </span>
                       </a>
                     </li>
                     <li class="nav-item">
@@ -862,17 +997,15 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Not-Interested{" "}
-                        {dataStatus === "NotInterested" && (
-                          <span
-                            style={{
-                              marginLeft: "5px",
-                              color: "#59cd59",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            ..{employeeData.length}
-                          </span>
-                        )}
+                        <span className="no_badge">
+                          {
+                            moreEmpData.filter(
+                              (obj) =>
+                                obj.Status === "Not Interested" ||
+                                obj.Status === "Junk"
+                            ).length
+                          }
+                        </span>
                       </a>
                     </li>
                   </ul>
@@ -883,7 +1016,7 @@ function EmployeePanel() {
                       style={{
                         overflowX: "auto",
                         overflowY: "auto",
-                        maxHeight: "48vh",
+                        maxHeight: "66vh",
                       }}
                     >
                       <table
@@ -895,41 +1028,25 @@ function EmployeePanel() {
                         className="table-vcenter table-nowrap"
                       >
                         <thead>
-                          <tr
-                            style={{
-                              position: "sticky",
-                              top: "0px",
-                              zIndex: 1,
-                              background: "#f2f2f2",
-                            }}
-                          >
-                            <th>Sr.No</th>
-                            <th
-                             style={{
-                              position: "sticky",
-                              left: "0px",
-                              top:"0px",
-                              zIndex: 1,
-                              background: "#f2f2f2",
-                            }}
-                            >
-                              Company Name
-                            </th>
+                          <tr className="tr-sticky">
+                            <th className="th-sticky">Sr.No</th>
+                            <th className="th-sticky1">Company Name</th>
                             <th>Company Number</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
                             <th>Company Email</th>
                             <th>Incorporation Date</th>
                             <th>City</th>
                             <th>State</th>
-                            <th>Status</th>
-                            <th>Remarks</th>
+
                             {dataStatus === "Matured" && <th>Action</th>}
                           </tr>
                         </thead>
                         {currentData.length === 0 ? (
                           <tbody>
-                            <tr>
+                            <tr className="particular">
                               <td colSpan="10" style={{ textAlign: "center" }}>
-                                No data available
+                                <Nodata/>
                               </td>
                             </tr>
                           </tbody>
@@ -940,27 +1057,13 @@ function EmployeePanel() {
                                 key={index}
                                 style={{ border: "1px solid #ddd" }}
                               >
-                                <td>{startIndex + index + 1}</td>
-                                <td
-                                  style={{
-                                    position: "sticky",
-                                    left: "0px",
-                                    top:"30px",
-                                    zIndex: 1,
-                                    background: "white",
-                                  }}
-                                >
+                                <td className="td-sticky">
+                                  {startIndex + index + 1}
+                                </td>
+                                <td className="td-sticky1">
                                   {company["Company Name"]}
                                 </td>
                                 <td>{company["Company Number"]}</td>
-                                <td>{company["Company Email"]}</td>
-                                <td>
-                                  {formatDate(
-                                    company["Company Incorporation Date  "]
-                                  )}
-                                </td>
-                                <td>{company["City"]}</td>
-                                <td>{company["State"]}</td>
                                 <td>
                                   {company["Status"] === "Matured" ? (
                                     <span>{company["Status"]}</span>
@@ -983,14 +1086,17 @@ function EmployeePanel() {
                                           company["Company Email"],
                                           company[
                                             "Company Incorporation Date  "
-                                          ]
+                                          ],
+                                          company["Company Number"]
                                         )
                                       }
                                     >
                                       <option value="Untouched">
                                         Untouched{" "}
                                       </option>
-                                      <option value="FollowUp">Follow Up </option>
+                                      <option value="FollowUp">
+                                        Follow Up{" "}
+                                      </option>
                                       <option value="Busy">Busy </option>
                                       <option value="Not Picked Up">
                                         Not Picked Up
@@ -1006,57 +1112,50 @@ function EmployeePanel() {
                                     </select>
                                   )}
                                 </td>
-
                                 <td>
                                   <div
-                                  key={company._id}
+                                    key={company._id}
                                     style={{
                                       display: "flex",
                                       alignItems: "center",
                                       justifyContent: "space-between",
+                                      width: "100px",
                                     }}
                                   >
-                                    <textarea
-                                      defaultValue={company.Remarks}
-                                      placeholder="No Remarks Added"
-                                      key={company._id}
-                                      onChange={(e) =>
-                                        handlenewFieldChange(
-                                          company._id,
-                                          
-                                          e.target.value
-                                        )
-                                      }
-                                      type="text"
-                                      style={{
-                                        padding: ".4375rem .75rem",
-                                        border:
-                                          " var(--tblr-border-width) solid var(--tblr-border-color)",
-                                        borderRadius:
-                                          "var(--tblr-border-radius)",
-                                        boxShadow: "0 0 transparent",
-                                        transition:
-                                          "border-color .15s ease-in-out,box-shadow .15s ease-in-out",
-                                        height: "34px",
-                                      }}
-                                    />
-                                    <IconButton
-                                      onClick={() => handleUpdate(company._id , company.Status)}
-                                      disabled={
-                                        !isUpdateButtonEnabled(company._id)
-                                      }
+                                    <p
+                                      className="rematkText text-wrap m-0"
+                                      title={company.Remarks}
                                     >
-                                      <SaveIcon
-                                        className="save"
-                                        style={
-                                          !isUpdateButtonEnabled(company._id)
-                                            ? { color: "grey" }
-                                            : { color: "#ffb900" }
-                                        }
+                                      {!company["Remarks"]
+                                        ? "No Remarks"
+                                        : company.Remarks}
+                                    </p>
+
+                                    <IconButton>
+                                      <EditIcon
+                                        style={{
+                                          width: "12px",
+                                          height: "12px",
+                                        }}
+                                        onClick={() => {
+                                          functionopenpopupremarks(
+                                            company._id,
+                                            company.Status
+                                          );
+                                        }}
                                       />
                                     </IconButton>
                                   </div>
                                 </td>
+                                <td>{company["Company Email"]}</td>
+                                <td>
+                                  {formatDate(
+                                    company["Company Incorporation Date  "]
+                                  )}
+                                </td>
+                                <td>{company["City"]}</td>
+                                <td>{company["State"]}</td>
+
                                 {dataStatus === "Matured" && (
                                   <td>
                                     <button
@@ -1077,13 +1176,14 @@ function EmployeePanel() {
                           </tbody>
                         )}
                       </table>
+
                     </div>
                     {currentData.length !== 0 && (
                       <div
                         style={{
                           display: "flex",
                           justifyContent: "space-between",
-                          margin: "10px",
+                          alignItems: "center",
                         }}
                         className="pagination"
                       >
@@ -1176,6 +1276,7 @@ function EmployeePanel() {
                   companysId={companyId}
                   companysName={companyName}
                   companysEmail={companyEmail}
+                  companyNumber={companyNumber}
                   companysInco={companyInco}
                   employeeName={data.ename}
                   employeeEmail={data.email}
@@ -1196,7 +1297,7 @@ function EmployeePanel() {
         </DialogTitle>
         <DialogContent>
           <div className="container">
-            <form onSubmit={handleSubmit}>
+            
               <div className="con2 row mb-3">
                 <div
                   style={
@@ -1333,17 +1434,197 @@ function EmployeePanel() {
                   required
                 />
               </div>
-              <div class="card-footer text-end">
-                <button type="submit" className="btn btn-primary">
-                  Submit
-                </button>
+            
+          </div>
+        </DialogContent>
+        <div class="card-footer">
+          <button
+            style={{ width: "100%" }}
+            onClick={handleSubmit}
+            className="btn btn-primary"
+          >
+            Submit
+          </button>
+        </div>
+      </Dialog>
+
+      {/* Remarks edit icon pop up*/}
+      <Dialog
+        open={openRemarks}
+        onClose={closepopupRemarks}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Remarks
+          <IconButton onClick={closepopupRemarks} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="remarks-content">
+            {filteredRemarks.length !== 0 ? (
+              filteredRemarks
+                .slice()
+                .reverse()
+                .map((historyItem) => (
+                  <div className="col-sm-12" key={historyItem._id}>
+                    <div className="card RemarkCard position-relative">
+                      <div className="d-flex justify-content-between">
+                        <div className="reamrk-card-innerText">
+                          <pre>{historyItem.remarks}</pre>
+                        </div>
+                        <div className="dlticon">
+                          <DeleteIcon
+                            
+                            style={{
+                              cursor: "pointer",
+                              color: "#f70000",
+                              width: "14px ",
+                            }}
+                            onClick={() => {
+                              handleDeleteRemarks(historyItem._id);
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="d-flex card-dateTime justify-content-between">
+                        <div className="date">{historyItem.date}</div>
+                        <div className="time">{historyItem.time}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+            ) : (
+              <div className="text-center overflow-hidden">
+                No Remarks History
               </div>
-            </form>
+            )}
+          </div>
+
+          <div class="card-footer">
+            <div class="mb-3 remarks-input">
+              <textarea
+                placeholder="Add Remarks Here...  "
+                class="form-control"
+                id="remarks-input"
+                rows="3"
+                onChange={(e) => {
+                  setChangeRemarks(e.target.value);
+                }}
+              ></textarea>
+            </div>
+            <button
+              onClick={handleUpdate}
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: "100%" }}
+            >
+              Submit
+            </button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Main Page Starts from here */}
+      {/* ADD Leads starts here */}
+      <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="sm">
+        <DialogTitle>
+          Company Info{" "}
+          <IconButton onClick={closepopupNew} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="modal-dialog modal-lg" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Company Name</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="Your Company Name"
+                    onChange={(e) => {
+                      setCname(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Company Email</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="example@gmail.com"
+                    onChange={(e) => {
+                      setCemail(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">Company Number</label>
+                      <input
+                        type="number"
+                        onChange={(e) => {
+                          setCnumber(e.target.value);
+                        }}
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Company Incorporation Date
+                      </label>
+                      <input
+                        onChange={(e) => {
+                          setCidate(e.target.value);
+                        }}
+                        type="date"
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">City</label>
+                      <input
+                        onChange={(e) => {
+                          setCity(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">State</label>
+                      <input
+                        onChange={(e) => {
+                          setState(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <button onClick={handleSubmitData} className="btn btn-primary">
+          Submit
+        </button>
+      </Dialog>
     </div>
   );
 }

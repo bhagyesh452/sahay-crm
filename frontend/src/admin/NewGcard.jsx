@@ -112,19 +112,20 @@ export default function NewGCard({ id, name, damount, assignStatus }) {
             read: true,
             assigned: true,
           });
-          fetchData();
-          closepopup();
-          Swal.fire({
-            title: "Data Send!",
-            text: "Data successfully sent to the Employee",
-            icon: "success",
-          });
+       
 
           console.log("Data posted successfully");
         } catch (err) {
           console.log("Internal server Error", err);
         }
       }
+      fetchData();
+      closepopup();
+      Swal.fire({
+        title: "Data Send!",
+        text: "Data successfully sent to the Employee",
+        icon: "success",
+      });
     } else {
       Swal.fire("Please Select a file");
     }

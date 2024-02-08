@@ -1,12 +1,6 @@
 import "./App.css";
 
-import {
-  BrowserRouter,
-  Routes,
-  Navigate,
-  Route,
-
-} from "react-router-dom";
+import { BrowserRouter, Routes, Navigate, Route } from "react-router-dom";
 import { useState } from "react";
 
 import EmployeeLogin from "./components/EmployeeLogin";
@@ -19,9 +13,12 @@ import Employees from "./admin/Employees";
 import Leads from "./admin/Leads";
 import ShowNotification from "./admin/ShowNotification";
 import Dashboard_processing from "./Processing/Dashboard_processing";
+import LoginDetails from "./components/LoginDetails";
+import ProcessingLogin from "./components/ProcessingLogin";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [processingTokenn, setProcessingToken] = useState(localStorage.getItem("processingToken") || null);
   const [newtoken, setnewToken] = useState(
     localStorage.getItem("newtoken") || null
   );
@@ -36,9 +33,7 @@ function App() {
           />
           <Route
             path="/employee-data/:userId/"
-            element={
-              newtoken ? <EmployeePanel /> : <Navigate to="/employeelogin" />
-            }
+            element={newtoken ? <EmployeePanel /> : <Navigate to="/" />}
           ></Route>
           <Route
             path="/converted-leads/:userId/"
@@ -59,6 +54,10 @@ function App() {
                 path="/admin/employees/:id"
                 element={<EmployeeParticular />}
               />
+              <Route
+                path="/admin/employees/:id/login-details"
+                element={<LoginDetails />}
+              />
               <Route path="/admin/leads" element={<Leads />} />
               <Route
                 path="/admin/notification"
@@ -74,6 +73,11 @@ function App() {
 
           {/* <Route path="/*" element={<Navigate to="/employeelogin" />} /> */}
           <Route path="/Processing/Dashboard_processing" element={<Dashboard_processing />} />
+          <Route
+            path="/processing/processing-login"
+            element={<ProcessingLogin setProcessingToken={setProcessingToken} />}
+          />
+         
         </Routes>
       </BrowserRouter>
     </div>

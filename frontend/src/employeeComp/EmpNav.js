@@ -62,7 +62,7 @@ function EmpNav({userId}) {
                 </li>
                 
                 
-                <li  className={
+                {/* <li  className={
                   location.pathname === `/converted-leads/${userId}` ? "nav-item active" : "nav-item"
                 } onClick={handleConvertedLeadsClick}
                   
@@ -70,7 +70,7 @@ function EmpNav({userId}) {
                   
                     <a  className="nav-link" href="#">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
-                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/home --> */}
+                        
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="icon"
@@ -92,7 +92,7 @@ function EmpNav({userId}) {
                       <span className="nav-link-title">Converted Leads</span>
                     </a>
                  
-                </li>
+                </li> */}
                 
               </ul>
               

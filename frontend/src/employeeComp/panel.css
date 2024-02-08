@@ -34,4 +34,14 @@ td textarea {
   background-color: #cccccc;
   color: #666666;
 }
-
+.rematkText 
+{
+    display: -webkit-box;
+    max-width: 100%;
+    text-align: left;
+    line-height: 1.5;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: 100px;
+}

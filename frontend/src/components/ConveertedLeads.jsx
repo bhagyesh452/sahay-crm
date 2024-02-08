@@ -10,6 +10,7 @@ import { IconButton } from "@mui/material";
 import "./styles/main.css";
 import CloseIcon from "@mui/icons-material/Close";
 import Form from "./Form";
+import Nodata from "./Nodata";
 
 function ConveertedLeads() {
   const [formOpen, setformOpen] = useState(false);
@@ -1170,7 +1171,7 @@ function ConveertedLeads() {
                         <tbody>
                           <tr>
                             <td colSpan="10" style={{ textAlign: "center" }}>
-                              No data available
+                             <Nodata/>
                             </td>
                           </tr>
                         </tbody>

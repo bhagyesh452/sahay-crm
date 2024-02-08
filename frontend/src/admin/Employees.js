@@ -11,6 +11,8 @@ import "../dist/css/tabler-payments.min.css?1684106062";
 import "../dist/css/tabler-vendors.min.css?1684106062";
 import "../dist/css/demo.min.css?1684106062";
 import { IconTrash } from "@tabler/icons-react";
+import "../components/styles/main.css";
+import "../employeeComp/panel.css";
 import Swal from "sweetalert2";
 // import EmployeeTable from "./EmployeeTable";
 import {
@@ -58,18 +60,15 @@ function Employees({ onEyeButtonClick }) {
     setIsModalOpen(false);
   };
 
-  const handledeletefromcompany = async()=>{
-
+  const handledeletefromcompany = async () => {
     if (companyDdata && companyDdata.length !== 0) {
       // Assuming ename is part of dataToSend
-  
+
       try {
         // Update companyData in the second database
         await Promise.all(
           companyDdata.map(async (item) => {
-            await axios.delete(
-              `${secretKey}/newcompanynamedelete/${item._id}`,
-            );
+            await axios.delete(`${secretKey}/newcompanynamedelete/${item._id}`);
             console.log(`Deleted name for ${item._id}`);
           })
         );
@@ -78,7 +77,7 @@ function Employees({ onEyeButtonClick }) {
           text: "You have successfully Deleted the data!",
           icon: "success",
         });
-  
+
         console.log("All ename updates completed successfully");
       } catch (error) {
         console.error("Error updating enames:", error.message);
@@ -86,12 +85,7 @@ function Employees({ onEyeButtonClick }) {
         // Handle the error as needed
       }
     }
-  
-  
-
-  }
-
- 
+  };
 
   const handleCancelDelete = () => {
     // Cancel the delete operation and close the modal
@@ -206,9 +200,7 @@ function Employees({ onEyeButtonClick }) {
         icon: "error",
         title: "Oops...",
         text: "Please try again later!",
-        
       });
-
     }
   };
   useEffect(() => {
@@ -251,10 +243,7 @@ function Employees({ onEyeButtonClick }) {
       }
 
       if (isUpdateMode) {
-        await axios.put(
-          `${secretKey}/einfo/${selectedDataId}`,
-          dataToSend
-        );
+        await axios.put(`${secretKey}/einfo/${selectedDataId}`, dataToSend);
         Swal.fire({
           title: "Name Updated!",
           text: "You have successfully updated the name!",
@@ -268,15 +257,13 @@ function Employees({ onEyeButtonClick }) {
             // Update companyData in the second database
             await Promise.all(
               companyData.map(async (item) => {
-                await axios.put(
-                  `${secretKey}/newcompanyname/${item._id}`,
-                  { ename }
-                );
-                
+                await axios.put(`${secretKey}/newcompanyname/${item._id}`, {
+                  ename,
+                });
+
                 console.log(`Updated ename for ${item._id}`);
               })
             );
-           
 
             console.log("All ename updates completed successfully");
           } catch (error) {
@@ -284,8 +271,6 @@ function Employees({ onEyeButtonClick }) {
             // Handle the error as needed
           }
         }
-
-      
       } else {
         await axios.post(`${secretKey}/einfo`, dataToSend);
         Swal.fire({
@@ -293,7 +278,6 @@ function Employees({ onEyeButtonClick }) {
           text: "You have successfully added the data!",
           icon: "success",
         });
-
       }
 
       setEmail("");
@@ -612,13 +596,23 @@ function Employees({ onEyeButtonClick }) {
         }}
         className="page-body"
       >
-        <div style={{maxWidth:"89vw" , overflowX:"auto"}} className="container-xl">
+        <div
+          style={{ maxWidth: "89vw", overflowX: "auto" }}
+          className="container-xl"
+        >
           <div className="card">
             <div style={{ padding: "0px" }} className="card-body">
               <div id="table-default">
-                <table style={{ margin: "0px" }} className="table">
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
                   <thead>
-                    <tr>
+                    <tr className="tr-sticky">
                       <th>
                         <button className="table-sort" data-sort="sort-name">
                           Sr.No
@@ -663,57 +657,68 @@ function Employees({ onEyeButtonClick }) {
                     <tbody>
                       <tr>
                         <td colSpan="10" style={{ textAlign: "center" }}>
-                          <div className="no-data-div">
-                            No data Available
-                          </div>
+                          <div className="no-data-div">No data Available</div>
                         </td>
                       </tr>
                     </tbody>
                   ) : (
                     filteredData.map((item, index) => (
                       <tbody className="table-tbody">
-                        <tr>
-                          <td className="sort-name pad">{index + 1}</td>
-                          <td className="sort-name pad">{item.ename}</td>
-                          <td className="sort-city pad">{item.number}</td>
-                          <td className="sort-type pad">{item.email}</td>
-                          <td className="sort-type pad">
+                        <tr key={index} style={{ border: "1px solid #ddd" }}>
+                          <td
+                           className="td-sticky"
+                          >
+                            {index + 1}
+                          </td>
+                          <td >{item.ename}</td>
+                          <td>{item.number}</td>
+                          <td>{item.email}</td>
+                          <td>
                             {formatDate(item.jdate)}
                           </td>
-                          <td className="sort-type pad">{item.designation}</td>
-                          <td
-                           
-                            className="sort-score pad d-flex text-align-center align-items-center"
-                          >
+                          <td>{item.designation}</td>
+                          <td className="d-flex justify-content-center align-items-center">
                             <div className="icons-btn">
-                              <IconTrash style={{
-                                cursor:"pointer",
-                                fontSize:"16px"
-                              }}
+                              <IconTrash
+                                style={{
+                                  cursor: "pointer",
+                                  color: "red",
+                                  width: "18px",
+                                  height: "18px"
+                                }}
                                 onClick={() =>
                                   handleDeleteClick(item._id, item.ename)
                                 }
                               />
                             </div>
 
-                            <div className="icons-btn">
-                              <ModeEditIcon style={{
-                                cursor:"pointer",
-                                fontSize:"18px"
-                              }}
+                            <div className="icons-btn m-1">
+                              <ModeEditIcon
+                                style={{
+                                  cursor: "pointer",
+                                  color: "#a29d9d",
+                                  width: "18px",
+                                  height: "18px"
+                                }}
                                 onClick={() => {
                                   functionopenpopup();
                                   handleUpdateClick(item._id, item.ename);
                                 }}
-                              >
-                                Update
-                              </ModeEditIcon>
+                              />
+                              
                             </div>
                             <div className="icons-btn">
-                              <Link style={{color:"black"}} to={`/admin/employees/${item._id}`}>
-                                <IconEye style={{
-                                  fontSize:"16px"
-                                }} />
+                              <Link
+                                style={{ color: "black" }}
+                                to={`/admin/employees/${item._id}`}
+                              >
+                                <IconEye
+                                  style={{
+                                    width: "18px",
+                                  height: "18px",
+                                  color:"#d6a10c"
+                                  }}
+                                />
                               </Link>
                             </div>
                           </td>

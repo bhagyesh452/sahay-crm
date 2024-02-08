@@ -1,14 +1,14 @@
 import React from "react";
 import axios from "axios";
 import { useState } from "react";
-
+import Swal from "sweetalert2";
 import "../dist/css/tabler.min.css?1684106062";
 import "../dist/css/tabler-flags.min.css?1684106062";
 import "../dist/css/tabler-payments.min.css?1684106062";
 import "../dist/css/tabler-vendors.min.css?1684106062";
 import "../dist/css/demo.min.css?1684106062";
 
-function LoginAdmin({ setToken }) {
+function ProcessingLogin({ setProcessingToken }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -33,17 +33,17 @@ function LoginAdmin({ setToken }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${secretKey}/admin/login-admin`, {
+      const response = await axios.post(`${secretKey}/processingLogin`, {
         username,
         password,
       });
 
-      const { token } = response.data;
-      console.log(token);
-      setToken(token);
-      localStorage.setItem("token", token);
+      const { processingToken } = response.data;
+      
+      setProcessingToken(processingToken);
+      localStorage.setItem("processingToken", processingToken);
+     Swal.fire("Processing Login Successfull");
      
-      window.location.replace("/admin/dashboard");
     } catch (error) {
       console.error("Login failed:", error.message);
       setErrorMessage("Incorrect Credentials!");
@@ -61,7 +61,7 @@ function LoginAdmin({ setToken }) {
           </div>
           <div className="card card-md login-card">
             <div className="card-body">
-              <h2 className="h2 text-center mb-4">Admin Login</h2>
+              <h2 className="h2 text-center mb-4">Processing Login</h2>
               <form action="./" method="get" autocomplete="off" novalidate>
                 <div className="mb-3">
                   <label className="form-label">Username</label>
@@ -142,4 +142,4 @@ function LoginAdmin({ setToken }) {
   );
 }
 
-export default LoginAdmin;
+export default ProcessingLogin;

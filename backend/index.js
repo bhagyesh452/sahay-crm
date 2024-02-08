@@ -8,30 +8,33 @@ const adminModel = require("./models/Admin");
 const CompanyModel = require("./models/Leads");
 const RequestModel = require("./models/Request");
 const RequestGModel = require("./models/RequestG");
+const { exec } = require('child_process');
 const jwt = require("jsonwebtoken");
 const onlyAdminModel = require("./models/AdminTable");
 const LeadModel = require("./models/Leadform");
 const { sendMail } = require("./helpers/sendMail");
 const { mailFormat } = require("./helpers/mailFormat");
 const multer = require("multer");
+const RemarksHistory = require("./models/RemarksHistory");
+const LoginDetails = require("./models/loginDetails");
 // const http = require('http');
 // const socketIo = require('socket.io');
 require("dotenv").config();
 
 const app = express();
-app.use(express.json({ limit: '50mb' }));
-app.use(cors())
-var http = require ("http") .createServer (app);
-var socketIO = require ("socket.io") (http, {
-     cors: {
-         origin:
-                 " * "
-     }
-    });
+app.use(express.json({ limit: "50mb" }));
+app.use(cors());
+var http = require("http").createServer(app);
+var socketIO = require("socket.io")(http, {
+  cors: {
+    origin: " * ",
+  },
+});
 // const server = http.createServer(app);
 // const io = socketIo(server);
 
 mongoose
+
   .connect(process.env.MONGO_URL)
   .then(() => {
     console.log("MongoDB is connected");
@@ -43,10 +46,10 @@ mongoose
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
 console.log(secretKey);
 
-app.get('/api',(req,res)=>{
-  console.log(req.url)
-  res.send('hello from backend!')
-})
+app.get("/api", (req, res) => {
+  console.log(req.url);
+  res.send("hello from backend!");
+});
 
 app.post("/api/admin/login-admin", async (req, res) => {
   const { username, password } = req.body;
@@ -77,14 +80,29 @@ app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
 
   // Replace this with your actual Employee authentication logic
-  const user = await adminModel.findOne({ email: email, password: password });
+  const user = await adminModel.findOne({ email: email, password: password , designation:"Sales Executive" });
   console.log(user);
 
   if (user) {
     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
-      expiresIn: "1h",
+      expiresIn: "10h",
     });
     res.json({ newtoken });
+  } else {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+});
+app.post("/api/processingLogin", async (req, res) => {
+  const { username, password } = req.body;
+
+  // Replace this with your actual Employee authentication logic
+  const user = await adminModel.findOne({ email: username, password: password , designation:"Admin Team" });
+  console.log(user);
+  if (user) {
+    const processingToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    res.json({ processingToken });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
   }
@@ -167,7 +185,7 @@ app.post("/api/update-status/:id", async (req, res) => {
 app.post("/api/update-remarks/:id", async (req, res) => {
   const { id } = req.params;
   const { Remarks } = req.body;
-  console.log(Remarks)
+  console.log(Remarks);
   try {
     // Update the status field in the database based on the employee id
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
@@ -255,11 +273,36 @@ app.delete("/api/delete-rows", async (req, res) => {
     // Use Mongoose to delete rows by their IDs
     await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
 
-    res.status(200).json({ message: "Rows deleted successfully" });
+    // Trigger backup on the server
+    exec(`mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`, (error, stdout, stderr) => {
+      if (error) {
+        console.error('Error creating backup:', error);
+        // Respond with an error if backup fails
+        res.status(500).json({ error: 'Error creating backup.' });
+      } else {
+        console.log('Backup created successfully:', stdout);
+        // Respond with success message if backup is successful
+        res.status(200).json({ message: 'Rows deleted successfully and backup created successfully.' });
+      }
+    });
   } catch (error) {
     console.error("Error deleting rows:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
+});
+
+app.post("/api/undo", (req, res) => {
+  // Run mongorestore command to restore the data
+  exec(`mongorestore --uri "mongodb://localhost:27017/AdminTable" --nsInclude "AdminTable.newcdatas" ${process.env.BACKUP_PATH}\newcdatas.bson
+  `, (error, stdout, stderr) => {
+    if (error) {
+      console.error('Error restoring data:', error);
+      res.status(500).json({ error: 'Error restoring data.' });
+    } else {
+      console.log('Data restored successfully:', stdout);
+      res.status(200).json({ message: 'Data restored successfully.' });
+    }
+  });
 });
 
 app.put("/api/einfo/:id", async (req, res) => {
@@ -324,6 +367,29 @@ app.post("/api/postData", async (req, res) => {
 
   res.json({ message: "Data posted successfully" });
 });
+app.post("/api/assign-new", async (req, res) => {
+  const { newemployeeSelection, csvdata } = req.body;
+  // Check if data is already assigned
+  // if (selectedObjects.every((obj) => obj.ename === employeeSelection)) {
+  //   return res.status(400).json({ error: `Data is already assigned to ${employeeSelection}` });
+  // }
+
+  // If not assigned, post data to MongoDB or perform any desired action
+  const updatePromises = csvdata.map((obj) => {
+    // Add AssignData property with the current date
+    const updatedObj = {
+      ...obj,
+      ename: newemployeeSelection,
+      AssignDate: new Date(),
+    };
+    return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
+  });
+
+  // Execute all update promises
+  await Promise.all(updatePromises);
+
+  res.json({ message: "Data posted successfully" });
+});
 
 app.post("/api/company", async (req, res) => {
   const { newemployeeSelection, csvdata } = req.body;
@@ -332,9 +398,9 @@ app.post("/api/company", async (req, res) => {
     const insertedCompanies = [];
 
     for (const company of csvdata) {
-      // Check for duplicate based on some unique identifier, like companyNumber
+      // Check for duplicate based on some unique identifier, like company name
       const isDuplicate = await CompanyModel.exists({
-        "Company Name": company["Company Name"],
+        "Company Name": company["Company Name"].trim().toLowerCase(),
       });
 
       if (!isDuplicate) {
@@ -349,7 +415,7 @@ app.post("/api/company", async (req, res) => {
         insertedCompanies.push(insertedCompany);
       } else {
         console.log(
-          `Duplicate entry found for companyNumber: ${company["Company Name"]}. Skipped.`
+          `Duplicate entry found for company name: ${company["Company Name"]}. Skipped.`
         );
       }
     }
@@ -483,7 +549,7 @@ app.post("/api/requestData", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.post('/api/requestgData', async (req, res) => {
+app.post("/api/requestgData", async (req, res) => {
   const { numberOfData, name, cTime, cDate } = req.body;
 
   try {
@@ -492,7 +558,7 @@ app.post('/api/requestgData', async (req, res) => {
       dAmount: numberOfData,
       ename: name,
       cTime: cTime,
-      cDate: cDate
+      cDate: cDate,
     });
 
     // Save the data to MongoDB
@@ -504,7 +570,7 @@ app.post('/api/requestgData', async (req, res) => {
     res.json(savedRequest);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -591,6 +657,53 @@ app.delete("/api/newcompanynamedelete/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+app.post("/api/remarks-history/:companyId", async (req, res) => {
+  const { companyId } = req.params;
+  const { Remarks } = req.body;
+
+  // Get the current date and time
+  const currentDate = new Date();
+  const time = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+  const date = currentDate.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
+console.log(companyId,Remarks,time,date)
+  try {
+    // Create a new RemarksHistory instance
+    const newRemarksHistory = new RemarksHistory({
+      time,
+      date,
+      companyID: companyId,
+      remarks : Remarks,
+    });
+
+    // Save the new entry to MongoDB
+    await newRemarksHistory.save();
+
+    res.json({ success: true, message: "Remarks history added successfully" });
+  } catch (error) {
+    console.error("Error adding remarks history:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
+app.get('/api/remarks-history', async (req, res) => {
+  try {
+    const remarksHistory = await RemarksHistory.find();
+    res.json(remarksHistory);
+  } catch (error) {
+    console.error('Error fetching remarks history:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+app.delete('/api/remarks-history/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await RemarksHistory.findByIdAndDelete(id);
+    res.json({ success: true, message: 'Remarks deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting remark:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -643,11 +756,11 @@ app.post(
         incoDate,
         extraNotes,
         empName,
-        empEmail
+        empEmail,
       } = req.body;
 
-      const otherDocs = req.files['otherDocs'] || [];
-  const paymentReceipt = req.files['paymentReceipt'] || [];// Array of files for 'file2'
+      const otherDocs = req.files["otherDocs"] || [];
+      const paymentReceipt = req.files["paymentReceipt"] || []; // Array of files for 'file2'
 
       // Your processing logic here
 
@@ -684,9 +797,18 @@ app.post(
       const displayPayment = paymentTerms === "Full Advanced" ? "none" : "flex";
 
       const savedEmployee = await employee.save();
-      const recipients= ['bookings@startupsahay.com', 'documents@startupsahay.com' ,`${bdmEmail}`,`${empEmail}`]//
-      
-     sendMail(recipients,"Mail received",``,`<div style="width: 80%; margin: 50px auto;">
+      const recipients = [
+        "bookings@startupsahay.com",
+        "documents@startupsahay.com",
+        `${bdmEmail}`,
+        `${empEmail}`,
+      ];
+
+      sendMail(
+        recipients,
+        "Mail received",
+        ``,
+        `<div style="width: 80%; margin: 50px auto;">
       <h2 style="text-align: center;">Lead Information</h2>
       <div style="display: flex;">
           <div style="width: 48%;">
@@ -894,7 +1016,7 @@ app.post(
               color: rgb(63, 66, 21);
               display: inline-block;
               border-radius: 4px;">
-              ${firstPayment*100/totalPayment}% Amount
+              ${(firstPayment * 100) / totalPayment}% Amount
               </small>
           </div>
           <div style="width: 24%;  margin-left: 10px;">
@@ -912,7 +1034,7 @@ app.post(
               color: rgb(63, 66, 21);
               display: inline-block;
               border-radius: 4px;">
-              ${secondPayment*100/totalPayment}% Amount
+              ${(secondPayment * 100) / totalPayment}% Amount
               </small>
           </div>
           <div style="width: 24%;  margin-left: 10px;">
@@ -930,7 +1052,7 @@ app.post(
               color: rgb(63, 66, 21);
               display: inline-block;
               border-radius: 4px;">
-              ${thirdPayment*100/totalPayment}% Amount
+              ${(thirdPayment * 100) / totalPayment}% Amount
               </small>
           </div>
           <div style="width: 24%;  margin-left: 10px;">
@@ -948,12 +1070,25 @@ app.post(
               color: rgb(63, 66, 21);
               display: inline-block;
               border-radius: 4px;">
-              ${fourthPayment*100/totalPayment}% Amount
+              ${(fourthPayment * 100) / totalPayment}% Amount
               </small>
           </div>
 
 
       </div>
+      <div style="display: flex; margin-top: 20px;">
+      <div style="width: 33%; ">
+              <label>Payment Remarks:</label>
+              <div style=" padding: 8px 10px;
+                  background: #fff7e8;
+                  margin-top: 10px;
+                  border-radius: 6px;
+                  color: #724f0d;">
+                  ${paymentRemarks}
+              </div>
+          </div>
+
+ </div>
       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
       </div>
 
@@ -1020,7 +1155,10 @@ app.post(
 
   </div>
   
-  `,otherDocs, paymentReceipt)
+  `,
+        otherDocs,
+        paymentReceipt
+      );
 
       console.log("Data sent");
       res
@@ -1086,12 +1224,36 @@ app.get("/api/company/:companyName", async (req, res) => {
 //     console.log('User disconnected');
 //   });
 // });
-http. listen (3001, function () {
-  console. log ("Server started...");
- socketIO.on ("connection", function (socket) {
-      console. log ("User connected: "+socket.id);
-      
- });                           
+app.post('/api/loginDetails', (req, res) => {
+  const { ename, date, time, address } = req.body;
+  const newLoginDetails = new LoginDetails({ ename, date, time,address });
+  newLoginDetails.save()
+      .then(savedLoginDetails => {
+          console.log('Login details saved to database:', savedLoginDetails);
+          res.json(savedLoginDetails);
+      })
+      .catch(error => {
+          console.error('Failed to save login details to database:', error);
+          res.status(500).json({ error: 'Failed to save login details' });
+      });
+});
+
+app.get('/api/loginDetails', (req, res) => {
+  LoginDetails.find()
+      .then(loginDetails => {
+          res.json(loginDetails);
+      })
+      .catch(error => {
+          console.error('Failed to fetch login details from database:', error);
+          res.status(500).json({ error: 'Failed to fetch login details' });
+      });
+});
+
+http.listen(3001, function () {
+  console.log("Server started...");
+  socketIO.on("connection", function (socket) {
+    console.log("User connected: " + socket.id);
+  });
 });
 
 // app.listen(3001,(req,res)=>{

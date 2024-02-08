@@ -9,6 +9,7 @@ import "./styles/main.css";
 import Select from "react-select";
 import { IconX } from "@tabler/icons-react";
 import { parse } from "papaparse";
+import Edit from "@mui/icons-material/Edit";
 const options = [
   {
     value: "Certification Services",
@@ -125,6 +126,7 @@ function Form({
   companysInco,
   employeeName,
   employeeEmail,
+  companyNumber
 }) {
   const [unames, setUnames] = useState([]);
   const [checkStat, setCheckStat] = useState(false);
@@ -314,6 +316,9 @@ function Form({
       // setErrorMessage("Incorrect Credentials!");
     }
   };
+
+  const [editEmail, setEditEmail] = useState(false)
+  const [editNumber, setEditNumber] = useState(false)
 
   const formatDate = (inputdate) => {
     const inputDate = new Date(inputdate);
@@ -607,8 +612,10 @@ function Form({
           </div>
           <div className="company-contact col">
             <label class="form-label">Enter Contact Number</label>
+            <div className="position-relative">
             <input
               type="number"
+              defaultValue={matured ? companyNumber : leadData.companyNumber}
               name="company-contact"
               id="company-contact"
               placeholder="Enter Contact Number"
@@ -619,24 +626,43 @@ function Form({
                   contactNumber: e.target.value, // Set the value based on the selected radio button
                 }));
               }}
+              disabled = {!editNumber}
             />
+            <div className="editField">
+            <Edit onClick={()=>{
+              setEditNumber(true)
+            }}/>
+            </div>
+            
+            </div>
+           
           </div>
           <div className="company-email col">
             <label class="form-label">Enter Company's Email-ID</label>
+            <div className="position-relative">
             <input
               type="text"
               name="company-email"
               id="company-email"
               placeholder="Enter Company Email ID"
               className="form-control"
-              value={matured ? companysEmail : leadData.companyEmail}
+              defaultValue={matured ? companysEmail : leadData.companyEmail}
               onChange={(e) => {
                 setLeadData((prevLeadData) => ({
                   ...prevLeadData,
                   companyEmail: e.target.value, // Set the value based on the selected radio button
                 }));
               }}
+              disabled={!editEmail}
             />
+            <div className="editField">
+            <Edit onClick={()=>{
+              setEditEmail(true)
+            }}/>
+            </div>
+            </div>
+           
+           
           </div>
         </div>
         <div className="row align-items-center">

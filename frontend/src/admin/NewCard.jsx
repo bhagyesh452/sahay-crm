@@ -115,18 +115,19 @@ export default function NewCard({id, name, year, ctype, damount,assignStatus }) 
           assigned:true
         })
           
-          closepopup();
-          Swal.fire({
-            title: "Data Send!",
-            text: "Data successfully sent to the Employee",
-            icon: "success",
-          });
+      
 
           console.log("Data posted successfully");
         } catch (err) {
           console.log("Internal server Error", err);
         }
       }
+      closepopup();
+      Swal.fire({
+        title: "Data Send!",
+        text: "Data successfully sent to the Employee",
+        icon: "success",
+      });
     } else {
       Swal.fire("Please Select a file");
     }

@@ -125,3 +125,205 @@ select:focus, input:focus, textarea:focus
 {
     outline: none !important;
 }
+.editField
+{
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    z-index: 9;
+    cursor: pointer;
+    color: #ffb900;
+}
+
+.RemarkCard
+{
+    padding: 8px 12px;
+    margin: 0px 0px 12px 0px;
+    border: 1px solid #fff1cb;
+    box-shadow: 1px 1px 5px -4px #ffb900;
+    border-radius: 9px;
+    background: #fffde9;
+}
+
+.reamrk-card-innerText
+{
+    text-transform: capitalize;
+    color: #000;
+}
+.card-dateTime
+{
+    font-size: 10px;
+    margin-top: 16px;
+    color: #826607;
+}
+
+.dlticon svg 
+{
+    width: 14px !important;
+}
+.dlticon
+{
+    width: 20px;
+    height: 20px;
+    border-radius: 150px;
+    background: #ffd7d7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.remarks-content {
+    max-height: 236px;
+    overflow-y: scroll !important;
+    margin: 0px 0px 22px 0;
+    cursor: pointer;
+    padding: 12px 12px 12px 12px;
+    background: #fbfbfb;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+a
+{
+    text-decoration: none;
+}
+.container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+    max-width: 96% !important;
+}
+tr:hover{
+    background: #eee;
+}
+tr:focus{
+    background: #eee;
+}
+.tr-sticky
+{
+    position: sticky;
+    top: -1px;
+    z-index: 99;
+    background: #f2f2f2;
+}
+.th-sticky
+{
+    position: sticky;
+    left: 0px;
+    top: 0px;
+    z-index: 99;
+    border-right: 1px solid #eee !important;
+    box-shadow: 1px 1px 10px 42px #000 !important;
+    background: #f2f2f2;
+}
+.th-sticky1
+{
+    position: sticky;
+    left: 52px;
+    top: 0px;
+    z-index: 99;
+    border-right: 1px solid #eee !important;
+    box-shadow: 1px 1px 10px 42px #000 !important;
+    background: #f2f2f2;
+}
+.td-sticky
+{
+    position: sticky;
+    left: 0px;
+    top: auto;
+    z-index: 98;
+    background: white;
+    border-right: 1px solid #eee !important;
+    box-shadow: 1px 1px 10px 42px #000 !important;
+}
+.td-sticky1
+{
+    position: sticky;
+    left: 52px;
+    top: auto;
+    z-index: 98;
+    background: white;
+    border-right: 1px solid #eee !important;
+    box-shadow: 1px 1px 10px 42px #000 !important;
+}
+tr:hover .td-sticky
+{
+    background: #eee;
+    z-index: 98;
+}
+tr:hover .td-sticky1
+{
+    background: #eee;
+    z-index: 98;
+}
+.pagination button
+{
+    padding: 0px 0px 5px 0px;
+
+}
+pre
+{
+    background:none !important;
+    color: #000 !important;
+    font-size: 14px;
+    padding: 0px;
+}
+.no_badge
+{
+    width: -moz-fit-content;
+    width: fit-content;
+    padding: 2px 5px;
+    color: #efad00;
+    background: #fff4d6;
+    margin-left: 8px;
+    font-weight: bold;
+    font-size: 10px;
+    border-radius: 100px;
+}
+th{
+    padding: 4px 10px !important;
+}
+.login-card
+{
+    width: 400px;
+    margin: 0 auto;
+}
+.my-tab .nav-fill .nav-item .nav-link {
+    justify-content: space-between;;
+    padding: 4px 10px;
+    color: #494949;
+    font-weight: 600;
+    border: 1px solid #eee;
+}
+.nav-link.active
+{
+    color: #000 !important;
+    border: 1px solid #dddddd !important;
+}
+th {
+    font-weight: 500 !important;
+}
+.page-wrapper .page-header
+{
+    margin: 10px 0px 0px 0px !important;
+}
+.page-body
+{
+    margin: 10px 0px 0px 0px !important;
+}
+.NoData
+{
+    padding: 100px;
+}
+.noDataImg
+{
+    width: 70px;
+    margin: 20px 0px;
+}
+.NoDataText
+{
+    font-weight: bold;
+    font-size: 18px;
+    color: #505050;
+}
+.particular:hover{
+    background-color: white !important;
+}
+.particular:focus{
+    background-color: white !important;
+}
