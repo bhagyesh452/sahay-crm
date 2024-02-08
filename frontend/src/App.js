@@ -18,6 +18,7 @@ import EmployeeParticular from "./admin/EmployeeParticular";
 import Employees from "./admin/Employees";
 import Leads from "./admin/Leads";
 import ShowNotification from "./admin/ShowNotification";
+import Dashboard_processing from "./Processing/Dashboard_processing";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -72,6 +73,7 @@ function App() {
           )}
 
           {/* <Route path="/*" element={<Navigate to="/employeelogin" />} /> */}
+          <Route path="/Processing/Dashboard_processing" element={<Dashboard_processing />} />
         </Routes>
       </BrowserRouter>
     </div>
