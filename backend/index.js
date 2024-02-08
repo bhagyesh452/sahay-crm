@@ -1174,9 +1174,8 @@ app.post(
 app.get("/api/companies", async (req, res) => {
   try {
     // Fetch only the company names from the LeadModel
-    const companies = await LeadModel.find({}, { companyName: 1, _id: 0 });
-
-    res.json(companies.map(company => company.companyName));
+    const companies = await LeadModel.find();
+    res.json(companies);
   } catch (error) {
     console.error("Error fetching company names:", error.message);
     res.status(500).json({ error: "Internal server error" });
