@@ -628,9 +628,7 @@ function EmployeeParticular() {
                           Login Details
                     
                     </Link>
-                    <div className="request">
                     
-                    </div>
                   </div>
                 </div>
 

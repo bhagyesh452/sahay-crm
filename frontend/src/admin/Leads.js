@@ -6,7 +6,7 @@ import axios from "axios";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import CircularProgress from "@mui/material/CircularProgress";
-import UndoIcon from '@mui/icons-material/Undo';
+import UndoIcon from "@mui/icons-material/Undo";
 import Box from "@mui/material/Box";
 import { IconEye } from "@tabler/icons-react";
 import { useRef, useState, useEffect } from "react";
@@ -14,8 +14,10 @@ import * as XLSX from "xlsx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../components/styles/table.css";
+
 import "./styles/main.css";
 import Swal from "sweetalert2";
+
 
 import {
   Button,
@@ -345,9 +347,9 @@ function Leads() {
 
   const handleUploadData = async (e) => {
     if (selectedOption === "someoneElse") {
-      const updatedCsvdata = csvdata.map(data => ({
+      const updatedCsvdata = csvdata.map((data) => ({
         ...data,
-        ename:newemployeeSelection
+        ename: newemployeeSelection,
       }));
       if (updatedCsvdata.length !== 0) {
         setLoading(true); // Move setLoading outside of the loop
@@ -424,7 +426,6 @@ function Leads() {
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
 
   const handleDelete = async (id) => {
-
     try {
       await axios.delete(`${secretKey}/leads/${id}`);
       // Refresh the data after successful deletion
@@ -702,52 +703,51 @@ function Leads() {
 
   // delete selection
 
-const handleDeleteSelection = async () => {
-  if (selectedRows.length !== 0) {
-    // Show confirmation dialog using SweetAlert2
-    Swal.fire({
-      title: 'Confirm Deletion',
-      text: 'Are you sure you want to delete the selected rows?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete',
-      cancelButtonText: 'No, cancel',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          // If user confirms, proceed with deletion
-          await axios.delete(`${secretKey}/delete-rows`, {
-            data: { selectedRows }, // Pass selected rows to the server
-          });
-          // Store backup process 
-          // After deletion, fetch updated data
-          fetchData();
-          setSelectedRows([]); // Clear selectedRows state
-        } catch (error) {
-          console.error("Error deleting rows:", error.message);
+  const handleDeleteSelection = async () => {
+    if (selectedRows.length !== 0) {
+      // Show confirmation dialog using SweetAlert2
+      Swal.fire({
+        title: "Confirm Deletion",
+        text: "Are you sure you want to delete the selected rows?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete",
+        cancelButtonText: "No, cancel",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            // If user confirms, proceed with deletion
+            await axios.delete(`${secretKey}/delete-rows`, {
+              data: { selectedRows }, // Pass selected rows to the server
+            });
+            // Store backup process
+            // After deletion, fetch updated data
+            fetchData();
+            setSelectedRows([]); // Clear selectedRows state
+          } catch (error) {
+            console.error("Error deleting rows:", error.message);
+          }
         }
-      }
-    });
-  } else {
-    // If no rows are selected, show an alert
-    Swal.fire("Select some rows first!");
-  }
-};
+      });
+    } else {
+      // If no rows are selected, show an alert
+      Swal.fire("Select some rows first!");
+    }
+  };
 
-const handleUndo = async () => {
-  try {
-    // Make a POST request to the /api/undo endpoint
-    await axios.post(`${secretKey}/undo`);
+  const handleUndo = async () => {
+    try {
+      // Make a POST request to the /api/undo endpoint
+      await axios.post(`${secretKey}/undo`);
 
-    // Show success message
-    Swal.fire('Data for the "newcdatas" collection restored successfully!');
-  } catch (error) {
-    console.error("Error restoring data:", error.message);
-    // Show error message
-    Swal.fire('Error restoring data:', error.message, 'error');
-  }
-};
-
+      // Show success message
+      Swal.fire('Data for the "newcdatas" collection restored successfully!');
+    } catch (error) {
+      console.error("Error restoring data:", error.message);
+      // Show error message
+      Swal.fire("Error restoring data:", error.message, "error");
+    }
+  };
 
   function formatDate(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -1253,10 +1253,9 @@ const handleUndo = async () => {
       {/* Main Page Starts from here */}
       {loading && (
         // Your loading screen component or message
-        <Box style={{zIndex:"999999999"}} sx={{ display: "flex" }}>
+        <Box style={{ zIndex: "999999999" }} sx={{ display: "flex" }}>
           <CircularProgress />
         </Box>
-
       )}
       <div className="page-wrapper">
         <div className="page-header d-print-none">
@@ -1285,9 +1284,8 @@ const handleUndo = async () => {
                         onClick={handleUndo}
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
-                        <UndoIcon/>
+                        <UndoIcon />
                       </button>
-                      
                     </div>
                   </div>
                   <div style={{ margin: "0px 10px" }} className="addLeads">
@@ -1648,10 +1646,10 @@ const handleUndo = async () => {
               <div className="container-xl">
                 <div class="card-header">
                   <ul
-                    class="nav nav-tabs card-header-tabs nav-fill"
+                    class="nav nav-tabs card-header-tabs nav-fill p-0"
                     data-bs-toggle="tabs"
                   >
-                    <li class="nav-item data-heading">
+                    <li class="nav-item ">
                       <a
                         href="#tabs-home-5"
                         className={
@@ -1668,9 +1666,14 @@ const handleUndo = async () => {
                         }}
                       >
                         UnAssigned
+                        <span className="no_badge">
+                        {
+                          data.filter((item) => item.ename === "Not Alloted").length
+                        }
+                      </span>
                       </a>
                     </li>
-                    <li class="nav-item data-heading">
+                    <li class="nav-item">
                       <a
                         href="#tabs-home-5"
                         className={
@@ -1687,111 +1690,53 @@ const handleUndo = async () => {
                         }}
                       >
                         Assigned
+                        <span className="no_badge">
+                        {
+                          data.filter((item) => item.ename !== "Not Alloted").length
+                        }
+                      </span>
                       </a>
                     </li>
                   </ul>
                 </div>
               </div>
-              <div id="table-default" className="table-responsive">
-                <table className="table table-vcenter table-nowrap">
+              <div
+                id="table-default"
+                style={{
+                  overflowX: "auto",
+                  overflowY: "auto",
+                  maxHeight: "60vh",
+                }}
+              >
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
                   <thead>
-                    <tr>
-                      <th
-                        style={{
-                          position: "sticky",
-                          left: 0,
-                          zIndex: 1,
-                          background: "white",
-                        }}
-                      >
-                        <th>
-                          <input
-                            type="checkbox"
-                            checked={selectedRows.length === data.length}
-                            onChange={() => handleCheckboxChange("all")}
-                          />
-                        </th>
-                      </th>
-                      <th
-                        style={{
-                          position: "sticky",
-                          left: "59px",
-                          zIndex: 1,
-                          background: "white",
-                        }}
-                      >
-                        <button className="table-sort" data-sort="sort-name">
-                          Sr.No
-                        </button>
-                      </th>
-                      <th
-                        style={{
-                          position: "sticky",
-                          left: "140px",
-                          zIndex: 1,
-                          background: "white",
-                        }}
-                      >
-                        <button className="table-sort" data-sort="sort-city">
-                          Company Name
-                        </button>
-                      </th>
+                    <tr className="tr-sticky">
                       <th>
-                        <button className="table-sort" data-sort="sort-type">
-                          Company Number
-                        </button>
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.length === data.length}
+                          onChange={() => handleCheckboxChange("all")}
+                        />
                       </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-score">
-                          Company Email
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          Incorporation Date
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          City
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          State
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          Status
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          Remarks
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          Assigned to
-                        </button>
-                      </th>
-                      <th>
-                        <button
-                          className="table-sort"
-                          data-sort="sort-quantity"
-                        >
-                          Last Updated on:
-                        </button>
-                      </th>
-                      <th>
-                        <button
-                          className="table-sort"
-                          data-sort="sort-quantity"
-                        >
-                          Action
-                        </button>
-                      </th>
+                      <th>Sr.No</th>
+                      <th>Company Name</th>
+                      <th>Company Number</th>
+                      <th>Company Email</th>
+                      <th>Incorporation Date</th>
+                      <th>City</th>
+                      <th>State</th>
+                      <th>Status</th>
+                      <th>Remarks</th>
+                      <th>Assigned to</th>
+                      <th>Last Updated on:</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   {currentData.length == 0 ? (
@@ -1805,74 +1750,48 @@ const handleUndo = async () => {
                   ) : (
                     currentData.map((company, index) => (
                       <tbody className="table-tbody">
-                        <tr>
-                          <td
-                            style={{
-                              position: "sticky",
-                              left: 0,
-                              zIndex: 1,
-                              background: "white",
-                            }}
-                          >
+                        <tr key={index} style={{ border: "1px solid #ddd" }}>
+                          <td>
                             <input
                               type="checkbox"
                               checked={selectedRows.includes(company._id)}
                               onChange={() => handleCheckboxChange(company._id)}
                             />
                           </td>
-                          <td
-                            style={{
-                              position: "sticky",
-                              left: "59px",
-                              zIndex: 1,
-                              background: "white",
-                            }}
-                            className="sort-name"
-                          >
-                            {startIndex + index + 1}
-                          </td>
-                          <td
-                            style={{
-                              position: "sticky",
-                              left: "140px",
-                              zIndex: 1,
-                              background: "white",
-                            }}
-                            className="sort-name"
-                          >
-                            {company["Company Name"]}
-                          </td>
-                          <td className="sort-name">
-                            {company["Company Number"]}
-                          </td>
-                          <td className="sort-name">
-                            {company["Company Email"]}
-                          </td>
-                          <td className="sort-name">
+                          <td>{startIndex + index + 1}</td>
+                          <td>{company["Company Name"]}</td>
+                          <td>{company["Company Number"]}</td>
+                          <td>{company["Company Email"]}</td>
+                          <td>
                             {formatDate(
                               company["Company Incorporation Date  "]
                             )}
                           </td>
-                          <td className="sort-name">{company["City"]}</td>
-                          <td className="sort-name">{company["State"]}</td>
-                          <td className="sort-name">{company["Status"]}</td>
-                          <td className="sort-name">{company["Remarks"]}</td>
-                          <td className="sort-name">{company["ename"]}</td>
-                          <td className="sort-name">
-                            {formatDate(company["AssignDate"])}
-                          </td>
-                          <td className="sort-name">
+                          <td>{company["City"]}</td>
+                          <td>{company["State"]}</td>
+                          <td>{company["Status"]}</td>
+                          <td>{company["Remarks"]}</td>
+                          <td>{company["ename"]}</td>
+                          <td>{formatDate(company["AssignDate"])}</td>
+                          <td>
                             <IconButton
                               onClick={() => handleDeleteClick(company._id)}
                             >
-                              <DeleteIcon>Delete</DeleteIcon>
+                              <DeleteIcon
+                                style={{
+                                  width: "16px",
+                                  height: "16px",
+                                  color: "#bf0b0b",
+                                }}
+                              >
+                                Delete
+                              </DeleteIcon>
                             </IconButton>
                           </td>
                         </tr>
                       </tbody>
                     ))
                   )}
-                  <tbody className="table-tbody"></tbody>
                 </table>
               </div>
               {currentData.length !== 0 && (

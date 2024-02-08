@@ -1071,6 +1071,7 @@ function EmployeePanel() {
                                     <select
                                       style={{
                                         width: "100px",
+                                        background:"none",
                                         padding: ".4375rem .75rem",
                                         border:
                                           "1px solid var(--tblr-border-color)",
