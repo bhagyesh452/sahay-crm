@@ -10,8 +10,8 @@ function EmployeeLogin({ setnewToken }) {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [userId, setUserId] = useState(null);
-  const [address, setAddress] = useState('');
-  
+  const [address, setAddress] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
 
   const fetchData = async () => {
@@ -48,7 +48,7 @@ function EmployeeLogin({ setnewToken }) {
 
       // Extract relevant location information
       const { display_name, address } = data;
-    
+
       setAddress(`${address.suburb} ,${address.state_district}`);
 
       // Log the location information
@@ -124,10 +124,10 @@ function EmployeeLogin({ setnewToken }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-const date = getCurrentDate();
-const time = getCurrentTime();
-console.log(address)
-const ename = email;
+    const date = getCurrentDate();
+    const time = getCurrentTime();
+    console.log(address);
+    const ename = email;
     try {
       const response = await axios.post(`${secretKey}/employeelogin`, {
         email,
@@ -135,7 +135,10 @@ const ename = email;
       });
 
       const response2 = await axios.post(`${secretKey}/loginDetails`, {
-        ename,date,time,address
+        ename,
+        date,
+        time,
+        address,
       });
 
       const { newtoken } = response.data;

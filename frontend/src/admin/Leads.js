@@ -6,6 +6,7 @@ import axios from "axios";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import CircularProgress from "@mui/material/CircularProgress";
+import UndoIcon from '@mui/icons-material/Undo';
 import Box from "@mui/material/Box";
 import { IconEye } from "@tabler/icons-react";
 import { useRef, useState, useEffect } from "react";
@@ -15,6 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../components/styles/table.css";
 import "./styles/main.css";
 import Swal from "sweetalert2";
+
 import {
   Button,
   Dialog,
@@ -717,6 +719,7 @@ const handleDeleteSelection = async () => {
           await axios.delete(`${secretKey}/delete-rows`, {
             data: { selectedRows }, // Pass selected rows to the server
           });
+          // Store backup process 
           // After deletion, fetch updated data
           fetchData();
           setSelectedRows([]); // Clear selectedRows state
@@ -728,6 +731,20 @@ const handleDeleteSelection = async () => {
   } else {
     // If no rows are selected, show an alert
     Swal.fire("Select some rows first!");
+  }
+};
+
+const handleUndo = async () => {
+  try {
+    // Make a POST request to the /api/undo endpoint
+    await axios.post(`${secretKey}/undo`);
+
+    // Show success message
+    Swal.fire('Data for the "newcdatas" collection restored successfully!');
+  } catch (error) {
+    console.error("Error restoring data:", error.message);
+    // Show error message
+    Swal.fire('Error restoring data:', error.message, 'error');
   }
 };
 
@@ -1262,6 +1279,17 @@ const handleDeleteSelection = async () => {
                   }}
                   className="feature2"
                 >
+                  <div style={{ margin: "0px 10px" }} className="undoDelete">
+                    <div className="btn-list">
+                      <button
+                        onClick={handleUndo}
+                        className="btn btn-primary d-none d-sm-inline-block"
+                      >
+                        <UndoIcon/>
+                      </button>
+                      
+                    </div>
+                  </div>
                   <div style={{ margin: "0px 10px" }} className="addLeads">
                     <div className="btn-list">
                       <button

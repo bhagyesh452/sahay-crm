@@ -8,6 +8,7 @@ const adminModel = require("./models/Admin");
 const CompanyModel = require("./models/Leads");
 const RequestModel = require("./models/Request");
 const RequestGModel = require("./models/RequestG");
+const { exec } = require('child_process');
 const jwt = require("jsonwebtoken");
 const onlyAdminModel = require("./models/AdminTable");
 const LeadModel = require("./models/Leadform");
@@ -79,14 +80,29 @@ app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
 
   // Replace this with your actual Employee authentication logic
-  const user = await adminModel.findOne({ email: email, password: password });
+  const user = await adminModel.findOne({ email: email, password: password , designation:"Sales Executive" });
   console.log(user);
 
   if (user) {
     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
-      expiresIn: "1h",
+      expiresIn: "10h",
     });
     res.json({ newtoken });
+  } else {
+    res.status(401).json({ message: "Invalid credentials" });
+  }
+});
+app.post("/api/processingLogin", async (req, res) => {
+  const { username, password } = req.body;
+
+  // Replace this with your actual Employee authentication logic
+  const user = await adminModel.findOne({ email: username, password: password , designation:"Admin Team" });
+  console.log(user);
+  if (user) {
+    const processingToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    res.json({ processingToken });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
   }
@@ -257,11 +273,36 @@ app.delete("/api/delete-rows", async (req, res) => {
     // Use Mongoose to delete rows by their IDs
     await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
 
-    res.status(200).json({ message: "Rows deleted successfully" });
+    // Trigger backup on the server
+    exec(`mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`, (error, stdout, stderr) => {
+      if (error) {
+        console.error('Error creating backup:', error);
+        // Respond with an error if backup fails
+        res.status(500).json({ error: 'Error creating backup.' });
+      } else {
+        console.log('Backup created successfully:', stdout);
+        // Respond with success message if backup is successful
+        res.status(200).json({ message: 'Rows deleted successfully and backup created successfully.' });
+      }
+    });
   } catch (error) {
     console.error("Error deleting rows:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
+});
+
+app.post("/api/undo", (req, res) => {
+  // Run mongorestore command to restore the data
+  exec(`mongorestore --uri "mongodb://localhost:27017/AdminTable" --nsInclude "AdminTable.newcdatas" ${process.env.BACKUP_PATH}\newcdatas.bson
+  `, (error, stdout, stderr) => {
+    if (error) {
+      console.error('Error restoring data:', error);
+      res.status(500).json({ error: 'Error restoring data.' });
+    } else {
+      console.log('Data restored successfully:', stdout);
+      res.status(200).json({ message: 'Data restored successfully.' });
+    }
+  });
 });
 
 app.put("/api/einfo/:id", async (req, res) => {
