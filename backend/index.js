@@ -797,6 +797,7 @@ app.post(
       const displayPayment = paymentTerms === "Full Advanced" ? "none" : "flex";
 
       const savedEmployee = await employee.save();
+      
       const recipients = [
         "bookings@startupsahay.com",
         "documents@startupsahay.com",
