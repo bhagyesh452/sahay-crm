@@ -9,3 +9,9 @@
 .p-booking-Cname h3{
     text-transform: capitalize;
 }
+.cmpy-d-b{
+    overflow: auto !important;
+}
+.cmpy-d-b-datagrid{
+    margin:20px;
+}

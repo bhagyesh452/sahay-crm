@@ -159,13 +159,14 @@ import React, { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import './style_processing/main_processing.css'
 
-function CompanyList({ companies, onCompanyClick,selectedBookingDate}) {
+function CompanyList({ companies, onCompanyClick, selectedBookingDate }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [companyClasses, setCompanyClasses] = useState({});
 
   const filteredCompanies = companies.filter(company =>
-    company.toLowerCase().includes(searchTerm.toLowerCase())
+    company && company.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
 
   const handleCompanyClick = (company) => {
     // Add or update the class for the clicked company
@@ -177,6 +178,8 @@ function CompanyList({ companies, onCompanyClick,selectedBookingDate}) {
     // Call the original onCompanyClick function
     onCompanyClick(company);
   };
+
+  const formattedDate = selectedBookingDate ? new Date(selectedBookingDate).toLocaleDateString() : '';
 
   return (
     <div className="card">
@@ -204,7 +207,7 @@ function CompanyList({ companies, onCompanyClick,selectedBookingDate}) {
                   </div>
                   <div className="bookingdate">
                     <label className="m-0">{selectedBookingDate && (
-                      <p>Selected Booking Date: {selectedBookingDate}</p>
+                      <p>{formattedDate}</p>
                     )}</label>
                   </div>
                 </div>
@@ -218,5 +221,6 @@ function CompanyList({ companies, onCompanyClick,selectedBookingDate}) {
 }
 
 export default CompanyList;
+
 
 

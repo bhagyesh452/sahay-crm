@@ -410,8 +410,9 @@ function Dashboard_processing() {
 
   const fetchCompanies = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/leads");
+      const response = await fetch("http://localhost:3001/api/companies");
       const data = await response.json();
+      console.log(response.data)
 
       // Extract unique booking dates from the fetched data
       const uniqueBookingDates = Array.from(
@@ -455,16 +456,21 @@ function Dashboard_processing() {
         <div className="container-xl">
           <div className="processing-main row">
             <div className="col-sm-4">
-            <CompanyList companies={companies} onCompanyClick={handleCompanyClick} bookingDates={bookingDates}
-                selectedBookingDate={selectedBookingDate}/>
+              <CompanyList
+                companies={companies.map(item => item.companyName)}  // Use the correct array
+                onCompanyClick={handleCompanyClick}
+                selectedBookingDate={selectedBookingDate}
+              />
             </div>
             <div className="col-sm-8">
               <div>
-              <h3 class="card-title">{companyDetails ? (
-                      <CompanyDetails company={companyDetails} />
-                    ) : (
-                      <p>Select a company to view details</p>
-                    )}</h3>
+                <h3 class="card-title">{companyDetails ? (
+                  <CompanyDetails company={companyDetails} />
+                ) : (
+                  <div className="card-header">
+                    <h3 className="card-title">Booking Details</h3>
+                  </div>
+                )}</h3>
               </div>
             </div>
           </div>
