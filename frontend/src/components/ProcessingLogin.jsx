@@ -42,7 +42,7 @@ function ProcessingLogin({ setProcessingToken }) {
       
       setProcessingToken(processingToken);
       localStorage.setItem("processingToken", processingToken);
-     Swal.fire("Processing Login Successfull");
+     window.location.replace('/Processing/Dashboard_processing');
      
     } catch (error) {
       console.error("Login failed:", error.message);

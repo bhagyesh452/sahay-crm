@@ -5,7 +5,7 @@ import "../dist/css/tabler-payments.min.css?1684106062";
 import "../dist/css/tabler-vendors.min.css?1684106062";
 import "../dist/css/demo.min.css?1684106062";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import myImage from "../static/logo.jpg";
+import myImage from "../static/mainLogo.png";
 import { useNavigate } from "react-router-dom";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import Notification from "./Notification";

@@ -757,6 +757,7 @@ app.post(
         extraNotes,
         empName,
         empEmail,
+        bookingTime
       } = req.body;
 
       const otherDocs = req.files["otherDocs"] || [];
@@ -791,12 +792,14 @@ app.post(
         cPANorGSTnum,
         incoDate,
         extraNotes,
+        bookingtime : bookingTime
       });
 
       const display = caCase === "No" ? "none" : "flex";
       const displayPayment = paymentTerms === "Full Advanced" ? "none" : "flex";
 
       const savedEmployee = await employee.save();
+      
       const recipients = [
         "bookings@startupsahay.com",
         "documents@startupsahay.com",

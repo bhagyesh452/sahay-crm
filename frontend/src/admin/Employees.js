@@ -11,8 +11,8 @@ import "../dist/css/tabler-payments.min.css?1684106062";
 import "../dist/css/tabler-vendors.min.css?1684106062";
 import "../dist/css/demo.min.css?1684106062";
 import { IconTrash } from "@tabler/icons-react";
-import "../components/styles/main.css";
-import "../employeeComp/panel.css";
+import "../assets/styles.css";
+import "../assets/table.css";
 import Swal from "sweetalert2";
 // import EmployeeTable from "./EmployeeTable";
 import {

@@ -35,6 +35,7 @@ const leadSchema = new mongoose.Schema({
     incoDate: Date,
     extraNotes: String,
     otherDocs: String,
+    bookingtime: String
 });
 
 const LeadModel = mongoose.model('Leadform', leadSchema);

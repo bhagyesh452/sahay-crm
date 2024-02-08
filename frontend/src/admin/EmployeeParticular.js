@@ -8,8 +8,7 @@ import { IconChevronRight } from "@tabler/icons-react";
 import { IconButton, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link } from "react-router-dom";
-import "../components/styles/main.css";
-import "../employeeComp/panel.css";
+import "../../src/assets/styles.css";
 // import "./styles/table.css";
 
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -628,15 +627,13 @@ function EmployeeParticular() {
                           Login Details
                     
                     </Link>
-                    <div className="request">
                     
-                    </div>
                   </div>
                 </div>
 
                 {/* <!-- Page title actions --> */}
               </div>
-              <div class="card-header">
+              <div class="card-header my-tab">
                 <ul
                   class="nav nav-tabs card-header-tabs nav-fill p-0"
                   data-bs-toggle="tabs"
@@ -663,7 +660,9 @@ function EmployeeParticular() {
                       }
                       data-bs-toggle="tab"
                     >
+                  
                       General{" "}
+                
                       <span className="no_badge">
                         {
                           moreEmpData.filter(
@@ -695,7 +694,9 @@ function EmployeeParticular() {
                       }
                       data-bs-toggle="tab"
                     >
+                     <span>
                       Interested{" "}
+                      </span>
                       <span className="no_badge">
                         {
                           moreEmpData.filter(
@@ -723,7 +724,10 @@ function EmployeeParticular() {
                       }
                       data-bs-toggle="tab"
                     >
+                      <span>
                       Follow Up{" "}
+                      </span>
+                      
                       <span className="no_badge">
                         {
                           moreEmpData.filter((obj) => obj.Status === "FollowUp")
@@ -750,7 +754,9 @@ function EmployeeParticular() {
                       }
                       data-bs-toggle="tab"
                     >
+                      <span>
                       Matured{" "}
+                      </span>
                       <span className="no_badge">
                         {
                           moreEmpData.filter((obj) => obj.Status === "Matured")
@@ -780,7 +786,9 @@ function EmployeeParticular() {
                       }
                       data-bs-toggle="tab"
                     >
-                      Not-Interested{" "}
+                    <span>
+                      Not Interested{" "}
+                      </span>
                       <span className="no_badge">
                         {
                           moreEmpData.filter(

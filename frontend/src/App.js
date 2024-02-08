@@ -72,11 +72,11 @@ function App() {
           )}
 
           {/* <Route path="/*" element={<Navigate to="/employeelogin" />} /> */}
-          <Route path="/Processing/Dashboard_processing" element={<Dashboard_processing />} />
           <Route
             path="/processing/processing-login"
             element={<ProcessingLogin setProcessingToken={setProcessingToken} />}
           />
+          <Route path="/Processing/Dashboard_processing"  element={processingTokenn ? <Dashboard_processing /> : <Navigate to="/processing/processing-login" />} />
          
         </Routes>
       </BrowserRouter>

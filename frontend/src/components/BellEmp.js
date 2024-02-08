@@ -16,7 +16,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useNavigate } from "react-router-dom";
-import "./styles/bell.css";
+import "../assets/styles.css";
 
 export default function BellEmp({ name }) {
   const [anchorEl, setAnchorEl] = React.useState(null);

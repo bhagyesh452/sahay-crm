@@ -4,6 +4,7 @@
 td {
     padding: 0px 7px !important;
     border: 1px solid #ddd !important;
+    text-align: center;
 }
 tbody, td, tfoot, th, thead, tr {
     /* border-color: inherit;
@@ -17,6 +18,11 @@ tbody, td, tfoot, th, thead, tr {
 }
 th{
     border:1px solid #ddd;
+    text-align: center;
+}
+
+.pad{
+    padding: 10px !important;
 }
 
 

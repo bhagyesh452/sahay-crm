@@ -5,7 +5,7 @@ import axios from "axios";
 
 import Swal from "sweetalert2";
 
-import "./styles/main.css";
+import "../assets/styles.css";
 import Select from "react-select";
 import { IconX } from "@tabler/icons-react";
 import { parse } from "papaparse";
@@ -205,6 +205,8 @@ function Form({
   const [selectedValues, setSelectedValues] = useState([]);
 
   const handleSubmitForm = async () => {
+    const currentTime = new Date();
+const formattedTime = formatTime(currentTime);
     const formData = new FormData();
     if (leadData.bdmName === "other") {
       formData.append("bdmName", otherName);
@@ -214,6 +216,7 @@ function Form({
 
     formData.append("bdmEmail", leadData.bdmEmail);
     formData.append("bdmType", leadData.bdmType);
+    formData.append("bookingTime" , formattedTime)
     formData.append("supportedBy", leadData.supportedBy);
     formData.append("bookingDate", leadData.bookingDate);
     formData.append("caCase", leadData.caCase);
@@ -319,6 +322,24 @@ function Form({
 
   const [editEmail, setEditEmail] = useState(false)
   const [editNumber, setEditNumber] = useState(false)
+
+  function formatTime(date) {
+    // Ensure date is a valid Date object
+    if (!(date instanceof Date)) {
+      return "Invalid Date";
+    }
+  
+    // Get the hours, minutes, and seconds from the date object
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+  
+    // Construct the formatted time string (HH:MM:SS)
+    const formattedTime = `${hours}:${minutes}:${seconds}`;
+  
+    return formattedTime;
+  }
+  
 
   const formatDate = (inputdate) => {
     const inputDate = new Date(inputdate);
