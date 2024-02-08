@@ -10,8 +10,16 @@
     text-transform: capitalize;
 }
 .cmpy-d-b{
-    overflow: auto !important;
+    overflow-x: none;
+    overflow-y: auto !important;
+    height: 500px;
+    width: 100%;
 }
 .cmpy-d-b-datagrid{
-    margin:20px;
+    margin-top:20px;
+    margin-left: 20px;
+    margin-right: -62px;
+}
+.cmpy-d-b-datagriditem{
+    padding: 20px;
 }
