@@ -1172,6 +1172,51 @@ app.post(
   }
 );
 
+app.get("/api/companies", async (req, res) => {
+  try {
+    // Fetch only the company names from the LeadModel
+    const companies = await LeadModel.find({}, { companyName: 1, _id: 0 });
+
+    res.json(companies.map(company => company.companyName));
+  } catch (error) {
+    console.error("Error fetching company names:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+/*app.get("/api/company/:id", async (req, res) => {
+  const companyId = req.params.id;
+
+  try {
+    const companyDetails = await LeadModel.findById(companyId);
+    res.json(companyDetails);
+  } catch (error) {
+    console.error("Error fetching company details:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});*/
+
+// Backend route for fetching individual company details
+app.get("/api/company/:companyName", async (req, res) => {
+  const companyName = req.params.companyName;
+
+  try {
+    // Fetch details for the specified company name from the LeadModel
+    const companyDetails = await LeadModel.findOne({ companyName });
+
+    if (!companyDetails) {
+      return res.status(404).json({ error: "Company not found" });
+    }
+    res.json(companyDetails);
+  } catch (error) {
+    console.error("Error fetching company details:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
+
 // io.on('connection', (socket) => {
 //   console.log('A user connected');
 

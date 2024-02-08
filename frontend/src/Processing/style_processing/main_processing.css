@@ -1,0 +1,11 @@
+.container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+    max-width: 96%!important;
+}
+.time,.bookingdate
+{
+    font-size: 12px;
+    color: #6a6a6a;
+}
+.p-booking-Cname h3{
+    text-transform: capitalize;
+}

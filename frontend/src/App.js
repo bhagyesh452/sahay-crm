@@ -12,6 +12,7 @@ import EmployeeParticular from "./admin/EmployeeParticular";
 import Employees from "./admin/Employees";
 import Leads from "./admin/Leads";
 import ShowNotification from "./admin/ShowNotification";
+import Dashboard_processing from "./Processing/Dashboard_processing";
 import LoginDetails from "./components/LoginDetails";
 import ProcessingLogin from "./components/ProcessingLogin";
 
@@ -71,6 +72,7 @@ function App() {
           )}
 
           {/* <Route path="/*" element={<Navigate to="/employeelogin" />} /> */}
+          <Route path="/Processing/Dashboard_processing" element={<Dashboard_processing />} />
           <Route
             path="/processing/processing-login"
             element={<ProcessingLogin setProcessingToken={setProcessingToken} />}
