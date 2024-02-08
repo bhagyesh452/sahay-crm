@@ -376,609 +376,609 @@ function EmployeeParticular() {
             </div>
           </div>
         </div>
-        {!openLogin && <div
-          onCopy={(e) => {
-            e.preventDefault();
-          }}
-          className="page-body"
-          style={{ marginTop: "0px " }}
-         >
-          <div className="container-xl">
-            <div className="row g-2 align-items-center">
-              <div
-                style={{ display: "flex", justifyContent: "space-between" }}
-                className="features"
-              >
-                <div style={{ display: "flex" }} className="feature1 mb-2">
-                  <div
-                    className="form-control"
-                    style={{ height: "fit-content", width: "auto" }}
-                  >
-                    <select
-                      style={{
-                        border: "none",
-                        outline: "none",
-                        width: "fit-content",
-                      }}
-                      value={selectedField}
-                      onChange={handleFieldChange}
-                    >
-                      <option value="Company Name">Company Name</option>
-                      <option value="Company Number">Company Number</option>
-                      <option value="Company Email">Company Email</option>
-                      <option value="Company Incorporation Date  ">
-                        Company Incorporation Date
-                      </option>
-                      <option value="City">City</option>
-                      <option value="State">State</option>
-                      <option value="Status">Status</option>
-                    </select>
-                  </div>
-                  {visibility === "block" ? (
-                    <div>
-                      <input
-                        onChange={handleDateChange}
-                        style={{ display: visibility }}
-                        type="date"
-                        className="form-control"
-                      />
-                    </div>
-                  ) : (
-                    <div></div>
-                  )}
-
-                  {visibilityOther === "block" ? (
+        {!openLogin && (
+          <div
+            onCopy={(e) => {
+              e.preventDefault();
+            }}
+            className="page-body"
+            style={{ marginTop: "0px " }}
+          >
+            <div className="container-xl">
+              <div className="row g-2 align-items-center">
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                  className="features"
+                >
+                  <div style={{ display: "flex" }} className="feature1 mb-2">
                     <div
-                      style={{
-                        width: "20vw",
-                        margin: "0px 10px",
-                        display: visibilityOther,
-                      }}
-                      className="input-icon"
-                    >
-                      <span className="input-icon-addon">
-                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="icon"
-                          width="20"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          stroke-width="2"
-                          stroke="currentColor"
-                          fill="none"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                          <path d="M21 21l-6 -6" />
-                        </svg>
-                      </span>
-                      <input
-                        type="text"
-                        value={searchText}
-                        onChange={(e) => {
-                          setSearchText(e.target.value);
-                          setCurrentPage(0);
-                        }}
-                        className="form-control"
-                        placeholder="Search…"
-                        aria-label="Search in website"
-                      />
-                    </div>
-                  ) : (
-                    <div></div>
-                  )}
-                  {visibilityOthernew === "block" ? (
-                    <div
-                      style={{
-                        width: "20vw",
-                        margin: "0px 10px",
-                        display: visibilityOthernew,
-                      }}
-                      className="input-icon"
+                      className="form-control"
+                      style={{ height: "fit-content", width: "auto" }}
                     >
                       <select
-                        value={searchText}
-                        onChange={(e) => {
-                          setSearchText(e.target.value);
+                        style={{
+                          border: "none",
+                          outline: "none",
+                          width: "fit-content",
                         }}
-                        className="form-select"
+                        value={selectedField}
+                        onChange={handleFieldChange}
                       >
-                        <option value="All">All </option>
-                        <option value="Busy">Busy </option>
-                        <option value="Not Picked Up">Not Picked Up </option>
-                        <option value="Junk">Junk</option>
-                        <option value="Interested">Interested</option>
-                        <option value="Not Interested">Not Interested</option>
+                        <option value="Company Name">Company Name</option>
+                        <option value="Company Number">Company Number</option>
+                        <option value="Company Email">Company Email</option>
+                        <option value="Company Incorporation Date  ">
+                          Company Incorporation Date
+                        </option>
+                        <option value="City">City</option>
+                        <option value="State">State</option>
+                        <option value="Status">Status</option>
                       </select>
                     </div>
-                  ) : (
-                    <div></div>
-                  )}
-                  {searchText !== "" ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        fontSize: "16px",
-                        fontFamily: "sans-serif",
-                      }}
-                      className="results"
-                    >
-                      {filteredData.length} results found
-                    </div>
-                  ) : (
-                    <div></div>
-                  )}
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center" }}
-                  className="feature2"
-                >
-                  {selectedField === "State" && (
-                    <div style={{ width: "15vw" }} className="input-icon">
-                      <span className="input-icon-addon">
-                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="icon"
-                          width="20"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          stroke-width="2"
-                          stroke="currentColor"
-                          fill="none"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                          <path d="M21 21l-6 -6" />
-                        </svg>
-                      </span>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={citySearch}
-                        onChange={(e) => {
-                          setcitySearch(e.target.value);
-                          setCurrentPage(0);
-                        }}
-                        placeholder="Search City"
-                        aria-label="Search in website"
-                      />
-                    </div>
-                  )}
-                  {selectedField === "Company Incorporation Date  " && (
-                    <>
+                    {visibility === "block" ? (
+                      <div>
+                        <input
+                          onChange={handleDateChange}
+                          style={{ display: visibility }}
+                          type="date"
+                          className="form-control"
+                        />
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
+
+                    {visibilityOther === "block" ? (
                       <div
-                        style={{ width: "fit-content" }}
-                        className="form-control"
+                        style={{
+                          width: "20vw",
+                          margin: "0px 10px",
+                          display: visibilityOther,
+                        }}
+                        className="input-icon"
                       >
-                        <select
-                          style={{ border: "none", outline: "none" }}
+                        <span className="input-icon-addon">
+                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="icon"
+                            width="20"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke="currentColor"
+                            fill="none"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                            <path d="M21 21l-6 -6" />
+                          </svg>
+                        </span>
+                        <input
+                          type="text"
+                          value={searchText}
                           onChange={(e) => {
-                            setMonth(e.target.value);
+                            setSearchText(e.target.value);
                             setCurrentPage(0);
                           }}
-                        >
-                          <option value="" disabled selected>
-                            Select Month
-                          </option>
-                          <option value="12">December</option>
-                          <option value="11">November</option>
-                          <option value="10">October</option>
-                          <option value="9">September</option>
-                          <option value="8">August</option>
-                          <option value="7">July</option>
-                          <option value="6">June</option>
-                          <option value="5">May</option>
-                          <option value="4">April</option>
-                          <option value="3">March</option>
-                          <option value="2">February</option>
-                          <option value="1">January</option>
-                        </select>
-                      </div>
-                      <div className="input-icon">
-                        <input
-                          type="number"
-                          value={year}
-                          defaultValue="Select Year"
                           className="form-control"
-                          placeholder="Select Year.."
-                          onChange={(e) => {
-                            setYear(e.target.value);
-                          }}
+                          placeholder="Search…"
                           aria-label="Search in website"
                         />
                       </div>
-                    </>
-                  )}
-                  {selectedRows.length !== 0 && (
-                    <div className="request">
-                      <div className="btn-list">
-                        <button
-                          onClick={functionOpenAssign}
-                          className="btn btn-primary d-none d-sm-inline-block"
-                        >
-                          Assign Data
-                        </button>
-                        <a
-                          href="#"
-                          className="btn btn-primary d-sm-none btn-icon"
-                          data-bs-toggle="modal"
-                          data-bs-target="#modal-report"
-                          aria-label="Create new report"
-                        >
-                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                        </a>
-                      </div>
-                    </div>
-                  )}
-                  <div className="request">
-                      <div className="btn-list">
-                        <button
-                          onClick={()=>{
-                            setOpenLogin(true)
-                          }}
-                          className="btn btn-primary d-none d-sm-inline-block"
-                        >
-                         Login Details
-                        </button>
-                        <a
-                          href="#"
-                          className="btn btn-primary d-sm-none btn-icon"
-                          data-bs-toggle="modal"
-                          data-bs-target="#modal-report"
-                          aria-label="Create new report"
-                        >
-                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                        </a>
-                      </div>
-                    </div>
-                </div>
-              </div>
-
-              {/* <!-- Page title actions --> */}
-            </div>
-            <div class="card-header">
-              <ul
-                class="nav nav-tabs card-header-tabs nav-fill p-0"
-                data-bs-toggle="tabs"
-              >
-                <li class="nav-item data-heading">
-                  <a
-                    href="#tabs-home-5"
-                    onClick={() => {
-                      setdataStatus("All");
-                      setCurrentPage(0);
-                      setEmployeeData(
-                        moreEmpData.filter(
-                          (obj) =>
-                            obj.Status === "Busy" ||
-                            obj.Status === "Not Picked Up" ||
-                            obj.Status === "Untouched"
-                        )
-                      );
-                    }}
-                    className={
-                      dataStatus === "All"
-                        ? "nav-link active item-act"
-                        : "nav-link"
-                    }
-                    data-bs-toggle="tab"
-                  >
-                    General{" "}
-                    <span className="no_badge">
-                      {
-                        moreEmpData.filter(
-                          (obj) =>
-                            obj.Status === "Busy" ||
-                            obj.Status === "Not Picked Up" ||
-                            obj.Status === "Untouched"
-                        ).length
-                      }
-                    </span>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a
-                    href="#tabs-activity-5"
-                    onClick={() => {
-                      setdataStatus("Interested");
-                      setCurrentPage(0);
-                      setEmployeeData(
-                        moreEmpData.filter((obj) => obj.Status === "Interested")
-                      );
-                    }}
-                    className={
-                      dataStatus === "Interested"
-                        ? "nav-link active item-act"
-                        : "nav-link"
-                    }
-                    data-bs-toggle="tab"
-                  >
-                    Interested{" "}
-                    <span className="no_badge">
-                      {
-                        moreEmpData.filter((obj) => obj.Status === "Interested")
-                          .length
-                      }
-                    </span>
-                  </a>
-                </li>
-
-                <li class="nav-item">
-                  <a
-                    href="#tabs-activity-5"
-                    onClick={() => {
-                      setdataStatus("FollowUp");
-                      setCurrentPage(0);
-                      setEmployeeData(
-                        moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                      );
-                    }}
-                    className={
-                      dataStatus === "FollowUp"
-                        ? "nav-link active item-act"
-                        : "nav-link"
-                    }
-                    data-bs-toggle="tab"
-                  >
-                    Follow Up{" "}
-                    <span className="no_badge">
-                      {
-                        moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                          .length
-                      }
-                    </span>
-                  </a>
-                </li>
-
-                <li class="nav-item">
-                  <a
-                    href="#tabs-activity-5"
-                    onClick={() => {
-                      setdataStatus("Matured");
-                      setCurrentPage(0);
-                      setEmployeeData(
-                        moreEmpData.filter((obj) => obj.Status === "Matured")
-                      );
-                    }}
-                    className={
-                      dataStatus === "Matured"
-                        ? "nav-link active item-act"
-                        : "nav-link"
-                    }
-                    data-bs-toggle="tab"
-                  >
-                    Matured{" "}
-                    <span className="no_badge">
-                      {
-                        moreEmpData.filter((obj) => obj.Status === "Matured")
-                          .length
-                      }
-                    </span>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a
-                    href="#tabs-activity-5"
-                    onClick={() => {
-                      setdataStatus("NotInterested");
-                      setCurrentPage(0);
-                      setEmployeeData(
-                        moreEmpData.filter(
-                          (obj) =>
-                            obj.Status === "Not Interested" ||
-                            obj.Status === "Junk"
-                        )
-                      );
-                    }}
-                    className={
-                      dataStatus === "NotInterested"
-                        ? "nav-link active item-act"
-                        : "nav-link"
-                    }
-                    data-bs-toggle="tab"
-                  >
-                    Not-Interested{" "}
-                    <span className="no_badge">
-                      {
-                        moreEmpData.filter(
-                          (obj) =>
-                            obj.Status === "Not Interested" ||
-                            obj.Status === "Junk"
-                        ).length
-                      }
-                    </span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div className="card">
-              <div className="card-body p-0">
-                <div
-                  style={{
-                    overflowX: "auto",
-                    overflowY: "auto",
-                    maxHeight: "60vh",
-                  }}
-                >
-                  <table
-                    style={{
-                      width: "100%",
-                      borderCollapse: "collapse",
-                      border: "1px solid #ddd",
-                    }}
-                    className="table-vcenter table-nowrap"
-                  >
-                    <thead>
-                      <tr className="tr-sticky">
-                        <th>
-                          <input
-                            type="checkbox"
-                            checked={
-                              selectedRows.length === filteredData.length
-                            }
-                            onChange={() => handleCheckboxChange("all")}
-                          />
-                        </th>
-
-                        <th className="th-sticky">Sr.No</th>
-                        <th className="th-sticky1">Company Name</th>
-                        <th>Company Number</th>
-                        <th>Status</th>
-                        <th>Remarks</th>
-                        <th>Company Email</th>
-                        <th>Incorporation Date</th>
-                        <th>City</th>
-                        <th>State</th>
-
-                        {dataStatus === "Matured" && <th>Action</th>}
-                      </tr>
-                    </thead>
-                    {currentData.length === 0 ? (
-                      <tbody>
-                        <tr>
-                          <td colSpan="10" style={{ textAlign: "center" }}>
-                            No data available
-                          </td>
-                        </tr>
-                      </tbody>
                     ) : (
-                      <tbody>
-                        {currentData.map((company, index) => (
-                          <tr key={index} style={{ border: "1px solid #ddd" }}>
-                            <td
-                              style={{
-                                position: "sticky",
-                                left: 0,
-                                zIndex: 1,
-                                background: "white",
-                              }}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedRows.includes(company._id)}
-                                onChange={() =>
-                                  handleCheckboxChange(company._id)
-                                }
-                              />
-                            </td>
-
-                            <td className="td-sticky">
-                              {startIndex + index + 1}
-                            </td>
-                            <td className="td-sticky1">
-                              {company["Company Name"]}
-                            </td>
-                            <td>{company["Company Number"]}</td>
-                            <td>
-                              <span>{company["Status"]}</span>
-                            </td>
-                            <td>
-                              <div
-                                key={company._id}
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "space-between",
-                                }}
-                              >
-                                <p
-                                  className="rematkText text-wrap m-0"
-                                  title={company.Remarks}
-                                >
-                                  {company.Remarks}
-                                </p>
-                              </div>
-                            </td>
-                            <td>{company["Company Email"]}</td>
-                            <td>
-                              {formatDate(
-                                company["Company Incorporation Date  "]
-                              )}
-                            </td>
-                            <td>{company["City"]}</td>
-                            <td>{company["State"]}</td>
-
-                            {dataStatus === "Matured" && (
-                              <td>
-                                <button
-                                  style={{
-                                    padding: "5px",
-                                    fontSize: "12px",
-                                    backgroundColor: "lightblue",
-                                    // Additional styles for the "View" button
-                                  }}
-                                  className="btn btn-primary d-none d-sm-inline-block"
-                                >
-                                  View
-                                </button>
-                              </td>
-                            )}
-                          </tr>
-                        ))}
-                      </tbody>
+                      <div></div>
                     )}
-                  </table>
+                    {visibilityOthernew === "block" ? (
+                      <div
+                        style={{
+                          width: "20vw",
+                          margin: "0px 10px",
+                          display: visibilityOthernew,
+                        }}
+                        className="input-icon"
+                      >
+                        <select
+                          value={searchText}
+                          onChange={(e) => {
+                            setSearchText(e.target.value);
+                          }}
+                          className="form-select"
+                        >
+                          <option value="All">All </option>
+                          <option value="Busy">Busy </option>
+                          <option value="Not Picked Up">Not Picked Up </option>
+                          <option value="Junk">Junk</option>
+                          <option value="Interested">Interested</option>
+                          <option value="Not Interested">Not Interested</option>
+                        </select>
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
+                    {searchText !== "" ? (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          fontSize: "16px",
+                          fontFamily: "sans-serif",
+                        }}
+                        className="results"
+                      >
+                        {filteredData.length} results found
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
+                  </div>
+                  <div
+                    style={{ display: "flex", alignItems: "center" }}
+                    className="feature2"
+                  >
+                    {selectedField === "State" && (
+                      <div style={{ width: "15vw" }} className="input-icon">
+                        <span className="input-icon-addon">
+                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="icon"
+                            width="20"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke="currentColor"
+                            fill="none"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                            <path d="M21 21l-6 -6" />
+                          </svg>
+                        </span>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={citySearch}
+                          onChange={(e) => {
+                            setcitySearch(e.target.value);
+                            setCurrentPage(0);
+                          }}
+                          placeholder="Search City"
+                          aria-label="Search in website"
+                        />
+                      </div>
+                    )}
+                    {selectedField === "Company Incorporation Date  " && (
+                      <>
+                        <div
+                          style={{ width: "fit-content" }}
+                          className="form-control"
+                        >
+                          <select
+                            style={{ border: "none", outline: "none" }}
+                            onChange={(e) => {
+                              setMonth(e.target.value);
+                              setCurrentPage(0);
+                            }}
+                          >
+                            <option value="" disabled selected>
+                              Select Month
+                            </option>
+                            <option value="12">December</option>
+                            <option value="11">November</option>
+                            <option value="10">October</option>
+                            <option value="9">September</option>
+                            <option value="8">August</option>
+                            <option value="7">July</option>
+                            <option value="6">June</option>
+                            <option value="5">May</option>
+                            <option value="4">April</option>
+                            <option value="3">March</option>
+                            <option value="2">February</option>
+                            <option value="1">January</option>
+                          </select>
+                        </div>
+                        <div className="input-icon">
+                          <input
+                            type="number"
+                            value={year}
+                            defaultValue="Select Year"
+                            className="form-control"
+                            placeholder="Select Year.."
+                            onChange={(e) => {
+                              setYear(e.target.value);
+                            }}
+                            aria-label="Search in website"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {selectedRows.length !== 0 && (
+                      <div className="request">
+                        <div className="btn-list">
+                          <button
+                            onClick={functionOpenAssign}
+                            className="btn btn-primary d-none d-sm-inline-block"
+                          >
+                            Assign Data
+                          </button>
+                          <a
+                            href="#"
+                            className="btn btn-primary d-sm-none btn-icon"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-report"
+                            aria-label="Create new report"
+                          >
+                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                          </a>
+                        </div>
+                      </div>
+                    )}
+                    <Link
+                      style={{ color: "black" }}
+                      to={`/admin/employees/${id}/login-details`}
+                      className="btn btn-primary d-none d-sm-inline-block"
+                    >
+                        
+                          Login Details
+                    
+                    </Link>
+                    <div className="request">
+                    
+                    </div>
+                  </div>
                 </div>
-                {currentData.length !== 0 && (
+
+                {/* <!-- Page title actions --> */}
+              </div>
+              <div class="card-header">
+                <ul
+                  class="nav nav-tabs card-header-tabs nav-fill p-0"
+                  data-bs-toggle="tabs"
+                >
+                  <li class="nav-item data-heading">
+                    <a
+                      href="#tabs-home-5"
+                      onClick={() => {
+                        setdataStatus("All");
+                        setCurrentPage(0);
+                        setEmployeeData(
+                          moreEmpData.filter(
+                            (obj) =>
+                              obj.Status === "Busy" ||
+                              obj.Status === "Not Picked Up" ||
+                              obj.Status === "Untouched"
+                          )
+                        );
+                      }}
+                      className={
+                        dataStatus === "All"
+                          ? "nav-link active item-act"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                    >
+                      General{" "}
+                      <span className="no_badge">
+                        {
+                          moreEmpData.filter(
+                            (obj) =>
+                              obj.Status === "Busy" ||
+                              obj.Status === "Not Picked Up" ||
+                              obj.Status === "Untouched"
+                          ).length
+                        }
+                      </span>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      href="#tabs-activity-5"
+                      onClick={() => {
+                        setdataStatus("Interested");
+                        setCurrentPage(0);
+                        setEmployeeData(
+                          moreEmpData.filter(
+                            (obj) => obj.Status === "Interested"
+                          )
+                        );
+                      }}
+                      className={
+                        dataStatus === "Interested"
+                          ? "nav-link active item-act"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                    >
+                      Interested{" "}
+                      <span className="no_badge">
+                        {
+                          moreEmpData.filter(
+                            (obj) => obj.Status === "Interested"
+                          ).length
+                        }
+                      </span>
+                    </a>
+                  </li>
+
+                  <li class="nav-item">
+                    <a
+                      href="#tabs-activity-5"
+                      onClick={() => {
+                        setdataStatus("FollowUp");
+                        setCurrentPage(0);
+                        setEmployeeData(
+                          moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                        );
+                      }}
+                      className={
+                        dataStatus === "FollowUp"
+                          ? "nav-link active item-act"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                    >
+                      Follow Up{" "}
+                      <span className="no_badge">
+                        {
+                          moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                            .length
+                        }
+                      </span>
+                    </a>
+                  </li>
+
+                  <li class="nav-item">
+                    <a
+                      href="#tabs-activity-5"
+                      onClick={() => {
+                        setdataStatus("Matured");
+                        setCurrentPage(0);
+                        setEmployeeData(
+                          moreEmpData.filter((obj) => obj.Status === "Matured")
+                        );
+                      }}
+                      className={
+                        dataStatus === "Matured"
+                          ? "nav-link active item-act"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                    >
+                      Matured{" "}
+                      <span className="no_badge">
+                        {
+                          moreEmpData.filter((obj) => obj.Status === "Matured")
+                            .length
+                        }
+                      </span>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      href="#tabs-activity-5"
+                      onClick={() => {
+                        setdataStatus("NotInterested");
+                        setCurrentPage(0);
+                        setEmployeeData(
+                          moreEmpData.filter(
+                            (obj) =>
+                              obj.Status === "Not Interested" ||
+                              obj.Status === "Junk"
+                          )
+                        );
+                      }}
+                      className={
+                        dataStatus === "NotInterested"
+                          ? "nav-link active item-act"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                    >
+                      Not-Interested{" "}
+                      <span className="no_badge">
+                        {
+                          moreEmpData.filter(
+                            (obj) =>
+                              obj.Status === "Not Interested" ||
+                              obj.Status === "Junk"
+                          ).length
+                        }
+                      </span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div className="card">
+                <div className="card-body p-0">
                   <div
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
+                      overflowX: "auto",
+                      overflowY: "auto",
+                      maxHeight: "60vh",
                     }}
-                    className="pagination"
                   >
-                    <IconButton
-                      onClick={() =>
-                        setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))
-                      }
-                      disabled={currentPage === 0}
+                    <table
+                      style={{
+                        width: "100%",
+                        borderCollapse: "collapse",
+                        border: "1px solid #ddd",
+                      }}
+                      className="table-vcenter table-nowrap"
                     >
-                      <IconChevronLeft />
-                    </IconButton>
-                    <span>
-                      Page {currentPage + 1} of{" "}
-                      {Math.ceil(filteredData.length / itemsPerPage)}
-                    </span>
+                      <thead>
+                        <tr className="tr-sticky">
+                          <th>
+                            <input
+                              type="checkbox"
+                              checked={
+                                selectedRows.length === filteredData.length
+                              }
+                              onChange={() => handleCheckboxChange("all")}
+                            />
+                          </th>
 
-                    <IconButton
-                      onClick={() =>
-                        setCurrentPage((prevPage) =>
-                          Math.min(
-                            prevPage + 1,
-                            Math.ceil(filteredData.length / itemsPerPage) - 1
-                          )
-                        )
-                      }
-                      disabled={
-                        currentPage ===
-                        Math.ceil(filteredData.length / itemsPerPage) - 1
-                      }
-                    >
-                      <IconChevronRight />
-                    </IconButton>
+                          <th className="th-sticky">Sr.No</th>
+                          <th className="th-sticky1">Company Name</th>
+                          <th>Company Number</th>
+                          <th>Status</th>
+                          <th>Remarks</th>
+                          <th>Company Email</th>
+                          <th>Incorporation Date</th>
+                          <th>City</th>
+                          <th>State</th>
+
+                          {dataStatus === "Matured" && <th>Action</th>}
+                        </tr>
+                      </thead>
+                      {currentData.length === 0 ? (
+                        <tbody>
+                          <tr>
+                            <td colSpan="10" style={{ textAlign: "center" }}>
+                              No data available
+                            </td>
+                          </tr>
+                        </tbody>
+                      ) : (
+                        <tbody>
+                          {currentData.map((company, index) => (
+                            <tr
+                              key={index}
+                              style={{ border: "1px solid #ddd" }}
+                            >
+                              <td
+                                style={{
+                                  position: "sticky",
+                                  left: 0,
+                                  zIndex: 1,
+                                  background: "white",
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={selectedRows.includes(company._id)}
+                                  onChange={() =>
+                                    handleCheckboxChange(company._id)
+                                  }
+                                />
+                              </td>
+
+                              <td className="td-sticky">
+                                {startIndex + index + 1}
+                              </td>
+                              <td className="td-sticky1">
+                                {company["Company Name"]}
+                              </td>
+                              <td>{company["Company Number"]}</td>
+                              <td>
+                                <span>{company["Status"]}</span>
+                              </td>
+                              <td>
+                                <div
+                                  key={company._id}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <p
+                                    className="rematkText text-wrap m-0"
+                                    title={company.Remarks}
+                                  >
+                                    {company.Remarks}
+                                  </p>
+                                </div>
+                              </td>
+                              <td>{company["Company Email"]}</td>
+                              <td>
+                                {formatDate(
+                                  company["Company Incorporation Date  "]
+                                )}
+                              </td>
+                              <td>{company["City"]}</td>
+                              <td>{company["State"]}</td>
+
+                              {dataStatus === "Matured" && (
+                                <td>
+                                  <button
+                                    style={{
+                                      padding: "5px",
+                                      fontSize: "12px",
+                                      backgroundColor: "lightblue",
+                                      // Additional styles for the "View" button
+                                    }}
+                                    className="btn btn-primary d-none d-sm-inline-block"
+                                  >
+                                    View
+                                  </button>
+                                </td>
+                              )}
+                            </tr>
+                          ))}
+                        </tbody>
+                      )}
+                    </table>
                   </div>
-                )}
+                  {currentData.length !== 0 && (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                      className="pagination"
+                    >
+                      <IconButton
+                        onClick={() =>
+                          setCurrentPage((prevPage) =>
+                            Math.max(prevPage - 1, 0)
+                          )
+                        }
+                        disabled={currentPage === 0}
+                      >
+                        <IconChevronLeft />
+                      </IconButton>
+                      <span>
+                        Page {currentPage + 1} of{" "}
+                        {Math.ceil(filteredData.length / itemsPerPage)}
+                      </span>
+
+                      <IconButton
+                        onClick={() =>
+                          setCurrentPage((prevPage) =>
+                            Math.min(
+                              prevPage + 1,
+                              Math.ceil(filteredData.length / itemsPerPage) - 1
+                            )
+                          )
+                        }
+                        disabled={
+                          currentPage ===
+                          Math.ceil(filteredData.length / itemsPerPage) - 1
+                        }
+                      >
+                        <IconChevronRight />
+                      </IconButton>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>}
+        )}
 
-{/* Login Details */}
-                      {openLogin && <>
-                        <LoginDetails loginDetails={loginDetails} />
-                      </>}
-          
-
-
+        {/* Login Details */}
+        {openLogin && (
+          <>
+            <LoginDetails loginDetails={loginDetails} />
+          </>
+        )}
       </div>
       {/* ------------------------------- Assign data -------------------------- */}
       <Dialog
@@ -1133,31 +1133,27 @@ function EmployeeParticular() {
           </IconButton>{" "}
         </DialogTitle>
         <DialogContent>
-         
-         
-        <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Address</th>
+          <table className="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Address</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loginDetails.map((details, index) => (
+                <tr key={index}>
+                  <td>{details.ename}</td>
+                  <td>{details.date}</td>
+                  <td>{details.time}</td>
+                  <td>{details.address}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {loginDetails.map((details, index) => (
-                  <tr key={index}>
-                    <td>{details.ename}</td>
-                    <td>{details.date}</td>
-                    <td>{details.time}</td>
-                    <td>{details.address}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          
+              ))}
+            </tbody>
+          </table>
         </DialogContent>
-       
       </Dialog>
     </div>
   );

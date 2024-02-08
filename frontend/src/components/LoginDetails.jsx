@@ -1,7 +1,24 @@
 import React from "react";
 import myImage from "../static/nodatalogo.png";
+import { useEffect,useState } from "react";
+import axios from "axios";
 
-function LoginDetails({ loginDetails }) {
+function LoginDetails() {
+  const [loginDetails, setLoginDetails] = useState([])
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+  useEffect(() => {
+    // Fetch employee details and related data when the component mounts or id changes
+   
+    axios
+      .get(`${secretKey}/loginDetails`)
+      .then((response) => {
+        // Update state with fetched login details
+        setLoginDetails(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching login details:", error);
+      });
+  }, []);
   return (
     <div>
       <div className="container-xl">

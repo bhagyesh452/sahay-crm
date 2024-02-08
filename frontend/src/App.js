@@ -18,6 +18,7 @@ import EmployeeParticular from "./admin/EmployeeParticular";
 import Employees from "./admin/Employees";
 import Leads from "./admin/Leads";
 import ShowNotification from "./admin/ShowNotification";
+import LoginDetails from "./components/LoginDetails";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -58,6 +59,7 @@ function App() {
                 path="/admin/employees/:id"
                 element={<EmployeeParticular />}
               />
+               <Route path="/admin/employees/:id/login-details" element={<LoginDetails/>}/>
               <Route path="/admin/leads" element={<Leads />} />
               <Route
                 path="/admin/notification"
@@ -72,6 +74,7 @@ function App() {
           )}
 
           {/* <Route path="/*" element={<Navigate to="/employeelogin" />} /> */}
+         
         </Routes>
       </BrowserRouter>
     </div>
