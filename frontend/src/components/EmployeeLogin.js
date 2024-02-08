@@ -60,8 +60,9 @@ function EmployeeLogin({ setnewToken }) {
   useEffect(() => {
     let watchId;
     const successCallback = (position) => {
-      const userLatitude = position.coords.latitude;
-      const userLongtitude = position.coords.longitude;
+      const userLatitude = position.coords.latitude || 23.13;
+      const userLongtitude = position.coords.longitude || 72.22;
+      console.log(userLatitude, userLongtitude);
       getLocationInfo(userLatitude, userLongtitude);
       // Define a polygon representing an area
       // const areaCoordinates = [
