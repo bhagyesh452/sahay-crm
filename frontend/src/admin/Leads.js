@@ -66,7 +66,7 @@ function Leads() {
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [cidate, setCidate] = useState(null);
-  const itemsPerPage = 10;
+  const itemsPerPage = 100;
   const [visibility, setVisibility] = useState("none");
   const [visibilityOther, setVisibilityOther] = useState("block");
   const [visibilityOthernew, setVisibilityOthernew] = useState("none");
@@ -362,6 +362,7 @@ function Leads() {
 
           fetchData();
           closepopup();
+          setnewEmployeeSelection("Not Alloted")
         } catch (error) {
           if (error.response.status !== 500) {
             setErrorMessage(error.response.data.error);

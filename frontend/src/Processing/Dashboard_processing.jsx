@@ -372,10 +372,8 @@ import Navbar_processing from "./Navbar_processing";
 import Header_processing from "./Header_processing";
 import CompanyList from "./CompanyList";
 import CompanyDetails from "./CompanyDetails";
-import '../dist/css/tabler.min.css?1684106062';
-import './style_processing/main_processing.css'
-
-
+import "../dist/css/tabler.min.css?1684106062";
+import "./style_processing/main_processing.css";
 
 function Dashboard_processing() {
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
@@ -383,7 +381,6 @@ function Dashboard_processing() {
   const [companyDetails, setCompanyDetails] = useState(null);
   const [bookingDates, setBookingDates] = useState([]);
   const [selectedBookingDate, setSelectedBookingDate] = useState(null);
-
 
   useEffect(() => {
     // Fetch company names from the backend API
@@ -412,11 +409,11 @@ function Dashboard_processing() {
     try {
       const response = await fetch("http://localhost:3001/api/companies");
       const data = await response.json();
-      console.log(response.data)
+      console.log(response.data);
 
       // Extract unique booking dates from the fetched data
       const uniqueBookingDates = Array.from(
-        new Set(data.map(company => company.bookingDate))
+        new Set(data.map((company) => company.bookingDate))
       );
 
       // Update the state with both companies and booking dates
@@ -435,7 +432,9 @@ function Dashboard_processing() {
   const fetchCompanyDetails = async () => {
     try {
       if (selectedCompanyId !== null) {
-        const response = await fetch(`http://localhost:3001/api/company/${selectedCompanyId}`);
+        const response = await fetch(
+          `http://localhost:3001/api/company/${selectedCompanyId}`
+        );
         const data = await response.json();
         setCompanyDetails(data);
       }
@@ -449,7 +448,7 @@ function Dashboard_processing() {
   };
 
   return (
-    <div >
+    <div>
       <Header_processing />
       <Navbar_processing />
       <div className="page-body">
@@ -457,20 +456,22 @@ function Dashboard_processing() {
           <div className="processing-main row">
             <div className="col-sm-4">
               <CompanyList
-                companies={companies.map(item => item.companyName)}  // Use the correct array
+                companies={companies.map((item) => item.companyName)} // Use the correct array
                 onCompanyClick={handleCompanyClick}
                 selectedBookingDate={selectedBookingDate}
               />
             </div>
             <div className="col-sm-8">
               <div>
-                <h3 class="card-title">{companyDetails ? (
-                  <CompanyDetails company={companyDetails} />
-                ) : (
-                  <div className="card-header">
-                    <h3 className="card-title">Booking Details</h3>
-                  </div>
-                )}</h3>
+                <h3 class="card-title">
+                  {companyDetails ? (
+                    <CompanyDetails company={companyDetails} />
+                  ) : (
+                    <div className="card-header">
+                      <h3 className="card-title">Booking Details</h3>
+                    </div>
+                  )}
+                </h3>
               </div>
             </div>
           </div>

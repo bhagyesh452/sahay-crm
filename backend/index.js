@@ -44,7 +44,7 @@ mongoose
   });
 // const secretKey = 'random32numberjsonwebtokenrequire';
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
-console.log(secretKey);
+
 
 app.get("/api", (req, res) => {
   console.log(req.url);
@@ -123,7 +123,7 @@ const deleteAllData = async () => {
 
 app.post("/api/leads", async (req, res) => {
   const csvData = req.body;
-
+ 
   try {
     for (const employeeData of csvData) {
       try {
@@ -133,7 +133,7 @@ app.post("/api/leads", async (req, res) => {
         };
         const employee = new CompanyModel(employeeWithAssignData);
         const savedEmployee = await employee.save();
-        console.log("Data sent successfully");
+       
       } catch (error) {
         console.error("Error saving employee:", error.message);
         // res.status(500).json({ error: 'Internal Server Error' });
@@ -174,7 +174,7 @@ app.post("/api/update-status/:id", async (req, res) => {
   try {
     // Update the status field in the database based on the employee id
     await CompanyModel.findByIdAndUpdate(id, { Status: newStatus });
-    console.log("Data Updated");
+    
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
     console.error("Error updating status:", error);
@@ -185,11 +185,11 @@ app.post("/api/update-status/:id", async (req, res) => {
 app.post("/api/update-remarks/:id", async (req, res) => {
   const { id } = req.params;
   const { Remarks } = req.body;
-  console.log(Remarks);
+ 
   try {
     // Update the status field in the database based on the employee id
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
-    console.log("Data Updated");
+    
     res.status(200).json({ message: "Remarks updated successfully" });
   } catch (error) {
     console.error("Error updating status:", error);
@@ -199,7 +199,7 @@ app.post("/api/update-remarks/:id", async (req, res) => {
 
 app.post("/api/einfo", async (req, res) => {
   try {
-    console.log(req.body);
+   
 
     adminModel.create(req.body).then((respond) => {
       res.json(respond);
@@ -349,7 +349,7 @@ app.post("/api/postData", async (req, res) => {
   //   return res.status(400).json({ error: `Data is already assigned to ${employeeSelection}` });
   // }
 
-  console.log(employeeSelection, selectedObjects);
+  
 
   // If not assigned, post data to MongoDB or perform any desired action
   const updatePromises = selectedObjects.map((obj) => {
@@ -665,7 +665,7 @@ app.post("/api/remarks-history/:companyId", async (req, res) => {
   const currentDate = new Date();
   const time = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
   const date = currentDate.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
-console.log(companyId,Remarks,time,date)
+
   try {
     // Create a new RemarksHistory instance
     const newRemarksHistory = new RemarksHistory({
@@ -1163,7 +1163,7 @@ app.post(
         paymentReceipt
       );
 
-      console.log("Data sent");
+      console.log("Data sent Via Email");
       res
         .status(200)
         .json(savedEmployee || { message: "Data sent successfully" });

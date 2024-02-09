@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import EmpNav from "./EmpNav.js";
 import Header from "../components/Header";
 import { useParams } from "react-router-dom";
+import Papa from "papaparse";
+import * as XLSX from "xlsx";
 import axios from "axios";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
@@ -18,11 +20,12 @@ import "../assets/table.css";
 import "../assets/styles.css";
 import Nodata from "../components/Nodata.jsx";
 
-
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
+  const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
   const [open, openchange] = useState(false);
+  const [openCSV, openchangeCSV] = useState(false);
   const [openRemarks, openchangeRemarks] = useState(false);
   const [data, setData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
@@ -69,9 +72,15 @@ function EmployeePanel() {
   const functionopenpopupNew = () => {
     openchangeNew(true);
   };
+  const functionopenpopupCSV = () => {
+    openchangeCSV(true);
+  };
 
   const closepopup = () => {
     openchange(false);
+  };
+  const closepopupCSV = () => {
+    openchangeCSV(false);
   };
   const closepopupNew = () => {
     openchangeNew(false);
@@ -558,6 +567,134 @@ function EmployeePanel() {
       });
   };
 
+
+  // Function for Parsing Excel File
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+
+    if (
+      file &&
+      file.type ===
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+
+        // Assuming there's only one sheet in the XLSX file
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        const formattedJsonData = jsonData
+          .slice(1) // Exclude the first row (header)
+          .map((row) => ({
+            "Sr. No": row[0],
+            "Company Name": row[1],
+            "Company Number": row[2],
+            "Company Email": row[3],
+            "Company Incorporation Date  ": formatDateFromExcel(row[4]), // Assuming the date is in column 'E' (0-based)
+            City: row[5],
+            State: row[6],
+            Status:row[7],
+            Remarks:row[8]
+          }));
+
+        setCsvData(formattedJsonData);
+      };
+
+      reader.readAsArrayBuffer(file);
+    } else if (file.type === "text/csv") {
+      // CSV file
+      const parsedCsvData = parseCsv(data);
+      setCsvData(parsedCsvData);
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+        footer: '<a href="#">Why do I have this issue?</a>',
+      });
+
+      console.error("Please upload a valid XLSX file.");
+    }
+  };
+
+  const parseCsv = (data) => {
+    // Use a CSV parsing library (e.g., Papaparse) to parse CSV data
+    // Example using Papaparse:
+    const parsedData = Papa.parse(data, { header: true });
+    return parsedData.data;
+  };
+  function formatDateFromExcel(serialNumber) {
+    // Excel uses a different date origin (January 1, 1900)
+    const excelDateOrigin = new Date(Date.UTC(1900, 0, 0));
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+    // Adjust for Excel leap year bug (1900 is not a leap year)
+    const daysAdjustment = serialNumber > 59 ? 1 : 0;
+
+    // Calculate the date in milliseconds
+    const dateMilliseconds =
+      excelDateOrigin.getTime() +
+      (serialNumber - daysAdjustment) * millisecondsPerDay;
+
+    // Create a Date object using the calculated milliseconds
+    const formattedDate = new Date(dateMilliseconds);
+
+    // Format the date as needed (you can use a library like 'date-fns' or 'moment' for more options)
+    // const formattedDateString = formattedDate.toISOString().split('T')[0];
+
+    return formattedDate;
+  }
+  // csvdata.map((item)=>{
+  //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
+  // })
+  const handleUploadData = async (e) => {
+ const name = data.ename;
+      const updatedCsvdata = csvdata.map((data) => ({
+        ...data,
+        ename: name,
+      }));
+      
+      if (updatedCsvdata.length !== 0) {
+         // Move setLoading outside of the loop
+
+        try {
+          await axios.post(`${secretKey}/leads`, updatedCsvdata);
+          console.log("Data sent successfully");
+          Swal.fire({
+            title: "Data Send!",
+            text: "Data Successfully Added",
+            icon: "success",
+          });
+
+      
+        } catch (error) {
+          if (error.response.status !== 500) {
+          
+            Swal.fire("Some of the data are not unique");
+          } else {
+           
+            Swal.fire("Please upload unique data");
+          }
+          console.log("Error:", error);
+        }
+
+       // Move setLoading outside of the loop
+
+        setCsvData([]);
+      } else {
+        Swal.fire("Please upload data");
+      }
+    
+  };
+
+
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
@@ -813,13 +950,56 @@ function EmployeePanel() {
                           </a>
                         </div>
                       </div>
-                      <div className="request">
+                      <div className="request" style={{ marginRight: "15px" }}>
                         <div className="btn-list">
                           <button
                             onClick={functionopenpopupNew}
                             className="btn btn-primary d-none d-sm-inline-block"
                           >
                             ADD Leads
+                          </button>
+                          <a
+                            href="#"
+                            className="btn btn-primary d-sm-none btn-icon"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-report"
+                            aria-label="Create new report"
+                          >
+                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                          </a>
+                        </div>
+                      </div>
+                      <div className="importCSV request">
+                        <div className="btn-list">
+                          <button
+                            className="btn btn-primary d-none d-sm-inline-block"
+                            onClick={functionopenpopupCSV}
+                          >
+                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                            <svg
+                              style={{
+                                verticalAlign: "middle",
+                              }}
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="icon"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              stroke-width="2"
+                              stroke="currentColor"
+                              fill="none"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            >
+                              <path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                              />
+                              <path d="M12 5l0 14" />
+                              <path d="M5 12l14 0" />
+                            </svg>
+                            Import CSV
                           </button>
                           <a
                             href="#"
@@ -1046,7 +1226,7 @@ function EmployeePanel() {
                           <tbody>
                             <tr className="particular">
                               <td colSpan="10" style={{ textAlign: "center" }}>
-                                <Nodata/>
+                                <Nodata />
                               </td>
                             </tr>
                           </tbody>
@@ -1071,7 +1251,7 @@ function EmployeePanel() {
                                     <select
                                       style={{
                                         width: "100px",
-                                        background:"none",
+                                        background: "none",
                                         padding: ".4375rem .75rem",
                                         border:
                                           "1px solid var(--tblr-border-color)",
@@ -1177,7 +1357,6 @@ function EmployeePanel() {
                           </tbody>
                         )}
                       </table>
-
                     </div>
                     {currentData.length !== 0 && (
                       <div
@@ -1298,144 +1477,140 @@ function EmployeePanel() {
         </DialogTitle>
         <DialogContent>
           <div className="container">
-            
-              <div className="con2 row mb-3">
-                <div
-                  style={
-                    selectedOption === "general"
-                      ? {
-                          backgroundColor: "#ffb900",
-                          margin: "10px 10px 0px 0px",
-                          cursor: "pointer",
-                          color: "white",
-                        }
-                      : {
-                          backgroundColor: "white",
-                          margin: "10px 10px 0px 0px",
-                          cursor: "pointer",
-                        }
-                  }
-                  onClick={() => {
-                    setSelectedOption("general");
-                  }}
-                  className="direct form-control col"
-                >
-                  <input
-                    type="radio"
-                    id="general"
-                    value="general"
-                    style={{
-                      display: "none",
-                    }}
-                    checked={selectedOption === "general"}
-                    onChange={handleOptionChange}
-                  />
-                  <label htmlFor="general">General Data </label>
-                </div>
-                <div
-                  style={
-                    selectedOption === "notgeneral"
-                      ? {
-                          backgroundColor: "#ffb900",
-                          margin: "10px 0px 0px 0px",
-                          cursor: "pointer",
-                          color: "white",
-                        }
-                      : {
-                          backgroundColor: "white",
-                          margin: "10px 0px 0px 0px",
-                          cursor: "pointer",
-                        }
-                  }
-                  className="notgeneral form-control col"
-                  onClick={() => {
-                    setSelectedOption("notgeneral");
-                  }}
-                >
-                  <input
-                    type="radio"
-                    id="notgeneral"
-                    value="notgeneral"
-                    style={{
-                      display: "none",
-                    }}
-                    checked={selectedOption === "notgeneral"}
-                    onChange={handleOptionChange}
-                  />
-                  <label htmlFor="notgeneral">Manual</label>
-                </div>
-              </div>
-              {selectedOption === "notgeneral" ? (
-                <>
-                  <div className="mb-3 row">
-                    <label className="col-sm-3 form-label" htmlFor="selectYear">
-                      Select Year :
-                    </label>
-                    <select
-                      id="selectYear"
-                      name="selectYear"
-                      value={selectedYear}
-                      onChange={handleYearChange}
-                      className="col form-select"
-                    >
-                      {[...Array(2025 - 1970).keys()].map((year) => (
-                        <option key={year} value={1970 + year}>
-                          {1970 + year}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="mb-3 row">
-                    <label className="form-label col-sm-3">
-                      Company Type :
-                    </label>
-                    <input
-                      type="radio"
-                      id="llp"
-                      name="companyType"
-                      value="LLP"
-                      checked={companyType === "LLP"}
-                      onChange={handleCompanyTypeChange}
-                      className="form-check-input"
-                    />
-                    <label htmlFor="llp" className="col">
-                      LLP
-                    </label>
-                    <input
-                      type="radio"
-                      id="pvtLtd"
-                      name="companyType"
-                      value="PVT LTD"
-                      checked={companyType === "PVT LTD"}
-                      onChange={handleCompanyTypeChange}
-                      className="form-check-input"
-                    />
-                    <label className="col" htmlFor="pvtLtd">
-                      PVT LTD
-                    </label>
-                  </div>
-                </>
-              ) : (
-                <div></div>
-              )}
-
-              <div className="mb-3 row">
-                <label className="col-sm-3 form-label" htmlFor="numberOfData">
-                  Number of Data :
-                </label>
+            <div className="con2 row mb-3">
+              <div
+                style={
+                  selectedOption === "general"
+                    ? {
+                        backgroundColor: "#ffb900",
+                        margin: "10px 10px 0px 0px",
+                        cursor: "pointer",
+                        color: "white",
+                      }
+                    : {
+                        backgroundColor: "white",
+                        margin: "10px 10px 0px 0px",
+                        cursor: "pointer",
+                      }
+                }
+                onClick={() => {
+                  setSelectedOption("general");
+                }}
+                className="direct form-control col"
+              >
                 <input
-                  type="number"
-                  id="numberOfData"
-                  name="numberOfData"
-                  className="form-control col"
-                  value={numberOfData}
-                  onChange={handleNumberOfDataChange}
-                  min="1"
-                  required
+                  type="radio"
+                  id="general"
+                  value="general"
+                  style={{
+                    display: "none",
+                  }}
+                  checked={selectedOption === "general"}
+                  onChange={handleOptionChange}
                 />
+                <label htmlFor="general">General Data </label>
               </div>
-            
+              <div
+                style={
+                  selectedOption === "notgeneral"
+                    ? {
+                        backgroundColor: "#ffb900",
+                        margin: "10px 0px 0px 0px",
+                        cursor: "pointer",
+                        color: "white",
+                      }
+                    : {
+                        backgroundColor: "white",
+                        margin: "10px 0px 0px 0px",
+                        cursor: "pointer",
+                      }
+                }
+                className="notgeneral form-control col"
+                onClick={() => {
+                  setSelectedOption("notgeneral");
+                }}
+              >
+                <input
+                  type="radio"
+                  id="notgeneral"
+                  value="notgeneral"
+                  style={{
+                    display: "none",
+                  }}
+                  checked={selectedOption === "notgeneral"}
+                  onChange={handleOptionChange}
+                />
+                <label htmlFor="notgeneral">Manual</label>
+              </div>
+            </div>
+            {selectedOption === "notgeneral" ? (
+              <>
+                <div className="mb-3 row">
+                  <label className="col-sm-3 form-label" htmlFor="selectYear">
+                    Select Year :
+                  </label>
+                  <select
+                    id="selectYear"
+                    name="selectYear"
+                    value={selectedYear}
+                    onChange={handleYearChange}
+                    className="col form-select"
+                  >
+                    {[...Array(2025 - 1970).keys()].map((year) => (
+                      <option key={year} value={1970 + year}>
+                        {1970 + year}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mb-3 row">
+                  <label className="form-label col-sm-3">Company Type :</label>
+                  <input
+                    type="radio"
+                    id="llp"
+                    name="companyType"
+                    value="LLP"
+                    checked={companyType === "LLP"}
+                    onChange={handleCompanyTypeChange}
+                    className="form-check-input"
+                  />
+                  <label htmlFor="llp" className="col">
+                    LLP
+                  </label>
+                  <input
+                    type="radio"
+                    id="pvtLtd"
+                    name="companyType"
+                    value="PVT LTD"
+                    checked={companyType === "PVT LTD"}
+                    onChange={handleCompanyTypeChange}
+                    className="form-check-input"
+                  />
+                  <label className="col" htmlFor="pvtLtd">
+                    PVT LTD
+                  </label>
+                </div>
+              </>
+            ) : (
+              <div></div>
+            )}
+
+            <div className="mb-3 row">
+              <label className="col-sm-3 form-label" htmlFor="numberOfData">
+                Number of Data :
+              </label>
+              <input
+                type="number"
+                id="numberOfData"
+                name="numberOfData"
+                className="form-control col"
+                value={numberOfData}
+                onChange={handleNumberOfDataChange}
+                min="1"
+                required
+              />
+            </div>
           </div>
         </DialogContent>
         <div class="card-footer">
@@ -1477,7 +1652,6 @@ function EmployeePanel() {
                         </div>
                         <div className="dlticon">
                           <DeleteIcon
-                            
                             style={{
                               cursor: "pointer",
                               color: "#f70000",
@@ -1625,6 +1799,41 @@ function EmployeePanel() {
         <button onClick={handleSubmitData} className="btn btn-primary">
           Submit
         </button>
+      </Dialog>
+
+      {/* -------------------------- Import CSV File ---------------------------- */}
+      <Dialog open={openCSV} onClose={closepopupCSV} fullWidth maxWidth="sm">
+        <DialogTitle>
+          Import CSV DATA{" "}
+          <IconButton onClick={closepopupCSV} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="maincon">
+            <div
+              style={{ justifyContent: "space-between" }}
+              className="con1 d-flex"
+            >
+              <label for="formFile" class="form-label">
+                Upload CSV File
+              </label>
+              <a href="../../AdminSample.xlsx" download>Download Sample</a>
+            </div>
+
+            <div class="mb-3">
+              <input onChange={handleFileChange} className="form-control" type="file" id="formFile" />
+            </div>
+          </div>
+          {/* <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
+              <button onClick={handleButtonClick}>Choose File</button> */}
+        </DialogContent>
+        <button onClick={handleUploadData} className="btn btn-primary">Submit</button>
       </Dialog>
     </div>
   );
