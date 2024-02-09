@@ -77,6 +77,7 @@ function Leads() {
   const [requestGData, setRequestGData] = useState([]);
   const [mainData, setmainData] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
   //fetch data
   const fetchData = async () => {
     try {
@@ -1109,7 +1110,7 @@ function Leads() {
                       Upload CSV File
                     </label>
                   </div>
-                  <a href="#">Download Sample</a>
+                  <a href={frontendKey + "/AdminSample.xlsx"} download>Download Sample</a>
                 </div>
                 <div
                   style={{ margin: "5px 0px 0px 0px" }}

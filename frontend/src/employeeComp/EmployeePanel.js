@@ -90,6 +90,7 @@ function EmployeePanel() {
     setFilteredRemarks([]);
   };
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/einfo`);
@@ -1818,7 +1819,7 @@ function EmployeePanel() {
               <label for="formFile" class="form-label">
                 Upload CSV File
               </label>
-              <a href="../../AdminSample.xlsx" download>Download Sample</a>
+              <a href={frontendKey + "/EmployeeSample.xlsx"} download>Download Sample</a>
             </div>
 
             <div class="mb-3">
