@@ -6,6 +6,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const adminModel = require("./models/Admin");
 const CompanyModel = require("./models/Leads");
+const CompanyRequestModel = require("./models/LeadsRequest");
 const RequestModel = require("./models/Request");
 const RequestGModel = require("./models/RequestG");
 const { exec } = require('child_process');
@@ -148,6 +149,33 @@ app.post("/api/leads", async (req, res) => {
     console.error("Error in bulk save:", error.message);
   }
 });
+app.post("/api/requestCompanyData", async (req, res) => {
+  const csvData = req.body;
+ 
+  try {
+    for (const employeeData of csvData) {
+      try {
+        const employeeWithAssignData = {
+          ...employeeData,
+          AssignDate: new Date(),
+        };
+        const employee = new CompanyRequestModel(employeeWithAssignData);
+        const savedEmployee = await employee.save();
+       
+      } catch (error) {
+        console.error("Error saving employee:", error.message);
+        // res.status(500).json({ error: 'Internal Server Error' });
+
+        // Handle the error for this specific entry, but continue with the next one
+      }
+    }
+
+    res.status(200).json({ message: "Data sent successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error in bulk save:", error.message);
+  }
+});
 
 app.post("/api/manual", async (req, res) => {
   const receivedData = req.body;
@@ -222,6 +250,15 @@ app.get("/api/einfo", async (req, res) => {
 app.get("/api/leads", async (req, res) => {
   try {
     const data = await CompanyModel.find();
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+app.get("/api/requestCompanyData", async (req, res) => {
+  try {
+    const data = await CompanyRequestModel.find();
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
@@ -344,13 +381,6 @@ app.put("/api/einfo/:id", async (req, res) => {
 
 app.post("/api/postData", async (req, res) => {
   const { employeeSelection, selectedObjects } = req.body;
-  // Check if data is already assigned
-  // if (selectedObjects.every((obj) => obj.ename === employeeSelection)) {
-  //   return res.status(400).json({ error: `Data is already assigned to ${employeeSelection}` });
-  // }
-
-  
-
   // If not assigned, post data to MongoDB or perform any desired action
   const updatePromises = selectedObjects.map((obj) => {
     // Add AssignData property with the current date
@@ -366,6 +396,19 @@ app.post("/api/postData", async (req, res) => {
   await Promise.all(updatePromises);
 
   res.json({ message: "Data posted successfully" });
+});
+app.delete('/api/delete-data/:ename', async (req, res) => {
+  const { ename } = req.params;
+
+  try {
+    // Delete all data objects with the given ename
+    await CompanyRequestModel.deleteMany({ ename });
+
+    res.status(200);
+  } catch (error) {
+  
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 app.post("/api/assign-new", async (req, res) => {
   const { newemployeeSelection, csvdata } = req.body;

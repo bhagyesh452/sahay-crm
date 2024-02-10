@@ -45,6 +45,8 @@ function EmployeePanel() {
   const [currentPage, setCurrentPage] = useState(0);
   const [month, setMonth] = useState(0);
   const [updateData, setUpdateData] = useState({});
+  const [RequestApprovals, setRequestApprovals] = useState([]);
+  const [mapArray, setMapArray] = useState([]);
   const itemsPerPage = 100;
   const [year, setYear] = useState(0);
   const startIndex = currentPage * itemsPerPage;
@@ -671,11 +673,11 @@ function EmployeePanel() {
       // Move setLoading outside of the loop
 
       try {
-        await axios.post(`${secretKey}/leads`, updatedCsvdata);
+        await axios.post(`${secretKey}/requestCompanyData`, updatedCsvdata);
         console.log("Data sent successfully");
         Swal.fire({
-          title: "Data Send!",
-          text: "Data Successfully Added",
+          title: "Request Sent!",
+          text: "Your Request has been successfully sent to the Admin",
           icon: "success",
         });
       } catch (error) {
@@ -694,6 +696,38 @@ function EmployeePanel() {
       Swal.fire("Please upload data");
     }
   };
+  const fetchApproveRequests = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/requestCompanyData`);
+      setRequestApprovals(response.data);
+      const uniqueEnames = response.data.reduce((acc, curr) => {
+   
+        if (!acc.some((item) => item.ename === data.ename)) {
+          const [dateString, timeString] = formatDateAndTime(
+            curr.AssignDate
+          ).split(", ");
+          acc.push({ ename: data.ename, date: dateString, time: timeString });
+        }
+        return acc;
+      }, []);
+      setMapArray(uniqueEnames);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+  const formatDateAndTime = (AssignDate) => {
+    // Convert AssignDate to a Date object
+    const date = new Date(AssignDate);
+
+    // Convert UTC date to Indian time zone
+    const options = { timeZone: "Asia/Kolkata" };
+    const indianDate = date.toLocaleString("en-IN", options);
+    return indianDate;
+  };
+
+  console.log(mapArray)
+
+
 
   return (
     <div>
@@ -826,7 +860,7 @@ function EmployeePanel() {
                       ) : (
                         <div></div>
                       )}
-                      {searchText !== "" ? (
+                      {searchText !== "" && (
                         <div
                           style={{
                             display: "flex",
@@ -839,9 +873,7 @@ function EmployeePanel() {
                         >
                           {filteredData.length} results found
                         </div>
-                      ) : (
-                        <div></div>
-                      )}
+                      ) }
                     </div>
                     <div
                       style={{ display: "flex", alignItems: "center" }}
