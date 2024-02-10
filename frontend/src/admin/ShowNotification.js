@@ -5,10 +5,14 @@ import { useState } from "react";
 import NewCard from "./NewCard";
 import axios from "axios";
 import NewGCard from "./NewGcard";
+import ApproveCard from "./ApproveCard";
+import Nodata from "../components/Nodata";
 
 function ShowNotification() {
   const [RequestData, setRequestData] = useState([]);
   const [RequestGData, setRequestGData] = useState([]);
+  const [RequestApprovals, setRequestApprovals] = useState([]);
+  const [mapArray, setMapArray] = useState([]);
   const [dataType, setDataType] = useState("General");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const fetchRequestDetails = async () => {
@@ -21,20 +25,48 @@ function ShowNotification() {
   };
   const fetchRequestGDetails = async () => {
     try {
-      const response = await axios.get(
-        `${secretKey}/requestgData`
-      );
+      const response = await axios.get(`${secretKey}/requestgData`);
       setRequestGData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
+  const fetchApproveRequests = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/requestCompanyData`);
+      setRequestApprovals(response.data);
+      const uniqueEnames = response.data.reduce((acc, curr) => {
+        if (!acc.some((item) => item.ename === curr.ename)) {
+          const [dateString, timeString] = formatDateAndTime(
+            curr.AssignDate
+          ).split(", ");
+          acc.push({ ename: curr.ename, date: dateString, time: timeString });
+        }
+        return acc;
+      }, []);
+      setMapArray(uniqueEnames);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+  const formatDateAndTime = (AssignDate) => {
+    // Convert AssignDate to a Date object
+    const date = new Date(AssignDate);
+
+    // Convert UTC date to Indian time zone
+    const options = { timeZone: "Asia/Kolkata" };
+    const indianDate = date.toLocaleString("en-IN", options);
+    return indianDate;
+  };
 
   useEffect(() => {
     fetchRequestDetails();
     fetchRequestGDetails();
+    fetchApproveRequests();
   }, []);
 
+  // setEnameArray(uniqueEnames);
+  console.log(mapArray);
   return (
     <div>
       {" "}
@@ -88,6 +120,22 @@ function ShowNotification() {
                       Manual Data
                     </a>
                   </li>
+                  <li class="nav-item data-heading">
+                    <a
+                      href="#tabs-home-5"
+                      className={
+                        dataType === "AddRequest"
+                          ? "nav-link active item-act"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                      onClick={() => {
+                        setDataType("AddRequest");
+                      }}
+                    >
+                      Approve Requests
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div
@@ -117,8 +165,16 @@ function ShowNotification() {
                       assignStatus={company.assigned}
                     />
                   ))}
+                {mapArray.length !== 0 &&
+                  dataType === "AddRequest" &&
+                  mapArray.map((company) => (
+                   <ApproveCard name={company.ename} date={company.date} time={company.time}/>
+                  ))}
 
                 {RequestData.length === 0 && dataType === "Manual" && (
+                  <Nodata/>
+                )}
+                {RequestGData.length === 0 && dataType === "General" && (
                   <span
                     style={{
                       textAlign: "center",
@@ -126,15 +182,19 @@ function ShowNotification() {
                       fontWeight: "bold",
                     }}
                   >
-                    No Data Available
+                    <Nodata/>
                   </span>
                 )}
-                {RequestGData.length === 0 && dataType === "General" && (
-                  <span style={{
-                    textAlign: "center",
-                    fontSize: "25px",
-                    fontWeight: "bold",
-                  }}>No Data Available</span>
+                {mapArray.length === 0 && dataType === "AddRequest" && (
+                  <span
+                    style={{
+                      textAlign: "center",
+                      fontSize: "25px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                     <Nodata/>
+                  </span>
                 )}
               </div>
             </div>
