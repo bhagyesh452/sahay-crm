@@ -106,13 +106,12 @@ function CompanyList({ companies, onCompanyClick }) {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Note: Month is zero-based
     const year = date.getFullYear();
-
     return `${day}/${month}/${year}`;
   };
 
   const handleCompanyClick = (company) => {
     setCompanyClasses(prevClasses => ({
-      ...prevClasses,
+    
       [company]: "list-group-item list-group-item-action active"
     }));
     onCompanyClick(company);
