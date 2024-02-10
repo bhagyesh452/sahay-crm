@@ -10,14 +10,26 @@
     font-size: 12px;
     color: #6a6a6a;
     margin-left: 20px !important;
-    margin-right: 20px !important;
+    margin-right: 8px !important;
+}
+.p-booking-Cname{
+    justify-content: space-between;
 }
 .p-booking-Cname h3{
     text-transform: capitalize;
     margin-left: 19px !important;
 }
+.cmpy-dash-header{
+    justify-content: space-between;
+}
+.cmpy-dash-header h3{
+    margin-bottom: -20px !important;
+}
+.cmpy-d-header{
+    margin-left: 35px !important;
+}
 .cmpy-d-body{
-    overflow-x: none;
+    overflow-x: none !important;
     overflow-y: auto !important;
     height: 80vh;
     width: 100%;

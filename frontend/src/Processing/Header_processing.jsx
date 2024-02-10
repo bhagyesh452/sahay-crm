@@ -32,7 +32,7 @@ function Header_processing({ name, designation}) {
       console.log("New request received:", newRequest);
 
       // Fetch updated data when a new request is received
-      fetchRequestDetails();
+    fetchRequestDetails();
     fetchRequestGDetails();
     });
     // Clean up the socket connection when the component unmounts
@@ -105,7 +105,7 @@ function Header_processing({ name, designation}) {
                 <div className="d-xl-block ps-2">
                   <div>{name ? name : "Username"}</div>
                   <div style={{textAlign:"left"}} className="mt-1 small text-muted">
-                    {designation ? designation : "Admin"}
+                    {designation ? designation : "Processing-team"}
                   </div>
                 </div>
               </button>

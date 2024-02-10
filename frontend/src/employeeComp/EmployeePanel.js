@@ -261,7 +261,7 @@ function EmployeePanel() {
       const stateMatches = fieldValue
         .toLowerCase()
         .includes(searchText.toLowerCase());
-      const cityMatches = company.City.toLowerCase().includes(
+        const cityMatches = company.City.toLowerCase().includes(
         citySearch.toLowerCase()
       );
       return stateMatches && cityMatches;

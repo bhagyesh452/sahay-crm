@@ -1251,6 +1251,10 @@ app.get('/api/loginDetails', (req, res) => {
       });
 });
 
+app.get('/api/pdf', (req, res) => {
+  const pdfPath = path.join(__dirname, 'uploads', 'pdf1.pdf');
+  res.sendFile(pdfPath);
+});
 
 
 http.listen(3001, function () {
