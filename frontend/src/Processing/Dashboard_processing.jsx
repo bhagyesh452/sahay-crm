@@ -15,7 +15,6 @@ function Dashboard_processing() {
   const [bookingDates, setBookingDates] = useState([]);
   const [selectedBookingDate, setSelectedBookingDate] = useState(null);
 
-
   useEffect(() => {
     // Fetch company names from the backend API
     fetchCompanies();
@@ -32,7 +31,7 @@ function Dashboard_processing() {
     try {
       const response = await fetch("http://localhost:3001/api/companies");
       const data = await response.json();
-      console.log(response.data)
+      console.log(response.data);
 
       // Extract unique booking dates from the fetched data
       const uniqueBookingDates = Array.from(
@@ -58,7 +57,9 @@ function Dashboard_processing() {
   const fetchCompanyDetails = async () => {
     try {
       if (selectedCompanyId !== null) {
-        const response = await fetch(`http://localhost:3001/api/company/${selectedCompanyId}`);
+        const response = await fetch(
+          `http://localhost:3001/api/company/${selectedCompanyId}`
+        );
         const data = await response.json();
         setCompanyDetails(data);
       }
@@ -83,7 +84,7 @@ function Dashboard_processing() {
 console.log(companies)  
 
   return (
-    <div >
+    <div>
       <Header_processing />
       <Navbar_processing />
       <div className="page-body">
@@ -325,13 +326,15 @@ function Dashboard_processing() {
             </div>
             <div className="col-sm-8">
               <div>
-                <h3 class="card-title">{companyDetails ? (
-                  <CompanyDetails company={companyDetails} />
-                ) : (
-                  <div className="card-header">
-                    <h3 className="card-title">Booking Details</h3>
-                  </div>
-                )}</h3>
+                <h3 class="card-title">
+                  {companyDetails ? (
+                    <CompanyDetails company={companyDetails} />
+                  ) : (
+                    <div className="card-header">
+                      <h3 className="card-title">Booking Details</h3>
+                    </div>
+                  )}
+                </h3>
               </div>
             </div>
           </div>

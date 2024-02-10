@@ -602,7 +602,7 @@ function Employees({ onEyeButtonClick }) {
         >
           <div className="card">
             <div style={{ padding: "0px" }} className="card-body">
-              <div id="table-default">
+              <div id="table-default" style={{overflow: "auto", maxHeight: "70vh"}}>
                 <table
                   style={{
                     width: "100%",
@@ -662,8 +662,9 @@ function Employees({ onEyeButtonClick }) {
                       </tr>
                     </tbody>
                   ) : (
-                    filteredData.map((item, index) => (
-                      <tbody className="table-tbody">
+                    <tbody className="table-tbody">
+                   { filteredData.map((item, index) => (
+                     
                         <tr key={index} style={{ border: "1px solid #ddd" }}>
                           <td
                            className="td-sticky"
@@ -723,8 +724,9 @@ function Employees({ onEyeButtonClick }) {
                             </div>
                           </td>
                         </tr>
-                      </tbody>
-                    ))
+                     
+                    ))}
+                    </tbody>
                   )}
                   <tbody className="table-tbody"></tbody>
                 </table>
