@@ -1,19 +1,27 @@
 .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
     max-width: 96%!important;
 }
+.cmpy-list-body{
+    overflow-y:auto !important;
+    height: 500px;
+}
 .time,.bookingdate
 {
     font-size: 12px;
     color: #6a6a6a;
+    margin-left: 20px !important;
+    margin-right: 20px !important;
 }
 .p-booking-Cname h3{
     text-transform: capitalize;
+    margin-left: 19px !important;
 }
-.cmpy-d-b{
+.cmpy-d-body{
     overflow-x: none;
     overflow-y: auto !important;
-    height: 500px;
+    height: 80vh;
     width: 100%;
+    
 }
 .cmpy-d-b-datagrid{
     margin-top:20px;
@@ -22,4 +30,23 @@
 }
 .cmpy-d-b-datagriditem{
     padding: 20px;
+}
+.search-date-header{
+    display: flex;
+    flex-direction: column;
+}
+
+.search-name{
+    width: 92% !important;
+}
+
+.search-date{
+    display: flex;
+    width: 97% !important;
+    margin-top: 16px;
+    
+}
+.search-date input{
+    font-size: 14px;
+    margin: 0px 10px;
 }

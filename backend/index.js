@@ -792,7 +792,7 @@ app.post(
         cPANorGSTnum,
         incoDate,
         extraNotes,
-        bookingtime : bookingTime
+        bookingTime
       });
 
       const display = caCase === "No" ? "none" : "flex";

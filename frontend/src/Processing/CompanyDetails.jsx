@@ -33,6 +33,14 @@ import './style_processing/main_processing.css'
 // Other imports...
 
 // Other imports...
+const formatDatelatest = (inputDate) => {
+  const date = new Date(inputDate);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Note: Month is zero-based
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+};
 
 const CompanyDetails = ({ company }) => {
   return (
@@ -40,7 +48,7 @@ const CompanyDetails = ({ company }) => {
       <div className="card-header">
         <h3 className="card-title">Booking Details</h3>
       </div>
-      <div className="card-body cmpy-d-b">
+      <div className="card-body cmpy-d-body">
         {company ? (
           <div className="datagrid cmpy-d-b-datagrid ">
             {Object.entries(company)
@@ -52,7 +60,8 @@ const CompanyDetails = ({ company }) => {
                     <div className="datagrid-title">{key}</div>
                     <div className="datagrid-content">
                       {/* Format date if key is "bookingDate" or "incoDate" */}
-                      {(key === "bookingDate" || key === "incoDate") ? new Date(value).toLocaleDateString() : value}
+                      {/* {(key === "bookingDate" || key === "incoDate") ? new Date(value).toLocaleDateString() : value} */}
+                      {(key === "bookingDate" || key === "incoDate") ? formatDatelatest(value) : value}
                     </div>
                   </div>
                 )

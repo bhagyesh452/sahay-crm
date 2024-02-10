@@ -1,53 +1,69 @@
-/*import React, { useState } from "react";
-import { FaSearch } from "react-icons/fa";
-import './style_processing/main_processing.css'
-import { FaRegCalendarAlt } from "react-icons/fa";
 
-function CompanyList({ companies, onCompanyClick, selectedBookingDate }) {
+/*import React, { useState } from "react";
+import './style_processing/main_processing.css';
+
+function CompanyList({ companies, onCompanyClick }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [companyClasses, setCompanyClasses] = useState({});
+  const [searchDate, setSearchDate] = useState("");
+  const [companyData, setcompanyData] = useState(companies);
 
-  const filteredCompanies = companies.filter(company =>
-    company && company.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
+  const formatDatelatest = (inputDate) => {
+    const date = new Date(inputDate);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Note: Month is zero-based
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
 
   const handleCompanyClick = (company) => {
-    // Add or update the class for the clicked company
     setCompanyClasses(prevClasses => ({
       ...prevClasses,
       [company]: "list-group-item list-group-item-action active"
     }));
-
-    // Call the original onCompanyClick function
     onCompanyClick(company);
   };
 
-  const formattedDate = selectedBookingDate ? new Date(selectedBookingDate).toLocaleDateString() : '';
+  const FilteredData = searchDate === "" ?
+
+    companies.filter(obj => obj.companyName.toLowerCase().includes(searchTerm)) : companies.filter(obj => formatDatelatest(obj.bookingDate) === formatDatelatest(searchDate))
+
+  console.log(FilteredData)
 
   return (
     <div className="card">
       <div className="card-header">
-        <div className="input-icon">
+        <div className="input-icon search-name">
           <span className="input-icon-addon">
             <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path><path d="M21 21l-6 -6"></path></svg>
           </span>
           <input type="text" value={searchTerm} className="form-control" placeholder="Search…" aria-label="Search in website" onChange={(e) => setSearchTerm(e.target.value)} />
         </div>
-        <div id="date-picker-example" class="md-form md-outline input-with-post-icon datepicker" inline="true">
-          <input placeholder="Select date" type="text" id="example" class="form-control" />
-          <label for="example">Try me...</label>
-          <i class="fas fa-calendar input-prefix"></i>
+        <div className="input-icon search-date">
+          <input
+            type="date"
+            value={searchDate}
+            className="form-control"
+            placeholder="Search…"
+            aria-label="Search in website"
+            onChange={(e) => {
+              setSearchDate(e.target.value)
+
+            }}
+          />
+
         </div>
       </div>
       <div className="list-group list-group-flush list-group-hoverable">
-        {filteredCompanies.map((company, index) => (
-          <div className={companyClasses[company] || "list-group-item list-group-item-action"} key={index}>
+        {FilteredData.map((company, index) => (
+          <div className={companyClasses[company.companyName] || "list-group-item list-group-item-action"} key={index}>
             <div className="row align-items-center">
               <div className="col text-justify">
                 <div className="p-booking-Cname">
-                  <h3 className="m-0" onClick={() => handleCompanyClick(company)}>
-                    {company}
+                  <h3 className="m-0" onClick={() => handleCompanyClick(company.companyName)}>
+                    {company.companyName}
                   </h3>
                 </div>
                 <div className="d-flex justify-content-between aligns-items-center mt-1">
@@ -55,9 +71,11 @@ function CompanyList({ companies, onCompanyClick, selectedBookingDate }) {
                     <label className="m-0">10:00 AM</label>
                   </div>
                   <div className="bookingdate">
-                    <label className="m-0">{selectedBookingDate && (
-                      <p>{formattedDate}</p>
-                    )}</label>
+                    <label className="m-0">
+                      {company.bookingDate && (
+                        <p>{formatDatelatest(company.bookingDate)}</p>
+                      )}
+                    </label>
                   </div>
                 </div>
               </div>
@@ -71,22 +89,26 @@ function CompanyList({ companies, onCompanyClick, selectedBookingDate }) {
 
 export default CompanyList;*/
 
+
 import React, { useState } from "react";
-import { FaSearch, FaRegCalendarAlt } from "react-icons/fa";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import './style_processing/main_processing.css';
 
-function CompanyList({ companies, onCompanyClick, selectedBookingDate }) {
+function CompanyList({ companies, onCompanyClick }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [companyClasses, setCompanyClasses] = useState({});
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [searchDate, setSearchDate] = useState("");
+  const [companyData, setcompanyData] = useState(companies);
+  const [dateRange, setDateRange] = useState({ startDate: "", endDate: "" });
 
-  const filteredCompanies = companies.filter(company =>
-    company &&
-    company.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (!selectedDate || new Date(company.bookingDate).toDateString() === selectedDate.toDateString())
-  );
+
+  const formatDatelatest = (inputDate) => {
+    const date = new Date(inputDate);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Note: Month is zero-based
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
 
   const handleCompanyClick = (company) => {
     setCompanyClasses(prevClasses => ({
@@ -96,46 +118,81 @@ function CompanyList({ companies, onCompanyClick, selectedBookingDate }) {
     onCompanyClick(company);
   };
 
-  const formattedDate = selectedBookingDate ? new Date(selectedBookingDate).toLocaleDateString() : '';
+  const FilteredData = !dateRange.startDate && !dateRange.endDate ?
+  companies.filter(obj => obj.companyName.toLowerCase().includes(searchTerm)) :
+  companies.filter(obj => {
+    const companyNameMatch = obj.companyName.toLowerCase().includes(searchTerm);
+    const dateMatch = dateRange.startDate && dateRange.endDate ?
+      formatDatelatest(obj.bookingDate) >= formatDatelatest(dateRange.startDate) &&
+      formatDatelatest(obj.bookingDate) <= formatDatelatest(dateRange.endDate) :
+      true;
+      console.log(obj.bookingDate)
+      console.log(dateRange.startDate)
+      console.log(dateRange.endDate)
+
+    return companyNameMatch && dateMatch;
+  });
+
+
 
   return (
     <div className="card">
-      <div className="card-header">
-        <div className="input-icon">
+      <div className="card-header search-date-header">
+        <div className="input-icon search-name">
           <span className="input-icon-addon">
             <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path><path d="M21 21l-6 -6"></path></svg>
           </span>
           <input type="text" value={searchTerm} className="form-control" placeholder="Search…" aria-label="Search in website" onChange={(e) => setSearchTerm(e.target.value)} />
         </div>
-        <div className="date-picker-icon">
-          <DatePicker
-            selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
-            dateFormat="yyyy-MM-dd"
-            placeholderText={<FaRegCalendarAlt />}
-            className="form-control datepicker-icon"
-            popperPlacement="bottom-end"
+        <div className="input-icon search-date">
+          {/* <input
+            type="date"
+            value={searchDate}
+            className="form-control"
+            placeholder="Search…"
+            aria-label="Search in website"
+            onChange={(e) => {
+              setSearchDate(e.target.value)
+
+            }}
+          /> */}
+          <input
+            type="date"
+            value={dateRange.startDate}
+            className="form-control"
+            onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
           />
+          <span className="date-range-separator">to</span>
+          <input
+            type="date"
+            value={dateRange.endDate}
+            className="form-control"
+            onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+          />
+
         </div>
       </div>
-      <div className="list-group list-group-flush list-group-hoverable">
-        {filteredCompanies.map((company, index) => (
-          <div className={companyClasses[company] || "list-group-item list-group-item-action"} key={index}>
+      <div className="list-group list-group-flush list-group-hoverable cmpy-list-body">
+        {FilteredData.map((company, index) => (
+          <div className={companyClasses[company.companyName] || "list-group-item list-group-item-action"} key={index}>
             <div className="row align-items-center">
               <div className="col text-justify">
                 <div className="p-booking-Cname">
-                  <h3 className="m-0" onClick={() => handleCompanyClick(company)}>
-                    {company}
+                  <h3 className="m-0" onClick={() => handleCompanyClick(company.companyName)}>
+                    {company.companyName}
                   </h3>
                 </div>
                 <div className="d-flex justify-content-between aligns-items-center mt-1">
                   <div className="time">
-                    <label className="m-0">10:00 AM</label>
+                    <label className="m-0">{company.bookingTime && (
+                      <p>{company.bookingTime}</p>)}</label>
                   </div>
                   <div className="bookingdate">
-                    <label className="m-0">{selectedBookingDate && (
-                      <p>{formattedDate}</p>
-                    )}</label>
+                    <label className="m-0">
+                      {company.bookingDate && (
+                        <p>{formatDatelatest(company.bookingDate)}</p>
+                      )}
+                    </label>
                   </div>
                 </div>
               </div>
@@ -148,6 +205,18 @@ function CompanyList({ companies, onCompanyClick, selectedBookingDate }) {
 }
 
 export default CompanyList;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
