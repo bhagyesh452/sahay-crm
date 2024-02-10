@@ -1251,6 +1251,8 @@ app.get('/api/loginDetails', (req, res) => {
       });
 });
 
+
+
 http.listen(3001, function () {
   console.log("Server started...");
   socketIO.on("connection", function (socket) {

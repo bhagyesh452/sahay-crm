@@ -31,6 +31,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import Modal from "react-modal";
 import { json } from "react-router-dom";
+import Nodata from "../components/Nodata";
 
 function Leads() {
   const [open, openchange] = useState(false);
@@ -483,6 +484,7 @@ function Leads() {
   // ------------------------------------------- CHECK BOX CONTENT----------------------------------------------------
 
   const [selectedRows, setSelectedRows] = useState([]);
+  const [startRowIndex, setStartRowIndex] = useState(null);
   const handleCheckboxChange = (id) => {
     // If the id is 'all', toggle all checkboxes
     if (id === "all") {
@@ -503,6 +505,31 @@ function Leads() {
         }
       });
     }
+  };
+  const handleMouseDown = (id) => {
+    // Initiate drag selection
+    setStartRowIndex(filteredData.findIndex(row => row._id === id));
+  };
+
+  const handleMouseEnter = (id) => {
+    // Update selected rows during drag selection
+    if (startRowIndex !== null) {
+      const endRowIndex = filteredData.findIndex(row => row._id === id);
+      const selectedRange = [];
+      const startIndex = Math.min(startRowIndex, endRowIndex);
+      const endIndex = Math.max(startRowIndex, endRowIndex);
+      
+      for (let i = startIndex; i <= endIndex; i++) {
+        selectedRange.push(filteredData[i]._id);
+      }
+      
+      setSelectedRows(selectedRange);
+    }
+  };
+
+  const handleMouseUp = () => {
+    // End drag selection
+    setStartRowIndex(null);
   };
 
   // const handleCheckboxChange = (id) => {
@@ -1444,6 +1471,7 @@ function Leads() {
                         <option value="City">City</option>
                         <option value="State">State</option>
                         <option value="Status">Status</option>
+                        <option value="ename">Assigned To</option>
                       </select>
                     </div>
                     {visibility === "block" ? (
@@ -1629,6 +1657,9 @@ function Leads() {
                         </div>
                       </>
                     )}
+                      {selectedRows.length!==0 && <div className="form-control">
+                        Total Data Selected : {selectedRows.length}
+                      </div>}
                   </div>
                 </div>
               </div>
@@ -1735,20 +1766,23 @@ function Leads() {
                   {currentData.length == 0 ? (
                     <tbody>
                       <tr>
-                        <td colSpan="12" style={{ textAlign: "center" }}>
-                          No data available
+                        <td colSpan="13" className="p-2 particular" >
+                          <Nodata/>
                         </td>
                       </tr>
                     </tbody>
                   ) : (
                     currentData.map((company, index) => (
                       <tbody className="table-tbody">
-                        <tr key={index} style={{ border: "1px solid #ddd" }}>
+                        <tr key={index} className={selectedRows.includes(company._id) ? 'selected' : ''} style={{ border: "1px solid #ddd" }} >
                           <td>
                             <input
                               type="checkbox"
                               checked={selectedRows.includes(company._id)}
                               onChange={() => handleCheckboxChange(company._id)}
+                              onMouseDown={() => handleMouseDown(company._id)}
+                              onMouseEnter={() => handleMouseEnter(company._id)}
+                              onMouseUp={handleMouseUp}
                             />
                           </td>
                           <td>{startIndex + index + 1}</td>

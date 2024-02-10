@@ -145,7 +145,10 @@ function EmployeePanel() {
   };
 
   const handleFieldChange = (event) => {
-    if (event.target.value === "Company Incorporation Date  ") {
+    if (
+      event.target.value === "Company Incorporation Date  " ||
+      event.target.value === "AssignDate"
+    ) {
       setSelectedField(event.target.value);
       setVisibility("block");
       setVisibilityOther("none");
@@ -278,6 +281,9 @@ function EmployeePanel() {
         selectedMonth.toString().includes(month) &&
         selectedYear.toString().includes(year)
       );
+    } else if (selectedField === "AssignDate") {
+      // Assuming you have the month value in a variable named `month`
+      return fieldValue.includes(searchText);
     } else if (selectedField === "Status" && searchText === "All") {
       // Display all data when Status is "All"
       return true;
@@ -568,7 +574,6 @@ function EmployeePanel() {
       });
   };
 
-
   // Function for Parsing Excel File
 
   const handleFileChange = (event) => {
@@ -601,8 +606,8 @@ function EmployeePanel() {
             "Company Incorporation Date  ": formatDateFromExcel(row[4]), // Assuming the date is in column 'E' (0-based)
             City: row[5],
             State: row[6],
-            Status:row[7],
-            Remarks:row[8]
+            Status: row[7],
+            Remarks: row[8],
           }));
 
         setCsvData(formattedJsonData);
@@ -656,45 +661,39 @@ function EmployeePanel() {
   //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
   // })
   const handleUploadData = async (e) => {
- const name = data.ename;
-      const updatedCsvdata = csvdata.map((data) => ({
-        ...data,
-        ename: name,
-      }));
-      
-      if (updatedCsvdata.length !== 0) {
-         // Move setLoading outside of the loop
+    const name = data.ename;
+    const updatedCsvdata = csvdata.map((data) => ({
+      ...data,
+      ename: name,
+    }));
 
-        try {
-          await axios.post(`${secretKey}/leads`, updatedCsvdata);
-          console.log("Data sent successfully");
-          Swal.fire({
-            title: "Data Send!",
-            text: "Data Successfully Added",
-            icon: "success",
-          });
+    if (updatedCsvdata.length !== 0) {
+      // Move setLoading outside of the loop
 
-      
-        } catch (error) {
-          if (error.response.status !== 500) {
-          
-            Swal.fire("Some of the data are not unique");
-          } else {
-           
-            Swal.fire("Please upload unique data");
-          }
-          console.log("Error:", error);
+      try {
+        await axios.post(`${secretKey}/leads`, updatedCsvdata);
+        console.log("Data sent successfully");
+        Swal.fire({
+          title: "Data Send!",
+          text: "Data Successfully Added",
+          icon: "success",
+        });
+      } catch (error) {
+        if (error.response.status !== 500) {
+          Swal.fire("Some of the data are not unique");
+        } else {
+          Swal.fire("Please upload unique data");
         }
-
-       // Move setLoading outside of the loop
-
-        setCsvData([]);
-      } else {
-        Swal.fire("Please upload data");
+        console.log("Error:", error);
       }
-    
-  };
 
+      // Move setLoading outside of the loop
+
+      setCsvData([]);
+    } else {
+      Swal.fire("Please upload data");
+    }
+  };
 
   return (
     <div>
@@ -714,9 +713,9 @@ function EmployeePanel() {
                   >
                     <div style={{ display: "flex" }} className="feature1">
                       <div
-                        className="form-control"
-                        style={{ height: "fit-content", width: "auto" }}
-                      >
+                        className="form-control mr-1"
+                        style={{ height: "fit-content", width: "auto"   }}
+                       >
                         <select
                           style={{
                             border: "none",
@@ -735,9 +734,10 @@ function EmployeePanel() {
                           <option value="City">City</option>
                           <option value="State">State</option>
                           <option value="Status">Status</option>
+                          <option value="AssignDate">Assigned Date</option>
                         </select>
                       </div>
-                      {visibility === "block" ? (
+                      {visibility === "block" && (
                         <div>
                           <input
                             onChange={handleDateChange}
@@ -746,9 +746,7 @@ function EmployeePanel() {
                             className="form-control"
                           />
                         </div>
-                      ) : (
-                        <div></div>
-                      )}
+                      ) }
 
                       {visibilityOther === "block" ? (
                         <div
@@ -837,7 +835,7 @@ function EmployeePanel() {
                             fontSize: "16px",
                             fontFamily: "sans-serif",
                           }}
-                          className="results"
+                          className="results ml-1"
                         >
                           {filteredData.length} results found
                         </div>
@@ -932,6 +930,7 @@ function EmployeePanel() {
                           </div>
                         </>
                       )}
+
                       <div className="request" style={{ marginRight: "15px" }}>
                         <div className="btn-list">
                           <button
@@ -1219,6 +1218,7 @@ function EmployeePanel() {
                             <th>Incorporation Date</th>
                             <th>City</th>
                             <th>State</th>
+                            <th>Assigned Date</th>
 
                             {dataStatus === "Matured" && <th>Action</th>}
                           </tr>
@@ -1233,7 +1233,7 @@ function EmployeePanel() {
                           </tbody>
                         ) : (
                           <tbody>
-                            {currentData.map((company, index) => (
+                            {currentData.reverse().map((company, index) => (
                               <tr
                                 key={index}
                                 style={{ border: "1px solid #ddd" }}
@@ -1337,6 +1337,7 @@ function EmployeePanel() {
                                 </td>
                                 <td>{company["City"]}</td>
                                 <td>{company["State"]}</td>
+                                <td>{formatDate(company["AssignDate"])}</td>
 
                                 {dataStatus === "Matured" && (
                                   <td>
@@ -1819,11 +1820,18 @@ function EmployeePanel() {
               <label for="formFile" class="form-label">
                 Upload CSV File
               </label>
-              <a href={frontendKey + "/EmployeeSample.xlsx"} download>Download Sample</a>
+              <a href={frontendKey + "/EmployeeSample.xlsx"} download>
+                Download Sample
+              </a>
             </div>
 
             <div class="mb-3">
-              <input onChange={handleFileChange} className="form-control" type="file" id="formFile" />
+              <input
+                onChange={handleFileChange}
+                className="form-control"
+                type="file"
+                id="formFile"
+              />
             </div>
           </div>
           {/* <input
@@ -1834,7 +1842,9 @@ function EmployeePanel() {
               />
               <button onClick={handleButtonClick}>Choose File</button> */}
         </DialogContent>
-        <button onClick={handleUploadData} className="btn btn-primary">Submit</button>
+        <button onClick={handleUploadData} className="btn btn-primary">
+          Submit
+        </button>
       </Dialog>
     </div>
   );
