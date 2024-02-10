@@ -1,5 +1,5 @@
 import React from "react";
-import myImage from "../static/nodatalogo.png";
+
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -7,6 +7,7 @@ import Header from "./Header";
 import Navbar from "../admin/Navbar";
 import { IconButton } from "@mui/material";
 import { IconChevronLeft } from "@tabler/icons-react";
+import Nodata from "./Nodata";
 
 function LoginDetails() {
   const [loginDetails, setLoginDetails] = useState([]);
@@ -117,7 +118,10 @@ function LoginDetails() {
                 </table>
               ) : (
                 <>
-                  <img src={myImage} alt="myImage" />
+                <div className="p-2">
+
+                <Nodata/>
+                </div>
                 </>
               )}
             </div>

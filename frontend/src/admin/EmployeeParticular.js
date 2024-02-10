@@ -14,6 +14,7 @@ import "../../src/assets/styles.css";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
 import LoginDetails from "../components/LoginDetails";
+import Nodata from "../components/Nodata";
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 function EmployeeParticular() {
@@ -259,6 +260,7 @@ function EmployeeParticular() {
     openchangelocation(false);
   };
   const [selectedOption, setSelectedOption] = useState("direct");
+  const [startRowIndex, setStartRowIndex] = useState(null);
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
@@ -334,6 +336,44 @@ function EmployeeParticular() {
   };
 
   console.log(loginDetails);
+
+  const handleMouseDown = (id) => {
+    // Initiate drag selection
+    setStartRowIndex(filteredData.findIndex(row => row._id === id));
+  };
+
+  const handleMouseEnter = (id) => {
+    // Update selected rows during drag selection
+    if (startRowIndex !== null) {
+      const endRowIndex = filteredData.findIndex(row => row._id === id);
+      const selectedRange = [];
+      const startIndex = Math.min(startRowIndex, endRowIndex);
+      const endIndex = Math.max(startRowIndex, endRowIndex);
+  
+      for (let i = startIndex; i <= endIndex; i++) {
+        selectedRange.push(filteredData[i]._id);
+      }
+  
+      setSelectedRows(selectedRange);
+  
+      // Scroll the window vertically when dragging beyond the visible viewport
+      const windowHeight = document.documentElement.clientHeight;
+      const mouseY = window.event.clientY;
+      const tableHeight = document.querySelector('table').clientHeight;
+      const maxVisibleRows = Math.floor(windowHeight / (tableHeight / filteredData.length));
+  
+      if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
+        window.scrollTo(0, window.scrollY + 20);
+      }
+    }
+  };
+  
+  
+
+  const handleMouseUp = () => {
+    // End drag selection
+    setStartRowIndex(null);
+  };
   return (
     <div>
       <Header />
@@ -347,15 +387,48 @@ function EmployeeParticular() {
         >
           <div className="container-xl">
             <div className="row g-2 align-items-center">
-              <div className="col d-flex">
+              <div className="col d-flex justify-content-between">
                 {/* <!-- Page pre-title --> */}
-                <Link to={`/admin/employees`}>
-                  <IconButton>
-                    <IconChevronLeft />
-                  </IconButton>
-                </Link>
+                <div className="d-flex">
+                  <Link to={`/admin/employees`}>
+                    <IconButton>
+                      <IconChevronLeft />
+                    </IconButton>
+                  </Link>
 
-                <h2 className="page-title">{employeeName}</h2>
+                  <h2 className="page-title">{employeeName}</h2>
+                </div>
+                <div className="d-flex">
+                  {selectedRows.length !== 0 && (
+                    <div className="request">
+                      <div className="btn-list">
+                        <button
+                          onClick={functionOpenAssign}
+                          className="btn btn-primary d-none d-sm-inline-block 2"
+                        >
+                          Assign Data
+                        </button>
+                        <a
+                          href="#"
+                          className="btn btn-primary d-sm-none btn-icon"
+                          data-bs-toggle="modal"
+                          data-bs-target="#modal-report"
+                          aria-label="Create new report"
+                        >
+                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                  <Link
+                    to={`/admin/employees/${id}/login-details`}
+                    style={{ marginLeft: "10px" }}
+                  >
+                    <button className="btn btn-primary d-none d-sm-inline-block">
+                      Login Details
+                    </button>
+                  </Link>
+                </div>
               </div>
 
               {/* <!-- Page title actions --> */}
@@ -385,140 +458,113 @@ function EmployeeParticular() {
           >
             <div className="container-xl">
               <div className="row g-2 align-items-center">
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                  className="features"
-                >
-                  <div style={{ display: "flex" }} className="feature1 mb-2">
-                    <div
+                <div className="col-2">
+                  <div
+                    className="form-control"
+                    style={{ height: "fit-content", width: "auto" }}
+                  >
+                    <select
+                      style={{
+                        border: "none",
+                        outline: "none",
+                        width: "fit-content",
+                      }}
+                      value={selectedField}
+                      onChange={handleFieldChange}
+                    >
+                      <option value="Company Name">Company Name</option>
+                      <option value="Company Number">Company Number</option>
+                      <option value="Company Email">Company Email</option>
+                      <option value="Company Incorporation Date  ">
+                        Company Incorporation Date
+                      </option>
+                      <option value="City">City</option>
+                      <option value="State">State</option>
+                      <option value="Status">Status</option>
+                    </select>
+                  </div>
+                </div>
+
+                {visibility === "block" && (
+                  <div className="col-2">
+                    <input
+                      onChange={handleDateChange}
+                      style={{ display: visibility }}
+                      type="date"
                       className="form-control"
-                      style={{ height: "fit-content", width: "auto" }}
+                    />
+                  </div>
+                )}
+                <div className="col-2">
+                  {visibilityOther === "block" && (
+                    <div
+                      style={{
+                        width: "20vw",
+                        margin: "0px 10px",
+                        display: visibilityOther,
+                      }}
+                      className="input-icon"
+                    >
+                      <span className="input-icon-addon">
+                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="icon"
+                          width="20"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          stroke-width="2"
+                          stroke="currentColor"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                          <path d="M21 21l-6 -6" />
+                        </svg>
+                      </span>
+                      <input
+                        type="text"
+                        value={searchText}
+                        onChange={(e) => {
+                          setSearchText(e.target.value);
+                          setCurrentPage(0);
+                        }}
+                        className="form-control"
+                        placeholder="Search…"
+                        aria-label="Search in website"
+                      />
+                    </div>
+                  )}
+                  {visibilityOthernew === "block" && (
+                    <div
+                      style={{
+                        width: "20vw",
+                        margin: "0px 10px",
+                        display: visibilityOthernew,
+                      }}
+                      className="input-icon"
                     >
                       <select
-                        style={{
-                          border: "none",
-                          outline: "none",
-                          width: "fit-content",
+                        value={searchText}
+                        onChange={(e) => {
+                          setSearchText(e.target.value);
                         }}
-                        value={selectedField}
-                        onChange={handleFieldChange}
+                        className="form-select"
                       >
-                        <option value="Company Name">Company Name</option>
-                        <option value="Company Number">Company Number</option>
-                        <option value="Company Email">Company Email</option>
-                        <option value="Company Incorporation Date  ">
-                          Company Incorporation Date
-                        </option>
-                        <option value="City">City</option>
-                        <option value="State">State</option>
-                        <option value="Status">Status</option>
+                        <option value="All">All </option>
+                        <option value="Busy">Busy </option>
+                        <option value="Not Picked Up">Not Picked Up </option>
+                        <option value="Junk">Junk</option>
+                        <option value="Interested">Interested</option>
+                        <option value="Not Interested">Not Interested</option>
                       </select>
                     </div>
-                    {visibility === "block" ? (
-                      <div>
-                        <input
-                          onChange={handleDateChange}
-                          style={{ display: visibility }}
-                          type="date"
-                          className="form-control"
-                        />
-                      </div>
-                    ) : (
-                      <div></div>
-                    )}
-
-                    {visibilityOther === "block" ? (
-                      <div
-                        style={{
-                          width: "20vw",
-                          margin: "0px 10px",
-                          display: visibilityOther,
-                        }}
-                        className="input-icon"
-                      >
-                        <span className="input-icon-addon">
-                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon"
-                            width="20"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            stroke-width="2"
-                            stroke="currentColor"
-                            fill="none"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                            <path d="M21 21l-6 -6" />
-                          </svg>
-                        </span>
-                        <input
-                          type="text"
-                          value={searchText}
-                          onChange={(e) => {
-                            setSearchText(e.target.value);
-                            setCurrentPage(0);
-                          }}
-                          className="form-control"
-                          placeholder="Search…"
-                          aria-label="Search in website"
-                        />
-                      </div>
-                    ) : (
-                      <div></div>
-                    )}
-                    {visibilityOthernew === "block" ? (
-                      <div
-                        style={{
-                          width: "20vw",
-                          margin: "0px 10px",
-                          display: visibilityOthernew,
-                        }}
-                        className="input-icon"
-                      >
-                        <select
-                          value={searchText}
-                          onChange={(e) => {
-                            setSearchText(e.target.value);
-                          }}
-                          className="form-select"
-                        >
-                          <option value="All">All </option>
-                          <option value="Busy">Busy </option>
-                          <option value="Not Picked Up">Not Picked Up </option>
-                          <option value="Junk">Junk</option>
-                          <option value="Interested">Interested</option>
-                          <option value="Not Interested">Not Interested</option>
-                        </select>
-                      </div>
-                    ) : (
-                      <div></div>
-                    )}
-                    {searchText !== "" ? (
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          fontSize: "16px",
-                          fontFamily: "sans-serif",
-                        }}
-                        className="results"
-                      >
-                        {filteredData.length} results found
-                      </div>
-                    ) : (
-                      <div></div>
-                    )}
-                  </div>
-                  <div
-                    style={{ display: "flex", alignItems: "center" }}
-                    className="feature2"
-                  >
-                    {selectedField === "State" && (
+                  )}
+                </div>
+                <div className="col-2">
+                  {selectedField === "State" && (
                       <div style={{ width: "15vw" }} className="input-icon">
                         <span className="input-icon-addon">
                           {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
@@ -597,37 +643,31 @@ function EmployeeParticular() {
                         </div>
                       </>
                     )}
+                </div>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                  className="features"
+                >
+                  <div style={{ display: "flex" }} className="feature1 mb-2">
                     {selectedRows.length !== 0 && (
-                      <div className="request">
-                        <div className="btn-list">
-                          <button
-                            onClick={functionOpenAssign}
-                            className="btn btn-primary d-none d-sm-inline-block"
-                          >
-                            Assign Data
-                          </button>
-                          <a
-                            href="#"
-                            className="btn btn-primary d-sm-none btn-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-report"
-                            aria-label="Create new report"
-                          >
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                          </a>
-                        </div>
+                      <div className="form-control">
+                        {selectedRows.length} Data Selected
                       </div>
-                    )}
-                    <Link
-                      style={{ color: "black" }}
-                      to={`/admin/employees/${id}/login-details`}
-                      className="btn btn-primary d-none d-sm-inline-block"
-                    >
-                        
-                          Login Details
-                    
-                    </Link>
-                    
+                    ) }
+                    {searchText !== "" && (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          fontSize: "16px",
+                          fontFamily: "sans-serif",
+                        }}
+                        className="results"
+                      >
+                        {filteredData.length} results found
+                      </div>
+                    ) }
                   </div>
                 </div>
 
@@ -660,9 +700,7 @@ function EmployeeParticular() {
                       }
                       data-bs-toggle="tab"
                     >
-                  
                       General{" "}
-                
                       <span className="no_badge">
                         {
                           moreEmpData.filter(
@@ -694,9 +732,7 @@ function EmployeeParticular() {
                       }
                       data-bs-toggle="tab"
                     >
-                     <span>
-                      Interested{" "}
-                      </span>
+                      <span>Interested </span>
                       <span className="no_badge">
                         {
                           moreEmpData.filter(
@@ -724,10 +760,8 @@ function EmployeeParticular() {
                       }
                       data-bs-toggle="tab"
                     >
-                      <span>
-                      Follow Up{" "}
-                      </span>
-                      
+                      <span>Follow Up </span>
+
                       <span className="no_badge">
                         {
                           moreEmpData.filter((obj) => obj.Status === "FollowUp")
@@ -754,9 +788,7 @@ function EmployeeParticular() {
                       }
                       data-bs-toggle="tab"
                     >
-                      <span>
-                      Matured{" "}
-                      </span>
+                      <span>Matured </span>
                       <span className="no_badge">
                         {
                           moreEmpData.filter((obj) => obj.Status === "Matured")
@@ -786,9 +818,7 @@ function EmployeeParticular() {
                       }
                       data-bs-toggle="tab"
                     >
-                    <span>
-                      Not Interested{" "}
-                      </span>
+                      <span>Not Interested </span>
                       <span className="no_badge">
                         {
                           moreEmpData.filter(
@@ -828,6 +858,7 @@ function EmployeeParticular() {
                                 selectedRows.length === filteredData.length
                               }
                               onChange={() => handleCheckboxChange("all")}
+
                             />
                           </th>
 
@@ -847,8 +878,8 @@ function EmployeeParticular() {
                       {currentData.length === 0 ? (
                         <tbody>
                           <tr>
-                            <td colSpan="10" style={{ textAlign: "center" }}>
-                              No data available
+                            <td colSpan="10" className="p-2">
+                              <Nodata/>
                             </td>
                           </tr>
                         </tbody>
@@ -857,6 +888,7 @@ function EmployeeParticular() {
                           {currentData.map((company, index) => (
                             <tr
                               key={index}
+                              className={selectedRows.includes(company._id) ? 'selected' : ''}
                               style={{ border: "1px solid #ddd" }}
                             >
                               <td
@@ -873,6 +905,9 @@ function EmployeeParticular() {
                                   onChange={() =>
                                     handleCheckboxChange(company._id)
                                   }
+                                  onMouseDown={() => handleMouseDown(company._id)}
+                                  onMouseEnter={() => handleMouseEnter(company._id)}
+                                  onMouseUp={handleMouseUp}
                                 />
                               </td>
 

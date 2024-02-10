@@ -369,6 +369,11 @@ th {
 {
     padding: 100px;
 }
+.No
+{
+    width: 100%;
+    text-align: center;
+}
 .noDataImg
 {
     width: 70px;
@@ -411,4 +416,25 @@ th {
     /* Add your styles for individual notification items */
     margin-bottom: 5px;
   }
-  
+  .selected{
+    background: #fff9e8;
+    color: #000;
+  }
+  .mr-2{
+    margin-right: 20px;
+  }
+  .mr-1{
+    margin-right: 10px;
+  }
+  .mr-3{
+    margin-right: 30px;
+  }
+  .ml-2{
+    margin-left: 20px;
+  }
+  .ml-1{
+    margin-left: 10px;
+  }
+  .ml-3{
+    margin-left: 30px;
+  }
