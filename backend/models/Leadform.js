@@ -1,6 +1,15 @@
 const mongoose = require('mongoose');
 
 const leadSchema = new mongoose.Schema({
+
+    bdeName: {
+        type:String,
+        required:true
+    },
+    bdeEmail:{
+        type:String,
+        required:true
+    },
     bdmName: {
         type:String,
         required:true
@@ -34,7 +43,7 @@ const leadSchema = new mongoose.Schema({
     cPANorGSTnum: Number,
     incoDate: Date,
     extraNotes: String,
-    otherDocs: String,
+    otherDocs: Array,
     bookingTime: String
 });
 

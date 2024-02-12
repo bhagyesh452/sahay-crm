@@ -47,7 +47,7 @@ function EmployeePanel() {
   const [updateData, setUpdateData] = useState({});
   const [RequestApprovals, setRequestApprovals] = useState([]);
   const [mapArray, setMapArray] = useState([]);
-  const itemsPerPage = 100;
+  const itemsPerPage = 500;
   const [year, setYear] = useState(0);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -113,7 +113,7 @@ function EmployeePanel() {
     try {
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
-      setmoreEmpData(response.data);
+      setmoreEmpData(response.data.reverse());
       setEmployeeData(
         tempData.filter(
           (obj) =>
@@ -726,6 +726,7 @@ function EmployeePanel() {
   };
 
   console.log(mapArray)
+  
 
 
 
@@ -1265,7 +1266,7 @@ function EmployeePanel() {
                           </tbody>
                         ) : (
                           <tbody>
-                            {currentData.reverse().map((company, index) => (
+                            {currentData.map((company, index) => (
                               <tr
                                 key={index}
                                 style={{ border: "1px solid #ddd" }}

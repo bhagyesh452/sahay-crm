@@ -13,10 +13,10 @@ import axios from 'axios';
 import { Link } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import socketIO from 'socket.io-client';
-export default function Bellicon({data , gdata}) {
+export default function Bellicon({data , gdata,adata}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [count, setCount] = useState(0);
-  const totalCount = data.filter((item) => !item.read).length + gdata.filter((item) => !item.read).length;
+  const totalCount = data.filter((item) => !item.read).length + gdata.filter((item) => !item.read).length + adata.length;
   
   
  
@@ -250,6 +250,26 @@ export default function Bellicon({data , gdata}) {
                      </Item>
                 
                 </MenuItem>
+              ))}
+              {adata.map((option)=>(
+                <MenuItem
+                style={{ marginTop: "0px" }}
+                key={option.ename}
+             
+              >
+                  <Item style={{alignItems:"center"}} className='d-flex' ><Avatar />
+                  <div className="cont-info">
+                  <h3 style={{margin:"0px"}}> {option.ename} </h3>
+                  <span>wants to add some data </span> </div> 
+                  <div className="timing">
+                  <span>{option.date}</span>
+                  <span style={{marginLeft: "10px", color: "#409d40"}}>{(option.time)}</span>
+                  </div>
+                  
+                  
+                   </Item>
+              
+              </MenuItem>
               ))}
               </Stack>
               <div style={{ margin: "3px 0px" }} className="foot">

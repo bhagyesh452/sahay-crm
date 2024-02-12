@@ -27,6 +27,7 @@ function Header({ name, designation}) {
     });
     fetchRequestDetails();
     fetchRequestGDetails();
+    fetchApproveRequests();
     socket.on("newRequest", (newRequest) => {
       // Handle the new request, e.g., update your state
       console.log("New request received:", newRequest);
@@ -46,7 +47,37 @@ function Header({ name, designation}) {
   },[]);
   const [requestData, setRequestData] = useState([]);
   const [requestGData, setRequestGData] = useState([]);
+  const [requestAppData, setRequestAppData] = useState([]);
+  const [mapArray, setMapArray] = useState([]);
 
+  const fetchApproveRequests = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/requestCompanyData`);
+      setRequestAppData(response.data);
+      const uniqueEnames = response.data.reduce((acc, curr) => {
+        if (!acc.some((item) => item.ename === curr.ename)) {
+          const [dateString, timeString] = formatDateAndTime(
+            curr.AssignDate
+          ).split(", ");
+          acc.push({ ename: curr.ename, date: dateString, time: timeString });
+        }
+        return acc;
+      }, []);
+      setMapArray(uniqueEnames);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+  const formatDateAndTime = (AssignDate) => {
+    // Convert AssignDate to a Date object
+    const date = new Date(AssignDate);
+
+    // Convert UTC date to Indian time zone
+    const options = { timeZone: "Asia/Kolkata" };
+    const indianDate = date.toLocaleString("en-IN", options);
+    return indianDate;
+  };
+console.log(mapArray)
   const fetchRequestDetails = async () => {
     try {
       const response = await axios.get(`${secretKey}/requestData`);
@@ -93,7 +124,7 @@ function Header({ name, designation}) {
             </a>
           </h1>
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
-          <Bellicon data={requestData} gdata = {requestGData}/>
+          <Bellicon data={requestData} gdata = {requestGData} adata={mapArray}/>
           <Avatar sx={{ width: 32, height: 32 }}/>
             <div className="nav-item dropdown">
               <button

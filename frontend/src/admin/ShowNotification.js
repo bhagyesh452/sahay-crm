@@ -152,6 +152,8 @@ function ShowNotification() {
                       damount={company.dAmount}
                       id={company._id}
                       assignStatus={company.assigned}
+                      cTime={company.cTime}
+                      cDate={company.cDate}
                     />
                   ))}
 
@@ -163,6 +165,8 @@ function ShowNotification() {
                       damount={company.dAmount}
                       id={company._id}
                       assignStatus={company.assigned}
+                      cTime={company.cTime}
+                      cDate={company.cDate}
                     />
                   ))}
                 {mapArray.length !== 0 &&

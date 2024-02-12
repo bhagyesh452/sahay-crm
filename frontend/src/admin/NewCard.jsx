@@ -26,7 +26,7 @@ const bull = (
   </Box>
 );
 
-export default function NewCard({id, name, year, ctype, damount,assignStatus }) {
+export default function NewCard({id, name, year, ctype, damount,assignStatus , cTime, cDate }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [data, setData] = useState([]);
   const [open, openchange] = useState(false);
@@ -195,6 +195,15 @@ export default function NewCard({id, name, year, ctype, damount,assignStatus }) 
             <Typography color="text.secondary">
               Number of Data : {damount}
             </Typography>
+            <div className="d-flex justify-content-between">
+            <Typography color="text.secondary">
+              {cDate}
+            </Typography>
+            <Typography color="text.secondary">
+               {cTime}
+            </Typography>
+
+            </div>
           </CardContent>
 
           <div
