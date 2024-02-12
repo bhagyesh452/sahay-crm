@@ -3,7 +3,7 @@ import axios from "axios";
 import Navbar from "./Navbar";
 import Header from "./Header";
 import { useParams } from "react-router-dom";
-import { IconBoxPadding, IconChevronLeft } from "@tabler/icons-react";
+import { IconBoxPadding, IconChevronLeft, IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { IconButton, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -20,6 +20,7 @@ const secretKey = process.env.REACT_APP_SECRET_KEY;
 function EmployeeParticular() {
   const { id } = useParams();
   const [openAssign, openchangeAssign] = useState(false);
+  const [openRemarks, openchangeRemarks] = useState(false);
   const [openlocation, openchangelocation] = useState(false);
   const [loginDetails, setLoginDetails] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
@@ -27,7 +28,7 @@ function EmployeeParticular() {
   const [dataStatus, setdataStatus] = useState("All");
   const [moreEmpData, setmoreEmpData] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 100;
+  const itemsPerPage = 500;
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const [searchText, setSearchText] = useState("");
@@ -98,6 +99,7 @@ function EmployeeParticular() {
     // Fetch employee details and related data when the component mounts or id changes
     fetchEmployeeDetails();
     fetchnewData();
+    fetchRemarksHistory();
     axios
       .get(`${secretKey}/loginDetails`)
       .then((response) => {
@@ -272,8 +274,24 @@ function EmployeeParticular() {
     const csvdata = employeeData
       .filter((employee) => selectedRows.includes(employee._id))
       .map((employee) => ({ ...employee, Status: "Untouched" }));
+    const currentDate = new Date().toLocaleDateString();
+    const currentTime = new Date().toLocaleTimeString();
+    // Create a new array of objects with desired properties
+    const newArray = csvdata.map((data) => ({
+      date: currentDate,
+      time: currentTime,
+      ename: newemployeeSelection,
+      companyName: data["Company Name"], // Assuming companyName is one of the existing properties in updatedCsvdata
+    }));
 
-    console.log(newemployeeSelection);
+    try {
+      await axios.post(`${secretKey}/employee-history`, newArray);
+      // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
+      console.log("Employee Changed!");
+      setnewEmployeeSelection("Not Alloted");
+    } catch (error) {
+      console.log("Error:", error);
+    }
     for (const obj of csvdata) {
       try {
         const response = await axios.post(`${secretKey}/assign-new`, {
@@ -339,40 +357,69 @@ function EmployeeParticular() {
 
   const handleMouseDown = (id) => {
     // Initiate drag selection
-    setStartRowIndex(filteredData.findIndex(row => row._id === id));
+    setStartRowIndex(filteredData.findIndex((row) => row._id === id));
   };
 
   const handleMouseEnter = (id) => {
     // Update selected rows during drag selection
     if (startRowIndex !== null) {
-      const endRowIndex = filteredData.findIndex(row => row._id === id);
+      const endRowIndex = filteredData.findIndex((row) => row._id === id);
       const selectedRange = [];
       const startIndex = Math.min(startRowIndex, endRowIndex);
       const endIndex = Math.max(startRowIndex, endRowIndex);
-  
+
       for (let i = startIndex; i <= endIndex; i++) {
         selectedRange.push(filteredData[i]._id);
       }
-  
+
       setSelectedRows(selectedRange);
-  
+
       // Scroll the window vertically when dragging beyond the visible viewport
       const windowHeight = document.documentElement.clientHeight;
       const mouseY = window.event.clientY;
-      const tableHeight = document.querySelector('table').clientHeight;
-      const maxVisibleRows = Math.floor(windowHeight / (tableHeight / filteredData.length));
-  
+      const tableHeight = document.querySelector("table").clientHeight;
+      const maxVisibleRows = Math.floor(
+        windowHeight / (tableHeight / filteredData.length)
+      );
+
       if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
         window.scrollTo(0, window.scrollY + 20);
       }
     }
   };
-  
-  
 
   const handleMouseUp = () => {
     // End drag selection
     setStartRowIndex(null);
+  };
+  const [cid, setcid] = useState("");
+  const [cstat, setCstat] = useState("");
+  const [remarksHistory, setRemarksHistory] = useState([]);
+  const [filteredRemarks, setFilteredRemarks] = useState([]);
+  const fetchRemarksHistory = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/remarks-history`);
+      setRemarksHistory(response.data);
+      setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
+
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching remarks history:", error);
+    }
+  };
+  const functionopenpopupremarks = (companyID, companyStatus) => {
+    openchangeRemarks(true);
+    setFilteredRemarks(
+      remarksHistory.filter((obj) => obj.companyID === companyID)
+    );
+    // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+
+    setcid(companyID);
+    setCstat(companyStatus);
+  };
+  const closepopupRemarks = () => {
+    openchangeRemarks(false);
+    setFilteredRemarks([]);
   };
   return (
     <div>
@@ -565,84 +612,84 @@ function EmployeeParticular() {
                 </div>
                 <div className="col-2">
                   {selectedField === "State" && (
-                      <div style={{ width: "15vw" }} className="input-icon">
-                        <span className="input-icon-addon">
-                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon"
-                            width="20"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            stroke-width="2"
-                            stroke="currentColor"
-                            fill="none"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                            <path d="M21 21l-6 -6" />
-                          </svg>
-                        </span>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={citySearch}
+                    <div style={{ width: "15vw" }} className="input-icon">
+                      <span className="input-icon-addon">
+                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="icon"
+                          width="20"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          stroke-width="2"
+                          stroke="currentColor"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                          <path d="M21 21l-6 -6" />
+                        </svg>
+                      </span>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={citySearch}
+                        onChange={(e) => {
+                          setcitySearch(e.target.value);
+                          setCurrentPage(0);
+                        }}
+                        placeholder="Search City"
+                        aria-label="Search in website"
+                      />
+                    </div>
+                  )}
+                  {selectedField === "Company Incorporation Date  " && (
+                    <>
+                      <div
+                        style={{ width: "fit-content" }}
+                        className="form-control"
+                      >
+                        <select
+                          style={{ border: "none", outline: "none" }}
                           onChange={(e) => {
-                            setcitySearch(e.target.value);
+                            setMonth(e.target.value);
                             setCurrentPage(0);
                           }}
-                          placeholder="Search City"
+                        >
+                          <option value="" disabled selected>
+                            Select Month
+                          </option>
+                          <option value="12">December</option>
+                          <option value="11">November</option>
+                          <option value="10">October</option>
+                          <option value="9">September</option>
+                          <option value="8">August</option>
+                          <option value="7">July</option>
+                          <option value="6">June</option>
+                          <option value="5">May</option>
+                          <option value="4">April</option>
+                          <option value="3">March</option>
+                          <option value="2">February</option>
+                          <option value="1">January</option>
+                        </select>
+                      </div>
+                      <div className="input-icon">
+                        <input
+                          type="number"
+                          value={year}
+                          defaultValue="Select Year"
+                          className="form-control"
+                          placeholder="Select Year.."
+                          onChange={(e) => {
+                            setYear(e.target.value);
+                          }}
                           aria-label="Search in website"
                         />
                       </div>
-                    )}
-                    {selectedField === "Company Incorporation Date  " && (
-                      <>
-                        <div
-                          style={{ width: "fit-content" }}
-                          className="form-control"
-                        >
-                          <select
-                            style={{ border: "none", outline: "none" }}
-                            onChange={(e) => {
-                              setMonth(e.target.value);
-                              setCurrentPage(0);
-                            }}
-                          >
-                            <option value="" disabled selected>
-                              Select Month
-                            </option>
-                            <option value="12">December</option>
-                            <option value="11">November</option>
-                            <option value="10">October</option>
-                            <option value="9">September</option>
-                            <option value="8">August</option>
-                            <option value="7">July</option>
-                            <option value="6">June</option>
-                            <option value="5">May</option>
-                            <option value="4">April</option>
-                            <option value="3">March</option>
-                            <option value="2">February</option>
-                            <option value="1">January</option>
-                          </select>
-                        </div>
-                        <div className="input-icon">
-                          <input
-                            type="number"
-                            value={year}
-                            defaultValue="Select Year"
-                            className="form-control"
-                            placeholder="Select Year.."
-                            onChange={(e) => {
-                              setYear(e.target.value);
-                            }}
-                            aria-label="Search in website"
-                          />
-                        </div>
-                      </>
-                    )}
+                    </>
+                  )}
                 </div>
                 <div
                   style={{ display: "flex", justifyContent: "space-between" }}
@@ -653,7 +700,7 @@ function EmployeeParticular() {
                       <div className="form-control">
                         {selectedRows.length} Data Selected
                       </div>
-                    ) }
+                    )}
                     {searchText !== "" && (
                       <div
                         style={{
@@ -667,7 +714,7 @@ function EmployeeParticular() {
                       >
                         {filteredData.length} results found
                       </div>
-                    ) }
+                    )}
                   </div>
                 </div>
 
@@ -858,7 +905,6 @@ function EmployeeParticular() {
                                 selectedRows.length === filteredData.length
                               }
                               onChange={() => handleCheckboxChange("all")}
-
                             />
                           </th>
 
@@ -879,7 +925,7 @@ function EmployeeParticular() {
                         <tbody>
                           <tr>
                             <td colSpan="10" className="p-2">
-                              <Nodata/>
+                              <Nodata />
                             </td>
                           </tr>
                         </tbody>
@@ -888,7 +934,11 @@ function EmployeeParticular() {
                           {currentData.map((company, index) => (
                             <tr
                               key={index}
-                              className={selectedRows.includes(company._id) ? 'selected' : ''}
+                              className={
+                                selectedRows.includes(company._id)
+                                  ? "selected"
+                                  : ""
+                              }
                               style={{ border: "1px solid #ddd" }}
                             >
                               <td
@@ -905,8 +955,12 @@ function EmployeeParticular() {
                                   onChange={() =>
                                     handleCheckboxChange(company._id)
                                   }
-                                  onMouseDown={() => handleMouseDown(company._id)}
-                                  onMouseEnter={() => handleMouseEnter(company._id)}
+                                  onMouseDown={() =>
+                                    handleMouseDown(company._id)
+                                  }
+                                  onMouseEnter={() =>
+                                    handleMouseEnter(company._id)
+                                  }
                                   onMouseUp={handleMouseUp}
                                 />
                               </td>
@@ -936,6 +990,22 @@ function EmployeeParticular() {
                                   >
                                     {company.Remarks}
                                   </p>
+                                  <span>
+                                    <IconEye
+                                      onClick={() => {
+                                        functionopenpopupremarks(
+                                          company._id,
+                                          company.Status
+                                        );
+                                      }}
+                                      style={{
+                                        width: "18px",
+                                        height: "18px",
+                                        color: "#d6a10c",
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  </span>
                                 </div>
                               </td>
                               <td>{company["Company Email"]}</td>
@@ -1196,6 +1266,50 @@ function EmployeeParticular() {
               ))}
             </tbody>
           </table>
+        </DialogContent>
+      </Dialog>
+
+      {/* Remarks History Pop up */}
+      <Dialog
+        open={openRemarks}
+        onClose={closepopupRemarks}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Remarks
+          <IconButton onClick={closepopupRemarks} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="remarks-content">
+            {filteredRemarks.length !== 0 ? (
+              filteredRemarks
+                .slice()
+                .reverse()
+                .map((historyItem) => (
+                  <div className="col-sm-12" key={historyItem._id}>
+                    <div className="card RemarkCard position-relative">
+                      <div className="d-flex justify-content-between">
+                        <div className="reamrk-card-innerText">
+                          <pre>{historyItem.remarks}</pre>
+                        </div>
+                      </div>
+
+                      <div className="d-flex card-dateTime justify-content-between">
+                        <div className="date">{historyItem.date}</div>
+                        <div className="time">{historyItem.time}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+            ) : (
+              <div className="text-center overflow-hidden">
+                No Remarks History
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>

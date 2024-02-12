@@ -17,6 +17,7 @@ const { sendMail } = require("./helpers/sendMail");
 const { mailFormat } = require("./helpers/mailFormat");
 const multer = require("multer");
 const RemarksHistory = require("./models/RemarksHistory");
+const EmployeeHistory = require("./models/EmployeeHistory")
 const LoginDetails = require("./models/loginDetails");
 // const http = require('http');
 // const socketIo = require('socket.io');
@@ -124,6 +125,8 @@ const deleteAllData = async () => {
 
 app.post("/api/leads", async (req, res) => {
   const csvData = req.body;
+  let counter = 0;
+  let sucessCounter = 0;
  
   try {
     for (const employeeData of csvData) {
@@ -133,6 +136,32 @@ app.post("/api/leads", async (req, res) => {
           AssignDate: new Date(),
         };
         const employee = new CompanyModel(employeeWithAssignData);
+        const savedEmployee = await employee.save();
+        sucessCounter++
+       
+      } catch (error) {
+        console.error("Error saving employee:", error.message);
+        counter++
+        // res.status(500).json({ error: 'Internal Server Error' });
+
+        // Handle the error for this specific entry, but continue with the next one
+      }
+    }
+
+    res.status(200).json({ message: "Data sent successfully" , counter:counter, sucessCounter:sucessCounter});
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error in bulk save:", error.message);
+  }
+});
+app.post("/api/employee-history", async (req, res) => {
+  const csvData = req.body;
+ 
+  try {
+    for (const employeeData of csvData) {
+      try {
+      
+        const employee = new EmployeeHistory(employeeData);
         const savedEmployee = await employee.save();
        
       } catch (error) {
@@ -404,12 +433,14 @@ app.delete('/api/delete-data/:ename', async (req, res) => {
     // Delete all data objects with the given ename
     await CompanyRequestModel.deleteMany({ ename });
 
-    res.status(200);
+    // Send success response
+    res.status(200).send("Data deleted successfully");
   } catch (error) {
-  
+    // Send error response
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 app.post("/api/assign-new", async (req, res) => {
   const { newemployeeSelection, csvdata } = req.body;
   // Check if data is already assigned
@@ -439,7 +470,7 @@ app.post("/api/company", async (req, res) => {
 
   try {
     const insertedCompanies = [];
-
+    let counter = 0;
     for (const company of csvdata) {
       // Check for duplicate based on some unique identifier, like company name
       const isDuplicate = await CompanyModel.exists({
@@ -460,10 +491,11 @@ app.post("/api/company", async (req, res) => {
         console.log(
           `Duplicate entry found for company name: ${company["Company Name"]}. Skipped.`
         );
+        counter++;
       }
     }
 
-    res.json(insertedCompanies);
+    res.json(insertedCompanies , counter);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -802,6 +834,8 @@ app.post(
         empEmail,
         bookingTime
       } = req.body;
+      const bdeName = empName
+      const bdeEmail = empEmail
 
       const otherDocs = req.files["otherDocs"] || [];
       const paymentReceipt = req.files["paymentReceipt"] || []; // Array of files for 'file2'
@@ -809,6 +843,8 @@ app.post(
       // Your processing logic here
 
       const employee = new LeadModel({
+        bdeName,
+        bdeEmail,      
         bdmName,
         bdmEmail,
         bdmType,

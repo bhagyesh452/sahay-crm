@@ -26,7 +26,7 @@ const bull = (
   </Box>
 );
 
-export default function NewGCard({ id, name, damount, assignStatus }) {
+export default function NewGCard({ id, name, damount, assignStatus,cDate,cTime }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [data, setData] = useState([]);
   const [open, openchange] = useState(false);
@@ -101,18 +101,14 @@ export default function NewGCard({ id, name, damount, assignStatus }) {
     if (selectedObjects.length !== 0) {
       for (const obj of selectedObjects) {
         try {
-          const response = await axios.post(
-            `${secretKey}/postData`,
-            {
-              employeeSelection,
-              selectedObjects,
-            }
-          );
+          const response = await axios.post(`${secretKey}/postData`, {
+            employeeSelection,
+            selectedObjects,
+          });
           await axios.put(`${secretKey}/requestgData/${id}`, {
             read: true,
             assigned: true,
           });
-       
 
           console.log("Data posted successfully");
         } catch (err) {
@@ -147,7 +143,14 @@ export default function NewGCard({ id, name, damount, assignStatus }) {
 
   return (
     <Box sx={{ minWidth: 275, width: "28vw" }}>
-      <Card style={{ padding: "10px" , backgroundColor: assignStatus && "#d3d2d2de" , margin:"10px 0px" }} variant="outlined">
+      <Card
+        style={{
+          padding: "10px",
+          backgroundColor: assignStatus && "#d3d2d2de",
+          margin: "10px 0px",
+        }}
+        variant="outlined"
+      >
         <React.Fragment>
           <CardContent>
             <Typography
@@ -161,6 +164,10 @@ export default function NewGCard({ id, name, damount, assignStatus }) {
             <Typography color="text.secondary">
               Number of Data : {damount}
             </Typography>
+            <div className="d-flex justify-content-between">
+              <Typography color="text.secondary">{cDate}</Typography>
+              <Typography color="text.secondary">{cTime}</Typography>
+            </div>
           </CardContent>
 
           <div

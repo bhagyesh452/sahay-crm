@@ -65,9 +65,10 @@ function Leads() {
   const [cemail, setCemail] = useState("");
   const [cnumber, setCnumber] = useState(0);
   const [state, setState] = useState("");
+  const [openRemarks, openchangeRemarks] = useState(false);
   const [city, setCity] = useState("");
   const [cidate, setCidate] = useState(null);
-  const itemsPerPage = 100;
+  const itemsPerPage = 500;
   const [visibility, setVisibility] = useState("none");
   const [visibilityOther, setVisibilityOther] = useState("block");
   const [visibilityOthernew, setVisibilityOthernew] = useState("none");
@@ -86,7 +87,7 @@ function Leads() {
 
       // Set the retrieved data in the state
 
-      setData(response.data);
+      setData(response.data.reverse());
       setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -100,6 +101,7 @@ function Leads() {
     fetchnewData();
     fetchRequestDetails();
     fetchRequestGDetails();
+    fetchRemarksHistory();
   }, []);
   // const fileInputRef = useRef(null);
   const functionopenpopup = () => {
@@ -345,26 +347,56 @@ function Leads() {
   console.log(csvdata);
 
   const handleUploadData = async (e) => {
+    // Get current date and time
+
+    // newArray now contains objects with updated properties
+
     if (selectedOption === "someoneElse") {
       const updatedCsvdata = csvdata.map((data) => ({
         ...data,
         ename: newemployeeSelection,
       }));
+      const currentDate = new Date().toLocaleDateString();
+      const currentTime = new Date().toLocaleTimeString();
+      // Create a new array of objects with desired properties
+      const newArray = updatedCsvdata.map((data) => ({
+        date: currentDate,
+        time: currentTime,
+        ename: newemployeeSelection,
+        companyName: data["Company Name"], // Assuming companyName is one of the existing properties in updatedCsvdata
+      }));
       if (updatedCsvdata.length !== 0) {
         setLoading(true); // Move setLoading outside of the loop
 
         try {
-          await axios.post(`${secretKey}/leads`, updatedCsvdata);
+         const response = await axios.post(`${secretKey}/leads`, updatedCsvdata);
+          await axios.post(`${secretKey}/employee-history`, newArray);
+          // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
           console.log("Data sent successfully");
-          Swal.fire({
-            title: "Data Send!",
-            text: "Data successfully sent to the Employee",
-            icon: "success",
-          });
-
+          const counter = response.data.counter;
+          const successCounter = response.data.sucessCounter;
+          if(counter === 0){
+            Swal.fire({
+              title: "Data Send!",
+              text: "Data successfully sent to the Employee",
+              icon: "success",
+            });
+          }else{
+            Swal.fire({
+              title: "Data Already exists!",
+              html: `
+              <b> ${counter} </b> Duplicate Entries found!,
+              </br>
+              <small>${successCounter} Data Added </small>
+            `,
+              icon: "info",
+            });
+          }
+         
+   
           fetchData();
           closepopup();
-          setnewEmployeeSelection("Not Alloted")
+          setnewEmployeeSelection("Not Alloted");
         } catch (error) {
           if (error.response.status !== 500) {
             setErrorMessage(error.response.data.error);
@@ -399,13 +431,7 @@ function Leads() {
           fetchData();
           closepopup();
         } catch (error) {
-          if (error.response.status !== 500) {
-            setErrorMessage(error.response.data.error);
-            Swal.fire("Some of the data are not unique");
-          } else {
-            setErrorMessage("An error occurred. Please try again.");
-            Swal.fire("Please upload unique data");
-          }
+         
           console.log("Error:", error);
         }
 
@@ -508,21 +534,21 @@ function Leads() {
   };
   const handleMouseDown = (id) => {
     // Initiate drag selection
-    setStartRowIndex(filteredData.findIndex(row => row._id === id));
+    setStartRowIndex(filteredData.findIndex((row) => row._id === id));
   };
 
   const handleMouseEnter = (id) => {
     // Update selected rows during drag selection
     if (startRowIndex !== null) {
-      const endRowIndex = filteredData.findIndex(row => row._id === id);
+      const endRowIndex = filteredData.findIndex((row) => row._id === id);
       const selectedRange = [];
       const startIndex = Math.min(startRowIndex, endRowIndex);
       const endIndex = Math.max(startRowIndex, endRowIndex);
-      
+
       for (let i = startIndex; i <= endIndex; i++) {
         selectedRange.push(filteredData[i]._id);
       }
-      
+
       setSelectedRows(selectedRange);
     }
   };
@@ -810,7 +836,35 @@ function Leads() {
       console.error("Error fetching data:", error.message);
     }
   };
+  const [cid, setcid] = useState("");
+  const [cstat, setCstat] = useState("");
+  const [remarksHistory, setRemarksHistory] = useState([]);
+  const [filteredRemarks, setFilteredRemarks] = useState([]);
+  const fetchRemarksHistory = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/remarks-history`);
+      setRemarksHistory(response.data);
+      setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching remarks history:", error);
+    }
+  };
+  const functionopenpopupremarks = (companyID, companyStatus) => {
+    openchangeRemarks(true);
+    setFilteredRemarks(
+      remarksHistory.filter((obj) => obj.companyID === companyID)
+    );
+    // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+
+    setcid(companyID);
+    setCstat(companyStatus);
+  };
+  const closepopupRemarks = () => {
+    openchangeRemarks(false);
+    setFilteredRemarks([]);
+  };
   // console.log(requestData);
   // console.log(requestGData);
 
@@ -1137,7 +1191,9 @@ function Leads() {
                       Upload CSV File
                     </label>
                   </div>
-                  <a href={frontendKey + "/AdminSample.xlsx"} download>Download Sample</a>
+                  <a href={frontendKey + "/AdminSample.xlsx"} download>
+                    Download Sample
+                  </a>
                 </div>
                 <div
                   style={{ margin: "5px 0px 0px 0px" }}
@@ -1276,6 +1332,51 @@ function Leads() {
           </Dialog>
         </div>
       )}
+
+      {/* Remarks History Pop up */}
+      <Dialog
+        open={openRemarks}
+        onClose={closepopupRemarks}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Remarks
+          <IconButton onClick={closepopupRemarks} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="remarks-content">
+            {filteredRemarks.length !== 0 ? (
+              filteredRemarks
+                .slice()
+                .reverse()
+                .map((historyItem) => (
+                  <div className="col-sm-12" key={historyItem._id}>
+                    <div className="card RemarkCard position-relative">
+                      <div className="d-flex justify-content-between">
+                        <div className="reamrk-card-innerText">
+                          <pre>{historyItem.remarks}</pre>
+                        </div>
+                      </div>
+
+                      <div className="d-flex card-dateTime justify-content-between">
+                        <div className="date">{historyItem.date}</div>
+                        <div className="time">{historyItem.time}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+            ) : (
+              <div className="text-center overflow-hidden">
+                No Remarks History
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Main Page Starts from here */}
       {loading && (
         // Your loading screen component or message
@@ -1304,7 +1405,10 @@ function Leads() {
                   }}
                   className="feature2"
                 >
-                  <div style={{ margin: "0px 10px" , display:"none" }} className="undoDelete">
+                  <div
+                    style={{ margin: "0px 10px", display: "none" }}
+                    className="undoDelete"
+                  >
                     <div className="btn-list">
                       <button
                         onClick={handleUndo}
@@ -1657,9 +1761,11 @@ function Leads() {
                         </div>
                       </>
                     )}
-                      {selectedRows.length!==0 && <div className="form-control">
+                    {selectedRows.length !== 0 && (
+                      <div className="form-control">
                         Total Data Selected : {selectedRows.length}
-                      </div>}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1759,22 +1865,28 @@ function Leads() {
                       <th>Status</th>
                       <th>Remarks</th>
                       <th>Assigned to</th>
-                      <th>Last Updated on:</th>
+                      <th>Alloted On:</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   {currentData.length == 0 ? (
                     <tbody>
                       <tr>
-                        <td colSpan="13" className="p-2 particular" >
-                          <Nodata/>
+                        <td colSpan="13" className="p-2 particular">
+                          <Nodata />
                         </td>
                       </tr>
                     </tbody>
                   ) : (
                     currentData.map((company, index) => (
                       <tbody className="table-tbody">
-                        <tr key={index} className={selectedRows.includes(company._id) ? 'selected' : ''} style={{ border: "1px solid #ddd" }} >
+                        <tr
+                          key={index}
+                          className={
+                            selectedRows.includes(company._id) ? "selected" : ""
+                          }
+                          style={{ border: "1px solid #ddd" }}
+                        >
                           <td>
                             <input
                               type="checkbox"
@@ -1797,7 +1909,23 @@ function Leads() {
                           <td>{company["City"]}</td>
                           <td>{company["State"]}</td>
                           <td>{company["Status"]}</td>
-                          <td>{company["Remarks"]}</td>
+                          <td>
+                            {company["Remarks"]}{" "}
+                            <IconEye
+                              onClick={() => {
+                                functionopenpopupremarks(
+                                  company._id,
+                                  company.Status
+                                );
+                              }}
+                              style={{
+                                width: "18px",
+                                height: "18px",
+                                color: "#d6a10c",
+                                cursor: "pointer",
+                              }}
+                            />
+                          </td>
                           <td>{company["ename"]}</td>
                           <td>{formatDate(company["AssignDate"])}</td>
                           <td>

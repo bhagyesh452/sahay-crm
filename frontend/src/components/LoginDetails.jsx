@@ -19,7 +19,7 @@ function LoginDetails() {
     // Fetch employee details and related data when the component mounts or id changes
     fetchEmployeeDetails();
   }, [id]);
-  
+
   useEffect(() => {
     // Fetch login details only when employeeData is available
     if (employeeData) {
@@ -28,18 +28,20 @@ function LoginDetails() {
         .then((response) => {
           const tempData = response.data;
           // Update state with fetched login details
-          setLoginDetails(tempData.filter(obj => obj.ename === employeeData.email));
+          setLoginDetails(
+            tempData.filter((obj) => obj.ename === employeeData.email)
+          );
         })
         .catch((error) => {
           console.error("Error fetching login details:", error);
         });
     }
   }, [employeeData]); // Add employeeData to the dependency array
-  
+
   const fetchEmployeeDetails = async () => {
     try {
       const response = await axios.get(`${secretKey}/einfo`);
-  
+
       // Find the employee by id and set the name
       const selectedEmployee = response.data.find(
         (employee) => employee._id === id
@@ -56,8 +58,7 @@ function LoginDetails() {
       console.error("Error fetching employee details:", error.message);
     }
   };
-  
-  
+
   function goBack() {
     window.history.back();
   }
@@ -118,10 +119,9 @@ function LoginDetails() {
                 </table>
               ) : (
                 <>
-                <div className="p-2">
-
-                <Nodata/>
-                </div>
+                  <div className="p-2">
+                    <Nodata />
+                  </div>
                 </>
               )}
             </div>

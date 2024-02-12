@@ -70,6 +70,7 @@ function ApproveCard({ name, date, time }) {
   }, []);
   const handleConfirmAssign = async () => {
     const updatedCsvdata = selectedRows;
+    const ename = name;
     if (updatedCsvdata.length !== 0) {
       try {
         await axios.post(`${secretKey}/leads`, updatedCsvdata);
@@ -79,7 +80,7 @@ function ApproveCard({ name, date, time }) {
           text: "Data successfully sent to the Employee",
           icon: "success",
         });
-        handleDeleteData();
+        await axios.delete(`${secretKey}/delete-data/${ename}`);
         fetchApproveRequests();
         closepopup();
       } catch (error) {
@@ -102,8 +103,13 @@ function ApproveCard({ name, date, time }) {
     const ename = name;
     try {
       // Make a DELETE request to the backend endpoint
-      await axios.delete(`${secretKey}/delete-data/${ename}`);
-
+      const response = await axios.delete(`${secretKey}/delete-data/${ename}`);
+      fetchApproveRequests();
+      closepopup();
+      if(response.status===200){
+        Swal.fire("Request Rejected!");
+      }
+  
       console.log(`Data objects with ename ${ename} deleted successfully`);
     } catch (error) {
       console.error('Error deleting data:', error);
@@ -126,10 +132,11 @@ function ApproveCard({ name, date, time }) {
                 {name} wants to upload some Data
               </Typography>
               <div className="d-flex justify-content-between">
+              <Typography color="text.secondary">{date}</Typography>
                 <Typography color="text.secondary">
                   {time.toUpperCase()}
                 </Typography>
-                <Typography color="text.secondary">{date}</Typography>
+              
               </div>
             </CardContent>
 
