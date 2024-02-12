@@ -361,13 +361,7 @@ const formattedTime = formatTime(currentTime);
       };
     });
   };
-  console.log(
-    parseInt(leadData.firstPayment) +
-      parseInt(leadData.secondPayment) +
-      parseInt(leadData.thirdPayment) +
-      parseInt(leadData.fourthPayment),
-    parseInt(leadData.totalPayment)
-  );
+console.log(leadData.otherDocs)
 
   return (
     <div>

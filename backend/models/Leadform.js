@@ -43,7 +43,7 @@ const leadSchema = new mongoose.Schema({
     cPANorGSTnum: Number,
     incoDate: Date,
     extraNotes: String,
-    otherDocs: String,
+    otherDocs: Array,
     bookingTime: String
 });
 

@@ -8,8 +8,10 @@ const adminModel = require("./models/Admin");
 const CompanyModel = require("./models/Leads");
 const CompanyRequestModel = require("./models/LeadsRequest");
 const RequestModel = require("./models/Request");
+const path = require("path");
+const fs = require("fs");
 const RequestGModel = require("./models/RequestG");
-const { exec } = require('child_process');
+const { exec } = require("child_process");
 const jwt = require("jsonwebtoken");
 const onlyAdminModel = require("./models/AdminTable");
 const LeadModel = require("./models/Leadform");
@@ -17,7 +19,7 @@ const { sendMail } = require("./helpers/sendMail");
 const { mailFormat } = require("./helpers/mailFormat");
 const multer = require("multer");
 const RemarksHistory = require("./models/RemarksHistory");
-const EmployeeHistory = require("./models/EmployeeHistory")
+const EmployeeHistory = require("./models/EmployeeHistory");
 const LoginDetails = require("./models/loginDetails");
 // const http = require('http');
 // const socketIo = require('socket.io');
@@ -46,7 +48,6 @@ mongoose
   });
 // const secretKey = 'random32numberjsonwebtokenrequire';
 const secretKey = process.env.SECRET_KEY || "mydefaultsecret";
-
 
 app.get("/api", (req, res) => {
   console.log(req.url);
@@ -82,7 +83,11 @@ app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
 
   // Replace this with your actual Employee authentication logic
-  const user = await adminModel.findOne({ email: email, password: password , designation:"Sales Executive" });
+  const user = await adminModel.findOne({
+    email: email,
+    password: password,
+    designation: "Sales Executive",
+  });
   console.log(user);
 
   if (user) {
@@ -98,7 +103,11 @@ app.post("/api/processingLogin", async (req, res) => {
   const { username, password } = req.body;
 
   // Replace this with your actual Employee authentication logic
-  const user = await adminModel.findOne({ email: username, password: password , designation:"Admin Team" });
+  const user = await adminModel.findOne({
+    email: username,
+    password: password,
+    designation: "Admin Team",
+  });
   console.log(user);
   if (user) {
     const processingToken = jwt.sign({ employeeId: user._id }, secretKey, {
@@ -127,7 +136,7 @@ app.post("/api/leads", async (req, res) => {
   const csvData = req.body;
   let counter = 0;
   let sucessCounter = 0;
- 
+
   try {
     for (const employeeData of csvData) {
       try {
@@ -137,18 +146,23 @@ app.post("/api/leads", async (req, res) => {
         };
         const employee = new CompanyModel(employeeWithAssignData);
         const savedEmployee = await employee.save();
-        sucessCounter++
-       
+        sucessCounter++;
       } catch (error) {
         console.error("Error saving employee:", error.message);
-        counter++
+        counter++;
         // res.status(500).json({ error: 'Internal Server Error' });
 
         // Handle the error for this specific entry, but continue with the next one
       }
     }
 
-    res.status(200).json({ message: "Data sent successfully" , counter:counter, sucessCounter:sucessCounter});
+    res
+      .status(200)
+      .json({
+        message: "Data sent successfully",
+        counter: counter,
+        sucessCounter: sucessCounter,
+      });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
     console.error("Error in bulk save:", error.message);
@@ -156,14 +170,12 @@ app.post("/api/leads", async (req, res) => {
 });
 app.post("/api/employee-history", async (req, res) => {
   const csvData = req.body;
- 
+
   try {
     for (const employeeData of csvData) {
       try {
-      
         const employee = new EmployeeHistory(employeeData);
         const savedEmployee = await employee.save();
-       
       } catch (error) {
         console.error("Error saving employee:", error.message);
         // res.status(500).json({ error: 'Internal Server Error' });
@@ -180,7 +192,7 @@ app.post("/api/employee-history", async (req, res) => {
 });
 app.post("/api/requestCompanyData", async (req, res) => {
   const csvData = req.body;
- 
+
   try {
     for (const employeeData of csvData) {
       try {
@@ -190,7 +202,6 @@ app.post("/api/requestCompanyData", async (req, res) => {
         };
         const employee = new CompanyRequestModel(employeeWithAssignData);
         const savedEmployee = await employee.save();
-       
       } catch (error) {
         console.error("Error saving employee:", error.message);
         // res.status(500).json({ error: 'Internal Server Error' });
@@ -231,7 +242,7 @@ app.post("/api/update-status/:id", async (req, res) => {
   try {
     // Update the status field in the database based on the employee id
     await CompanyModel.findByIdAndUpdate(id, { Status: newStatus });
-    
+
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
     console.error("Error updating status:", error);
@@ -242,11 +253,11 @@ app.post("/api/update-status/:id", async (req, res) => {
 app.post("/api/update-remarks/:id", async (req, res) => {
   const { id } = req.params;
   const { Remarks } = req.body;
- 
+
   try {
     // Update the status field in the database based on the employee id
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
-    
+
     res.status(200).json({ message: "Remarks updated successfully" });
   } catch (error) {
     console.error("Error updating status:", error);
@@ -256,8 +267,6 @@ app.post("/api/update-remarks/:id", async (req, res) => {
 
 app.post("/api/einfo", async (req, res) => {
   try {
-   
-
     adminModel.create(req.body).then((respond) => {
       res.json(respond);
     });
@@ -340,17 +349,25 @@ app.delete("/api/delete-rows", async (req, res) => {
     await CompanyModel.deleteMany({ _id: { $in: selectedRows } });
 
     // Trigger backup on the server
-    exec(`mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`, (error, stdout, stderr) => {
-      if (error) {
-        console.error('Error creating backup:', error);
-        // Respond with an error if backup fails
-        res.status(500).json({ error: 'Error creating backup.' });
-      } else {
-        console.log('Backup created successfully:', stdout);
-        // Respond with success message if backup is successful
-        res.status(200).json({ message: 'Rows deleted successfully and backup created successfully.' });
+    exec(
+      `mongodump --db AdminTable --collection newcdatas --out ${process.env.BACKUP_PATH}`,
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error("Error creating backup:", error);
+          // Respond with an error if backup fails
+          res.status(500).json({ error: "Error creating backup." });
+        } else {
+          console.log("Backup created successfully:", stdout);
+          // Respond with success message if backup is successful
+          res
+            .status(200)
+            .json({
+              message:
+                "Rows deleted successfully and backup created successfully.",
+            });
+        }
       }
-    });
+    );
   } catch (error) {
     console.error("Error deleting rows:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
@@ -359,16 +376,19 @@ app.delete("/api/delete-rows", async (req, res) => {
 
 app.post("/api/undo", (req, res) => {
   // Run mongorestore command to restore the data
-  exec(`mongorestore --uri "mongodb://localhost:27017/AdminTable" --nsInclude "AdminTable.newcdatas" ${process.env.BACKUP_PATH}\newcdatas.bson
-  `, (error, stdout, stderr) => {
-    if (error) {
-      console.error('Error restoring data:', error);
-      res.status(500).json({ error: 'Error restoring data.' });
-    } else {
-      console.log('Data restored successfully:', stdout);
-      res.status(200).json({ message: 'Data restored successfully.' });
+  exec(
+    `mongorestore --uri "mongodb://localhost:27017/AdminTable" --nsInclude "AdminTable.newcdatas" ${process.env.BACKUP_PATH}\newcdatas.bson
+  `,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error("Error restoring data:", error);
+        res.status(500).json({ error: "Error restoring data." });
+      } else {
+        console.log("Data restored successfully:", stdout);
+        res.status(200).json({ message: "Data restored successfully." });
+      }
     }
-  });
+  );
 });
 
 app.put("/api/einfo/:id", async (req, res) => {
@@ -426,7 +446,7 @@ app.post("/api/postData", async (req, res) => {
 
   res.json({ message: "Data posted successfully" });
 });
-app.delete('/api/delete-data/:ename', async (req, res) => {
+app.delete("/api/delete-data/:ename", async (req, res) => {
   const { ename } = req.params;
 
   try {
@@ -437,7 +457,7 @@ app.delete('/api/delete-data/:ename', async (req, res) => {
     res.status(200).send("Data deleted successfully");
   } catch (error) {
     // Send error response
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -495,7 +515,7 @@ app.post("/api/company", async (req, res) => {
       }
     }
 
-    res.json(insertedCompanies , counter);
+    res.json(insertedCompanies, counter);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -747,7 +767,7 @@ app.post("/api/remarks-history/:companyId", async (req, res) => {
       time,
       date,
       companyID: companyId,
-      remarks : Remarks,
+      remarks: Remarks,
     });
 
     // Save the new entry to MongoDB
@@ -759,26 +779,25 @@ app.post("/api/remarks-history/:companyId", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
-app.get('/api/remarks-history', async (req, res) => {
+app.get("/api/remarks-history", async (req, res) => {
   try {
     const remarksHistory = await RemarksHistory.find();
     res.json(remarksHistory);
   } catch (error) {
-    console.error('Error fetching remarks history:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error fetching remarks history:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
-app.delete('/api/remarks-history/:id', async (req, res) => {
+app.delete("/api/remarks-history/:id", async (req, res) => {
   const { id } = req.params;
   try {
     await RemarksHistory.findByIdAndDelete(id);
-    res.json({ success: true, message: 'Remarks deleted successfully' });
+    res.json({ success: true, message: "Remarks deleted successfully" });
   } catch (error) {
-    console.error('Error deleting remark:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error deleting remark:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -832,19 +851,23 @@ app.post(
         extraNotes,
         empName,
         empEmail,
-        bookingTime
+        bookingTime,
       } = req.body;
-      const bdeName = empName
-      const bdeEmail = empEmail
+      const bdeName = empName;
+      const bdeEmail = empEmail;
 
-      const otherDocs = req.files["otherDocs"] || [];
-      const paymentReceipt = req.files["paymentReceipt"] || []; // Array of files for 'file2'
+      const otherDocs =
+        req.files["otherDocs"].map((file) => file.filename) || [];
 
+      const paymentReceipt = req.files["paymentReceipt"]
+        ? req.files["paymentReceipt"][0].filename
+        : null; // Array of files for 'file2'
+      console.log(otherDocs);
       // Your processing logic here
 
       const employee = new LeadModel({
         bdeName,
-        bdeEmail,      
+        bdeEmail,
         bdmName,
         bdmEmail,
         bdmType,
@@ -871,14 +894,16 @@ app.post(
         cPANorGSTnum,
         incoDate,
         extraNotes,
-        bookingTime
+        bookingTime,
+        otherDocs,
+        paymentReceipt,
       });
 
       const display = caCase === "No" ? "none" : "flex";
       const displayPayment = paymentTerms === "Full Advanced" ? "none" : "flex";
 
       const savedEmployee = await employee.save();
-      
+
       const recipients = [
         "bookings@startupsahay.com",
         "documents@startupsahay.com",
@@ -886,361 +911,351 @@ app.post(
         `${empEmail}`,
       ];
 
-      sendMail(
-        recipients,
-        "Mail received",
-        ``,
-        `<div style="width: 80%; margin: 50px auto;">
-      <h2 style="text-align: center;">Lead Information</h2>
-      <div style="display: flex;">
-          <div style="width: 48%;">
-              <label>BDE Name:</label>
-              <div style="    padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${empName}
-              </div>
-          </div>
-          <div style="width: 48%;margin-left: 15px;">
-              <label>BDE Email Address:</label>
-              <div style="    padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${empEmail}
-              </div>
-          </div>
-      </div>
-      <div style="display: flex; margin-top: 20px;">
-          <div style="width: 48%;">
-              <label>BDM Name:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${bdmName}
-              </div>
-          </div>
-          <div style="width: 48%;margin-left: 15px;">
-              <label>BDM Email Address:</label>
-              <div style="    padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${bdmEmail}
-              </div>
-          </div>
-      </div>
-      <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-      </div>
-      <div style="display: flex; margin-top: 20px;">
-          <div style="width: 48%;">
-              <label>Booking Date:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${bookingDate}
-              </div>
-          </div>
+      //       sendMail(
+      //         recipients,
+      //         "Mail received",
+      //         ``,
+      //         `<div style="width: 80%; margin: 50px auto;">
+      //       <h2 style="text-align: center;">Lead Information</h2>
+      //       <div style="display: flex;">
+      //           <div style="width: 48%;">
+      //               <label>BDE Name:</label>
+      //               <div style="    padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${empName}
+      //               </div>
+      //           </div>
+      //           <div style="width: 48%;margin-left: 15px;">
+      //               <label>BDE Email Address:</label>
+      //               <div style="    padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${empEmail}
+      //               </div>
+      //           </div>
+      //       </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 48%;">
+      //               <label>BDM Name:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${bdmName}
+      //               </div>
+      //           </div>
+      //           <div style="width: 48%;margin-left: 15px;">
+      //               <label>BDM Email Address:</label>
+      //               <div style="    padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${bdmEmail}
+      //               </div>
+      //           </div>
+      //       </div>
+      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
+      //       </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 48%;">
+      //               <label>Booking Date:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${bookingDate}
+      //               </div>
+      //           </div>
 
-      </div>
+      //       </div>
 
-      <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-      </div>
+      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
+      //       </div>
 
-      <div style="display: flex; margin-top: 20px;" id="cacase">
-          <div style="width: 48%;">
-              <label>CA Case: ${caCase}</label>
+      //       <div style="display: flex; margin-top: 20px;" id="cacase">
+      //           <div style="width: 48%;">
+      //               <label>CA Case: ${caCase}</label>
 
+      //           </div>
 
-          </div>
+      //       </div>
+      //       <div id="ca-case-option" style="display: ${display}; margin-top: 20px;" >
+      //           <div style="width: 30%;">
+      //               <label>Enter CA's number:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${caNumber}
+      //               </div>
+      //           </div>
+      //           <div style="width: 30%; margin-left: 10px;">
+      //               <label>Enter CA's Email:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${caEmail}
+      //               </div>
+      //           </div>
+      //           <div style="width: 38%; margin-left: 10px;">
+      //               <label>Enter CA's Commission:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${caCommission}
+      //               </div>
+      //           </div>
 
-      </div>
-      <div id="ca-case-option" style="display: ${display}; margin-top: 20px;" >
-          <div style="width: 30%;">
-              <label>Enter CA's number:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${caNumber}
-              </div>
-          </div>
-          <div style="width: 30%; margin-left: 10px;">
-              <label>Enter CA's Email:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${caEmail}
-              </div>
-          </div>
-          <div style="width: 38%; margin-left: 10px;">
-              <label>Enter CA's Commission:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${caCommission}
-              </div>
-          </div>
+      //       </div>
+      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
+      //       </div>
 
-      </div>
-      <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-      </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 30%;">
+      //               <label>Enter Company's Name:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${companyName}
+      //               </div>
+      //           </div>
+      //           <div style="width: 30%; margin-left: 10px;">
+      //               <label>Enter Contact Number:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${contactNumber}
+      //               </div>
+      //           </div>
+      //           <div style="width: 38%; margin-left: 10px;">
+      //               <label>Enter Company's Email id:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${companyEmail}
+      //               </div>
+      //           </div>
 
-      <div style="display: flex; margin-top: 20px;">
-          <div style="width: 30%;">
-              <label>Enter Company's Name:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${companyName}
-              </div>
-          </div>
-          <div style="width: 30%; margin-left: 10px;">
-              <label>Enter Contact Number:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${contactNumber}
-              </div>
-          </div>
-          <div style="width: 38%; margin-left: 10px;">
-              <label>Enter Company's Email id:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${companyEmail}
-              </div>
-          </div>
+      //       </div>
 
-      </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 48%;">
+      //               <label>Services:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${services}
+      //               </div>
+      //           </div>
 
-      <div style="display: flex; margin-top: 20px;">
-          <div style="width: 48%;">
-              <label>Services:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${services}
-              </div>
-          </div>
+      //       </div>
+      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
+      //       </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 48%; ">
+      //               <label>Total Payment:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${originalTotalPayment}
+      //               </div>
+      //           </div>
+      //           <div style="width: 48%;  margin-left: 10px;">
+      //               <label>Total Payment Including GST</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${totalPayment}
+      //               </div>
+      //           </div>
 
+      //       </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 48%; ">
+      //               <label>Payment Terms: ${paymentTerms}</label>
 
-      </div>
-      <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-      </div>
-      <div style="display: flex; margin-top: 20px;">
-          <div style="width: 48%; ">
-              <label>Total Payment:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${originalTotalPayment}
-              </div>
-          </div>
-          <div style="width: 48%;  margin-left: 10px;">
-              <label>Total Payment Including GST</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${totalPayment}
-              </div>
-          </div>
+      //           </div>
 
+      //       </div>
+      //       <div style="display: ${displayPayment}; margin-top: 20px;">
+      //           <div style="width: 24%; ">
+      //               <label>First Payment:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${firstPayment}
+      //               </div>
+      //               <small style="background: #e7e7e7;
+      //               padding: 2px 8px;
+      //               margin: 4px 0;
+      //               color: rgb(63, 66, 21);
+      //               display: inline-block;
+      //               border-radius: 4px;">
+      //               ${(firstPayment * 100) / totalPayment}% Amount
+      //               </small>
+      //           </div>
+      //           <div style="width: 24%;  margin-left: 10px;">
+      //               <label>Second Payment</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${secondPayment}
+      //               </div>
+      //               <small style="background: #e7e7e7;
+      //               padding: 2px 8px;
+      //               margin: 4px 0;
+      //               color: rgb(63, 66, 21);
+      //               display: inline-block;
+      //               border-radius: 4px;">
+      //               ${(secondPayment * 100) / totalPayment}% Amount
+      //               </small>
+      //           </div>
+      //           <div style="width: 24%;  margin-left: 10px;">
+      //               <label>Third Payment</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${thirdPayment}
+      //               </div>
+      //               <small style="background: #e7e7e7;
+      //               padding: 2px 8px;
+      //               margin: 4px 0;
+      //               color: rgb(63, 66, 21);
+      //               display: inline-block;
+      //               border-radius: 4px;">
+      //               ${(thirdPayment * 100) / totalPayment}% Amount
+      //               </small>
+      //           </div>
+      //           <div style="width: 24%;  margin-left: 10px;">
+      //               <label>Fourth Payment</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${fourthPayment}
+      //               </div>
+      //               <small style="background: #e7e7e7;
+      //               padding: 2px 8px;
+      //               margin: 4px 0;
+      //               color: rgb(63, 66, 21);
+      //               display: inline-block;
+      //               border-radius: 4px;">
+      //               ${(fourthPayment * 100) / totalPayment}% Amount
+      //               </small>
+      //           </div>
 
-      </div>
-      <div style="display: flex; margin-top: 20px;">
-          <div style="width: 48%; ">
-              <label>Payment Terms: ${paymentTerms}</label>
-              
-          </div>
-          
+      //       </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //       <div style="width: 33%; ">
+      //               <label>Payment Remarks:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${paymentRemarks}
+      //               </div>
+      //           </div>
 
+      //  </div>
+      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
+      //       </div>
 
-      </div>
-      <div style="display: ${displayPayment}; margin-top: 20px;">
-          <div style="width: 24%; ">
-              <label>First Payment:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${firstPayment}
-              </div>
-              <small style="background: #e7e7e7;
-              padding: 2px 8px;
-              margin: 4px 0;
-              color: rgb(63, 66, 21);
-              display: inline-block;
-              border-radius: 4px;">
-              ${(firstPayment * 100) / totalPayment}% Amount
-              </small>
-          </div>
-          <div style="width: 24%;  margin-left: 10px;">
-              <label>Second Payment</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${secondPayment}
-              </div>
-              <small style="background: #e7e7e7;
-              padding: 2px 8px;
-              margin: 4px 0;
-              color: rgb(63, 66, 21);
-              display: inline-block;
-              border-radius: 4px;">
-              ${(secondPayment * 100) / totalPayment}% Amount
-              </small>
-          </div>
-          <div style="width: 24%;  margin-left: 10px;">
-              <label>Third Payment</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${thirdPayment}
-              </div>
-              <small style="background: #e7e7e7;
-              padding: 2px 8px;
-              margin: 4px 0;
-              color: rgb(63, 66, 21);
-              display: inline-block;
-              border-radius: 4px;">
-              ${(thirdPayment * 100) / totalPayment}% Amount
-              </small>
-          </div>
-          <div style="width: 24%;  margin-left: 10px;">
-              <label>Fourth Payment</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${fourthPayment}
-              </div>
-              <small style="background: #e7e7e7;
-              padding: 2px 8px;
-              margin: 4px 0;
-              color: rgb(63, 66, 21);
-              display: inline-block;
-              border-radius: 4px;">
-              ${(fourthPayment * 100) / totalPayment}% Amount
-              </small>
-          </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 33%; ">
+      //               <label>Payment Method:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${paymentMethod}
+      //               </div>
+      //           </div>
+      //           <div style="width: 33%;  margin-left: 10px;">
+      //               <label>Booking Source</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${bookingSource}
+      //               </div>
+      //           </div>
+      //           <div style="width: 33%;  margin-left: 10px;">
+      //               <label>Company Pan or GST number</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${cPANorGSTnum}
+      //               </div>
+      //           </div>
 
+      //       </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 48%; ">
+      //               <label>Company Incorporation Date:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${incoDate}
+      //               </div>
+      //           </div>
+      //           <div style="width: 48%;  margin-left: 10px;">
+      //               <label>Any Extra Notes</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${extraNotes}
+      //               </div>
+      //           </div>
 
-      </div>
-      <div style="display: flex; margin-top: 20px;">
-      <div style="width: 33%; ">
-              <label>Payment Remarks:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${paymentRemarks}
-              </div>
-          </div>
+      //       </div>
 
- </div>
-      <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-      </div>
+      //   </div>
 
-      <div style="display: flex; margin-top: 20px;">
-          <div style="width: 33%; ">
-              <label>Payment Method:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${paymentMethod}
-              </div>
-          </div>
-          <div style="width: 33%;  margin-left: 10px;">
-              <label>Booking Source</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${bookingSource}
-              </div>
-          </div>
-          <div style="width: 33%;  margin-left: 10px;">
-              <label>Company Pan or GST number</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${cPANorGSTnum}
-              </div>
-          </div>
-
-
-      </div>
-      <div style="display: flex; margin-top: 20px;">
-          <div style="width: 48%; ">
-              <label>Company Incorporation Date:</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${incoDate}
-              </div>
-          </div>
-          <div style="width: 48%;  margin-left: 10px;">
-              <label>Any Extra Notes</label>
-              <div style=" padding: 8px 10px;
-                  background: #fff7e8;
-                  margin-top: 10px;
-                  border-radius: 6px;
-                  color: #724f0d;">
-                  ${extraNotes}
-              </div>
-          </div>
-          
-
-
-      </div>
-
-
-  </div>
-  
-  `,
-        otherDocs,
-        paymentReceipt
-      );
+      //   `,
+      //         otherDocs,
+      //         paymentReceipt
+      //       );
 
       console.log("Data sent Via Email");
       res
@@ -1294,9 +1309,6 @@ app.get("/api/company/:companyName", async (req, res) => {
   }
 });
 
-
-
-
 // io.on('connection', (socket) => {
 //   console.log('A user connected');
 
@@ -1305,36 +1317,47 @@ app.get("/api/company/:companyName", async (req, res) => {
 //     console.log('User disconnected');
 //   });
 // });
-app.post('/api/loginDetails', (req, res) => {
+app.post("/api/loginDetails", (req, res) => {
   const { ename, date, time, address } = req.body;
-  const newLoginDetails = new LoginDetails({ ename, date, time,address });
-  newLoginDetails.save()
-      .then(savedLoginDetails => {
-          console.log('Login details saved to database:', savedLoginDetails);
-          res.json(savedLoginDetails);
-      })
-      .catch(error => {
-          console.error('Failed to save login details to database:', error);
-          res.status(500).json({ error: 'Failed to save login details' });
-      });
+  const newLoginDetails = new LoginDetails({ ename, date, time, address });
+  newLoginDetails
+    .save()
+    .then((savedLoginDetails) => {
+      console.log("Login details saved to database:", savedLoginDetails);
+      res.json(savedLoginDetails);
+    })
+    .catch((error) => {
+      console.error("Failed to save login details to database:", error);
+      res.status(500).json({ error: "Failed to save login details" });
+    });
 });
 
-app.get('/api/loginDetails', (req, res) => {
+app.get("/api/loginDetails", (req, res) => {
   LoginDetails.find()
-      .then(loginDetails => {
-          res.json(loginDetails);
-      })
-      .catch(error => {
-          console.error('Failed to fetch login details from database:', error);
-          res.status(500).json({ error: 'Failed to fetch login details' });
-      });
+    .then((loginDetails) => {
+      res.json(loginDetails);
+    })
+    .catch((error) => {
+      console.error("Failed to fetch login details from database:", error);
+      res.status(500).json({ error: "Failed to fetch login details" });
+    });
 });
 
-app.get('/api/pdf', (req, res) => {
-  const pdfPath = path.join(__dirname, 'uploads', 'pdf1.pdf');
-  res.sendFile(pdfPath);
-});
+app.get("/api/pdf/:filename", (req, res) => {
+  const filepath = req.params.filename;
+  const pdfPath = path.join(__dirname, 'ExtraDocs' , filepath);
 
+  // Check if the file exists
+  fs.access(pdfPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // If the file exists, send it
+    res.sendFile(pdfPath);
+  });
+});
 
 http.listen(3001, function () {
   console.log("Server started...");
