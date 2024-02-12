@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import './style_processing/main_processing.css'
 import { pdfuploader } from "../documents/pdf1.pdf";
+import Dashboard_processing from "./Dashboard_processing";
+
 
 // Other imports...
 
@@ -16,16 +18,8 @@ const formatDate = (inputDate) => {
 
 const CompanyDetails = ({ company }) => {
   const [pdfUrl, setPdfUrl] = useState(""); // Add this state variable
-  const [formOpen , setformOpen] = useState(false); // Add this state variable
+  const [formOpen , setformOpen] = useState(true); // Add this state variable
 
-  // const handleViewPDF = () => {
-  //   // Replace 'your-pdf-url' with the actual URL or logic to fetch the PDF URL
-  //   const pdfUrl = '../documents/pdf1.pdf';
-  //   setPdfUrl(pdfUrl);
-  //   window.open(pdfUrl, '_blank', 'toolbar=0,location=0,menubar=0');
-  //   console.log(pdfUrl)
-  //   // Now, you can open a modal or redirect to a new page to display the PDF
-  // };
 
   const handleViewPDF = () => {
     // Replace 'http://localhost:3001/api/pdf' with the actual API endpoint serving your PDF
@@ -40,13 +34,13 @@ const CompanyDetails = ({ company }) => {
       </div>
       <div className="card-body cmpy-d-body">
         {company ? (
-          <div className="datagrid cmpy-d-b-datagrid">
+          <div className="datagrid">
             {Object.entries(company)
               .filter(([key, value]) => key !== "_id" && (value || value === "")) // Exclude "id" field and empty/undefined values
               .map(([key, value]) => (
                 // Render only if both key and value are present
                 value && (
-                  <div className="datagrid-item cmpy-d-b-datagriditem" key={key}>
+                  <div className="datagrid-item" key={key}>
                     <div className="datagrid-title">{key}</div>
                     <div className="datagrid-content">
                       {(key === "bookingDate" || key === "incoDate") ? formatDate(value) : value}
@@ -55,7 +49,7 @@ const CompanyDetails = ({ company }) => {
                 )
               ))}
             {/* Add the "View PDF" button */}
-            <div className="datagrid-item cmpy-d-b-datagriditem">
+            <div className="datagrid-item">
               <div className="datagrid-title">Actions</div>
               <div className="datagrid-content">
                 <button className="btn btn-primary" onClick={handleViewPDF}>
