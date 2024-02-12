@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import './style_processing/main_processing.css'
 import { pdfuploader } from "../documents/pdf1.pdf";
 import Dashboard_processing from "./Dashboard_processing";
+import { Link } from "react-router-dom";
 
 
 // Other imports...
@@ -18,20 +19,25 @@ const formatDate = (inputDate) => {
 
 const CompanyDetails = ({ company }) => {
   const [pdfUrl, setPdfUrl] = useState(""); // Add this state variable
-  const [formOpen , setformOpen] = useState(true); // Add this state variable
+  const [formOpen, setformOpen] = useState(false); // Add this state variable
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-
-  const handleViewPDF = () => {
-    // Replace 'http://localhost:3001/api/pdf' with the actual API endpoint serving your PDF
-    const pdfUrl = 'http://localhost:3001/api/pdf';
-    window.open(pdfUrl, '_blank', 'toolbar=0,location=0,menubar=0');
+  const handleViewPdf = () => {
+    const pathname = company.otherDocs[0];
+    console.log(pathname);
+    window.open(`${secretKey}/pdf/${pathname}`, "_blank");
   };
 
   return (
     <div className="card">
-      <div className="card-header d-flex align-items-center cmpy-d-header">
-        <h3 className="card-title">Booking Details</h3>
-      </div>
+          <div className="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title">Booking Details</h3>
+            <Link to='/Processing/Dashboard_processing/addbookings'>
+              <button
+                className="btn btn-primary">
+                Add Booking
+              </button>
+            </Link></div>
       <div className="card-body cmpy-d-body">
         {company ? (
           <div className="datagrid">
@@ -51,10 +57,15 @@ const CompanyDetails = ({ company }) => {
             {/* Add the "View PDF" button */}
             <div className="datagrid-item">
               <div className="datagrid-title">Actions</div>
-              <div className="datagrid-content">
+              {/* <div className="datagrid-content">
                 <button className="btn btn-primary" onClick={handleViewPDF}>
                   View PDF
                 </button>
+              </div> */}
+              <div className="datagrid-content">
+                  <button className="btn btn-primary" onClick={handleViewPdf}>
+                    View PDF
+                  </button>
               </div>
             </div>
           </div>
@@ -62,7 +73,7 @@ const CompanyDetails = ({ company }) => {
           <p>Select a company from the list to view details.</p>
         )}
       </div>
-    </div> 
+    </div>
   );
 };
 
