@@ -1,19 +1,28 @@
-.container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
-    max-width: 96%!important;
+.container,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl,
+.container-xxl {
+    max-width: 96% !important;
 }
-.cmpy-list-body{
-    overflow-y:auto !important;
+
+.cmpy-list-body {
+    overflow-y: auto !important;
     height: 500px;
 }
-.time,.bookingdate
-{
+
+.time,
+.bookingdate {
     font-size: 12px;
     color: #6a6a6a;
 }
-.p-booking-Cname{
+
+.p-booking-Cname {
     justify-content: space-between;
 }
-.p-booking-Cname h4{
+
+.p-booking-Cname h4 {
     text-transform: capitalize;
     display: -webkit-box;
     line-height: 1.5;
@@ -21,40 +30,61 @@
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
 }
-.cmpy-dash-header{
+
+.cmpy-dash-header,
+.cmpy-d-header {
     justify-content: space-between;
+    margin-top: 20px;
 }
-.cmpy-dash-header h3{
+
+.cmpy-dash-header h3 {
     margin-bottom: -20px !important;
     margin-left: 51px !important;
-    
+
 }
-.cmpy-d-header{
+
+.cmpy-d-header {
     margin-left: 35px !important;
 }
-.cmpy-d-body{
+
+.cmpy-d-body {
     overflow-y: auto !important;
     height: 74vh;
     width: 100%;
-    
+    margin-top: 20px;
+
+
 }
-.search-date-header{
+
+.cmpy-d-button {
+    margin-right: 100px !important;
+    margin-bottom: 14px;
+}
+
+.search-date-header {
     display: flex;
     flex-direction: column;
     padding: 10px 6px !important;
 }
 
-.search-date{
+.search-date {
     display: flex;
     width: 97% !important;
     margin-top: 16px;
-    
+
 }
-.search-date input{
+
+.search-date input {
     font-size: 14px;
     margin: 0px 10px;
 }
-.list-group-item
-{
+
+.list-group-item {
     padding: 2px 10px !important;
+}
+
+.bookings-form {
+    margin-top: -24px !important;
+    margin-right: 71px;
+    margin-left: 40px;
 }

@@ -11,7 +11,7 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import Notification from "../admin/Notification.js";
 import Avatar from '@mui/material/Avatar';
 import axios from "axios";
-// import Bellicon from "../admin/Bellicon.js";
+import Bellicon from "../admin/Bellicon.js";
 import socketIO from 'socket.io-client';
 // import "./styles/header.css"
 
@@ -93,7 +93,7 @@ function Header_processing({ name, designation}) {
             </a>
           </h1>
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
-          {/* <Bellicon data={requestData} gdata = {requestGData}/> */}
+          <Bellicon data={requestData} gdata = {requestGData}/>
           <Avatar sx={{ width: 32, height: 32 }}/>
             <div className="nav-item dropdown">
               <button
@@ -103,7 +103,7 @@ function Header_processing({ name, designation}) {
               >
                 
                 <div className="d-xl-block ps-2">
-                  <div style={{textAlign:"left"}}  >{name ? name : "Username"}</div>
+                  <div>{name ? name : "Username"}</div>
                   <div style={{textAlign:"left"}} className="mt-1 small text-muted">
                     {designation ? designation : "Processing-team"}
                   </div>

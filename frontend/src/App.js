@@ -15,6 +15,8 @@ import ShowNotification from "./admin/ShowNotification";
 import Dashboard_processing from "./Processing/Dashboard_processing";
 import LoginDetails from "./components/LoginDetails";
 import ProcessingLogin from "./components/ProcessingLogin";
+import Bookings from "./Processing/Bookings.jsx";
+import Form from "./Processing/Form.jsx";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -77,7 +79,7 @@ function App() {
             element={<ProcessingLogin setProcessingToken={setProcessingToken} />}
           />
           <Route path="/Processing/Dashboard_processing"  element={processingTokenn ? <Dashboard_processing /> : <Navigate to="/processing/processing-login" />} />
-         
+          <Route path="/Processing/Dashboard_processing/addbookings" element={<Form/>} /> 
         </Routes>
       </BrowserRouter>
     </div>

@@ -1,11 +1,11 @@
 
-
 import React, { useState, useEffect } from "react";
 import Navbar_processing from "./Navbar_processing";
 import Header_processing from "./Header_processing";
 import CompanyList from "./CompanyList";
 import CompanyDetails from "./CompanyDetails";
 import Form from "./Form";
+import { Link } from "react-router-dom";
 
 function Dashboard_processing() {
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
@@ -15,6 +15,7 @@ function Dashboard_processing() {
   const [bookingTime, setBookingTime] = useState([]);
   const [formOpen, setformOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
+
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -87,7 +88,7 @@ function Dashboard_processing() {
     <div>
       <Header_processing />
       <Navbar_processing />
-      <div className="page-body">
+      {/* <div className="page-body">
         <div className="container-xl">
           <div className="processing-main row">
             <div className="col-sm-12"></div>
@@ -99,79 +100,31 @@ function Dashboard_processing() {
                 bookingTime={bookingTime}
               />
             </div>
-            <div className="col-sm-8">
-              <div>
-              {formOpen ? (
-                <>
-                  <div className="d-flex align-items-center cmpy-dash-header ">
-                    <h3 className="card-title">Booking Details</h3>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => {
-                        setformOpen(false);
-                      }}
-                    >
-                      Close Form
-                    </button>
-                  </div>
-                  <Form onClose={() => setformOpen(false)} />
-                </>
-              ) : (
-                <div>
-                  <h3 class="card-title">
-                    {!formOpen ? (
-                      <button
-                        className="btn btn-primary"
-                        onClick={() => {
-                          setformOpen(true);
-                        }}
-                      >
-                        Add Booking
-                      </button>
-                    ) : null}
-                  </h3>
+           </div>
+           </div>
+      </div> */}
+       <div className="page-body">
+                <div className="page-body">
+                    <div className="container-xl">
+                        <div className="processing-main row">
+                            <div className="col-sm-12"></div>
+                            <div className="col-sm-4">
+                                <CompanyList
+                                    companies={companies} // Use the correct array
+                                    onCompanyClick={handleCompanyClick}
+                                    selectedBookingDate={formattedDates}
+                                    bookingTime={bookingTime}
+                                />
+                            </div>
+                            <div className="col-sm-8">
+                                {companyDetails ? (
+                                    <CompanyDetails company={companyDetails} />
+                                ) : null}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              )}
-              </div>
-              {companyDetails ? (
-                <CompanyDetails company={companyDetails} />
-              ) : null}
-
-              {/* {formOpen ? (
-                <>
-                  <div className="d-flex align-items-center cmpy-dash-header ">
-                    <h3 className="card-title">Booking Details</h3>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => {
-                        setformOpen(false);
-                      }}
-                    >
-                      Close Form
-                    </button>
-                  </div>
-                  <Form onClose={() => setformOpen(false)} />
-                </>
-              ) : (
-                <div>
-                  <h3 class="card-title">
-                    {!formOpen ? (
-                      <button
-                        className="btn btn-primary"
-                        onClick={() => {
-                          setformOpen(true);
-                        }}
-                      >
-                        Add Booking
-                      </button>
-                    ) : null}
-                  </h3>
-                </div>
-              )} */}
             </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
