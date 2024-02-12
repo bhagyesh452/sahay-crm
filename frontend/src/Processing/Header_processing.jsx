@@ -93,7 +93,7 @@ function Header_processing({ name, designation}) {
             </a>
           </h1>
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
-          <Bellicon data={requestData} gdata = {requestGData}/>
+        
           <Avatar sx={{ width: 32, height: 32 }}/>
             <div className="nav-item dropdown">
               <button
