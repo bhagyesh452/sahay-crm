@@ -115,8 +115,7 @@ app.post("/api/processingLogin", async (req, res) => {
     const processingToken = jwt.sign({ employeeId: user._id }, secretKey, {
       expiresIn: "10h",
     });
-    const ename = user.ename;
-    res.json({ processingToken,ename });
+    res.json({ processingToken, ename });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
   }
