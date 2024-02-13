@@ -21,6 +21,7 @@ const multer = require("multer");
 const RemarksHistory = require("./models/RemarksHistory");
 const EmployeeHistory = require("./models/EmployeeHistory");
 const LoginDetails = require("./models/loginDetails");
+const RequestDeleteByBDE = require('./models/Deleterequestbybde');
 // const http = require('http');
 // const socketIo = require('socket.io');
 require("dotenv").config();
@@ -823,6 +824,7 @@ app.post(
   async (req, res) => {
     try {
       const {
+        
         bdmName,
         bdmEmail,
         bdmType,
@@ -907,7 +909,7 @@ app.post(
       const savedEmployee = await employee.save();
 
       const recipients = [
-        "bookings@startupsahay.com",
+        // "bookings@startupsahay.com",
         "documents@startupsahay.com",
         `${bdmEmail}`,
         `${empEmail}`,
@@ -1294,6 +1296,8 @@ app.get("/api/companies", async (req, res) => {
 });*/
 
 // Backend route for fetching individual company details
+
+
 app.get("/api/company/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
 
@@ -1308,6 +1312,52 @@ app.get("/api/company/:companyName", async (req, res) => {
   } catch (error) {
     console.error("Error fetching company details:", error.message);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get('/api/company/:_id', async (req, res) => {
+  try {
+    const companyId = req.params._id
+    const company = await LeadModel.findById(companyId);
+    res.json(company);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+app.delete('/api/company/:_id', async (req, res) => {
+  try {
+    const companyId = req.params._id
+    await LeadModel.findByIdAndDelete(companyId);
+    res.json({ message: 'Company deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/api/deleterequestbybde', async (req, res) => {
+  try {
+    const { companyName, companyId, time, date, request } = req.body;
+    console.log(req.body)
+    // Create a new instance of the RequestDeleteByBDE model
+    const deleteRequest = new RequestDeleteByBDE({
+      companyName,
+      companyId,
+      time,
+      date,
+      request,
+    });
+
+    // Save the delete request to the database
+    await deleteRequest.save();
+
+    res.json({ message: 'Delete request created successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

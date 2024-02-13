@@ -188,7 +188,7 @@ function Form({
 
       // Check if the API call was successful
       if (response.status === 200) {
-        console.log("Status Changed");
+      
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);
@@ -361,15 +361,7 @@ const formattedTime = formatTime(currentTime);
       };
     });
   };
-  console.log(
-    parseInt(leadData.firstPayment) +
-      parseInt(leadData.secondPayment) +
-      parseInt(leadData.thirdPayment) +
-      parseInt(leadData.fourthPayment),
-    parseInt(leadData.totalPayment)
-  );
-
-  
+ 
   return (
     <div>
       <div className="hr-1"></div>

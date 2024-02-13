@@ -137,6 +137,8 @@ function Form({
   const [otherName, setotherName] = useState("");
   const [leadData, setLeadData] = useState({
     // Initialize properties with default values if needed
+    bdeName:"",
+    bdeEmail:"",
     bdmName: "",
     bdmEmail: "",
     bdmType: "Close by",
@@ -173,6 +175,7 @@ function Form({
 
       // Set the retrieved data in the state
       const tempData = response.data;
+      console.log(response.data)
       setUnames(tempData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -227,8 +230,8 @@ function Form({
     formData.append("caEmail", leadData.caEmail);
     formData.append("caCommission", leadData.caCommission);
 
-    formData.append("empName", employeeName);
-    formData.append("empEmail", employeeEmail);
+    formData.append("empName", leadData.bdeName);
+    formData.append("empEmail", leadData. bdeEmail);
     {
       matured
         ? formData.append("companyName", companysName)
@@ -283,6 +286,8 @@ function Form({
       const response = await axios.post(`${secretKey}/lead-form`, formData);
       setLeadData({
         // Initialize properties with default values if needed
+        bdeName:"",
+        bdeEmail:"",
         bdmName: "",
         bdmEmail: "",
         bdmType: "Close by",
@@ -415,8 +420,57 @@ function Form({
           }}
           className="page-body"
         >
+          {/*---------------- new data added for bde name and bde email------------ */}
           <div className="container-xl">
             <div class="card-body mt-3">
+            <div className="BDE-section mb-3 row">
+            <div className="email col">
+                  <label class="form-label">
+                    BDE Name
+                    {leadData.bdeName == "" && (
+                      <span style={{ color: "red" }}>*</span>
+                    )}
+                  </label>
+                  <input
+                    type="text"
+                    name="othername"
+                    id="bdename"
+                    placeholder="Enter BDE  Name"
+                    className="form-control"
+                    value={leadData.bdeName}
+                    onChange={(e) => {
+                      setLeadData((prevLeadData) => ({
+                        ...prevLeadData,
+                      bdeName: e.target.value,
+                      }));
+                    }}
+                    required
+                  />
+                </div>
+                <div className="email col">
+                  <label class="form-label">
+                    BDE Email
+                    {leadData.bd == "" && (
+                      <span style={{ color: "red" }}>*</span>
+                    )}
+                  </label>
+                  <input
+                    type="email"
+                    name="othername"
+                    id="bdeemail"
+                    placeholder="Enter BDE Email Address"
+                    className="form-control"
+                    value={leadData.bdeEmail}
+                    onChange={(e) => {
+                      setLeadData((prevLeadData) => ({
+                        ...prevLeadData,
+                      bdeEmail: e.target.value,
+                      }));
+                    }}
+                    required
+                  />
+                </div>
+                </div>
               <div className="BDM-section row">
                 <div className="bdm-name col">
                   <label class="form-label">
