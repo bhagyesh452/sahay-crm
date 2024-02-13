@@ -18,8 +18,7 @@ const formatDate = (inputDate) => {
 };
 
 const CompanyDetails = ({ company }) => {
-  const [pdfUrl, setPdfUrl] = useState(""); // Add this state variable
-  const [formOpen, setformOpen] = useState(false); // Add this state variable
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   const handleViewPdf = () => {

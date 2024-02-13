@@ -13,8 +13,7 @@ function Dashboard_processing() {
   const [companyDetails, setCompanyDetails] = useState(null);
   const [bookingDates, setBookingDates] = useState([]);
   const [bookingTime, setBookingTime] = useState([]);
-  const [formOpen, setformOpen] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState(null);
+  
 
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
