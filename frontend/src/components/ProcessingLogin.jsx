@@ -38,11 +38,11 @@ function ProcessingLogin({ setProcessingToken }) {
         password,
       });
 
-      const { processingToken , ename } = response.data;
+      const { processingToken,ename } = response.data;
       
       setProcessingToken(processingToken);
       localStorage.setItem("processingToken", processingToken);
-      localStorage.setItem("username", ename);
+      localStorage.setItem("username",ename);
      window.location.replace('/Processing/Dashboard_processing');
      
     } catch (error) {

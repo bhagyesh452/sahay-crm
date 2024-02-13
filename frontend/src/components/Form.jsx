@@ -779,7 +779,7 @@ const formattedTime = formatTime(currentTime);
                 style={{
                   borderRadius: "5px 0px 0px 5px",
                 }}
-                className={
+                className={ paymentCount >= 2 &&
                   parseInt(leadData.firstPayment) +
                     parseInt(leadData.secondPayment) +
                     parseInt(leadData.thirdPayment) +
@@ -1313,7 +1313,7 @@ const formattedTime = formatTime(currentTime);
             <div className="cpan-or-gst mb-3">
               <label class="form-label">Company Pan or GST Number</label>
               <input
-                type="number"
+                type="text"
                 name="panorGSTnumber"
                 id="panorGSTnumber"
                 placeholder="Enter Company's PAN/GST number "

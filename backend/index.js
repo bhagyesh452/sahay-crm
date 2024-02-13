@@ -109,14 +109,14 @@ app.post("/api/processingLogin", async (req, res) => {
     password: password,
     designation: "Admin Team",
   });
-  console.log(user);
- 
+
   if (user) {
     const ename = user.ename;
     const processingToken = jwt.sign({ employeeId: user._id }, secretKey, {
       expiresIn: "10h",
     });
-    res.json({ processingToken , ename });
+    const ename = user.ename;
+    res.json({ processingToken,ename });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
   }
@@ -861,12 +861,14 @@ app.post(
       const bdeEmail = empEmail;
 
       const otherDocs =
-        req.files["otherDocs"].map((file) => file.filename) || [];
+      req.files["otherDocs"] && req.files["otherDocs"].length > 0
+        ? req.files["otherDocs"].map((file) => file.filename)
+        : [];
 
-      const paymentReceipt = req.files["paymentReceipt"]
-        ? req.files["paymentReceipt"][0].filename
-        : null; // Array of files for 'file2'
-      console.log(otherDocs);
+    const paymentReceipt = req.files["paymentReceipt"]
+      ? req.files["paymentReceipt"][0].filename
+      : null; // Array of files for 'file2'
+    
       // Your processing logic here
 
       const employee = new LeadModel({
@@ -912,7 +914,7 @@ app.post(
         // "bookings@startupsahay.com",
         "documents@startupsahay.com",
         `${bdmEmail}`,
-        `${empEmail}`,
+        `${bdeName}`,
       ];
 
       //       sendMail(
@@ -1340,7 +1342,7 @@ app.get("/api/company/:companyName", async (req, res) => {
 
 app.post('/api/deleterequestbybde', async (req, res) => {
   try {
-    const { companyName, companyId, time, date, request , ename} = req.body;
+    const { companyName, companyId, time, date, request , ename } = req.body;
     console.log(req.body)
     // Create a new instance of the RequestDeleteByBDE model
     const deleteRequest = new RequestDeleteByBDE({
@@ -1349,7 +1351,7 @@ app.post('/api/deleterequestbybde', async (req, res) => {
       time,
       date,
       request,
-      ename,
+      ename
     });
 
     // Save the delete request to the database
@@ -1361,7 +1363,44 @@ app.post('/api/deleterequestbybde', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+app.get('/api/deleterequestbybde', async (req, res) => {
+  try {
+    
+    const company = await RequestDeleteByBDE.find();
+    res.json(company);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.delete('/api/deleterequestbybde/:cname', async (req, res) => {
+  try {
+    const companyName = req.params.cname;
+    
+    // Find document by company name and delete it
+    const deletedCompany = await RequestDeleteByBDE.findOneAndDelete({ companyName });
 
+    // If document is not found, return 404
+    if (!deletedCompany) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+    
+    // If document is deleted successfully, return the deleted document
+    res.json(deletedCompany);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// io.on('connection', (socket) => {
+//   console.log('A user connected');
+
+//   // Handle disconnection
+//   socket.on('disconnect', () => {
+//     console.log('User disconnected');
+//   });
+// });
 app.post("/api/loginDetails", (req, res) => {
   const { ename, date, time, address } = req.body;
   const newLoginDetails = new LoginDetails({ ename, date, time, address });

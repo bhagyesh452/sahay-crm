@@ -51,6 +51,7 @@ function CompanyList({ companies, onCompanyClick }) {
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
 
+<<<<<<< HEAD
 
 const handleDelete = (companyId, companyName) => {
   const ename = localStorage.getItem("username");
@@ -68,13 +69,21 @@ const handleDelete = (companyId, companyName) => {
     if (result.isConfirmed) {
       const date = new Date().toLocaleDateString();
       const time = new Date().toLocaleTimeString();
+=======
+    const handleDelete = (companyId, companyName) => {
+      // Assuming you have an API endpoint for creating delete requests
+    const ename = localStorage.getItem("username");
+      // Store the company details in the RequestDeleteByBDE model
+      const date = new Date().toLocaleDateString()
+      const time = new Date().toLocaleTimeString()
+>>>>>>> b7aaf9d682d7413aed1e3629d87d1976345e5fb9
       const deleteRequestData = {
         companyName,
         companyId,
         time,
         date,
-        request: false,
-        ename,
+        request: false, 
+        ename// You can customize this field as needed
       };
 
       // Make a request to store the delete request details

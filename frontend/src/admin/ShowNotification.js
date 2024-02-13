@@ -7,6 +7,7 @@ import axios from "axios";
 import NewGCard from "./NewGcard";
 import ApproveCard from "./ApproveCard";
 import Nodata from "../components/Nodata";
+import DeleteBookingsCard from "./DeleteBookingsCard";
 
 function ShowNotification() {
   const [RequestData, setRequestData] = useState([]);
@@ -14,6 +15,7 @@ function ShowNotification() {
   const [RequestApprovals, setRequestApprovals] = useState([]);
   const [mapArray, setMapArray] = useState([]);
   const [dataType, setDataType] = useState("General");
+  const [deleteData, setDeleteData] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const fetchRequestDetails = async () => {
     try {
@@ -31,6 +33,15 @@ function ShowNotification() {
       console.error("Error fetching data:", error.message);
     }
   };
+  const fetchDataDelete = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/deleterequestbybde`);
+      setDeleteData(response.data); // Assuming your data is returned as an array
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const fetchApproveRequests = async () => {
     try {
       const response = await axios.get(`${secretKey}/requestCompanyData`);
@@ -49,6 +60,7 @@ function ShowNotification() {
       console.error("Error fetching data:", error.message);
     }
   };
+  
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -63,6 +75,7 @@ function ShowNotification() {
     fetchRequestDetails();
     fetchRequestGDetails();
     fetchApproveRequests();
+    fetchDataDelete();
   }, []);
 
   // setEnameArray(uniqueEnames);
@@ -136,6 +149,22 @@ function ShowNotification() {
                       Approve Requests
                     </a>
                   </li>
+                  <li class="nav-item data-heading">
+                    <a
+                      href="#tabs-home-5"
+                      className={
+                        dataType === "deleteBookingRequests"
+                          ? "nav-link active item-act"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                      onClick={() => {
+                        setDataType("deleteBookingRequests");
+                      }}
+                    >
+                      Delete Booking Requests
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div
@@ -200,6 +229,22 @@ function ShowNotification() {
                      <Nodata/>
                   </span>
                 )}
+                {deleteData.length === 0 && dataType === "deleteBookingRequests" && (
+                  <span
+                    style={{
+                      textAlign: "center",
+                      fontSize: "25px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                     <Nodata/>
+                  </span>
+                )}
+              {dataType === "deleteBookingRequests" && deleteData.length !==0 && (
+               deleteData.map((company) => (
+                <DeleteBookingsCard companyId={company.companyId} name={company.ename} companyName={company.companyName} date={company.date} time={company.time} />
+               ))
+              )}
               </div>
             </div>
           </div>
