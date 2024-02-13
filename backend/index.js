@@ -913,7 +913,7 @@ app.post(
         // "bookings@startupsahay.com",
         "documents@startupsahay.com",
         `${bdmEmail}`,
-        `${empEmail}`,
+        `${bdeName}`,
       ];
 
       //       sendMail(

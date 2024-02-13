@@ -40,7 +40,7 @@ const leadSchema = new mongoose.Schema({
     paymentRemarks:String,
     paymentReceipt: String,
     bookingSource: String,
-    cPANorGSTnum: Number,
+    cPANorGSTnum: String,
     incoDate: Date,
     extraNotes: String,
     otherDocs: Array,
