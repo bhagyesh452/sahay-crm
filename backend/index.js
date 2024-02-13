@@ -110,11 +110,13 @@ app.post("/api/processingLogin", async (req, res) => {
     designation: "Admin Team",
   });
   console.log(user);
+ 
   if (user) {
+    const ename = user.ename;
     const processingToken = jwt.sign({ employeeId: user._id }, secretKey, {
       expiresIn: "10h",
     });
-    res.json({ processingToken });
+    res.json({ processingToken , ename });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
   }
@@ -1313,32 +1315,32 @@ app.get("/api/company/:companyName", async (req, res) => {
   }
 });
 
-app.get('/api/company/:_id', async (req, res) => {
-  try {
-    const companyId = req.params._id
-    const company = await LeadModel.findById(companyId);
-    res.json(company);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+// app.get('/api/company/:_id', async (req, res) => {
+//   try {
+//     const companyId = req.params._id
+//     const company = await LeadModel.findById(companyId);
+//     res.json(company);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
 
 
-app.delete('/api/company/:_id', async (req, res) => {
-  try {
-    const companyId = req.params._id
-    await LeadModel.findByIdAndDelete(companyId);
-    res.json({ message: 'Company deleted successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+// app.delete('/api/company/:_id', async (req, res) => {
+//   try {
+//     const companyId = req.params._id
+//     await LeadModel.findByIdAndDelete(companyId);
+//     res.json({ message: 'Company deleted successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
 
 app.post('/api/deleterequestbybde', async (req, res) => {
   try {
-    const { companyName, companyId, time, date, request } = req.body;
+    const { companyName, companyId, time, date, request , ename} = req.body;
     console.log(req.body)
     // Create a new instance of the RequestDeleteByBDE model
     const deleteRequest = new RequestDeleteByBDE({
@@ -1347,6 +1349,7 @@ app.post('/api/deleterequestbybde', async (req, res) => {
       time,
       date,
       request,
+      ename,
     });
 
     // Save the delete request to the database
@@ -1359,14 +1362,6 @@ app.post('/api/deleterequestbybde', async (req, res) => {
   }
 });
 
-// io.on('connection', (socket) => {
-//   console.log('A user connected');
-
-//   // Handle disconnection
-//   socket.on('disconnect', () => {
-//     console.log('User disconnected');
-//   });
-// });
 app.post("/api/loginDetails", (req, res) => {
   const { ename, date, time, address } = req.body;
   const newLoginDetails = new LoginDetails({ ename, date, time, address });

@@ -21,6 +21,10 @@ const deleteSchema = new mongoose.Schema({
     type: Boolean,
     required: false,
   },
+  ename : {
+    type: String,
+    required: true,
+  },
 });
 
 const RequestDeleteByBDE = mongoose.model('RequestDeleteByBDE', deleteSchema);

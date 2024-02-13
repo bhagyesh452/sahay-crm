@@ -8,11 +8,12 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import myImage from "../static/logo.jpg";
 import { useNavigate } from "react-router-dom";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import Notification from "../admin/Notification.js";
+// import Notification from "../admin/Notification.js";
 import Avatar from '@mui/material/Avatar';
 import axios from "axios";
 import Bellicon from "../admin/Bellicon.js";
 import socketIO from 'socket.io-client';
+import Processing_notification from './Processing_notification.js'
 // import "./styles/header.css"
 
 
@@ -131,7 +132,7 @@ function Header_processing({ name, designation}) {
                 </a>
               </div>
             </div>
-            <Notification/>
+            <Processing_notification/>
             <div
               style={{ display: "flex", alignItems: "center" }}
               className="item"

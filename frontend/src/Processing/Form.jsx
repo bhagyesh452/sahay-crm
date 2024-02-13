@@ -420,7 +420,6 @@ function Form({
           }}
           className="page-body"
         >
-          {/*---------------- new data added for bde name and bde email------------ */}
           <div className="container-xl">
             <div class="card-body mt-3">
             <div className="BDE-section mb-3 row">

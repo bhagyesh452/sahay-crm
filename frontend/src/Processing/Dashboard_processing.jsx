@@ -87,21 +87,6 @@ function Dashboard_processing() {
     <div>
       <Header_processing />
       <Navbar_processing />
-      {/* <div className="page-body">
-        <div className="container-xl">
-          <div className="processing-main row">
-            <div className="col-sm-12"></div>
-            <div className="col-sm-4">
-              <CompanyList
-                companies={companies} // Use the correct array
-                onCompanyClick={handleCompanyClick}
-                selectedBookingDate={formattedDates}
-                bookingTime={bookingTime}
-              />
-            </div>
-           </div>
-           </div>
-      </div> */}
        <div className="page-body">
                 <div className="page-body">
                     <div className="container-xl">
