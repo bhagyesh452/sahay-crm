@@ -857,12 +857,14 @@ app.post(
       const bdeEmail = empEmail;
 
       const otherDocs =
-        req.files["otherDocs"].map((file) => file.filename) || [];
+      req.files["otherDocs"] && req.files["otherDocs"].length > 0
+        ? req.files["otherDocs"].map((file) => file.filename)
+        : [];
 
-      const paymentReceipt = req.files["paymentReceipt"]
-        ? req.files["paymentReceipt"][0].filename
-        : null; // Array of files for 'file2'
-      console.log(otherDocs);
+    const paymentReceipt = req.files["paymentReceipt"]
+      ? req.files["paymentReceipt"][0].filename
+      : null; // Array of files for 'file2'
+    
       // Your processing logic here
 
       const employee = new LeadModel({

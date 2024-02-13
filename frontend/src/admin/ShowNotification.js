@@ -7,6 +7,7 @@ import axios from "axios";
 import NewGCard from "./NewGcard";
 import ApproveCard from "./ApproveCard";
 import Nodata from "../components/Nodata";
+import DeleteBookingsCard from "./DeleteBookingsCard";
 
 function ShowNotification() {
   const [RequestData, setRequestData] = useState([]);
@@ -136,6 +137,22 @@ function ShowNotification() {
                       Approve Requests
                     </a>
                   </li>
+                  <li class="nav-item data-heading">
+                    <a
+                      href="#tabs-home-5"
+                      className={
+                        dataType === "deleteBookingRequests"
+                          ? "nav-link active item-act"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                      onClick={() => {
+                        setDataType("deleteBookingRequests");
+                      }}
+                    >
+                      Delete Booking Requests
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div
@@ -200,6 +217,17 @@ function ShowNotification() {
                      <Nodata/>
                   </span>
                 )}
+              {dataType === "deleteBookingRequests" && (
+               <span
+               style={{
+                 textAlign: "center",
+                 fontSize: "25px",
+                 fontWeight: "bold",
+               }}
+             >
+                <DeleteBookingsCard/>
+             </span>
+              )}
               </div>
             </div>
           </div>
