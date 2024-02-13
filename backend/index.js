@@ -109,12 +109,13 @@ app.post("/api/processingLogin", async (req, res) => {
     password: password,
     designation: "Admin Team",
   });
-  console.log(user);
+
   if (user) {
     const processingToken = jwt.sign({ employeeId: user._id }, secretKey, {
       expiresIn: "10h",
     });
-    res.json({ processingToken });
+    const ename = user.ename;
+    res.json({ processingToken,ename });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
   }
@@ -1340,7 +1341,7 @@ app.delete('/api/company/:_id', async (req, res) => {
 
 app.post('/api/deleterequestbybde', async (req, res) => {
   try {
-    const { companyName, companyId, time, date, request } = req.body;
+    const { companyName, companyId, time, date, request , ename } = req.body;
     console.log(req.body)
     // Create a new instance of the RequestDeleteByBDE model
     const deleteRequest = new RequestDeleteByBDE({
@@ -1349,12 +1350,42 @@ app.post('/api/deleterequestbybde', async (req, res) => {
       time,
       date,
       request,
+      ename
     });
 
     // Save the delete request to the database
     await deleteRequest.save();
 
     res.json({ message: 'Delete request created successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.get('/api/deleterequestbybde', async (req, res) => {
+  try {
+    
+    const company = await RequestDeleteByBDE.find();
+    res.json(company);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.delete('/api/deleterequestbybde/:cname', async (req, res) => {
+  try {
+    const companyName = req.params.cname;
+    
+    // Find document by company name and delete it
+    const deletedCompany = await RequestDeleteByBDE.findOneAndDelete({ companyName });
+
+    // If document is not found, return 404
+    if (!deletedCompany) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+    
+    // If document is deleted successfully, return the deleted document
+    res.json(deletedCompany);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });

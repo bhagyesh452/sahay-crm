@@ -3,8 +3,50 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
+import Swal from "sweetalert2";
+import axios from "axios";
 
-function DeleteBookingsCard({ name, companyName, date, time }) {
+function DeleteBookingsCard({ name, companyName, date, time, companyId }) {
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const handleDelete = () => {
+    // Assuming you have an API endpoint for deleting a company
+    
+    fetch(`${secretKey}/company/${companyId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        // Add any additional headers if needed
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Successfully deleted
+          handleDeleteRequest()
+          Swal.fire({title :"company deleted successfully" , icon:'success'});
+          // You can also update the UI by refetching the company list or any other action
+          // For example, you can call fetchCompanies() here
+        } else {
+          // Handle error if the delete request fails
+          Swal.fire({title :"Failer to delete company" , icon:'error'});
+          
+        }
+      })
+      .catch((error) => {
+        console.error("Error during delete request:", error);
+      });
+  };
+
+
+  const handleDeleteRequest = async () => {
+    try {
+      const response = await axios.delete(`${secretKey}/deleterequestbybde/${companyName}`);
+      console.log('Deleted company:', response.data);
+      // Handle success or update state as needed
+    } catch (error) {
+      console.error('Error deleting company:', error);
+      // Handle error
+    }
+  };
   return (
     <div>
       <Box sx={{ minWidth: 275, width: "28vw" }}>
@@ -41,6 +83,7 @@ function DeleteBookingsCard({ name, companyName, date, time }) {
               className="footerbutton"
             >
               <button
+              onClick={handleDelete}
                 style={{
                   width: "100vw",
                   borderRadius: "0px",
@@ -52,6 +95,7 @@ function DeleteBookingsCard({ name, companyName, date, time }) {
                 Delete
               </button>
               <button
+              onClick={handleDeleteRequest}
                 style={{
                   width: "100vw",
                   borderRadius: "0px",
