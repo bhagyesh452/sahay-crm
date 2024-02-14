@@ -88,3 +88,41 @@
     margin-right: 71px;
     margin-left: 40px;
 }
+
+.bdesection{
+    text-align: justify;
+}
+
+.booking-fields-view
+{
+
+}
+.fields-view-title
+{
+    font-size: 12px;
+}
+.fields-view-value {
+    background: #eee;
+    padding: 4px 4px 4px 7px;
+    margin: 5px 0px 5px 0;
+    border-radius: 3px;
+    font-size: 12px;
+}
+.custom-image-div img{
+    width: 50px;
+    height: 50px;
+    
+}
+.custom-image-div{
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.custom-image-div h3{
+    text-transform: capitalize;
+}
+
+.custom-image-div:hover{
+    opacity: 0.75;
+}
+
