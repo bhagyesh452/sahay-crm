@@ -292,8 +292,6 @@ import './style_processing/main_processing.css'
 import { pdfuploader } from "../documents/pdf1.pdf";
 import Dashboard_processing from "./Dashboard_processing";
 import { Link } from "react-router-dom";
-import { FaRegFilePdf } from "react-icons/fa";
-import pdficon from './PDF-icon-1.png'
 
 const CompanyDetails = ({ company }) => {
   // const [field, setField] = useState(false)
@@ -308,286 +306,122 @@ const CompanyDetails = ({ company }) => {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-  const handleViewPdfReciepts = (paymentreciept) => {
-    const pathname = paymentreciept;
+  console.log(company)
+
+  const handleViewPdf = () => {
+    const pathname = company.otherDocs[0];
     console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${pathname}`, "_blank");
+    window.open(`${secretKey}/pdf/${pathname}`, "_blank");
   };
 
-  // const handleViewPdOtherDocs = () => {
-  //   const pdfUrls = company.otherDocs.map(doc => `${secretKey}/otherpdf/${doc}`);
-  //   console.log(pdfUrls)
-  //   for(let i=0 ; i<pdfUrls.length ; i++){
-  //     window.open(pdfUrls[i], "_blank")
-  //   }
-  // };
-
-
-  const handleViewPdOtherDocs = (pdfurl) => {
-    const pathname = pdfurl;
-    console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${pathname}`, "_blank");
-  }
-
   return (
-
-    <div className='card'>
-      <div className="card-header">
-        <div className="d-flex justify-content-between align-items-center w-100">
-          <div>
-            <h3 class="card-title">Booking Details</h3>
-          </div>
-          <div>
-            <Link to='/Processing/Dashboard_processing/addbookings'>
-              <button
-                className="btn btn-primary">
-                Add Booking
-              </button>
-            </Link>
+    <div>
+      <div className='card'>
+        <div className="card-header">
+          <div className="container-xl d-flex justify-content-between">
+            <div className="row g-2">
+              <div className="col">
+                <h3 class="card-title">Booking Details</h3>
+              </div>
+            </div>
+            <div className="row g-2">
+              <div className="col">
+                <Link to='/Processing/Dashboard_processing/addbookings'>
+                  <button
+                    className="btn btn-primary">
+                    Add Booking
+                  </button>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="card-body">
-
-        {/* ------------------------Booking info section------------- */}
-        <section>
-          <div className="row">
-            {(company.bdeName || company.bdeName === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">BDE Name :</div>
-                <div className="fields-view-value">{company.bdeName}</div>
-              </div>
-            </div>)}
-            {(company.bdeEmail || company.bdeEmail === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">BDE Email :</div>
-                <div className="fields-view-value">{company.bdeEmail}</div>
-              </div>
-            </div>)}
-            {(company.bdmName || company.bdmName === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">BDM Name :</div>
-                <div className="fields-view-value">{company.bdmName}({company.bdmType})</div>
-              </div>
-            </div>)}
-            {(company.bdmEmail || company.bdmEmail === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">BDM Email :</div>
-                <div className="fields-view-value">{company.bdmEmail}</div>
-              </div>
-            </div>)}
-          </div>
-          <div className="row mt-2">
-            {(company.bookingDate || company.bookingDate === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Booking Date :</div>
-                <div className="fields-view-value">{formatDatelatest(company.bookingDate)}</div>
-              </div>
-            </div>)}
-            {(company.bookingTime || company.bookingTime === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Booking Time :</div>
-                <div className="fields-view-value">{company.bookingTime}</div>
-              </div>
-            </div>)}
-          </div>
-        </section>
-        <hr className="m-0 mt-2 mb-2"></hr>
-
-        {/* --------------CA SECTION--------------------------- */}
-
-        <section>
-          <div className="row">
-            {(company.caCase || company.caCase === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Ca Case :</div>
-                <div className="fields-view-value">{company.caCase}</div>
-              </div>
-            </div>)}
-            {(company.caCommission || company.caCommission === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Ca Case :</div>
-                <div className="fields-view-value">{company.caCommission}</div>
-              </div>
-            </div>)}
-            {(company.caEmail || company.caEmail === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">CA Email :</div>
-                <div className="fields-view-value">{company.caEmail}</div>
-              </div>
-            </div>)}
-            {(company.caNumber || company.caNumber === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">CA Number :</div>
-                <div className="fields-view-value">{company.caNumber}</div>
-              </div>
-            </div>)}
-          </div>
-        </section>
-        <hr className="m-0 mt-2 mb-2"></hr>
-
-        {/* -------------------------------Company Details Section-------------------------------------------- */}
-
-        <section>
-          <div className="row">
-            {(company.companyName || company.companyName === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Company Name :</div>
-                <div className="fields-view-value">{company.companyName}</div>
-              </div>
-            </div>)}
-            {(company.companyEmail || company.companyEmail === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Company Email :</div>
-                <div className="fields-view-value">{company.companyEmail}</div>
-              </div>
-            </div>)}
-            {(company.contactNumber || company.contactNumber === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Contact Number :</div>
-                <div className="fields-view-value">{company.contactNumber}</div>
-              </div>
-            </div>)}
-            {(company.services || company.services === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Services :</div>
-                <div className="fields-view-value">{company.services}</div>
-              </div>
-            </div>)}
-          </div>
-        </section>
-        <hr className="m-0 mt-2 mb-2"></hr>
-        {/* --------------------------------Payment Details Section------------------------------ */}
-        <section>
-          <div className="row">
-            {(company.paymentTerms || company.paymentTerms === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Payment Terms :</div>
-                <div className="fields-view-value">{company.paymentTerms}</div>
-              </div>
-            </div>)}
-            {(company.paymentMethod || company.paymentMethod === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Payment Method :</div>
-                <div className="fields-view-value">{company.paymentMethod}</div>
-              </div>
-
-            </div>)}
-            {(company.originalTotalPayment || company.originalTotalPayment === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Original Total Payment :</div>
-                <div className="fields-view-value">{company.originalTotalPayment}</div>
-              </div>
-            </div>)}
-            {(company.totalPayment || company.totalPayment === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Total Payment :</div>
-                <div className="fields-view-value">{company.totalPayment}</div>
-              </div>
-            </div>)}
-          </div>
-          <div className="row">
-            {(company.firstPayment || company.firstPayment === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">First Payment :</div>
-                <div className="fields-view-value">{company.firstPayment}</div>
-              </div>
-            </div>)}
-            {(company.secondPayment || company.secondPayment === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Second Payment :</div>
-                <div className="fields-view-value">{company.secondPayment}</div>
-              </div>
-            </div>)}
-            {(company.thirdPayment || company.thirdPayment === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Third Payment :</div>
-                <div className="fields-view-value">{company.thirdPayment}</div>
-              </div>
-            </div>)}
-            {(company.fourthPayment || company.fourthPayment === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Fourth Payment :</div>
-                <div className="fields-view-value">{company.fourthPayment}</div>
-              </div>
-            </div>)}
-          </div>
-          <div className="row">
-            {(company.bookingSource || company.bookingSource === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Booking Source :</div>
-                <div className="fields-view-value">{company.bookingSource}</div>
-              </div>
-            </div>)}
-            {(company.cPANorGSTnum || company.cPANorGSTnum === " ") && (<div className="col-sm-3">
-
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Pan or Gst :</div>
-                <div className="fields-view-value">{company.cPANorGSTnum}</div>
-              </div>
-            </div>)}
-            {(company.incoDate || company.incoDate === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Incorporation Date :</div>
-                <div className="fields-view-value">{company.incoDate}</div>
-              </div>
-            </div>)}
-            {(company.extraNotes || company.extraNotes === " ") && (<div className="col-sm-3">
-              <div className="booking-fields-view">
-                <div className="fields-view-title">Extra Notes :</div>
-                <div className="fields-view-value">{company.extraNotes}</div>
-              </div>
-            </div>)}
-          </div>
-        </section>
-        
-        {/* -----------------------------------Recipets and Documents Section----------------------------- */}
-        {(company.paymentReceipt || company.otherDocs.length > 0) && (
-          <>
-          {/* <hr className="m-0 mt-4 mb-2"></hr> */}
-          <section>
-            <div className="d-flex justify-content-between mb-0">
-              {company.paymentReceipt && (
-                <div className="col-sm-3">
-                  <div className="booking-fields-view d-flex align-items-center flex-column">
-                    <div className="fields-view-title mb-2">Payment Receipts :</div>
-                    <div
-                      className="custom-image-div d-flex"
-                      onClick={() => {
-                        handleViewPdfReciepts(company.paymentReceipt);
-                      }}
-                    >
-                      <img src={pdficon} alt="pdficon" />
-                      <h3>Receipt</h3>
+        <div className="card-body">
+          <div className="container-xl">
+            <div className="bdesection d-flex align-items-center justify-content-between mt-1">
+              <div className="row d-flex">
+                <div className="d-flex">
+                  {(company.bdeName || company.bdeName === " ") && (
+                    <div className="datagrid-item bdeName d-flex align-items-center">
+                      <div className="bde-title mr-1">BDE Name :</div>
+                      <div className="bde-value">{company.bdeName}</div>
                     </div>
-                  </div>
+                  )}
                 </div>
-              )}
-              {company.otherDocs.map((object) => {
-                const originalFilename = object.split('-').slice(1).join('-').replace('.pdf', '');
-                return (
-                  <div className="col-sm-3" key={object}>
-                    <div className="booking-fields-view d-flex align-items-center flex-column">
-                      <div className="fields-view-title mb-2">Attachments</div>
-                      <div
-                        className="custom-image-div d-flex"
-                        onClick={() => {
-                          handleViewPdOtherDocs(object);
-                        }}
-                      >
-                        <img src={pdficon} alt="pdficon" />
-                        <h3>{originalFilename}</h3>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              </div>
+              <div className="row g-2">
+                <div className="col">
+                {(company.bdeEmail || company.bdeEmail === " ") && (<div className="datagrid-item bdeEmail d-flex align-items-center">
+                    <div className="bde-title mr-1">BDE Email :</div>
+                    <div className="bde-value">{company.bdeEmail}</div>
+                  </div>)}
+                </div>
+              </div>
             </div>
-          </section></>
-        )}
+            <div className="bdmsection d-flex align-items-center justify-content-between mt-1">
+              <div className="row d-flex">
+                <div className="d-flex">
+                  {(company.bdmName || company.bdmName === " ") && (
+                    <div className="datagrid-item bdmName d-flex align-items-center">
+                      <div className="bdm-title mr-1">BDM Name :</div>
+                      <div className="bdm-value">{company.bdmName}({company.bdmType})</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="row g-2">
+                <div className="col">
+                {(company.bdmEmail || company.bdmEmail === " ") && (<div className="datagrid-item bdmEmail d-flex align-items-center">
+                    <div className="bdm-title mr-1">BDM Email :</div>
+                    <div className="bdm-value">{company.bdmEmail}</div>
+                  </div>)}
+                </div>
+              </div>
+            </div>
+            <div className="booking-date-time d-flex align-items-center justify-content-between mt-1">
+              <div className="row d-flex">
+                <div className="d-flex">
+                {(company.bookingDate || company.bookingDate === " ") && (
+                    <div className="datagrid-item bookingDate d-flex align-items-center">
+                      <div className="bookingdate-title mr-1">Booking Date :</div>
+                      <div className="bookingdate-value">{formatDatelatest(company.bookingDate)}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="row g-2">
+                <div className="col">
+                {(company.bookingTime|| company.bookingtimee === " ") && ( <div className="datagrid-item bookingtime d-flex align-items-center">
+                    <div className="bookingtime-title mr-1">Booking Time :</div>
+                    <div className="bookingtime-value">{company.bookingTime}</div>
+                  </div>)}
+                </div>
+              </div>
+            </div>
+          </div><hr></hr>
+          <div className="bdesection d-flex align-items-center justify-content-between mt-1">
+              <div className="row d-flex">
+                <div className="d-flex">
+                  {(company.bdeName || company.bdeName === " ") && (
+                    <div className="datagrid-item bdeName d-flex align-items-center">
+                      <div className="bde-title mr-1">BDE Name :</div>
+                      <div className="bde-value">{company.bdeName}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="row g-2">
+                <div className="col">
+                {(company.bdeEmail || company.bdeEmail === " ") && (<div className="datagrid-item bdeEmail d-flex align-items-center">
+                    <div className="bde-title mr-1">BDE Email :</div>
+                    <div className="bde-value">{company.bdeEmail}</div>
+                  </div>)}
+                </div>
+              </div>
+            </div>
+        </div>
       </div>
     </div>
-
   )
 };
 

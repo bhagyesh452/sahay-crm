@@ -1426,7 +1426,23 @@ app.get("/api/loginDetails", (req, res) => {
     });
 });
 
-app.get("/api/pdf/:filename", (req, res) => {
+app.get("/api/recieptpdf/:filename", (req, res) => {
+  const filepath = req.params.filename;
+  const pdfPath = path.join(__dirname, 'PaymentReceipts' , filepath);
+
+  // Check if the file exists
+  fs.access(pdfPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // If the file exists, send it
+    res.sendFile(pdfPath);
+  });
+});
+
+app.get("/api/otherpdf/:filename", (req, res) => {
   const filepath = req.params.filename;
   const pdfPath = path.join(__dirname, 'ExtraDocs' , filepath);
 

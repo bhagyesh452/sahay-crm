@@ -137,8 +137,8 @@ function Form({
   const [otherName, setotherName] = useState("");
   const [leadData, setLeadData] = useState({
     // Initialize properties with default values if needed
-    bdeName:"",
-    bdeEmail:"",
+    bdeName: "",
+    bdeEmail: "",
     bdmName: "",
     bdmEmail: "",
     bdmType: "Close by",
@@ -231,7 +231,7 @@ function Form({
     formData.append("caCommission", leadData.caCommission);
 
     formData.append("empName", leadData.bdeName);
-    formData.append("empEmail", leadData. bdeEmail);
+    formData.append("empEmail", leadData.bdeEmail);
     {
       matured
         ? formData.append("companyName", companysName)
@@ -286,8 +286,8 @@ function Form({
       const response = await axios.post(`${secretKey}/lead-form`, formData);
       setLeadData({
         // Initialize properties with default values if needed
-        bdeName:"",
-        bdeEmail:"",
+        bdeName: "",
+        bdeEmail: "",
         bdmName: "",
         bdmEmail: "",
         bdmType: "Close by",
@@ -401,15 +401,6 @@ function Form({
                     Back
                   </button>
                 </Link>
-                <a
-                  href="#"
-                  className="btn btn-primary d-sm-none btn-icon"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modal-report"
-                  aria-label="Create new report"
-                >
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                </a>
               </div>
             </div>
           </div>
@@ -422,8 +413,8 @@ function Form({
         >
           <div className="container-xl">
             <div class="card-body mt-3">
-            <div className="BDE-section mb-3 row">
-            <div className="email col">
+              <div className="BDE-section mb-3 row">
+                <div className="email col">
                   <label class="form-label">
                     BDE Name
                     {leadData.bdeName == "" && (
@@ -440,7 +431,7 @@ function Form({
                     onChange={(e) => {
                       setLeadData((prevLeadData) => ({
                         ...prevLeadData,
-                      bdeName: e.target.value,
+                        bdeName: e.target.value,
                       }));
                     }}
                     required
@@ -463,13 +454,13 @@ function Form({
                     onChange={(e) => {
                       setLeadData((prevLeadData) => ({
                         ...prevLeadData,
-                      bdeEmail: e.target.value,
+                        bdeEmail: e.target.value,
                       }));
                     }}
                     required
                   />
                 </div>
-                </div>
+              </div>
               <div className="BDM-section row">
                 <div className="bdm-name col">
                   <label class="form-label">
