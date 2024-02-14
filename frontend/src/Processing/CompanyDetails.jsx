@@ -544,7 +544,7 @@ const CompanyDetails = ({ company }) => {
         {/* -----------------------------------Recipets and Documents Section----------------------------- */}
         {(company.paymentReceipt || company.otherDocs.length > 0) && (
           <>
-          {/* <hr className="m-0 mt-4 mb-2"></hr> */}
+          <hr className="m-0 mt-4 mb-2"></hr>
           <section>
             <div className="d-flex justify-content-between mb-0">
               {company.paymentReceipt && (
