@@ -121,7 +121,7 @@ function EmployeeLogin({ setnewToken }) {
     const day = now.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-
+console.log(address)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const date = getCurrentDate();

@@ -6,11 +6,19 @@ import Typography from "@mui/material/Typography";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-function DeleteBookingsCard({ name, companyName, date, time, companyId }) {
+function DeleteBookingsCard({
+  name,
+  companyName,
+  date,
+  time,
+  companyId,
+  request,
+}) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+
   const handleDelete = () => {
     // Assuming you have an API endpoint for deleting a company
-    
+
     fetch(`${secretKey}/company/${companyId}`, {
       method: "DELETE",
       headers: {
@@ -21,14 +29,13 @@ function DeleteBookingsCard({ name, companyName, date, time, companyId }) {
       .then((response) => {
         if (response.ok) {
           // Successfully deleted
-          handleDeleteRequest()
-          Swal.fire({title :"company deleted successfully" , icon:'success'});
+          handleDeleteRequest();
+          Swal.fire({ title: "company deleted successfully", icon: "success" });
           // You can also update the UI by refetching the company list or any other action
           // For example, you can call fetchCompanies() here
         } else {
           // Handle error if the delete request fails
-          Swal.fire({title :"Failer to delete company" , icon:'error'});
-          
+          Swal.fire({ title: "Failer to delete company", icon: "error" });
         }
       })
       .catch((error) => {
@@ -36,14 +43,17 @@ function DeleteBookingsCard({ name, companyName, date, time, companyId }) {
       });
   };
 
-
   const handleDeleteRequest = async () => {
     try {
-      const response = await axios.delete(`${secretKey}/deleterequestbybde/${companyName}`);
-      console.log('Deleted company:', response.data);
+      const response = await axios.delete(
+        `${secretKey}/deleterequestbybde/${companyName}`
+      );
+      console.log("Deleted company:", response.data);
+      Swal.fire({ title: "Success", icon: "success" });
+      
       // Handle success or update state as needed
     } catch (error) {
-      console.error('Error deleting company:', error);
+      console.error("Error deleting company:", error);
       // Handle error
     }
   };
@@ -51,7 +61,11 @@ function DeleteBookingsCard({ name, companyName, date, time, companyId }) {
     <div>
       <Box sx={{ minWidth: 275, width: "28vw" }}>
         <Card
-          style={{ padding: "10px", margin: "10px 0px" }}
+          style={{
+            padding: "10px",
+            margin: "10px 0px",
+            backgroundColor: request && "#cacaca",
+          }}
           variant="outlined"
         >
           <React.Fragment>
@@ -61,7 +75,7 @@ function DeleteBookingsCard({ name, companyName, date, time, companyId }) {
                 variant="h5"
                 component="div"
               >
-                {name ? name : "UserName"} Name wants to Delete Bookings
+                {name ? name : "UserName"} wants to Delete Bookings
               </Typography>
 
               <Typography color="text.secondary">
@@ -83,7 +97,7 @@ function DeleteBookingsCard({ name, companyName, date, time, companyId }) {
               className="footerbutton"
             >
               <button
-              onClick={handleDelete}
+                onClick={handleDelete}
                 style={{
                   width: "100vw",
                   borderRadius: "0px",
@@ -91,11 +105,12 @@ function DeleteBookingsCard({ name, companyName, date, time, companyId }) {
                   color: "#bc2929",
                 }}
                 className="btn btn-primary d-none d-sm-inline-block"
+                disabled={request}
               >
                 Delete
               </button>
               <button
-              onClick={handleDeleteRequest}
+                onClick={handleDeleteRequest}
                 style={{
                   width: "100vw",
                   borderRadius: "0px",
@@ -107,6 +122,7 @@ function DeleteBookingsCard({ name, companyName, date, time, companyId }) {
                   },
                 }}
                 className="btn btn-primary d-none d-sm-inline-block"
+                disabled={request}
               >
                 Cancel Delete
               </button>

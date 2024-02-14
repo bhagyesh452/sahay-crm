@@ -242,7 +242,7 @@ function ShowNotification() {
                 )}
               {dataType === "deleteBookingRequests" && deleteData.length !==0 && (
                deleteData.map((company) => (
-                <DeleteBookingsCard companyId={company.companyId} name={company.ename} companyName={company.companyName} date={company.date} time={company.time} />
+                <DeleteBookingsCard request={company.request} companyId={company.companyId} name={company.ename} companyName={company.companyName} date={company.date} time={company.time} />
                ))
               )}
               </div>
