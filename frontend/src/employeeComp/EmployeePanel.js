@@ -1309,9 +1309,9 @@ function EmployeePanel() {
                                       <option value="Untouched">
                                         Untouched{" "}
                                       </option>
-                                      <option value="FollowUp">
+                                      {dataStatus==="Interested" &&  <option value="FollowUp">
                                         Follow Up{" "}
-                                      </option>
+                                      </option>}
                                       <option value="Busy">Busy </option>
                                       <option value="Not Picked Up">
                                         Not Picked Up
@@ -1320,7 +1320,7 @@ function EmployeePanel() {
                                       <option value="Interested">
                                         Interested
                                       </option>
-                                      <option value="Matured">Matured</option>
+                                     {dataStatus==="FollowUp" && <option value="Matured">Matured</option>}
                                       <option value="Not Interested">
                                         Not Interested
                                       </option>
