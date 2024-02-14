@@ -1,16 +1,15 @@
 const nodemailer = require("nodemailer");
 const mime = require('mime-types');
-const smtpTransport = require('nodemailer-smtp-transport');
 
-const transporter = nodemailer.createTransport(smtpTransport({
-  service: 'gmail',
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  secure: true,
   auth: {
-    type: 'OAuth2',
-    user: 'alerts@startupsahay.com', // Your Gmail address
-    clientId: '414406193938-89lakoke6o1l7ogs8ilodl0c25ev59os.apps.googleusercontent.com', // Your client ID
-    clientSecret: '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', // Your client secret
+    // TODO: replace user and pass values from <https://forwardemail.net>
+    user: "nimesh@incscale.in",
+    pass: "jipaefozdbqwzlhu",
   },
-}));
+});
 
 // async..await is not allowed in global scope, must use a wrapper
 async function sendMail(recipients, subject, text, html, otherDocs, paymentReceipt) {
@@ -39,7 +38,7 @@ async function sendMail(recipients, subject, text, html, otherDocs, paymentRecei
   processAttachments(paymentReceipt, 'paymentReceipt');
 
   const info = await transporter.sendMail({
-    from: 'alerts@startupsahay.com', // sender address
+    from: 'nimesh@incscale.in', // sender address
     to:recipients.join(', '),
     replyTo: 'bookings@startupsahay.com',
     subject, // Subject line

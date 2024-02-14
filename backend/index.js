@@ -913,8 +913,8 @@ app.post(
       const savedEmployee = await employee.save();
 
       const recipients = [
-        // "bookings@startupsahay.com",
-        // "documents@startupsahay.com",
+        "bookings@startupsahay.com",
+        "documents@startupsahay.com",
         `${bdmEmail}`,
         `${bdeName}`,
       ];
