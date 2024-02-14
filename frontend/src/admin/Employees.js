@@ -27,6 +27,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import Modal from "react-modal";
 import { IconEye } from "@tabler/icons-react";
+import Nodata from "../components/Nodata";
 
 function Employees({ onEyeButtonClick }) {
   // const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedin')==='true');
@@ -656,8 +657,8 @@ function Employees({ onEyeButtonClick }) {
                   {filteredData.length == 0 ? (
                     <tbody>
                       <tr>
-                        <td colSpan="10" style={{ textAlign: "center" }}>
-                          <div className="no-data-div">No data Available</div>
+                        <td className="particular" colSpan="10" style={{ textAlign: "center" }}>
+                          <Nodata/>
                         </td>
                       </tr>
                     </tbody>

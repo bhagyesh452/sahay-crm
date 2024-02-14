@@ -8,6 +8,7 @@ import Navbar from "../admin/Navbar";
 import { IconButton } from "@mui/material";
 import { IconChevronLeft } from "@tabler/icons-react";
 import Nodata from "./Nodata";
+import "../assets/styles.css";
 
 function LoginDetails() {
   const [loginDetails, setLoginDetails] = useState([]);
@@ -95,9 +96,23 @@ function LoginDetails() {
         </div>
         <div className="card mt-2">
           <div className="card-body p-0">
-            <div style={{ overflowX: "auto" }}>
+            <div
+              id="table-default"
+              style={{
+                overflowX: "auto",
+                overflowY: "auto",
+                maxHeight: "60vh",
+              }}
+            >
               {loginDetails.length !== 0 ? (
-                <table className="table table-striped">
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
                   <thead>
                     <tr>
                       <th>Name</th>

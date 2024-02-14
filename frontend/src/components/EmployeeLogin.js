@@ -10,7 +10,7 @@ function EmployeeLogin({ setnewToken }) {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [userId, setUserId] = useState(null);
-  const [address, setAddress] = useState("");
+  const [address1, setAddress] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -40,71 +40,68 @@ function EmployeeLogin({ setnewToken }) {
   }, []);
   async function getLocationInfo(latitude, longitude) {
     try {
-      // Fetch location information from OpenStreetMap Nominatim API
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
       );
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
       const data = await response.json();
-
-      // Extract relevant location information
-      const { display_name, address } = data;
-
+      
+  
+      if (data.error) {
+        throw new Error(`Nominatim API error: ${data.error}`);
+      }
+  
+      const { address } = data;
       setAddress(`${address.suburb} ,${address.state_district}`);
-
+  
       // Log the location information
     } catch (error) {
-      console.log("Error fetching location");
+      console.error("Error fetching location:", error.message);
     }
   }
+  
   const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
     let watchId;
     const successCallback = (position) => {
-      const userLatitude = position.coords.latitude || 23.13;
-      const userLongtitude = position.coords.longitude || 72.22;
-      console.log(userLatitude, userLongtitude);
-      getLocationInfo(userLatitude, userLongtitude);
-      // Define a polygon representing an area
-      // const areaCoordinates = [
-      //   { lat: userLatitude, lng: userLongitude }, // Coordinates provided
-      //   // Add more coordinates if necessary...
-      // ];
-
-      // // Calculate area of the polygon
-      // const area = window.google.maps.geometry.spherical.computeArea(areaCoordinates);
-      // console.log('Area of the polygon (in square meters):', area);
-      // if(Number(userLatitude.toFixed(3)) === 23.114 && Number(userLongitude.toFixed(3)) === 72.541){
-      //   setLocationAccess(true);
-      //   // console.log("Location accessed")
-      // }
-      // Now you can send these coordinates to your server for further processing
+      const userLatitude = position.coords.latitude;
+      const userLongitude = position.coords.longitude;
+      setLocationAccess(true);
+      getLocationInfo(userLatitude, userLongitude);
     };
-
+  
     const errorCallback = (error) => {
       console.error("Geolocation error:", error.message);
-      setLocationAccess(false);
-      // Handle the error, e.g., show a message to the user
+      if (error.code === error.PERMISSION_DENIED) {
+        setLocationAccess(false);
+      }
+      // Handle other error cases if needed
     };
-
+  
     navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-
+  
     // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
-
+  
     // Cleanup function to clear the watch if the component unmounts
     return () => {
       navigator.geolocation.clearWatch(watchId);
     };
   }, []);
+  
 
   // Trigger the findUserId function when email or password changes
   useEffect(() => {
     findUserId();
   }, [email, password]);
 
-  console.log(userId);
+  
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendkey = process.env.REACT_APP_FRONTEND_KEY;
-  console.log(frontendkey, secretKey);
+
   const getCurrentTime = () => {
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, "0");
@@ -121,13 +118,14 @@ function EmployeeLogin({ setnewToken }) {
     const day = now.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-console.log(address)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const date = getCurrentDate();
     const time = getCurrentTime();
-    console.log(address);
+ ;  const address = address1!=="" ? address1 : "No Location Found"
     const ename = email;
+   
     try {
       const response = await axios.post(`${secretKey}/employeelogin`, {
         email,
@@ -244,6 +242,7 @@ console.log(address)
                     type="submit"
                     onClick={handleSubmit}
                     className="btn btn-primary w-100"
+                    disabled={!locationAccess}
                   >
                     Submit
                   </button>
