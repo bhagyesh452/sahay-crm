@@ -38,7 +38,7 @@ function ShowNotification() {
       const response = await axios.get(`${secretKey}/deleterequestbybde`);
       setDeleteData(response.data); // Assuming your data is returned as an array
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -60,7 +60,7 @@ function ShowNotification() {
       console.error("Error fetching data:", error.message);
     }
   };
-  
+
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -198,14 +198,30 @@ function ShowNotification() {
                       cDate={company.cDate}
                     />
                   ))}
+                {dataType === "deleteBookingRequests" &&
+                  deleteData.length !== 0 &&
+                  deleteData.map((company) => (
+                    <DeleteBookingsCard
+                      request={company.request}
+                      companyId={company.companyId}
+                      name={company.ename}
+                      companyName={company.companyName}
+                      date={company.date}
+                      time={company.time}
+                    />
+                  ))}
                 {mapArray.length !== 0 &&
                   dataType === "AddRequest" &&
                   mapArray.map((company) => (
-                   <ApproveCard name={company.ename} date={company.date} time={company.time}/>
+                    <ApproveCard
+                      name={company.ename}
+                      date={company.date}
+                      time={company.time}
+                    />
                   ))}
 
                 {RequestData.length === 0 && dataType === "Manual" && (
-                  <Nodata/>
+                  <Nodata />
                 )}
                 {RequestGData.length === 0 && dataType === "General" && (
                   <span
@@ -215,7 +231,7 @@ function ShowNotification() {
                       fontWeight: "bold",
                     }}
                   >
-                    <Nodata/>
+                    <Nodata />
                   </span>
                 )}
                 {mapArray.length === 0 && dataType === "AddRequest" && (
@@ -226,25 +242,21 @@ function ShowNotification() {
                       fontWeight: "bold",
                     }}
                   >
-                     <Nodata/>
+                    <Nodata />
                   </span>
                 )}
-                {deleteData.length === 0 && dataType === "deleteBookingRequests" && (
-                  <span
-                    style={{
-                      textAlign: "center",
-                      fontSize: "25px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                     <Nodata/>
-                  </span>
-                )}
-              {dataType === "deleteBookingRequests" && deleteData.length !==0 && (
-               deleteData.map((company) => (
-                <DeleteBookingsCard request={company.request} companyId={company.companyId} name={company.ename} companyName={company.companyName} date={company.date} time={company.time} />
-               ))
-              )}
+                {deleteData.length === 0 &&
+                  dataType === "deleteBookingRequests" && (
+                    <span
+                      style={{
+                        textAlign: "center",
+                        fontSize: "25px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <Nodata />
+                    </span>
+                  )}
               </div>
             </div>
           </div>

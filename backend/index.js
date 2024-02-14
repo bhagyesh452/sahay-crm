@@ -15,13 +15,14 @@ const { exec } = require("child_process");
 const jwt = require("jsonwebtoken");
 const onlyAdminModel = require("./models/AdminTable");
 const LeadModel = require("./models/Leadform");
+const DeletedDatabase = require("./models/DeletedCollection");
 const { sendMail } = require("./helpers/sendMail");
 const { mailFormat } = require("./helpers/mailFormat");
 const multer = require("multer");
 const RemarksHistory = require("./models/RemarksHistory");
 const EmployeeHistory = require("./models/EmployeeHistory");
 const LoginDetails = require("./models/loginDetails");
-const RequestDeleteByBDE = require('./models/Deleterequestbybde');
+const RequestDeleteByBDE = require("./models/Deleterequestbybde");
 // const http = require('http');
 // const socketIo = require('socket.io');
 require("dotenv").config();
@@ -158,13 +159,11 @@ app.post("/api/leads", async (req, res) => {
       }
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Data sent successfully",
-        counter: counter,
-        sucessCounter: sucessCounter,
-      });
+    res.status(200).json({
+      message: "Data sent successfully",
+      counter: counter,
+      sucessCounter: sucessCounter,
+    });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
     console.error("Error in bulk save:", error.message);
@@ -361,12 +360,10 @@ app.delete("/api/delete-rows", async (req, res) => {
         } else {
           console.log("Backup created successfully:", stdout);
           // Respond with success message if backup is successful
-          res
-            .status(200)
-            .json({
-              message:
-                "Rows deleted successfully and backup created successfully.",
-            });
+          res.status(200).json({
+            message:
+              "Rows deleted successfully and backup created successfully.",
+          });
         }
       }
     );
@@ -825,7 +822,6 @@ app.post(
   async (req, res) => {
     try {
       const {
-        
         bdmName,
         bdmEmail,
         bdmType,
@@ -860,17 +856,17 @@ app.post(
       const bdeEmail = empEmail;
 
       const otherDocs =
-      req.files["otherDocs"] && req.files["otherDocs"].length > 0
-        ? req.files["otherDocs"].map((file) => file.filename)
-        : [];
+        req.files["otherDocs"] && req.files["otherDocs"].length > 0
+          ? req.files["otherDocs"].map((file) => file.filename)
+          : [];
 
-        const extraDocuments = req.files["otherDocs"];
-        const paymentDoc = req.files["paymentReceipt"];
-        console.log(extraDocuments , paymentDoc);
-    const paymentReceipt = req.files["paymentReceipt"]
-      ? req.files["paymentReceipt"][0].filename
-      : null; // Array of files for 'file2'
-    
+      const extraDocuments = req.files["otherDocs"];
+      const paymentDoc = req.files["paymentReceipt"];
+      console.log(extraDocuments, paymentDoc);
+      const paymentReceipt = req.files["paymentReceipt"]
+        ? req.files["paymentReceipt"][0].filename
+        : null; // Array of files for 'file2'
+
       // Your processing logic here
 
       const employee = new LeadModel({
@@ -919,11 +915,11 @@ app.post(
         `${bdeName}`,
       ];
 
-            sendMail(
-              recipients,
-              "Mail received",
-              ``,
-              `<div style="width: 80%; margin: 50px auto;">
+      sendMail(
+        recipients,
+        "Mail received",
+        ``,
+        `<div style="width: 80%; margin: 50px auto;">
             <h2 style="text-align: center;">Lead Information</h2>
             <div style="display: flex;">
                 <div style="width: 48%;">
@@ -1260,8 +1256,10 @@ app.post(
 
         </div>
 
-        `, extraDocuments , paymentDoc
-            );
+        `,
+        extraDocuments,
+        paymentDoc
+      );
 
       console.log("Data sent Via Email");
       res
@@ -1299,7 +1297,6 @@ app.get("/api/companies", async (req, res) => {
 
 // Backend route for fetching individual company details
 
-
 app.get("/api/company/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
 
@@ -1317,6 +1314,28 @@ app.get("/api/company/:companyName", async (req, res) => {
   }
 });
 
+app.delete("/api/reverse-delete/:companyName", async (req, res) => {
+  try {
+    const { companyName } = req.params;
+
+    // Find the deleted company by companyName in DeletedModel
+    const deletedCompany = await DeletedDatabase.findOneAndDelete({
+      companyName,
+    });
+
+    if (deletedCompany) {
+      // Move the deleted company from DeletedModel to LeadModel
+      await LeadModel.create(deletedCompany.toObject());
+      res.json({ message: "Company restored successfully" });
+    } else {
+      res.status(404).json({ message: "Company not found in deleted records" });
+    }
+  } catch (error) {
+    console.error("Error reversing delete:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // app.get('/api/company/:_id', async (req, res) => {
 //   try {
 //     const companyId = req.params._id
@@ -1328,22 +1347,35 @@ app.get("/api/company/:companyName", async (req, res) => {
 //   }
 // });
 
-
-// app.delete('/api/company/:_id', async (req, res) => {
-//   try {
-//     const companyId = req.params._id
-//     await LeadModel.findByIdAndDelete(companyId);
-//     res.json({ message: 'Company deleted successfully' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// });
-
-app.post('/api/deleterequestbybde', async (req, res) => {
+app.delete("/api/company-delete/:id", async (req, res) => {
   try {
-    const { companyName, companyId, time, date, request , ename } = req.body;
-    console.log(req.body)
+    const _id = req.params.id;
+    const deletedCompany = await LeadModel.findByIdAndDelete({ _id });
+    if (deletedCompany) {
+      // Move the deleted company to the DeletedModel collection
+      await DeletedDatabase.create(deletedCompany.toObject());
+      // Find the same company name in the CompanyModel and update its Status to "Untouched"
+      const companyName = deletedCompany.companyName;
+      
+      await CompanyModel.findOneAndUpdate(
+        { "Company Name": companyName },
+        { $set: { Status: "Untouched" } }
+      );
+    
+      res.status(200).json({ message: "Company Deleted Successfully" });
+    } else {
+      res.status(404).json({ message: "Company not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/deleterequestbybde", async (req, res) => {
+  try {
+    const { companyName, companyId, time, date, request, ename } = req.body;
+    console.log(req.body);
     // Create a new instance of the RequestDeleteByBDE model
     const deleteRequest = new RequestDeleteByBDE({
       companyName,
@@ -1351,32 +1383,31 @@ app.post('/api/deleterequestbybde', async (req, res) => {
       time,
       date,
       request,
-      ename
+      ename,
     });
 
     // Save the delete request to the database
     await deleteRequest.save();
 
-    res.json({ message: 'Delete request created successfully' });
+    res.json({ message: "Delete request created successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.get('/api/deleterequestbybde', async (req, res) => {
+app.get("/api/deleterequestbybde", async (req, res) => {
   try {
-    
     const company = await RequestDeleteByBDE.find();
     res.json(company);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.delete('/api/deleterequestbybde/:cname', async (req, res) => {
+app.delete("/api/deleterequestbybde/:cname", async (req, res) => {
   try {
     const companyName = req.params.cname;
-    
+
     // Find document by company name and delete it
     const updatedCompany = await RequestDeleteByBDE.findOneAndUpdate(
       { companyName },
@@ -1384,14 +1415,14 @@ app.delete('/api/deleterequestbybde/:cname', async (req, res) => {
       { new: true }
     );
     if (!updatedCompany) {
-      return res.status(404).json({ error: 'Company not found' });
+      return res.status(404).json({ error: "Company not found" });
     }
-    
+
     // If document is deleted successfully, return the deleted document
     res.json(updatedCompany);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -1431,7 +1462,7 @@ app.get("/api/loginDetails", (req, res) => {
 
 app.get("/api/pdf/:filename", (req, res) => {
   const filepath = req.params.filename;
-  const pdfPath = path.join(__dirname, 'ExtraDocs' , filepath);
+  const pdfPath = path.join(__dirname, "ExtraDocs", filepath);
 
   // Check if the file exists
   fs.access(pdfPath, fs.constants.F_OK, (err) => {
