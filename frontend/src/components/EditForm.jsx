@@ -126,8 +126,9 @@ function EditForm({
   companysInco,
   employeeName,
   employeeEmail,
-  companyNumber
+  companyNumber,
 }) {
+  const [companyData, setCompanyData] = useState([]);
   const [unames, setUnames] = useState([]);
   const [checkStat, setCheckStat] = useState(false);
   const [paymentCount, setpaymentCount] = useState(0);
@@ -155,7 +156,7 @@ function EditForm({
     secondPayment: 0,
     thirdPayment: 0,
     fourthPayment: 0,
-    paymentRemarks:"",
+    paymentRemarks: "",
     paymentReciept: null,
     bookingSource: "",
     cPANorGSTnum: 0,
@@ -164,6 +165,15 @@ function EditForm({
     otherDocs: null,
   });
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+  const fetchCompanyDetails = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/company/${companysName}`);
+      setCompanyData(response.data);
+    } catch {
+      console.error("Error Fetching company Data");
+    }
+  };
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/einfo`);
@@ -188,7 +198,6 @@ function EditForm({
 
       // Check if the API call was successful
       if (response.status === 200) {
-      
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);
@@ -201,12 +210,13 @@ function EditForm({
 
   useEffect(() => {
     fetchData();
+    fetchCompanyDetails();
   }, []);
   const [selectedValues, setSelectedValues] = useState([]);
 
   const handleSubmitForm = async () => {
     const currentTime = new Date();
-const formattedTime = formatTime(currentTime);
+    const formattedTime = formatTime(currentTime);
     const formData = new FormData();
     if (leadData.bdmName === "other") {
       formData.append("bdmName", otherName);
@@ -216,7 +226,7 @@ const formattedTime = formatTime(currentTime);
 
     formData.append("bdmEmail", leadData.bdmEmail);
     formData.append("bdmType", leadData.bdmType);
-    formData.append("bookingTime" , formattedTime)
+    formData.append("bookingTime", formattedTime);
     formData.append("supportedBy", leadData.supportedBy);
     formData.append("bookingDate", leadData.bookingDate);
     formData.append("caCase", leadData.caCase);
@@ -319,27 +329,26 @@ const formattedTime = formatTime(currentTime);
       // setErrorMessage("Incorrect Credentials!");
     }
   };
-
-  const [editEmail, setEditEmail] = useState(false)
-  const [editNumber, setEditNumber] = useState(false)
+  console.log(matured);
+  const [editEmail, setEditEmail] = useState(false);
+  const [editNumber, setEditNumber] = useState(false);
 
   function formatTime(date) {
     // Ensure date is a valid Date object
     if (!(date instanceof Date)) {
       return "Invalid Date";
     }
-  
+
     // Get the hours, minutes, and seconds from the date object
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
     const seconds = String(date.getSeconds()).padStart(2, "0");
-  
+
     // Construct the formatted time string (HH:MM:SS)
     const formattedTime = `${hours}:${minutes}:${seconds}`;
-  
+
     return formattedTime;
   }
-  
 
   const formatDate = (inputdate) => {
     const inputDate = new Date(inputdate);
@@ -361,13 +370,11 @@ const formattedTime = formatTime(currentTime);
       };
     });
   };
- 
+
   return (
     <div>
-     
       <div class="card-body mt-3">
-       
-      <div className="hr-1"></div>
+        <div className="hr-1"></div>
         <div className="BDM-section row">
           <div className="bdm-name col">
             <label class="form-label">
@@ -380,27 +387,34 @@ const formattedTime = formatTime(currentTime);
               type="text"
               className="form-select"
               id="select-users"
-              value={leadData.bdmName}
+              value={companyData.length !== 0 && companyData.bdmName}
               onChange={(e) => {
+                const newValue = e.target.value;
                 setLeadData((prevLeadData) => ({
                   ...prevLeadData,
-                  bdmName: e.target.value,
+                  bdmName: newValue,
+                }));
+                setCompanyData((prevLeadData) => ({
+                  ...prevLeadData,
+                  bdmName: newValue,
                 }));
               }}
+              disabled={!matured}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Please select BDM Name
               </option>
               {unames &&
                 unames.map((names) => (
-                  <option value={names.ename}>{names.ename}</option>
+                  <option key={names.ename} value={names.ename}>
+                    {names.ename}
+                  </option>
                 ))}
-
               <option value="other">Other</option>
             </select>
           </div>
 
-          {leadData.bdmName === "other" && (
+          {companyData.bdmName === "other" && (
             <div className="bdmOtherName col">
               <div className="othername">
                 <label class="form-label">
@@ -413,9 +427,14 @@ const formattedTime = formatTime(currentTime);
                   id="othername"
                   placeholder="Enter BDM Name"
                   className="form-control"
-                  value={otherName}
+                  value={leadData.bdmName}
                   onChange={(e) => {
-                    setotherName(e.target.value);
+                    const newValue = e.target.value;
+                    setLeadData((prevLeadData) => ({
+                      ...prevLeadData,
+                      bdmName: newValue,
+                    }));
+                    
                   }}
                 />
               </div>
@@ -435,14 +454,19 @@ const formattedTime = formatTime(currentTime);
               id="othername"
               placeholder="Enter BDM Email Address"
               className="form-control"
-              value={leadData.bdmEmail}
+              value={companyData.bdmEmail}
               onChange={(e) => {
                 setLeadData((prevLeadData) => ({
                   ...prevLeadData,
                   bdmEmail: e.target.value,
                 }));
+                setCompanyData((prevLeadData) => ({
+                  ...prevLeadData,
+                  bdmEmail: e.target.value,
+                }));
               }}
               required
+              disabled={!matured}
             />
           </div>
 
@@ -459,8 +483,13 @@ const formattedTime = formatTime(currentTime);
                         ...prevLeadData,
                         bdmType: "Close by",
                       }));
+                      setCompanyData((prevLeadData) => ({
+                        ...prevLeadData,
+                        bdmType: "Close by",
+                      }));
                     }}
-                    checked
+                    checked={companyData.bdmType === "Close by"}
+                    disabled={!matured}
                   />
                   <span class="form-check-label">Close By</span>
                 </label>
@@ -474,7 +503,14 @@ const formattedTime = formatTime(currentTime);
                         ...prevLeadData,
                         bdmType: "Supported by",
                       }));
+                      setCompanyData((prevLeadData) => ({
+                        ...prevLeadData,
+                        bdmType: "Supported by",
+                      }));
+                      
                     }}
+                    checked={companyData.bdmType === "Supported By"}
+                    disabled={!matured}
                   />
                   <span class="form-check-label">Supported By</span>
                 </label>
@@ -492,12 +528,21 @@ const formattedTime = formatTime(currentTime);
                     <input
                       type="date"
                       className="form-control"
+                      value={
+                        companyData.length !== 0 &&
+                        companyData.bookingDate.split("T")[0]
+                      }
                       onChange={(e) => {
                         setLeadData((prevLeadData) => ({
                           ...prevLeadData,
                           bookingDate: e.target.value,
                         }));
+                        setCompanyData((prevLeadData) => ({
+                          ...prevLeadData,
+                          bookingDate: e.target.value,
+                        }));
                       }}
+                      disabled={!matured}
                     />
                   </div>
                 </div>
@@ -524,9 +569,16 @@ const formattedTime = formatTime(currentTime);
                         ...prevLeadData,
                         caCase: e.target.value, // Set the value based on the selected radio button
                       }));
+                      setCompanyData((prevLeadData) => ({
+                        ...prevLeadData,
+                        caCase: e.target.value,
+                      }));
                     }}
                     value="Yes" // Set the value attribute for "Yes"
-                    checked={leadData.caCase === "Yes"} // Check condition based on state
+                    checked={
+                      companyData.length !== 0 && companyData.caCase === "Yes"
+                    }
+                    disabled={!matured} // Check condition based on state
                   />
                   <span className="form-check-label">Yes</span>
                 </label>
@@ -540,16 +592,23 @@ const formattedTime = formatTime(currentTime);
                         ...prevLeadData,
                         caCase: e.target.value, // Set the value based on the selected radio button
                       }));
+                      setCompanyData((prevLeadData) => ({
+                        ...prevLeadData,
+                        caCase: e.target.value,
+                      }));
                     }}
                     value="No" // Set the value attribute for "No"
-                    checked={leadData.caCase === "No"} // Check condition based on state
+                    checked={
+                      companyData.length !== 0 && companyData.caCase === "No"
+                    }
+                    disabled={!matured} // Check condition based on state
                   />
                   <span className="form-check-label">No</span>
                 </label>
               </div>
             </div>
           </div>
-          {leadData.caCase === "Yes" && (
+          {companyData.length !== 0 && companyData.caCase === "Yes" && (
             <div className="ca-details row">
               <div className="ca-number col">
                 <label className="form-label">Enter CA's Number</label>
@@ -557,6 +616,7 @@ const formattedTime = formatTime(currentTime);
                   type="number"
                   name="ca-number"
                   id="ca-number"
+                  value={companyData.caNumber}
                   placeholder="Enter CA's Number"
                   className="form-control"
                   onChange={(e) => {
@@ -564,7 +624,12 @@ const formattedTime = formatTime(currentTime);
                       ...prevLeadData,
                       caNumber: e.target.value, // Set the value based on the selected radio button
                     }));
+                    setCompanyData((prevLeadData) => ({
+                      ...prevLeadData,
+                      caNumber: e.target.value, 
+                    }));
                   }}
+                  disabled={!matured}
                 />
               </div>
               <div className="ca-email col">
@@ -574,6 +639,7 @@ const formattedTime = formatTime(currentTime);
                     type="text"
                     name="ca-email"
                     id="ca-email"
+                    value={companyData.caEmail}
                     placeholder="Enter CA's Email Address"
                     className="form-control"
                     onChange={(e) => {
@@ -581,7 +647,12 @@ const formattedTime = formatTime(currentTime);
                         ...prevLeadData,
                         caEmail: e.target.value, // Set the value based on the selected radio button
                       }));
+                      setCompanyData((prevLeadData) => ({
+                        ...prevLeadData,
+                        caEmail: e.target.value, 
+                      }));
                     }}
+                    disabled={!matured}
                   />
                 </div>
               </div>
@@ -593,13 +664,20 @@ const formattedTime = formatTime(currentTime);
                   name="ca-commision"
                   id="ca-commision"
                   placeholder="Enter CA's Commision- If any"
+                  value={companyData.caCommission}
                   className="form-control"
                   onChange={(e) => {
                     setLeadData((prevLeadData) => ({
                       ...prevLeadData,
                       caCommission: e.target.value, // Set the value based on the selected radio button
                     }));
+                    setCompanyData((prevLeadData) => ({
+                      ...prevLeadData,
+                      caCommission: e.target.value, 
+                    }));
+                    
                   }}
+                  disabled={!matured}
                 />
               </div>
             </div>
@@ -617,68 +695,81 @@ const formattedTime = formatTime(currentTime);
               id="company-name"
               placeholder="Enter Company Name"
               className="form-control"
-              value={matured ? companysName : leadData.companyName}
+              value={companyData.companyName}
               onChange={(e) => {
                 setLeadData((prevLeadData) => ({
                   ...prevLeadData,
                   companyName: e.target.value, // Set the value based on the selected radio button
                 }));
+                setCompanyData((prevLeadData) => ({
+                  ...prevLeadData,
+                  companyName: e.target.value, 
+                }));
               }}
+              disabled={!matured}
             />
           </div>
           <div className="company-contact col">
             <label class="form-label">Enter Contact Number</label>
             <div className="position-relative">
-            <input
-              type="number"
-              defaultValue={matured ? companyNumber : leadData.companyNumber}
-              name="company-contact"
-              id="company-contact"
-              placeholder="Enter Contact Number"
-              className="form-control"
-              onChange={(e) => {
-                setLeadData((prevLeadData) => ({
-                  ...prevLeadData,
-                  contactNumber: e.target.value, // Set the value based on the selected radio button
-                }));
-              }}
-              disabled = {!editNumber}
-            />
-            <div className="editField">
-            <Edit onClick={()=>{
-              setEditNumber(true)
-            }}/>
+              <input
+                type="number"
+                value={companyData.contactNumber}
+                name="company-contact"
+                id="company-contact"
+                placeholder="Enter Contact Number"
+                className="form-control"
+                onChange={(e) => {
+                  setLeadData((prevLeadData) => ({
+                    ...prevLeadData,
+                    contactNumber: e.target.value, // Set the value based on the selected radio button
+                  }));
+                  setCompanyData((prevLeadData) => ({
+                    ...prevLeadData,
+                    contactNumber: e.target.value, 
+                  }));
+                }}
+                disabled={!matured}
+              />
+              {/* <div className="editField">
+                <Edit
+                  onClick={() => {
+                    setEditNumber(true);
+                  }}
+                />
+              </div> */}
             </div>
-            
-            </div>
-           
           </div>
           <div className="company-email col">
             <label class="form-label">Enter Company's Email-ID</label>
             <div className="position-relative">
-            <input
-              type="text"
-              name="company-email"
-              id="company-email"
-              placeholder="Enter Company Email ID"
-              className="form-control"
-              defaultValue={matured ? companysEmail : leadData.companyEmail}
-              onChange={(e) => {
-                setLeadData((prevLeadData) => ({
-                  ...prevLeadData,
-                  companyEmail: e.target.value, // Set the value based on the selected radio button
-                }));
-              }}
-              disabled={!editEmail}
-            />
-            <div className="editField">
-            <Edit onClick={()=>{
-              setEditEmail(true)
-            }}/>
+              <input
+                type="text"
+                name="company-email"
+                id="company-email"
+                placeholder="Enter Company Email ID"
+                className="form-control"
+                value={companyData.companyEmail}
+                onChange={(e) => {
+                  setLeadData((prevLeadData) => ({
+                    ...prevLeadData,
+                    companyEmail: e.target.value, // Set the value based on the selected radio button
+                  }));
+                  setCompanyData((prevLeadData) => ({
+                    ...prevLeadData,
+                    companyEmail: e.target.value, 
+                  }));
+                }}
+                disabled={!matured}
+              />
+              {/* <div className="editField">
+                <Edit
+                  onClick={() => {
+                    setEditEmail(true);
+                  }}
+                />
+              </div> */}
             </div>
-            </div>
-           
-           
           </div>
         </div>
         <div className="row align-items-center">
@@ -695,15 +786,21 @@ const formattedTime = formatTime(currentTime);
                   setSelectedValues(
                     selectedOptions.map((option) => option.value)
                   );
+
                 }}
-                value={selectedValues.map((value) => ({ value, label: value }))}
+                value={
+                  companyData.length !== 0 &&
+                  companyData.services.map((value) => ({ value, label: value }))
+                }
+                disabled={!matured}
                 placeholder="Select Services..."
               />
             </div>
           </div>
           <div className="col-sm-6">
             <p className="p-0">
-              Total Selceted Services: {selectedValues.length}
+              Total Selceted Services:{" "}
+              {companyData.length !== 0 && companyData.services.length}
             </p>
           </div>
         </div>
@@ -724,6 +821,7 @@ const formattedTime = formatTime(currentTime);
                     type="number"
                     name="total-payment"
                     id="total-payment"
+                    value={companyData.originalTotalPayment}
                     placeholder="Enter Total Payment with GST"
                     className="form-control"
                     onChange={(e) => {
@@ -734,7 +832,15 @@ const formattedTime = formatTime(currentTime);
                           ? e.target.value * 1.18
                           : e.target.value,
                       }));
+                      setCompanyData((prevLeadData) => ({
+                        ...prevLeadData,
+                        originalTotalPayment: e.target.value,
+                        totalPayment: checkStat
+                          ? e.target.value * 1.18
+                          : e.target.value,
+                      }));
                     }}
+                    disabled={!matured}
                   />
                   <span className="rupees-sym">₹</span>
                 </div>
@@ -744,7 +850,7 @@ const formattedTime = formatTime(currentTime);
                   <input
                     className="form-check-input"
                     type="checkbox"
-                    value={leadData.totalPayment}
+                    value={companyData.totalPayment}
                     id="flexCheckChecked"
                     onChange={(e) => {
                       const isChecked = e.target.checked;
@@ -758,7 +864,21 @@ const formattedTime = formatTime(currentTime);
                           ? prevLeadData.totalPayment * 1.18
                           : prevLeadData.originalTotalPayment,
                       }));
+                      setCompanyData((prevLeadData) => ({
+                        ...prevLeadData,
+                        originalTotalPayment: isChecked
+                          ? prevLeadData.totalPayment
+                          : prevLeadData.originalTotalPayment,
+                        totalPayment: isChecked
+                          ? prevLeadData.totalPayment * 1.18
+                          : prevLeadData.originalTotalPayment,
+                      }));
                     }}
+                    checked={
+                      companyData.originalTotalPayment !==
+                      companyData.totalPayment
+                    }
+                    disabled={!matured}
                   />
                   <label
                     className="form-check-label"
@@ -781,17 +901,18 @@ const formattedTime = formatTime(currentTime);
                 style={{
                   borderRadius: "5px 0px 0px 5px",
                 }}
-                className={ paymentCount >= 2 &&
+                className={
+                  paymentCount >= 2 &&
                   parseInt(leadData.firstPayment) +
                     parseInt(leadData.secondPayment) +
                     parseInt(leadData.thirdPayment) +
                     parseInt(leadData.fourthPayment) !==
-                  parseInt(leadData.totalPayment)
+                    parseInt(leadData.totalPayment)
                     ? "form-control error-border"
                     : "form-control"
                 }
               >
-                {leadData.totalPayment ? leadData.totalPayment : 0}
+                {companyData.totalPayment ? companyData.totalPayment : 0}
               </div>
               <span className="rupees-sym">₹</span>
             </div>
@@ -808,7 +929,7 @@ const formattedTime = formatTime(currentTime);
                   type="radio"
                   name="radios-inline"
                   value="Full Advanced"
-                  checked={leadData.paymentTerms === "Full Advanced"}
+                  checked={companyData.paymentTerms === "Full Advanced"}
                   onChange={(e) => {
                     setpaymentCount(1);
                     setLeadData((prevLeadData) => ({
@@ -820,6 +941,7 @@ const formattedTime = formatTime(currentTime);
                       fourthPayment: 0,
                     }));
                   }}
+                  disabled={!matured}
                 />
                 <span className="form-check-label">Full Advanced</span>
               </label>
@@ -829,7 +951,7 @@ const formattedTime = formatTime(currentTime);
                   type="radio"
                   name="radios-inline"
                   value="two-part"
-                  checked={leadData.paymentTerms === "two-part"}
+                  checked={companyData.paymentTerms === "two-part"}
                   onChange={(e) => {
                     setpaymentCount(2);
 
@@ -842,12 +964,13 @@ const formattedTime = formatTime(currentTime);
                       // Set the value based on the selected radio button
                     }));
                   }}
+                  disabled={!matured}
                 />
                 <span className="form-check-label">Part Payment</span>
               </label>
             </div>
           </div>
-          {leadData.paymentTerms === "two-part" && (
+          {companyData.paymentTerms === "two-part" && (
             <>
               <div className="row more-payments">
                 <div className="col first-payment">
@@ -860,7 +983,7 @@ const formattedTime = formatTime(currentTime);
                       }}
                       name="first-payment"
                       id="first-payment"
-                      value={leadData.firstPayment}
+                      value={companyData.firstPayment}
                       placeholder="First Payment"
                       className="form-control"
                       onChange={(e) => {
@@ -872,6 +995,7 @@ const formattedTime = formatTime(currentTime);
                             leadData.totalPayment - e.target.value,
                         }));
                       }}
+                      disabled={!matured}
                     />
 
                     <span className="rupees-sym">₹</span>
@@ -887,7 +1011,7 @@ const formattedTime = formatTime(currentTime);
                           style={{ borderRadius: "5px 0px 0px 5px" }}
                           name="second-payment"
                           id="second-payment"
-                          value={leadData.secondPayment}
+                          value={companyData.secondPayment}
                           placeholder="Second Payment"
                           className={
                             parseInt(leadData.firstPayment) +
@@ -902,29 +1026,31 @@ const formattedTime = formatTime(currentTime);
                               secondPayment: e.target.value, // Set the value based on the input
                             }));
                           }}
-                          readOnly={paymentCount === 2}
+                          disabled={!matured}
                           // Add style for extra space on the right
                         />
                         <span className="rupees-sym">₹</span>
 
                         {/* Add a span with Indian Rupees symbol */}
 
-                        <button
-                          onClick={() => {
-                            setpaymentCount(3);
-                            setLeadData((prevLeadData) => ({
-                              ...prevLeadData,
-                              firstPayment: 0,
-                              secondPayment: 0,
-                              thirdPayment: 0,
-                            }));
-                          }}
-                          type="button"
-                          style={{ marginLeft: "5px" }}
-                          className="btn btn-primary"
-                        >
-                          <i className="fas fa-plus"></i> +{" "}
-                        </button>
+                        {!matured && (
+                          <button
+                            onClick={() => {
+                              setpaymentCount(3);
+                              setLeadData((prevLeadData) => ({
+                                ...prevLeadData,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                                thirdPayment: 0,
+                              }));
+                            }}
+                            type="button"
+                            style={{ marginLeft: "5px" }}
+                            className="btn btn-primary"
+                          >
+                            <i className="fas fa-plus"></i> +{" "}
+                          </button>
+                        )}
                       </div>
                     </div>
                   </>
@@ -941,7 +1067,7 @@ const formattedTime = formatTime(currentTime);
                           type="number"
                           name="second-payment"
                           id="second-payment"
-                          value={leadData.secondPayment}
+                          value={companyData.secondPayment}
                           placeholder="Second Payment"
                           className="form-control"
                           onChange={(e) => {
@@ -954,6 +1080,7 @@ const formattedTime = formatTime(currentTime);
                                 parseInt(e.target.value),
                             }));
                           }}
+                          disabled={!matured}
                         />
                         <span className="rupees-sym">₹</span>
                       </div>
@@ -968,7 +1095,7 @@ const formattedTime = formatTime(currentTime);
                           type="number"
                           name="third-payment"
                           id="third-payment"
-                          value={leadData.thirdPayment}
+                          value={companyData.thirdPayment}
                           placeholder="Third Payment"
                           className={
                             parseInt(leadData.firstPayment) +
@@ -984,25 +1111,27 @@ const formattedTime = formatTime(currentTime);
                               thirdPayment: e.target.value,
                             }));
                           }}
-                          readOnly={paymentCount === 3}
+                          disabled={!matured}
                         />
                         <span className="rupees-sym">₹</span>
-                        <button
-                          style={{ marginLeft: "5px" }}
-                          onClick={(e) => {
-                            setpaymentCount(2);
-                            setLeadData((prevLeadData) => ({
-                              ...prevLeadData,
-                              thirdPayment: 0,
-                              firstPayment: 0,
-                              secondPayment: 0,
-                            }));
-                          }}
-                          type="button"
-                          className="btn btn-primary"
-                        >
-                          <i className="fas fa-plus"></i> -{" "}
-                        </button>
+                        {!matured && (
+                          <button
+                            style={{ marginLeft: "5px" }}
+                            onClick={(e) => {
+                              setpaymentCount(2);
+                              setLeadData((prevLeadData) => ({
+                                ...prevLeadData,
+                                thirdPayment: 0,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                              }));
+                            }}
+                            type="button"
+                            className="btn btn-primary"
+                          >
+                            <i className="fas fa-plus"></i> -{" "}
+                          </button>
+                        )}
                         <button
                           style={{ marginLeft: "5px" }}
                           onClick={() => {
@@ -1036,7 +1165,7 @@ const formattedTime = formatTime(currentTime);
                           type="number"
                           name="second-payment"
                           id="second-payment"
-                          value={leadData.secondPayment}
+                          value={companyData.secondPayment}
                           placeholder="Second Payment"
                           className="form-control"
                           onChange={(e) => {
@@ -1087,7 +1216,7 @@ const formattedTime = formatTime(currentTime);
                           type="number"
                           name="fourth-payment"
                           id="fourth-payment"
-                          value={leadData.fourthPayment}
+                          value={companyData.fourthPayment}
                           placeholder="Fourth Payment"
                           className={
                             parseInt(leadData.firstPayment) +
@@ -1198,6 +1327,7 @@ const formattedTime = formatTime(currentTime);
                   type="text"
                   name="payment-remarks"
                   id="payment-remarks"
+                  value={companyData.paymentRemarks}
                   placeholder="Please add remarks if any"
                   className="form-control"
                   onChange={(e) => {
@@ -1206,6 +1336,7 @@ const formattedTime = formatTime(currentTime);
                       paymentRemarks: e.target.value,
                     }));
                   }}
+                  disabled={!matured}
                 />
               </div>
             </>
@@ -1221,7 +1352,7 @@ const formattedTime = formatTime(currentTime);
               <label className="form-label">Payment Method</label>
               <select
                 className="form-select mb-3"
-                value={leadData.paymentMethod}
+                value={companyData.paymentMethod}
                 onChange={(e) => {
                   setLeadData((prevLeadData) => ({
                     ...prevLeadData,
@@ -1229,6 +1360,7 @@ const formattedTime = formatTime(currentTime);
                   }));
                 }}
                 id="select-emails"
+                disabled={!matured}
               >
                 <option value="" disabled>
                   Select Payment Option
@@ -1265,12 +1397,14 @@ const formattedTime = formatTime(currentTime);
                   class="form-control"
                   type="file"
                   id="formFile"
+                  value={companyData.paymentReciept}
                   onChange={(e) => {
                     setLeadData((prevLeadData) => ({
                       ...prevLeadData,
                       paymentReciept: e.target.files[0],
                     }));
                   }}
+                  disabled={!matured}
                 />
               </div>
             </div>
@@ -1282,13 +1416,14 @@ const formattedTime = formatTime(currentTime);
                 type="text"
                 class="form-select mb-3"
                 id="select-emails"
-                value={leadData.bookingSource}
+                value={companyData.bookingSource}
                 onChange={(e) => {
                   setLeadData((prevLeadData) => ({
                     ...prevLeadData,
                     bookingSource: e.target.value,
                   }));
                 }}
+                disabled={!matured}
               >
                 <option value="" disabled>
                   Select Booking Source
@@ -1319,6 +1454,7 @@ const formattedTime = formatTime(currentTime);
                 name="panorGSTnumber"
                 id="panorGSTnumber"
                 placeholder="Enter Company's PAN/GST number "
+                value={companyData.cPANorGSTnum}
                 className="form-control"
                 onChange={(e) => {
                   setLeadData((prevLeadData) => ({
@@ -1326,6 +1462,7 @@ const formattedTime = formatTime(currentTime);
                     cPANorGSTnum: e.target.value,
                   }));
                 }}
+                disabled={!matured}
               />
             </div>
           </div>
@@ -1341,9 +1478,10 @@ const formattedTime = formatTime(currentTime);
                   incoDate: e.target.value,
                 }));
               }}
-              value={matured ? formatDate(companysInco) : leadData.incoDate}
+              value={formatDate(companyData.incoDate)}
               type="date"
               className="form-control"
+              disabled={!matured}
             />
           </div>
           <div className="other-docs col">
@@ -1365,25 +1503,8 @@ const formattedTime = formatTime(currentTime);
               type="file"
               id="other-docs"
               multiple
+              disabled={!matured}
             />
-            {leadData.otherDocs && leadData.otherDocs.length > 0 && (
-              <div className="uploaded-filename-main d-flex flex-wrap">
-                {leadData.otherDocs.map((file, index) => (
-                  <div
-                    className="uploaded-fileItem d-flex align-items-center"
-                    key={index}
-                  >
-                    <p className="m-0">{file.name}</p>
-                    <button
-                      className="fileItem-dlt-btn"
-                      onClick={() => handleRemoveFile(index)}
-                    >
-                      <IconX className="close-icon" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
           <div className="extra-notes col">
             <label class="form-label">Any Extra Notes</label>
@@ -1391,6 +1512,7 @@ const formattedTime = formatTime(currentTime);
               type="text"
               name="extraNotes"
               id="extraNotes"
+              value={companyData.extraNotes}
               placeholder="Enter any extra notes "
               className="form-control"
               onChange={(e) => {
@@ -1399,15 +1521,13 @@ const formattedTime = formatTime(currentTime);
                   extraNotes: e.target.value,
                 }));
               }}
+              disabled={!matured}
             />
           </div>
         </div>
       </div>
       <div class="card-footer text-end">
-        <button
-          type="submit"
-          class="btn btn-primary mb-3"
-        >
+        <button type="submit" class="btn btn-primary mb-3">
           Request Changes
         </button>
       </div>
