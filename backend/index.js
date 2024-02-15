@@ -1272,6 +1272,92 @@ app.post(
   }
 );
 
+
+app.post(
+  "/api/upload/lead-form",
+  async (req, res) => {
+    
+    try {
+      const excelData = req.body; // Assuming req.body is an array of objects
+      console.log(excelData)
+      // Loop through each object in the array and save it to the database
+      for (const data of excelData) {
+        const {
+          bdeName,
+          bdeEmail,
+          bdmName,
+          bdmEmail,
+          bdmType,
+          supportedBy,
+          bookingDate,
+          caCase,
+          caNumber,
+          caEmail,
+          caCommission,
+          companyName,
+          contactNumber,
+          companyEmail,
+          services,
+          originalTotalPayment,
+          totalPayment,
+          paymentTerms,
+          paymentMethod,
+          firstPayment,
+          secondPayment,
+          thirdPayment,
+          fourthPayment,
+          paymentRemarks,
+          bookingSource,
+          cPANorGSTnum,
+          incoDate,
+          extraNotes,
+          bookingTime,
+        } = data;
+        
+        const employee = new LeadModel({
+          bdeName,
+          bdeEmail,
+          bdmName,
+          bdmEmail,
+          bdmType,
+          supportedBy,
+          bookingDate,
+          caCase,
+          caNumber,
+          caEmail,
+          caCommission,
+          companyName,
+          contactNumber,
+          companyEmail,
+          services,
+          originalTotalPayment,
+          totalPayment,
+          paymentTerms,
+          paymentMethod,
+          firstPayment,
+          secondPayment,
+          thirdPayment,
+          fourthPayment,
+          paymentRemarks,
+          bookingSource,
+          cPANorGSTnum,
+          incoDate,
+          extraNotes,
+          bookingTime,
+        });
+
+        await employee.save();
+      }
+
+      res.status(200).json({ message: "Data sent successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+      console.error("Error saving employee:", error.message);
+    }
+  }
+);
+
+
 app.get("/api/companies", async (req, res) => {
   try {
     // Fetch only the company names from the LeadModel
@@ -1491,6 +1577,19 @@ app.get("/api/otherpdf/:filename", (req, res) => {
     res.sendFile(pdfPath);
   });
 });
+
+app.get('/download/recieptpdf/:filePath', (req, res) => {
+  const fileName = req.params.filePath;
+  const filePath = path.join(__dirname, 'uploads', fileName)
+
+  console.log(fileName)
+  res.setHeader('Content-Disposition', attachment, fileName=`${fileName}`);
+  res.setHeader('Content-Type', 'application/pdf');
+  res.sendFile(filePath);
+  }
+)
+
+
 
 http.listen(3001, function () {
   console.log("Server started...");
