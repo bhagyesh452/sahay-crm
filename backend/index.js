@@ -23,6 +23,8 @@ const RemarksHistory = require("./models/RemarksHistory");
 const EmployeeHistory = require("./models/EmployeeHistory");
 const LoginDetails = require("./models/loginDetails");
 const RequestDeleteByBDE = require("./models/Deleterequestbybde");
+const BookingsRequestModel = require("./models/BookingsEdit");
+
 // const http = require('http');
 // const socketIo = require('socket.io');
 require("dotenv").config();

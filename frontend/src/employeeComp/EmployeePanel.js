@@ -7,7 +7,7 @@ import * as XLSX from "xlsx";
 import axios from "axios";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
-import { IconButton } from "@mui/material";
+import { Drawer, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
@@ -19,14 +19,17 @@ import Form from "../components/Form.jsx";
 import "../assets/table.css";
 import "../assets/styles.css";
 import Nodata from "../components/Nodata.jsx";
+import EditForm from "../components/EditForm.jsx";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
   const [open, openchange] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [openCSV, openchangeCSV] = useState(false);
   const [openRemarks, openchangeRemarks] = useState(false);
+  const [openAnchor, setOpenAnchor] = useState(false);
   const [data, setData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -57,6 +60,9 @@ function EmployeePanel() {
   const functionopenpopup = () => {
     openchange(true);
   };
+  const functionopenAnchor = () => {
+    setOpenAnchor(true);
+  };
   const [cid, setcid] = useState("");
   const [cstat, setCstat] = useState("");
   const functionopenpopupremarks = (companyID, companyStatus) => {
@@ -73,6 +79,9 @@ function EmployeePanel() {
   const [openNew, openchangeNew] = useState(false);
   const functionopenpopupNew = () => {
     openchangeNew(true);
+  };
+  const closeAnchor = () => {
+    setOpenAnchor(false);
   };
   const functionopenpopupCSV = () => {
     openchangeCSV(true);
@@ -263,7 +272,7 @@ function EmployeePanel() {
       const stateMatches = fieldValue
         .toLowerCase()
         .includes(searchText.toLowerCase());
-        const cityMatches = company.City.toLowerCase().includes(
+      const cityMatches = company.City.toLowerCase().includes(
         citySearch.toLowerCase()
       );
       return stateMatches && cityMatches;
@@ -305,6 +314,7 @@ function EmployeePanel() {
   });
 
   const [companyName, setCompanyName] = useState("");
+  const [maturedCompanyName, setMaturedCompanyName] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
   const [companyInco, setCompanyInco] = useState(null);
   const [companyNumber, setCompanyNumber] = useState(0);
@@ -701,7 +711,6 @@ function EmployeePanel() {
       const response = await axios.get(`${secretKey}/requestCompanyData`);
       setRequestApprovals(response.data);
       const uniqueEnames = response.data.reduce((acc, curr) => {
-   
         if (!acc.some((item) => item.ename === data.ename)) {
           const [dateString, timeString] = formatDateAndTime(
             curr.AssignDate
@@ -725,10 +734,7 @@ function EmployeePanel() {
     return indianDate;
   };
 
-  console.log(mapArray)
-  
-
-
+  console.log(mapArray);
 
   return (
     <div>
@@ -749,8 +755,8 @@ function EmployeePanel() {
                     <div style={{ display: "flex" }} className="feature1">
                       <div
                         className="form-control mr-1"
-                        style={{ height: "fit-content", width: "auto"   }}
-                       >
+                        style={{ height: "fit-content", width: "auto" }}
+                      >
                         <select
                           style={{
                             border: "none",
@@ -781,7 +787,7 @@ function EmployeePanel() {
                             className="form-control"
                           />
                         </div>
-                      ) }
+                      )}
 
                       {visibilityOther === "block" ? (
                         <div
@@ -874,7 +880,7 @@ function EmployeePanel() {
                         >
                           {filteredData.length} results found
                         </div>
-                      ) }
+                      )}
                     </div>
                     <div
                       style={{ display: "flex", alignItems: "center" }}
@@ -1309,9 +1315,11 @@ function EmployeePanel() {
                                       <option value="Untouched">
                                         Untouched{" "}
                                       </option>
-                                      {dataStatus==="Interested" &&  <option value="FollowUp">
-                                        Follow Up{" "}
-                                      </option>}
+                                      {dataStatus === "Interested" && (
+                                        <option value="FollowUp">
+                                          Follow Up{" "}
+                                        </option>
+                                      )}
                                       <option value="Busy">Busy </option>
                                       <option value="Not Picked Up">
                                         Not Picked Up
@@ -1320,7 +1328,9 @@ function EmployeePanel() {
                                       <option value="Interested">
                                         Interested
                                       </option>
-                                     {dataStatus==="FollowUp" && <option value="Matured">Matured</option>}
+                                      {dataStatus === "FollowUp" && (
+                                        <option value="Matured">Matured</option>
+                                      )}
                                       <option value="Not Interested">
                                         Not Interested
                                       </option>
@@ -1382,6 +1392,12 @@ function EmployeePanel() {
                                         // Additional styles for the "View" button
                                       }}
                                       className="btn btn-primary d-none d-sm-inline-block"
+                                      onClick={() => {
+                                        functionopenAnchor();
+                                        setMaturedCompanyName(
+                                          company["Company Name"]
+                                        );
+                                      }}
                                     >
                                       View
                                     </button>
@@ -1879,6 +1895,23 @@ function EmployeePanel() {
           Submit
         </button>
       </Dialog>
+
+      {/* Side Drawer for Edit Booking Requests */}
+      <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
+        <div className="container-xl">
+          <div className="header d-flex justify-content-between">
+            <h1 className="title">LeadForm</h1>
+          
+            <IconButton>
+            <EditIcon onClick={()=>{
+              setIsEdit(true)
+            }} color="primary"></EditIcon>
+          </IconButton>{" "}
+           
+          </div>
+          <EditForm matured={isEdit} companysName={maturedCompanyName} />
+        </div>
+      </Drawer>
     </div>
   );
 }
