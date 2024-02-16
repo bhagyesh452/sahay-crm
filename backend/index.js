@@ -1528,6 +1528,48 @@ app.get("/api/loginDetails", (req, res) => {
     });
 });
 
+// ------------------------------------pdf files reader-------------------------------------
+
+app.get('/api/pdf/:filename', (req, res) => {
+  const filepath = req.params.filename;
+  const pdfPath = path.join(__dirname, 'ExtraDocs' , filepath);
+
+  // Read the PDF file
+  fs.readFile(pdfPath, (err, data) => {
+    if (err) {
+      console.error('Error reading PDF file:', err);
+      res.status(500).send('Internal Server Error');
+    } else {
+      // Set the response headers
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline; filename=example.pdf');
+
+      // Send the PDF file data
+      res.sendFile(pdfPath);
+    }
+  });
+});
+
+app.get('/api/paymentrecieptpdf/:filename', (req, res) => {
+  const filepath = req.params.filename;
+  const pdfPath = path.join(__dirname, 'PaymentReceipts' , filepath);
+
+  // Read the PDF file
+  fs.readFile(pdfPath, (err, data) => {
+    if (err) {
+      console.error('Error reading PDF file:', err);
+      res.status(500).send('Internal Server Error');
+    } else {
+      // Set the response headers
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline; filename=example.pdf');
+
+      // Send the PDF file data
+      res.sendFile(pdfPath);
+    }
+  });
+});
+
 app.get("/api/recieptpdf/:filename", (req, res) => {
   const filepath = req.params.filename;
   const pdfPath = path.join(__dirname, 'PaymentReceipts' , filepath);

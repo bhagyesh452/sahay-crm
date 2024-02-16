@@ -34,6 +34,8 @@ function Dashboard_processing() {
     try {
       const response = await fetch(`${secretKey}/companies`);
       const data = await response.json();
+
+      const updatedCompanies = data.map(company => ({ ...company, unread: true }));
   
       // Extract unique booking dates from the fetched data
       const uniqueBookingDates = Array.from(
@@ -42,6 +44,7 @@ function Dashboard_processing() {
       const uniqueBookingTime = Array.from(
         new Set(data.map((company) => company.bookingTime))
       );
+      
   
       // Set the details of the first company by default if there are companies available
       if (data.length !== 0) {
@@ -49,13 +52,22 @@ function Dashboard_processing() {
       }
   
       // Update the state with both companies and booking dates
-      setCompanies(data);
+      setCompanies(updatedCompanies);
       setBookingDates(uniqueBookingDates);
       setBookingTime(uniqueBookingTime);
+     
     } catch (error) {
       console.error("Error fetching companies:", error);
     }
   };
+
+  const markCompanyAsRead = (companyId) => {
+    const updatedCompanies = companies.map(company =>
+      company._id === companyId ? { ...company, unread: false } : company
+    );
+    setCompanies(updatedCompanies);
+  };
+
 
   const fetchCompanyDetails = async () => {
     try {
@@ -98,6 +110,7 @@ function Dashboard_processing() {
                                     onCompanyClick={handleCompanyClick}
                                     selectedBookingDate={formattedDates}
                                     bookingTime={bookingTime}
+                                   
                                 />
                             </div>
                             <div className="col-sm-8">
