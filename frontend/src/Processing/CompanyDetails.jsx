@@ -195,17 +195,27 @@ const CompanyDetails = ({ company }) => {
   }
 
 
+  const transformedData = excelData.map(item => ({
+    "Company Name": item.companyName,
+    "Company Number": item.contactNumber,
+    "Company Email": item.companyEmail,
+    "Company Incorporation Date  ": item.incoDate,
+    ename: item.bdeName,
+    City:"NA",
+    State:"NA",
+    Status:"Matured"
+    // Add other fields as needed
+  }));
+  
   const handleSubmit = async () => {
     try {
+      
       await axios.post(`${secretKey}/upload/lead-form`, excelData);
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'File uploaded successfully.',
-      });
+      await axios.post(`${secretKey}/leads`, transformedData)
+      Swal.fire('File uploaded successfully.');
     } catch (error) {
       console.error(error);
-      alert('Error uploading file.');
+      Swal.fire('Error uploading file.');
     }
   };
 
@@ -648,7 +658,7 @@ const CompanyDetails = ({ company }) => {
 
                         {/* <PdfViewer pdfPath={pdfPath} />  */}
 
-                        <div className="d-flex aling-items-center justify-content-center download-attachments cursor-pointer">
+                        <div className="d-flex align-items-center justify-content-center download-attachments cursor-pointer">
                           <MdDownload style={{ width: "19px", height: "20px" }} />
                           <div>Reciept</div>
                         </div>
