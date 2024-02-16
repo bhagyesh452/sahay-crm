@@ -1274,6 +1274,7 @@ app.post(
   }
 );
 
+// --------------------api for sending excel data on processing dashboard----------------------------
 
 app.post(
   "/api/upload/lead-form",
@@ -1371,19 +1372,6 @@ app.get("/api/companies", async (req, res) => {
   }
 });
 
-/*app.get("/api/company/:id", async (req, res) => {
-  const companyId = req.params.id;
-
-  try {
-    const companyDetails = await LeadModel.findById(companyId);
-    res.json(companyDetails);
-  } catch (error) {
-    console.error("Error fetching company details:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});*/
-
-// Backend route for fetching individual company details
 
 app.get("/api/company/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
@@ -1424,16 +1412,6 @@ app.delete("/api/reverse-delete/:companyName", async (req, res) => {
   }
 });
 
-// app.get('/api/company/:_id', async (req, res) => {
-//   try {
-//     const companyId = req.params._id
-//     const company = await LeadModel.findById(companyId);
-//     res.json(company);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// });
 
 app.delete("/api/company-delete/:id", async (req, res) => {
   try {
@@ -1483,6 +1461,7 @@ app.post("/api/deleterequestbybde", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 app.get("/api/deleterequestbybde", async (req, res) => {
   try {
     const company = await RequestDeleteByBDE.find();
@@ -1492,6 +1471,7 @@ app.get("/api/deleterequestbybde", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 app.delete("/api/deleterequestbybde/:cname", async (req, res) => {
   try {
     const companyName = req.params.cname;
@@ -1580,10 +1560,9 @@ app.get("/api/otherpdf/:filename", (req, res) => {
   });
 });
 
-app.get('/download/recieptpdf/:filePath', (req, res) => {
+app.get('/download/recieptpdf/:fileName', (req, res) => {
   const fileName = req.params.filePath;
   const filePath = path.join(__dirname, 'uploads', fileName)
-
   console.log(fileName)
   res.setHeader('Content-Disposition', attachment, fileName=`${fileName}`);
   res.setHeader('Content-Type', 'application/pdf');
