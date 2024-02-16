@@ -1909,7 +1909,7 @@ function EmployeePanel() {
           </IconButton>{" "}
            
           </div>
-          <EditForm matured={isEdit} companysName={maturedCompanyName} />
+          <EditForm  matured={isEdit} companysName={maturedCompanyName} />
         </div>
       </Drawer>
     </div>

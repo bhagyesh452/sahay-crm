@@ -135,34 +135,34 @@ function EditForm({
   const [otherName, setotherName] = useState("");
   const [leadData, setLeadData] = useState({
     // Initialize properties with default values if needed
-    bdmName: "",
-    bdmEmail: "",
-    bdmType: "Close by",
-    supportedBy: false,
-    bookingDate: null,
-    caCase: "No",
-    caNumber: 0,
-    caEmail: "",
-    caCommission: "",
-    companyName: "",
-    contactNumber: 0,
-    companyEmail: "",
-    services: "",
-    originalTotalPayment: 0,
-    totalPayment: 0,
-    paymentTerms: "Full Advanced",
-    paymentMethod: "",
-    firstPayment: 0,
-    secondPayment: 0,
-    thirdPayment: 0,
-    fourthPayment: 0,
-    paymentRemarks: "",
-    paymentReciept: null,
-    bookingSource: "",
-    cPANorGSTnum: 0,
-    incoDate: null,
-    extraNotes: "",
-    otherDocs: null,
+    bdmName:  companyData.bdmName,
+    bdmEmail: companyData.bdmEmail,
+    bdmType: companyData.bdmType,
+    supportedBy: companyData.supportedBy,
+    bookingDate: companyData.bookingDate,
+    caCase: companyData.caCase,
+    caNumber: companyData.caNumber,
+    caEmail: companyData.caEmail,
+    caCommission: companyData.caCommission,
+    companyName: companyData.companyName,
+    contactNumber: companyData.contactNumber,
+    companyEmail: companyData.companyEmail,
+    services: companyData.services,
+    originalTotalPayment: companyData.originalTotalPayment,
+    totalPayment: companyData.totalPayment,
+    paymentTerms: companyData.paymentTerms,
+    paymentMethod: companyData.paymentMethod,
+    firstPayment: companyData.firstPayment,
+    secondPayment: companyData.secondPayment,
+    thirdPayment: companyData.thirdPayment,
+    fourthPayment: companyData.fourthPayment,
+    paymentRemarks: companyData.paymentRemarks,
+    paymentReciept: companyData.paymentReciept,
+    bookingSource: companyData.bookingSource,
+    cPANorGSTnum: companyData.cPANorGSTnum,
+    incoDate: companyData.incoDate,
+    extraNotes: companyData.extraNotes,
+    otherDocs: companyData.otherDocs,
   });
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
@@ -217,62 +217,63 @@ function EditForm({
   const handleSubmitForm = async () => {
     const currentTime = new Date();
     const formattedTime = formatTime(currentTime);
+   
     const formData = new FormData();
-    if (leadData.bdmName === "other") {
+    if (companyData.bdmName === "other") {
       formData.append("bdmName", otherName);
     } else {
-      formData.append("bdmName", leadData.bdmName);
+      formData.append("bdmName", companyData.bdmName);
     }
 
-    formData.append("bdmEmail", leadData.bdmEmail);
-    formData.append("bdmType", leadData.bdmType);
+    formData.append("bdmEmail", companyData.bdmEmail);
+    formData.append("bdmType", companyData.bdmType);
     formData.append("bookingTime", formattedTime);
-    formData.append("supportedBy", leadData.supportedBy);
-    formData.append("bookingDate", leadData.bookingDate);
-    formData.append("caCase", leadData.caCase);
-    formData.append("caNumber", leadData.caNumber);
-    formData.append("caEmail", leadData.caEmail);
-    formData.append("caCommission", leadData.caCommission);
+    formData.append("supportedBy", companyData.supportedBy);
+    formData.append("bookingDate", companyData.bookingDate);
+    formData.append("caCase", companyData.caCase);
+    formData.append("caNumber", companyData.caNumber);
+    formData.append("caEmail", companyData.caEmail);
+    formData.append("caCommission", companyData.caCommission);
 
-    formData.append("empName", employeeName);
-    formData.append("empEmail", employeeEmail);
+    formData.append("empName", companyData.bdeName);
+    formData.append("empEmail", companyData.bdeEmail);
     {
       matured
         ? formData.append("companyName", companysName)
-        : formData.append("companyName", leadData.companyName);
+        : formData.append("companyName", companyData.companyName);
     }
 
-    formData.append("contactNumber", leadData.contactNumber);
+    formData.append("contactNumber", companyData.contactNumber);
     {
       matured
         ? formData.append("companyEmail", companysEmail)
-        : formData.append("companyEmail", leadData.companyEmail);
+        : formData.append("companyEmail", companyData.companyEmail);
     }
     formData.append("services", selectedValues);
-    formData.append("originalTotalPayment", leadData.originalTotalPayment);
-    formData.append("totalPayment", leadData.totalPayment);
-    formData.append("paymentTerms", leadData.paymentTerms);
-    formData.append("paymentMethod", leadData.paymentMethod);
-    formData.append("firstPayment", leadData.firstPayment);
-    formData.append("secondPayment", leadData.secondPayment);
-    formData.append("thirdPayment", leadData.thirdPayment);
-    formData.append("fourthPayment", leadData.fourthPayment);
-    formData.append("paymentRemarks", leadData.paymentRemarks);
-    formData.append("bookingSource", leadData.bookingSource);
-    formData.append("cPANorGSTnum", leadData.cPANorGSTnum);
+    formData.append("originalTotalPayment", companyData.originalTotalPayment);
+    formData.append("totalPayment", companyData.totalPayment);
+    formData.append("paymentTerms", companyData.paymentTerms);
+    formData.append("paymentMethod", companyData.paymentMethod);
+    formData.append("firstPayment", companyData.firstPayment);
+    formData.append("secondPayment", companyData.secondPayment);
+    formData.append("thirdPayment", companyData.thirdPayment);
+    formData.append("fourthPayment", companyData.fourthPayment);
+    formData.append("paymentRemarks", companyData.paymentRemarks);
+    formData.append("bookingSource", companyData.bookingSource);
+    formData.append("cPANorGSTnum", companyData.cPANorGSTnum);
     if (matured) {
-      formData.append("incoDate", new Date(companysInco));
+      formData.append("incoDate", new Date(companyData.incoDate));
     } else {
-      formData.append("incoDate", leadData.incoDate);
+      formData.append("incoDate", companyData.incoDate);
     }
 
-    formData.append("extraNotes", leadData.extraNotes);
-    if (leadData.otherDocs) {
-      for (let i = 0; i < leadData.otherDocs.length; i++) {
-        formData.append("otherDocs", leadData.otherDocs[i]);
+    formData.append("extraNotes", companyData.extraNotes);
+    if (companyData.otherDocs) {
+      for (let i = 0; i < companyData.otherDocs.length; i++) {
+        formData.append("otherDocs", companyData.otherDocs[i]);
       }
     }
-    formData.append("paymentReceipt", leadData.paymentReciept);
+    formData.append("paymentReceipt", companyData.paymentReciept);
 
     try {
       if (
@@ -284,10 +285,10 @@ function EditForm({
           parseInt(leadData.totalPayment)
       ) {
         Swal.fire("Incorrect Payment");
-
         return true;
       }
-      const response = await axios.post(`${secretKey}/lead-form`, formData);
+      const response = await axios.post(`${secretKey}/lead-form2`, formData);
+        
       setLeadData({
         // Initialize properties with default values if needed
         bdmName: "",
@@ -318,9 +319,9 @@ function EditForm({
         extraNotes: "",
         otherDocs: null,
       });
-      if (matured) {
-        handleStatusChange(companysId);
-      }
+      // if (matured) {
+      //   handleStatusChange(companysId);
+      // }
       Swal.fire("Data sent Succefully!");
     } catch (error) {
       Swal.fire("Error!");
@@ -329,7 +330,7 @@ function EditForm({
       // setErrorMessage("Incorrect Credentials!");
     }
   };
-  console.log(matured);
+
   const [editEmail, setEditEmail] = useState(false);
   const [editNumber, setEditNumber] = useState(false);
 
@@ -912,7 +913,7 @@ function EditForm({
                     : "form-control"
                 }
               >
-                {companyData.totalPayment ? companyData.totalPayment : 0}
+                {leadData.totalPayment ? leadData.totalPayment : 0}
               </div>
               <span className="rupees-sym">₹</span>
             </div>
@@ -1335,6 +1336,10 @@ function EditForm({
                       ...prevLeadData,
                       paymentRemarks: e.target.value,
                     }));
+                    setCompanyData((prevLeadData) => ({
+                      ...prevLeadData,
+                      paymentRemarks: e.target.value,
+                    }));
                   }}
                   disabled={!matured}
                 />
@@ -1355,6 +1360,10 @@ function EditForm({
                 value={companyData.paymentMethod}
                 onChange={(e) => {
                   setLeadData((prevLeadData) => ({
+                    ...prevLeadData,
+                    paymentMethod: e.target.value,
+                  }));
+                  setCompanyData((prevLeadData) => ({
                     ...prevLeadData,
                     paymentMethod: e.target.value,
                   }));
@@ -1397,9 +1406,13 @@ function EditForm({
                   class="form-control"
                   type="file"
                   id="formFile"
-                  value={companyData.paymentReciept}
+                  
                   onChange={(e) => {
                     setLeadData((prevLeadData) => ({
+                      ...prevLeadData,
+                      paymentReciept: e.target.files[0],
+                    }));
+                    setCompanyData((prevLeadData) => ({
                       ...prevLeadData,
                       paymentReciept: e.target.files[0],
                     }));
@@ -1419,6 +1432,10 @@ function EditForm({
                 value={companyData.bookingSource}
                 onChange={(e) => {
                   setLeadData((prevLeadData) => ({
+                    ...prevLeadData,
+                    bookingSource: e.target.value,
+                  }));
+                  setCompanyData((prevLeadData) => ({
                     ...prevLeadData,
                     bookingSource: e.target.value,
                   }));
@@ -1461,6 +1478,10 @@ function EditForm({
                     ...prevLeadData,
                     cPANorGSTnum: e.target.value,
                   }));
+                  setCompanyData((prevLeadData) => ({
+                    ...prevLeadData,
+                    cPANorGSTnum: e.target.value,
+                  }));
                 }}
                 disabled={!matured}
               />
@@ -1474,6 +1495,10 @@ function EditForm({
             <input
               onChange={(e) => {
                 setLeadData((prevLeadData) => ({
+                  ...prevLeadData,
+                  incoDate: e.target.value,
+                }));
+                setCompanyData((prevLeadData) => ({
                   ...prevLeadData,
                   incoDate: e.target.value,
                 }));
@@ -1506,6 +1531,24 @@ function EditForm({
               disabled={!matured}
             />
           </div>
+          {leadData.otherDocs && leadData.otherDocs.length > 0 && (
+              <div className="uploaded-filename-main d-flex flex-wrap">
+                {leadData.otherDocs.map((file, index) => (
+                  <div
+                    className="uploaded-fileItem d-flex align-items-center"
+                    key={index}
+                  >
+                    <p className="m-0">{file.name}</p>
+                    <button
+                      className="fileItem-dlt-btn"
+                      onClick={() => handleRemoveFile(index)}
+                    >
+                      <IconX className="close-icon" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           <div className="extra-notes col">
             <label class="form-label">Any Extra Notes</label>
             <input
@@ -1520,6 +1563,10 @@ function EditForm({
                   ...prevLeadData,
                   extraNotes: e.target.value,
                 }));
+                setCompanyData((prevLeadData) => ({
+                  ...prevLeadData,
+                  extraNotes: e.target.value,
+                }));
               }}
               disabled={!matured}
             />
@@ -1527,7 +1574,7 @@ function EditForm({
         </div>
       </div>
       <div class="card-footer text-end">
-        <button type="submit" class="btn btn-primary mb-3">
+        <button onClick={handleSubmitForm} type="submit" class="btn btn-primary mb-3">
           Request Changes
         </button>
       </div>

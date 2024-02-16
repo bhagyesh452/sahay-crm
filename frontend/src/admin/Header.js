@@ -77,7 +77,7 @@ function Header({ name, designation}) {
     const indianDate = date.toLocaleString("en-IN", options);
     return indianDate;
   };
-console.log(mapArray)
+
   const fetchRequestDetails = async () => {
     try {
       const response = await axios.get(`${secretKey}/requestData`);
