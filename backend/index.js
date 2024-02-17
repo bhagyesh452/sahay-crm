@@ -1710,7 +1710,6 @@ app.get("/download/recieptpdf/:fileName", (req, res) => {
   res.setHeader("Content-Disposition", attachment, (fileName = `${fileName}`));
   res.setHeader("Content-Type", "application/pdf");
   res.sendFile(filePath);
-<<<<<<< HEAD
   }
 );
 
@@ -1802,9 +1801,7 @@ app.delete('/api/delete-edit-request/:id', async (req, res) => {
   }
 });
 
-=======
 });
->>>>>>> cb4df6cb67a0dce7e3cc0ea436e512c19bff068b
 
 http.listen(3001, function () {
   console.log("Server started...");
