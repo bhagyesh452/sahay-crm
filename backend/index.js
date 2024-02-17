@@ -1801,7 +1801,6 @@ app.delete('/api/delete-edit-request/:id', async (req, res) => {
   }
 });
 
-});
 
 http.listen(3001, function () {
   console.log("Server started...");
