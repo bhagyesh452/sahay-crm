@@ -918,7 +918,6 @@ app.post(
         `${bdmEmail}`,
         `${bdeEmail}`,
       ];
-
       sendMail(
         recipients,
         "Mail received",
