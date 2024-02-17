@@ -35,7 +35,6 @@ function Dashboard_processing() {
       const response = await fetch(`${secretKey}/companies`);
       const data = await response.json();
 
-      const updatedCompanies = data.map(company => ({ ...company, unread: true }));
   
       // Extract unique booking dates from the fetched data
       const uniqueBookingDates = Array.from(
@@ -52,7 +51,7 @@ function Dashboard_processing() {
       }
   
       // Update the state with both companies and booking dates
-      setCompanies(updatedCompanies);
+      setCompanies(data);
       setBookingDates(uniqueBookingDates);
       setBookingTime(uniqueBookingTime);
      
@@ -60,6 +59,7 @@ function Dashboard_processing() {
       console.error("Error fetching companies:", error);
     }
   };
+  console.log(companies)
 
   const markCompanyAsRead = (companyId) => {
     const updatedCompanies = companies.map(company =>

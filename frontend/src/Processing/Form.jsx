@@ -1408,7 +1408,7 @@ function Form({
                   <div className="cpan-or-gst mb-3">
                     <label class="form-label">Company Pan or GST Number</label>
                     <input
-                      type="number"
+                      type="text"
                       name="panorGSTnumber"
                       id="panorGSTnumber"
                       placeholder="Enter Company's PAN/GST number "
