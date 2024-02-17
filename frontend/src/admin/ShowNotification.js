@@ -8,11 +8,14 @@ import NewGCard from "./NewGcard";
 import ApproveCard from "./ApproveCard";
 import Nodata from "../components/Nodata";
 import DeleteBookingsCard from "./DeleteBookingsCard";
+import EditBookingsCard from "./EditBookingsCard";
 
 function ShowNotification() {
   const [RequestData, setRequestData] = useState([]);
   const [RequestGData, setRequestGData] = useState([]);
   const [RequestApprovals, setRequestApprovals] = useState([]);
+  const [editData, setEditData] = useState([]);
+
   const [mapArray, setMapArray] = useState([]);
   const [dataType, setDataType] = useState("General");
   const [deleteData, setDeleteData] = useState([]);
@@ -41,6 +44,27 @@ function ShowNotification() {
       console.error("Error fetching data:", error);
     }
   };
+  const fetchEditRequests = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/editRequestByBde`);
+      const uniqueEnames = response.data.reduce((acc, curr) => {
+        if (!acc.some((item) => item.bdeName === curr.bdeName)) {
+          const newDate = new Date(curr.bookingDate).toLocaleDateString();
+          acc.push({
+            ename: curr.bdeName,
+            date: curr.bookingDate,
+            time: curr.bookingTime,
+            companyName: curr.companyName,
+          });
+        }
+        return acc;
+      }, []);
+      setEditData(uniqueEnames);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  console.log(editData);
 
   const fetchApproveRequests = async () => {
     try {
@@ -76,10 +100,11 @@ function ShowNotification() {
     fetchRequestGDetails();
     fetchApproveRequests();
     fetchDataDelete();
+    fetchEditRequests();
   }, []);
 
   // setEnameArray(uniqueEnames);
-  console.log(mapArray);
+
   return (
     <div>
       {" "}
@@ -165,6 +190,22 @@ function ShowNotification() {
                       Delete Booking Requests
                     </a>
                   </li>
+                  <li class="nav-item data-heading">
+                    <a
+                      href="#tabs-home-5"
+                      className={
+                        dataType === "editBookingRequests"
+                          ? "nav-link active item-act"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                      onClick={() => {
+                        setDataType("editBookingRequests");
+                      }}
+                    >
+                      Bookings Edit Requests
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div
@@ -208,6 +249,16 @@ function ShowNotification() {
                       companyName={company.companyName}
                       date={company.date}
                       time={company.time}
+                    />
+                  ))}
+                {dataType === "editBookingRequests" &&
+                  editData.length !== 0 &&
+                  editData.map((company) => (
+                    <EditBookingsCard
+                      date={company.date}
+                      time={company.time}
+                      name={company.ename}
+                      companyName={company.companyName}
                     />
                   ))}
                 {mapArray.length !== 0 &&

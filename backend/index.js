@@ -1273,86 +1273,105 @@ app.post(
     }
   }
 );
-
-// --------------------api for sending excel data on processing dashboard----------------------------
-
 app.post(
-  "/api/upload/lead-form",
+  "/api/lead-form2",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 1 },
+  ]),
   async (req, res) => {
-    
     try {
-      const excelData = req.body; // Assuming req.body is an array of objects
-      console.log(excelData)
-      // Loop through each object in the array and save it to the database
-      for (const data of excelData) {
-        const {
-          bdeName,
-          bdeEmail,
-          bdmName,
-          bdmEmail,
-          bdmType,
-          supportedBy,
-          bookingDate,
-          caCase,
-          caNumber,
-          caEmail,
-          caCommission,
-          companyName,
-          contactNumber,
-          companyEmail,
-          services,
-          originalTotalPayment,
-          totalPayment,
-          paymentTerms,
-          paymentMethod,
-          firstPayment,
-          secondPayment,
-          thirdPayment,
-          fourthPayment,
-          paymentRemarks,
-          bookingSource,
-          cPANorGSTnum,
-          incoDate,
-          extraNotes,
-          bookingTime,
-        } = data;
-        
-        const employee = new LeadModel({
-          bdeName,
-          bdeEmail,
-          bdmName,
-          bdmEmail,
-          bdmType,
-          supportedBy,
-          bookingDate,
-          caCase,
-          caNumber,
-          caEmail,
-          caCommission,
-          companyName,
-          contactNumber,
-          companyEmail,
-          services,
-          originalTotalPayment,
-          totalPayment,
-          paymentTerms,
-          paymentMethod,
-          firstPayment,
-          secondPayment,
-          thirdPayment,
-          fourthPayment,
-          paymentRemarks,
-          bookingSource,
-          cPANorGSTnum,
-          incoDate,
-          extraNotes,
-          bookingTime,
-        });
+      const {
+        bdmName,
+        bdmEmail,
+        bdmType,
+        supportedBy,
+        bookingDate,
+        caCase,
+        caNumber,
+        caEmail,
+        caCommission,
+        companyName,
+        contactNumber,
+        companyEmail,
+        services,
+        originalTotalPayment,
+        totalPayment,
+        paymentTerms,
+        paymentMethod,
+        firstPayment,
+        secondPayment,
+        thirdPayment,
+        fourthPayment,
+        paymentRemarks,
+        bookingSource,
+        cPANorGSTnum,
+        incoDate,
+        extraNotes,
+        empName,
+        empEmail,
+        bookingTime,
+      } = req.body;
+      const bdeName = empName;
+      const bdeEmail = empEmail;
 
-        await employee.save();
-      }
+      const otherDocs =
+        req.files["otherDocs"] && req.files["otherDocs"].length > 0
+          ? req.files["otherDocs"].map((file) => file.filename)
+          : [];
 
-      res.status(200).json({ message: "Data sent successfully" });
+      const extraDocuments = req.files["otherDocs"];
+      const paymentDoc = req.files["paymentReceipt"];
+      
+      const paymentReceipt = req.files["paymentReceipt"]
+        ? req.files["paymentReceipt"][0].filename
+        : null; // Array of files for 'file2'
+
+      // Your processing logic here
+
+      const employee = new BookingsRequestModel({
+        bdeName,
+        bdeEmail,
+        bdmName,
+        bdmEmail,
+        bdmType,
+        supportedBy,
+        bookingDate,
+        caCase,
+        caNumber,
+        caEmail,
+        caCommission,
+        companyName,
+        contactNumber,
+        companyEmail,
+        services,
+        originalTotalPayment,
+        totalPayment,
+        paymentTerms,
+        paymentMethod,
+        firstPayment,
+        secondPayment,
+        thirdPayment,
+        fourthPayment,
+        paymentRemarks,
+        bookingSource,
+        cPANorGSTnum,
+        incoDate,
+        extraNotes,
+        bookingTime,
+        otherDocs,
+        paymentReceipt,
+      });
+
+      const display = caCase === "No" ? "none" : "flex";
+      const displayPayment = paymentTerms === "Full Advanced" ? "none" : "flex";
+
+      const savedEmployee = await employee.save();
+
+      console.log("Data Request Sent Successfully");
+      res
+        .status(200)
+        .json(savedEmployee || { message: "Data sent successfully" });
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
       console.error("Error saving employee:", error.message);
@@ -1360,6 +1379,87 @@ app.post(
   }
 );
 
+// --------------------api for sending excel data on processing dashboard----------------------------
+
+app.post("/api/upload/lead-form", async (req, res) => {
+  try {
+    const excelData = req.body; // Assuming req.body is an array of objects
+    console.log(excelData);
+    // Loop through each object in the array and save it to the database
+    for (const data of excelData) {
+      const {
+        bdeName,
+        bdeEmail,
+        bdmName,
+        bdmEmail,
+        bdmType,
+        supportedBy,
+        bookingDate,
+        caCase,
+        caNumber,
+        caEmail,
+        caCommission,
+        companyName,
+        contactNumber,
+        companyEmail,
+        services,
+        originalTotalPayment,
+        totalPayment,
+        paymentTerms,
+        paymentMethod,
+        firstPayment,
+        secondPayment,
+        thirdPayment,
+        fourthPayment,
+        paymentRemarks,
+        bookingSource,
+        cPANorGSTnum,
+        incoDate,
+        extraNotes,
+        bookingTime,
+      } = data;
+
+      const employee = new LeadModel({
+        bdeName,
+        bdeEmail,
+        bdmName,
+        bdmEmail,
+        bdmType,
+        supportedBy,
+        bookingDate,
+        caCase,
+        caNumber,
+        caEmail,
+        caCommission,
+        companyName,
+        contactNumber,
+        companyEmail,
+        services,
+        originalTotalPayment,
+        totalPayment,
+        paymentTerms,
+        paymentMethod,
+        firstPayment,
+        secondPayment,
+        thirdPayment,
+        fourthPayment,
+        paymentRemarks,
+        bookingSource,
+        cPANorGSTnum,
+        incoDate,
+        extraNotes,
+        bookingTime,
+      });
+
+      await employee.save();
+    }
+
+    res.status(200).json({ message: "Data sent successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error saving employee:", error.message);
+  }
+});
 
 app.get("/api/companies", async (req, res) => {
   try {
@@ -1371,7 +1471,6 @@ app.get("/api/companies", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 app.get("/api/company/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
@@ -1412,7 +1511,6 @@ app.delete("/api/reverse-delete/:companyName", async (req, res) => {
   }
 });
 
-
 app.delete("/api/company-delete/:id", async (req, res) => {
   try {
     const _id = req.params.id;
@@ -1422,12 +1520,12 @@ app.delete("/api/company-delete/:id", async (req, res) => {
       await DeletedDatabase.create(deletedCompany.toObject());
       // Find the same company name in the CompanyModel and update its Status to "Untouched"
       const companyName = deletedCompany.companyName;
-      
+
       await CompanyModel.findOneAndUpdate(
         { "Company Name": companyName },
         { $set: { Status: "Untouched" } }
       );
-    
+
       res.status(200).json({ message: "Company Deleted Successfully" });
     } else {
       res.status(404).json({ message: "Company not found" });
@@ -1465,6 +1563,15 @@ app.post("/api/deleterequestbybde", async (req, res) => {
 app.get("/api/deleterequestbybde", async (req, res) => {
   try {
     const company = await RequestDeleteByBDE.find();
+    res.json(company);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+app.get("/api/editRequestByBde", async (req, res) => {
+  try {
+    const company = await BookingsRequestModel.find();
     res.json(company);
   } catch (error) {
     console.error(error);
@@ -1565,7 +1672,7 @@ app.get('/api/paymentrecieptpdf/:filename', (req, res) => {
 
 app.get("/api/recieptpdf/:filename", (req, res) => {
   const filepath = req.params.filename;
-  const pdfPath = path.join(__dirname, 'PaymentReceipts' , filepath);
+  const pdfPath = path.join(__dirname, "PaymentReceipts", filepath);
 
   // Check if the file exists
   fs.access(pdfPath, fs.constants.F_OK, (err) => {
@@ -1595,13 +1702,14 @@ app.get("/api/otherpdf/:filename", (req, res) => {
   });
 });
 
-app.get('/download/recieptpdf/:fileName', (req, res) => {
+app.get("/download/recieptpdf/:fileName", (req, res) => {
   const fileName = req.params.filePath;
-  const filePath = path.join(__dirname, 'uploads', fileName)
-  console.log(fileName)
-  res.setHeader('Content-Disposition', attachment, fileName=`${fileName}`);
-  res.setHeader('Content-Type', 'application/pdf');
+  const filePath = path.join(__dirname, "uploads", fileName);
+  console.log(fileName);
+  res.setHeader("Content-Disposition", attachment, (fileName = `${fileName}`));
+  res.setHeader("Content-Type", "application/pdf");
   res.sendFile(filePath);
+<<<<<<< HEAD
   }
 );
 
@@ -1647,6 +1755,9 @@ app.put('/api/read/:companyName', async (req, res) => {
   }
 });
 
+=======
+});
+>>>>>>> cb4df6cb67a0dce7e3cc0ea436e512c19bff068b
 
 http.listen(3001, function () {
   console.log("Server started...");

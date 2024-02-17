@@ -4,7 +4,6 @@ const leadSchema = new mongoose.Schema({
 
     bdeName: {
         type:String,
-       
     },
     bdeEmail:{
         type:String,
