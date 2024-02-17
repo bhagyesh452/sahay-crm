@@ -128,10 +128,6 @@
     color: #322e2e;
     
 }
-.custom-image-div:hover{
-    display: none !important;
-    
-}
 
 .download-attachments{
     width: 100%;
@@ -185,3 +181,15 @@
     align-items: start;
     justify-content: center;
 }
+.column-width-reciept{
+  margin-left:-30px;
+  margin-right:-30px;
+}
+
+.read {
+    background-color: lightgreen;
+  }
+  
+  .unread {
+    background-color: lightcoral;
+  }

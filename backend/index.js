@@ -913,8 +913,8 @@ app.post(
       const savedEmployee = await employee.save();
 
       const recipients = [
-        "bookings@startupsahay.com",
-        "documents@startupsahay.com",
+        // "bookings@startupsahay.com",
+        // "documents@startupsahay.com",
         `${bdmEmail}`,
         `${bdeEmail}`,
       ];
@@ -1602,14 +1602,6 @@ app.delete("/api/deleterequestbybde/:cname", async (req, res) => {
   }
 });
 
-// io.on('connection', (socket) => {
-//   console.log('A user connected');
-
-//   // Handle disconnection
-//   socket.on('disconnect', () => {
-//     console.log('User disconnected');
-//   });
-// });
 app.post("/api/loginDetails", (req, res) => {
   const { ename, date, time, address } = req.body;
   const newLoginDetails = new LoginDetails({ ename, date, time, address });
@@ -1651,6 +1643,7 @@ app.get('/api/pdf/:filename', (req, res) => {
       // Set the response headers
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'inline; filename=example.pdf');
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
 
       // Send the PDF file data
       res.sendFile(pdfPath);
@@ -1671,7 +1664,7 @@ app.get('/api/paymentrecieptpdf/:filename', (req, res) => {
       // Set the response headers
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'inline; filename=example.pdf');
-
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
       // Send the PDF file data
       res.sendFile(pdfPath);
     }
@@ -1717,6 +1710,50 @@ app.get("/download/recieptpdf/:fileName", (req, res) => {
   res.setHeader("Content-Disposition", attachment, (fileName = `${fileName}`));
   res.setHeader("Content-Type", "application/pdf");
   res.sendFile(filePath);
+<<<<<<< HEAD
+  }
+);
+
+// ---------------------------to update the read status of companies-------------------------------------
+
+// app.post("/api/read/:companyName", async (req, res) => {
+//   const companyName = req.params.companyName;
+
+//   try {
+//     // Fetch details for the specified company name from the LeadModel
+//     const companyDetails = await LeadModel.findOne({ companyName });
+
+//     if (!companyDetails) {
+//       return res.status(404).json({ error: "Company not found" });
+//     }
+//     res.json(companyDetails);
+//   } catch (error) {
+//     console.error("Error fetching company details:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+app.put('/api/read/:companyName', async (req, res) => {
+  const companyName = req.params.companyName;
+
+  try {
+    // Find the company in the database based on its name
+    const companyDetails = await LeadModel.findOne({ companyName });
+
+    // If company is found, update its read status to true
+    if (companyDetails) {
+      companyDetails.read = true; // Update the read status to true
+      // Save the updated company back to the database
+      await companyDetails.save();
+      res.json(companyDetails); // Send the updated company as the response
+    } else {
+      // If company is not found, return a 404 error
+      res.status(404).json({ error: 'Company not found' });
+    }
+  } catch (error) {
+    console.error('Error updating company:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 app.post('/api/save-draft', async (req, res) => {
   const draftData = req.body;
@@ -1764,6 +1801,10 @@ app.delete('/api/delete-edit-request/:id', async (req, res) => {
     res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 });
+
+=======
+});
+>>>>>>> cb4df6cb67a0dce7e3cc0ea436e512c19bff068b
 
 http.listen(3001, function () {
   console.log("Server started...");
