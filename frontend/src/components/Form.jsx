@@ -126,7 +126,7 @@ function Form({
   companysInco,
   employeeName,
   employeeEmail,
-  companyNumber
+  companyNumber,
 }) {
   const [unames, setUnames] = useState([]);
   const [checkStat, setCheckStat] = useState(false);
@@ -155,7 +155,7 @@ function Form({
     secondPayment: 0,
     thirdPayment: 0,
     fourthPayment: 0,
-    paymentRemarks:"",
+    paymentRemarks: "",
     paymentReciept: null,
     bookingSource: "",
     cPANorGSTnum: 0,
@@ -188,7 +188,6 @@ function Form({
 
       // Check if the API call was successful
       if (response.status === 200) {
-      
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);
@@ -204,9 +203,31 @@ function Form({
   }, []);
   const [selectedValues, setSelectedValues] = useState([]);
 
+  const handleSaveDraft = async () => {
+    if (leadData.companyName === "") {
+      Swal.fire({ title: "Please Enter Company Name", icon: "warning" });
+      return;
+    }
+    try {
+      const modifiedLeadData = {
+        ...leadData,
+        ename: employeeName,
+      };
+      const response = await axios.post(`${secretKey}/save-draft`, modifiedLeadData);
+      Swal.fire("Draft Saved Successfully");
+    } catch (error) {
+      console.error("Error saving draft:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
+    }
+  };
+
   const handleSubmitForm = async () => {
     const currentTime = new Date();
-const formattedTime = formatTime(currentTime);
+    const formattedTime = formatTime(currentTime);
     const formData = new FormData();
     if (leadData.bdmName === "other") {
       formData.append("bdmName", otherName);
@@ -216,7 +237,7 @@ const formattedTime = formatTime(currentTime);
 
     formData.append("bdmEmail", leadData.bdmEmail);
     formData.append("bdmType", leadData.bdmType);
-    formData.append("bookingTime" , formattedTime)
+    formData.append("bookingTime", formattedTime);
     formData.append("supportedBy", leadData.supportedBy);
     formData.append("bookingDate", leadData.bookingDate);
     formData.append("caCase", leadData.caCase);
@@ -320,26 +341,25 @@ const formattedTime = formatTime(currentTime);
     }
   };
 
-  const [editEmail, setEditEmail] = useState(false)
-  const [editNumber, setEditNumber] = useState(false)
+  const [editEmail, setEditEmail] = useState(false);
+  const [editNumber, setEditNumber] = useState(false);
 
   function formatTime(date) {
     // Ensure date is a valid Date object
     if (!(date instanceof Date)) {
       return "Invalid Date";
     }
-  
+
     // Get the hours, minutes, and seconds from the date object
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
     const seconds = String(date.getSeconds()).padStart(2, "0");
-  
+
     // Construct the formatted time string (HH:MM:SS)
     const formattedTime = `${hours}:${minutes}:${seconds}`;
-  
+
     return formattedTime;
   }
-  
 
   const formatDate = (inputdate) => {
     const inputDate = new Date(inputdate);
@@ -361,7 +381,7 @@ const formattedTime = formatTime(currentTime);
       };
     });
   };
- 
+
   return (
     <div>
       <div className="hr-1"></div>
@@ -627,56 +647,56 @@ const formattedTime = formatTime(currentTime);
           <div className="company-contact col">
             <label class="form-label">Enter Contact Number</label>
             <div className="position-relative">
-            <input
-              type="number"
-              defaultValue={matured ? companyNumber : leadData.companyNumber}
-              name="company-contact"
-              id="company-contact"
-              placeholder="Enter Contact Number"
-              className="form-control"
-              onChange={(e) => {
-                setLeadData((prevLeadData) => ({
-                  ...prevLeadData,
-                  contactNumber: e.target.value, // Set the value based on the selected radio button
-                }));
-              }}
-              disabled = {!editNumber}
-            />
-            <div className="editField">
-            <Edit onClick={()=>{
-              setEditNumber(true)
-            }}/>
+              <input
+                type="number"
+                defaultValue={matured ? companyNumber : leadData.companyNumber}
+                name="company-contact"
+                id="company-contact"
+                placeholder="Enter Contact Number"
+                className="form-control"
+                onChange={(e) => {
+                  setLeadData((prevLeadData) => ({
+                    ...prevLeadData,
+                    contactNumber: e.target.value, // Set the value based on the selected radio button
+                  }));
+                }}
+                disabled={!editNumber}
+              />
+              <div className="editField">
+                <Edit
+                  onClick={() => {
+                    setEditNumber(true);
+                  }}
+                />
+              </div>
             </div>
-            
-            </div>
-           
           </div>
           <div className="company-email col">
             <label class="form-label">Enter Company's Email-ID</label>
             <div className="position-relative">
-            <input
-              type="text"
-              name="company-email"
-              id="company-email"
-              placeholder="Enter Company Email ID"
-              className="form-control"
-              defaultValue={matured ? companysEmail : leadData.companyEmail}
-              onChange={(e) => {
-                setLeadData((prevLeadData) => ({
-                  ...prevLeadData,
-                  companyEmail: e.target.value, // Set the value based on the selected radio button
-                }));
-              }}
-              disabled={!editEmail}
-            />
-            <div className="editField">
-            <Edit onClick={()=>{
-              setEditEmail(true)
-            }}/>
+              <input
+                type="text"
+                name="company-email"
+                id="company-email"
+                placeholder="Enter Company Email ID"
+                className="form-control"
+                defaultValue={matured ? companysEmail : leadData.companyEmail}
+                onChange={(e) => {
+                  setLeadData((prevLeadData) => ({
+                    ...prevLeadData,
+                    companyEmail: e.target.value, // Set the value based on the selected radio button
+                  }));
+                }}
+                disabled={!editEmail}
+              />
+              <div className="editField">
+                <Edit
+                  onClick={() => {
+                    setEditEmail(true);
+                  }}
+                />
+              </div>
             </div>
-            </div>
-           
-           
           </div>
         </div>
         <div className="row align-items-center">
@@ -779,12 +799,13 @@ const formattedTime = formatTime(currentTime);
                 style={{
                   borderRadius: "5px 0px 0px 5px",
                 }}
-                className={ paymentCount >= 2 &&
+                className={
+                  paymentCount >= 2 &&
                   parseInt(leadData.firstPayment) +
                     parseInt(leadData.secondPayment) +
                     parseInt(leadData.thirdPayment) +
                     parseInt(leadData.fourthPayment) !==
-                  parseInt(leadData.totalPayment)
+                    parseInt(leadData.totalPayment)
                     ? "form-control error-border"
                     : "form-control"
                 }
@@ -1401,7 +1422,11 @@ const formattedTime = formatTime(currentTime);
           </div>
         </div>
       </div>
-      <div class="card-footer text-end">
+      <div class="card-footer d-flex justify-content-between ">
+        <button class="btn btn-primary mb-3" onClick={handleSaveDraft}>
+          Save Draft
+        </button>
+
         <button
           onClick={handleSubmitForm}
           type="submit"

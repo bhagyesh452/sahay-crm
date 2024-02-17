@@ -252,7 +252,7 @@ function ShowNotification() {
                     />
                   ))}
                 {dataType === "editBookingRequests" &&
-                  editData.length !== 0 &&
+                  editData !== undefined &&
                   editData.map((company) => (
                     <EditBookingsCard
                       date={company.date}
@@ -298,6 +298,18 @@ function ShowNotification() {
                 )}
                 {deleteData.length === 0 &&
                   dataType === "deleteBookingRequests" && (
+                    <span
+                      style={{
+                        textAlign: "center",
+                        fontSize: "25px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <Nodata />
+                    </span>
+                  )}
+                {editData.length === 0 &&
+                  dataType === "editBookingRequests" && (
                     <span
                       style={{
                         textAlign: "center",

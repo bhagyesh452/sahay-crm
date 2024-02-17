@@ -129,13 +129,15 @@ function EditForm({
   companyNumber,
 }) {
   const [companyData, setCompanyData] = useState([]);
+  const [selectedValues, setSelectedValues] = useState([]);
   const [unames, setUnames] = useState([]);
   const [checkStat, setCheckStat] = useState(false);
   const [paymentCount, setpaymentCount] = useState(0);
+  const [oldPaymentCount, setOldPaymentCount] = useState(0)
   const [otherName, setotherName] = useState("");
   const [leadData, setLeadData] = useState({
     // Initialize properties with default values if needed
-    bdmName:  companyData.bdmName,
+    bdmName: companyData.bdmName,
     bdmEmail: companyData.bdmEmail,
     bdmType: companyData.bdmType,
     supportedBy: companyData.supportedBy,
@@ -170,10 +172,31 @@ function EditForm({
     try {
       const response = await axios.get(`${secretKey}/company/${companysName}`);
       setCompanyData(response.data);
+      setSelectedValues(response.data.services);
     } catch {
       console.error("Error Fetching company Data");
     }
   };
+  const [companyDataLoaded, setCompanyDataLoaded] = useState(false);
+
+  useEffect(() => {
+    if (companyData !== null && !companyDataLoaded) {
+      changeCount();
+      setCompanyDataLoaded(true);
+    }
+  }, [companyData, companyDataLoaded]);
+  
+  const changeCount = () => {
+    setOldPaymentCount(
+      companyData.paymentTerms === "Full Advanced" ? 1 :
+      companyData.thirdPayment === 0 ? 2 :
+      companyData.fourthPayment === 0 ? 3 : 4
+    );
+  };
+  
+
+
+ 
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/einfo`);
@@ -185,6 +208,8 @@ function EditForm({
       console.error("Error fetching data:", error.message);
     }
   };
+
+  console.log(selectedValues);
   const handleStatusChange = async (companysId) => {
     const newStatus = "Matured";
     try {
@@ -212,12 +237,12 @@ function EditForm({
     fetchData();
     fetchCompanyDetails();
   }, []);
-  const [selectedValues, setSelectedValues] = useState([]);
+  console.log(companyData);
 
   const handleSubmitForm = async () => {
     const currentTime = new Date();
     const formattedTime = formatTime(currentTime);
-   
+
     const formData = new FormData();
     if (companyData.bdmName === "other") {
       formData.append("bdmName", otherName);
@@ -244,11 +269,8 @@ function EditForm({
     }
 
     formData.append("contactNumber", companyData.contactNumber);
-    {
-      matured
-        ? formData.append("companyEmail", companysEmail)
-        : formData.append("companyEmail", companyData.companyEmail);
-    }
+    formData.append("companyEmail", companyData.companyEmail)
+        
     formData.append("services", selectedValues);
     formData.append("originalTotalPayment", companyData.originalTotalPayment);
     formData.append("totalPayment", companyData.totalPayment);
@@ -277,18 +299,18 @@ function EditForm({
 
     try {
       if (
-        paymentCount > 1 &&
-        parseInt(leadData.firstPayment) +
-          parseInt(leadData.secondPayment) +
-          parseInt(leadData.thirdPayment) +
-          parseInt(leadData.fourthPayment) !==
-          parseInt(leadData.totalPayment)
+        oldPaymentCount > 1 &&
+        parseInt(companyData.firstPayment) +
+          parseInt(companyData.secondPayment) +
+          parseInt(companyData.thirdPayment) +
+          parseInt(companyData.fourthPayment) !==
+          parseInt(companyData.totalPayment)
       ) {
         Swal.fire("Incorrect Payment");
         return true;
       }
       const response = await axios.post(`${secretKey}/lead-form2`, formData);
-        
+
       setLeadData({
         // Initialize properties with default values if needed
         bdmName: "",
@@ -435,7 +457,6 @@ function EditForm({
                       ...prevLeadData,
                       bdmName: newValue,
                     }));
-                    
                   }}
                 />
               </div>
@@ -508,7 +529,6 @@ function EditForm({
                         ...prevLeadData,
                         bdmType: "Supported by",
                       }));
-                      
                     }}
                     checked={companyData.bdmType === "Supported By"}
                     disabled={!matured}
@@ -627,7 +647,7 @@ function EditForm({
                     }));
                     setCompanyData((prevLeadData) => ({
                       ...prevLeadData,
-                      caNumber: e.target.value, 
+                      caNumber: e.target.value,
                     }));
                   }}
                   disabled={!matured}
@@ -650,7 +670,7 @@ function EditForm({
                       }));
                       setCompanyData((prevLeadData) => ({
                         ...prevLeadData,
-                        caEmail: e.target.value, 
+                        caEmail: e.target.value,
                       }));
                     }}
                     disabled={!matured}
@@ -674,9 +694,8 @@ function EditForm({
                     }));
                     setCompanyData((prevLeadData) => ({
                       ...prevLeadData,
-                      caCommission: e.target.value, 
+                      caCommission: e.target.value,
                     }));
-                    
                   }}
                   disabled={!matured}
                 />
@@ -704,7 +723,7 @@ function EditForm({
                 }));
                 setCompanyData((prevLeadData) => ({
                   ...prevLeadData,
-                  companyName: e.target.value, 
+                  companyName: e.target.value,
                 }));
               }}
               disabled={!matured}
@@ -727,7 +746,7 @@ function EditForm({
                   }));
                   setCompanyData((prevLeadData) => ({
                     ...prevLeadData,
-                    contactNumber: e.target.value, 
+                    contactNumber: e.target.value,
                   }));
                 }}
                 disabled={!matured}
@@ -758,7 +777,7 @@ function EditForm({
                   }));
                   setCompanyData((prevLeadData) => ({
                     ...prevLeadData,
-                    companyEmail: e.target.value, 
+                    companyEmail: e.target.value,
                   }));
                 }}
                 disabled={!matured}
@@ -787,12 +806,8 @@ function EditForm({
                   setSelectedValues(
                     selectedOptions.map((option) => option.value)
                   );
-
                 }}
-                value={
-                  companyData.length !== 0 &&
-                  companyData.services.map((value) => ({ value, label: value }))
-                }
+                value={selectedValues.map((value) => ({ value, label: value }))}
                 disabled={!matured}
                 placeholder="Select Services..."
               />
@@ -902,18 +917,9 @@ function EditForm({
                 style={{
                   borderRadius: "5px 0px 0px 5px",
                 }}
-                className={
-                  paymentCount >= 2 &&
-                  parseInt(leadData.firstPayment) +
-                    parseInt(leadData.secondPayment) +
-                    parseInt(leadData.thirdPayment) +
-                    parseInt(leadData.fourthPayment) !==
-                    parseInt(leadData.totalPayment)
-                    ? "form-control error-border"
-                    : "form-control"
-                }
+                className="form-control"                
               >
-                {leadData.totalPayment ? leadData.totalPayment : 0}
+                {companyData.totalPayment}
               </div>
               <span className="rupees-sym">₹</span>
             </div>
@@ -941,6 +947,15 @@ function EditForm({
                       thirdPayment: 0,
                       fourthPayment: 0,
                     }));
+                    setOldPaymentCount(1);
+                    setCompanyData((prevLeadData) => ({
+                      ...prevLeadData,
+                      paymentTerms: e.target.value,
+                      firstPayment: 100,
+                      secondPayment: 0,
+                      thirdPayment: 0,
+                      fourthPayment: 0,
+                    }));
                   }}
                   disabled={!matured}
                 />
@@ -957,6 +972,16 @@ function EditForm({
                     setpaymentCount(2);
 
                     setLeadData((prevLeadData) => ({
+                      ...prevLeadData,
+                      paymentTerms: e.target.value,
+                      firstPayment: 0,
+                      secondPayment: 0,
+
+                      // Set the value based on the selected radio button
+                    }));
+                    setOldPaymentCount(2);
+
+                    setCompanyData((prevLeadData) => ({
                       ...prevLeadData,
                       paymentTerms: e.target.value,
                       firstPayment: 0,
@@ -995,6 +1020,13 @@ function EditForm({
                             paymentCount === 2 &&
                             leadData.totalPayment - e.target.value,
                         }));
+                        setCompanyData((prevLeadData) => ({
+                          ...prevLeadData,
+                          firstPayment: e.target.value,
+                          secondPayment:
+                            oldPaymentCount === 2 &&
+                            companyData.totalPayment - e.target.value,
+                        }));
                       }}
                       disabled={!matured}
                     />
@@ -1002,7 +1034,33 @@ function EditForm({
                     <span className="rupees-sym">₹</span>
                   </div>
                 </div>
-                {paymentCount === 2 && (
+                {oldPaymentCount === 2 && !matured && (
+                  <>
+                  <div className="col second-payment">
+                      <label class="form-label">Second Payment</label>
+                      <div className="d-flex">
+                        <input
+                          type="number"
+                          style={{ borderRadius: "5px 0px 0px 5px" }}
+                          name="second-payment"
+                          id="second-payment"
+                          value={companyData.secondPayment}
+                          placeholder="Second Payment"
+                          className={
+                           
+                               "form-control"
+                          }
+                       
+                          disabled
+                          // Add style for extra space on the right
+                        />
+                        <span className="rupees-sym">₹</span>
+
+                      </div>
+                    </div>
+                  </>
+                )}
+                {oldPaymentCount === 2 && matured && (
                   <>
                     <div className="col second-payment">
                       <label class="form-label">Second Payment</label>
@@ -1015,14 +1073,18 @@ function EditForm({
                           value={companyData.secondPayment}
                           placeholder="Second Payment"
                           className={
-                            parseInt(leadData.firstPayment) +
-                              parseInt(leadData.secondPayment) !==
-                            parseInt(leadData.totalPayment)
+                            parseInt(companyData.firstPayment) +
+                              parseInt(companyData.secondPayment) !==
+                            parseInt(companyData.totalPayment)
                               ? "form-control error-border"
                               : "form-control"
                           }
                           onChange={(e) => {
                             setLeadData((prevLeadData) => ({
+                              ...prevLeadData,
+                              secondPayment: e.target.value, // Set the value based on the input
+                            }));
+                            setCompanyData((prevLeadData) => ({
                               ...prevLeadData,
                               secondPayment: e.target.value, // Set the value based on the input
                             }));
@@ -1034,11 +1096,18 @@ function EditForm({
 
                         {/* Add a span with Indian Rupees symbol */}
 
-                        {!matured && (
+                        {matured && (
                           <button
                             onClick={() => {
-                              setpaymentCount(3);
+                             
+                              setOldPaymentCount(3)
                               setLeadData((prevLeadData) => ({
+                                ...prevLeadData,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                                thirdPayment: 0,
+                              }));
+                              setCompanyData((prevLeadData) => ({
                                 ...prevLeadData,
                                 firstPayment: 0,
                                 secondPayment: 0,
@@ -1056,7 +1125,55 @@ function EditForm({
                     </div>
                   </>
                 )}
-                {paymentCount === 3 && (
+                 {oldPaymentCount === 3 && !matured && (
+                  <>
+                  <div className="col second-payment">
+                      <label class="form-label">Second Payment</label>
+                      <div className="d-flex">
+                        <input
+                          type="number"
+                          style={{ borderRadius: "5px 0px 0px 5px" }}
+                          name="second-payment"
+                          id="second-payment"
+                          value={companyData.secondPayment}
+                          placeholder="Second Payment"
+                          className={
+                           
+                               "form-control"
+                          }
+                       
+                          disabled
+                          // Add style for extra space on the right
+                        />
+                        <span className="rupees-sym">₹</span>
+
+                      </div>
+                    </div>
+                  <div className="col third-payment">
+                      <label class="form-label">Third Payment</label>
+                      <div className="d-flex">
+                        <input
+                          type="number"
+                          style={{ borderRadius: "5px 0px 0px 5px" }}
+                          name="third-payment"
+                          id="third-payment"
+                          value={companyData.thirdPayment}
+                          placeholder="third Payment"
+                          className={
+                           
+                               "form-control"
+                          }
+                       
+                          disabled
+                          // Add style for extra space on the right
+                        />
+                        <span className="rupees-sym">₹</span>
+
+                      </div>
+                    </div>
+                  </>
+                )}
+                {oldPaymentCount === 3 && matured && (
                   <>
                     <div className="col second-payment">
                       <label class="form-label">Second Payment</label>
@@ -1080,6 +1197,14 @@ function EditForm({
                                 parseInt(leadData.firstPayment) -
                                 parseInt(e.target.value),
                             }));
+                            setCompanyData((prevLeadData) => ({
+                              ...prevLeadData,
+                              secondPayment: e.target.value,
+                              thirdPayment:
+                                parseInt(companyData.totalPayment) -
+                                parseInt(companyData.firstPayment) -
+                                parseInt(e.target.value),
+                            }));
                           }}
                           disabled={!matured}
                         />
@@ -1099,10 +1224,10 @@ function EditForm({
                           value={companyData.thirdPayment}
                           placeholder="Third Payment"
                           className={
-                            parseInt(leadData.firstPayment) +
-                              parseInt(leadData.secondPayment) +
-                              parseInt(leadData.thirdPayment) !==
-                            parseInt(leadData.totalPayment)
+                            parseInt(companyData.firstPayment) +
+                              parseInt(companyData.secondPayment) +
+                              parseInt(companyData.thirdPayment) !==
+                            parseInt(companyData.totalPayment)
                               ? "form-control error-border"
                               : "form-control"
                           }
@@ -1111,16 +1236,28 @@ function EditForm({
                               ...prevLeadData,
                               thirdPayment: e.target.value,
                             }));
+                            setCompanyData((prevLeadData) => ({
+                              ...prevLeadData,
+                              thirdPayment: e.target.value,
+                            }));
                           }}
                           disabled={!matured}
+                          readOnly={oldPaymentCount === 3}
                         />
                         <span className="rupees-sym">₹</span>
-                        {!matured && (
+                        {matured && (
                           <button
                             style={{ marginLeft: "5px" }}
                             onClick={(e) => {
                               setpaymentCount(2);
+                              setOldPaymentCount(2);
                               setLeadData((prevLeadData) => ({
+                                ...prevLeadData,
+                                thirdPayment: 0,
+                                firstPayment: 0,
+                                secondPayment: 0,
+                              }));
+                              setCompanyData((prevLeadData) => ({
                                 ...prevLeadData,
                                 thirdPayment: 0,
                                 firstPayment: 0,
@@ -1137,7 +1274,15 @@ function EditForm({
                           style={{ marginLeft: "5px" }}
                           onClick={() => {
                             setpaymentCount(4);
+                            setOldPaymentCount(4)
                             setLeadData((prevLeadData) => ({
+                              ...prevLeadData,
+                              thirdPayment: 0,
+                              firstPayment: 0,
+                              secondPayment: 0,
+                              fourthPayment: 0,
+                            }));
+                            setCompanyData((prevLeadData) => ({
                               ...prevLeadData,
                               thirdPayment: 0,
                               firstPayment: 0,
@@ -1154,7 +1299,77 @@ function EditForm({
                     </div>
                   </>
                 )}
-                {paymentCount === 4 && (
+                 {oldPaymentCount === 4 && !matured && (
+                  <>
+                  <div className="col second-payment">
+                      <label class="form-label">Second Payment</label>
+                      <div className="d-flex">
+                        <input
+                          type="number"
+                          style={{ borderRadius: "5px 0px 0px 5px" }}
+                          name="second-payment"
+                          id="second-payment"
+                          value={companyData.secondPayment}
+                          placeholder="Second Payment"
+                          className={
+                           
+                               "form-control"
+                          }
+                       
+                          disabled
+                          // Add style for extra space on the right
+                        />
+                        <span className="rupees-sym">₹</span>
+
+                      </div>
+                    </div>
+                  <div className="col third-payment">
+                      <label class="form-label">Third Payment</label>
+                      <div className="d-flex">
+                        <input
+                          type="number"
+                          style={{ borderRadius: "5px 0px 0px 5px" }}
+                          name="Third-payment"
+                          id="Third-payment"
+                          value={companyData.thirdPayment}
+                          placeholder="Third Payment"
+                          className={
+                           
+                               "form-control"
+                          }
+                       
+                          disabled
+                          // Add style for extra space on the right
+                        />
+                        <span className="rupees-sym">₹</span>
+
+                      </div>
+                    </div>
+                  <div className="col fourth-payment">
+                      <label class="form-label">Fourth Payment</label>
+                      <div className="d-flex">
+                        <input
+                          type="number"
+                          style={{ borderRadius: "5px 0px 0px 5px" }}
+                          name="Fourth-payment"
+                          id="Fourth-payment"
+                          value={companyData.fourthPayment}
+                          placeholder="Fourth Payment"
+                          className={
+                           
+                               "form-control"
+                          }
+                       
+                          disabled
+                          // Add style for extra space on the right
+                        />
+                        <span className="rupees-sym">₹</span>
+
+                      </div>
+                    </div>
+                  </>
+                )}
+                {oldPaymentCount === 4 && matured && (
                   <>
                     <div className="col second-payment">
                       <label class="form-label">Second Payment</label>
@@ -1170,7 +1385,7 @@ function EditForm({
                           placeholder="Second Payment"
                           className="form-control"
                           onChange={(e) => {
-                            setLeadData((prevLeadData) => ({
+                            setCompanyData((prevLeadData) => ({
                               ...prevLeadData,
                               secondPayment: e.target.value,
                             }));
@@ -1189,17 +1404,17 @@ function EditForm({
                           }}
                           name="third-payment"
                           id="third-payment"
-                          value={leadData.thirdPayment}
+                          value={companyData.thirdPayment}
                           placeholder="Thrid Payment"
                           className="form-control"
                           onChange={(e) => {
-                            setLeadData((prevLeadData) => ({
+                            setCompanyData((prevLeadData) => ({
                               ...prevLeadData,
                               thirdPayment: e.target.value,
                               fourthPayment:
-                                parseInt(leadData.totalPayment) -
-                                parseInt(leadData.firstPayment) -
-                                parseInt(leadData.secondPayment) -
+                                parseInt(companyData.totalPayment) -
+                                parseInt(companyData.firstPayment) -
+                                parseInt(companyData.secondPayment) -
                                 parseInt(e.target.value),
                             }));
                           }}
@@ -1220,28 +1435,31 @@ function EditForm({
                           value={companyData.fourthPayment}
                           placeholder="Fourth Payment"
                           className={
-                            parseInt(leadData.firstPayment) +
-                              parseInt(leadData.secondPayment) +
-                              parseInt(leadData.thirdPayment) +
-                              parseInt(leadData.fourthPayment) !==
-                            parseInt(leadData.totalPayment)
+                            parseInt(companyData.firstPayment) +
+                              parseInt(companyData.secondPayment) +
+                              parseInt(companyData.thirdPayment) +
+                              parseInt(companyData.fourthPayment) !==
+                            parseInt(companyData.totalPayment)
                               ? "form-control error-border"
                               : "form-control"
                           }
                           onChange={(e) => {
-                            setLeadData((prevLeadData) => ({
+                            
+                            setCompanyData((prevLeadData) => ({
                               ...prevLeadData,
                               fourthPayment: e.target.value,
                             }));
                           }}
-                          readOnly={paymentCount === 4}
+                          readOnly={oldPaymentCount === 4}
                         />
                         <span className="rupees-sym">₹</span>
                         <button
                           style={{ marginLeft: "5px" }}
                           onClick={(e) => {
-                            setpaymentCount(3);
-                            setLeadData((prevLeadData) => ({
+                           
+                            setOldPaymentCount(3)
+                         
+                            setCompanyData((prevLeadData) => ({
                               ...prevLeadData,
                               fourthPayment: 0,
                               firstPayment: 0,
@@ -1259,69 +1477,69 @@ function EditForm({
                   </>
                 )}
               </div>
-              <div className="details-payment row mb-3">
+              {matured && <div className="details-payment row mb-3">
                 <div className="details-payment-1 col">
                   <small class="form-hint">
-                    {parseInt(leadData.firstPayment) +
-                      parseInt(leadData.secondPayment) +
-                      parseInt(leadData.thirdPayment) +
-                      parseInt(leadData.fourthPayment) !==
-                    parseInt(leadData.totalPayment)
+                    {parseInt(companyData.firstPayment) +
+                      parseInt(companyData.secondPayment) +
+                      parseInt(companyData.thirdPayment) +
+                      parseInt(companyData.fourthPayment) !==
+                    parseInt(companyData.totalPayment)
                       ? "Wrong Payment"
                       : `${(
-                          (leadData.firstPayment * 100) /
-                          leadData.totalPayment
+                          (companyData.firstPayment * 100) /
+                          companyData.totalPayment
                         ).toFixed(2)} % Amount`}
                   </small>
                 </div>
                 <div className="details-payment-2 col">
                   <small class="form-hint">
-                    {parseInt(leadData.firstPayment) +
-                      parseInt(leadData.secondPayment) +
-                      parseInt(leadData.thirdPayment) +
-                      parseInt(leadData.fourthPayment) !==
-                    parseInt(leadData.totalPayment)
+                    {parseInt(companyData.firstPayment) +
+                      parseInt(companyData.secondPayment) +
+                      parseInt(companyData.thirdPayment) +
+                      parseInt(companyData.fourthPayment) !==
+                    parseInt(companyData.totalPayment)
                       ? "Wrong Payment"
                       : `${(
-                          (leadData.secondPayment * 100) /
-                          leadData.totalPayment
+                          (companyData.secondPayment * 100) /
+                          companyData.totalPayment
                         ).toFixed(2)} % Amount`}
                   </small>
                 </div>
-                {paymentCount >= 3 && (
+                {oldPaymentCount >= 3 && (
                   <div className="details-payment-3 col">
                     <small class="form-hint">
-                      {parseInt(leadData.firstPayment) +
-                        parseInt(leadData.secondPayment) +
-                        parseInt(leadData.thirdPayment) +
-                        parseInt(leadData.fourthPayment) !==
-                      parseInt(leadData.totalPayment)
+                      {parseInt(companyData.firstPayment) +
+                        parseInt(companyData.secondPayment) +
+                        parseInt(companyData.thirdPayment) +
+                        parseInt(companyData.fourthPayment) !==
+                      parseInt(companyData.totalPayment)
                         ? "Wrong Payment"
                         : `${(
-                            (leadData.thirdPayment * 100) /
-                            leadData.totalPayment
+                            (companyData.thirdPayment * 100) /
+                            companyData.totalPayment
                           ).toFixed(2)} % Amount`}
                     </small>
                   </div>
                 )}
 
-                {paymentCount === 4 && (
+                {oldPaymentCount === 4 && (
                   <div className="details-payment-4 col">
                     <small class="form-hint">
-                      {parseInt(leadData.firstPayment) +
-                        parseInt(leadData.secondPayment) +
-                        parseInt(leadData.thirdPayment) +
-                        parseInt(leadData.fourthPayment) !==
-                      parseInt(leadData.totalPayment)
+                      {parseInt(companyData.firstPayment) +
+                        parseInt(companyData.secondPayment) +
+                        parseInt(companyData.thirdPayment) +
+                        parseInt(companyData.fourthPayment) !==
+                      parseInt(companyData.totalPayment)
                         ? "Wrong Payment"
                         : `${(
-                            (leadData.fourthPayment * 100) /
-                            leadData.totalPayment
+                            (companyData.fourthPayment * 100) /
+                            companyData.totalPayment
                           ).toFixed(2)} % Amount`}
                     </small>
                   </div>
                 )}
-              </div>
+              </div>}
               <div className="payment-remarks col">
                 <label class="form-label">Payment Remarks</label>
                 <input
@@ -1332,10 +1550,6 @@ function EditForm({
                   placeholder="Please add remarks if any"
                   className="form-control"
                   onChange={(e) => {
-                    setLeadData((prevLeadData) => ({
-                      ...prevLeadData,
-                      paymentRemarks: e.target.value,
-                    }));
                     setCompanyData((prevLeadData) => ({
                       ...prevLeadData,
                       paymentRemarks: e.target.value,
@@ -1359,10 +1573,6 @@ function EditForm({
                 className="form-select mb-3"
                 value={companyData.paymentMethod}
                 onChange={(e) => {
-                  setLeadData((prevLeadData) => ({
-                    ...prevLeadData,
-                    paymentMethod: e.target.value,
-                  }));
                   setCompanyData((prevLeadData) => ({
                     ...prevLeadData,
                     paymentMethod: e.target.value,
@@ -1406,12 +1616,7 @@ function EditForm({
                   class="form-control"
                   type="file"
                   id="formFile"
-                  
                   onChange={(e) => {
-                    setLeadData((prevLeadData) => ({
-                      ...prevLeadData,
-                      paymentReciept: e.target.files[0],
-                    }));
                     setCompanyData((prevLeadData) => ({
                       ...prevLeadData,
                       paymentReciept: e.target.files[0],
@@ -1431,10 +1636,6 @@ function EditForm({
                 id="select-emails"
                 value={companyData.bookingSource}
                 onChange={(e) => {
-                  setLeadData((prevLeadData) => ({
-                    ...prevLeadData,
-                    bookingSource: e.target.value,
-                  }));
                   setCompanyData((prevLeadData) => ({
                     ...prevLeadData,
                     bookingSource: e.target.value,
@@ -1474,10 +1675,6 @@ function EditForm({
                 value={companyData.cPANorGSTnum}
                 className="form-control"
                 onChange={(e) => {
-                  setLeadData((prevLeadData) => ({
-                    ...prevLeadData,
-                    cPANorGSTnum: e.target.value,
-                  }));
                   setCompanyData((prevLeadData) => ({
                     ...prevLeadData,
                     cPANorGSTnum: e.target.value,
@@ -1494,10 +1691,6 @@ function EditForm({
             <label className="form-label">Company Incorporation Date</label>
             <input
               onChange={(e) => {
-                setLeadData((prevLeadData) => ({
-                  ...prevLeadData,
-                  incoDate: e.target.value,
-                }));
                 setCompanyData((prevLeadData) => ({
                   ...prevLeadData,
                   incoDate: e.target.value,
@@ -1532,23 +1725,23 @@ function EditForm({
             />
           </div>
           {leadData.otherDocs && leadData.otherDocs.length > 0 && (
-              <div className="uploaded-filename-main d-flex flex-wrap">
-                {leadData.otherDocs.map((file, index) => (
-                  <div
-                    className="uploaded-fileItem d-flex align-items-center"
-                    key={index}
+            <div className="uploaded-filename-main d-flex flex-wrap">
+              {leadData.otherDocs.map((file, index) => (
+                <div
+                  className="uploaded-fileItem d-flex align-items-center"
+                  key={index}
+                >
+                  <p className="m-0">{file.name}</p>
+                  <button
+                    className="fileItem-dlt-btn"
+                    onClick={() => handleRemoveFile(index)}
                   >
-                    <p className="m-0">{file.name}</p>
-                    <button
-                      className="fileItem-dlt-btn"
-                      onClick={() => handleRemoveFile(index)}
-                    >
-                      <IconX className="close-icon" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+                    <IconX className="close-icon" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="extra-notes col">
             <label class="form-label">Any Extra Notes</label>
             <input
@@ -1573,11 +1766,15 @@ function EditForm({
           </div>
         </div>
       </div>
-      <div class="card-footer text-end">
-        <button onClick={handleSubmitForm} type="submit" class="btn btn-primary mb-3">
+      {matured && <div class="card-footer text-end">
+        <button
+          onClick={handleSubmitForm}
+          type="submit"
+          class="btn btn-primary mb-3"
+        >
           Request Changes
         </button>
-      </div>
+      </div>}
     </div>
   );
 }

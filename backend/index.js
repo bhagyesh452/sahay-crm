@@ -24,6 +24,7 @@ const EmployeeHistory = require("./models/EmployeeHistory");
 const LoginDetails = require("./models/loginDetails");
 const RequestDeleteByBDE = require("./models/Deleterequestbybde");
 const BookingsRequestModel = require("./models/BookingsEdit");
+const DraftModel = require("./models/DraftLeadform");
 
 // const http = require('http');
 // const socketIo = require('socket.io');
@@ -813,6 +814,7 @@ const storage = multer.diskStorage({
   },
 });
 
+
 const upload = multer({ storage: storage });
 
 app.post(
@@ -914,7 +916,7 @@ app.post(
         "bookings@startupsahay.com",
         "documents@startupsahay.com",
         `${bdmEmail}`,
-        `${bdeName}`,
+        `${bdeEmail}`,
       ];
 
       sendMail(
@@ -1716,6 +1718,52 @@ app.get("/download/recieptpdf/:fileName", (req, res) => {
   res.setHeader("Content-Disposition", attachment, (fileName = `${fileName}`));
   res.setHeader("Content-Type", "application/pdf");
   res.sendFile(filePath);
+});
+app.post('/api/save-draft', async (req, res) => {
+  const draftData = req.body;
+  try {
+    // Check if a draft with the same company name already exists
+    let existingDraft = await DraftModel.findOne({ companyName: draftData.companyName });
+
+    if (existingDraft) {
+      // If a draft with the same company name exists, update its data
+      existingDraft = await DraftModel.findOneAndUpdate(
+        { companyName: draftData.companyName },
+        draftData,
+        { new: true }
+      );
+      res.status(200).json(existingDraft); // Respond with the updated draft
+    } else {
+      // If no draft with the same company name exists, save the data as a new draft
+      const newDraft = await DraftModel.create(draftData);
+      res.status(201).json(newDraft); // Respond with the newly created draft
+    }
+  } catch (error) {
+    console.error("Error saving draft:", error);
+    res.status(500).json({ message: "Error saving draft" });
+  }
+});
+
+
+
+app.delete('/api/delete-edit-request/:id', async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    // Find and delete the object from the database
+    const deletedObject = await BookingsRequestModel.findByIdAndDelete(id);
+    
+    if (!deletedObject) {
+      // If the object with the given ID is not found
+      return res.status(404).json({ message: "Object not found" });
+    }
+
+    // If the object is successfully deleted
+    res.status(200).json({ message: "Object deleted successfully" });
+  } catch (error) {
+    // If an error occurs during deletion
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
 });
 
 http.listen(3001, function () {

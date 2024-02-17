@@ -115,8 +115,8 @@ const customStyles = {
     backgroundColor: state.isSelected
       ? "blue"
       : state.isDisabled
-        ? "#ffb900"
-        : "white",
+      ? "#ffb900"
+      : "white",
     color: state.isDisabled ? "white" : "black",
     // Add more styles as needed
   }),
@@ -130,7 +130,7 @@ function BookingsForm({
   companysInco,
   employeeName,
   employeeEmail,
-  companyNumber
+  companyNumber,
 }) {
   const [unames, setUnames] = useState([]);
   const [checkStat, setCheckStat] = useState(false);
@@ -176,12 +176,24 @@ function BookingsForm({
 
       // Set the retrieved data in the state
       const tempData = response.data;
-      console.log(response.data)
+      console.log(response.data);
       setUnames(tempData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
+
+  const transformedData = {
+    "Company Name": leadData.companyName,
+    "Company Number": leadData.contactNumber,
+    "Company Email": leadData.companyEmail,
+    "Company Incorporation Date  ": leadData.incoDate,
+    ename: leadData.bdeName,
+    City: "NA",
+    State: "NA",
+    Status: "Matured",
+  };
+
   const handleStatusChange = async (companysId) => {
     const newStatus = "Matured";
     try {
@@ -211,6 +223,8 @@ function BookingsForm({
   }, []);
   const [selectedValues, setSelectedValues] = useState([]);
 
+  // Add other fields as needed
+
   const handleSubmitForm = async () => {
     const currentTime = new Date();
     const formattedTime = formatTime(currentTime);
@@ -223,7 +237,7 @@ function BookingsForm({
 
     formData.append("bdmEmail", leadData.bdmEmail);
     formData.append("bdmType", leadData.bdmType);
-    formData.append("bookingTime", formattedTime)
+    formData.append("bookingTime", formattedTime);
     formData.append("supportedBy", leadData.supportedBy);
     formData.append("bookingDate", leadData.bookingDate);
     formData.append("caCase", leadData.caCase);
@@ -275,16 +289,17 @@ function BookingsForm({
       if (
         paymentCount > 1 &&
         parseInt(leadData.firstPayment) +
-        parseInt(leadData.secondPayment) +
-        parseInt(leadData.thirdPayment) +
-        parseInt(leadData.fourthPayment) !==
-        parseInt(leadData.totalPayment)
+          parseInt(leadData.secondPayment) +
+          parseInt(leadData.thirdPayment) +
+          parseInt(leadData.fourthPayment) !==
+          parseInt(leadData.totalPayment)
       ) {
         Swal.fire("Incorrect Payment");
 
         return true;
       }
       const response = await axios.post(`${secretKey}/lead-form`, formData);
+     await axios.post(`${secretKey}/leads`, transformedData);
       setLeadData({
         // Initialize properties with default values if needed
         bdeName: "",
@@ -329,8 +344,8 @@ function BookingsForm({
     }
   };
 
-  const [editEmail, setEditEmail] = useState(false)
-  const [editNumber, setEditNumber] = useState(false)
+  const [editEmail, setEditEmail] = useState(false);
+  const [editNumber, setEditNumber] = useState(false);
 
   function formatTime(date) {
     // Ensure date is a valid Date object
@@ -348,7 +363,6 @@ function BookingsForm({
 
     return formattedTime;
   }
-
 
   const formatDate = (inputdate) => {
     const inputDate = new Date(inputdate);
@@ -372,16 +386,16 @@ function BookingsForm({
   };
   console.log(
     parseInt(leadData.firstPayment) +
-    parseInt(leadData.secondPayment) +
-    parseInt(leadData.thirdPayment) +
-    parseInt(leadData.fourthPayment),
+      parseInt(leadData.secondPayment) +
+      parseInt(leadData.thirdPayment) +
+      parseInt(leadData.fourthPayment),
     parseInt(leadData.totalPayment)
   );
 
   return (
     <div>
       <Header />
-      <Navbar/>
+      <Navbar />
       <div className="page-wrapper">
         <div className="page-header d-print-none">
           <div
@@ -396,11 +410,8 @@ function BookingsForm({
             </div>
             <div className="request">
               <div className="btn-list">
-                <Link to='/admin/bookings'>
-                  <button
-                    className="btn btn-primary">
-                    Back
-                  </button>
+                <Link to="/admin/bookings">
+                  <button className="btn btn-primary">Back</button>
                 </Link>
               </div>
             </div>
@@ -499,7 +510,9 @@ function BookingsForm({
                     <div className="othername">
                       <label class="form-label">
                         BDM Name
-                        {otherName == "" && <span style={{ color: "red" }}>*</span>}
+                        {otherName == "" && (
+                          <span style={{ color: "red" }}>*</span>
+                        )}
                       </label>
                       <input
                         type="text"
@@ -681,7 +694,9 @@ function BookingsForm({
                     </div>
 
                     <div className="ca-commision col">
-                      <label className="form-label">Enter CA's Commission</label>
+                      <label className="form-label">
+                        Enter CA's Commission
+                      </label>
                       <input
                         type="text"
                         name="ca-commision"
@@ -725,7 +740,9 @@ function BookingsForm({
                   <div className="position-relative">
                     <input
                       type="number"
-                      defaultValue={matured ? companyNumber : leadData.companyNumber}
+                      defaultValue={
+                        matured ? companyNumber : leadData.companyNumber
+                      }
                       name="company-contact"
                       id="company-contact"
                       placeholder="Enter Contact Number"
@@ -739,13 +756,13 @@ function BookingsForm({
                       disabled={!editNumber}
                     />
                     <div className="editField">
-                      <Edit onClick={() => {
-                        setEditNumber(true)
-                      }} />
+                      <Edit
+                        onClick={() => {
+                          setEditNumber(true);
+                        }}
+                      />
                     </div>
-
                   </div>
-
                 </div>
                 <div className="company-email col">
                   <label class="form-label">Enter Company's Email-ID</label>
@@ -756,7 +773,9 @@ function BookingsForm({
                       id="company-email"
                       placeholder="Enter Company Email ID"
                       className="form-control"
-                      defaultValue={matured ? companysEmail : leadData.companyEmail}
+                      defaultValue={
+                        matured ? companysEmail : leadData.companyEmail
+                      }
                       onChange={(e) => {
                         setLeadData((prevLeadData) => ({
                           ...prevLeadData,
@@ -766,13 +785,13 @@ function BookingsForm({
                       disabled={!editEmail}
                     />
                     <div className="editField">
-                      <Edit onClick={() => {
-                        setEditEmail(true)
-                      }} />
+                      <Edit
+                        onClick={() => {
+                          setEditEmail(true);
+                        }}
+                      />
                     </div>
                   </div>
-
-
                 </div>
               </div>
               <div className="row align-items-center">
@@ -790,7 +809,10 @@ function BookingsForm({
                           selectedOptions.map((option) => option.value)
                         );
                       }}
-                      value={selectedValues.map((value) => ({ value, label: value }))}
+                      value={selectedValues.map((value) => ({
+                        value,
+                        label: value,
+                      }))}
                       placeholder="Select Services..."
                     />
                   </div>
@@ -880,7 +902,7 @@ function BookingsForm({
                           parseInt(leadData.secondPayment) +
                           parseInt(leadData.thirdPayment) +
                           parseInt(leadData.fourthPayment) !==
-                          parseInt(leadData.totalPayment)
+                        parseInt(leadData.totalPayment)
                           ? "form-control error-border"
                           : "form-control"
                       }
@@ -986,7 +1008,7 @@ function BookingsForm({
                                 className={
                                   parseInt(leadData.firstPayment) +
                                     parseInt(leadData.secondPayment) !==
-                                    parseInt(leadData.totalPayment)
+                                  parseInt(leadData.totalPayment)
                                     ? "form-control error-border"
                                     : "form-control"
                                 }
@@ -997,7 +1019,7 @@ function BookingsForm({
                                   }));
                                 }}
                                 readOnly={paymentCount === 2}
-                              // Add style for extra space on the right
+                                // Add style for extra space on the right
                               />
                               <span className="rupees-sym">₹</span>
 
@@ -1068,7 +1090,7 @@ function BookingsForm({
                                   parseInt(leadData.firstPayment) +
                                     parseInt(leadData.secondPayment) +
                                     parseInt(leadData.thirdPayment) !==
-                                    parseInt(leadData.totalPayment)
+                                  parseInt(leadData.totalPayment)
                                     ? "form-control error-border"
                                     : "form-control"
                                 }
@@ -1188,7 +1210,7 @@ function BookingsForm({
                                     parseInt(leadData.secondPayment) +
                                     parseInt(leadData.thirdPayment) +
                                     parseInt(leadData.fourthPayment) !==
-                                    parseInt(leadData.totalPayment)
+                                  parseInt(leadData.totalPayment)
                                     ? "form-control error-border"
                                     : "form-control"
                                 }
@@ -1230,12 +1252,12 @@ function BookingsForm({
                             parseInt(leadData.secondPayment) +
                             parseInt(leadData.thirdPayment) +
                             parseInt(leadData.fourthPayment) !==
-                            parseInt(leadData.totalPayment)
+                          parseInt(leadData.totalPayment)
                             ? "Wrong Payment"
                             : `${(
-                              (leadData.firstPayment * 100) /
-                              leadData.totalPayment
-                            ).toFixed(2)} % Amount`}
+                                (leadData.firstPayment * 100) /
+                                leadData.totalPayment
+                              ).toFixed(2)} % Amount`}
                         </small>
                       </div>
                       <div className="details-payment-2 col">
@@ -1244,12 +1266,12 @@ function BookingsForm({
                             parseInt(leadData.secondPayment) +
                             parseInt(leadData.thirdPayment) +
                             parseInt(leadData.fourthPayment) !==
-                            parseInt(leadData.totalPayment)
+                          parseInt(leadData.totalPayment)
                             ? "Wrong Payment"
                             : `${(
-                              (leadData.secondPayment * 100) /
-                              leadData.totalPayment
-                            ).toFixed(2)} % Amount`}
+                                (leadData.secondPayment * 100) /
+                                leadData.totalPayment
+                              ).toFixed(2)} % Amount`}
                         </small>
                       </div>
                       {paymentCount >= 3 && (
@@ -1259,12 +1281,12 @@ function BookingsForm({
                               parseInt(leadData.secondPayment) +
                               parseInt(leadData.thirdPayment) +
                               parseInt(leadData.fourthPayment) !==
-                              parseInt(leadData.totalPayment)
+                            parseInt(leadData.totalPayment)
                               ? "Wrong Payment"
                               : `${(
-                                (leadData.thirdPayment * 100) /
-                                leadData.totalPayment
-                              ).toFixed(2)} % Amount`}
+                                  (leadData.thirdPayment * 100) /
+                                  leadData.totalPayment
+                                ).toFixed(2)} % Amount`}
                           </small>
                         </div>
                       )}
@@ -1276,12 +1298,12 @@ function BookingsForm({
                               parseInt(leadData.secondPayment) +
                               parseInt(leadData.thirdPayment) +
                               parseInt(leadData.fourthPayment) !==
-                              parseInt(leadData.totalPayment)
+                            parseInt(leadData.totalPayment)
                               ? "Wrong Payment"
                               : `${(
-                                (leadData.fourthPayment * 100) /
-                                leadData.totalPayment
-                              ).toFixed(2)} % Amount`}
+                                  (leadData.fourthPayment * 100) /
+                                  leadData.totalPayment
+                                ).toFixed(2)} % Amount`}
                           </small>
                         </div>
                       )}
@@ -1332,7 +1354,8 @@ function BookingsForm({
                         SRK Seedfund(Non GST)/IDFC first Bank
                       </option>
                       <option value="STARTUP SAHAY SERVICES/ADVISORY(Non GST)/ IDFC First Bank">
-                        STARTUP SAHAY SERVICES/ADVISORY(Non GST)/ IDFC First Bank
+                        STARTUP SAHAY SERVICES/ADVISORY(Non GST)/ IDFC First
+                        Bank
                       </option>
                       <option value="Razorpay">Razorpay</option>
                       <option value="PayU">PayU</option>
@@ -1391,7 +1414,9 @@ function BookingsForm({
                       <option value="Insta Lead">Insta Lead</option>
                       <option value="Reference">Reference</option>
                       <option value="Existing Client">Existing Client</option>
-                      <option value="Lead By Saurav Sir">Lead By Saurav Sir</option>
+                      <option value="Lead By Saurav Sir">
+                        Lead By Saurav Sir
+                      </option>
                       <option value="Other">Other</option>
                     </select>
                     {leadData.bookingSource === "Other" && (
@@ -1427,7 +1452,9 @@ function BookingsForm({
 
               <div className="cidate-or-extranotes row mb-3">
                 <div className="cidate col">
-                  <label className="form-label">Company Incorporation Date</label>
+                  <label className="form-label">
+                    Company Incorporation Date
+                  </label>
                   <input
                     onChange={(e) => {
                       setLeadData((prevLeadData) => ({
@@ -1435,7 +1462,9 @@ function BookingsForm({
                         incoDate: e.target.value,
                       }));
                     }}
-                    value={matured ? formatDate(companysInco) : leadData.incoDate}
+                    value={
+                      matured ? formatDate(companysInco) : leadData.incoDate
+                    }
                     type="date"
                     className="form-control"
                   />
