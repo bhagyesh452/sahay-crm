@@ -95,9 +95,10 @@ function Dashboard_processing() {
       : ""
   );
 
+
   return (
     <div>
-      <Header_processing />
+      <Header_processing data={companies} />
       <Navbar_processing />
        <div className="page-body">
                 <div className="page-body">

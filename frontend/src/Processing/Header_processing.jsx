@@ -13,11 +13,38 @@ import Avatar from '@mui/material/Avatar';
 import axios from "axios";
 import Bellicon from "../admin/Bellicon.js";
 import socketIO from 'socket.io-client';
-import Processing_notification from './Processing_notification.js'
+import Processing_notification from './Processing_notification.js';
+import Dashboard_processing from "./Dashboard_processing.jsx";
+import CompanyList from "./CompanyList.jsx";
+import {
+  IconButton,
+} from "@mui/material";
+
 // import "./styles/header.css"
 
 
-function Header_processing({ name, designation}) {
+function Header_processing({ name, designation, data }) {
+  const [unreadCount, setUnreadCount] = useState(0); // State to hold the count of unread companies
+  console.log(data)
+  const countUnreadCompanies = () => {
+    console.log(data)
+    if(data.length !== 0 || data !== undefined){
+    const count = data.reduce((acc, company) => {
+      if (!company.read) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
+    setUnreadCount(count);
+  }}
+  
+  useEffect(() => {
+    // Calculate the count of unread companies when the component mounts
+  
+    if(data){countUnreadCompanies()}
+
+  }, [data]);
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   useEffect(() => {
     const socket = socketIO.connect(`${secretKey}`);
@@ -33,18 +60,20 @@ function Header_processing({ name, designation}) {
       console.log("New request received:", newRequest);
 
       // Fetch updated data when a new request is received
-    fetchRequestDetails();
-    fetchRequestGDetails();
+      fetchRequestDetails();
+      fetchRequestGDetails();
     });
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
     };
   }, []);
- 
+
   useEffect(() => {
- 
-  },[]);
+
+  }, []);
+
+
   const [requestData, setRequestData] = useState([]);
   const [requestGData, setRequestGData] = useState([]);
 
@@ -93,19 +122,28 @@ function Header_processing({ name, designation}) {
               />
             </a>
           </h1>
-          <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
-        
-          <Avatar sx={{ width: 32, height: 32 }}/>
+          <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
+            <IconButton>
+              {/* Render the bell icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"></path><path d="M9 17v1a3 3 0 0 0 6 0v-1"></path></svg>
+              <span style={{
+              fontSize: "8px",
+              borderRadius: "15px",
+              marginBottom: "9px",
+              padding: "2px"
+            }} className="badge bg-red">{unreadCount}</span>
+            </IconButton>
+            <Avatar sx={{ width: 32, height: 32 }} />
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
                 data-bs-toggle="dropdown"
                 aria-label="Open user menu"
               >
-                
+
                 <div className="d-xl-block ps-2">
                   <div>{name ? name : "Username"}</div>
-                  <div style={{textAlign:"left"}} className="mt-1 small text-muted">
+                  <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
                     {designation ? designation : "Processing-team"}
                   </div>
                 </div>
@@ -132,12 +170,12 @@ function Header_processing({ name, designation}) {
                 </a>
               </div>
             </div>
-            <Processing_notification/>
+            <Processing_notification />
             <div
               style={{ display: "flex", alignItems: "center" }}
               className="item"
             >
-              
+
             </div>
           </div>
         </div>
