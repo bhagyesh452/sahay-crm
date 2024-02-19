@@ -129,7 +129,8 @@ function Form({
   companysInco,
   employeeName,
   employeeEmail,
-  companyNumber
+  companyNumber,
+
 }) {
   const [unames, setUnames] = useState([]);
   const [checkStat, setCheckStat] = useState(false);
@@ -379,7 +380,7 @@ function Form({
 
   return (
     <div>
-      <Header_processing />
+      <Header_processing  />
       <Navbar_processing />
       <div className="page-wrapper">
         <div className="page-header d-print-none">
