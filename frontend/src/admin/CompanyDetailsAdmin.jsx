@@ -1,14 +1,20 @@
+
 import React, { useState } from "react";
+
+
 import { Link } from "react-router-dom";
+import { FaRegFilePdf } from "react-icons/fa";
 import pdficon from './PDF-icon-1.png';
 import { MdDownload } from "react-icons/md";
 import { FaRegCopy } from "react-icons/fa";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
-
+import PdfImageViewerAdmin from "./PdfViewerAdmin";
+import { pdfjs } from 'react-pdf';
 import {
   Button,
   Dialog,
@@ -21,7 +27,10 @@ import {
   FormControl,
 } from "@mui/material";
 
-
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url,
+).toString();
 
 
 
@@ -45,18 +54,6 @@ const CompanyDetailsAdmin = ({ company }) => {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
 
-
-
-
-  // const handleFileInputChange = (event) => {
-  //   const file = event.target.files[0];
-  //   console.log('File selected:', file);
-  // };
-
-  // Function to handle button click and open popup
-  const handleButtonClick = () => {
-    setIsOpen(true);
-  };
 
   // Function to close the popup
   // const handleClosePopup = () => {
@@ -127,9 +124,13 @@ const CompanyDetailsAdmin = ({ company }) => {
             "incoDate": formatDateFromExcel(row[28]),
             "extraNotes": row[29],
             "otherDocs": row[30],
-            "bookingTime": row[31],
+            "bookingTime": formatTimeFromExcel(row[31]),
           }));
-       setExcelData(formattedJsonData)
+          const newFormattedData = formattedJsonData.filter((obj) => {
+            return obj.companyName !== "" && obj.companyName !== null && obj.companyName !== undefined;
+          });
+       setExcelData(newFormattedData)
+       console.log(newFormattedData)
       };
 
       reader.readAsArrayBuffer(file);
@@ -156,6 +157,19 @@ const CompanyDetailsAdmin = ({ company }) => {
     const parsedData = Papa.parse(data, { header: true });
     return parsedData.data;
   };
+  function formatTimeFromExcel(serialNumber) {
+    // Excel uses a fractional representation for time
+    const totalSeconds = Math.round(serialNumber * 24 * 60 * 60); // Convert days to seconds
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    
+    // Format the time
+    const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    return formattedTime;
+}
+
   function formatDateFromExcel(serialNumber) {
     // Excel uses a different date origin (January 1, 1900)
     const excelDateOrigin = new Date(Date.UTC(1900, 0, 0));
@@ -172,11 +186,10 @@ const CompanyDetailsAdmin = ({ company }) => {
     // Create a Date object using the calculated milliseconds
     const formattedDate = new Date(dateMilliseconds);
 
-    // Format the date as needed (you can use a library like 'date-fns' or 'moment' for more options)
-    // const formattedDateString = formattedDate.toISOString().split('T')[0];
-
+   
     return formattedDate;
   }
+
 
   const transformedData = excelData.map(item => ({
     "Company Name": item.companyName,
@@ -189,11 +202,36 @@ const CompanyDetailsAdmin = ({ company }) => {
     Status:"Matured"
     // Add other fields as needed
   }));
+  
   const handleSubmit = async () => {
     try {
-      await axios.post(`${secretKey}/upload/lead-form`, excelData);
+      
+      const response = await axios.post(`${secretKey}/upload/lead-form`, excelData);
       await axios.post(`${secretKey}/leads`, transformedData)
-      Swal.fire('File uploaded successfully.');
+      console.log(response.data.successCounter , response.data.errorCounter)
+      if (response.data.errorCounter === 0){
+        Swal.fire({
+          title: "Success!",
+          html: `
+          <b> ${response.data.errorCounter} </b> Duplicate Entries found!,
+          </br>
+          <small>${response.data.successCounter} Data Added </small>
+        `,
+          icon: "success",
+        });
+      }else{
+        Swal.fire({
+          title: "Data Already exists!",
+          html: `
+          <b> ${response.data.errorCounter} </b> Duplicate Entries found!,
+          </br>
+          <small>${response.data.successCounter} Data Added </small>
+        `,
+          icon: "info",
+        });
+
+      }
+     
     } catch (error) {
       console.error(error);
       Swal.fire('Error uploading file.');
@@ -212,7 +250,7 @@ const CompanyDetailsAdmin = ({ company }) => {
     console.log(pathname);
     window.open(`${secretKey}/otherpdf/${pathname}`, "_blank");
   }
-
+// console.log(company.paymentReceipt)
   const copyToClipboard = (value) => {
     navigator.clipboard.writeText(value)
 
@@ -241,27 +279,13 @@ const CompanyDetailsAdmin = ({ company }) => {
           <div>
             <h3 class="card-title">Booking Details</h3>
           </div>
-          <div >
+          <div className="buttons d-flex align-items-center justify-content-around" style={{gap:"5px"}}>
+          <div>
             <button
-              className="btn btn-primary" style={{ marginLeft: "50px !important" }} onClick={functionopenpopup}>
+              className="btn btn-primary"  onClick={functionopenpopup}>
               + Import CSV
             </button>
           </div>
-          {/* {isOpen && (
-            <div className="popup">
-              <div className="popup-inner">
-                <h2>Upload CSV or Excel File</h2>
-                <input
-                  type="file"
-                  accept=".csv, .xlsx, .xls"
-                  onChange={handleFileInputChange}
-                />
-                <IoIosCloseCircleOutline onClick={handleClosePopup} style={{width:"22px" , height:"22px"}} />
-                
-              </div>
-            </div>
-          )} */}
-          
             <div>
               <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
                 <DialogTitle>
@@ -284,7 +308,7 @@ const CompanyDetailsAdmin = ({ company }) => {
                           Upload CSV File
                         </label>
                       </div>
-                      <a href={frontendKey + "/AdminSample.xlsx"} download>
+                      <a href={frontendKey + "/BulkBookingFormat.xlsx"} download>
                         Download Sample
                       </a>
                     </div>
@@ -307,7 +331,6 @@ const CompanyDetailsAdmin = ({ company }) => {
                 </button>
               </Dialog>
             </div>
-          
           <div>
             <Link to='/admin/bookings/Addbookings'>
               <button
@@ -315,6 +338,7 @@ const CompanyDetailsAdmin = ({ company }) => {
                 Add Booking
               </button>
             </Link>
+          </div>
           </div>
         </div>
       </div>
@@ -327,9 +351,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">BDE Name :</div>
                 <div className="fields-view-value">{company.bdeName}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bdeName})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bdeName}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" ,cursor:"pointer" }} />
                   </span>
                 </div>
               </div>
@@ -338,9 +362,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">BDE Email :</div>
                 <div className="fields-view-value">{company.bdeEmail}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bdeEmail})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bdeEmail}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px", cursor:"pointer" }} />
                   </span>
                 </div>
               </div>
@@ -351,9 +375,9 @@ const CompanyDetailsAdmin = ({ company }) => {
                 <div className="fields-view-title">BDM Name :</div>
                 <div className="fields-view-value" id="bdmNameValue">
                   {`${company.bdmName}(${company.bdmType})`}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bdmName}(${company.bdmType})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bdmName}(${company.bdmType}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span>
                 </div>
               </div>
@@ -364,9 +388,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">BDM Email :</div>
                 <div className="fields-view-value">{company.bdmEmail}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bdmEmail})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bdmEmail}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer"}} />
                   </span>
                 </div>
               </div>
@@ -377,9 +401,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Booking Date :</div>
                 <div className="fields-view-value">{formatDatelatest(company.bookingDate)}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bookingDate})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${formatDatelatest(company.bookingDate)}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span>
                 </div>
               </div>
@@ -388,9 +412,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Booking Time :</div>
                 <div className="fields-view-value">{company.bookingTime}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bookingTime})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bookingTime}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span></div>
               </div>
             </div>)}
@@ -406,9 +430,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Ca Case :</div>
                 <div className="fields-view-value">{company.caCase}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.caCase})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.caCase}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span></div>
               </div>
             </div>)}
@@ -416,9 +440,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Ca Case :</div>
                 <div className="fields-view-value">{company.caCommission}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.caCommission})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.caCommission}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span>
                 </div>
               </div>
@@ -427,9 +451,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">CA Email :</div>
                 <div className="fields-view-value">{company.caEmail}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.caEmail})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.caEmail}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span></div>
               </div>
             </div>)}
@@ -437,9 +461,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">CA Number :</div>
                 <div className="fields-view-value">{company.caNumber}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.caNumber})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.caNumber}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span></div>
               </div>
             </div>)}
@@ -455,9 +479,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Company Name :</div>
                 <div className="fields-view-value">{company.companyName}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.companyName})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.companyName}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" ,cursor:"pointer"}} />
                   </span>
                 </div>
               </div>
@@ -466,9 +490,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Company Email :</div>
                 <div className="fields-view-value">{company.companyEmail}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.companyEmail})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.companyEmail}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" ,cursor:"pointer" }} />
                   </span></div>
               </div>
             </div>)}
@@ -476,9 +500,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Contact Number :</div>
                 <div className="fields-view-value">{company.contactNumber}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.contactNumber})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.contactNumber}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span>
                 </div>
               </div>
@@ -490,7 +514,7 @@ const CompanyDetailsAdmin = ({ company }) => {
                   {company.services}
                   <span className="copy-icon" onClick={() => copyToClipboard(company.services, 'servicesValue')}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" ,cursor:"pointer"}} />
                   </span>
                 </div>
               </div>
@@ -506,9 +530,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Payment Terms :</div>
                 <div className="fields-view-value">{company.paymentTerms}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.paymentTerms})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.paymentTerms}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span></div>
               </div>
             </div>)}
@@ -516,9 +540,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Payment Method :</div>
                 <div className="fields-view-value">{company.paymentMethod}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.paymentMethod})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.paymentMethod}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span>
                 </div>
               </div>
@@ -527,20 +551,20 @@ const CompanyDetailsAdmin = ({ company }) => {
             {(company.originalTotalPayment || company.originalTotalPayment === " ") && (<div className="col-sm-3">
               <div className="booking-fields-view">
                 <div className="fields-view-title">Original Total Payment :</div>
-                <div className="fields-view-value">{company.originalTotalPayment}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.originalTotalPayment})`)}>
+                <div className="fields-view-value"><span style={{ color: 'black', fontWeight:"bolder",marginRight:"-120px"}}>&#8377;</span>{company.originalTotalPayment}
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.originalTotalPayment}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span></div>
               </div>
             </div>)}
             {(company.totalPayment || company.totalPayment === " ") && (<div className="col-sm-3">
               <div className="booking-fields-view">
                 <div className="fields-view-title">Total Payment :</div>
-                <div className="fields-view-value">{company.totalPayment}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.totalPayment})`)}>
+                <div className="fields-view-value"><span style={{ color: 'black', fontWeight:"bolder",marginRight:"-120px"}}>&#8377;</span>{company.totalPayment}
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.totalPayment}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" ,cursor:"pointer"}} />
                   </span></div>
               </div>
             </div>)}
@@ -549,40 +573,40 @@ const CompanyDetailsAdmin = ({ company }) => {
             {(company.firstPayment || company.firstPayment === " ") && (<div className="col-sm-3">
               <div className="booking-fields-view">
                 <div className="fields-view-title">First Payment :</div>
-                <div className="fields-view-value">{company.firstPayment}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.firstPayment})`)}>
+                <div className="fields-view-value"><span style={{ color: 'black', fontWeight:"bolder",marginRight:"-120px"}}>&#8377;</span>{company.firstPayment}
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.firstPayment}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span></div>
               </div>
             </div>)}
             {(company.secondPayment || company.secondPayment === " ") && (<div className="col-sm-3">
               <div className="booking-fields-view">
                 <div className="fields-view-title">Second Payment :</div>
-                <div className="fields-view-value">{company.secondPayment}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.secondPayment})`)}>
+                <div className="fields-view-value"><span style={{ color: 'black', fontWeight:"bolder",marginRight:"-120px"}}>&#8377;</span>{company.secondPayment}
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.secondPayment}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" ,cursor:"pointer"}} />
                   </span></div>
               </div>
             </div>)}
             {(company.thirdPayment || company.thirdPayment === " ") && (<div className="col-sm-3">
               <div className="booking-fields-view">
                 <div className="fields-view-title">Third Payment :</div>
-                <div className="fields-view-value">{company.thirdPayment}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.thirdPayment})`)}>
+                <div className="fields-view-value"><span style={{ color: 'black', fontWeight:"bolder",marginRight:"-120px"}}>&#8377;</span>{company.thirdPayment}
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.thirdPayment}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" ,cursor:"pointer"}} />
                   </span></div>
               </div>
             </div>)}
             {(company.fourthPayment || company.fourthPayment === " ") && (<div className="col-sm-3">
               <div className="booking-fields-view">
                 <div className="fields-view-title">Fourth Payment :</div>
-                <div className="fields-view-value">{company.fourthPayment}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.fourthPayment})`)}>
+                <div className="fields-view-value"><span style={{ color: 'black', fontWeight:"bolder",marginRight:"-120px"}}>&#8377;</span>{company.fourthPayment}
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.fourthPayment}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span></div>
               </div>
             </div>)}
@@ -592,9 +616,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Booking Source :</div>
                 <div className="fields-view-value">{company.bookingSource}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bookingSource})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.bookingSource}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span></div>
               </div>
             </div>)}
@@ -603,9 +627,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Pan or Gst :</div>
                 <div className="fields-view-value">{company.cPANorGSTnum}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.cPANorGSTnum})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.cPANorGSTnum}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" ,cursor:"pointer"}} />
                   </span></div>
               </div>
             </div>)}
@@ -613,9 +637,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Incorporation Date :</div>
                 <div className="fields-view-value">{formatDatelatest(company.incoDate)}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.incoDate})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${formatDatelatest(company.incoDate)}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" ,cursor:"pointer"}} />
                   </span>
                 </div>
               </div>
@@ -624,9 +648,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               <div className="booking-fields-view">
                 <div className="fields-view-title">Extra Notes :</div>
                 <div className="fields-view-value">{company.extraNotes}
-                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.extraNotes})`)}>
+                  <span className="copy-icon" onClick={() => copyToClipboard(`${company.extraNotes}`)}>
                     {/* Replace with your clipboard icon */}
-                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px" }} />
+                    <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px",cursor:"pointer" }} />
                   </span></div>
               </div>
             </div>)}
@@ -638,25 +662,25 @@ const CompanyDetailsAdmin = ({ company }) => {
           <>
             <hr className="m-0 mt-4 mb-2"></hr>
             <section>
-              <div className="d-flex justify-content-between mb-0">
+              <div className="d-flex justify-content-between mb-0 flex-wrap">
                 {company.paymentReceipt && (
-                  <div className="col-sm-3">
-                    <div className="booking-fields-view d-flex align-items-center flex-column">
-                      <div className="fields-view-title mb-2">Payment Receipts :</div>
+                  <div className="col-sm-3 column-width-reciept">
+                    <div className="booking-fields-view d-flex align-items-center flex-column cursor-pointer">
+                      <div className="fields-view-title mb-2 mt-2">Payment Receipts :</div>
                       <div
                         className="custom-image-div d-flex"
                         onClick={() => {
                           handleViewPdfReciepts(company.paymentReceipt);
                         }}
                       >
-                        <img src={pdficon} alt="pdficon" />
+                        {/* <img src={pdficon} alt="pdficon" /> */}
 
-                        {/* <PdfViewer pdfPath={pdfPath} />  */}
+                         <PdfImageViewerAdmin type="paymentrecieptpdf" path={company.paymentReceipt} />
+                         
 
-                        <div className="d-flex aling-items-center justify-content-center download-attachments">
-
-                          <MdDownload style={{ width: "19px", height: "27px" }} />
-                          <h3>Reciept</h3>
+                        <div className="d-flex align-items-center justify-content-center download-attachments cursor-pointer">
+                        <div className="pdf-div">Pdf</div>
+                          <div style={{overflow:"hidden" , textOverflow:"ellipsis" , textWrap:"nowrap"}} >Reciept</div>
                         </div>
                       </div>
                     </div>
@@ -665,19 +689,21 @@ const CompanyDetailsAdmin = ({ company }) => {
                 {company.otherDocs.map((object) => {
                   const originalFilename = object.split('-').slice(1).join('-').replace('.pdf', '');
                   return (
-                    <div className="col-sm-3" key={object}>
-                      <div className="booking-fields-view d-flex align-items-center flex-column">
-                        <div className="fields-view-title mb-2">Attachments</div>
+                    <div className="col-sm-3 column-width-reciept" key={object}>
+                      <div className="booking-fields-view d-flex  align-items-center flex-column cursor-pointer">
+                        <div className="fields-view-title mb-2 mt-2">Attachments</div>
                         <div
-                          className="custom-image-div d-flex"
+                          className="custom-image-div d-flex justify-content-center" 
                           onClick={() => {
                             handleViewPdOtherDocs(object);
                           }}
                         >
-                          <img src={pdficon} alt="pdficon" />
-                          <div className="d-flex aling-items-center justify-content-center download-attachments">
-                            <MdDownload style={{ width: "19px", height: "27px" }} />
-                            <h3>{originalFilename}</h3>
+                          {/* <img src={pdficon} alt="pdficon" /> */}
+                          
+                          <PdfImageViewerAdmin type="pdf" path={object} />
+                          <div className="d-flex align-items-center justify-content-center download-attachments cursor-pointer">
+                           <div className="pdf-div">Pdf</div>
+                            <div title={originalFilename} style={{overflow:"hidden" , textOverflow:"ellipsis" , textWrap:"nowrap"}} >{originalFilename}</div>
                           </div>
                         </div>
                       </div>
@@ -694,3 +720,40 @@ const CompanyDetailsAdmin = ({ company }) => {
 };
 
 export default CompanyDetailsAdmin;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
