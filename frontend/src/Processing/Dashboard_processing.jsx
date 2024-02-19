@@ -51,7 +51,7 @@ function Dashboard_processing() {
       }
   
       // Update the state with both companies and booking dates
-      setCompanies(data);
+      setCompanies(data.reverse());
       setBookingDates(uniqueBookingDates);
       setBookingTime(uniqueBookingTime);
      
