@@ -191,7 +191,6 @@ const CompanyDetailsAdmin = ({ company }) => {
   }));
   const handleSubmit = async () => {
     try {
-      
       await axios.post(`${secretKey}/upload/lead-form`, excelData);
       await axios.post(`${secretKey}/leads`, transformedData)
       Swal.fire('File uploaded successfully.');

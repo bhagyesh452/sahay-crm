@@ -132,6 +132,9 @@ function Form({
   const [checkStat, setCheckStat] = useState(false);
   const [paymentCount, setpaymentCount] = useState(0);
   const [otherName, setotherName] = useState("");
+  const [isDraft, setIsDraft] = useState(false);
+  const [draftValues, setDraftValues] = useState(null);
+  const [tempPayMethod , setTempPayMethod] = useState('');
   const [leadData, setLeadData] = useState({
     // Initialize properties with default values if needed
     bdmName: "",
@@ -175,6 +178,89 @@ function Form({
       console.error("Error fetching data:", error.message);
     }
   };
+  const fetchDraft = async () => {
+    const companyName = matured ? companysName : leadData.companyName;
+    try {
+      // Make API call to fetch draft data for the company name
+      const response = await axios.get(`${secretKey}/drafts-search/${companyName}`);
+      
+      // Check if draft data exists
+      if (response.data) {
+        // Show Swal popup to confirm whether to continue
+        const confirmation = await Swal.fire({
+          title: 'Draft Found!',
+          text: 'Do you want to continue with the draft?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No'
+        });
+  
+        if (confirmation.isConfirmed) {
+          const data = response.data;
+          setIsDraft(true);
+          setDraftValues(response.data);
+          console.log("Draft values:", response.data);
+          setSelectedValues(data.services && data.services.length ? data.services : [])
+          setpaymentCount( data.paymentTerms === "Full Advanced" ? 1 :
+          data.thirdPayment === 0 ? 2 :
+          data.fourthPayment === 0 ? 3 : 4)
+          setLeadData({
+            bdmName: data.bdmName!=="" ? data.bdmName : "" ,
+            bdmEmail: data.bdmEmail!=="" ? data.bdmEmail : "" ,
+            bdmType: data.bdmType!=="" ? data.bdmType : "" ,
+            supportedBy: data.supportedBy!==false ? data.supportedBy : false ,
+            bookingDate: data.bookingDate!==null ? data.bookingDate : null ,
+            caCase: data.caCase!=="" ? data.caCase : 'no' ,
+            caNumber: data.caNumber!==0 ? data.caNumber : 0 ,
+            caEmail: data.caEmail!=="" ? data.caEmail : '' ,
+            caCommission: data.caCommission!=="" ? data.caCommission : '',
+            companyName: data.companyName!=="" ? data.companyName : "",
+            contactNumber: data.contactNumber !== 0 ? data.contactNumber : 0,
+            companyEmail: data.companyEmail !== 0 ? data.companyEmail : 0,
+            services: data.services && data.services.length ? data.services : [],
+            originalTotalPayment: data.originalTotalPayment!== 0 ? data.originalTotalPayment : 0,
+            totalPayment: data.totalPayment!==0 ? data.totalPayment : 0,
+            paymentTerms: data.paymentTerms!=="" ? data.paymentTerms : "Full Advanced",
+            paymentRemarks: data.paymentRemarks !=="" ? data.paymentRemarks : "",
+            paymentMethod: data.paymentMethod!=="" ? data.paymentMethod : "",
+            firstPayment: data.firstPayment!== 0 ? data.firstPayment : 0,
+            secondPayment:data.secondPayment!== 0 ? data.secondPayment : 0,
+            thirdPayment: data.thirdPayment!== 0 ? data.thirdPayment : 0,
+            fourthPayment: data.fourthPayment!== 0 ? data.fourthPayment :0,
+            paymentReciept: null,
+            bookingSource:data.bookingSource!== "" ? data.bookingSource : "",
+            cPANorGSTnum:data.cPANorGSTnum!== 0 ? data.cPANorGSTnum : 0,
+            incoDate: data.incoDate!== 0 ? data.incoDate : null,
+            extraNotes: data.extraNotes!== "" ? data.extraNotes :"",
+            otherDocs: null,
+          })
+        } else {
+          setIsDraft(false);
+          setDraftValues(null);
+        }
+      } else {
+       
+        setIsDraft(false);
+        setDraftValues(null);
+      }
+    } catch (error) {
+      console.error('Error fetching draft:', error);
+    }
+  };
+  
+  useEffect(() => {
+    if (matured) {
+      fetchDraft();
+    }
+  }, [matured]);
+
+  // const fetchDraftDetails = async ()=>{
+  //   try{
+  //     const response = await axios.get(`${secretKey}/get-draft/`)
+  //   }
+  // }
+  console.log(isDraft);
   const handleStatusChange = async (companysId) => {
     const newStatus = "Matured";
     try {
@@ -201,10 +287,12 @@ function Form({
   useEffect(() => {
     fetchData();
   }, []);
+  
   const [selectedValues, setSelectedValues] = useState([]);
 
   const handleSaveDraft = async () => {
-    if (leadData.companyName === "") {
+  
+    if (leadData.companyName === "" && !matured) {
       Swal.fire({ title: "Please Enter Company Name", icon: "warning" });
       return;
     }
@@ -212,6 +300,10 @@ function Form({
       const modifiedLeadData = {
         ...leadData,
         ename: employeeName,
+        companyName: matured ? companysName : leadData.companyName ,
+        contactNumber: matured ? companyNumber : leadData.contactNumber ,
+        companyEmail: matured ? companysEmail : leadData.companyEmail ,
+        services: selectedValues
       };
       const response = await axios.post(`${secretKey}/save-draft`, modifiedLeadData);
       Swal.fire("Draft Saved Successfully");
@@ -234,6 +326,13 @@ function Form({
     } else {
       formData.append("bdmName", leadData.bdmName);
     }
+    
+    if (leadData.paymentMethod === "other") {
+      formData.append("paymentMethod",tempPayMethod );
+    } else {
+      formData.append("paymentMethod", leadData.paymentMethod);
+    }
+
 
     formData.append("bdmEmail", leadData.bdmEmail);
     formData.append("bdmType", leadData.bdmType);
@@ -1218,6 +1317,7 @@ function Form({
                   name="payment-remarks"
                   id="payment-remarks"
                   placeholder="Please add remarks if any"
+                  value={leadData.paymentRemarks}
                   className="form-control"
                   onChange={(e) => {
                     setLeadData((prevLeadData) => ({
@@ -1270,6 +1370,10 @@ function Form({
                   id="other-method"
                   placeholder="Enter Payment Method "
                   className="form-control "
+                  value = {tempPayMethod}
+                  onChange={(e)=>{
+                      setTempPayMethod(e.target.value)
+                  }}  
                 />
               )}
             </div>
@@ -1435,6 +1539,9 @@ function Form({
           Submit
         </button>
       </div>
+
+      {/* Pop Up for Draft savings  */}
+    
     </div>
   );
 }
