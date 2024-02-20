@@ -1311,22 +1311,24 @@ app.post(
         empName,
         empEmail,
         bookingTime,
+        otherDocs ,
+        paymentReceipt
       } = req.body;
       const bdeName = empName;
       const bdeEmail = empEmail;
 
-      const otherDocs =
-        req.files["otherDocs"] && req.files["otherDocs"].length > 0
-          ? req.files["otherDocs"].map((file) => file.filename)
-          : [];
+      // const otherDocs =
+      //   req.files["otherDocs"] && req.files["otherDocs"].length > 0
+      //     ? req.files["otherDocs"].map((file) => file.filename)
+      //     : [];
 
-      const extraDocuments = req.files["otherDocs"];
-      const paymentDoc = req.files["paymentReceipt"];
+      // const extraDocuments = req.files["otherDocs"];
+      // const paymentDoc = req.files["paymentReceipt"];
       
-      const paymentReceipt = req.files["paymentReceipt"]
-        ? req.files["paymentReceipt"][0].filename
-        : null; // Array of files for 'file2'
-
+      // const paymentReceipt = req.files["paymentReceipt"]
+      //   ? req.files["paymentReceipt"][0].filename
+      //   : null; // Array of files for 'file2'
+   
       // Your processing logic here
 
       const employee = new BookingsRequestModel({
@@ -1562,6 +1564,47 @@ app.post("/api/upload/lead-form", async (req, res) => {
     // If an error occurs at the outer try-catch block, handle it here
     console.error("Error saving employees:", error.message);
     res.status(500).json({ error: "Internal Server Error", errorCounter });
+  }
+});
+app.post('/api/accept-booking-request/:companyName', async (req, res) => {
+  const companyName = req.params.companyName;
+  const requestData = req.body;
+
+  try {
+    // Find the data to be moved from BookingsRequestModel
+
+    // Update leadModel data with data from BookingsRequestModel
+    const { _id, ...updatedData } = requestData;
+
+    // Update leadModel data with data from BookingsRequestModel
+    const updatedLead = await LeadModel.findOneAndUpdate(
+      { companyName },
+      { $set: updatedData },
+      { new: true }
+    );
+
+    // Delete the data from BookingsRequestModel
+    await BookingsRequestModel.findOneAndDelete({ companyName });
+
+    // Send success response with the updated lead data
+    res.status(200).json(updatedLead);
+  } catch (error) {
+    console.error('Error accepting booking request:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+app.get('/api/drafts-search/:companyName', async (req, res) => {
+  const companyName = req.params.companyName;
+
+  try {
+    // Find draft data for the company name
+    const draft = await DraftModel.findOne({ companyName });
+
+    // Send the draft data as response
+    res.status(200).json(draft);
+  } catch (error) {
+    console.error('Error fetching draft:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 

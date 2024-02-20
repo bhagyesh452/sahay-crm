@@ -10,16 +10,18 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Link } from "react-router-dom";
 import "../../src/assets/styles.css";
 // import "./styles/table.css";
-
+import{ Drawer } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
 import LoginDetails from "../components/LoginDetails";
 import Nodata from "../components/Nodata";
+import EditForm from "../components/EditForm";
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 function EmployeeParticular() {
   const { id } = useParams();
   const [openAssign, openchangeAssign] = useState(false);
+  const [openAnchor, setOpenAnchor] = useState(false)
   const [openRemarks, openchangeRemarks] = useState(false);
   const [openlocation, openchangelocation] = useState(false);
   const [loginDetails, setLoginDetails] = useState([]);
@@ -40,6 +42,8 @@ function EmployeeParticular() {
   const [selectedField, setSelectedField] = useState("Company Name");
   const [newempData, setnewEmpData] = useState([]);
   const [openLogin, setOpenLogin] = useState(false);
+  const [openCSV, openchangeCSV] = useState(false);
+  const [maturedCompanyName, setMaturedCompanyName] = useState("");
 
   const [month, setMonth] = useState(0);
   // const [updateData, setUpdateData] = useState({});
@@ -73,7 +77,12 @@ function EmployeeParticular() {
       console.error("Error fetching employee details:", error.message);
     }
   };
-
+  const functionopenAnchor = () => {
+    setOpenAnchor(true);
+  };
+  const closeAnchor = () => {
+    setOpenAnchor(false);
+  };
   // Function to fetch new data based on employee name
   const fetchNewData = async () => {
     try {
@@ -917,6 +926,7 @@ function EmployeeParticular() {
                           <th>Incorporation Date</th>
                           <th>City</th>
                           <th>State</th>
+                          <th>Assigned On</th>
 
                           {dataStatus === "Matured" && <th>Action</th>}
                         </tr>
@@ -1016,6 +1026,7 @@ function EmployeeParticular() {
                               </td>
                               <td>{company["City"]}</td>
                               <td>{company["State"]}</td>
+                              <td>{formatDate(company["AssignDate"])}</td>
 
                               {dataStatus === "Matured" && (
                                 <td>
@@ -1027,6 +1038,12 @@ function EmployeeParticular() {
                                       // Additional styles for the "View" button
                                     }}
                                     className="btn btn-primary d-none d-sm-inline-block"
+                                    onClick={() => {
+                                      functionopenAnchor();
+                                      setMaturedCompanyName(
+                                        company["Company Name"]
+                                      );
+                                    }}
                                   >
                                     View
                                   </button>
@@ -1312,6 +1329,18 @@ function EmployeeParticular() {
           </div>
         </DialogContent>
       </Dialog>
+
+
+      {/* View Bookings Page */}
+      <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
+        <div className="container-xl">
+          <div className="header d-flex justify-content-between">
+            <h1 className="title">LeadForm</h1>
+           
+          </div>
+          <EditForm companysName={maturedCompanyName}/>
+        </div>
+      </Drawer>
     </div>
   );
 }

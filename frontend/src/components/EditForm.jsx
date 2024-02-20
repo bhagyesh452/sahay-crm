@@ -167,7 +167,7 @@ function EditForm({
     otherDocs: companyData.otherDocs,
   });
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-
+console.log(companyData)
   const fetchCompanyDetails = async () => {
     try {
       const response = await axios.get(`${secretKey}/company/${companysName}`);
@@ -237,7 +237,7 @@ function EditForm({
     fetchData();
     fetchCompanyDetails();
   }, []);
-  console.log(companyData);
+ 
 
   const handleSubmitForm = async () => {
     const currentTime = new Date();
@@ -295,7 +295,7 @@ function EditForm({
         formData.append("otherDocs", companyData.otherDocs[i]);
       }
     }
-    formData.append("paymentReceipt", companyData.paymentReciept);
+    formData.append("paymentReceipt", companyData.paymentReceipt);
 
     try {
       if (

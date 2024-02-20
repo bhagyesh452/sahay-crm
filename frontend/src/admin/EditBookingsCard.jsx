@@ -73,7 +73,30 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
     }
 
   }
+  const handleAcceptRequest = async () => {
+    try {
+      // Make API call to move data from BookingsRequestModel to leadModel
+      const response = await axios.post(`${secretKey}/accept-booking-request/${company.companyName}` , company);
+  
+      // Show success message
+      Swal.fire({
+        title: 'Booking Updated Successfully!',
+        icon: 'success'
+      });
+  
+    } catch (error) {
+      // Show error message if request fails
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to Update Booking. Please try again later.',
+        icon: 'error'
+      });
+      console.error('Error accepting request:', error);
+    }
+  };
 
+
+ 
   return (
     <div>
       <Box sx={{ minWidth: 275, width: "28vw" }} className="col">
@@ -97,7 +120,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
 
               <div className="d-flex justify-content-between">
                 <Typography color="text.secondary">
-                  {date ? date : "dd/mm/yyyy"}
+                  {date ? formatDatelatest(date) : "dd/mm/yyyy"}
                 </Typography>
                 <Typography color="text.secondary">
                   {time ? time : "hh:mm"}
@@ -399,16 +422,16 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
           </div>
           <div className="col request-form">
             <DialogTitle>Requested Form</DialogTitle>
-            {company !== null && (
+            {company !== null && companyReal !== null && (
               <DialogContent>
                 <div className="row" style={{ fontSize: "5px" }}>
                   {company.length !== 0 && (
                     <div className="col">
                       <div className="booking-fields-view">
                         <div className="fields-view-title">BDM Name :</div>
-                        <div className="fields-view-value" id="bdmNameAnother">
+                        <div style={{backgroundColor :company.bdmName !== companyReal.bdmName || company.bdmType !== companyReal.bdmType && "Yellow" }} className="fields-view-value" id="bdmNameAnother">
                           {`${company.bdmName}(${company.bdmType})`}
-                          <span className="copy-icon"></span>
+                          
                         </div>
                       </div>
                     </div>
@@ -416,7 +439,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                   <div className="col">
                     <div className="booking-fields-view">
                       <div className="fields-view-title">BDM Email :</div>
-                      <div className="fields-view-value">
+                      <div style={{backgroundColor :company.bdmEmail !== companyReal.bdmEmail && "Yellow" }} className="fields-view-value">
                         {company.bdmEmail}
                       </div>
                     </div>
@@ -435,7 +458,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                   <div className="col">
                     <div className="booking-fields-view">
                       <div className="fields-view-title">Booking Date :</div>
-                      <div className="fields-view-value">
+                      <div style={{backgroundColor :formatDatelatest(company.bookingDate) !== formatDatelatest(companyReal.bookingDate) && "Yellow" }}  className="fields-view-value">
                         {formatDatelatest(company.bookingDate)}
                       </div>
                     </div>
@@ -446,7 +469,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                   <div className="col-sm-3">
                     <div className="booking-fields-view">
                       <div className="fields-view-title">Ca Case :</div>
-                      <div className="fields-view-value">{company.caCase}</div>
+                      <div style={{backgroundColor :company.caCase !== companyReal.caCase && "Yellow" }}  className="fields-view-value">{company.caCase}</div>
                     </div>
                   </div>
                   {(company.caCommission || company.caCommission !== "") && (
@@ -456,7 +479,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                           <div className="fields-view-title">
                             Ca Commission :
                           </div>
-                          <div className="fields-view-value">
+                          <div style={{backgroundColor :company.caCommission !== companyReal.caCommission && "Yellow" }}  className="fields-view-value">
                             {company.caCommission}
                           </div>
                         </div>
@@ -465,7 +488,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                       <div className="col-sm-3">
                         <div className="booking-fields-view">
                           <div className="fields-view-title">CA Email :</div>
-                          <div className="fields-view-value">
+                          <div style={{backgroundColor :company.caEmail !== companyReal.caEmail && "Yellow" }}  className="fields-view-value">
                             {company.caEmail}
                           </div>
                         </div>
@@ -474,7 +497,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                       <div className="col-sm-3">
                         <div className="booking-fields-view">
                           <div className="fields-view-title">CA Number :</div>
-                          <div className="fields-view-value">
+                          <div style={{backgroundColor :company.caNumber !== companyReal.caNumber && "Yellow" }}  className="fields-view-value">
                             {company.caNumber}
                           </div>
                         </div>
@@ -487,7 +510,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                   <div className="col">
                     <div className="booking-fields-view">
                       <div className="fields-view-title">Company Name :</div>
-                      <div className="fields-view-value">
+                      <div style={{backgroundColor :company.companyName !== companyReal.companyName && "Yellow" }}  className="fields-view-value">
                         {company.companyName}
                       </div>
                     </div>
@@ -495,7 +518,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                   <div className="col">
                     <div className="booking-fields-view">
                       <div className="fields-view-title">Company Email :</div>
-                      <div className="fields-view-value">
+                      <div style={{backgroundColor :company.companyEmail !== companyReal.companyEmail && "Yellow" }}  className="fields-view-value">
                         {company.companyEmail}
                       </div>
                     </div>
@@ -503,7 +526,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                   <div className="col">
                     <div className="booking-fields-view">
                       <div className="fields-view-title">Contact Number :</div>
-                      <div className="fields-view-value">
+                      <div style={{backgroundColor :company.contactNumber !== companyReal.contactNumber && "Yellow" }}  className="fields-view-value">
                         {company.contactNumber}
                       </div>
                     </div>
@@ -512,9 +535,9 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                 <div className="row">
                   <div className="col">
                     <div className="booking-fields-view" id="fieldValue">
-                      <div className="fields-view-title">Services :</div>
-                      <div className="fields-view-value" id="servicesValue">
-                        {company.services}
+                      <div   className="fields-view-title">Services :</div>
+                      <div style={{backgroundColor :company.services[0] !== companyReal.services[0] && "Yellow" }} className="fields-view-value" id="servicesValue">
+                        {company.services} 
                       </div>
                     </div>
                   </div>
@@ -524,7 +547,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                   <div className="col">
                     <div className="booking-fields-view">
                       <div className="fields-view-title">Payment Terms :</div>
-                      <div className="fields-view-value">
+                      <div  style={{backgroundColor :company.paymentTerms !== companyReal.paymentTerms && "Yellow" }} className="fields-view-value">
                         {company.paymentTerms}
                       </div>
                     </div>
@@ -636,7 +659,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                   <div className="col">
                     <div className="booking-fields-view">
                       <div className="fields-view-title">Extra Notes :</div>
-                      <div className="fields-view-value">
+                      <div style={{backgroundColor :company.extraNotes !== companyReal.extraNotes && "Yellow" }} className="fields-view-value">
                         {company.extraNotes}
                       </div>
                     </div>
@@ -662,6 +685,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
                       color: "#ffffff !important",
                     },
                   }}
+                  onClick={handleAcceptRequest}
                 >
                   Accept
                 </button>
