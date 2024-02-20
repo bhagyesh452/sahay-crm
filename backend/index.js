@@ -1559,6 +1559,7 @@ app.post("/api/upload/lead-form", async (req, res) => {
     }
 
     // Respond with success and error counters
+  
     res.status(200).json({ message: "Data sent successfully", successCounter, errorCounter });
   } catch (error) {
     // If an error occurs at the outer try-catch block, handle it here
@@ -1818,6 +1819,46 @@ app.get('/api/paymentrecieptpdf/:filename', (req, res) => {
     }
   });
 });
+
+// app.get('/api/paymentrecieptpdf/:filename', (req, res) => {
+//   const filename = req.params.filename;
+//   const filePath = path.join(__dirname, 'documents', filename);
+
+//   // Check if the file exists
+//   fs.access(filePath, fs.constants.F_OK, (err) => {
+//     if (err) {
+//       console.error('File not found:', err);
+//       res.status(404).send('File not found');
+//       return;
+//     }
+
+//     // Determine the content type based on the file extension
+//     let contentType;
+//     const fileExt = path.extname(filePath).toLowerCase();
+//     switch (fileExt) {
+//       case '.pdf':
+//         contentType = 'application/pdf';
+//         break;
+//       case '.jpg':
+//       case '.jpeg':
+//         contentType = 'image/jpeg';
+//         break;
+//       case '.png':
+//         contentType = 'image/png';
+//         break;
+//       default:
+//         contentType = 'application/octet-stream';
+//     }
+
+    // Set the response headers
+//     res.setHeader('Content-Type', contentType);
+//     res.setHeader('Content-Disposition', `inline; filename=${filename}`);
+//     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+
+//     // Send the file
+//     res.sendFile(filePath);
+//   });
+// });
 
 app.get("/api/recieptpdf/:filename", (req, res) => {
   const filepath = req.params.filename;
