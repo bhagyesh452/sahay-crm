@@ -10,7 +10,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Link } from "react-router-dom";
 import "../../src/assets/styles.css";
 // import "./styles/table.css";
-import{ Drawer } from "@mui/material";
+import { Drawer } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
 import LoginDetails from "../components/LoginDetails";
@@ -21,7 +21,7 @@ const secretKey = process.env.REACT_APP_SECRET_KEY;
 function EmployeeParticular() {
   const { id } = useParams();
   const [openAssign, openchangeAssign] = useState(false);
-  const [openAnchor, setOpenAnchor] = useState(false)
+  const [openAnchor, setOpenAnchor] = useState(false);
   const [openRemarks, openchangeRemarks] = useState(false);
   const [openlocation, openchangelocation] = useState(false);
   const [loginDetails, setLoginDetails] = useState([]);
@@ -90,7 +90,13 @@ function EmployeeParticular() {
         `${secretKey}/employees/${employeeName}`
       );
 
-      setmoreEmpData(response.data);
+      // Sort the data by AssignDate property
+      const sortedData = response.data.sort((a, b) => {
+        // Assuming AssignDate is a string representation of a date
+        return new Date(b.AssignDate) - new Date(a.AssignDate);
+      });
+
+      setmoreEmpData(sortedData);
       setEmployeeData(
         response.data.filter(
           (obj) =>
@@ -221,11 +227,10 @@ function EmployeeParticular() {
   // }, [employeeName]);
 
   const [selectedRows, setSelectedRows] = useState([]);
-  const handleCheckboxChange = (id) => {
+  const handleCheckboxChange = (id, event) => {
     // If the id is 'all', toggle all checkboxes
     if (id === "all") {
       // If all checkboxes are already selected, clear the selection; otherwise, select all
-
       setSelectedRows((prevSelectedRows) =>
         prevSelectedRows.length === filteredData.length
           ? []
@@ -234,14 +239,36 @@ function EmployeeParticular() {
     } else {
       // Toggle the selection status of the row with the given id
       setSelectedRows((prevSelectedRows) => {
-        if (prevSelectedRows.includes(id)) {
-          return prevSelectedRows.filter((rowId) => rowId !== id);
-        } else {
-          return [...prevSelectedRows, id];
+        // If the Ctrl key is pressed
+        if (event.ctrlKey) {
+          console.log("pressed");
+          const selectedIndex = filteredData.findIndex((row) => row._id === id);
+          const lastSelectedIndex = filteredData.findIndex((row) =>
+            prevSelectedRows.includes(row._id)
+          );
+
+          // Select rows between the last selected row and the current row
+          if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
+            const start = Math.min(selectedIndex, lastSelectedIndex);
+            const end = Math.max(selectedIndex, lastSelectedIndex);
+            const idsToSelect = filteredData
+              .slice(start, end + 1)
+              .map((row) => row._id);
+
+            return prevSelectedRows.includes(id)
+              ? prevSelectedRows.filter((rowId) => !idsToSelect.includes(rowId))
+              : [...prevSelectedRows, ...idsToSelect];
+          }
         }
+
+        // Toggle the selection status of the row with the given id
+        return prevSelectedRows.includes(id)
+          ? prevSelectedRows.filter((rowId) => rowId !== id)
+          : [...prevSelectedRows, id];
       });
     }
   };
+
   // const [employeeSelection, setEmployeeSelection] = useState("Select Employee");
   const [newemployeeSelection, setnewEmployeeSelection] =
     useState("Not Alloted");
@@ -280,86 +307,61 @@ function EmployeeParticular() {
   const handleUploadData = async (e) => {
     console.log("Uploading data");
 
+    const currentDate = new Date().toLocaleDateString();
+    const currentTime = new Date().toLocaleTimeString();
+
     const csvdata = employeeData
       .filter((employee) => selectedRows.includes(employee._id))
       .map((employee) => ({ ...employee, Status: "Untouched" }));
-    const currentDate = new Date().toLocaleDateString();
-    const currentTime = new Date().toLocaleTimeString();
-    // Create a new array of objects with desired properties
-    const newArray = csvdata.map((data) => ({
-      date: currentDate,
-      time: currentTime,
-      ename: newemployeeSelection,
-      companyName: data["Company Name"], // Assuming companyName is one of the existing properties in updatedCsvdata
-    }));
+
+    // Create an array to store promises for updating CompanyModel
+    const updatePromises = [];
+
+    for (const data of csvdata) {
+      const updatedObj = {
+        ...data,
+        date: currentDate,
+        time: currentTime,
+        ename: newemployeeSelection,
+        companyName: data["Company Name"],
+      };
+
+      // Add the promise for updating CompanyModel to the array
+      updatePromises.push(
+        axios.post(`${secretKey}/assign-new`, {
+          newemployeeSelection,
+          data: updatedObj,
+        })
+      );
+    }
 
     try {
-      await axios.post(`${secretKey}/employee-history`, newArray);
-      // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
-      console.log("Employee Changed!");
+      // Wait for all update promises to resolve
+      await Promise.all(updatePromises);
+      console.log("Employee data updated!");
+
+      // Clear the selection
       setnewEmployeeSelection("Not Alloted");
+
+      Swal.fire({
+        title: "Data Sent!",
+        text: "Data sent successfully!",
+        icon: "success",
+      });
+
+      // Fetch updated employee details and new data
+      fetchEmployeeDetails();
+      fetchNewData();
+      closepopupAssign();
     } catch (error) {
-      console.log("Error:", error);
+      console.error("Error updating employee data:", error);
+
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to update employee data. Please try again later.",
+        icon: "error",
+      });
     }
-    for (const obj of csvdata) {
-      try {
-        const response = await axios.post(`${secretKey}/assign-new`, {
-          newemployeeSelection,
-          csvdata,
-        });
-        console.log("Data posted successfully");
-      } catch (err) {
-        console.log("Internal server Error", err);
-      }
-    }
-    Swal.fire({
-      title: "Data Send!",
-      text: "Data sent successfully!",
-      icon: "success",
-    });
-    fetchEmployeeDetails();
-    fetchNewData();
-    closepopupAssign();
-    //  for (const obj of csvdata) {
-    //   if (!obj.ename && obj.ename !== "Not Alloted") {
-    // try {
-    //   const response = await axios.post(`${secretKey}/company`, {
-    //     newemployeeSelection,
-    //     csvdata,
-    //   });
-    //   console.log("Data posted successfully");
-    // } catch (err) {
-    //   console.log("Internal server Error", err);
-    // }
-    //   } else {
-    //     const userConfirmed = window.confirm(
-    //       `Data is already assigned to: ${obj.ename}. Do you want to continue?`
-    //     );
-
-    //     if (userConfirmed) {
-    //       try {
-    //         const response = await axios.post(`${secretKey}/postData`, {
-    //           newemployeeSelection,
-    //           csvdata,
-    //         });
-    //         window.location.reload();
-    //         console.log("Data posted successfully");
-    //       } catch (err) {
-    //         console.log("Internal server Error", err);
-    //       }
-    //     } else {
-    //       console.log("User canceled the assignation.");
-    //     }
-    //   }
-    // }
-
-    // setLoading(false); // Move setLoading outside of the loop
-
-    // Swal.fire({
-    //   title: "Data Send!",
-    //   text: "Data successfully sent to the Employee",
-    //   icon: "success",
-    // });
   };
 
   console.log(loginDetails);
@@ -476,6 +478,99 @@ function EmployeeParticular() {
                       </div>
                     </div>
                   )}
+                  <div className="form-control mr-2 sort-by">
+                    <label htmlFor="sort-by">Sort By:</label>
+                    <select
+                      style={{
+                        border: "none",
+                        outline: "none",
+                        color: "#666a66",
+                      }}
+                      name="sort-by"
+                      id="sort-by"
+                      onChange={(e) => {
+                        const selectedOption = e.target.value;
+
+                        switch (selectedOption) {
+                          case "Busy":
+                          case "Untouched":
+                          case "Not Picked Up":
+                            setdataStatus("All");
+                            setEmployeeData(
+                              moreEmpData
+                                .filter((data) =>
+                                  [
+                                    "Busy",
+                                    "Untouched",
+                                    "Not Picked Up",
+                                  ].includes(data.Status)
+                                )
+                                .sort((a, b) => {
+                                  if (a.Status === selectedOption) return -1;
+                                  if (b.Status === selectedOption) return 1;
+                                  return 0;
+                                })
+                            );
+                            break;
+                          case "Interested":
+                            setdataStatus("Interested");
+                            setEmployeeData(
+                              moreEmpData
+                                .filter((data) => data.Status === "Interested")
+                                .sort((a, b) =>
+                                  a.AssignDate.localeCompare(b.AssignDate)
+                                )
+                            );
+                            break;
+                          case "Not Interested":
+                            setdataStatus("NotInterested");
+                            setEmployeeData(
+                              moreEmpData
+                                .filter((data) =>
+                                  ["Not Interested", "Junk"].includes(
+                                    data.Status
+                                  )
+                                )
+                                .sort((a, b) =>
+                                  a.AssignDate.localeCompare(b.AssignDate)
+                                )
+                            );
+                            break;
+                          case "FollowUp":
+                            setdataStatus("FollowUp");
+                            setEmployeeData(
+                              moreEmpData
+                                .filter((data) => data.Status === "FollowUp")
+                                .sort((a, b) =>
+                                  a.AssignDate.localeCompare(b.AssignDate)
+                                )
+                            );
+                            break;
+                          default:
+                            // No filtering if default option selected
+                            setdataStatus("All");
+                            setEmployeeData(
+                              moreEmpData.sort((a, b) => {
+                                if (a.Status === selectedOption) return -1;
+                                if (b.Status === selectedOption) return 1;
+                                return 0;
+                              })
+                            );
+                            break;
+                        }
+                      }}
+                    >
+                      <option value="" disabled selected>
+                        Select Status
+                      </option>
+                      <option value="Untouched">Untouched</option>
+                      <option value="Busy">Busy</option>
+                      <option value="Not Picked Up">Not Picked Up</option>
+                      <option value="FollowUp">Follow Up</option>
+                      <option value="Interested">Interested</option>
+                      <option value="Not Interested">Not Interested</option>
+                    </select>
+                  </div>
                   <Link
                     to={`/admin/employees/${id}/login-details`}
                     style={{ marginLeft: "10px" }}
@@ -606,15 +701,37 @@ function EmployeeParticular() {
                         value={searchText}
                         onChange={(e) => {
                           setSearchText(e.target.value);
+                          // Set dataStatus based on selected option
+                          if (
+                            e.target.value === "All" ||
+                            e.target.value === "Busy" ||
+                            e.target.value === "Not Picked Up"
+                          ) {
+                            setdataStatus("All");
+                          } else if (
+                            e.target.value === "Junk" ||
+                            e.target.value === "Not Interested"
+                          ) {
+                            setdataStatus("NotInterested");
+                          } else if (e.target.value === "Interested") {
+                            setdataStatus("Interested");
+                          } else if (e.target.value === "Untouched") {
+                            setEmployeeData(
+                              moreEmpData.filter(
+                                (obj) => obj.Status === "Untouched"
+                              )
+                            );
+                          }
                         }}
                         className="form-select"
                       >
-                        <option value="All">All </option>
-                        <option value="Busy">Busy </option>
-                        <option value="Not Picked Up">Not Picked Up </option>
+                        <option value="All">All</option>
+                        <option value="Busy">Busy</option>
+                        <option value="Not Picked Up">Not Picked Up</option>
                         <option value="Junk">Junk</option>
                         <option value="Interested">Interested</option>
                         <option value="Not Interested">Not Interested</option>
+                        <option value="Untouched">Untouched</option>
                       </select>
                     </div>
                   )}
@@ -934,7 +1051,7 @@ function EmployeeParticular() {
                       {currentData.length === 0 ? (
                         <tbody>
                           <tr>
-                            <td colSpan="10" className="p-2">
+                            <td colSpan="11" className="p-2">
                               <Nodata />
                             </td>
                           </tr>
@@ -962,9 +1079,9 @@ function EmployeeParticular() {
                                 <input
                                   type="checkbox"
                                   checked={selectedRows.includes(company._id)}
-                                  onChange={() =>
-                                    handleCheckboxChange(company._id)
-                                  }
+                                  onChange={(e) =>
+                                    handleCheckboxChange(company._id, e)
+                                  } // Pass the event object
                                   onMouseDown={() =>
                                     handleMouseDown(company._id)
                                   }
@@ -1330,15 +1447,13 @@ function EmployeeParticular() {
         </DialogContent>
       </Dialog>
 
-
       {/* View Bookings Page */}
       <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
         <div className="container-xl">
           <div className="header d-flex justify-content-between">
             <h1 className="title">LeadForm</h1>
-           
           </div>
-          <EditForm companysName={maturedCompanyName}/>
+          <EditForm companysName={maturedCompanyName} />
         </div>
       </Drawer>
     </div>

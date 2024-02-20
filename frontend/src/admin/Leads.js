@@ -594,44 +594,41 @@ function Leads() {
     const selectedObjects = data.filter((row) =>
       selectedRows.includes(row._id)
     );
+  
+    // Check if no data is selected
     if (selectedObjects.length === 0) {
       Swal.fire("Empty Data!");
       closepopupEmp();
+      return; // Exit the function early if no data is selected
     }
-
-    for (const obj of selectedObjects) {
-      if (!obj.ename || obj.ename === "Not Alloted") {
-        handleAssignData();
-        setEmployeeSelection("");
-      } else {
-        // If ename is present, show a confirmation dialog
-        console.log(obj.ename);
-        const userConfirmed = window.confirm(
-          `Data is already assigned to: ${obj.ename}. Do you want to continue?`
-        );
-
-        if (userConfirmed) {
-          // If user confirms, perform the assignation
-          handleAssignData();
-        } else {
-          // If user cancels, you can handle it as needed (e.g., show a message)
-          console.log("User canceled the assignation.");
-        }
-      }
+  
+    const alreadyAssignedData = selectedObjects.filter(
+      (obj) => obj.ename && obj.ename !== "Not Alloted"
+    );
+  
+    // If all selected data is not already assigned, proceed with assignment
+    if (alreadyAssignedData.length === 0) {
+      handleAssignData();
+      return; // Exit the function after handling assignment
+    }
+  
+    // If some selected data is already assigned, show confirmation dialog
+    const userConfirmed = window.confirm(
+      `Some data is already assigned. Do you want to continue?`
+    );
+  
+    if (userConfirmed) {
+      handleAssignData();
+    } else {
+      console.log("User canceled the assignation.");
     }
   };
-
+  
   const handleAssignData = async () => {
-    // // Find the selected employee object
-    const selectedObjects = data.filter((row) =>
-      selectedRows.includes(row._id)
-    );
-    // console.log(selectedObjects, employeeSelection);
-
     try {
       const response = await axios.post(`${secretKey}/postData`, {
         employeeSelection,
-        selectedObjects,
+        selectedObjects: data.filter((row) => selectedRows.includes(row._id)),
       });
       Swal.fire("Data Assigned");
       fetchData();
@@ -640,68 +637,8 @@ function Leads() {
       console.log("Internal server Error", err);
       Swal.fire("Error Assigning Data");
     }
-
-    // const selectedempData = selectedRows.find(
-    //   (employee) => employee.ename === employeeSelection
-    // );
-    // const selectedData = data.filter((row) => selectedRows.includes(row._id));
-
-    // Check if an employee is selected
-    // if (!selectedEmployee) {
-    //   console.warn("No employee selected");
-    //   return;
-    // }
-
-    // try {
-    //   // Map the selected data to the format expected by the backend
-    //   const formattedSelectedData = selectedData.map((row) => ({
-    //     "Company Name": row["Company Name"],
-    //     "Company Number": row["Company Number"],
-    //     "Company Email": row["Company Email"],
-    //     "Company Incorporation Date  ": row["Company Incorporation Date  "],
-    //     City: row.City,
-    //     State: row.State,
-    //   }));
-
-    //   // Check for duplicates in company names or numbers
-    //   const existingCompanyNames = new Set();
-    //   const existingCompanyNumbers = new Set();
-
-    //   formattedSelectedData.forEach((row) => {
-    //     if (existingCompanyNames.has(row["Company Name"]) || existingCompanyNumbers.has(row["Company Number"])) {
-    //       // Duplicate found, perform your action
-    //       functionopenpopupConf();
-    //       console.log("Duplicate data found");
-    //       return;
-    //     }
-
-    //   });
-
-    //   // Make a PUT request using Axios to update the value on the backend
-    //   const response = await axios.put(
-    //     `${secretKey}/neweinfo/${selectedEmployee._id}`,
-    //     {
-    //       cInfo: formattedSelectedData,
-    //     }
-    //   );
-
-    //   if (response.status === 200) {
-    //     const updatedData = response.data.updatedData;
-    //     console.log(`Value assigned to ${updatedData._id}`);
-    //     window.location.reload();
-
-    //     // Optionally, you can update the state or trigger a re-fetch of the data
-    //     // based on your application's requirements.
-    //   } else {
-    //     console.error("Error updating data:", response.statusText);
-    //     Swal.fire("Data Already exist");
-    //   }
-    // } catch (error) {
-    //   functionopenpopupConf();
-
-    //   console.error("Error updating data:", error.message);
-    // }
   };
+  
 
   // const handleAssignData = async () => {
   //   // Find the selected employee object

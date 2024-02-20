@@ -259,16 +259,37 @@ app.post("/api/update-remarks/:id", async (req, res) => {
   const { Remarks } = req.body;
 
   try {
-    // Update the status field in the database based on the employee id
+    // Update remarks and fetch updated data in a single operation
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
 
-    res.status(200).json({ message: "Remarks updated successfully" });
+    // Fetch updated data and remarks history
+    const updatedCompany = await CompanyModel.findById(id);
+    const remarksHistory = await RemarksHistory.find({ companyId: id });
+
+    res.status(200).json({ updatedCompany, remarksHistory });
   } catch (error) {
-    console.error("Error updating status:", error);
+    console.error("Error updating remarks:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
+app.delete('/api/remarks-delete/:companyId', async (req, res) => {
+  const { companyId } = req.params;
+  
+  try {
+    // Find the company by companyId and update the remarks field
+    const updatedCompany = await CompanyModel.findByIdAndUpdate(companyId, { Remarks: "No Remarks Added" }, { new: true });
+
+    if (!updatedCompany) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    res.status(200).json({ message: "Remarks deleted successfully", updatedCompany });
+  } catch (error) {
+    console.error("Error deleting remarks:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 app.post("/api/einfo", async (req, res) => {
   try {
     adminModel.create(req.body).then((respond) => {
@@ -464,27 +485,24 @@ app.delete("/api/delete-data/:ename", async (req, res) => {
 });
 
 app.post("/api/assign-new", async (req, res) => {
-  const { newemployeeSelection, csvdata } = req.body;
-  // Check if data is already assigned
-  // if (selectedObjects.every((obj) => obj.ename === employeeSelection)) {
-  //   return res.status(400).json({ error: `Data is already assigned to ${employeeSelection}` });
-  // }
+  const { newemployeeSelection, data } = req.body;
 
-  // If not assigned, post data to MongoDB or perform any desired action
-  const updatePromises = csvdata.map((obj) => {
-    // Add AssignData property with the current date
+  try {
+    // Add AssignDate property with the current date
     const updatedObj = {
-      ...obj,
+      ...data,
       ename: newemployeeSelection,
       AssignDate: new Date(),
     };
-    return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
-  });
 
-  // Execute all update promises
-  await Promise.all(updatePromises);
+    // Update CompanyModel for the specific data
+    await CompanyModel.updateOne({ _id: data._id }, updatedObj);
 
-  res.json({ message: "Data posted successfully" });
+    res.status(200).json({ message: "Data updated successfully" });
+  } catch (error) {
+    console.error("Error updating data:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 app.post("/api/company", async (req, res) => {
