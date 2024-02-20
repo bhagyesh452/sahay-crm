@@ -120,7 +120,6 @@
     align-items: center;
     /* justify-content: center; */
     width: 62%;
-    height: auto;
     /* justify-content: space-around; */
     gap: 3px;
     text-transform: capitalize;
@@ -140,7 +139,7 @@
     background-color: #dfdada;
     height: 26px;
     overflow: hidden;
-    margin-top: -80px;
+    margin-top: -32px;
 }
 .pdf-div{
     background-color: #e25353;
