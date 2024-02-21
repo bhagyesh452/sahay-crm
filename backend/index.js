@@ -24,6 +24,8 @@ const EmployeeHistory = require("./models/EmployeeHistory");
 const LoginDetails = require("./models/loginDetails");
 const RequestDeleteByBDE = require("./models/Deleterequestbybde");
 const BookingsRequestModel = require("./models/BookingsEdit");
+const RecentUpdatesModel = require("./models/RecentUpdates");
+
 
 // const http = require('http');
 // const socketIo = require('socket.io');
@@ -57,6 +59,8 @@ app.get("/api", (req, res) => {
   console.log(req.url);
   res.send("hello from backend!");
 });
+
+
 
 app.post("/api/admin/login-admin", async (req, res) => {
   const { username, password } = req.body;
@@ -451,7 +455,7 @@ app.put("/api/einfo/:id", async (req, res) => {
 // Assigning data
 
 app.post("/api/postData", async (req, res) => {
-  const { employeeSelection, selectedObjects } = req.body;
+  const { employeeSelection, selectedObjects, title, date, time } = req.body;
   // If not assigned, post data to MongoDB or perform any desired action
   const updatePromises = selectedObjects.map((obj) => {
     // Add AssignData property with the current date
@@ -463,11 +467,35 @@ app.post("/api/postData", async (req, res) => {
     return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
   });
 
+  // Add the recent update to the RecentUpdatesModel
+  const newUpdate = new RecentUpdatesModel({
+    title: title,
+    date: date,
+    time: time,
+  });
+  await newUpdate.save();
+
   // Execute all update promises
   await Promise.all(updatePromises);
 
   res.json({ message: "Data posted successfully" });
 });
+
+app.get("/api/recent-updates", async (req, res) => {
+  try {
+    // Fetch all data from the RecentUpdatesModel
+    const recentUpdates = await RecentUpdatesModel.find();
+
+    // Send the retrieved data as a response
+    res.status(200).json(recentUpdates);
+  } catch (error) {
+    // Handle any errors that occur during the database query
+    console.error("Error fetching recent updates:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 app.delete("/api/delete-data/:ename", async (req, res) => {
   const { ename } = req.params;
 

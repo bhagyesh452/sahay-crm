@@ -451,3 +451,15 @@ th {
 {
 padding:6px !important;
 }
+
+.recent-updates{
+    height: 50vh;
+    overflow-y: scroll;
+}
+.update-card{
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    box-shadow: 1px 2px 1px #ccc;
+    margin-bottom: 5px;
+}

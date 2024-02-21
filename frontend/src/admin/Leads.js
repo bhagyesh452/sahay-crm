@@ -369,19 +369,22 @@ function Leads() {
         setLoading(true); // Move setLoading outside of the loop
 
         try {
-         const response = await axios.post(`${secretKey}/leads`, updatedCsvdata);
+          const response = await axios.post(
+            `${secretKey}/leads`,
+            updatedCsvdata
+          );
           await axios.post(`${secretKey}/employee-history`, newArray);
           // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
           console.log("Data sent successfully");
           const counter = response.data.counter;
           const successCounter = response.data.sucessCounter;
-          if(counter === 0){
+          if (counter === 0) {
             Swal.fire({
               title: "Data Send!",
               text: "Data successfully sent to the Employee",
               icon: "success",
             });
-          }else{
+          } else {
             Swal.fire({
               title: "Data Already exists!",
               html: `
@@ -392,8 +395,7 @@ function Leads() {
               icon: "info",
             });
           }
-         
-   
+
           fetchData();
           closepopup();
           setnewEmployeeSelection("Not Alloted");
@@ -431,7 +433,6 @@ function Leads() {
           fetchData();
           closepopup();
         } catch (error) {
-         
           console.log("Error:", error);
         }
 
@@ -594,41 +595,49 @@ function Leads() {
     const selectedObjects = data.filter((row) =>
       selectedRows.includes(row._id)
     );
-  
+
     // Check if no data is selected
     if (selectedObjects.length === 0) {
       Swal.fire("Empty Data!");
       closepopupEmp();
       return; // Exit the function early if no data is selected
     }
-  
+
     const alreadyAssignedData = selectedObjects.filter(
       (obj) => obj.ename && obj.ename !== "Not Alloted"
     );
-  
+
     // If all selected data is not already assigned, proceed with assignment
     if (alreadyAssignedData.length === 0) {
       handleAssignData();
       return; // Exit the function after handling assignment
     }
-  
+
     // If some selected data is already assigned, show confirmation dialog
     const userConfirmed = window.confirm(
       `Some data is already assigned. Do you want to continue?`
     );
-  
+
     if (userConfirmed) {
       handleAssignData();
     } else {
       console.log("User canceled the assignation.");
     }
   };
-  
+
   const handleAssignData = async () => {
+    const title = `${selectedRows.length} data assigned to ${employeeSelection}`;
+    const DT = new Date();
+    const date = DT.toLocaleDateString();
+    const time = DT.toLocaleTimeString();
+
     try {
       const response = await axios.post(`${secretKey}/postData`, {
         employeeSelection,
         selectedObjects: data.filter((row) => selectedRows.includes(row._id)),
+        title,
+        date,
+        time,
       });
       Swal.fire("Data Assigned");
       fetchData();
@@ -638,7 +647,6 @@ function Leads() {
       Swal.fire("Error Assigning Data");
     }
   };
-  
 
   // const handleAssignData = async () => {
   //   // Find the selected employee object
