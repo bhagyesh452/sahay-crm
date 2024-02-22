@@ -197,6 +197,36 @@ app.post("/api/employee-history", async (req, res) => {
     console.error("Error in bulk save:", error.message);
   }
 });
+app.get('/api/employee-history/:companyName', async (req, res) => {
+  try {
+    // Extract the companyName from the URL parameter
+    const { companyName } = req.params;
+
+    // Query the database to find all data with matching companyName
+    const employeeHistory = await EmployeeHistory.find({ companyName });
+
+    // Respond with the fetched data
+    res.json(employeeHistory);
+  } catch (error) {
+    // Handle errors
+    console.error('Error fetching employee history:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.get('/api/specific-company/:companyId', async (req, res) => {
+  try {
+    const companyId = req.params.companyId;
+    // Assuming CompanyModel.findById() is used to find a company by its ID
+    const company = await CompanyModel.findById(companyId);
+    if (!company) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+    res.json(company);
+  } catch (error) {
+    console.error('Error fetching company:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 app.post("/api/requestCompanyData", async (req, res) => {
   const csvData = req.body;
 

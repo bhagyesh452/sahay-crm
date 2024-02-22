@@ -30,7 +30,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import Modal from "react-modal";
-import { json } from "react-router-dom";
+import { Link, json } from "react-router-dom";
 import Nodata from "../components/Nodata";
 
 function Leads() {
@@ -1278,7 +1278,7 @@ function Leads() {
         </div>
       )}
 
-      {/* Remarks History Pop up */}
+      {/* Remarks 3 Pop up */}
       <Dialog
         open={openRemarks}
         onClose={closepopupRemarks}
@@ -1887,6 +1887,19 @@ function Leads() {
                                 Delete
                               </DeleteIcon>
                             </IconButton>
+                           <Link to={`/admin/leads/${company._id}`}>
+                          <IconButton>
+                            <IconEye
+                              
+                              style={{
+                                width: "18px",
+                                height: "18px",
+                                color: "#d6a10c",
+                                cursor: "pointer",
+                              }}
+                            />
+                            </IconButton>
+                            </Link> 
                           </td>
                         </tr>
                       </tbody>

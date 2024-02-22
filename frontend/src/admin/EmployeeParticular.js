@@ -46,7 +46,7 @@ function EmployeeParticular() {
   const [openLogin, setOpenLogin] = useState(false);
   const [openCSV, openchangeCSV] = useState(false);
   const [maturedCompanyName, setMaturedCompanyName] = useState("");
-const [companies, setCompanies] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const [month, setMonth] = useState(0);
   // const [updateData, setUpdateData] = useState({});
   const [eData, seteData] = useState([]);
@@ -66,8 +66,8 @@ const [companies, setCompanies] = useState([]);
 
       // Filter the response data to find _id values where designation is "Sales Executive"
       const salesExecutivesIds = response.data
-        .filter(employee => employee.designation === "Sales Executive")
-        .map(employee => employee._id);
+        .filter((employee) => employee.designation === "Sales Executive")
+        .map((employee) => employee._id);
 
       // Set eData to the array of _id values
       seteData(salesExecutivesIds);
@@ -76,7 +76,7 @@ const [companies, setCompanies] = useState([]);
       const selectedEmployee = response.data.find(
         (employee) => employee._id === id
       );
-      
+
       if (selectedEmployee) {
         setEmployeeName(selectedEmployee.ename);
       } else {
@@ -86,7 +86,7 @@ const [companies, setCompanies] = useState([]);
     } catch (error) {
       console.error("Error fetching employee details:", error.message);
     }
-};
+  };
 
   const functionopenAnchor = () => {
     setOpenAnchor(true);
@@ -100,22 +100,26 @@ const [companies, setCompanies] = useState([]);
         try {
           const response = await fetch(`${secretKey}/companies`);
           const data = await response.json();
-          
+
           // Filter and format the data based on employeeName
-          const formattedData = data.filter(entry => entry.bdeName === employeeName || entry.bdmName === employeeName)
-                                      .map(entry => ({
-                                        "Company Name": entry.companyName,
-                                        "Company Number": entry.contactNumber,
-                                        "Company Email": entry.companyEmail,
-                                        "Company Incorporation Date": entry.incoDate,
-                                        City: "NA",
-                                        State: "NA",
-                                        ename: employeeName,
-                                        AssignDate: entry.bookingDate,
-                                        Status: "Matured",
-                                        Remarks: "No Remarks Added"
-                                      }));
-          
+          const formattedData = data
+            .filter(
+              (entry) =>
+                entry.bdeName === employeeName || entry.bdmName === employeeName
+            )
+            .map((entry) => ({
+              "Company Name": entry.companyName,
+              "Company Number": entry.contactNumber,
+              "Company Email": entry.companyEmail,
+              "Company Incorporation Date": entry.incoDate,
+              City: "NA",
+              State: "NA",
+              ename: employeeName,
+              AssignDate: entry.bookingDate,
+              Status: "Matured",
+              Remarks: "No Remarks Added",
+            }));
+
           setCompanies(formattedData);
         } catch (error) {
           console.error("Error fetching companies:", error);
@@ -477,7 +481,6 @@ const [companies, setCompanies] = useState([]);
     setFilteredRemarks([]);
   };
 
-
   const handleChangeUrl = () => {
     const currId = id;
     console.log(eData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
@@ -486,16 +489,16 @@ const [companies, setCompanies] = useState([]);
     const currentIndex = eData.findIndex((itemId) => itemId === currId);
 
     if (currentIndex !== -1) {
-        // Calculate the next index in a circular manner
-        const nextIndex = (currentIndex + 1) % eData.length;
+      // Calculate the next index in a circular manner
+      const nextIndex = (currentIndex + 1) % eData.length;
 
-        // Get the nextId from the eData array
-        const nextId = eData[nextIndex];
-        window.location.replace(`/admin/employees/${nextId}`)
+      // Get the nextId from the eData array
+      const nextId = eData[nextIndex];
+      window.location.replace(`/admin/employees/${nextId}`);
     } else {
-        console.log("Current ID not found in eData array.");
+      console.log("Current ID not found in eData array.");
     }
-}
+  };
   return (
     <div>
       <Header />
@@ -611,6 +614,7 @@ const [companies, setCompanies] = useState([]);
                             );
                             break;
                           case "AssignDate":
+                            setdataStatus("AssignDate");
                             setEmployeeData(
                               moreEmpData.sort((a, b) =>
                                 b.AssignDate.localeCompare(a.AssignDate)
@@ -618,6 +622,7 @@ const [companies, setCompanies] = useState([]);
                             );
                             break;
                           case "Company Incorporation Date  ":
+                            setdataStatus("CompanyIncorporationDate");
                             setEmployeeData(
                               moreEmpData.sort((a, b) =>
                                 b["Company Incorporation Date  "].localeCompare(
@@ -1051,12 +1056,7 @@ const [companies, setCompanies] = useState([]);
                       data-bs-toggle="tab"
                     >
                       <span>Matured </span>
-                      <span className="no_badge">
-                        {
-                          companies
-                            .length
-                        }
-                      </span>
+                      <span className="no_badge">{companies.length}</span>
                     </a>
                   </li>
                   <li class="nav-item">
@@ -1113,15 +1113,17 @@ const [companies, setCompanies] = useState([]);
                     >
                       <thead>
                         <tr className="tr-sticky">
-                          {dataStatus!=="Matured" && <th>
-                            <input
-                              type="checkbox"
-                              checked={
-                                selectedRows.length === filteredData.length
-                              }
-                              onChange={() => handleCheckboxChange("all")}
-                            />
-                          </th>}
+                          {dataStatus !== "Matured" && (
+                            <th>
+                              <input
+                                type="checkbox"
+                                checked={
+                                  selectedRows.length === filteredData.length
+                                }
+                                onChange={() => handleCheckboxChange("all")}
+                              />
+                            </th>
+                          )}
 
                           <th className="th-sticky">Sr.No</th>
                           <th className="th-sticky1">Company Name</th>
@@ -1137,7 +1139,7 @@ const [companies, setCompanies] = useState([]);
                           {dataStatus === "Matured" && <th>Action</th>}
                         </tr>
                       </thead>
-                      { currentData.length !== 0 && dataStatus!=="Matured" && (
+                      {currentData.length !== 0 && dataStatus !== "Matured" && (
                         <tbody>
                           {currentData.map((company, index) => (
                             <tr
@@ -1251,9 +1253,8 @@ const [companies, setCompanies] = useState([]);
                           ))}
                         </tbody>
                       )}
-                      
 
-{dataStatus==="Matured" && companies.length !== 0 && (
+                      {dataStatus === "Matured" && companies.length !== 0 && (
                         <tbody>
                           {companies.map((company, index) => (
                             <tr
@@ -1265,8 +1266,6 @@ const [companies, setCompanies] = useState([]);
                               }
                               style={{ border: "1px solid #ddd" }}
                             >
-                              
-
                               <td className="td-sticky">
                                 {startIndex + index + 1}
                               </td>
@@ -1313,52 +1312,54 @@ const [companies, setCompanies] = useState([]);
                               <td>{company["Company Email"]}</td>
                               <td>
                                 {formatDate(
-                                  company["Company Incorporation Date  "]
+                                  company["Company Incorporation Date"]
                                 )}
                               </td>
                               <td>{company["City"]}</td>
                               <td>{company["State"]}</td>
                               <td>{formatDate(company["AssignDate"])}</td>
 
-                              {dataStatus === "Matured" && (
-                                <td>
-                                  <button
-                                    style={{
-                                      padding: "5px",
-                                      fontSize: "12px",
-                                      backgroundColor: "lightblue",
-                                      // Additional styles for the "View" button
-                                    }}
-                                    className="btn btn-primary d-none d-sm-inline-block"
-                                    onClick={() => {
-                                      functionopenAnchor();
-                                      setMaturedCompanyName(
-                                        company["Company Name"]
-                                      );
-                                    }}
-                                  >
-                                    View
-                                  </button>
-                                </td>
-                              )}
+                              <td>
+                                <button
+                                  style={{
+                                    padding: "5px",
+                                    fontSize: "12px",
+                                    backgroundColor: "lightblue",
+                                    // Additional styles for the "View" button
+                                  }}
+                                  className="btn btn-primary d-none d-sm-inline-block"
+                                  onClick={() => {
+                                    functionopenAnchor();
+                                    setMaturedCompanyName(
+                                      company["Company Name"]
+                                    );
+                                  }}
+                                >
+                                  View
+                                </button>
+                              </td>
                             </tr>
                           ))}
                         </tbody>
                       )}
-                      {currentData.length===0 && dataStatus!=="Matured" &&  <tbody>
+                      {currentData.length === 0 && dataStatus !== "Matured" && (
+                        <tbody>
                           <tr>
                             <td colSpan="11" className="p-2">
                               <Nodata />
                             </td>
                           </tr>
-                        </tbody>}
-                        {companies.length===0 && dataStatus==="Matured" && <tbody>
+                        </tbody>
+                      )}
+                      {companies.length === 0 && dataStatus === "Matured" && (
+                        <tbody>
                           <tr>
                             <td colSpan="11" className="p-2">
                               <Nodata />
                             </td>
                           </tr>
-                        </tbody>}
+                        </tbody>
+                      )}
                     </table>
                   </div>
                   {currentData.length !== 0 && (

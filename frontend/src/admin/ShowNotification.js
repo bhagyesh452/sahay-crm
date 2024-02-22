@@ -252,7 +252,7 @@ function ShowNotification() {
                     />
                   ))}
                 {dataType === "editBookingRequests" &&
-                  editData !== undefined &&
+                  editData.length !== 0 &&
                   editData.map((company) => (
                     <EditBookingsCard
                       date={company.date}

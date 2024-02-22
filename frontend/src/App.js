@@ -19,6 +19,7 @@ import Bookings from "./Processing/Bookings.jsx";
 import Form from "./Processing/Form.jsx";
 import BookingsAdmin from "./admin/BookingsAdmin.jsx";
 import BookingsForm from "./admin/BookingsForm.jsx";
+import CompanyParticular from "./admin/CompanyParticular.jsx";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -63,12 +64,14 @@ function App() {
                 element={<LoginDetails />}
               />
               <Route path="/admin/leads" element={<Leads />} />
+              <Route path = "/admin/leads/:companyId" element={<CompanyParticular/>}/>
               <Route path="/admin/bookings" element={<BookingsAdmin />} />
               <Route
                 path="/admin/notification"
                 element={<ShowNotification />}
               />
               <Route path="/admin/bookings/Addbookings" element = {<BookingsForm/>}/>
+              
             </>
           ) : (
             <Route

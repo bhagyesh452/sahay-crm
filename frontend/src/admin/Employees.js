@@ -245,6 +245,7 @@ function Employees({ onEyeButtonClick }) {
       }
 
       if (isUpdateMode) {
+        
         await axios.put(`${secretKey}/einfo/${selectedDataId}`, dataToSend);
         Swal.fire({
           title: "Name Updated!",

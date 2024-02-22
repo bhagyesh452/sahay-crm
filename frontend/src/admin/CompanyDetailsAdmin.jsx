@@ -26,6 +26,7 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
+import Nodata from "../components/Nodata";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.js',
@@ -342,7 +343,7 @@ const CompanyDetailsAdmin = ({ company }) => {
           </div>
         </div>
       </div>
-      <div className="card-body">
+      {company!== null ?  <div className="card-body">
 
         {/* ------------------------Booking info section------------- */}
         <section>
@@ -716,7 +717,9 @@ const CompanyDetailsAdmin = ({ company }) => {
               </div>
             </section></>
         )}
-      </div>
+      </div> : <div>
+        <Nodata/>
+        </div>}
     </div>
 
   )

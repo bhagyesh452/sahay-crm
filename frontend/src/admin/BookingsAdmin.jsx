@@ -100,9 +100,9 @@ function BookingsAdmin() {
                                 />
                             </div>
                             <div className="col-sm-8">
-                                {companyDetails ? (
+                                
                                     <CompanyDetailsAdmin company={companyDetails} />
-                                ) : null}
+                           
                             </div>
                         </div>
                     </div>
