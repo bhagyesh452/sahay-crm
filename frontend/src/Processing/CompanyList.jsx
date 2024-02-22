@@ -366,7 +366,7 @@ function CompanyList({ companies, onCompanyClick }) {
     // Make a PUT request to mark the company as read
     axios.put(`${secretKey}/read/${company}`)
       .then((response) => {
-        console.log('Company marked as read:', response.data);
+        // console.log('Company marked as read:', response.data);
       })
       .catch((error) => {
         console.error('Error marking company as read:', error);
@@ -381,6 +381,7 @@ function CompanyList({ companies, onCompanyClick }) {
           ? "#ffb900"
           : "white",
       color: state.isDisabled ? "white" : "black",
+
       // Add more styles as needed
     }),
   };
@@ -627,21 +628,7 @@ function CompanyList({ companies, onCompanyClick }) {
               <option value="bookingDate">Booking Date</option>
             </select>
           </div>
-          {searchServices && (<div className="input-icon w-100 d-flex align-items-center justify-content-between">
-            <Select
-              styles={customStyles}
-              isMulti
-              options={options}
-              onChange={(selectedOptions) => {
-                setSelectedValues(
-                  selectedOptions.map((option) => option.value)
-                );
-              }}
-              value={selectedValues.map((value) => ({ value, label: value }))}
-              placeholder="Select Services..."
-         >
-            </Select>
-          </div>)}
+          
           {searchbde && (
             <div className="input-icon w-100 d-flex align-items-center justify-content-between">
               <select
@@ -693,6 +680,32 @@ function CompanyList({ companies, onCompanyClick }) {
             </div>
           )}
         </div>
+        {searchServices && (<div className="input-icon w-100 d-flex align-items-center mt-2 searchServices">
+            <Select
+              styles={{customStyles ,
+                // Add custom styles here
+                container: (provided) => ({
+                  ...provided,
+                  display: 'flex !important',
+                  width: '100%', // Apply display: flex with !important
+                  // Add other custom styles as needed
+                }),
+                // Add other styles as needed
+                // Make sure to include the default styles for other elements
+              }}
+            
+              isMulti
+              options={options}
+              onChange={(selectedOptions) => {
+                setSelectedValues(
+                  selectedOptions.map((option) => option.value)
+                );
+              }}
+              value={selectedValues.map((value) => ({ value, label: value }))}
+              placeholder="Select Services..."
+         >
+            </Select>
+          </div>)}
 
         {dateRangeDisplay && (<div className="input-icon d-flex align-items-center justify-content-between w-100 mt-2 gap-2">
 

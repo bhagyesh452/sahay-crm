@@ -24,6 +24,9 @@ const EmployeeHistory = require("./models/EmployeeHistory");
 const LoginDetails = require("./models/loginDetails");
 const RequestDeleteByBDE = require("./models/Deleterequestbybde");
 const BookingsRequestModel = require("./models/BookingsEdit");
+const json2csv = require('json2csv').parse;
+const fastCsv = require('fast-csv');
+
 
 // const http = require('http');
 // const socketIo = require('socket.io');
@@ -1317,19 +1320,6 @@ app.post(
       const bdeName = empName;
       const bdeEmail = empEmail;
 
-      // const otherDocs =
-      //   req.files["otherDocs"] && req.files["otherDocs"].length > 0
-      //     ? req.files["otherDocs"].map((file) => file.filename)
-      //     : [];
-
-      // const extraDocuments = req.files["otherDocs"];
-      // const paymentDoc = req.files["paymentReceipt"];
-      
-      // const paymentReceipt = req.files["paymentReceipt"]
-      //   ? req.files["paymentReceipt"][0].filename
-      //   : null; // Array of files for 'file2'
-   
-      // Your processing logic here
 
       const employee = new BookingsRequestModel({
         bdeName,
@@ -1382,93 +1372,6 @@ app.post(
 );
 
 // --------------------api for sending excel data on processing dashboard----------------------------
-
-// app.post("/api/upload/lead-form", async (req, res) => {
-//   let counter  = 0;
-//   let errorCounter = 0;
-//   try {
-//     const excelData = req.body; // Assuming req.body is an array of objects
-//     console.log(excelData);
-   
-
-//     // Loop through each object in the array and save it to the database
-//     for (const data of excelData) {
-//       const {
-//         bdeName,
-//         bdeEmail,
-//         bdmName,
-//         bdmEmail,
-//         bdmType,
-//         supportedBy,
-//         bookingDate,
-//         caCase,
-//         caNumber,
-//         caEmail,
-//         caCommission,
-//         companyName,
-//         contactNumber,
-//         companyEmail,
-//         services,
-//         originalTotalPayment,
-//         totalPayment,
-//         paymentTerms,
-//         paymentMethod,
-//         firstPayment,
-//         secondPayment,
-//         thirdPayment,
-//         fourthPayment,
-//         paymentRemarks,
-//         bookingSource,
-//         cPANorGSTnum,
-//         incoDate,
-//         extraNotes,
-//         bookingTime,
-//       } = data;
-
-//       const employee = new LeadModel({
-//         bdeName,
-//         bdeEmail,
-//         bdmName,
-//         bdmEmail,
-//         bdmType,
-//         supportedBy,
-//         bookingDate,
-//         caCase,
-//         caNumber,
-//         caEmail,
-//         caCommission,
-//         companyName,
-//         contactNumber,
-//         companyEmail,
-//         services,
-//         originalTotalPayment,
-//         totalPayment,
-//         paymentTerms,
-//         paymentMethod,
-//         firstPayment,
-//         secondPayment,
-//         thirdPayment,
-//         fourthPayment,
-//         paymentRemarks,
-//         bookingSource,
-//         cPANorGSTnum,
-//         incoDate,
-//         extraNotes,
-//         bookingTime,
-//       });
-
-//       await employee.save();
-      
-//       counter++;
-
-//     }
-//     res.status(200).json({ message: "Data sent successfully",counter});
-//   } catch (error) {
-//     errorCounter++
-//     res.status(500).json({ error: "Internal Server Error" , errorCounter });
-//     console.error("Error saving employee:", error.message);
-//   }
-// });
 
 app.post("/api/upload/lead-form", async (req, res) => {
   let successCounter = 0;
@@ -1820,45 +1723,6 @@ app.get('/api/paymentrecieptpdf/:filename', (req, res) => {
   });
 });
 
-// app.get('/api/paymentrecieptpdf/:filename', (req, res) => {
-//   const filename = req.params.filename;
-//   const filePath = path.join(__dirname, 'documents', filename);
-
-//   // Check if the file exists
-//   fs.access(filePath, fs.constants.F_OK, (err) => {
-//     if (err) {
-//       console.error('File not found:', err);
-//       res.status(404).send('File not found');
-//       return;
-//     }
-
-//     // Determine the content type based on the file extension
-//     let contentType;
-//     const fileExt = path.extname(filePath).toLowerCase();
-//     switch (fileExt) {
-//       case '.pdf':
-//         contentType = 'application/pdf';
-//         break;
-//       case '.jpg':
-//       case '.jpeg':
-//         contentType = 'image/jpeg';
-//         break;
-//       case '.png':
-//         contentType = 'image/png';
-//         break;
-//       default:
-//         contentType = 'application/octet-stream';
-//     }
-
-    // Set the response headers
-//     res.setHeader('Content-Type', contentType);
-//     res.setHeader('Content-Disposition', `inline; filename=${filename}`);
-//     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-
-//     // Send the file
-//     res.sendFile(filePath);
-//   });
-// });
 
 app.get("/api/recieptpdf/:filename", (req, res) => {
   const filepath = req.params.filename;
@@ -1928,6 +1792,190 @@ app.put('/api/read/:companyName', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// ----------------------------apitodownloadcsvfrombooking--------------------------
+app.get('/api/exportdatacsv', async (req, res) => {
+  try {
+    const leads = await LeadModel.find({});
+    const csvData = [];
+
+    // Push the headers as the first row
+    csvData.push([
+      "SR. NO",
+      "BDE NAME",
+      "BDE'S EMAIL ID",
+      "BDM NAME",
+      "BDM'S EMAIL ID",
+      "BDM TYP",
+      "SUPPORTED BY",
+      "BOOKING DATE",
+      "CA CASE? (Yes Or No)",
+      "CA NUMBER",
+      "CA'S EMAIL ID",
+      "CA'S CAMMISSION",
+      "COMPANY NAME",
+      "COMPANY'S NUMBER",
+      "COMPANY'S EMAIL ID",
+      "SERVICES",
+      "TOTAL PAYMENT WITH GST",
+      "TOTAL PAYMENT WITHOUT GST",
+      "PAYMENT TERMS",
+      "PAYMENT METHOD",
+      "FIRST PAYMENT",
+      "SECOND PAYMENT",
+      "THIRD PAYMENT",
+      "FOURTH PAYMENT",
+      "PAYMENT REMARK",
+      "PAYMENT RECEIPT",
+      "BOOKING SOURCE",
+      "COMPANY PAN OR GST NUMBER",
+      "INCORPORATION DATE",
+      "EXTRA NOTES IF ANY",
+      "OTHER DOCS",
+      "BOOKING TIME"
+    ]);
+
+    // Push each lead as a row into the csvData array
+    leads.forEach((lead, index) => {
+      const rowData = [
+        index + 1,
+        lead.bdeName,
+        lead.bdeEmail,
+        lead.bdmName,
+        lead.bdmEmail,
+        lead.bdmType,
+        lead.supportedBy,
+        lead.bookingDate,
+        lead.caCase,
+        lead.caNumber,
+        lead.caEmail,
+        lead.caCommission,
+        lead.companyName,
+        lead.contactNumber,
+        lead.companyEmail,
+        `"${lead.services.join(',')}"`, // Assuming services is an array
+        lead.originalTotalPayment,
+        lead.totalPayment,
+        lead.paymentTerms,
+        lead.paymentMethod,
+        lead.firstPayment,
+        lead.secondPayment,
+        lead.thirdPayment,
+        lead.fourthPayment,
+        lead.paymentRemarks,
+        lead.paymentReceipt,
+        lead.bookingSource,
+        lead.cPANorGSTnum,
+        lead.incoDate,
+        lead.extraNotes,
+        `"${lead.otherDocs.join(',')}"`, // Assuming otherDocs is an array
+        lead.bookingTime
+      ];
+      csvData.push(rowData);
+      console.log("rowData:" , rowData)
+    });
+
+    // Use fast-csv to stringify the csvData array
+    res.setHeader('Content-Type' , 'text/csv')
+    res.setHeader('Content-Disposition' , 'attachment; filename=leads.csv')
+    
+    const csvString = csvData.map(row => row.join(',')).join('\n');
+    // Send response with CSV data
+    // Send response with CSV data
+    res.status(200).end(csvString);
+    console.log(csvString)
+     // Here you're ending the response
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// ------------------------------apitouploaddocsfromprocessingwindow------------------------------
+
+app.post('/api/uploadAttachment/:companyName', upload.fields([
+  { name: "otherDocs", maxCount: 50 },
+  { name: "paymentReceipt", maxCount: 1 },
+]), async (req, res) => {
+  try {
+      const companyName = req.params.companyName;
+
+      // Check if company name is provided
+      if (!companyName) {
+          return res.status(404).send("Company name not provided");
+      }
+
+      // Find the company by its name
+      const company = await LeadModel.findOne({ companyName });
+      console.log(company)
+      // Check if company exists
+      if (!company) {
+          return res.status(404).send("Company not found");
+      }
+
+      // const paymentDoc = req.files["paymentReceipt"];
+
+      // Update the payment receipt field of the company document
+      const paymentReceipt = req.files["paymentReceipt"]
+          ? req.files["paymentReceipt"][0].filename
+          : null;
+      console.log(paymentReceipt)
+      console.log(req.files)
+
+      // Update the payment receipt field in the company document
+      company.paymentReceipt = paymentReceipt;
+      
+      await company.save();
+
+      res.status(200).send('Payment receipt updated successfully!');
+  } catch (error) {
+      console.error('Error updating payment receipt:', error);
+      res.status(500).send('Error updating payment receipt.');
+  }
+});
+
+app.post('/api/uploadotherdocsAttachment/:companyName', upload.fields([
+  { name: "otherDocs", maxCount: 50 },
+  { name: "paymentReceipt", maxCount: 1 },
+]), async (req, res) => {
+  try {
+      const companyName = req.params.companyName;
+
+      // Check if company name is provided
+      if (!companyName) {
+          return res.status(404).send("Company name not provided");
+      }
+
+      // Find the company by its name
+      const company = await LeadModel.findOne({ companyName });
+      console.log(company)
+      // Check if company exists
+      if (!company) {
+          return res.status(404).send("Company not found");
+      }
+
+      // const paymentDoc = req.files["paymentReceipt"];
+
+      // Update the payment receipt field of the company document
+      const newOtherDocs =
+      req.files["otherDocs"] && req.files["otherDocs"].length > 0
+        ? req.files["otherDocs"].map((file) => file.filename)
+        : [];
+
+    // Append new filenames to the existing otherDocs array
+    company.otherDocs = company.otherDocs.concat(newOtherDocs);
+
+      
+      await company.save();
+
+      res.status(200).send('Documents uploaded updated successfully!');
+  } catch (error) {
+      console.error('Error updating payment receipt:', error);
+      res.status(500).send('Error updating payment receipt.');
+  }
+});
+
 
 
 http.listen(3001, function () {
