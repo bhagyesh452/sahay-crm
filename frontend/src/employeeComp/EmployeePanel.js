@@ -20,11 +20,14 @@ import "../assets/table.css";
 import "../assets/styles.css";
 import Nodata from "../components/Nodata.jsx";
 import EditForm from "../components/EditForm.jsx";
+import { useCallback } from "react";
+import debounce from "lodash/debounce";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
+  const [changeRemarks, setChangeRemarks] = useState("");
   const [open, openchange] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [openCSV, openchangeCSV] = useState(false);
@@ -50,6 +53,7 @@ function EmployeePanel() {
   const [updateData, setUpdateData] = useState({});
   const [RequestApprovals, setRequestApprovals] = useState([]);
   const [mapArray, setMapArray] = useState([]);
+  const [currentRemarks, setCurrentRemarks] = useState('');
   const itemsPerPage = 500;
   const [year, setYear] = useState(0);
   const startIndex = currentPage * itemsPerPage;
@@ -75,6 +79,12 @@ function EmployeePanel() {
     setcid(companyID);
     setCstat(companyStatus);
   };
+  const debouncedSetChangeRemarks = useCallback(
+    debounce((value) => {
+      setChangeRemarks(value);
+    }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
+    [] // Empty dependency array to ensure the function is memoized
+  );
 
   const [openNew, openchangeNew] = useState(false);
   const functionopenpopupNew = () => {
@@ -122,7 +132,12 @@ function EmployeePanel() {
     try {
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
-      setmoreEmpData(response.data.reverse());
+      const sortedData = response.data.sort((a, b) => {
+        // Assuming AssignDate is a string representation of a date
+        return new Date(b.AssignDate) - new Date(a.AssignDate);
+      });
+    
+      setmoreEmpData(sortedData);
       setEmployeeData(
         tempData.filter(
           (obj) =>
@@ -356,7 +371,7 @@ function EmployeePanel() {
       if (response.status === 200) {
         // Assuming fetchData is a function to fetch updated employee data
 
-        fetchNewData(newStatus);
+        fetchNewData();
 
         // if(newStatus==="Interested"){
         //   setdataStatus("Interested");
@@ -383,14 +398,21 @@ function EmployeePanel() {
     }));
   };
 
-  const handleDeleteRemarks = async (remarks_id) => {
+  const handleDeleteRemarks = async (remarks_id , remarks_value) => {
+    const mainRemarks = remarks_value === currentRemarks ? true : false;
+    console.log(mainRemarks)
+    const companyId = cid;
     console.log("Deleting Remarks with", remarks_id);
     try {
       // Send a delete request to the backend to delete the item with the specified ID
       await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
+      if(mainRemarks){
+        await axios.delete(`${secretKey}/remarks-delete/${companyId}`)
+      }
       // Set the deletedItemId state to trigger re-fetching of remarks history
       Swal.fire("Remarks Deleted");
       fetchRemarksHistory();
+      fetchNewData(cstat);
     } catch (error) {
       console.error("Error deleting remarks:", error);
     }
@@ -399,13 +421,14 @@ function EmployeePanel() {
     return updateData[companyId]?.isButtonEnabled || false;
   };
 
-  const [changeRemarks, setChangeRemarks] = useState("");
-
   const handleUpdate = async () => {
     // Now you have the updated Status and Remarks, perform the update logic
     console.log(cid, cstat, changeRemarks);
     const Remarks = changeRemarks;
-
+    if (Remarks === "") {
+      Swal.fire({ title: "Empty Remarks!", icon: "warning" });
+      return true;
+    }
     try {
       // Make an API call to update the employee status in the database
       const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
@@ -421,7 +444,7 @@ function EmployeePanel() {
       // Check if the API call was successful
       if (response.status === 200) {
         Swal.fire("Remarks updated!");
-
+        setChangeRemarks("");
         // If successful, update the employeeData state or fetch data again to reflect changes
         fetchNewData(cstat);
         fetchRemarksHistory();
@@ -849,6 +872,27 @@ function EmployeePanel() {
                             value={searchText}
                             onChange={(e) => {
                               setSearchText(e.target.value);
+                              // Set dataStatus based on selected option
+                              if (
+                                e.target.value === "All" ||
+                                e.target.value === "Busy" ||
+                                e.target.value === "Not Picked Up"
+                              ) {
+                                setdataStatus("All");
+                              } else if (
+                                e.target.value === "Junk" ||
+                                e.target.value === "Not Interested"
+                              ) {
+                                setdataStatus("NotInterested");
+                              } else if (e.target.value === "Interested") {
+                                setdataStatus("Interested");
+                              } else if (e.target.value === "Untouched") {
+                                setEmployeeData(
+                                  moreEmpData.filter(
+                                    (obj) => obj.Status === "Untouched"
+                                  )
+                                );
+                              }
                             }}
                             className="form-select"
                           >
@@ -862,6 +906,7 @@ function EmployeePanel() {
                             <option value="Not Interested">
                               Not Interested
                             </option>
+                            <option value="Untouched">Untouched</option>
                           </select>
                         </div>
                       ) : (
@@ -886,6 +931,105 @@ function EmployeePanel() {
                       style={{ display: "flex", alignItems: "center" }}
                       className="feature2"
                     >
+                      <div className="form-control mr-2 sort-by">
+                        <label htmlFor="sort-by">Sort By:</label>
+                        <select
+                          style={{
+                            border: "none",
+                            outline: "none",
+                            color: "#666a66",
+                          }}
+                          name="sort-by"
+                          id="sort-by"
+                          onChange={(e) => {
+                            const selectedOption = e.target.value;
+
+                            switch (selectedOption) {
+                              case "Busy":
+                              case "Untouched":
+                              case "Not Picked Up":
+                                setdataStatus("All");
+                                setEmployeeData(
+                                  moreEmpData
+                                    .filter((data) =>
+                                      [
+                                        "Busy",
+                                        "Untouched",
+                                        "Not Picked Up",
+                                      ].includes(data.Status)
+                                    )
+                                    .sort((a, b) => {
+                                      if (a.Status === selectedOption)
+                                        return -1;
+                                      if (b.Status === selectedOption) return 1;
+                                      return 0;
+                                    })
+                                );
+                                break;
+                              case "Interested":
+                                setdataStatus("Interested");
+                                setEmployeeData(
+                                  moreEmpData
+                                    .filter(
+                                      (data) => data.Status === "Interested"
+                                    )
+                                    .sort((a, b) =>
+                                      a.AssignDate.localeCompare(b.AssignDate)
+                                    )
+                                );
+                                break;
+                              case "Not Interested":
+                                setdataStatus("NotInterested");
+                                setEmployeeData(
+                                  moreEmpData
+                                    .filter((data) =>
+                                      ["Not Interested", "Junk"].includes(
+                                        data.Status
+                                      )
+                                    )
+                                    .sort((a, b) =>
+                                      a.AssignDate.localeCompare(b.AssignDate)
+                                    )
+                                );
+                                break;
+                              case "FollowUp":
+                                setdataStatus("FollowUp");
+                                setEmployeeData(
+                                  moreEmpData
+                                    .filter(
+                                      (data) => data.Status === "FollowUp"
+                                    )
+                                    .sort((a, b) =>
+                                      a.AssignDate.localeCompare(b.AssignDate)
+                                    )
+                                );
+                                break;
+                              default:
+                                // No filtering if default option selected
+                                setdataStatus("All");
+                                setEmployeeData(
+                                  moreEmpData.sort((a, b) => {
+                                    if (a.Status === selectedOption) return -1;
+                                    if (b.Status === selectedOption) return 1;
+                                    return 0;
+                                  })
+                                );
+                                break;
+                            }
+                          }}
+                        >
+                          <option value="" disabled selected>
+                            Select Status
+                          </option>
+                          <option value="Untouched">Untouched</option>
+                          <option value="Busy">Busy</option>
+                          <option value="Not Picked Up">Not Picked Up</option>
+                          <option value="FollowUp">Follow Up</option>
+                          <option value="Interested">Interested</option>
+                          <option value="Not Interested">Not Interested</option>
+                        </select>
+                      </div>
+
                       {selectedField === "State" && (
                         <div style={{ width: "15vw" }} className="input-icon">
                           <span className="input-icon-addon">
@@ -1312,28 +1456,50 @@ function EmployeePanel() {
                                         )
                                       }
                                     >
-                                      <option value="Untouched">
-                                        Untouched{" "}
-                                      </option>
-                                      {dataStatus === "Interested" && (
-                                        <option value="FollowUp">
-                                          Follow Up{" "}
-                                        </option>
-                                      )}
-                                      <option value="Busy">Busy </option>
+                                      
                                       <option value="Not Picked Up">
                                         Not Picked Up
                                       </option>
-                                      <option value="Junk">Junk</option>
-                                      <option value="Interested">
-                                        Interested
-                                      </option>
-                                      {dataStatus === "FollowUp" && (
-                                        <option value="Matured">Matured</option>
-                                      )}
-                                      <option value="Not Interested">
+                                      <option value="Busy">Busy </option>
+                                     
+                                     <option value="Junk">Junk</option>
+                                     <option value="Not Interested">
                                         Not Interested
                                       </option>
+                                      {dataStatus==="All" && (
+                                        <>
+                                       
+                                        <option value="Untouched">
+                                        Untouched{" "}
+                                      </option>
+                                         <option value="Interested">
+                                         Interested
+                                       </option>
+                                       </>
+                                      )}
+
+                                      {dataStatus === "Interested" && (
+                                        <>
+                                          <option value="Interested">
+                                         Interested
+                                       </option>
+                                        <option value="FollowUp">
+                                          Follow Up{" "}
+                                        </option>
+                                         <option value="Matured">Matured</option>
+                                         </>
+                                      )}
+                                    
+                                   
+                                      {dataStatus === "FollowUp" && (
+                                        <>
+                                         <option value="FollowUp">
+                                         Follow Up{" "}
+                                       </option>
+                                        <option value="Matured">Matured</option>
+                                        </>
+                                      )}
+                                      
                                     </select>
                                   )}
                                 </td>
@@ -1356,17 +1522,20 @@ function EmployeePanel() {
                                         : company.Remarks}
                                     </p>
 
-                                    <IconButton>
+                                    <IconButton
+                                      onClick={() => {
+                                        functionopenpopupremarks(
+                                          company._id,
+                                          company.Status
+                                        );
+                                        setCurrentRemarks(company.Remarks)
+                                        setCompanyId(company._id)
+                                      }}
+                                    >
                                       <EditIcon
                                         style={{
                                           width: "12px",
                                           height: "12px",
-                                        }}
-                                        onClick={() => {
-                                          functionopenpopupremarks(
-                                            company._id,
-                                            company.Status
-                                          );
                                         }}
                                       />
                                     </IconButton>
@@ -1693,7 +1862,7 @@ function EmployeePanel() {
             {filteredRemarks.length !== 0 ? (
               filteredRemarks
                 .slice()
-                .reverse()
+
                 .map((historyItem) => (
                   <div className="col-sm-12" key={historyItem._id}>
                     <div className="card RemarkCard position-relative">
@@ -1709,7 +1878,7 @@ function EmployeePanel() {
                               width: "14px ",
                             }}
                             onClick={() => {
-                              handleDeleteRemarks(historyItem._id);
+                              handleDeleteRemarks(historyItem._id , historyItem.remarks);
                             }}
                           />
                         </div>
@@ -1733,11 +1902,11 @@ function EmployeePanel() {
             <div class="mb-3 remarks-input">
               <textarea
                 placeholder="Add Remarks Here...  "
-                class="form-control"
+                className="form-control"
                 id="remarks-input"
                 rows="3"
                 onChange={(e) => {
-                  setChangeRemarks(e.target.value);
+                  debouncedSetChangeRemarks(e.target.value);
                 }}
               ></textarea>
             </div>
@@ -1901,15 +2070,16 @@ function EmployeePanel() {
         <div className="container-xl">
           <div className="header d-flex justify-content-between">
             <h1 className="title">LeadForm</h1>
-          
             <IconButton>
-            <EditIcon onClick={()=>{
-              setIsEdit(true)
-            }} color="primary"></EditIcon>
-          </IconButton>{" "}
-           
+              <EditIcon
+                onClick={() => {
+                  setIsEdit(true);
+                }}
+                color="primary"
+              ></EditIcon>
+            </IconButton>{" "}
           </div>
-          <EditForm  matured={isEdit} companysName={maturedCompanyName} />
+          <EditForm matured={isEdit} companysName={maturedCompanyName} />
         </div>
       </Drawer>
     </div>
