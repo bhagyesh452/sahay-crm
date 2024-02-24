@@ -12,6 +12,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import Select from "react-select";
 import Swal from "sweetalert2";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
@@ -22,9 +23,23 @@ import Nodata from "../components/Nodata.jsx";
 import EditForm from "../components/EditForm.jsx";
 import { useCallback } from "react";
 import debounce from "lodash/debounce";
+import { options } from "../components/Options.js";
+
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
+  const [isEditProjection, setIsEditProjection] = useState(false);
+  const [projectingCompany, setProjectingCompany] = useState("")
+  const [projectionData, setProjectionData] = useState([]);
+  const [currentProjection, setCurrentProjection] = useState({
+    companyName:'',
+    ename:"",
+    offeredPrize:0,
+    offeredServices:[],
+    lastFollowUpdate: '' ,
+    date:'',
+    time:'',
+  });
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
   const [changeRemarks, setChangeRemarks] = useState("");
@@ -33,6 +48,7 @@ function EmployeePanel() {
   const [openCSV, openchangeCSV] = useState(false);
   const [openRemarks, openchangeRemarks] = useState(false);
   const [openAnchor, setOpenAnchor] = useState(false);
+  const [openProjection, setOpenProjection] = useState(false);
   const [data, setData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -54,6 +70,7 @@ function EmployeePanel() {
   const [RequestApprovals, setRequestApprovals] = useState([]);
   const [mapArray, setMapArray] = useState([]);
   const [companies, setCompanies] = useState([]);
+  const [selectedValues, setSelectedValues] = useState([]);
   const [currentRemarks, setCurrentRemarks] = useState("");
   const itemsPerPage = 500;
   const [year, setYear] = useState(0);
@@ -61,13 +78,50 @@ function EmployeePanel() {
   const endIndex = startIndex + itemsPerPage;
   const { userId } = useParams();
   console.log(userId);
+  const customStyles = {
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected
+        ? "blue"
+        : state.isDisabled
+        ? "#ffb900"
+        : "white",
+      color: state.isDisabled ? "white" : "black",
+      // Add more styles as needed
+    }),
+  };
 
   const functionopenpopup = () => {
     openchange(true);
   };
+  const functionopenprojection = (comName) => {
+    setProjectingCompany(comName);
+    setOpenProjection(true);
+    const findOneprojection = projectionData.length !== 0 && projectionData.find(item => item.companyName === comName);
+    if (findOneprojection) {
+      setCurrentProjection({        
+          companyName:findOneprojection.companyName,
+          ename:findOneprojection.ename,
+          offeredPrize:findOneprojection.offeredPrize,
+          offeredServices:findOneprojection.offeredServices,
+          lastFollowUpdate: findOneprojection.lastFollowUpdate ,
+          date:'',
+          time:'',
+      });
+      setSelectedValues(findOneprojection.offeredServices);
+    } else {
+      setIsEditProjection(true);
+    }
+  };
+  
+  const closeProjection = () => {
+    setOpenProjection(false);
+  };
   const functionopenAnchor = () => {
     setOpenAnchor(true);
   };
+
+
   const [cid, setcid] = useState("");
   const [cstat, setCstat] = useState("");
   const functionopenpopupremarks = (companyID, companyStatus) => {
@@ -127,6 +181,14 @@ function EmployeePanel() {
       console.error("Error fetching data:", error.message);
     }
   };
+  const fetchProjections = async()=>{
+    try{
+      const response = await axios.get(`${secretKey}/projection-data`);
+      setProjectionData(response.data);
+    }catch(error){
+      console.error("Error fetching Projection Data:" , error.message);
+    }
+  }
   const [moreEmpData, setmoreEmpData] = useState([]);
 
   const fetchNewData = async (status) => {
@@ -224,6 +286,7 @@ function EmployeePanel() {
 
   useEffect(() => {
     fetchData();
+
   }, [userId]);
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
@@ -241,6 +304,7 @@ function EmployeePanel() {
   // const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
     fetchRemarksHistory();
+    fetchProjections();
     // let watchId;
     // const successCallback = (position) => {
     //   const userLatitude = position.coords.latitude;
@@ -387,6 +451,8 @@ function EmployeePanel() {
       console.error("Error updating status:", error.message);
     }
   };
+
+
 
   const handlenewFieldChange = (companyId, value) => {
     setUpdateData((prevData) => ({
@@ -796,6 +862,37 @@ function EmployeePanel() {
   }, [data]);
   console.log(companies);
 
+
+  const handleProjectionSubmit = async () => {
+    try {
+     
+      const finalData = {
+        ...currentProjection,
+        companyName: projectingCompany,
+        ename: data.ename,
+        offeredServices: selectedValues
+      };
+  
+      // Send data to backend API
+      const response = await axios.post(`${secretKey}/update-followup`, finalData);
+      Swal.fire({title:"Projection Submitted!" , icon:'success'});
+      setOpenProjection(false);
+      setCurrentProjection({
+        companyName:'',
+        ename:"",
+        offeredPrize:0,
+        offeredServices:[],
+        lastFollowUpdate: '' ,
+        date:'',
+        time:'',
+      })
+      fetchProjections();
+
+      console.log(response.data); // Log success message
+    } catch (error) {
+      console.error('Error updating or adding data:', error.message);
+    }
+  };
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
@@ -1390,11 +1487,7 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Matured{" "}
-                        <span className="no_badge">
-                          {
-                            companies.length
-                          }
-                        </span>
+                        <span className="no_badge">{companies.length}</span>
                       </a>
                     </li>
                     <li class="nav-item">
@@ -1462,7 +1555,8 @@ function EmployeePanel() {
                             <th>State</th>
                             <th>Assigned Date</th>
 
-                            {dataStatus === "Matured" && <th>Action</th>}
+                            {(dataStatus === "Matured" && <th>Action</th>) ||
+                              (dataStatus === "FollowUp" && <th>Action</th>)}
                           </tr>
                         </thead>
                         {currentData.length !== 0 &&
@@ -1603,7 +1697,7 @@ function EmployeePanel() {
                                   <td>{company["State"]}</td>
                                   <td>{formatDate(company["AssignDate"])}</td>
 
-                                  {dataStatus === "Matured" && (
+                                  {dataStatus === "FollowUp" && (
                                     <td>
                                       <button
                                         style={{
@@ -1614,10 +1708,7 @@ function EmployeePanel() {
                                         }}
                                         className="btn btn-primary d-none d-sm-inline-block"
                                         onClick={() => {
-                                          functionopenAnchor();
-                                          setMaturedCompanyName(
-                                            company["Company Name"]
-                                          );
+                                          functionopenprojection(company["Company Name"]);
                                         }}
                                       >
                                         View
@@ -1664,7 +1755,9 @@ function EmployeePanel() {
                                 </td>
                                 <td>{company["Company Email"]}</td>
                                 <td>
-                                  {formatDate(company["Company Incorporation Date"])}
+                                  {formatDate(
+                                    company["Company Incorporation Date"]
+                                  )}
                                 </td>
                                 <td>{company["City"]}</td>
                                 <td>{company["State"]}</td>
@@ -2219,6 +2312,91 @@ function EmployeePanel() {
             </IconButton>{" "}
           </div>
           <EditForm matured={isEdit} companysName={maturedCompanyName} />
+        </div>
+      </Drawer>
+      {/* Drawer for Follow Up Projection  */}
+      <Drawer anchor="right" open={openProjection} onClose={closeProjection}>
+        <div style={{ width: "31em" }} className="container-xl">
+          <div className="header d-flex justify-content-between">
+            <h1 className="title">Projection Form</h1>
+           {currentProjection.offeredPrize!==0 && <IconButton onClick={()=>{
+            setIsEditProjection(true)
+           }}>
+              <EditIcon color="primary"></EditIcon>
+            </IconButton>}
+          </div>
+          <div className="body-projection">
+            <div className="header">
+              <strong>
+               {projectingCompany}
+              </strong>
+            </div>
+            <div className="label">
+              <strong>Offered Services :</strong>
+              <div className="services mb-3">
+                <Select
+                  styles={customStyles}
+                  isMulti
+                  options={options}
+                  onChange={(selectedOptions) => {
+                    setSelectedValues(
+                      selectedOptions.map((option) => option.value)
+                    );
+                  }}
+                  value={selectedValues.map((value) => ({
+                    value,
+                    label: value,
+                  }))}
+                  placeholder="Select Services..."
+                  disabled={!isEditProjection}
+                />
+              </div>
+            </div>
+            <div className="label">
+              <strong>Offered prizes:</strong>
+              <div className="services mb-3">
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="Please enter offered Prize"
+                  value={currentProjection.offeredPrize}
+                  onChange={(e) => {
+                    setCurrentProjection((prevLeadData) => ({
+                      ...prevLeadData,
+                      offeredPrize: e.target.value,
+                      
+                    }));
+                  }}
+                  disabled={!isEditProjection}
+                />
+              </div>
+            </div>
+            <div className="label">
+              <strong>Last Follow Up Date:</strong>
+              <div className="services mb-3">
+                <input
+                  type="date"
+                  className="form-control"
+                  placeholder="Please enter offered Prize"
+                  value={currentProjection.lastFollowUpdate}
+                  onChange={(e) => {
+                    setCurrentProjection((prevLeadData) => ({
+                      ...prevLeadData,
+                      lastFollowUpdate: e.target.value,
+                      
+                    }));
+                  }}
+                  disabled={!isEditProjection}
+                />
+              </div>
+            </div>
+            <div className="submitBtn">
+            <button   disabled={!isEditProjection} onClick={handleProjectionSubmit} style={{width:'100%'}} type="submit" class="btn btn-primary mb-3">
+              Submit
+            </button>
+            </div>
+            
+          </div>
         </div>
       </Drawer>
     </div>

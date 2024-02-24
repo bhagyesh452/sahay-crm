@@ -115,9 +115,7 @@ function Dashboard_processing() {
                                 />
                             </div>
                             <div className="col-sm-8">
-                                {companyDetails ? (
                                     <CompanyDetails company={companyDetails} />
-                                ) : null}
                             </div>
                         </div>
                     </div>

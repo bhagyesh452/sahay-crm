@@ -19,6 +19,7 @@ import Bookings from "./Processing/Bookings.jsx";
 import Form from "./Processing/Form.jsx";
 import BookingsAdmin from "./admin/BookingsAdmin.jsx";
 import BookingsForm from "./admin/BookingsForm.jsx";
+import Nodata from "./Processing/Nodata.jsx";
 import CompanyParticular from "./admin/CompanyParticular.jsx";
 
 function App() {
@@ -87,6 +88,7 @@ function App() {
           />
           <Route path="/Processing/Dashboard_processing"  element={processingTokenn ? <Dashboard_processing /> : <Navigate to="/processing/processing-login" />} />
           <Route path="/Processing/Dashboard_processing/addbookings" element={<Form/>} /> 
+          <Route path="/Processing/Dashboard_processing/nodata" element={<Nodata/>} /> 
         </Routes>
       </BrowserRouter>
     </div>

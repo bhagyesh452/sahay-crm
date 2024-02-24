@@ -8,11 +8,13 @@ import "../assets/styles.css";
 import { IconPhoneFilled } from "@tabler/icons-react";
 import { IconMailFilled } from "@tabler/icons-react";
 import { IconClockFilled } from "@tabler/icons-react";
+import Nodata from "../components/Nodata";
 
 function CompanyParticular({}) {
   const [employeeHistory, setEmployeeHistory] = useState([]);
   const [companyObject, setCompanyObject] = useState(null);
   const [companyName, setCompanyName] = useState("");
+  const [bookingObject, setBookingObject] = useState(null);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const { companyId } = useParams();
 
@@ -44,9 +46,22 @@ function CompanyParticular({}) {
         );
         // Extract the data from the response
         const data = response.data;
-      
+
         // Set the fetched employee history data to the state
         setEmployeeHistory(data);
+      } catch (error) {
+        console.error("Error fetching employee history:", error);
+      }
+    };
+    const fetchBookingDetails = async () => {
+      try {
+        // Make a GET request to fetch data based on the companyName
+        const response = await axios.get(`${secretKey}/company/${companyName}`);
+        // Extract the data from the response
+        const data = response.data;
+
+        // Set the fetched employee history data to the state
+        setBookingObject(data);
       } catch (error) {
         console.error("Error fetching employee history:", error);
       }
@@ -55,6 +70,7 @@ function CompanyParticular({}) {
     // Call the fetchEmployeeHistory function when the component mounts
     if (companyName !== "") {
       fetchEmployeeHistory();
+      fetchBookingDetails();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -135,62 +151,377 @@ function CompanyParticular({}) {
           </div>
         </div>
       )}
-      {companyObject!== null && <div className="container-xl">
-        <div style={{ width: "fit-content" }} className="card p-2 mt-2">
-          <div className="heading">
-            <h1>Company History</h1>
-          </div>
-          <div className="wrapper">
-            <ul className="StepProgress">
-              <li className="StepProgress-item is-done">
-                <div class="step-content">
-                  <strong>Company Added</strong>
-                  <span class="step-date">Feb 15, 2024</span>
+      <div className="row main-container">
+        <div className="col-sm-4">
+          {companyObject !== null && (
+            <>
+              <div className="card p-2">
+                <div className="heading">
+                  <h1>Company History</h1>
                 </div>
-              </li>
-              <li className="StepProgress-item is-done">
-                <div class="step-content">
-                  {companyObject.ename !== "Not Alloted" ? (
-                    <> {employeeHistory.length!==0 && employeeHistory.map(()=>(
-                        <>
-                        <strong>Company Assigned to {companyObject.ename}</strong>
-                    
-                        <span class="step-date">
-                          {formatDate(companyObject.AssignDate)}
+                <div className="wrapper">
+                  <ul className="StepProgress">
+                    <li className="StepProgress-item is-done">
+                      <div class="step-content">
+                        <strong>Company Added</strong>
+                        <span style={{ marginLeft: "-54px" }} class="step-date">
+                          Feb 15, 2024
                         </span>
-                        </>
-                    )) }
-                      
-                    </>
-                  ) : (
-                    <>
-                      <strong>Company Unassigned</strong>
-                    </>
-                  )}
+                      </div>
+                    </li>
+                    <li className="StepProgress-item is-done">
+                      <div class="step-content">
+                        {companyObject.ename !== "Not Alloted" ? (
+                          <>
+                            {" "}
+                            {employeeHistory.length !== 0 &&
+                              employeeHistory.map(() => (
+                                <>
+                                  <strong>
+                                    Company Assigned to {companyObject.ename}
+                                  </strong>
+
+                                  <span
+                                    style={{ marginLeft: "-54px" }}
+                                    class="step-date"
+                                  >
+                                    {formatDate(companyObject.AssignDate)}
+                                  </span>
+                                </>
+                              ))}
+                          </>
+                        ) : (
+                          <>
+                            <strong>Company Unassigned</strong>
+                          </>
+                        )}
+                      </div>
+                    </li>
+                    <li
+                      className={
+                        companyObject.Status === "Interested"
+                          ? "StepProgress-item current"
+                          : "StepProgress-item"
+                      }
+                    >
+                      <div class="step-content">
+                        <strong>Interested</strong>
+                        <span class="step-date" style={{ marginLeft: "-54px" }}>
+                          Feb 17, 2024
+                        </span>
+                      </div>
+                    </li>
+                    <li className="StepProgress-item">
+                      <div class="step-content">
+                        <strong>Handover</strong>
+                        <span class="step-date" style={{ marginLeft: "-54px" }}>
+                          Feb 18, 2024
+                        </span>
+                      </div>
+                    </li>
+                    <li className="StepProgress-item">
+                      <div class="step-content">
+                        <strong>Provide feedback</strong>
+                        <span class="step-date" style={{ marginLeft: "-54px" }}>
+                          Feb 19, 2024
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
                 </div>
-              </li>
-              <li className={companyObject.Status==="Interested" ? "StepProgress-item current" : "StepProgress-item"}>
-                <div class="step-content">
-                  <strong>Interested</strong>
-                  <span class="step-date">Feb 17, 2024</span>
+              </div>
+            </>
+          )}
+        </div>
+        <div className="col">
+          <div className="bookingDetails card p-2">
+            <div className="heading">
+              <h1>Booking Details</h1>
+            </div>
+            <div className="card-body">
+              {bookingObject === null ? (
+                <div style={{ marginBottom: "28px" }}>
+                  {" "}
+                  <Nodata />{" "}
                 </div>
-              </li>
-              <li className="StepProgress-item">
-                <div class="step-content">
-                  <strong>Handover</strong>
-                  <span class="step-date">Feb 18, 2024</span>
+              ) : (
+                <div>
+                  <div className="row">
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">BDE Name :</div>
+                        <div className="fields-view-value" id="bdmNameReal">
+                          {`${bookingObject.bdmName}`}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">BDE Email :</div>
+                        <div className="fields-view-value" id="bdmNameReal">
+                          {`${bookingObject.bdeEmail})`}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">BDM Name :</div>
+                        <div className="fields-view-value" id="bdmNameReal">
+                          {`${bookingObject.bdmName}(${bookingObject.bdmType})`}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">BDM Email :</div>
+                        <div className="fields-view-value" id="bdmNameReal">
+                          {`${bookingObject.bdmEmail})`}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">Booking Time :</div>
+                        <div className="fields-view-value">
+                          {bookingObject.bookingTime}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">Booking Date :</div>
+                        <div className="fields-view-value">
+                          {formatDate(bookingObject.bookingDate)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <hr className="m-0 mt-2 mb-2"></hr>
+                  <div className="row">
+                    <div className="col-sm-3">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">Ca Case :</div>
+                        <div className="fields-view-value">
+                          {bookingObject.caCase}
+                        </div>
+                      </div>
+                    </div>
+                    {(bookingObject.caCommission ||
+                      bookingObject.caCommission !== "") && (
+                      <>
+                        <div className="col-sm-3">
+                          <div className="booking-fields-view">
+                            <div className="fields-view-title">
+                              Ca commission :
+                            </div>
+                            <div className="fields-view-value">
+                              {bookingObject.caCommission}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="col-sm-3">
+                          <div className="booking-fields-view">
+                            <div className="fields-view-title">CA Email :</div>
+                            <div className="fields-view-value">
+                              {bookingObject.caEmail}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="col-sm-3">
+                          <div className="booking-fields-view">
+                            <div className="fields-view-title">CA Number :</div>
+                            <div className="fields-view-value">
+                              {bookingObject.caNumber}
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <hr className="m-0 mt-2 mb-2"></hr>
+                  <div className="row">
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">Company Name :</div>
+                        <div className="fields-view-value">
+                          {bookingObject.companyName}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">Company Email :</div>
+                        <div className="fields-view-value">
+                          {bookingObject.companyEmail}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">
+                          Contact Number :
+                        </div>
+                        <div className="fields-view-value">
+                          {bookingObject.contactNumber}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col">
+                      <div className="booking-fields-view" id="fieldValue">
+                        <div className="fields-view-title">Services :</div>
+                        <div className="fields-view-value" id="servicesValue">
+                          {bookingObject.services}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <hr className="m-0 mt-2 mb-2"></hr>
+                  <div className="row">
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">Payment Terms :</div>
+                        <div className="fields-view-value">
+                          {bookingObject.paymentTerms}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">
+                          Original Total Payment :
+                        </div>
+                        <div className="fields-view-value">
+                          {bookingObject.originalTotalPayment}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">Total Payment :</div>
+                        <div className="fields-view-value">
+                          {bookingObject.totalPayment}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col">
+                      <div className="booking-fields-view">
+                        <div className="fields-view-title">
+                          Payment Method :
+                        </div>
+                        <div className="fields-view-value">
+                          {bookingObject.paymentMethod}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <hr className="m-0 mt-2 mb-2"></hr>
+                  <div className="row">
+                    {(bookingObject.firstPayment ||
+                      bookingObject.firstPayment === " ") && (
+                      <div className="col-sm-3">
+                        <div className="booking-fields-view">
+                          <div className="fields-view-title">
+                            First Payment :
+                          </div>
+                          <div className="fields-view-value">
+                            {bookingObject.firstPayment}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {(bookingObject.secondPayment ||
+                      bookingObject.secondPayment === " ") && (
+                      <div className="col-sm-3">
+                        <div className="booking-fields-view">
+                          <div className="fields-view-title">
+                            Second Payment :
+                          </div>
+                          <div className="fields-view-value">
+                            {bookingObject.secondPayment}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {(bookingObject.thirdPayment ||
+                      bookingObject.thirdPayment === " ") && (
+                      <div className="col-sm-3">
+                        <div className="booking-fields-view">
+                          <div className="fields-view-title">
+                            Third Payment :
+                          </div>
+                          <div className="fields-view-value">
+                            {bookingObject.thirdPayment}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {(bookingObject.fourthPayment ||
+                      bookingObject.fourthPayment === " ") && (
+                      <div className="col-sm-3">
+                        <div className="booking-fields-view">
+                          <div className="fields-view-title">
+                            Fourth Payment :
+                          </div>
+                          <div className="fields-view-value">
+                            {bookingObject.fourthPayment}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="row">
+                  <div className="col">
+                    <div className="booking-fields-view">
+                      <div className="fields-view-title">Booking Source :</div>
+                      <div className="fields-view-value">
+                        {bookingObject.bookingSource}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="booking-fields-view">
+                      <div className="fields-view-title">Pan or Gst :</div>
+                      <div className="fields-view-value">
+                        {bookingObject.cPANorGSTnum}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="booking-fields-view">
+                      <div className="fields-view-title">
+                        Incorporation Date :
+                      </div>
+                      <div className="fields-view-value">
+                        {formatDate(bookingObject.incoDate)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="booking-fields-view">
+                      <div className="fields-view-title">Extra Notes :</div>
+                      <div className="fields-view-value">
+                        {bookingObject.extraNotes}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </li>
-              <li className="StepProgress-item">
-                <div class="step-content">
-                  <strong>Provide feedback</strong>
-                  <span class="step-date">Feb 19, 2024</span>
                 </div>
-              </li>
-            </ul>
+              )}
+            </div>
           </div>
         </div>
-      </div>}
+      </div>
     </div>
   );
 }

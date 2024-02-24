@@ -8,6 +8,8 @@ import "../assets/styles.css";
 
 function Dashboard() {
   const [recentUpdates, setRecentUpdates] = useState([]);
+  const [bookingObject, setBookingObject] = useState([]);
+  const [filteredBooking, setFilteredBooking] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   useEffect(() => {
     const fetchData = async () => {
@@ -19,10 +21,27 @@ function Dashboard() {
       } catch (error) {
         console.error("Error fetching recent updates:", error.message);
       }
-    };
+    }; 
 
+    const fetchCompanies = async () => {
+      try {
+        const response = await axios.get(`${secretKey}/companies`);
+        const today = new Date().toLocaleDateString();
+        const filteredData = response.data.filter(company => {
+          // Assuming bookingDate is in the format of a string representing a date (e.g., "YYYY-MM-DD")
+          return new Date(company.bookingDate).toLocaleDateString() === today;
+        });
+        setBookingObject(response.data);
+        setFilteredBooking(filteredData);
+        console.log(response.data)
+      } catch (error) {
+        console.error("Error Fetching Booking Details", error.message);
+      }
+    };
+    
     // Call the fetchData function when the component mounts
     fetchData();
+    fetchCompanies();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -82,11 +101,30 @@ function Dashboard() {
                 </div>
               </div>
               <div className="col card todays-booking m-2">
-                <div className="card-header">
+                <div className="card-header d-flex justify-content-between ">
+                  <div className="heading">
+
                   <h2>Today's Booking</h2>
+                  </div>
+                  <div className="filter d-flex">
+                   <div className="label">
+                    Filter By :
+                   </div>
+                   <div className="filter-by">
+                    <select name="filter-by" id="filter-by">
+                      <option value="" disabled selected> </option>
+                      <option value="by-week">Week</option>
+                      <option value="by-month">Month</option>
+                      <option value="by-year">Year</option>
+                    </select>
+                   </div>
+                  </div>
+
                 </div>
                 <div className="card-body">
-                  <div className="row"></div>
+                  <div className="row">
+
+                  </div>
                 </div>
               </div>
             </div>
