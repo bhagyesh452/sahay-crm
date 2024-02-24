@@ -14,7 +14,7 @@
     overflow-y: auto !important;
     height: 75vh;
 }
-.card-body{
+.booking-details-body{
     overflow-y: auto !important;
     overflow-x: hidden !important;
     height: 80vh;
@@ -222,4 +222,12 @@
   .li-ellipsis{
     margin-top: 5px;
     margin-right: 5px;
+  }
+
+  #searchServices{
+    border: 0px solid transparent !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between !important;
+    width: 100%;
   }

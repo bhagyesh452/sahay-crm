@@ -19,7 +19,8 @@ import Bookings from "./Processing/Bookings.jsx";
 import Form from "./Processing/Form.jsx";
 import BookingsAdmin from "./admin/BookingsAdmin.jsx";
 import BookingsForm from "./admin/BookingsForm.jsx";
-import Nodata from "./Processing/Nodata.jsx";
+import Nodata from "./Processing/Nodata.jsx"; 
+import Analysis_dashboard from "./Processing/Analysis_dashboard.jsx";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -86,6 +87,7 @@ function App() {
           <Route path="/Processing/Dashboard_processing"  element={processingTokenn ? <Dashboard_processing /> : <Navigate to="/processing/processing-login" />} />
           <Route path="/Processing/Dashboard_processing/addbookings" element={<Form/>} /> 
           <Route path="/Processing/Dashboard_processing/nodata" element={<Nodata/>} /> 
+          <Route path="/Processing/analysis_dashboard" element={<Analysis_dashboard/>} /> 
         </Routes>
       </BrowserRouter>
     </div>

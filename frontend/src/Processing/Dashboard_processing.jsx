@@ -34,24 +34,25 @@ function Dashboard_processing() {
     try {
       const response = await fetch(`${secretKey}/companies`);
       const data = await response.json();
-
+      const companyData = data.companies
+      console.log(companyData)
   
       // Extract unique booking dates from the fetched data
       const uniqueBookingDates = Array.from(
-        new Set(data.map((company) => company.bookingDate))
+        new Set(companyData.map((company) => company.bookingDate))
       );
       const uniqueBookingTime = Array.from(
-        new Set(data.map((company) => company.bookingTime))
+        new Set(companyData.map((company) => company.bookingTime))
       );
       
   
       // Set the details of the first company by default if there are companies available
-      if (data.length !== 0) {
-        setSelectedCompanyId(data[0].companyName);
+      if (companyData.length !== 0) {
+        setSelectedCompanyId(companyData[0].companyName);
       }
   
       // Update the state with both companies and booking dates
-      setCompanies(data.reverse());
+      setCompanies(companyData.reverse());
       setBookingDates(uniqueBookingDates);
       setBookingTime(uniqueBookingTime);
      
@@ -59,6 +60,7 @@ function Dashboard_processing() {
       console.error("Error fetching companies:", error);
     }
   };
+ 
   console.log(companies)
 
   const markCompanyAsRead = (companyId) => {
