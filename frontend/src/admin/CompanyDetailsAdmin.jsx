@@ -1,13 +1,7 @@
 
 import React, { useState } from "react";
-import { pdfuploader } from "../documents/pdf1.pdf";
-
 import { Link } from "react-router-dom";
-import { FaRegFilePdf } from "react-icons/fa";
-import pdficon from './PDF-icon-1.png';
-import { MdDownload } from "react-icons/md";
 import { FaRegCopy } from "react-icons/fa";
-import { IoIosCloseCircleOutline } from "react-icons/io";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
@@ -15,6 +9,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import PdfViewerAdmin from "./PdfViewerAdmin";
 import { pdfjs } from 'react-pdf';
+import Nodata from "../components/Nodata";
+import { IconX } from "@tabler/icons-react";
 import {
   Button,
   Dialog,
@@ -40,6 +36,12 @@ const CompanyDetailsAdmin = ({ company }) => {
   const [open, openchange] = useState(false);
   const [csvdata, setCsvData] = useState([]);
   const [excelData, setExcelData] = useState([]);
+  const [displayForm, setDisplayForm] = useState(false)
+  const [selectedFile, setSelectedFile] = useState()
+  const [selectedDocuments, setSelectedDocuments] = useState([])
+  const [openPaymentReceipt, setOpenPaymentReceipt] = useState(false);
+  const [openOtherDocs, setOpenOtherDocs] = useState(false)
+
 
   const formatDatelatest = (inputDate) => {
     const date = new Date(inputDate);
@@ -269,6 +271,169 @@ const CompanyDetailsAdmin = ({ company }) => {
         }, 2000); // Adjust the delay as needed (2 seconds in this example)
       })
   };
+  // ---------------------------tofetchdatainexcelfile---------------------------------
+
+  const exportData = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/exportdatacsv`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'leads.csv');
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+    }
+  };
+
+  // --------------------------------------uploadfiles-----------------------------------------
+
+  const handleOtherDocsUpload = (updatedFiles) => {
+    setSelectedDocuments((prevSelectedDocuments) => {
+
+      return [...prevSelectedDocuments, ...updatedFiles];
+    });
+  };
+  console.log(selectedDocuments)
+
+
+  const handleRemoveFile = (index) => {
+    setSelectedDocuments((prevSelectedDocuments) => {
+      // Create a copy of the array of selected documents
+      const updatedDocuments = [...prevSelectedDocuments];
+      // Remove the document at the specified index
+      updatedDocuments.splice(index, 1);
+      // Return the updated array of selected documents
+      return updatedDocuments;
+    });
+  };
+
+  const closePaymentReceiptPopup = () => {
+    setOpenPaymentReceipt(false)
+
+  }
+
+  const closeOtherDocsPopup = () => {
+    setOpenOtherDocs(false)
+  }
+
+  const handleChange = (selectedValue) => {
+    const selectedOption = selectedValue;
+    console.log(selectedOption)
+
+    if (selectedOption === "paymentReceipt") {
+      // If "Payment Receipt" is selected, open the payment receipt dialog and close other docs dialog
+      setOpenPaymentReceipt(true);
+      setOpenOtherDocs(false);
+    } else if (selectedOption === "otherDocs") {
+      // If "Other Docs" is selected, open the other docs dialog and close payment receipt dialog
+      setOpenPaymentReceipt(false);
+      setOpenOtherDocs(true);
+    }
+  };
+
+
+  const handleUploads = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file)
+    if (file && /\.(pdf|jpe?g|png)$/i.test(file.name)) {
+      // File is valid (PDF, JPG, JPEG, PNG)
+      // You can handle the file here, if needed
+    } else {
+      // Invalid file type
+      alert("Please upload a PDF, JPG, JPEG, or PNG file.");
+      e.target.value = ""; // Clear the file input
+    }
+  };
+
+  const handleAttachment = async () => {
+    try {
+      const files = selectedFile;
+      console.log(files)
+
+      if (files.length === 0) {
+        // No files selected
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('paymentReceipt', files);
+
+      const response = await fetch(`${secretKey}/uploadAttachment/${company.companyName}`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        Swal.fire({
+          title: "Success!",
+          html: `<small> File Uploaded successfully </small>
+        `,
+          icon: "success",
+        });
+  
+      } else {
+        Swal.fire({
+          title: "Error uploading file",
+      
+          icon: "error",
+        });
+        console.error('Error uploading file');
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error uploading file",
+        icon: "error",
+      });
+      console.error('Error uploading file:', error);
+    }
+  };
+  const handleotherdocsAttachment = async () => {
+    try {
+      const files = selectedDocuments;
+      console.log(files)
+
+      if (files.length === 0) {
+        // No files selected
+        return;
+      }
+
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append('otherDocs', files[i]);
+      }
+      console.log(formData)
+
+      const response = await fetch(`${secretKey}/uploadotherdocsAttachment/${company.companyName}`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        Swal.fire({
+          title: "Success!",
+          html: `<small> File Uploaded successfully </small>
+        `,
+          icon: "success",
+        });
+      
+      } else {
+        Swal.fire({
+          title: "Error uploading file",
+      
+          icon: "error",
+        });
+        console.error('Error uploading file');
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error uploading file",
+        icon: "error",
+      });
+      console.error('Error uploading file:', error);
+    }
+  };
 
 
   return (
@@ -280,6 +445,12 @@ const CompanyDetailsAdmin = ({ company }) => {
             <h3 class="card-title">Booking Details</h3>
           </div>
           <div className="buttons d-flex align-items-center justify-content-around" style={{ gap: "5px" }}>
+            <div>
+              <button
+                className="btn btn-primary mr-1" onClick={exportData}>
+                + Export Csv
+              </button>
+            </div>
             <div>
               <button
                 className="btn btn-primary" onClick={functionopenpopup}>
@@ -308,7 +479,7 @@ const CompanyDetailsAdmin = ({ company }) => {
                           Upload CSV File
                         </label>
                       </div>
-                      <a href={frontendKey + "/BulkBookingFormat.xlsx"} download>
+                      <a href={frontendKey + "/AddBookingFormat.xlsx"} download>
                         Download Sample
                       </a>
                     </div>
@@ -342,9 +513,8 @@ const CompanyDetailsAdmin = ({ company }) => {
           </div>
         </div>
       </div>
-      <div className="card-body">
-
-        {/* ------------------------Booking info section------------- */}
+      {/* ------------------------Booking info section------------- */}
+      {company !== null ? (<div className="card-body booking-details-body">
         <section>
           <div className="row">
             {(company.bdeName || company.bdeName === " ") && (<div className="col-sm-3">
@@ -657,18 +827,117 @@ const CompanyDetailsAdmin = ({ company }) => {
           </div>
         </section>
 
-        {/* -----------------------------------Recipets and Documents Section----------------------------- */}
+        {/* -----------------------------------Reciepts and Documents Upload Section----------------------------- */}
+        <hr className="m-0 mt-4 mb-2 w-100"></hr>
+        <section>
+          <div className="d-flex justify-content-between mb-0">
+            <div className="col-sm-3 column-width-reciept mt-2">
+              <select id="docType" class="form-select" onChange={(event) => { handleChange(event.target.value) }}>
+                <option value="" disabled selected>Upload Attachment</option>
+                <option value="paymentReceipt">Payment Receipt</option>
+                <option value="otherDocs" multiple>Other Docs</option>
+              </select>
+              <div>
+                <Dialog open={openPaymentReceipt} onClose={closePaymentReceiptPopup} fullWidth maxWidth="sm">
+                  <DialogTitle>
+                    Upload Your Attachments
+                    <IconButton onClick={closePaymentReceiptPopup} style={{ float: "right" }}>
+                      <CloseIcon color="primary"></CloseIcon>
+                    </IconButton>{" "}
+                  </DialogTitle>
+                  <DialogContent>
+                    <div className="maincon">
+                      <div style={{ justifyContent: "space-between" }} className="con1 d-flex">
+                        <div style={{ paddingTop: "9px" }} className="uploadcsv">
+                          <label style={{ margin: "0px 0px 6px 0px" }} htmlFor="attachmentfile">
+                            Upload Files
+                          </label>
+                        </div>
+                      </div>
+                      <div style={{ margin: "5px 0px 0px 0px" }} className="form-control">
+                        <input
+                          type="file"
+                          name="attachmentfile"
+                          id="attachmentfile"
+                          onChange={handleUploads}
+                        // Allow multiple files selection
+                        />
+                      </div>
+                    </div>
+                  </DialogContent>
+                  <button className="btn btn-primary" onClick={handleAttachment}>
+                    Submit
+                  </button>
+                </Dialog>
+
+                <Dialog open={openOtherDocs} onClose={closeOtherDocsPopup} fullWidth maxWidth="sm">
+                  <DialogTitle>
+                    Upload Your Attachments
+                    <IconButton onClick={closeOtherDocsPopup} style={{ float: "right" }}>
+                      <CloseIcon color="primary"></CloseIcon>
+                    </IconButton>{" "}
+                  </DialogTitle>
+                  <DialogContent>
+                    <div className="maincon">
+                      {/* Single file input for multiple documents */}
+                      <div style={{ justifyContent: "space-between" }} className="con1 d-flex">
+                        <div style={{ paddingTop: "9px" }} className="uploadcsv">
+                          <label style={{ margin: "0px 0px 6px 0px" }} htmlFor="attachmentfile">
+                            Upload Files
+                          </label>
+                        </div>
+                      </div>
+                      <div style={{ margin: "5px 0px 0px 0px" }} className="form-control">
+                        <input
+                          type="file"
+                          name="attachmentfile"
+                          id="attachmentfile"
+                          onChange={(e) => { handleOtherDocsUpload(e.target.files) }}
+                          multiple // Allow multiple files selection
+                        />
+                        {selectedDocuments && selectedDocuments.length > 0 && (
+                          <div className="uploaded-filename-main d-flex flex-wrap">
+                            {selectedDocuments.map((file, index) => (
+                              <div
+                                className="uploaded-fileItem d-flex align-items-center"
+                                key={index}
+                              >
+                                <p className="m-0">{file.name}</p>
+                                <button
+                                  className="fileItem-dlt-btn"
+                                  onClick={() => handleRemoveFile(index)}
+                                >
+                                  <IconX className="close-icon" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </DialogContent>
+                  <button className="btn btn-primary" onClick={handleotherdocsAttachment}>
+                    Submit
+                  </button>
+                </Dialog>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/*------------------------------------------------Reciepts Viewer Section---------------------------------------- */}
+
         {(company.paymentReceipt || company.otherDocs.length > 0) && (
           <>
-            <hr className="m-0 mt-4 mb-2"></hr>
+            <hr className="m-0 mt-4 mb-2 w-100"></hr>
             <section>
-              <div className="d-flex justify-content-between mb-0 flex-wrap">
+              <div className="d-flex justify-content-between mb-0 flex-wrap ml-0">
                 {company.paymentReceipt && (
                   <div className="col-sm-3 column-width-reciept">
                     <div className="booking-fields-view d-flex align-items-center flex-column cursor-pointer">
                       <div className="fields-view-title mb-2 mt-2">Payment Receipts :</div>
                       <div
-                        className="custom-image-div d-flex " 
+                        className="custom-image-div d-flex "
                         onClick={() => {
                           handleViewPdfReciepts(company.paymentReceipt);
                         }}
@@ -678,7 +947,7 @@ const CompanyDetailsAdmin = ({ company }) => {
                         {company.paymentReceipt.endsWith(".pdf") ? (
                           <PdfViewerAdmin type="paymentrecieptpdf" path={company.paymentReceipt} />
                         ) : (
-                          <img src={`${secretKey}/recieptpdf/${company.paymentReceipt}`} alt="Receipt"   style={{ width: "200px", height: "129px" }}   />
+                          <img src={`${secretKey}/recieptpdf/${company.paymentReceipt}`} alt="Receipt" style={{ width: "200px", height: "129px" }} />
                         )}
 
                         <div className="d-flex align-items-center justify-content-center download-attachments cursor-pointer">
@@ -692,8 +961,8 @@ const CompanyDetailsAdmin = ({ company }) => {
                 {company.otherDocs.map((object) => {
                   const originalFilename = object.split('-').slice(1).join('-').replace('.pdf', '');
                   return (
-                    <div className="col-sm-3 column-width-reciept" key={object}>
-                      <div className="booking-fields-view d-flex  align-items-center flex-column cursor-pointer">
+                    <div className="col-sm-3 column-width-reciept" >
+                      <div className="booking-fields-view d-flex  align-items-center flex-column cursor-pointer" key={object}>
                         <div className="fields-view-title mb-2 mt-2">Attachments</div>
                         <div
                           className="custom-image-div d-flex justify-content-center"
@@ -702,8 +971,11 @@ const CompanyDetailsAdmin = ({ company }) => {
                           }}
                         >
                           {/* <img src={pdficon} alt="pdficon" /> */}
-
-                          <PdfViewerAdmin type="pdf" path={object} />
+                          {object.endsWith(".pdf") ? (
+                            <PdfViewerAdmin type="pdf" path={object} />
+                          ) : (
+                            <img src={`${secretKey}/otherpdf/${object}`} alt="Document" style={{ width: "200px", height: "129px" }} />
+                          )}
                           <div className="d-flex align-items-center justify-content-center download-attachments cursor-pointer">
                             <div className="pdf-div">Pdf</div>
                             <div title={originalFilename} style={{ overflow: "hidden", textOverflow: "ellipsis", textWrap: "nowrap" }} >{originalFilename}</div>
@@ -716,13 +988,40 @@ const CompanyDetailsAdmin = ({ company }) => {
               </div>
             </section></>
         )}
-      </div>
+      </div>) : (<Nodata />)}
     </div>
 
   )
 };
 
 export default CompanyDetailsAdmin;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

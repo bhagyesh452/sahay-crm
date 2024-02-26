@@ -19,7 +19,8 @@ import Bookings from "./Processing/Bookings.jsx";
 import Form from "./Processing/Form.jsx";
 import BookingsAdmin from "./admin/BookingsAdmin.jsx";
 import BookingsForm from "./admin/BookingsForm.jsx";
-import Nodata from "./Processing/Nodata.jsx"; 
+import Nodata from "./Processing/Nodata.jsx";
+import CompanyParticular from "./admin/CompanyParticular.jsx";
 import Analysis_dashboard from "./Processing/Analysis_dashboard.jsx";
 
 function App() {
@@ -65,12 +66,14 @@ function App() {
                 element={<LoginDetails />}
               />
               <Route path="/admin/leads" element={<Leads />} />
+              <Route path = "/admin/leads/:companyId" element={<CompanyParticular/>}/>
               <Route path="/admin/bookings" element={<BookingsAdmin />} />
               <Route
                 path="/admin/notification"
                 element={<ShowNotification />}
               />
               <Route path="/admin/bookings/Addbookings" element = {<BookingsForm/>}/>
+              
             </>
           ) : (
             <Route

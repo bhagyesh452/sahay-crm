@@ -16,8 +16,10 @@ import Swal from "sweetalert2";
 import LoginDetails from "../components/LoginDetails";
 import Nodata from "../components/Nodata";
 import EditForm from "../components/EditForm";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
+const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
 function EmployeeParticular() {
   const { id } = useParams();
   const [openAssign, openchangeAssign] = useState(false);
@@ -44,10 +46,10 @@ function EmployeeParticular() {
   const [openLogin, setOpenLogin] = useState(false);
   const [openCSV, openchangeCSV] = useState(false);
   const [maturedCompanyName, setMaturedCompanyName] = useState("");
-
+  const [companies, setCompanies] = useState([]);
   const [month, setMonth] = useState(0);
   // const [updateData, setUpdateData] = useState({});
-
+  const [eData, seteData] = useState([]);
   const [year, setYear] = useState(0);
   function formatDate(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -61,6 +63,14 @@ function EmployeeParticular() {
   const fetchEmployeeDetails = async () => {
     try {
       const response = await axios.get(`${secretKey}/einfo`);
+
+      // Filter the response data to find _id values where designation is "Sales Executive"
+      const salesExecutivesIds = response.data
+        .filter((employee) => employee.designation === "Sales Executive")
+        .map((employee) => employee._id);
+
+      // Set eData to the array of _id values
+      seteData(salesExecutivesIds);
 
       // Find the employee by id and set the name
       const selectedEmployee = response.data.find(
@@ -77,12 +87,50 @@ function EmployeeParticular() {
       console.error("Error fetching employee details:", error.message);
     }
   };
+
   const functionopenAnchor = () => {
     setOpenAnchor(true);
   };
   const closeAnchor = () => {
     setOpenAnchor(false);
   };
+  useEffect(() => {
+    if (employeeName) {
+      const fetchCompanies = async () => {
+        try {
+          const response = await fetch(`${secretKey}/companies`);
+          const data = await response.json();
+
+          // Filter and format the data based on employeeName
+          const formattedData = data
+            .filter(
+              (entry) =>
+                entry.bdeName === employeeName || entry.bdmName === employeeName
+            )
+            .map((entry) => ({
+              "Company Name": entry.companyName,
+              "Company Number": entry.contactNumber,
+              "Company Email": entry.companyEmail,
+              "Company Incorporation Date": entry.incoDate,
+              City: "NA",
+              State: "NA",
+              ename: employeeName,
+              AssignDate: entry.bookingDate,
+              Status: "Matured",
+              Remarks: "No Remarks Added",
+            }));
+
+          setCompanies(formattedData);
+        } catch (error) {
+          console.error("Error fetching companies:", error);
+          setCompanies([]);
+        }
+      };
+
+      fetchCompanies();
+    }
+  }, [employeeName]);
+
   // Function to fetch new data based on employee name
   const fetchNewData = async () => {
     try {
@@ -432,6 +480,25 @@ function EmployeeParticular() {
     openchangeRemarks(false);
     setFilteredRemarks([]);
   };
+
+  const handleChangeUrl = () => {
+    const currId = id;
+    console.log(eData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
+
+    // Find the index of the currentId in the eData array
+    const currentIndex = eData.findIndex((itemId) => itemId === currId);
+
+    if (currentIndex !== -1) {
+      // Calculate the next index in a circular manner
+      const nextIndex = (currentIndex + 1) % eData.length;
+
+      // Get the nextId from the eData array
+      const nextId = eData[nextIndex];
+      window.location.replace(`/admin/employees/${nextId}`);
+    } else {
+      console.log("Current ID not found in eData array.");
+    }
+  };
   return (
     <div>
       <Header />
@@ -546,6 +613,24 @@ function EmployeeParticular() {
                                 )
                             );
                             break;
+                          case "AssignDate":
+                            setdataStatus("AssignDate");
+                            setEmployeeData(
+                              moreEmpData.sort((a, b) =>
+                                b.AssignDate.localeCompare(a.AssignDate)
+                              )
+                            );
+                            break;
+                          case "Company Incorporation Date  ":
+                            setdataStatus("CompanyIncorporationDate");
+                            setEmployeeData(
+                              moreEmpData.sort((a, b) =>
+                                b["Company Incorporation Date  "].localeCompare(
+                                  a["Company Incorporation Date  "]
+                                )
+                              )
+                            );
+                            break;
                           default:
                             // No filtering if default option selected
                             setdataStatus("All");
@@ -569,6 +654,10 @@ function EmployeeParticular() {
                       <option value="FollowUp">Follow Up</option>
                       <option value="Interested">Interested</option>
                       <option value="Not Interested">Not Interested</option>
+                      <option value="AssignDate">Assigned Date</option>
+                      <option value="Company Incorporation Date  ">
+                        C.Inco. Date
+                      </option>
                     </select>
                   </div>
                   <Link
@@ -579,6 +668,11 @@ function EmployeeParticular() {
                       Login Details
                     </button>
                   </Link>
+                  <div className="nextBtn">
+                    <IconButton onClick={handleChangeUrl}>
+                      <ArrowForwardIosIcon />
+                    </IconButton>
+                  </div>
                 </div>
               </div>
 
@@ -962,12 +1056,7 @@ function EmployeeParticular() {
                       data-bs-toggle="tab"
                     >
                       <span>Matured </span>
-                      <span className="no_badge">
-                        {
-                          moreEmpData.filter((obj) => obj.Status === "Matured")
-                            .length
-                        }
-                      </span>
+                      <span className="no_badge">{companies.length}</span>
                     </a>
                   </li>
                   <li class="nav-item">
@@ -1024,15 +1113,17 @@ function EmployeeParticular() {
                     >
                       <thead>
                         <tr className="tr-sticky">
-                          <th>
-                            <input
-                              type="checkbox"
-                              checked={
-                                selectedRows.length === filteredData.length
-                              }
-                              onChange={() => handleCheckboxChange("all")}
-                            />
-                          </th>
+                          {dataStatus !== "Matured" && (
+                            <th>
+                              <input
+                                type="checkbox"
+                                checked={
+                                  selectedRows.length === filteredData.length
+                                }
+                                onChange={() => handleCheckboxChange("all")}
+                              />
+                            </th>
+                          )}
 
                           <th className="th-sticky">Sr.No</th>
                           <th className="th-sticky1">Company Name</th>
@@ -1048,15 +1139,7 @@ function EmployeeParticular() {
                           {dataStatus === "Matured" && <th>Action</th>}
                         </tr>
                       </thead>
-                      {currentData.length === 0 ? (
-                        <tbody>
-                          <tr>
-                            <td colSpan="11" className="p-2">
-                              <Nodata />
-                            </td>
-                          </tr>
-                        </tbody>
-                      ) : (
+                      {currentData.length !== 0 && dataStatus !== "Matured" && (
                         <tbody>
                           {currentData.map((company, index) => (
                             <tr
@@ -1168,6 +1251,113 @@ function EmployeeParticular() {
                               )}
                             </tr>
                           ))}
+                        </tbody>
+                      )}
+
+                      {dataStatus === "Matured" && companies.length !== 0 && (
+                        <tbody>
+                          {companies.map((company, index) => (
+                            <tr
+                              key={index}
+                              className={
+                                selectedRows.includes(company._id)
+                                  ? "selected"
+                                  : ""
+                              }
+                              style={{ border: "1px solid #ddd" }}
+                            >
+                              <td className="td-sticky">
+                                {startIndex + index + 1}
+                              </td>
+                              <td className="td-sticky1">
+                                {company["Company Name"]}
+                              </td>
+                              <td>{company["Company Number"]}</td>
+                              <td>
+                                <span>{company["Status"]}</span>
+                              </td>
+                              <td>
+                                <div
+                                  key={company._id}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <p
+                                    className="rematkText text-wrap m-0"
+                                    title={company.Remarks}
+                                  >
+                                    {company.Remarks}
+                                  </p>
+                                  <span>
+                                    <IconEye
+                                      onClick={() => {
+                                        functionopenpopupremarks(
+                                          company._id,
+                                          company.Status
+                                        );
+                                      }}
+                                      style={{
+                                        width: "18px",
+                                        height: "18px",
+                                        color: "#d6a10c",
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  </span>
+                                </div>
+                              </td>
+                              <td>{company["Company Email"]}</td>
+                              <td>
+                                {formatDate(
+                                  company["Company Incorporation Date"]
+                                )}
+                              </td>
+                              <td>{company["City"]}</td>
+                              <td>{company["State"]}</td>
+                              <td>{formatDate(company["AssignDate"])}</td>
+
+                              <td>
+                                <button
+                                  style={{
+                                    padding: "5px",
+                                    fontSize: "12px",
+                                    backgroundColor: "lightblue",
+                                    // Additional styles for the "View" button
+                                  }}
+                                  className="btn btn-primary d-none d-sm-inline-block"
+                                  onClick={() => {
+                                    functionopenAnchor();
+                                    setMaturedCompanyName(
+                                      company["Company Name"]
+                                    );
+                                  }}
+                                >
+                                  View
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      )}
+                      {currentData.length === 0 && dataStatus !== "Matured" && (
+                        <tbody>
+                          <tr>
+                            <td colSpan="11" className="p-2">
+                              <Nodata />
+                            </td>
+                          </tr>
+                        </tbody>
+                      )}
+                      {companies.length === 0 && dataStatus === "Matured" && (
+                        <tbody>
+                          <tr>
+                            <td colSpan="11" className="p-2">
+                              <Nodata />
+                            </td>
+                          </tr>
                         </tbody>
                       )}
                     </table>

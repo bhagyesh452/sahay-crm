@@ -5,11 +5,11 @@ import { GrDocumentStore } from "react-icons/gr";
 import { CiCalendar } from "react-icons/ci";
 import { HiMiniCurrencyRupee } from "react-icons/hi2";
 import Select, { components } from 'react-select';
-import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
 
+// import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 
 
@@ -27,6 +27,12 @@ const Analysis_dashboard = () => {
     const [selectedField, setSelectedField] = useState([])
     const [completeData, setCompleteData] = useState([])
     const [filterServiceCount, setFilterServiceCount] = useState()
+    const [displayDateRange, setDateRangeDisplay] = useState(false)
+    const [buttonToggle, setButtonToggle] = useState(false);
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+    const [filteredDataDateRange, setFilteredDataDateRange] = useState([]);
+    const [companiesToday, setcompaniesToday] = useState([])
 
 
 
@@ -66,6 +72,18 @@ const Analysis_dashboard = () => {
                 let bookingDate = new Date(company.bookingDate);
                 return bookingDate.getMonth() + 1 === currentMonth && bookingDate.getFullYear() === currentYear;
             });
+            // console.log(companiesThisMonth)
+
+            const companiesToday = companiesThisMonth.filter(company => {
+                const bookingDate = new Date(company.bookingDate);
+                const today = new Date(); // Get current date
+
+                // Check if bookingDate is the same as today
+                return bookingDate.getDate() === today.getDate() &&
+                    bookingDate.getMonth() === today.getMonth() &&
+                    bookingDate.getFullYear() === today.getFullYear();
+            });
+            //console.log(companiesToday)
 
             const revenueCurrentMonth = companiesThisMonth.flatMap(obj => obj.totalPayment)
 
@@ -76,6 +94,7 @@ const Analysis_dashboard = () => {
             setTotalPayment(totalPaymentSum)
             setcurrentBookingDate(bookingDatesCurrentMonth)
             setcompanyCount(companyLength);
+            setcompaniesToday(companiesToday)
         } catch (error) {
             console.error("Error fetching companies:", error);
         }
@@ -207,7 +226,67 @@ const Analysis_dashboard = () => {
     );
 
 
-    function filterCompaniesByService(selectedValues) {
+
+    // ----------------------------------------------------daterangepicker-filter-----------------------------------------------------------------
+
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1; // Months are zero-indexed, so we add 1
+    const currentYear = currentDate.getFullYear();
+
+    const handleIconClick = () => {
+        if (!buttonToggle) {
+            setDateRangeDisplay(true);
+        } else {
+            setDateRangeDisplay(false);
+        }
+        setButtonToggle(!buttonToggle);
+    };
+
+
+    const handleSelect = (date) => {
+        const filteredDataDateRange = completeData.filter(product => {
+            const productDate = new Date(product["bookingDate"]);
+            return (
+                productDate >= date.selection.startDate &&
+                productDate <= date.selection.endDate
+            );
+        });
+        setStartDate(date.selection.startDate);
+        setEndDate(date.selection.endDate);
+        setFilteredDataDateRange(filteredDataDateRange);
+        //console.log(filteredDataDateRange)
+    };
+
+    const companieswithDateRangeCurrentMonth = filteredDataDateRange.filter(company => {
+        const bookingDate = new Date(company.bookingDate);
+        const bookingMonth = bookingDate.getMonth() + 1; // Months are zero-indexed, so we add 1
+        const bookingYear = bookingDate.getFullYear();
+
+        return bookingMonth === currentMonth && bookingYear === currentYear;
+    });
+    console.log(companieswithDateRangeCurrentMonth)
+
+    const companieswithDateRangeToday = filteredDataDateRange.filter(company => {
+        const bookingDate = new Date(company.bookingDate);
+        const today = new Date(); // Get current date
+
+        // Check if bookingDate is the same as today
+        return bookingDate.getDate() === today.getDate() &&
+            bookingDate.getMonth() === today.getMonth() &&
+            bookingDate.getFullYear() === today.getFullYear();
+    });
+    //console.log(companieswithDateRangeToday)
+
+
+    const selectionRange = {
+        startDate: startDate,
+        endDate: endDate,
+        key: 'selection',
+    };
+
+    // -----------------------------------------service filter----------------------------------------
+
+    function filterCompaniesByServiceTotal(selectedValues) {
 
         const newselectedValues = selectedValues;
 
@@ -221,13 +300,57 @@ const Analysis_dashboard = () => {
         });
 
     }
-    const filteredCompanies = filterCompaniesByService(selectedValues);
-    // console.log(filteredCompanies)
+    const filteredCompaniesTotal = filterCompaniesByServiceTotal(selectedValues);
+    //console.log(filteredCompaniesTotal)
     // console.log(filteredCompanies.length)
 
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1; // Months are zero-indexed, so we add 1
-    const currentYear = currentDate.getFullYear();
+
+
+    const companieswithServicesInCurrentMonthTotal = filteredCompaniesTotal.filter(company => {
+        const bookingDate = new Date(company.bookingDate);
+        const bookingMonth = bookingDate.getMonth() + 1; // Months are zero-indexed, so we add 1
+        const bookingYear = bookingDate.getFullYear();
+
+        return bookingMonth === currentMonth && bookingYear === currentYear;
+    });
+    //console.log(companieswithServicesInCurrentMonthTotal)
+
+
+    // console.log(companieswithServicesInCurrentMonth);
+    // console.log(companieswithServicesInCurrentMonth.length);
+
+    const companieswithServicesTodayTotal = companieswithServicesInCurrentMonthTotal.filter(company => {
+        const bookingDate = new Date(company.bookingDate);
+        const today = new Date(); // Get current date
+
+        // Check if bookingDate is the same as today
+        return bookingDate.getDate() === today.getDate() &&
+            bookingDate.getMonth() === today.getMonth() &&
+            bookingDate.getFullYear() === today.getFullYear();
+    });
+
+    // console.log(companieswithServicesToday);
+    // console.log(companieswithServicesToday.length);
+    //console.log(companieswithServicesTodayTotal)
+
+
+    function filterCompaniesByService(selectedValues) {
+
+        const newselectedValues = selectedValues;
+
+        return filteredDataDateRange.filter(company => {
+
+            for (let index = 0; index < newselectedValues.length; index++) {
+
+                return company.services[0].includes(newselectedValues[index])
+
+            }
+        });
+
+    }
+    const filteredCompanies = filterCompaniesByService(selectedValues);
+    console.log(filteredCompanies)
+    // console.log(filteredCompanies.length)
 
     const companieswithServicesInCurrentMonth = filteredCompanies.filter(company => {
         const bookingDate = new Date(company.bookingDate);
@@ -253,11 +376,7 @@ const Analysis_dashboard = () => {
     // console.log(companieswithServicesToday);
     // console.log(companieswithServicesToday.length);
 
-    const selectionRange = {
-        startDate: new Date(),
-        endDate: new Date(),
-        key: 'selection',
-    }
+
 
     return (
         <div>
@@ -507,15 +626,24 @@ const Analysis_dashboard = () => {
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <div class="col-auto">
-                                            <span class="bg-facebook text-white avatar">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 448 512" fill='white' stroke-width="2" stroke="currentColor"><path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z" /></svg>
-                                            </span>
+                                            <button onClick={handleIconClick} style={{ border: "none", padding: "0px" }}>
+                                                <span className="bg-facebook text-white avatar">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 448 512" fill='white' strokeWidth="2" stroke="currentColor">
+                                                        <path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z" />
+                                                    </svg>
+                                                </span>
+                                            </button>
                                         </div>
-                                        <div class="col">
-                                            <DateRangePicker
-                                                ranges={[selectionRange]}
-                                               // onChange={handleSelect}
-                                            />
+                                        <div class="col position-relative">
+                                            {displayDateRange && (
+                                                <div class="position-absolute top-100 start-0" style={{zIndex:"1"}}>
+                                                    <DateRangePicker
+                                                        ranges={[selectionRange]}
+                                                        onClose={() => setDateRangeDisplay(false)}
+                                                        onChange={handleSelect}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -591,7 +719,19 @@ const Analysis_dashboard = () => {
                                     </div> */}
                                 </div>
                                 <div class="d-flex align-items-baseline">
-                                    <div class="h1 mb-3 me-2">{filteredCompanies.length}</div>
+                                    <div class="h1 mb-3 me-2">
+                                        {(() => {
+                                            if (filteredDataDateRange.length !== 0 && filteredCompaniesTotal.length !== 0) {
+                                                return filteredCompanies.length;
+                                            } else if (filteredDataDateRange.length !== 0) {
+                                                return filteredDataDateRange.length;
+                                            } else if (filteredCompaniesTotal.length !== 0) {
+                                                return filteredCompaniesTotal.length;
+                                            } else {
+                                                return completeData.length;
+                                            }
+                                        })()}
+                                    </div>
                                     {/* <PieChart width={400} height={400}>
                                         <Pie
                                             dataKey="value"
@@ -626,7 +766,18 @@ const Analysis_dashboard = () => {
                                     {/* <CiCalendar style={{ width: "50px", height: "50px" }} /> */}
                                 </div>
                                 <div class="d-flex align-items-baseline">
-                                    <div class="h1 mb-3 me-2">{companieswithServicesInCurrentMonth.length}</div>
+                                    <div class="h1 mb-3 me-2">{(() => {
+                                        if (companieswithDateRangeCurrentMonth.length !== 0 && companieswithServicesInCurrentMonthTotal.length !== 0) {
+                                            return companieswithServicesInCurrentMonth.length;
+                                        } else if (companieswithDateRangeCurrentMonth.length !== 0) {
+                                            return companieswithDateRangeCurrentMonth.length;
+                                        } else if (companieswithServicesInCurrentMonthTotal.length !== 0) {
+                                            return companieswithServicesInCurrentMonthTotal.length;
+                                        } else {
+                                            return currentBookingDate.length;
+                                        }
+                                    })()}
+                                    </div>
                                     <div class="me-auto">
                                         {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
 
@@ -646,7 +797,18 @@ const Analysis_dashboard = () => {
                                     {/* <HiMiniCurrencyRupee style={{ width: "50px", height: "50px" }} /> */}
                                 </div>
                                 <div class="d-flex align-items-baseline">
-                                    <div class="h1 mb-0 me-2">{companieswithServicesToday.length}</div>
+                                    <div class="h1 mb-3 me-2">{(() => {
+                                        if (companieswithDateRangeToday.length !== 0 && companieswithServicesTodayTotal.length !== 0) {
+                                            return companieswithServicesToday.length;
+                                        } else if (companieswithDateRangeToday.length !== 0) {
+                                            return companieswithDateRangeToday.length;
+                                        } else if (companieswithServicesTodayTotal.length !== 0) {
+                                            return companieswithServicesTodayTotal.length;
+                                        } else {
+                                            return companiesToday.length;
+                                        }
+                                    })()}
+                                    </div>
                                     {/* <div class="me-auto">
                                         <span class="text-green d-inline-flex align-items-center lh-1">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>

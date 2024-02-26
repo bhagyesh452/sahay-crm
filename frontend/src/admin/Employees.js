@@ -43,6 +43,7 @@ function Employees({ onEyeButtonClick }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [companyDdata, setCompanyDdata] = useState([]);
   const [nametodelete, setnametodelete] = useState("");
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleDeleteClick = (itemId, nametochange) => {
     // Open the confirm delete modal
@@ -244,6 +245,7 @@ function Employees({ onEyeButtonClick }) {
       }
 
       if (isUpdateMode) {
+        
         await axios.put(`${secretKey}/einfo/${selectedDataId}`, dataToSend);
         Swal.fire({
           title: "Name Updated!",
@@ -441,19 +443,29 @@ function Employees({ onEyeButtonClick }) {
                   </div>
 
                   <div className="col-lg-6 mb-3">
-                    <label className="form-label">Password</label>
-                    <input
-                      type="password"
-                      value={password}
-                      className="form-control"
-                      name="example-text-input"
-                      placeholder="Your report name"
-                      required
-                      onChange={(e) => {
-                        setPassword(e.target.value);
-                      }}
-                    />
-                  </div>
+    <label className="form-label">Password</label>
+    <div className="input-group">
+        <input
+            type={showPassword ? "text" : "password"}
+            value={password}
+            className="form-control"
+            name="example-text-input"
+            placeholder="Your report name"
+            required
+            onChange={(e) => {
+                setPassword(e.target.value);
+            }}
+        />
+        <button
+            className="btn btn-outline-secondary"
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+        >
+            {showPassword ? "Hide" : "Show"}
+        </button>
+    </div>
+</div>
+
                 </div>
                 {/* If the designation is others */}
                 {designation === "Others" && (

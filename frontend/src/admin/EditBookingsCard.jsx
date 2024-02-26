@@ -170,7 +170,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
             {companyReal !== null && (
               <DialogContent>
                 <div className="row" style={{ fontSize: "5px" }}>
-                  {companyReal.length !== 0 && (
+                  {companyReal !== null && (
                     <div className="col">
                       <div className="booking-fields-view">
                         <div className="fields-view-title">BDM Name :</div>
@@ -425,7 +425,7 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
             {company !== null && companyReal !== null && (
               <DialogContent>
                 <div className="row" style={{ fontSize: "5px" }}>
-                  {company.length !== 0 && (
+                  {company !== null && (
                     <div className="col">
                       <div className="booking-fields-view">
                         <div className="fields-view-title">BDM Name :</div>

@@ -12,6 +12,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import Select from "react-select";
 import Swal from "sweetalert2";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
@@ -22,9 +23,24 @@ import Nodata from "../components/Nodata.jsx";
 import EditForm from "../components/EditForm.jsx";
 import { useCallback } from "react";
 import debounce from "lodash/debounce";
+import { options } from "../components/Options.js";
+
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
+  const [isEditProjection, setIsEditProjection] = useState(false);
+  const [projectingCompany, setProjectingCompany] = useState("")
+  const [sortStatus, setSortStatus] = useState("")
+  const [projectionData, setProjectionData] = useState([]);
+  const [currentProjection, setCurrentProjection] = useState({
+    companyName:'',
+    ename:"",
+    offeredPrize:0,
+    offeredServices:[],
+    lastFollowUpdate: '' ,
+    date:'',
+    time:'',
+  });
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
   const [changeRemarks, setChangeRemarks] = useState("");
@@ -33,6 +49,7 @@ function EmployeePanel() {
   const [openCSV, openchangeCSV] = useState(false);
   const [openRemarks, openchangeRemarks] = useState(false);
   const [openAnchor, setOpenAnchor] = useState(false);
+  const [openProjection, setOpenProjection] = useState(false);
   const [data, setData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -53,20 +70,59 @@ function EmployeePanel() {
   const [updateData, setUpdateData] = useState({});
   const [RequestApprovals, setRequestApprovals] = useState([]);
   const [mapArray, setMapArray] = useState([]);
-  const [currentRemarks, setCurrentRemarks] = useState('');
+  const [companies, setCompanies] = useState([]);
+  const [selectedValues, setSelectedValues] = useState([]);
+  const [currentRemarks, setCurrentRemarks] = useState("");
   const itemsPerPage = 500;
   const [year, setYear] = useState(0);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const { userId } = useParams();
   console.log(userId);
+  const customStyles = {
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected
+        ? "blue"
+        : state.isDisabled
+        ? "#ffb900"
+        : "white",
+      color: state.isDisabled ? "white" : "black",
+      // Add more styles as needed
+    }),
+  };
 
   const functionopenpopup = () => {
     openchange(true);
   };
+  const functionopenprojection = (comName) => {
+    setProjectingCompany(comName);
+    setOpenProjection(true);
+    const findOneprojection = projectionData.length !== 0 && projectionData.find(item => item.companyName === comName);
+    if (findOneprojection) {
+      setCurrentProjection({        
+          companyName:findOneprojection.companyName,
+          ename:findOneprojection.ename,
+          offeredPrize:findOneprojection.offeredPrize,
+          offeredServices:findOneprojection.offeredServices,
+          lastFollowUpdate: findOneprojection.lastFollowUpdate ,
+          date:'',
+          time:'',
+      });
+      setSelectedValues(findOneprojection.offeredServices);
+    } else {
+      setIsEditProjection(true);
+    }
+  };
+  
+  const closeProjection = () => {
+    setOpenProjection(false);
+  };
   const functionopenAnchor = () => {
     setOpenAnchor(true);
   };
+
+
   const [cid, setcid] = useState("");
   const [cstat, setCstat] = useState("");
   const functionopenpopupremarks = (companyID, companyStatus) => {
@@ -126,6 +182,14 @@ function EmployeePanel() {
       console.error("Error fetching data:", error.message);
     }
   };
+  const fetchProjections = async()=>{
+    try{
+      const response = await axios.get(`${secretKey}/projection-data`);
+      setProjectionData(response.data);
+    }catch(error){
+      console.error("Error fetching Projection Data:" , error.message);
+    }
+  }
   const [moreEmpData, setmoreEmpData] = useState([]);
 
   const fetchNewData = async (status) => {
@@ -136,7 +200,7 @@ function EmployeePanel() {
         // Assuming AssignDate is a string representation of a date
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
-    
+
       setmoreEmpData(sortedData);
       setEmployeeData(
         tempData.filter(
@@ -223,6 +287,7 @@ function EmployeePanel() {
 
   useEffect(() => {
     fetchData();
+
   }, [userId]);
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
@@ -240,6 +305,7 @@ function EmployeePanel() {
   // const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
     fetchRemarksHistory();
+    fetchProjections();
     // let watchId;
     // const successCallback = (position) => {
     //   const userLatitude = position.coords.latitude;
@@ -348,6 +414,7 @@ function EmployeePanel() {
     cindate,
     cnum
   ) => {
+    
     if (newStatus === "Matured") {
       setCompanyName(cname);
       setCompanyEmail(cemail);
@@ -370,8 +437,10 @@ function EmployeePanel() {
       // Check if the API call was successful
       if (response.status === 200) {
         // Assuming fetchData is a function to fetch updated employee data
-
-        fetchNewData();
+        console.log("Sort Status :", sortStatus);
+     fetchNewData()
+        
+        
 
         // if(newStatus==="Interested"){
         //   setdataStatus("Interested");
@@ -387,6 +456,8 @@ function EmployeePanel() {
     }
   };
 
+
+
   const handlenewFieldChange = (companyId, value) => {
     setUpdateData((prevData) => ({
       ...prevData,
@@ -398,16 +469,16 @@ function EmployeePanel() {
     }));
   };
 
-  const handleDeleteRemarks = async (remarks_id , remarks_value) => {
+  const handleDeleteRemarks = async (remarks_id, remarks_value) => {
     const mainRemarks = remarks_value === currentRemarks ? true : false;
-    console.log(mainRemarks)
+    console.log(mainRemarks);
     const companyId = cid;
     console.log("Deleting Remarks with", remarks_id);
     try {
       // Send a delete request to the backend to delete the item with the specified ID
       await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
-      if(mainRemarks){
-        await axios.delete(`${secretKey}/remarks-delete/${companyId}`)
+      if (mainRemarks) {
+        await axios.delete(`${secretKey}/remarks-delete/${companyId}`);
       }
       // Set the deletedItemId state to trigger re-fetching of remarks history
       Swal.fire("Remarks Deleted");
@@ -756,9 +827,76 @@ function EmployeePanel() {
     const indianDate = date.toLocaleString("en-IN", options);
     return indianDate;
   };
+  useEffect(() => {
+    const employeeName = data.ename;
+    if (employeeName) {
+      const fetchCompanies = async () => {
+        try {
+          const response = await fetch(`${secretKey}/companies`);
+          const data = await response.json();
 
-  console.log(mapArray);
+          // Filter and format the data based on employeeName
+          const formattedData = data
+            .filter(
+              (entry) =>
+                entry.bdeName === employeeName || entry.bdmName === employeeName
+            )
+            .map((entry) => ({
+              "Company Name": entry.companyName,
+              "Company Number": entry.contactNumber,
+              "Company Email": entry.companyEmail,
+              "Company Incorporation Date": entry.incoDate,
+              City: "NA",
+              State: "NA",
+              ename: employeeName,
+              AssignDate: entry.bookingDate,
+              Status: "Matured",
+              Remarks: "No Remarks Added",
+            }));
 
+          setCompanies(formattedData);
+        } catch (error) {
+          console.error("Error fetching companies:", error);
+          setCompanies([]);
+        }
+      };
+
+      fetchCompanies();
+    }
+  }, [data]);
+  console.log(companies);
+
+
+  const handleProjectionSubmit = async () => {
+    try {
+     
+      const finalData = {
+        ...currentProjection,
+        companyName: projectingCompany,
+        ename: data.ename,
+        offeredServices: selectedValues
+      };
+  
+      // Send data to backend API
+      const response = await axios.post(`${secretKey}/update-followup`, finalData);
+      Swal.fire({title:"Projection Submitted!" , icon:'success'});
+      setOpenProjection(false);
+      setCurrentProjection({
+        companyName:'',
+        ename:"",
+        offeredPrize:0,
+        offeredServices:[],
+        lastFollowUpdate: '' ,
+        date:'',
+        time:'',
+      })
+      fetchProjections();
+
+      console.log(response.data); // Log success message
+    } catch (error) {
+      console.error('Error updating or adding data:', error.message);
+    }
+  };
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
@@ -942,6 +1080,7 @@ function EmployeePanel() {
                           name="sort-by"
                           id="sort-by"
                           onChange={(e) => {
+                            setSortStatus(e.target.value);
                             const selectedOption = e.target.value;
 
                             switch (selectedOption) {
@@ -1004,6 +1143,26 @@ function EmployeePanel() {
                                     )
                                 );
                                 break;
+                              case "AssignDate":
+                                setdataStatus("AssignDate");
+                                setEmployeeData(
+                                  moreEmpData.sort((a, b) =>
+                                    b.AssignDate.localeCompare(a.AssignDate)
+                                  )
+                                );
+                                break;
+                              case "Company Incorporation Date  ":
+                                setdataStatus("CompanyIncorporationDate");
+                                setEmployeeData(
+                                  moreEmpData.sort((a, b) =>
+                                    b[
+                                      "Company Incorporation Date  "
+                                    ].localeCompare(
+                                      a["Company Incorporation Date  "]
+                                    )
+                                  )
+                                );
+                                break;
                               default:
                                 // No filtering if default option selected
                                 setdataStatus("All");
@@ -1027,6 +1186,10 @@ function EmployeePanel() {
                           <option value="FollowUp">Follow Up</option>
                           <option value="Interested">Interested</option>
                           <option value="Not Interested">Not Interested</option>
+                          <option value="AssignDate">Assigned Date</option>
+                          <option value="Company Incorporation Date  ">
+                            C.Inco. Date
+                          </option>
                         </select>
                       </div>
 
@@ -1329,13 +1492,7 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Matured{" "}
-                        <span className="no_badge">
-                          {
-                            moreEmpData.filter(
-                              (obj) => obj.Status === "Matured"
-                            ).length
-                          }
-                        </span>
+                        <span className="no_badge">{companies.length}</span>
                       </a>
                     </li>
                     <li class="nav-item">
@@ -1403,20 +1560,173 @@ function EmployeePanel() {
                             <th>State</th>
                             <th>Assigned Date</th>
 
-                            {dataStatus === "Matured" && <th>Action</th>}
+                            {(dataStatus === "Matured" && <th>Action</th>) ||
+                              (dataStatus === "FollowUp" && <th>Action</th>)}
                           </tr>
                         </thead>
-                        {currentData.length === 0 ? (
+                        {currentData.length !== 0 &&
+                          dataStatus !== "Matured" && (
+                            <tbody>
+                              {currentData.map((company, index) => (
+                                <tr
+                                  key={index}
+                                  style={{ border: "1px solid #ddd" }}
+                                >
+                                  <td className="td-sticky">
+                                    {startIndex + index + 1}
+                                  </td>
+                                  <td className="td-sticky1">
+                                    {company["Company Name"]}
+                                  </td>
+                                  <td>{company["Company Number"]}</td>
+                                  <td>
+                                    {company["Status"] === "Matured" ? (
+                                      <span>{company["Status"]}</span>
+                                    ) : (
+                                      <select
+                                        style={{
+                                          width: "100px",
+                                          background: "none",
+                                          padding: ".4375rem .75rem",
+                                          border:
+                                            "1px solid var(--tblr-border-color)",
+                                          borderRadius:
+                                            "var(--tblr-border-radius)",
+                                        }}
+                                        value={company["Status"]}
+                                        onChange={(e) =>
+                                          handleStatusChange(
+                                            company._id,
+                                            e.target.value,
+                                            company["Company Name"],
+                                            company["Company Email"],
+                                            company[
+                                              "Company Incorporation Date  "
+                                            ],
+                                            company["Company Number"]
+                                          )
+                                        }
+                                      >
+                                        <option value="Not Picked Up">
+                                          Not Picked Up
+                                        </option>
+                                        <option value="Busy">Busy </option>
+
+                                        <option value="Junk">Junk</option>
+                                        <option value="Not Interested">
+                                          Not Interested
+                                        </option>
+                                        {dataStatus === "All" && (
+                                          <>
+                                            <option value="Untouched">
+                                              Untouched{" "}
+                                            </option>
+                                            <option value="Interested">
+                                              Interested
+                                            </option>
+                                          </>
+                                        )}
+
+                                        {dataStatus === "Interested" && (
+                                          <>
+                                            <option value="Interested">
+                                              Interested
+                                            </option>
+                                            <option value="FollowUp">
+                                              Follow Up{" "}
+                                            </option>
+                                            <option value="Matured">
+                                              Matured
+                                            </option>
+                                          </>
+                                        )}
+
+                                        {dataStatus === "FollowUp" && (
+                                          <>
+                                            <option value="FollowUp">
+                                              Follow Up{" "}
+                                            </option>
+                                            <option value="Matured">
+                                              Matured
+                                            </option>
+                                          </>
+                                        )}
+                                      </select>
+                                    )}
+                                  </td>
+                                  <td>
+                                    <div
+                                      key={company._id}
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        width: "100px",
+                                      }}
+                                    >
+                                      <p
+                                        className="rematkText text-wrap m-0"
+                                        title={company.Remarks}
+                                      >
+                                        {!company["Remarks"]
+                                          ? "No Remarks"
+                                          : company.Remarks}
+                                      </p>
+
+                                      <IconButton
+                                        onClick={() => {
+                                          functionopenpopupremarks(
+                                            company._id,
+                                            company.Status
+                                          );
+                                          setCurrentRemarks(company.Remarks);
+                                          setCompanyId(company._id);
+                                        }}
+                                      >
+                                        <EditIcon
+                                          style={{
+                                            width: "12px",
+                                            height: "12px",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    </div>
+                                  </td>
+                                  <td>{company["Company Email"]}</td>
+                                  <td>
+                                    {formatDate(
+                                      company["Company Incorporation Date  "]
+                                    )}
+                                  </td>
+                                  <td>{company["City"]}</td>
+                                  <td>{company["State"]}</td>
+                                  <td>{formatDate(company["AssignDate"])}</td>
+
+                                  {dataStatus === "FollowUp" && (
+                                    <td>
+                                      <button
+                                        style={{
+                                          padding: "5px",
+                                          fontSize: "12px",
+                                          backgroundColor: "lightblue",
+                                          // Additional styles for the "View" button
+                                        }}
+                                        className="btn btn-primary d-none d-sm-inline-block"
+                                        onClick={() => {
+                                          functionopenprojection(company["Company Name"]);
+                                        }}
+                                      >
+                                        View
+                                      </button>
+                                    </td>
+                                  )}
+                                </tr>
+                              ))}
+                            </tbody>
+                          )}
+                        {dataStatus === "Matured" && companies.length !== 0 && (
                           <tbody>
-                            <tr className="particular">
-                              <td colSpan="10" style={{ textAlign: "center" }}>
-                                <Nodata />
-                              </td>
-                            </tr>
-                          </tbody>
-                        ) : (
-                          <tbody>
-                            {currentData.map((company, index) => (
+                            {companies.map((company, index) => (
                               <tr
                                 key={index}
                                 style={{ border: "1px solid #ddd" }}
@@ -1429,79 +1739,7 @@ function EmployeePanel() {
                                 </td>
                                 <td>{company["Company Number"]}</td>
                                 <td>
-                                  {company["Status"] === "Matured" ? (
-                                    <span>{company["Status"]}</span>
-                                  ) : (
-                                    <select
-                                      style={{
-                                        width: "100px",
-                                        background: "none",
-                                        padding: ".4375rem .75rem",
-                                        border:
-                                          "1px solid var(--tblr-border-color)",
-                                        borderRadius:
-                                          "var(--tblr-border-radius)",
-                                      }}
-                                      value={company["Status"]}
-                                      onChange={(e) =>
-                                        handleStatusChange(
-                                          company._id,
-                                          e.target.value,
-                                          company["Company Name"],
-                                          company["Company Email"],
-                                          company[
-                                            "Company Incorporation Date  "
-                                          ],
-                                          company["Company Number"]
-                                        )
-                                      }
-                                    >
-                                      
-                                      <option value="Not Picked Up">
-                                        Not Picked Up
-                                      </option>
-                                      <option value="Busy">Busy </option>
-                                     
-                                     <option value="Junk">Junk</option>
-                                     <option value="Not Interested">
-                                        Not Interested
-                                      </option>
-                                      {dataStatus==="All" && (
-                                        <>
-                                       
-                                        <option value="Untouched">
-                                        Untouched{" "}
-                                      </option>
-                                         <option value="Interested">
-                                         Interested
-                                       </option>
-                                       </>
-                                      )}
-
-                                      {dataStatus === "Interested" && (
-                                        <>
-                                          <option value="Interested">
-                                         Interested
-                                       </option>
-                                        <option value="FollowUp">
-                                          Follow Up{" "}
-                                        </option>
-                                         <option value="Matured">Matured</option>
-                                         </>
-                                      )}
-                                    
-                                   
-                                      {dataStatus === "FollowUp" && (
-                                        <>
-                                         <option value="FollowUp">
-                                         Follow Up{" "}
-                                       </option>
-                                        <option value="Matured">Matured</option>
-                                        </>
-                                      )}
-                                      
-                                    </select>
-                                  )}
+                                  <span>{company["Status"]}</span>
                                 </td>
                                 <td>
                                   <div
@@ -1510,70 +1748,66 @@ function EmployeePanel() {
                                       display: "flex",
                                       alignItems: "center",
                                       justifyContent: "space-between",
-                                      width: "100px",
                                     }}
                                   >
                                     <p
                                       className="rematkText text-wrap m-0"
                                       title={company.Remarks}
                                     >
-                                      {!company["Remarks"]
-                                        ? "No Remarks"
-                                        : company.Remarks}
+                                      {company.Remarks}
                                     </p>
-
-                                    <IconButton
-                                      onClick={() => {
-                                        functionopenpopupremarks(
-                                          company._id,
-                                          company.Status
-                                        );
-                                        setCurrentRemarks(company.Remarks)
-                                        setCompanyId(company._id)
-                                      }}
-                                    >
-                                      <EditIcon
-                                        style={{
-                                          width: "12px",
-                                          height: "12px",
-                                        }}
-                                      />
-                                    </IconButton>
                                   </div>
                                 </td>
                                 <td>{company["Company Email"]}</td>
                                 <td>
                                   {formatDate(
-                                    company["Company Incorporation Date  "]
+                                    company["Company Incorporation Date"]
                                   )}
                                 </td>
                                 <td>{company["City"]}</td>
                                 <td>{company["State"]}</td>
                                 <td>{formatDate(company["AssignDate"])}</td>
 
-                                {dataStatus === "Matured" && (
-                                  <td>
-                                    <button
-                                      style={{
-                                        padding: "5px",
-                                        fontSize: "12px",
-                                        backgroundColor: "lightblue",
-                                        // Additional styles for the "View" button
-                                      }}
-                                      className="btn btn-primary d-none d-sm-inline-block"
-                                      onClick={() => {
-                                        functionopenAnchor();
-                                        setMaturedCompanyName(
-                                          company["Company Name"]
-                                        );
-                                      }}
-                                    >
-                                      View
-                                    </button>
-                                  </td>
-                                )}
+                                <td>
+                                  <button
+                                    style={{
+                                      padding: "5px",
+                                      fontSize: "12px",
+                                      backgroundColor: "lightblue",
+                                      // Additional styles for the "View" button
+                                    }}
+                                    className="btn btn-primary d-none d-sm-inline-block"
+                                    onClick={() => {
+                                      functionopenAnchor();
+                                      setMaturedCompanyName(
+                                        company["Company Name"]
+                                      );
+                                    }}
+                                  >
+                                    View
+                                  </button>
+                                </td>
                               </tr>
                             ))}
+                          </tbody>
+                        )}
+                        {currentData.length === 0 &&
+                          dataStatus !== "Matured" && (
+                            <tbody>
+                              <tr>
+                                <td colSpan="11" className="p-2 particular">
+                                  <Nodata />
+                                </td>
+                              </tr>
+                            </tbody>
+                          )}
+                        {companies.length === 0 && dataStatus === "Matured" && (
+                          <tbody>
+                            <tr>
+                              <td colSpan="11" className="p-2 particular">
+                                <Nodata />
+                              </td>
+                            </tr>
                           </tbody>
                         )}
                       </table>
@@ -1878,7 +2112,10 @@ function EmployeePanel() {
                               width: "14px ",
                             }}
                             onClick={() => {
-                              handleDeleteRemarks(historyItem._id , historyItem.remarks);
+                              handleDeleteRemarks(
+                                historyItem._id,
+                                historyItem.remarks
+                              );
                             }}
                           />
                         </div>
@@ -2080,6 +2317,91 @@ function EmployeePanel() {
             </IconButton>{" "}
           </div>
           <EditForm matured={isEdit} companysName={maturedCompanyName} />
+        </div>
+      </Drawer>
+      {/* Drawer for Follow Up Projection  */}
+      <Drawer anchor="right" open={openProjection} onClose={closeProjection}>
+        <div style={{ width: "31em" }} className="container-xl">
+          <div className="header d-flex justify-content-between">
+            <h1 className="title">Projection Form</h1>
+           {currentProjection.offeredPrize!==0 && <IconButton onClick={()=>{
+            setIsEditProjection(true)
+           }}>
+              <EditIcon color="primary"></EditIcon>
+            </IconButton>}
+          </div>
+          <div className="body-projection">
+            <div className="header">
+              <strong>
+               {projectingCompany}
+              </strong>
+            </div>
+            <div className="label">
+              <strong>Offered Services :</strong>
+              <div className="services mb-3">
+                <Select
+                  styles={customStyles}
+                  isMulti
+                  options={options}
+                  onChange={(selectedOptions) => {
+                    setSelectedValues(
+                      selectedOptions.map((option) => option.value)
+                    );
+                  }}
+                  value={selectedValues.map((value) => ({
+                    value,
+                    label: value,
+                  }))}
+                  placeholder="Select Services..."
+                  disabled={!isEditProjection}
+                />
+              </div>
+            </div>
+            <div className="label">
+              <strong>Offered prizes:</strong>
+              <div className="services mb-3">
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="Please enter offered Prize"
+                  value={currentProjection.offeredPrize}
+                  onChange={(e) => {
+                    setCurrentProjection((prevLeadData) => ({
+                      ...prevLeadData,
+                      offeredPrize: e.target.value,
+                      
+                    }));
+                  }}
+                  disabled={!isEditProjection}
+                />
+              </div>
+            </div>
+            <div className="label">
+              <strong>Last Follow Up Date:</strong>
+              <div className="services mb-3">
+                <input
+                  type="date"
+                  className="form-control"
+                  placeholder="Please enter offered Prize"
+                  value={currentProjection.lastFollowUpdate}
+                  onChange={(e) => {
+                    setCurrentProjection((prevLeadData) => ({
+                      ...prevLeadData,
+                      lastFollowUpdate: e.target.value,
+                      
+                    }));
+                  }}
+                  disabled={!isEditProjection}
+                />
+              </div>
+            </div>
+            <div className="submitBtn">
+            <button   disabled={!isEditProjection} onClick={handleProjectionSubmit} style={{width:'100%'}} type="submit" class="btn btn-primary mb-3">
+              Submit
+            </button>
+            </div>
+            
+          </div>
         </div>
       </Drawer>
     </div>

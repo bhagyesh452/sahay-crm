@@ -27,6 +27,10 @@ const BookingsRequestModel = require("./models/BookingsEdit");
 const json2csv = require('json2csv').parse;
 const fastCsv = require('fast-csv');
 
+const RecentUpdatesModel = require("./models/RecentUpdates");
+const FollowUpModel = require("./models/FollowUp");
+const DraftModel = require("./models/DraftLeadform");
+
 
 // const http = require('http');
 // const socketIo = require('socket.io');
@@ -60,6 +64,8 @@ app.get("/api", (req, res) => {
   console.log(req.url);
   res.send("hello from backend!");
 });
+
+
 
 app.post("/api/admin/login-admin", async (req, res) => {
   const { username, password } = req.body;
@@ -196,6 +202,36 @@ app.post("/api/employee-history", async (req, res) => {
     console.error("Error in bulk save:", error.message);
   }
 });
+app.get('/api/employee-history/:companyName', async (req, res) => {
+  try {
+    // Extract the companyName from the URL parameter
+    const { companyName } = req.params;
+
+    // Query the database to find all data with matching companyName
+    const employeeHistory = await EmployeeHistory.find({ companyName });
+
+    // Respond with the fetched data
+    res.json(employeeHistory);
+  } catch (error) {
+    // Handle errors
+    console.error('Error fetching employee history:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.get('/api/specific-company/:companyId', async (req, res) => {
+  try {
+    const companyId = req.params.companyId;
+    // Assuming CompanyModel.findById() is used to find a company by its ID
+    const company = await CompanyModel.findById(companyId);
+    if (!company) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+    res.json(company);
+  } catch (error) {
+    console.error('Error fetching company:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 app.post("/api/requestCompanyData", async (req, res) => {
   const csvData = req.body;
 
@@ -321,6 +357,46 @@ app.get("/api/leads", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+app.get('/api/projection-data', async (req, res) => {
+  try {
+    // Fetch all data from the FollowUpModel
+    const followUps = await FollowUpModel.find();
+    
+    // Return the data as JSON response
+    res.json(followUps);
+  } catch (error) {
+    // If there's an error, send a 500 internal server error response
+    console.error('Error fetching FollowUp data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+// Backend API to update or add data to FollowUpModel
+app.post('/api/update-followup', async (req, res) => {
+  try {
+    const { companyName } = req.body;
+    const todayDate = new Date();
+    const time = todayDate.toLocaleTimeString();
+    const date = todayDate.toLocaleDateString();
+    const finalData = { ...req.body, date, time };
+    
+    // Check if a document with companyName exists
+    const existingData = await FollowUpModel.findOne({ companyName });
+    
+    if (existingData) {
+      // Update existing document
+      await FollowUpModel.findOneAndUpdate({ companyName }, finalData);
+      res.status(200).json({ message: 'Data updated successfully' });
+    } else {
+      // Create new document
+      await FollowUpModel.create(finalData);
+      res.status(201).json({ message: 'New data added successfully' });
+    }
+  } catch (error) {
+    console.error('Error updating or adding data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get("/api/requestCompanyData", async (req, res) => {
   try {
     const data = await CompanyRequestModel.find();
@@ -454,7 +530,7 @@ app.put("/api/einfo/:id", async (req, res) => {
 // Assigning data
 
 app.post("/api/postData", async (req, res) => {
-  const { employeeSelection, selectedObjects } = req.body;
+  const { employeeSelection, selectedObjects, title, date, time } = req.body;
   // If not assigned, post data to MongoDB or perform any desired action
   const updatePromises = selectedObjects.map((obj) => {
     // Add AssignData property with the current date
@@ -466,11 +542,35 @@ app.post("/api/postData", async (req, res) => {
     return CompanyModel.updateOne({ _id: obj._id }, updatedObj);
   });
 
+  // Add the recent update to the RecentUpdatesModel
+  const newUpdate = new RecentUpdatesModel({
+    title: title,
+    date: date,
+    time: time,
+  });
+  await newUpdate.save();
+
   // Execute all update promises
   await Promise.all(updatePromises);
 
   res.json({ message: "Data posted successfully" });
 });
+
+app.get("/api/recent-updates", async (req, res) => {
+  try {
+    // Fetch all data from the RecentUpdatesModel
+    const recentUpdates = await RecentUpdatesModel.find();
+
+    // Send the retrieved data as a response
+    res.status(200).json(recentUpdates);
+  } catch (error) {
+    // Handle any errors that occur during the database query
+    console.error("Error fetching recent updates:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 app.delete("/api/delete-data/:ename", async (req, res) => {
   const { ename } = req.params;
 
