@@ -7,6 +7,7 @@ import BookingsForm from "./BookingsForm";
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import Header from "./Header";
+import socketIO from 'socket.io-client';
 
 function BookingsAdmin() {
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
@@ -18,7 +19,19 @@ function BookingsAdmin() {
 
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+  useEffect(() => {
+    const socket = socketIO.connect(`http://localhost:3001`);
 
+    // Listen for the 'welcome' event from the server
+    socket.on('welcome', (message) => {
+      console.log(message); // Log the welcome message received from the server
+    });
+  
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
   useEffect(() => {
     // Fetch company names from the backend API
     fetchCompanies();

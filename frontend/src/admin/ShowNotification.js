@@ -101,8 +101,13 @@ function ShowNotification() {
     fetchApproveRequests();
     fetchDataDelete();
     fetchEditRequests();
-  }, []);
 
+  }, []);
+  const [expandedRow, setExpandedRow] = useState(null);
+
+  const handleRowClick = (index) => {
+    setExpandedRow(expandedRow === index ? null : index);
+  };
   // setEnameArray(uniqueEnames);
 
   return (

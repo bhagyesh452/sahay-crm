@@ -8,9 +8,6 @@ import Select, { components } from 'react-select';
 // import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 
-
-
-
 const Analysis_dashboard = () => {
 
 
