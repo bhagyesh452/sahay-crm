@@ -6,6 +6,10 @@ import { CiCalendar } from "react-icons/ci";
 import { HiMiniCurrencyRupee } from "react-icons/hi2";
 import Select, { components } from 'react-select';
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import { DateRangePicker } from 'react-date-range';
+
 
 
 
@@ -229,25 +233,31 @@ const Analysis_dashboard = () => {
         const bookingDate = new Date(company.bookingDate);
         const bookingMonth = bookingDate.getMonth() + 1; // Months are zero-indexed, so we add 1
         const bookingYear = bookingDate.getFullYear();
-    
+
         return bookingMonth === currentMonth && bookingYear === currentYear;
     });
-    
+
     // console.log(companieswithServicesInCurrentMonth);
     // console.log(companieswithServicesInCurrentMonth.length);
 
     const companieswithServicesToday = filteredCompanies.filter(company => {
         const bookingDate = new Date(company.bookingDate);
         const today = new Date(); // Get current date
-        
+
         // Check if bookingDate is the same as today
         return bookingDate.getDate() === today.getDate() &&
-               bookingDate.getMonth() === today.getMonth() &&
-               bookingDate.getFullYear() === today.getFullYear();
+            bookingDate.getMonth() === today.getMonth() &&
+            bookingDate.getFullYear() === today.getFullYear();
     });
-    
+
     // console.log(companieswithServicesToday);
     // console.log(companieswithServicesToday.length);
+
+    const selectionRange = {
+        startDate: new Date(),
+        endDate: new Date(),
+        key: 'selection',
+    }
 
     return (
         <div>
@@ -466,12 +476,14 @@ const Analysis_dashboard = () => {
                                         <div class="col">
                                             <Select
                                                 options={options}
-                                                styles={{customStyles , 
+                                                styles={{
+                                                    customStyles,
                                                     container: (provided, state) => ({
                                                         ...provided,
-                                                        border:"0px solid transparent",
-                                                        justifyContent:"space-between"
-                                                    }),}}
+                                                        border: "0px solid transparent",
+                                                        justifyContent: "space-between"
+                                                    }),
+                                                }}
                                                 isMulti
                                                 // value={selectedOptions}
                                                 // onChange={handleChange}
@@ -496,17 +508,15 @@ const Analysis_dashboard = () => {
                                     <div class="row align-items-center">
                                         <div class="col-auto">
                                             <span class="bg-facebook text-white avatar">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 448 512" fill='white' stroke-width="2" stroke="currentColor"><path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z"/></svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 448 512" fill='white' stroke-width="2" stroke="currentColor"><path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z" /></svg>
                                             </span>
                                         </div>
-                                        {/* <div class="col">
-                                            <div class="font-weight-medium">
-                                                132 Likes
-                                            </div>
-                                            <div class="text-muted">
-                                                21 today
-                                            </div>
-                                        </div> */}
+                                        <div class="col">
+                                            <DateRangePicker
+                                                ranges={[selectionRange]}
+                                               // onChange={handleSelect}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
