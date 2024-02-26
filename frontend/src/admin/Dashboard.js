@@ -5,7 +5,7 @@ import axios from "axios";
 import Nodata from "../components/Nodata";
 import "../assets/styles.css";
 import { IconButton } from "@mui/material";
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 // import LoginAdmin from "./LoginAdmin";
@@ -43,13 +43,13 @@ function Dashboard() {
         const filteredData = data.filter((company) => {
           // Assuming bookingDate is in the format of a string representing a date (e.g., "YYYY-MM-DD")
           const companyDate = formatDate(company.bookingDate);
-          console.log(companyDate, today);
+      
           return companyDate === today;
         });
 
         setBookingObject(data);
         setFilteredBooking(filteredData);
-        console.log(filteredData);
+    
       } catch (error) {
         console.error("Error Fetching Booking Details", error.message);
       }
@@ -135,7 +135,7 @@ function Dashboard() {
 
   filteredBooking.forEach((obj) => {
     // Check if the bdeName is already in the Set
-    console.log(obj.bdeName, uniqueBdeNames);
+
     if (!uniqueBdeNames.has(obj.bdeName)) {
       // If not, add it to the Set and push the object to the final array
       uniqueBdeNames.add(obj.bdeName);
@@ -268,11 +268,13 @@ function Dashboard() {
                                 <tr>
                                   <td>{index + 1}</td>
                                   <td>{obj.bdeName}</td>
-                                  <td style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center"
-                                  }}>
+                                  <td
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}
+                                  >
                                     {filteredBooking.filter((data) => {
                                       return (
                                         data.bdeName === obj.bdeName &&
@@ -287,10 +289,13 @@ function Dashboard() {
                                       }).length /
                                         2}{" "}
                                     <div>
-                                      <IconButton  onClick={() => handleRowClick(index)}>
-                                  <AddCircleIcon/>
-                                      </IconButton>
-                                      
+                                      <AddCircleIcon
+                                        style={{
+                                          cursor: "pointer",
+                                          marginLeft: "5px",
+                                        }}
+                                        onClick={() => handleRowClick(index)}
+                                      />
                                     </div>
                                   </td>
 
@@ -315,14 +320,25 @@ function Dashboard() {
                                         }, 0) // Initialize totalServices as 0
                                     }
                                   </td>
-                                  <td> {
-    filteredBooking
-      .filter((data) => data.bdeName === obj.bdeName) // Filter objects with bdeName same as myName
-      .reduce((totalPayments, obj1) => { // Use reduce to calculate the total of totalPayments
-        return totalPayments + (obj1.totalPayment ? obj1.totalPayment : 0);
-      }, 0) // Initialize totalPayments as 0
-  }</td>
-                                  <td>  
+                                  <td>
+                                    {" "}
+                                    {
+                                      filteredBooking
+                                        .filter(
+                                          (data) => data.bdeName === obj.bdeName
+                                        ) // Filter objects with bdeName same as myName
+                                        .reduce((totalPayments, obj1) => {
+                                          // Use reduce to calculate the total of totalPayments
+                                          return (
+                                            totalPayments +
+                                            (obj1.totalPayment
+                                              ? obj1.totalPayment
+                                              : 0)
+                                          );
+                                        }, 0) // Initialize totalPayments as 0
+                                    }
+                                  </td>
+                                  <td>
                                     {obj.paymentTerms === "Full Advanced"
                                       ? obj.totalPayment
                                       : obj.firstPayment}
@@ -332,6 +348,12 @@ function Dashboard() {
                                       ? 0
                                       : obj.totalPayment - obj.firstPayment}
                                   </td>
+                                  {expandedRow !== null && (
+                                    <>
+                                      <td>-</td>
+                                      <td>CLOSED/SUPPORTED BY</td>
+                                    </>
+                                  )}
                                   {/* <td>
                                     {obj.bdeName !== obj.bdmName ? "Yes" : "No"}
                                   </td>
@@ -415,12 +437,45 @@ function Dashboard() {
                                   }).length /
                                     2}
                               </td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
+                              <td>
+                                {filteredBooking.reduce((totalLength, obj) => {
+                                  // Split the services string by commas and calculate the length of the resulting array
+                                  const serviceLength =
+                                    obj.services[0].split(",").length;
+                                  // Add the length of services for the current object to the total length
+                                  return totalLength + serviceLength;
+                                }, 0)}
+                              </td>
+
+                              <td>
+  {filteredBooking.reduce((totalPayment, obj) => {
+    // Add the totalPayment of the current object to the totalPayment accumulator
+    return totalPayment + obj.totalPayment;
+  }, 0)}
+</td>
+
+<td>
+  {filteredBooking.reduce((totalFirstPayment, obj) => {
+    // If firstPayment is 0, count totalPayment instead
+    const paymentToAdd = obj.firstPayment === 0 ? obj.totalPayment : obj.firstPayment;
+    // Add the paymentToAdd to the totalFirstPayment accumulator
+    return totalFirstPayment + paymentToAdd;
+  }, 0)}
+</td>
+<td>
+  {filteredBooking.reduce((totalFirstPayment, obj) => {
+    // If firstPayment is 0, count totalPayment instead
+    const paymentToAdd = obj.firstPayment === 0 ? 0 :obj.totalPayment- obj.firstPayment;
+    // Add the paymentToAdd to the totalFirstPayment accumulator
+    return totalFirstPayment + paymentToAdd;
+  }, 0)}
+</td>
+                              {expandedRow !== null && (
+                                <>
+                                  <td>-</td>
+                                  <td>CLOSED/SUPPORTED BY</td>
+                                </>
+                              )}
                             </tr>
                           </tfoot>
                         </>
