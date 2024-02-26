@@ -5,7 +5,7 @@ import { GrDocumentStore } from "react-icons/gr";
 import { CiCalendar } from "react-icons/ci";
 import { HiMiniCurrencyRupee } from "react-icons/hi2";
 import Select, { components } from 'react-select';
-import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+// import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 
 
