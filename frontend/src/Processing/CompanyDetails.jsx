@@ -215,7 +215,9 @@ const CompanyDetails = ({ company }) => {
   const handleSubmit = async () => {
     try {
 
-      const response = await axios.post(`${secretKey}/upload/lead-form`, excelData);
+    const updatedExcelData = excelData.map(item => ({ ...item, imported: true }));
+    console.log(updatedExcelData)
+      const response = await axios.post(`${secretKey}/upload/lead-form`, updatedExcelData);
       await axios.post(`${secretKey}/leads`, transformedData)
       console.log(response.data.successCounter, response.data.errorCounter)
       if (response.data.errorCounter === 0) {
@@ -247,6 +249,7 @@ const CompanyDetails = ({ company }) => {
     }
   };
 
+// --------------------------------------to open attachments------------------------------------
 
   const handleViewPdfReciepts = (paymentreciept) => {
     const pathname = paymentreciept;
@@ -259,7 +262,9 @@ const CompanyDetails = ({ company }) => {
     console.log(pathname);
     window.open(`${secretKey}/otherpdf/${pathname}`, "_blank");
   }
-  // console.log(company.paymentReceipt)
+
+  // ---------------------------------------copy to clipboard-------------------------------
+ 
   const copyToClipboard = (value) => {
     navigator.clipboard.writeText(value)
 
@@ -302,7 +307,7 @@ const CompanyDetails = ({ company }) => {
       return [...prevSelectedDocuments, ...updatedFiles];
     });
   };
-  console.log(selectedDocuments)
+ 
 
 
   const handleRemoveFile = (index) => {

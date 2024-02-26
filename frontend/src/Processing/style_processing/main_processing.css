@@ -37,6 +37,8 @@
     overflow: hidden;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
+    white-space: 'nowrap';
+    text-overflow: ellipsis;
     /* font-weight: 400;
     font-family: "Noto Sans", sans-serif; */
 }
@@ -230,4 +232,8 @@
     align-items: center;
     justify-content: space-between !important;
     width: 100%;
+  }
+  .css-13cymwt-control{
+      border: 0px solid transparent !important;
+      justify-content: space-between !important;
   }

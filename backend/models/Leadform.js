@@ -51,6 +51,10 @@ const leadSchema = new mongoose.Schema({
     read:{
         type:Boolean,
         default:false
+    },
+    imported:{
+        type:Boolean,
+        default:false
     }
 });
 

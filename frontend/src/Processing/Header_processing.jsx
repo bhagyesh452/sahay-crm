@@ -25,9 +25,9 @@ import {
 
 function Header_processing({ name, designation, data }) {
   const [unreadCount, setUnreadCount] = useState(0); // State to hold the count of unread companies
-  console.log(data)
+  // console.log(data)
   const countUnreadCompanies = () => {
-    console.log(data)
+
     if(data.length !== 0 || data !== undefined){
     const count = data.reduce((acc, company) => {
       if (!company.read) {

@@ -44,7 +44,7 @@ function Navbar_processing() {
                 </li>
                 <li
                   className={
-                    location.pathname === "/Processing/Dashboard_processing"
+                    location.pathname === "/Processing/analysis_dashboard"
                       ? "nav-item active"
                       : "nav-item"
                   }

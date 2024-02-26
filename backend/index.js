@@ -71,10 +71,10 @@ app.post("/api/admin/login-admin", async (req, res) => {
     admin_email: username,
     admin_password: password,
   });
-  console.log(user);
+  // console.log(user);
   if (user) {
     // Generate a JWT token
-    console.log("user is appropriate");
+    // console.log("user is appropriate");
     const token = jwt.sign({ userId: user._id }, secretKey, {
       expiresIn: "1h",
     });
@@ -95,7 +95,7 @@ app.post("/api/employeelogin", async (req, res) => {
     password: password,
     designation: "Sales Executive",
   });
-  console.log(user);
+  // console.log(user);
 
   if (user) {
     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
@@ -130,7 +130,7 @@ app.post("/api/processingLogin", async (req, res) => {
 const deleteAllData = async () => {
   try {
     const result = await CompanyModel.deleteMany({});
-    console.log(` documents deleted successfully.`);
+    // console.log(` documents deleted successfully.`);
   } catch (error) {
     console.error("Error deleting documents:", error.message);
   } finally {
@@ -231,7 +231,7 @@ app.post("/api/manual", async (req, res) => {
   try {
     const employee = new CompanyModel(receivedData);
     const savedEmployee = await employee.save();
-    console.log("Data sent");
+    // console.log("Data sent");
     res
       .status(200)
       .json(savedEmployee || { message: "Data sent successfully" });
@@ -384,7 +384,7 @@ app.delete("/api/delete-rows", async (req, res) => {
           // Respond with an error if backup fails
           res.status(500).json({ error: "Error creating backup." });
         } else {
-          console.log("Backup created successfully:", stdout);
+          // console.log("Backup created successfully:", stdout);
           // Respond with success message if backup is successful
           res.status(200).json({
             message:
@@ -409,7 +409,7 @@ app.post("/api/undo", (req, res) => {
         console.error("Error restoring data:", error);
         res.status(500).json({ error: "Error restoring data." });
       } else {
-        console.log("Data restored successfully:", stdout);
+        // console.log("Data restored successfully:", stdout);
         res.status(200).json({ message: "Data restored successfully." });
       }
     }
@@ -734,6 +734,7 @@ app.put("/api/requestData/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 app.put("/api/requestgData/:id", async (req, res) => {
   const { id } = req.params;
   const { read, assigned } = req.body;
@@ -885,7 +886,7 @@ app.post(
 
       const extraDocuments = req.files["otherDocs"];
       const paymentDoc = req.files["paymentReceipt"];
-      console.log(extraDocuments, paymentDoc);
+      // console.log(extraDocuments, paymentDoc);
       const paymentReceipt = req.files["paymentReceipt"]
         ? req.files["paymentReceipt"][0].filename
         : null; // Array of files for 'file2'
@@ -1284,7 +1285,7 @@ app.post(
         paymentDoc
       );
 
-      console.log("Data sent Via Email");
+      // console.log("Data sent Via Email");
       res
         .status(200)
         .json(savedEmployee || { message: "Data sent successfully" });
@@ -1378,7 +1379,7 @@ app.post(
 
       const savedEmployee = await employee.save();
 
-      console.log("Data Request Sent Successfully");
+      // console.log("Data Request Sent Successfully");
       res
         .status(200)
         .json(savedEmployee || { message: "Data sent successfully" });
@@ -1432,6 +1433,7 @@ app.post("/api/upload/lead-form", async (req, res) => {
           incoDate,
           extraNotes,
           bookingTime,
+          imported,
         } = data;
 
         // Create a new LeadModel instance with the data
@@ -1465,11 +1467,12 @@ app.post("/api/upload/lead-form", async (req, res) => {
           incoDate,
           extraNotes,
           bookingTime,
+          imported,
         });
 
         // Save the employee data to the database
         await employee.save();
-        
+        // console.log(excelData)
         // Increment the success counter
         successCounter++;
       } catch (error) {
@@ -1630,7 +1633,7 @@ app.delete("/api/company-delete/:id", async (req, res) => {
 app.post("/api/deleterequestbybde", async (req, res) => {
   try {
     const { companyName, companyId, time, date, request, ename } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     // Create a new instance of the RequestDeleteByBDE model
     const deleteRequest = new RequestDeleteByBDE({
       companyName,
@@ -1698,7 +1701,7 @@ app.post("/api/loginDetails", (req, res) => {
   newLoginDetails
     .save()
     .then((savedLoginDetails) => {
-      console.log("Login details saved to database:", savedLoginDetails);
+      // console.log("Login details saved to database:", savedLoginDetails);
       res.json(savedLoginDetails);
     })
     .catch((error) => {
@@ -1797,7 +1800,7 @@ app.get("/api/otherpdf/:filename", (req, res) => {
 app.get("/download/recieptpdf/:fileName", (req, res) => {
   const fileName = req.params.filePath;
   const filePath = path.join(__dirname, "uploads", fileName);
-  console.log(fileName);
+  // console.log(fileName);
   res.setHeader("Content-Disposition", attachment, (fileName = `${fileName}`));
   res.setHeader("Content-Type", "application/pdf");
   res.sendFile(filePath);
@@ -1809,11 +1812,11 @@ app.get("/download/recieptpdf/:fileName", (req, res) => {
 
 app.put('/api/read/:companyName', async (req, res) => {
   const companyName = req.params.companyName;
-  console.log(companyName)
+  // console.log(companyName)
   try {
     // Find the company in the database based on its name
     const companyDetails = await LeadModel.findOne({ companyName });
-    console.log(companyDetails)
+    // console.log(companyDetails)
 
     // If company is found, update its read status to true
     if (companyDetails) {
@@ -1910,7 +1913,7 @@ app.get('/api/exportdatacsv', async (req, res) => {
         lead.bookingTime
       ];
       csvData.push(rowData);
-      console.log("rowData:" , rowData)
+      // console.log("rowData:" , rowData)
     });
 
     // Use fast-csv to stringify the csvData array
@@ -1921,7 +1924,7 @@ app.get('/api/exportdatacsv', async (req, res) => {
     // Send response with CSV data
     // Send response with CSV data
     res.status(200).end(csvString);
-    console.log(csvString)
+    // console.log(csvString)
      // Here you're ending the response
 
   } catch (err) {
@@ -1946,7 +1949,7 @@ app.post('/api/uploadAttachment/:companyName', upload.fields([
 
       // Find the company by its name
       const company = await LeadModel.findOne({ companyName });
-      console.log(company)
+      // console.log(company)
       // Check if company exists
       if (!company) {
           return res.status(404).send("Company not found");
@@ -1958,8 +1961,8 @@ app.post('/api/uploadAttachment/:companyName', upload.fields([
       const paymentReceipt = req.files["paymentReceipt"]
           ? req.files["paymentReceipt"][0].filename
           : null;
-      console.log(paymentReceipt)
-      console.log(req.files)
+      // console.log(paymentReceipt)
+      // console.log(req.files)
 
       // Update the payment receipt field in the company document
       company.paymentReceipt = paymentReceipt;
@@ -1987,7 +1990,7 @@ app.post('/api/uploadotherdocsAttachment/:companyName', upload.fields([
 
       // Find the company by its name
       const company = await LeadModel.findOne({ companyName });
-      console.log(company)
+      // console.log(company)
       // Check if company exists
       if (!company) {
           return res.status(404).send("Company not found");
