@@ -1632,13 +1632,33 @@ app.get('/api/drafts-search/:companyName', async (req, res) => {
 
 // ---------------------------api to fetch companies in processing dashboard-----------------------------------
 
+// app.get("/api/companies", async (req, res) => {
+//   try {
+//     // Fetch only the company names from the LeadModel
+//     const companies = await LeadModel.find();
+//     res.json(companies);
+//   } catch (error) {
+//     console.error("Error fetching company names:", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
 app.get("/api/companies", async (req, res) => {
   try {
-    // Fetch only the company names from the LeadModel
+    // Fetch all companies from the LeadModel
     const companies = await LeadModel.find();
-    res.json(companies);
+    // Count the total number of companies
+    const totalCompanies = companies.length;
+    
+    // Construct response JSON with company names and count
+    const response = {
+      totalCompanies: totalCompanies,
+      companies: companies
+    };
+
+    res.json(response);
   } catch (error) {
-    console.error("Error fetching company names:", error.message);
+    console.error("Error fetching companies:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });

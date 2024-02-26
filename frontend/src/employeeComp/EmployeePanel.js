@@ -30,6 +30,7 @@ function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("")
+  const [sortStatus, setSortStatus] = useState("")
   const [projectionData, setProjectionData] = useState([]);
   const [currentProjection, setCurrentProjection] = useState({
     companyName:'',
@@ -413,6 +414,7 @@ function EmployeePanel() {
     cindate,
     cnum
   ) => {
+    
     if (newStatus === "Matured") {
       setCompanyName(cname);
       setCompanyEmail(cemail);
@@ -435,8 +437,10 @@ function EmployeePanel() {
       // Check if the API call was successful
       if (response.status === 200) {
         // Assuming fetchData is a function to fetch updated employee data
-
-        fetchNewData();
+        console.log("Sort Status :", sortStatus);
+     fetchNewData()
+        
+        
 
         // if(newStatus==="Interested"){
         //   setdataStatus("Interested");
@@ -1076,6 +1080,7 @@ function EmployeePanel() {
                           name="sort-by"
                           id="sort-by"
                           onChange={(e) => {
+                            setSortStatus(e.target.value);
                             const selectedOption = e.target.value;
 
                             switch (selectedOption) {

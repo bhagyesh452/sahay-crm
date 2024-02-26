@@ -1,10 +1,12 @@
 
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import Header from "./Header";
-import Navbar from "./Navbar";
 import CompanyListAdmin from "./CompanyListAdmin";
+
 import CompanyDetailsAdmin from "./CompanyDetailsAdmin";
+import BookingsForm from "./BookingsForm";
+import { Link } from "react-router-dom";
+import Navbar from "./Navbar";
+import Header from "./Header";
 
 function BookingsAdmin() {
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
@@ -33,28 +35,42 @@ function BookingsAdmin() {
     try {
       const response = await fetch(`${secretKey}/companies`);
       const data = await response.json();
+      const companyData = data.companies
+      console.log(companyData)
   
       // Extract unique booking dates from the fetched data
       const uniqueBookingDates = Array.from(
-        new Set(data.map((company) => company.bookingDate))
+        new Set(companyData.map((company) => company.bookingDate))
       );
       const uniqueBookingTime = Array.from(
-        new Set(data.map((company) => company.bookingTime))
+        new Set(companyData.map((company) => company.bookingTime))
       );
+      
   
       // Set the details of the first company by default if there are companies available
-      if (data.length !== 0) {
-        setSelectedCompanyId(data[0].companyName);
+      if (companyData.length !== 0) {
+        setSelectedCompanyId(companyData[0].companyName);
       }
   
       // Update the state with both companies and booking dates
-      setCompanies(data);
+      setCompanies(companyData.reverse());
       setBookingDates(uniqueBookingDates);
       setBookingTime(uniqueBookingTime);
+     
     } catch (error) {
       console.error("Error fetching companies:", error);
     }
   };
+ 
+  console.log(companies)
+
+  const markCompanyAsRead = (companyId) => {
+    const updatedCompanies = companies.map(company =>
+      company._id === companyId ? { ...company, unread: false } : company
+    );
+    setCompanies(updatedCompanies);
+  };
+
 
   const fetchCompanyDetails = async () => {
     try {
@@ -82,9 +98,10 @@ function BookingsAdmin() {
       : ""
   );
 
+
   return (
     <div>
-      <Header/>
+      <Header data={companies} />
       <Navbar />
        <div className="page-body">
                 <div className="page-body">
@@ -97,12 +114,11 @@ function BookingsAdmin() {
                                     onCompanyClick={handleCompanyClick}
                                     selectedBookingDate={formattedDates}
                                     bookingTime={bookingTime}
+                                   
                                 />
                             </div>
                             <div className="col-sm-8">
-                                
                                     <CompanyDetailsAdmin company={companyDetails} />
-                           
                             </div>
                         </div>
                     </div>

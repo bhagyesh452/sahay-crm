@@ -19,10 +19,13 @@ background-color: #f6df9f !important;
     padding: 0px 20px;
     border-radius: 0px 5px 5px 0px;
 }
-.css-13cymwt-control{
+/* .css-13cymwt-control{
     border: 1px solid #ffb900 !important;
     
-}
+} */
+#resizableColumn {
+    width: 200px; /* Initial width of the resizable column */
+  }
 .hr-1
 {
     width: 100%;
@@ -551,3 +554,15 @@ padding:6px !important;
     padding: 7px 45px 5px 45px;
   }
   
+  .recent-updates{
+    position: absolute;
+    top: 18vh;
+    right: 7vw;
+    z-index: 9;
+    display: none;
+  }
+  .recent-updates-icon{
+    position: absolute;
+    z-index: 9;
+    right: 10vh;
+  }
