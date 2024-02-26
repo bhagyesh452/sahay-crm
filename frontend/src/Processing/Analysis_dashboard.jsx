@@ -329,9 +329,9 @@ const Analysis_dashboard = () => {
             bookingDate.getFullYear() === today.getFullYear();
     });
 
-    // console.log(companieswithServicesToday);
-    // console.log(companieswithServicesToday.length);
-    //console.log(companieswithServicesTodayTotal)
+    console.log(filteredCompaniesTotal)
+    console.log(companieswithServicesInCurrentMonthTotal)
+    console.log(companieswithServicesInCurrentMonthTotal)
 
 
     function filterCompaniesByService(selectedValues) {
@@ -375,7 +375,9 @@ const Analysis_dashboard = () => {
 
     // console.log(companieswithServicesToday);
     // console.log(companieswithServicesToday.length);
-
+    const handleRightClick = () => {
+        console.log(filteredCompanies)
+    }
 
 
     return (
@@ -626,21 +628,25 @@ const Analysis_dashboard = () => {
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <div class="col-auto">
-                                            <button onClick={handleIconClick} style={{ border: "none", padding: "0px" }}>
+                                            <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor:"white" }} className='d-flex align-items-center justify-content-between gap-4'>
                                                 <span className="bg-facebook text-white avatar">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 448 512" fill='white' strokeWidth="2" stroke="currentColor">
                                                         <path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z" />
                                                     </svg>
                                                 </span>
+                                                <span style={{ border: "none", padding: "5px", color: "#969595" }}>
+                                                    Select your date here.....
+                                                </span>
                                             </button>
                                         </div>
                                         <div class="col position-relative">
                                             {displayDateRange && (
-                                                <div class="position-absolute top-100 start-0" style={{zIndex:"1"}}>
+                                                <div class="position-absolute top-100 start-0" style={{ zIndex: "1" }}>
                                                     <DateRangePicker
                                                         ranges={[selectionRange]}
                                                         onClose={() => setDateRangeDisplay(false)}
                                                         onChange={handleSelect}
+
                                                     />
                                                 </div>
                                             )}
@@ -771,6 +777,9 @@ const Analysis_dashboard = () => {
                                             return companieswithServicesInCurrentMonth.length;
                                         } else if (companieswithDateRangeCurrentMonth.length !== 0) {
                                             return companieswithDateRangeCurrentMonth.length;
+                                        } else if (companieswithServicesInCurrentMonthTotal.length === 0 && selectedValues.length !== 0) {
+                                            return companieswithServicesInCurrentMonthTotal.length;
+
                                         } else if (companieswithServicesInCurrentMonthTotal.length !== 0) {
                                             return companieswithServicesInCurrentMonthTotal.length;
                                         } else {
@@ -802,6 +811,11 @@ const Analysis_dashboard = () => {
                                             return companieswithServicesToday.length;
                                         } else if (companieswithDateRangeToday.length !== 0) {
                                             return companieswithDateRangeToday.length;
+
+                                        }
+                                        else if (companieswithServicesTodayTotal.length === 0 && selectedValues.length !== 0) {
+                                            return companieswithServicesTodayTotal.length;
+
                                         } else if (companieswithServicesTodayTotal.length !== 0) {
                                             return companieswithServicesTodayTotal.length;
                                         } else {
@@ -816,7 +830,15 @@ const Analysis_dashboard = () => {
                                     </div> */}
                                 </div>
                             </div>
-                            <div id="chart-revenue-bg" class="chart-sm"></div>
+                            
+                            {/* <div id="chart-revenue-bg" class="chart-sm" className='d-flex align-items-center justify-content-between'>
+                                View Details
+                                <button onClick={handleRightClick}>
+                                    <span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="24px" height="24px"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" /></svg>
+                                    </span>
+                                </button>
+                            </div> */}
                         </div>
                     </div>
 
