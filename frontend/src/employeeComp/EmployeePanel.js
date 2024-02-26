@@ -23,23 +23,23 @@ import Nodata from "../components/Nodata.jsx";
 import EditForm from "../components/EditForm.jsx";
 import { useCallback } from "react";
 import debounce from "lodash/debounce";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
 import { options } from "../components/Options.js";
-
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
-  const [projectingCompany, setProjectingCompany] = useState("")
-  const [sortStatus, setSortStatus] = useState("")
+  const [projectingCompany, setProjectingCompany] = useState("");
+  const [sortStatus, setSortStatus] = useState("");
   const [projectionData, setProjectionData] = useState([]);
   const [currentProjection, setCurrentProjection] = useState({
-    companyName:'',
-    ename:"",
-    offeredPrize:0,
-    offeredServices:[],
-    lastFollowUpdate: '' ,
-    date:'',
-    time:'',
+    companyName: "",
+    ename: "",
+    offeredPrize: 0,
+    offeredServices: [],
+    lastFollowUpdate: "",
+    date: "",
+    time: "",
   });
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
@@ -98,30 +98,41 @@ function EmployeePanel() {
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
     setOpenProjection(true);
-    const findOneprojection = projectionData.length !== 0 && projectionData.find(item => item.companyName === comName);
+    const findOneprojection =
+      projectionData.length !== 0 &&
+      projectionData.find((item) => item.companyName === comName);
     if (findOneprojection) {
-      setCurrentProjection({        
-          companyName:findOneprojection.companyName,
-          ename:findOneprojection.ename,
-          offeredPrize:findOneprojection.offeredPrize,
-          offeredServices:findOneprojection.offeredServices,
-          lastFollowUpdate: findOneprojection.lastFollowUpdate ,
-          date:'',
-          time:'',
+      setCurrentProjection({
+        companyName: findOneprojection.companyName,
+        ename: findOneprojection.ename,
+        offeredPrize: findOneprojection.offeredPrize,
+        offeredServices: findOneprojection.offeredServices,
+        lastFollowUpdate: findOneprojection.lastFollowUpdate,
+        date: "",
+        time: "",
       });
       setSelectedValues(findOneprojection.offeredServices);
-    } else {
-      setIsEditProjection(true);
-    }
+    } 
   };
-  
+
   const closeProjection = () => {
     setOpenProjection(false);
+    setProjectingCompany("");
+    setCurrentProjection({
+      companyName: "",
+      ename: "",
+      offeredPrize: "",
+      offeredServices: "",
+      lastFollowUpdate: "",
+      date: "",
+      time: "",
+    });
+
+ setSelectedValues([]);
   };
   const functionopenAnchor = () => {
     setOpenAnchor(true);
   };
-
 
   const [cid, setcid] = useState("");
   const [cstat, setCstat] = useState("");
@@ -182,14 +193,14 @@ function EmployeePanel() {
       console.error("Error fetching data:", error.message);
     }
   };
-  const fetchProjections = async()=>{
-    try{
+  const fetchProjections = async () => {
+    try {
       const response = await axios.get(`${secretKey}/projection-data`);
       setProjectionData(response.data);
-    }catch(error){
-      console.error("Error fetching Projection Data:" , error.message);
+    } catch (error) {
+      console.error("Error fetching Projection Data:", error.message);
     }
-  }
+  };
   const [moreEmpData, setmoreEmpData] = useState([]);
 
   const fetchNewData = async (status) => {
@@ -211,7 +222,8 @@ function EmployeePanel() {
         )
       );
       setdataStatus("All");
-
+      if (!status && sortStatus !== "") {
+      }
       if (status === "Not Interested" || status === "Junk") {
         setEmployeeData(
           tempData.filter(
@@ -287,7 +299,6 @@ function EmployeePanel() {
 
   useEffect(() => {
     fetchData();
-
   }, [userId]);
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
@@ -412,9 +423,9 @@ function EmployeePanel() {
     cname,
     cemail,
     cindate,
-    cnum
+    cnum,
+    oldStatus
   ) => {
-    
     if (newStatus === "Matured") {
       setCompanyName(cname);
       setCompanyEmail(cemail);
@@ -438,9 +449,7 @@ function EmployeePanel() {
       if (response.status === 200) {
         // Assuming fetchData is a function to fetch updated employee data
         console.log("Sort Status :", sortStatus);
-     fetchNewData()
-        
-        
+        fetchNewData(oldStatus);
 
         // if(newStatus==="Interested"){
         //   setdataStatus("Interested");
@@ -455,8 +464,6 @@ function EmployeePanel() {
       console.error("Error updating status:", error.message);
     }
   };
-
-
 
   const handlenewFieldChange = (companyId, value) => {
     setUpdateData((prevData) => ({
@@ -866,35 +873,36 @@ function EmployeePanel() {
   }, [data]);
   console.log(companies);
 
-
   const handleProjectionSubmit = async () => {
     try {
-     
       const finalData = {
         ...currentProjection,
         companyName: projectingCompany,
         ename: data.ename,
-        offeredServices: selectedValues
+        offeredServices: selectedValues,
       };
-  
+
       // Send data to backend API
-      const response = await axios.post(`${secretKey}/update-followup`, finalData);
-      Swal.fire({title:"Projection Submitted!" , icon:'success'});
+      const response = await axios.post(
+        `${secretKey}/update-followup`,
+        finalData
+      );
+      Swal.fire({ title: "Projection Submitted!", icon: "success" });
       setOpenProjection(false);
       setCurrentProjection({
-        companyName:'',
-        ename:"",
-        offeredPrize:0,
-        offeredServices:[],
-        lastFollowUpdate: '' ,
-        date:'',
-        time:'',
-      })
+        companyName: "",
+        ename: "",
+        offeredPrize: 0,
+        offeredServices: [],
+        lastFollowUpdate: "",
+        date: "",
+        time: "",
+      });
       fetchProjections();
 
       console.log(response.data); // Log success message
     } catch (error) {
-      console.error('Error updating or adding data:', error.message);
+      console.error("Error updating or adding data:", error.message);
     }
   };
   return (
@@ -1144,7 +1152,6 @@ function EmployeePanel() {
                                 );
                                 break;
                               case "AssignDate":
-                                setdataStatus("AssignDate");
                                 setEmployeeData(
                                   moreEmpData.sort((a, b) =>
                                     b.AssignDate.localeCompare(a.AssignDate)
@@ -1152,7 +1159,6 @@ function EmployeePanel() {
                                 );
                                 break;
                               case "Company Incorporation Date  ":
-                                setdataStatus("CompanyIncorporationDate");
                                 setEmployeeData(
                                   moreEmpData.sort((a, b) =>
                                     b[
@@ -1555,10 +1561,46 @@ function EmployeePanel() {
                             <th>Status</th>
                             <th>Remarks</th>
                             <th>Company Email</th>
-                            <th>Incorporation Date</th>
+                            <th>
+                              Incorporation Date
+                              <SwapVertIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setEmployeeData(
+                                    [...moreEmpData].sort((a, b) =>
+                                      b[
+                                        "Company Incorporation Date  "
+                                      ].localeCompare(
+                                        a["Company Incorporation Date  "]
+                                      )
+                                    )
+                                  );
+                                }}
+                              />
+                            </th>
                             <th>City</th>
                             <th>State</th>
-                            <th>Assigned Date</th>
+                            <th>
+                              Assigned Date
+                              <SwapVertIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setEmployeeData(
+                                    [...moreEmpData].sort((a, b) =>
+                                      b.AssignDate.localeCompare(a.AssignDate)
+                                    )
+                                  );
+                                }}
+                              />
+                            </th>
 
                             {(dataStatus === "Matured" && <th>Action</th>) ||
                               (dataStatus === "FollowUp" && <th>Action</th>)}
@@ -1603,8 +1645,10 @@ function EmployeePanel() {
                                             company[
                                               "Company Incorporation Date  "
                                             ],
-                                            company["Company Number"]
+                                            company["Company Number"],
+                                            company['Status']
                                           )
+                                          
                                         }
                                       >
                                         <option value="Not Picked Up">
@@ -1713,7 +1757,9 @@ function EmployeePanel() {
                                         }}
                                         className="btn btn-primary d-none d-sm-inline-block"
                                         onClick={() => {
-                                          functionopenprojection(company["Company Name"]);
+                                          functionopenprojection(
+                                            company["Company Name"]
+                                          );
                                         }}
                                       >
                                         View
@@ -2324,23 +2370,30 @@ function EmployeePanel() {
         <div style={{ width: "31em" }} className="container-xl">
           <div className="header d-flex justify-content-between">
             <h1 className="title">Projection Form</h1>
-           {currentProjection.offeredPrize!==0 && <IconButton onClick={()=>{
-            setIsEditProjection(true)
-           }}>
-              <EditIcon color="primary"></EditIcon>
-            </IconButton>}
+            (
+              <IconButton
+                onClick={() => {
+                  setIsEditProjection(true);
+                }}
+              >
+                <EditIcon color="primary"></EditIcon>
+              </IconButton>
+            )
           </div>
           <div className="body-projection">
             <div className="header">
-              <strong>
-               {projectingCompany}
-              </strong>
+              <strong>{projectingCompany}</strong>
             </div>
             <div className="label">
               <strong>Offered Services :</strong>
               <div className="services mb-3">
                 <Select
-                  styles={customStyles}
+                  styles={{customStyles , 
+                    container : (provided)=>({
+                     
+                      border:'1px solid #ffb900',
+                      borderRadius:'5px'
+                    })}}
                   isMulti
                   options={options}
                   onChange={(selectedOptions) => {
@@ -2369,7 +2422,6 @@ function EmployeePanel() {
                     setCurrentProjection((prevLeadData) => ({
                       ...prevLeadData,
                       offeredPrize: e.target.value,
-                      
                     }));
                   }}
                   disabled={!isEditProjection}
@@ -2388,7 +2440,6 @@ function EmployeePanel() {
                     setCurrentProjection((prevLeadData) => ({
                       ...prevLeadData,
                       lastFollowUpdate: e.target.value,
-                      
                     }));
                   }}
                   disabled={!isEditProjection}
@@ -2396,11 +2447,16 @@ function EmployeePanel() {
               </div>
             </div>
             <div className="submitBtn">
-            <button   disabled={!isEditProjection} onClick={handleProjectionSubmit} style={{width:'100%'}} type="submit" class="btn btn-primary mb-3">
-              Submit
-            </button>
+              <button
+                disabled={!isEditProjection}
+                onClick={handleProjectionSubmit}
+                style={{ width: "100%" }}
+                type="submit"
+                class="btn btn-primary mb-3"
+              >
+                Submit
+              </button>
             </div>
-            
           </div>
         </div>
       </Drawer>

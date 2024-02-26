@@ -1743,7 +1743,7 @@ app.post("/api/deleterequestbybde", async (req, res) => {
       request,
       ename,
     });
-
+    socketIO.emit('DeleteRequest');
     // Save the delete request to the database
     await deleteRequest.save();
 
@@ -1923,7 +1923,9 @@ app.put('/api/read/:companyName', async (req, res) => {
       companyDetails.read = true; // Update the read status to true
       // Save the updated company back to the database
       await companyDetails.save();
+      socketIO.emit("read", companyDetails);
       res.json(companyDetails); // Send the updated company as the response
+
     } else {
       // If company is not found, return a 404 error
       res.status(404).json({ error: 'Company not found' });

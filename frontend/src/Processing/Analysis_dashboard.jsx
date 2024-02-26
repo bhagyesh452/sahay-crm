@@ -12,9 +12,6 @@ import { DateRangePicker } from 'react-date-range';
 // import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 
-
-
-
 const Analysis_dashboard = () => {
 
 
