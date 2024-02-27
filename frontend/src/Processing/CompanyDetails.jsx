@@ -287,13 +287,26 @@ const CompanyDetails = ({ company }) => {
 
   const exportData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/exportdatacsv`, { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'leads.csv');
-      document.body.appendChild(link);
-      link.click();
+      // Ask user for confirmation using SweetAlert
+      const confirmed = await Swal.fire({
+        title: 'Confirmation',
+        text: 'Do you want to download the leads CSV file?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+      });
+  
+      // If user confirms, proceed with downloading
+      if (confirmed.isConfirmed) {
+        const response = await axios.get(`${secretKey}/exportdatacsv`, { responseType: 'blob' });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'leads.csv');
+        document.body.appendChild(link);
+        link.click();
+      }
     } catch (error) {
       console.error('Error downloading CSV:', error);
     }

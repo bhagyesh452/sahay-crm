@@ -233,7 +233,45 @@
     justify-content: space-between !important;
     width: 100%;
   }
-  .css-13cymwt-control{
-      border: 0px solid transparent !important;
-      justify-content: space-between !important;
-  }
+   .css-13cymwt-control{
+      border-color: #fbb900;
+      justify-content: space-between;
+  } 
+
+  .rdrMonth {
+    width: 21.667em !important;
+}
+.rdrDateRangePickerWrapper {
+    width: 119px;
+    margin-top: 20px;
+}
+.rdrDefinedRangesWrapper {
+    font-size: 10px;
+    height: 360px;
+}
+.firstClass{
+    transition: transform 0.2s ease-in , box-shadow 0.2s ease-in-out;
+    overflow: hidden;
+    display: inline-block;
+    background-color: #fbb900;
+    color: white ;
+    box-shadow: 0px 0px 5px #e0d9d9
+}
+.firstClass:hover{
+    box-shadow: 0px 0px 15px 5px rgba(251, 185, 0, 0.7); /* Adjust the values as needed */
+    transform: translateY(-10px);
+}
+/* .secondClass{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */
+.numbers{
+    border: 0px solid transparent;
+    width: fit-content;
+    border-radius: 18px 18px;
+    background-color: #c01717;
+    padding: 2px 12px;
+    color: white;
+    margin-top: 16px;
+}
