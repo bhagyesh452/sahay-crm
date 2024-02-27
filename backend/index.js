@@ -1491,7 +1491,7 @@ app.post(
   }
 );
 
-// --------------------api for sending excel data on processing dashboard----------------------------
+// --------------------api for importing excel data on processing dashboard----------------------------
 
 app.post("/api/upload/lead-form", async (req, res) => {
   let successCounter = 0;
@@ -1937,7 +1937,8 @@ app.put('/api/read/:companyName', async (req, res) => {
   }
 });
 
-// ----------------------------apitodownloadcsvfrombooking--------------------------
+// ----------------------------api to download csv from processing dashboard--------------------------
+
 app.get('/api/exportdatacsv', async (req, res) => {
   try {
     const leads = await LeadModel.find({});
@@ -1979,8 +1980,13 @@ app.get('/api/exportdatacsv', async (req, res) => {
       "BOOKING TIME"
     ]);
 
+
+    const baseDocumentURL = "http://localhost:3001/api/recieptpdf/";
+    const DocumentURL = "http://localhost:3001/api/otherpdf/";
+    
     // Push each lead as a row into the csvData array
     leads.forEach((lead, index) => {
+      const otherDocsUrls = lead.otherDocs.map(doc => `${DocumentURL}${doc}`);
       const rowData = [
         index + 1,
         lead.bdeName,
@@ -2007,12 +2013,12 @@ app.get('/api/exportdatacsv', async (req, res) => {
         lead.thirdPayment,
         lead.fourthPayment,
         lead.paymentRemarks,
-        lead.paymentReceipt,
+        lead.paymentReceipt ? `${baseDocumentURL}${lead.paymentReceipt}` : '',            // ? baseDocumentURL + lead.paymentReceipt : '',  Concatenate base URL with document name
         lead.bookingSource,
         lead.cPANorGSTnum,
         lead.incoDate,
         lead.extraNotes,
-        `"${lead.otherDocs.join(',')}"`, // Assuming otherDocs is an array
+        `"${otherDocsUrls.join(',')}"`, // Assuming otherDocs is an array
         lead.bookingTime
       ];
       csvData.push(rowData);

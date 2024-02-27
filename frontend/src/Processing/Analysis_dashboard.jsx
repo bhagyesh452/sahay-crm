@@ -8,7 +8,8 @@ import Select, { components } from 'react-select';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
-
+import { FaChevronDown } from "react-icons/fa6";
+import { Link } from 'react-router-dom';
 // import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 
@@ -253,6 +254,7 @@ const Analysis_dashboard = () => {
         setFilteredDataDateRange(filteredDataDateRange);
         //console.log(filteredDataDateRange)
     };
+    // console.log(startDate)
 
     const companieswithDateRangeCurrentMonth = filteredDataDateRange.filter(company => {
         const bookingDate = new Date(company.bookingDate);
@@ -298,8 +300,7 @@ const Analysis_dashboard = () => {
 
     }
     const filteredCompaniesTotal = filterCompaniesByServiceTotal(selectedValues);
-    //console.log(filteredCompaniesTotal)
-    // console.log(filteredCompanies.length)
+    console.log(filteredCompaniesTotal)
 
 
 
@@ -330,6 +331,7 @@ const Analysis_dashboard = () => {
     console.log(companieswithServicesInCurrentMonthTotal)
     console.log(companieswithServicesInCurrentMonthTotal)
 
+    // ---------------------------------------------------services filter by date range------------------------------------
 
     function filterCompaniesByService(selectedValues) {
 
@@ -383,8 +385,8 @@ const Analysis_dashboard = () => {
             <Navbar_processing />
             <div className='container-xl'>
                 <div className='row row-deck row-cards mt-3'>
-                    <div class="col-sm-6 col-lg-3">
-                        <div class="card" style={{ backgroundColor: "#fbb900", color: "white", boxShadow: "0px 0px 5px #e0d9d9" }}>
+                    <div class="col-sm-6 col-lg-3 ">
+                        <div class="card firstClass">
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="subheader" style={{ color: "white", fontSize: "10px" }}>Total No of Bookings</div>
@@ -404,7 +406,7 @@ const Analysis_dashboard = () => {
                         </div>
                     </div>
                     <div class="col-sm-6 col-lg-3" >
-                        <div class="card" style={{ backgroundColor: "#fbb900", color: "white", boxShadow: "0px 0px 5px #e0d9d9" }}>
+                        <div class="card firstClass">
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="subheader" style={{ color: "white", fontSize: "10px" }}>Monthly Bookings</div>
@@ -424,7 +426,7 @@ const Analysis_dashboard = () => {
                         </div>
                     </div>
                     <div class="col-sm-6 col-lg-3" >
-                        <div class="card" style={{ backgroundColor: "#fbb900", color: "white", boxShadow: "0px 0px 5px #e0d9d9" }}>
+                        <div class="card firstClass">
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="subheader" style={{ color: "white", fontSize: "10px" }}>Total Revenue</div>
@@ -444,7 +446,7 @@ const Analysis_dashboard = () => {
                         </div>
                     </div>
                     <div class="col-sm-6 col-lg-3">
-                        <div class="card" style={{ backgroundColor: "#fbb900", color: "white", boxShadow: "0px 0px 5px #e0d9d9" }}>
+                        <div class="card firstClass">
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="subheader" style={{ color: "white", fontSize: "10px" }}>Monthly Revenue</div>
@@ -598,7 +600,7 @@ const Analysis_dashboard = () => {
                                                     customStyles,
                                                     container: (provided, state) => ({
                                                         ...provided,
-                                                        border: "0px solid transparent",
+                                                        borderColor: "transparent",
                                                         justifyContent: "space-between"
                                                     }),
                                                 }}
@@ -621,19 +623,30 @@ const Analysis_dashboard = () => {
                             </div>
                         </div>
                         <div class="col-sm-6 col-lg-6">
-                            <div class="card card-sm">
+                            <div class="card card-sm ">
                                 <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor:"white" }} className='d-flex align-items-center justify-content-between gap-4'>
+                                    <div class="row align-items-center ">
+                                        <div class="col-auto d-flex align-items-center justify-content-between w-100" >
+                                            <div className='d-flex align-items-center'>
                                                 <span className="bg-facebook text-white avatar">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 448 512" fill='white' strokeWidth="2" stroke="currentColor">
                                                         <path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z" />
                                                     </svg>
                                                 </span>
-                                                <span style={{ border: "none", padding: "5px", color: "#969595" }}>
-                                                    Select your date here.....
+                                                <span style={{ border: "none", padding: "0px 20px", color: "#969595" }}>
+                                                    {startDate && endDate && startDate.toLocaleDateString() === endDate.toLocaleDateString() ? (
+                                                        // If start date is equal to end date
+                                                        <span>Select your date here......</span>
+                                                    ) : (
+                                                        // If start date is not equal to end date
+                                                        <span>
+                                                            {startDate && startDate.toLocaleDateString()} - {endDate && endDate.toLocaleDateString()}
+                                                        </span>
+                                                    )}
                                                 </span>
+                                            </div>
+                                            <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                                                <FaChevronDown style={{ width: "14px", height: "14px", color: "#bcbaba", }} />
                                             </button>
                                         </div>
                                         <div class="col position-relative">
@@ -645,6 +658,7 @@ const Analysis_dashboard = () => {
                                                         onChange={handleSelect}
 
                                                     />
+
                                                 </div>
                                             )}
                                         </div>
@@ -705,24 +719,13 @@ const Analysis_dashboard = () => {
             <div className='container-xl mt-2'>
                 <div className='row row-deck row-cards'>
                     <div class="col-sm-6 col-lg-4">
-                        <div class="card" style={{ boxShadow: "0px 0px 5px #e0d9d9" }}>
+                        <div class="card secondClass" style={{ boxShadow: "0px 0px 5px #e0d9d9" }}>
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="subheader" style={{ fontSize: "10px" }}>Total Bookings</div>
-                                    {/* <GrDocumentStore style={{ width: "50px", height: "50px" }} /> */}
-                                    {/* <div class="ms-auto lh-1">
-                                        <div class="dropdown">
-                                            <a class="dropdown-toggle text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Last 7 days</a>
-                                             <div class="dropdown-menu dropdown-menu-end">
-                                                <a class="dropdown-item active" href="#">Last 7 days</a>
-                                                <a class="dropdown-item" href="#">Last 30 days</a>
-                                                <a class="dropdown-item" href="#">Last 3 months</a>
-                                            </div> 
-                                        </div>
-                                    </div> */}
                                 </div>
                                 <div class="d-flex align-items-baseline">
-                                    <div class="h1 mb-3 me-2">
+                                    <div class="h1 mb-3 me-2 numbers">
                                         {(() => {
                                             if (filteredDataDateRange.length !== 0 && filteredCompaniesTotal.length !== 0) {
                                                 return filteredCompanies.length;
@@ -735,41 +738,23 @@ const Analysis_dashboard = () => {
                                             }
                                         })()}
                                     </div>
-                                    {/* <PieChart width={400} height={400}>
-                                        <Pie
-                                            dataKey="value"
-                                            isAnimationActive={false}
-                                            data={data01}
-                                            cx="50%"
-                                            cy="50%"
-                                            outerRadius={80}
-                                            fill="#8884d8"
-                                            label
-                                        />
-                                         <Pie dataKey="value" data={data02} cx={500} cy={200} innerRadius={40} outerRadius={80} fill="#82ca9d" /> 
-                                        <Tooltip />
-                                    </PieChart> */}
-
-                                    <div class="me-auto">
-                                        {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
-                                        </span> */}
-                                    </div>
                                 </div>
-                                {/* <div id="chart-new-clients" class="chart-sm"></div> */}
+                                {/* <hr></hr>
+                                <div id="chart-new-clients" class="chart-sm">
+                                    <Link to="#"> View Details </Link>
+                                </div> */}
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-lg-4" >
-                        <div class="card" style={{ boxShadow: "0px 0px 5px #e0d9d9" }}>
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="card secondClass" style={{ boxShadow: "0px 0px 5px #e0d9d9" }}>
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
-                                    <div class="subheader" style={{ fontSize: "10px" }}>This Month Booking</div>
-                                    {/* <CiCalendar style={{ width: "50px", height: "50px" }} /> */}
+                                    <div class="subheader" style={{ fontSize: "10px" }}>Total Bookings</div>
                                 </div>
                                 <div class="d-flex align-items-baseline">
-                                    <div class="h1 mb-3 me-2">{(() => {
+                                    <div class="h1 mb-3 me-2 numbers">
+                                    {(() => {
                                         if (companieswithDateRangeCurrentMonth.length !== 0 && companieswithServicesInCurrentMonthTotal.length !== 0) {
                                             return companieswithServicesInCurrentMonth.length;
                                         } else if (companieswithDateRangeCurrentMonth.length !== 0) {
@@ -784,26 +769,22 @@ const Analysis_dashboard = () => {
                                         }
                                     })()}
                                     </div>
-                                    <div class="me-auto">
-                                        {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
-                                        </span> */}
-                                    </div>
                                 </div>
-                                <div id="chart-new-clients" class="chart-sm"></div>
+                                {/* <hr></hr>
+                                <div id="chart-new-clients" class="chart-sm">
+                                    <Link to="#"> View Details </Link>
+                                </div> */}
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6 col-lg-4"  >
-                        <div class="card" style={{ boxShadow: "0px 0px 5px #e0d9d9" }}>
+                        <div class="card secondClass" style={{ boxShadow: "0px 0px 5px #e0d9d9" }}>
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="subheader" style={{ fontSize: "10px" }}>Todays Booking</div>
-                                    {/* <HiMiniCurrencyRupee style={{ width: "50px", height: "50px" }} /> */}
                                 </div>
                                 <div class="d-flex align-items-baseline">
-                                    <div class="h1 mb-3 me-2">{(() => {
+                                    <div class="h1 mb-3 me-2 numbers">{(() => {
                                         if (companieswithDateRangeToday.length !== 0 && companieswithServicesTodayTotal.length !== 0) {
                                             return companieswithServicesToday.length;
                                         } else if (companieswithDateRangeToday.length !== 0) {
@@ -820,22 +801,12 @@ const Analysis_dashboard = () => {
                                         }
                                     })()}
                                     </div>
-                                    {/* <div class="me-auto">
-                                        <span class="text-green d-inline-flex align-items-center lh-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>
-                                        </span>
-                                    </div> */}
                                 </div>
+                                {/* <hr></hr>
+                                <div id="chart-new-clients" class="chart-sm">
+                                    <Link to="#"> View Details </Link>
+                                </div> */}
                             </div>
-                            
-                            {/* <div id="chart-revenue-bg" class="chart-sm" className='d-flex align-items-center justify-content-between'>
-                                View Details
-                                <button onClick={handleRightClick}>
-                                    <span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" width="24px" height="24px"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" /></svg>
-                                    </span>
-                                </button>
-                            </div> */}
                         </div>
                     </div>
 
