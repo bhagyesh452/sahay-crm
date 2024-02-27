@@ -12,6 +12,7 @@ import "../../src/assets/styles.css";
 // import "./styles/table.css";
 import { Drawer } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
 import Swal from "sweetalert2";
 import LoginDetails from "../components/LoginDetails";
 import Nodata from "../components/Nodata";
@@ -29,6 +30,7 @@ function EmployeeParticular() {
   const [loginDetails, setLoginDetails] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [employeeName, setEmployeeName] = useState("");
+  const [sortOrder, setSortOrder] = useState('asc');
   const [dataStatus, setdataStatus] = useState("All");
   const [moreEmpData, setmoreEmpData] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -102,7 +104,7 @@ function EmployeeParticular() {
           const data = await response.json();
 
           // Filter and format the data based on employeeName
-          const formattedData = data
+          const formattedData = data.companies
             .filter(
               (entry) =>
                 entry.bdeName === employeeName || entry.bdmName === employeeName
@@ -1130,12 +1132,32 @@ function EmployeeParticular() {
                           <th>Company Number</th>
                           <th>Status</th>
                           <th>Remarks</th>
-                          <th>Company Email</th>
+                      
                           <th>Incorporation Date</th>
                           <th>City</th>
                           <th>State</th>
-                          <th>Assigned On</th>
-
+                          <th>Company Email</th>
+                          <th>
+  Assigned On
+  <SwapVertIcon
+    style={{
+      height: "15px",
+      width: "15px",
+      cursor: "pointer",
+    }}
+    onClick={() => {
+      const sortedData = [...employeeData].sort((a, b) => {
+        if (sortOrder === 'asc') {
+          return b.AssignDate.localeCompare(a.AssignDate);
+        } else {
+          return a.AssignDate.localeCompare(b.AssignDate);
+        }
+      });
+      setEmployeeData(sortedData);
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    }}
+  />
+</th>
                           {dataStatus === "Matured" && <th>Action</th>}
                         </tr>
                       </thead>
@@ -1218,7 +1240,7 @@ function EmployeeParticular() {
                                   </span>
                                 </div>
                               </td>
-                              <td>{company["Company Email"]}</td>
+                             
                               <td>
                                 {formatDate(
                                   company["Company Incorporation Date  "]
@@ -1226,6 +1248,7 @@ function EmployeeParticular() {
                               </td>
                               <td>{company["City"]}</td>
                               <td>{company["State"]}</td>
+                              <td>{company["Company Email"]}</td>
                               <td>{formatDate(company["AssignDate"])}</td>
 
                               {dataStatus === "Matured" && (

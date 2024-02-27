@@ -30,6 +30,7 @@ const fastCsv = require('fast-csv');
 const RecentUpdatesModel = require("./models/RecentUpdates");
 const FollowUpModel = require("./models/FollowUp");
 const DraftModel = require("./models/DraftLeadform");
+const { type } = require("os");
 
 
 // const http = require('http');
@@ -2034,6 +2035,72 @@ app.get('/api/exportdatacsv', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+app.get('/api/exportLeads/:dataType' , async (req , res)=>{
+  try {
+    const dataType = req.params.dataType;
+
+    const leads = dataType === 'Assigned' ? await CompanyModel.find({ ename: { $ne: 'Not Alloted' } }) : await CompanyModel.find({ ename: 'Not Alloted' });
+
+    const csvData = [];
+
+    // Push the headers as the first row
+    csvData.push([
+      "SR. NO",
+      "Company Name",
+      "Company Number",
+      "Company Email",
+      "Company Incorporation Date  ",
+      "City",
+      "State",
+      "ename",
+      "AssignDate", 
+      "Status",
+      "Remarks"
+    ]);
+
+    // Push each lead as a row into the csvData array
+    leads.forEach((lead, index) => {
+      const rowData = [
+        index + 1,
+        lead["Company Name"],
+        lead["Contact Number"],
+        lead["Company Email"],
+        lead["Company Incorporation Date  "],
+        lead["City"],
+        lead["State"],
+        lead["ename"],
+        lead["AssignDate"],
+        lead['Status'],
+        lead["Remarks"],
+      ];
+      csvData.push(rowData);
+      // console.log("rowData:" , rowData)
+    });
+
+    // Use fast-csv to stringify the csvData array
+    res.setHeader('Content-Type' , 'text/csv')
+    if(dataType=== "Assigned"){
+      res.setHeader('Content-Disposition' , 'attachment; filename=AssignedData.csv');
+    }else{
+      res.setHeader('Content-Disposition' , 'attachment; filename=UnassignedData.csv');
+    }
+ 
+    
+    const csvString = csvData.map(row => row.join(',')).join('\n');
+    // Send response with CSV data
+    // Send response with CSV data
+    res.status(200).end(csvString);
+    // console.log(csvString)
+     // Here you're ending the response
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+  
+})
+
 
 // ------------------------------apitouploaddocsfromprocessingwindow------------------------------
 
