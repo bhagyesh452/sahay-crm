@@ -243,11 +243,12 @@
 }
 .rdrDateRangePickerWrapper {
     width: 119px;
-    margin-top: 20px;
+    /* margin-top: 5px; */
+    padding: 0px !important;
 }
 .rdrDefinedRangesWrapper {
     font-size: 10px;
-    height: 360px;
+    height: 345px;
 }
 .firstClass{
     transition: transform 0.2s ease-in , box-shadow 0.2s ease-in-out;
@@ -266,12 +267,54 @@
     align-items: center;
     justify-content: center;
 } */
-.numbers{
-    border: 0px solid transparent;
+.numbers {
+    display: inline-block; /* Ensure it behaves like an inline element */
+    width: -moz-fit-content;
     width: fit-content;
-    border-radius: 18px 18px;
-    background-color: #c01717;
-    padding: 2px 12px;
-    color: white;
-    margin-top: 16px;
+    padding: 10px 10px;
+    color: black;
+    border-radius: 50%; /* Make it a circle */
+    font-size: 17px;
+}
+.viewDetails{
+    color: #207dc8;
+    background-color: white;
+    cursor: pointer;
+}
+.viewDetails:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
+.subheaderNew{
+    font-size: 13px;
+    color: black;
+    text-transform: capitalize;
+    backgrouund-color: grey;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    padding: 2px 13px;
+}
+.detailservices{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px ;
+}
+.serviceCount{
+    border: 0px solid black;
+    padding: 3px 1px 3px 13px;
+    border-radius: 15px;
+    background-color: #eaedf6;
+    width: 90%;
+    font-size: 12px;
+    box-shadow: 0px 2px lightgrey;
+}
+.count{
+    border: 1px solid #dbdbdb;
+    border-radius: 15px;
+    padding: 5px 1px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 1px 2px lightgrey;
 }

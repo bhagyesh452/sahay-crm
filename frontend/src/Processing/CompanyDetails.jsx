@@ -253,7 +253,7 @@ const CompanyDetails = ({ company }) => {
 
   const handleViewPdfReciepts = (paymentreciept) => {
     const pathname = paymentreciept;
-    console.log(pathname);
+    //console.log(pathname);
     window.open(`${secretKey}/recieptpdf/${pathname}`, "_blank");
   };
 
