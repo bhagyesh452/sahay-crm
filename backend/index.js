@@ -2003,7 +2003,7 @@ app.get('/api/exportdatacsv', async (req, res) => {
         lead.companyName,
         lead.contactNumber,
         lead.companyEmail,
-        `"${lead.services.join(',')}"`, // Assuming services is an array
+        `"${lead.services.join(',')}"`, 
         lead.originalTotalPayment,
         lead.totalPayment,
         lead.paymentTerms,

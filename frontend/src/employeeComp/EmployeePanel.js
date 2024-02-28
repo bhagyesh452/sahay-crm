@@ -244,6 +244,25 @@ function EmployeePanel() {
             })
         );
       }
+      if(sortStatus==="Busy"){
+        setEmployeeData(
+          sortedData
+            .filter((data) =>
+              [
+                "Busy",
+                "Untouched",
+                "Not Picked Up",
+              ].includes(data.Status)
+            )
+            .sort((a, b) => {
+              if (a.Status === "Busy")
+                return -1;
+              if (b.Status === "Busy") return 1;
+              return 0;
+            })
+        );
+      }
+      
       if (!status && sortStatus !== "") {
       }
       if (status === "Not Interested" || status === "Junk") {
@@ -1182,24 +1201,7 @@ function EmployeePanel() {
                                     )
                                 );
                                 break;
-                              case "AssignDate":
-                                setEmployeeData(
-                                  moreEmpData.sort((a, b) =>
-                                    b.AssignDate.localeCompare(a.AssignDate)
-                                  )
-                                );
-                                break;
-                              case "Company Incorporation Date  ":
-                                setEmployeeData(
-                                  moreEmpData.sort((a, b) =>
-                                    b[
-                                      "Company Incorporation Date  "
-                                    ].localeCompare(
-                                      a["Company Incorporation Date  "]
-                                    )
-                                  )
-                                );
-                                break;
+                             
                               default:
                                 // No filtering if default option selected
                                 setdataStatus("All");
@@ -1223,10 +1225,7 @@ function EmployeePanel() {
                           <option value="FollowUp">Follow Up</option>
                           <option value="Interested">Interested</option>
                           <option value="Not Interested">Not Interested</option>
-                          <option value="AssignDate">Assigned Date</option>
-                          <option value="Company Incorporation Date  ">
-                            C.Inco. Date
-                          </option>
+                         
                         </select>
                       </div>
 
@@ -2260,34 +2259,35 @@ function EmployeePanel() {
 
                 .map((historyItem) => (
                   <div className="col-sm-12" key={historyItem._id}>
-                    <div className="card RemarkCard position-relative">
-                      <div className="d-flex justify-content-between">
-                        <div className="reamrk-card-innerText">
-                          <pre>{historyItem.remarks}</pre>
-                        </div>
-                        <div className="dlticon">
-                          <DeleteIcon
-                            style={{
-                              cursor: "pointer",
-                              color: "#f70000",
-                              width: "14px ",
-                            }}
-                            onClick={() => {
-                              handleDeleteRemarks(
-                                historyItem._id,
-                                historyItem.remarks
-                              );
-                            }}
-                          />
-                        </div>
+                  <div className="card RemarkCard position-relative">
+                    <div className="d-flex justify-content-between">
+                      <div className="reamrk-card-innerText">
+                        <pre className="remark-text">{historyItem.remarks}</pre>
                       </div>
-
-                      <div className="d-flex card-dateTime justify-content-between">
-                        <div className="date">{historyItem.date}</div>
-                        <div className="time">{historyItem.time}</div>
+                      <div className="dlticon">
+                        <DeleteIcon
+                          style={{
+                            cursor: "pointer",
+                            color: "#f70000",
+                            width: "14px",
+                          }}
+                          onClick={() => {
+                            handleDeleteRemarks(
+                              historyItem._id,
+                              historyItem.remarks
+                            );
+                          }}
+                        />
                       </div>
                     </div>
+                
+                    <div className="d-flex card-dateTime justify-content-between">
+                      <div className="date">{historyItem.date}</div>
+                      <div className="time">{historyItem.time}</div>
+                    </div>
                   </div>
+                </div>
+                
                 ))
             ) : (
               <div className="text-center overflow-hidden">

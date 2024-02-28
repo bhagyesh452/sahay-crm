@@ -326,7 +326,7 @@ function Form({
     } else {
       formData.append("bdmName", leadData.bdmName);
     }
-    
+    console.log(leadData.paymentMethod)
     if (leadData.paymentMethod === "other") {
       formData.append("paymentMethod",tempPayMethod );
     } else {
