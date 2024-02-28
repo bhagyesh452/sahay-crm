@@ -243,18 +243,6 @@ function EmployeeLogin({ setnewToken }) {
                 </div>
 
                 <div className="form-footer">
-                  <div className="otp">
-                    <p>OTP sent on ....12@gmail.com</p>
-                    <h1>Enter OTP</h1>
-                    <div class="otp-field">
-                      <input type="number" maxlength="1" />
-                      <input type="number" maxlength="1" />
-                      <input class="space" type="number" maxlength="1" />
-                      <input type="number" maxlength="1" />
-                      <input type="number" maxlength="1" />
-                      <input type="number" maxlength="1" />
-                    </div>
-                  </div>
                   <button
                     type="submit"
                     onClick={handleSubmit}
