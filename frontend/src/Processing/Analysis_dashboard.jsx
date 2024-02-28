@@ -302,6 +302,32 @@ const Analysis_dashboard = () => {
     const filteredCompaniesTotal = filterCompaniesByServiceTotal(selectedValues);
     console.log(filteredCompaniesTotal)
 
+    function countServices(companies) {
+        const serviceCounts = {};
+        
+        // Iterate over each company
+        companies.forEach(company => {
+            const services = company.services[0];
+
+            console.log(services)
+            
+            // Iterate over each service within the company
+            services.filter(service => {
+                if (serviceCounts.hasOwnProperty(service)) {
+                    serviceCounts[service]++;
+                } else {
+                    serviceCounts[service] = 1;
+                }
+            });
+        });
+        
+        return serviceCounts;
+    }
+    
+    // Calculate the number of each service
+    const serviceCounts = countServices(filteredCompaniesTotal);
+    console.log(serviceCounts);
+
 
 
     const companieswithServicesInCurrentMonthTotal = filteredCompaniesTotal.filter(company => {
@@ -739,10 +765,10 @@ const Analysis_dashboard = () => {
                                         })()}
                                     </div>
                                 </div>
-                                {/* <hr></hr>
+                                <hr></hr>
                                 <div id="chart-new-clients" class="chart-sm">
                                     <Link to="#"> View Details </Link>
-                                </div> */}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -770,10 +796,10 @@ const Analysis_dashboard = () => {
                                     })()}
                                     </div>
                                 </div>
-                                {/* <hr></hr>
+                                <hr></hr>
                                 <div id="chart-new-clients" class="chart-sm">
                                     <Link to="#"> View Details </Link>
-                                </div> */}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -802,10 +828,10 @@ const Analysis_dashboard = () => {
                                     })()}
                                     </div>
                                 </div>
-                                {/* <hr></hr>
+                                <hr></hr>
                                 <div id="chart-new-clients" class="chart-sm">
                                     <Link to="#"> View Details </Link>
-                                </div> */}
+                                </div>
                             </div>
                         </div>
                     </div>

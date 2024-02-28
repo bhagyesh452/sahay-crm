@@ -1635,17 +1635,6 @@ app.get('/api/drafts-search/:companyName', async (req, res) => {
 
 // ---------------------------api to fetch companies in processing dashboard-----------------------------------
 
-// app.get("/api/companies", async (req, res) => {
-//   try {
-//     // Fetch only the company names from the LeadModel
-//     const companies = await LeadModel.find();
-//     res.json(companies);
-//   } catch (error) {
-//     console.error("Error fetching company names:", error.message);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
 app.get("/api/companies", async (req, res) => {
   try {
     // Fetch all companies from the LeadModel
@@ -1847,10 +1836,10 @@ app.get('/api/pdf/:filename', (req, res) => {
 app.get('/api/paymentrecieptpdf/:filename', (req, res) => {
   const filepath = req.params.filename;
   const pdfPath = path.join(__dirname, 'PaymentReceipts' , filepath);
-
+  console.log(pdfPath)
   // Read the PDF file
   fs.readFile(pdfPath, (err, data) => {
-    if (err) {
+    if (err) { 
       console.error('Error reading PDF file:', err);
       res.status(500).send('Internal Server Error');
     } else {
@@ -2041,7 +2030,7 @@ app.get('/api/exportdatacsv', async (req, res) => {
   }
 });
 
-// ------------------------------apitouploaddocsfromprocessingwindow------------------------------
+// ------------------------------api to upload docs from processing window------------------------------
 
 app.post('/api/uploadAttachment/:companyName', upload.fields([
   { name: "otherDocs", maxCount: 50 },
