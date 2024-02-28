@@ -31,6 +31,11 @@ const Analysis_dashboard = () => {
     const [endDate, setEndDate] = useState(new Date());
     const [filteredDataDateRange, setFilteredDataDateRange] = useState([]);
     const [companiesToday, setcompaniesToday] = useState([])
+    const [detailsServices, setDetailServices] = useState(false)
+    const [detailsServicesMonth, setDetailServicesMonth] = useState(false)
+    const [detailsServicesToday, setDetailServicesToday] = useState(false)
+    const [companiesThisMonth, setcompaniesThisMonth] = useState([])
+
 
 
 
@@ -93,10 +98,13 @@ const Analysis_dashboard = () => {
             setcurrentBookingDate(bookingDatesCurrentMonth)
             setcompanyCount(companyLength);
             setcompaniesToday(companiesToday)
+            setcompaniesThisMonth(companiesThisMonth)
         } catch (error) {
             console.error("Error fetching companies:", error);
         }
     };
+    //console.log(companiesThisMonth)
+    //console.log(companiesToday)
 
     const options = [
         {
@@ -263,7 +271,7 @@ const Analysis_dashboard = () => {
 
         return bookingMonth === currentMonth && bookingYear === currentYear;
     });
-    console.log(companieswithDateRangeCurrentMonth)
+    //console.log(companieswithDateRangeCurrentMonth)
 
     const companieswithDateRangeToday = filteredDataDateRange.filter(company => {
         const bookingDate = new Date(company.bookingDate);
@@ -300,33 +308,33 @@ const Analysis_dashboard = () => {
 
     }
     const filteredCompaniesTotal = filterCompaniesByServiceTotal(selectedValues);
-    console.log(filteredCompaniesTotal)
+    //console.log(filteredCompaniesTotal)
 
-    function countServices(companies) {
-        const serviceCounts = {};
-        
-        // Iterate over each company
-        companies.forEach(company => {
-            const services = company.services[0];
+    // function countServices(companies) {
+    //     const serviceCounts = {};
 
-            console.log(services)
-            
-            // Iterate over each service within the company
-            services.filter(service => {
-                if (serviceCounts.hasOwnProperty(service)) {
-                    serviceCounts[service]++;
-                } else {
-                    serviceCounts[service] = 1;
-                }
-            });
-        });
-        
-        return serviceCounts;
-    }
-    
-    // Calculate the number of each service
-    const serviceCounts = countServices(filteredCompaniesTotal);
-    console.log(serviceCounts);
+    //     // Iterate over each company
+    //     companies.forEach(company => {
+    //         const services = company.services[0];
+
+    //         //console.log(services)
+
+    //         // Iterate over each service within the company
+    //         services.filter(service => {
+    //             if (serviceCounts.hasOwnProperty(service)) {
+    //                 serviceCounts[service]++;
+    //             } else {
+    //                 serviceCounts[service] = 1;
+    //             }
+    //         });
+    //     });
+
+    //     return serviceCounts;
+    // }
+
+    // // Calculate the number of each service
+    // const serviceCounts = countServices(filteredCompaniesTotal);
+    // console.log(serviceCounts);
 
 
 
@@ -353,9 +361,9 @@ const Analysis_dashboard = () => {
             bookingDate.getFullYear() === today.getFullYear();
     });
 
-    console.log(filteredCompaniesTotal)
-    console.log(companieswithServicesInCurrentMonthTotal)
-    console.log(companieswithServicesInCurrentMonthTotal)
+    //console.log(filteredCompaniesTotal)
+    //console.log(companieswithServicesInCurrentMonthTotal)
+    //console.log(companieswithServicesInCurrentMonthTotal)
 
     // ---------------------------------------------------services filter by date range------------------------------------
 
@@ -374,7 +382,7 @@ const Analysis_dashboard = () => {
 
     }
     const filteredCompanies = filterCompaniesByService(selectedValues);
-    console.log(filteredCompanies)
+    //console.log(filteredCompanies)
     // console.log(filteredCompanies.length)
 
     const companieswithServicesInCurrentMonth = filteredCompanies.filter(company => {
@@ -401,8 +409,138 @@ const Analysis_dashboard = () => {
     // console.log(companieswithServicesToday);
     // console.log(companieswithServicesToday.length);
     const handleRightClick = () => {
-        console.log(filteredCompanies)
+        //console.log(filteredCompanies)
     }
+
+    // ---------------------------------------------each service filter------------------------------------------------
+
+
+    function countServicesTotal() {
+        const serviceCount = {};
+        let data;
+
+        if (filteredDataDateRange.length !== 0 && filteredCompaniesTotal.length !== 0) {
+            data = filteredCompanies;
+        } else if (filteredDataDateRange.length !== 0) {
+            data = filteredDataDateRange;
+        } else if (filteredCompaniesTotal.length !== 0) {
+            data = filteredCompaniesTotal;
+        } else {
+            data = completeData;
+        }
+
+        // const data = completeData;
+        // Iterate through each object in the array
+        data.forEach(obj => {
+            // Split the services string into an array of individual services
+            const servicesArray = obj.services[0].split(',');
+
+            // Iterate through each service in the services array
+            servicesArray.forEach(service => {
+                // Trim any extra whitespace around the service name
+                const trimmedService = service.trim();
+
+                // Increment the count for the service or initialize it to 1 if it doesn't exist
+                serviceCount[trimmedService] = (serviceCount[trimmedService] || 0) + 1;
+            });
+        });
+
+        return serviceCount;
+    }
+
+    // Count services
+    const countedServices = countServicesTotal();
+
+    const serviceArray = Object.entries(countedServices).map(([service, count]) => ({ service, count }));
+    //console.log(serviceArray)
+
+    function countServicesMonth() {
+        const serviceCount = {};
+        let data;
+
+        if (companieswithDateRangeCurrentMonth.length !== 0 && companieswithServicesInCurrentMonthTotal.length !== 0) {
+            data = companieswithServicesInCurrentMonth;
+        } else if (companieswithDateRangeCurrentMonth.length !== 0) {
+            data = companieswithDateRangeCurrentMonth;
+        } else if (companieswithServicesInCurrentMonthTotal.length === 0 && selectedValues.length !== 0) {
+            data = companieswithServicesInCurrentMonthTotal;
+
+        } else if (companieswithServicesInCurrentMonthTotal.length !== 0) {
+            data = companieswithServicesInCurrentMonthTotal;
+        } else {
+            data = companiesThisMonth;
+            //console.log(data)
+        }
+
+        // const data = completeData;
+        // Iterate through each object in the array
+        data.forEach(obj => {
+            // Split the services string into an array of individual services
+            const servicesArray = obj.services[0].split(',');
+
+            // Iterate through each service in the services array
+            servicesArray.forEach(service => {
+                // Trim any extra whitespace around the service name
+                const trimmedService = service.trim();
+
+                // Increment the count for the service or initialize it to 1 if it doesn't exist
+                serviceCount[trimmedService] = (serviceCount[trimmedService] || 0) + 1;
+            });
+        });
+
+        return serviceCount;
+    }
+
+    // Count services
+    const countedServicesMonth = countServicesMonth();
+
+    const serviceArrayMonth = Object.entries(countedServicesMonth).map(([service, count]) => ({ service, count }));
+    //console.log(serviceArrayMonth)
+
+    function countServicesToday() {
+        const serviceCount = {};
+        let data;
+
+        if (companieswithDateRangeToday.length !== 0 && companieswithServicesTodayTotal.length !== 0) {
+            data = companieswithServicesToday;
+        } else if (companieswithDateRangeToday.length !== 0) {
+            data = companieswithDateRangeToday;
+
+        }
+        else if (companieswithServicesTodayTotal.length === 0 && selectedValues.length !== 0) {
+            data = companieswithServicesTodayTotal;
+
+        } else if (companieswithServicesTodayTotal.length !== 0) {
+            data = companieswithServicesTodayTotal;
+        } else {
+            data = companiesToday;
+        }
+        console.log(data)
+        // Iterate through each object in the array
+        data.forEach(obj => {
+            // Split the services string into an array of individual services
+            const servicesArray = obj.services[0].split(',');
+
+            // Iterate through each service in the services array
+            servicesArray.forEach(service => {
+                // Trim any extra whitespace around the service name
+                const trimmedService = service.trim();
+
+                // Increment the count for the service or initialize it to 1 if it doesn't exist
+                serviceCount[trimmedService] = (serviceCount[trimmedService] || 0) + 1;
+            });
+        });
+
+        return serviceCount;
+    }
+
+    // Count services
+    const countedServicesToday = countServicesToday();
+
+    const serviceArrayToday = Object.entries(countedServicesToday).map(([service, count]) => ({ service, count }));
+    console.log(serviceArrayToday)
+
+
 
 
     return (
@@ -492,118 +630,7 @@ const Analysis_dashboard = () => {
                     </div>
                 </div>
             </div>
-            {/* <div class='container-xl mt-4'>
-                <div class="col-12">
-                    <div class="row row-cards">
-                        <div class="col-sm-6 col-lg-6">
-                            <div class="card card-sm">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <span class="bg-primary text-white avatar">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg>
-                                            </span>
-                                        </div>
-                                        <div class="col">
-                                            <div>
-                                                <Select
-                                                    styles={{
-                                                        customStyles,
-                                                        // border: "0px solid transparent !important",
-                                                        // display: "flex !important",
-                                                        // alignItems: "center !important",
-                                                        // justifyContent: "space-between !important",
-                                                        // width: " 100% !important",
-                                                        // Add custom styles here
-                                                        container: (provided) => ({
-                                                            ...provided,
-                                                            // Apply display: flex with !important
-                                                            //     // Add other custom styles as needed
-                                                        }),
-                                                    }}
-                                                    isMulti
-                                                    options={options_new}
-                                                    onChange={(selectedOptions) => {
-                                                        setSelectedValues(
-                                                            selectedOptions.map((option) => option.value)
-                                                        );
-                                                    }}
-                                                    value={selectedValues.map((value) => ({ value, label: value }))}
-                                                    placeholder="Select Services..."
-                                                >
-                                                </Select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                         <div class="col-sm-6 col-lg-3">
-                            <div class="card card-sm">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <span class="bg-green text-white avatar">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg>
-                                            </span>
-                                        </div>
-                                        <div class="col">
-                                            <div class="font-weight-medium">
-                                                78 Orders
-                                            </div>
-                                            <div class="text-muted">
-                                                32 shipped
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-lg-3">
-                            <div class="card card-sm">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <span class="bg-twitter text-white avatar">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c0 -.249 1.51 -2.772 1.818 -4.013z" /></svg>
-                                            </span>
-                                        </div>
-                                        <div class="col">
-                                            <div class="font-weight-medium">
-                                                623 Shares
-                                            </div>
-                                            <div class="text-muted">
-                                                16 today
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> 
-                        <div class="col-sm-6 col-lg-6">
-                            <div class="card card-sm">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <span class="bg-facebook text-white avatar">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 10v4h3v7h4v-7h3l1 -4h-4v-2a1 1 0 0 1 1 -1h3v-4h-3a5 5 0 0 0 -5 5v2h-3" /></svg>
-                                            </span>
-                                        </div>
-                                        <div class="col">
-                                            <div class="font-weight-medium">
-                                                132 Likes
-                                            </div>
-                                            <div class="text-muted">
-                                                21 today
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> */}
+
 
             {/* -------------------------------------------filtersection----------------------------------------------------------- */}
 
@@ -692,48 +719,6 @@ const Analysis_dashboard = () => {
                                 </div>
                             </div>
                         </div>
-                        {/* <div class="col-sm-6 col-lg-3">
-                            <div class="card card-sm">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <span class="bg-facebook text-white avatar">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 10v4h3v7h4v-7h3l1 -4h-4v-2a1 1 0 0 1 1 -1h3v-4h-3a5 5 0 0 0 -5 5v2h-3" /></svg>
-                                            </span>
-                                        </div>
-                                        <div class="col">
-                                            <div class="font-weight-medium">
-                                                132 Likes
-                                            </div>
-                                            <div class="text-muted">
-                                                21 today
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> */}
-                        {/* <div class="col-sm-6 col-lg-3">
-                            <div class="card card-sm">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <span class="bg-facebook text-white avatar">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 10v4h3v7h4v-7h3l1 -4h-4v-2a1 1 0 0 1 1 -1h3v-4h-3a5 5 0 0 0 -5 5v2h-3" /></svg>
-                                            </span>
-                                        </div>
-                                        <div class="col">
-                                            <div class="font-weight-medium">
-                                                132 Likes
-                                            </div>
-                                            <div class="text-muted">
-                                                21 today
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> */}
                     </div>
                 </div>
             </div>
@@ -748,26 +733,38 @@ const Analysis_dashboard = () => {
                         <div class="card secondClass" style={{ boxShadow: "0px 0px 5px #e0d9d9" }}>
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
-                                    <div class="subheader" style={{ fontSize: "10px" }}>Total Bookings</div>
-                                </div>
-                                <div class="d-flex align-items-baseline">
-                                    <div class="h1 mb-3 me-2 numbers">
-                                        {(() => {
-                                            if (filteredDataDateRange.length !== 0 && filteredCompaniesTotal.length !== 0) {
-                                                return filteredCompanies.length;
-                                            } else if (filteredDataDateRange.length !== 0) {
-                                                return filteredDataDateRange.length;
-                                            } else if (filteredCompaniesTotal.length !== 0) {
-                                                return filteredCompaniesTotal.length;
-                                            } else {
-                                                return completeData.length;
-                                            }
-                                        })()}
+                                    <div class="subheader d-flex align-items-center justify-content-between w-100 subheaderNew">Total Bookings
+                                        <div class=" numbers">
+                                            {(() => {
+                                                if (filteredDataDateRange.length !== 0 && filteredCompaniesTotal.length !== 0) {
+                                                    return filteredCompanies.length;
+                                                } else if (filteredDataDateRange.length !== 0) {
+                                                    return filteredDataDateRange.length;
+                                                } else if (filteredCompaniesTotal.length !== 0) {
+                                                    return filteredCompaniesTotal.length;
+                                                } else {
+                                                    return completeData.length;
+                                                }
+                                            })()}
+                                        </div>
                                     </div>
                                 </div>
-                                <hr></hr>
-                                <div id="chart-new-clients" class="chart-sm">
-                                    <Link to="#"> View Details </Link>
+                                {detailsServices && (
+                                    <div class="detailservices mt-3">
+                                        {serviceArray.map((obj, index) => (
+                                            <div key={index} className='serviceCount'>
+                                                <div className='d-flex align-items-center justify-content-between'>
+                                                <div className='service'>{obj.service}</div>
+                                                    <div className='count'>{obj.count}</div>
+                                                   
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                <hr className='mb-2 mt-2'></hr>
+                                <div id="viewDetails" className={` ${detailsServices ? 'viewDetails' : 'viewDetails'}`} onClick={() => setDetailServices(!detailsServices)}>
+                                    {detailsServices ? 'Hide Details' : 'View Details'}
                                 </div>
                             </div>
                         </div>
@@ -775,30 +772,42 @@ const Analysis_dashboard = () => {
                     <div class="col-sm-6 col-lg-4">
                         <div class="card secondClass" style={{ boxShadow: "0px 0px 5px #e0d9d9" }}>
                             <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="subheader" style={{ fontSize: "10px" }}>Total Bookings</div>
-                                </div>
-                                <div class="d-flex align-items-baseline">
-                                    <div class="h1 mb-3 me-2 numbers">
-                                    {(() => {
-                                        if (companieswithDateRangeCurrentMonth.length !== 0 && companieswithServicesInCurrentMonthTotal.length !== 0) {
-                                            return companieswithServicesInCurrentMonth.length;
-                                        } else if (companieswithDateRangeCurrentMonth.length !== 0) {
-                                            return companieswithDateRangeCurrentMonth.length;
-                                        } else if (companieswithServicesInCurrentMonthTotal.length === 0 && selectedValues.length !== 0) {
-                                            return companieswithServicesInCurrentMonthTotal.length;
+                                <div class="d-flex align-items-center justify-content-between w-100 ">
+                                    <div class="subheader d-flex align-items-center justify-content-between w-100 subheaderNew ">Monthly Bookings
+                                        <div className='numbers'>
+                                            {(() => {
+                                                if (companieswithDateRangeCurrentMonth.length !== 0 && companieswithServicesInCurrentMonthTotal.length !== 0) {
+                                                    return companieswithServicesInCurrentMonth.length;
+                                                } else if (companieswithDateRangeCurrentMonth.length !== 0) {
+                                                    return companieswithDateRangeCurrentMonth.length;
+                                                } else if (companieswithServicesInCurrentMonthTotal.length === 0 && selectedValues.length !== 0) {
+                                                    return companieswithServicesInCurrentMonthTotal.length;
 
-                                        } else if (companieswithServicesInCurrentMonthTotal.length !== 0) {
-                                            return companieswithServicesInCurrentMonthTotal.length;
-                                        } else {
-                                            return currentBookingDate.length;
-                                        }
-                                    })()}
+                                                } else if (companieswithServicesInCurrentMonthTotal.length !== 0) {
+                                                    return companieswithServicesInCurrentMonthTotal.length;
+                                                } else {
+                                                    return currentBookingDate.length;
+                                                }
+                                            })()}
+                                        </div>
                                     </div>
                                 </div>
-                                <hr></hr>
-                                <div id="chart-new-clients" class="chart-sm">
-                                    <Link to="#"> View Details </Link>
+
+                                {detailsServicesMonth && (<div class="detailservices mt-3">
+                                        {serviceArrayMonth.map((obj, index) => (
+                                            <div key={index} className='serviceCount'>
+                                                <div className='d-flex align-items-center justify-content-between'>
+                                                <div className='service'>{obj.service}</div>
+                                                    <div className='count'>{obj.count}</div>
+                                                   
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                 <hr className='mb-2 mt-2'></hr>
+                                <div id="viewDetails" className={`${detailsServicesMonth ? 'viewDetails' : 'viewDetails'}`} onClick={() => setDetailServicesMonth(!detailsServicesMonth)}>
+                                    {detailsServicesMonth ? 'Hide Details' : 'View Details'}
                                 </div>
                             </div>
                         </div>
@@ -807,30 +816,41 @@ const Analysis_dashboard = () => {
                         <div class="card secondClass" style={{ boxShadow: "0px 0px 5px #e0d9d9" }}>
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
-                                    <div class="subheader" style={{ fontSize: "10px" }}>Todays Booking</div>
-                                </div>
-                                <div class="d-flex align-items-baseline">
-                                    <div class="h1 mb-3 me-2 numbers">{(() => {
-                                        if (companieswithDateRangeToday.length !== 0 && companieswithServicesTodayTotal.length !== 0) {
-                                            return companieswithServicesToday.length;
-                                        } else if (companieswithDateRangeToday.length !== 0) {
-                                            return companieswithDateRangeToday.length;
+                                    <div class="subheader d-flex align-items-center justify-content-between w-100 subheaderNew">Todays Booking
+                                        <div class="numbers">{(() => {
+                                            if (companieswithDateRangeToday.length !== 0 && companieswithServicesTodayTotal.length !== 0) {
+                                                return companieswithServicesToday.length;
+                                            } else if (companieswithDateRangeToday.length !== 0) {
+                                                return companieswithDateRangeToday.length;
 
-                                        }
-                                        else if (companieswithServicesTodayTotal.length === 0 && selectedValues.length !== 0) {
-                                            return companieswithServicesTodayTotal.length;
+                                            }
+                                            else if (companieswithServicesTodayTotal.length === 0 && selectedValues.length !== 0) {
+                                                return companieswithServicesTodayTotal.length;
 
-                                        } else if (companieswithServicesTodayTotal.length !== 0) {
-                                            return companieswithServicesTodayTotal.length;
-                                        } else {
-                                            return companiesToday.length;
-                                        }
-                                    })()}
+                                            } else if (companieswithServicesTodayTotal.length !== 0) {
+                                                return companieswithServicesTodayTotal.length;
+                                            } else {
+                                                return companiesToday.length;
+                                            }
+                                        })()}
+                                        </div>
                                     </div>
                                 </div>
-                                <hr></hr>
-                                <div id="chart-new-clients" class="chart-sm">
-                                    <Link to="#"> View Details </Link>
+                                {detailsServicesToday && (<div class="detailservices mt-3 mb-0">
+                                        {serviceArrayToday.map((obj, index) => (
+                                            <div key={index} className='serviceCount'>
+                                                <div className='d-flex align-items-center justify-content-between'>
+                                                <div className='service'>{obj.service}</div>
+                                                    <div className='count'>{obj.count}</div>
+                                                   
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                 <hr className='mb-2 mt-2'></hr>
+                                <div id="viewDetails" className={`${detailsServicesToday ? 'viewDetails' : 'viewDetails'}`} onClick={() => setDetailServicesToday(!detailsServicesToday)}>
+                                    {detailsServicesToday ? 'Hide Details' : 'View Details'}
                                 </div>
                             </div>
                         </div>
