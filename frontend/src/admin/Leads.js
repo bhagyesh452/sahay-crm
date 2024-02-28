@@ -533,6 +533,26 @@ function Leads() {
       });
     }
   };
+  const exportData = async () => {
+    try {
+      const response = await axios.get(
+        `${secretKey}/exportLeads/${dataStatus}`,
+        { responseType: "blob" }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      dataStatus === "Assigned"
+        ? link.setAttribute("download", "AssignedData.csv")
+        : link.setAttribute("download", "UnAssigned.csv");
+
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+    }
+  };
+
   const handleMouseDown = (id) => {
     // Initiate drag selection
     setStartRowIndex(filteredData.findIndex((row) => row._id === id));
@@ -1443,7 +1463,7 @@ function Leads() {
                       </a>
                     </div>
                   </div>
-                  <div className="importCSV">
+                  <div className="importCSV mr-1">
                     <div className="btn-list">
                       <button
                         onClick={handleImportClick}
@@ -1481,6 +1501,14 @@ function Leads() {
                         {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
                       </a>
                     </div>
+                  </div>
+                  <div>
+                    <button
+                      className="btn btn-primary mr-1"
+                      onClick={exportData}
+                    >
+                      + Export Csv
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1887,19 +1915,18 @@ function Leads() {
                                 Delete
                               </DeleteIcon>
                             </IconButton>
-                           <Link to={`/admin/leads/${company._id}`}>
-                          <IconButton>
-                            <IconEye
-                              
-                              style={{
-                                width: "18px",
-                                height: "18px",
-                                color: "#d6a10c",
-                                cursor: "pointer",
-                              }}
-                            />
-                            </IconButton>
-                            </Link> 
+                            <Link to={`/admin/leads/${company._id}`}>
+                              <IconButton>
+                                <IconEye
+                                  style={{
+                                    width: "18px",
+                                    height: "18px",
+                                    color: "#d6a10c",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </IconButton>
+                            </Link>
                           </td>
                         </tr>
                       </tbody>

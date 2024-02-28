@@ -32,6 +32,7 @@ function EmployeePanel() {
   const [projectingCompany, setProjectingCompany] = useState("");
   const [sortStatus, setSortStatus] = useState("");
   const [projectionData, setProjectionData] = useState([]);
+  const [sortOrder, setSortOrder] = useState("asc");
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
     ename: "",
@@ -75,6 +76,7 @@ function EmployeePanel() {
   const [currentRemarks, setCurrentRemarks] = useState("");
   const itemsPerPage = 500;
   const [year, setYear] = useState(0);
+  const [incoFilter, setIncoFilter] = useState("");
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const { userId } = useParams();
@@ -112,7 +114,7 @@ function EmployeePanel() {
         time: "",
       });
       setSelectedValues(findOneprojection.offeredServices);
-    } 
+    }
   };
 
   const closeProjection = () => {
@@ -128,7 +130,7 @@ function EmployeePanel() {
       time: "",
     });
 
- setSelectedValues([]);
+    setSelectedValues([]);
   };
   const functionopenAnchor = () => {
     setOpenAnchor(true);
@@ -207,12 +209,14 @@ function EmployeePanel() {
     try {
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
+     
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
 
       setmoreEmpData(sortedData);
+      
       setEmployeeData(
         tempData.filter(
           (obj) =>
@@ -222,6 +226,24 @@ function EmployeePanel() {
         )
       );
       setdataStatus("All");
+      if(sortStatus==="Untouched"){
+        setEmployeeData(
+          sortedData
+            .filter((data) =>
+              [
+                "Busy",
+                "Untouched",
+                "Not Picked Up",
+              ].includes(data.Status)
+            )
+            .sort((a, b) => {
+              if (a.Status === "Untouched")
+                return -1;
+              if (b.Status === "Untouched") return 1;
+              return 0;
+            })
+        );
+      }
       if (!status && sortStatus !== "") {
       }
       if (status === "Not Interested" || status === "Junk") {
@@ -843,7 +865,7 @@ function EmployeePanel() {
           const data = await response.json();
 
           // Filter and format the data based on employeeName
-          const formattedData = data
+          const formattedData = data.companies
             .filter(
               (entry) =>
                 entry.bdeName === employeeName || entry.bdmName === employeeName
@@ -904,6 +926,15 @@ function EmployeePanel() {
     } catch (error) {
       console.error("Error updating or adding data:", error.message);
     }
+  };
+
+  const [openIncoDate, setOpenIncoDate] = useState(false);
+
+  const handleFilterIncoDate = () => {
+    setOpenIncoDate(true);
+  };
+  const handleCloseIncoDate = () => {
+    setOpenIncoDate(false);
   };
   return (
     <div>
@@ -1560,7 +1591,7 @@ function EmployeePanel() {
                             <th>Company Number</th>
                             <th>Status</th>
                             <th>Remarks</th>
-                            <th>Company Email</th>
+
                             <th>
                               Incorporation Date
                               <SwapVertIcon
@@ -1569,21 +1600,23 @@ function EmployeePanel() {
                                   width: "15px",
                                   cursor: "pointer",
                                 }}
-                                onClick={() => {
-                                  setEmployeeData(
-                                    [...moreEmpData].sort((a, b) =>
-                                      b[
-                                        "Company Incorporation Date  "
-                                      ].localeCompare(
-                                        a["Company Incorporation Date  "]
-                                      )
-                                    )
-                                  );
-                                }}
+                                // onClick={() => {
+                                //   setEmployeeData(
+                                //     [...moreEmpData].sort((a, b) =>
+                                //       b[
+                                //         "Company Incorporation Date  "
+                                //       ].localeCompare(
+                                //         a["Company Incorporation Date  "]
+                                //       )
+                                //     )
+                                //   );
+                                // }}
+                                onClick={handleFilterIncoDate}
                               />
                             </th>
                             <th>City</th>
                             <th>State</th>
+                            <th>Company Email</th>
                             <th>
                               Assigned Date
                               <SwapVertIcon
@@ -1593,10 +1626,22 @@ function EmployeePanel() {
                                   cursor: "pointer",
                                 }}
                                 onClick={() => {
-                                  setEmployeeData(
-                                    [...moreEmpData].sort((a, b) =>
-                                      b.AssignDate.localeCompare(a.AssignDate)
-                                    )
+                                  const sortedData = [...employeeData].sort(
+                                    (a, b) => {
+                                      if (sortOrder === "asc") {
+                                        return b.AssignDate.localeCompare(
+                                          a.AssignDate
+                                        );
+                                      } else {
+                                        return a.AssignDate.localeCompare(
+                                          b.AssignDate
+                                        );
+                                      }
+                                    }
+                                  );
+                                  setEmployeeData(sortedData);
+                                  setSortOrder(
+                                    sortOrder === "asc" ? "desc" : "asc"
                                   );
                                 }}
                               />
@@ -1646,9 +1691,8 @@ function EmployeePanel() {
                                               "Company Incorporation Date  "
                                             ],
                                             company["Company Number"],
-                                            company['Status']
+                                            company["Status"]
                                           )
-                                          
                                         }
                                       >
                                         <option value="Not Picked Up">
@@ -1736,7 +1780,7 @@ function EmployeePanel() {
                                       </IconButton>
                                     </div>
                                   </td>
-                                  <td>{company["Company Email"]}</td>
+
                                   <td>
                                     {formatDate(
                                       company["Company Incorporation Date  "]
@@ -1744,6 +1788,7 @@ function EmployeePanel() {
                                   </td>
                                   <td>{company["City"]}</td>
                                   <td>{company["State"]}</td>
+                                  <td>{company["Company Email"]}</td>
                                   <td>{formatDate(company["AssignDate"])}</td>
 
                                   {dataStatus === "FollowUp" && (
@@ -2123,6 +2168,76 @@ function EmployeePanel() {
           </button>
         </div>
       </Dialog>
+      {/* --------------------------  Inco-filter ---------------- */}
+      <Dialog
+        open={openIncoDate}
+        onClose={handleCloseIncoDate}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogContent>
+          <div>
+            <input
+             
+              type="checkbox"
+              onChange={(e) => {
+                setIncoFilter(e.target.value);
+
+                setEmployeeData(
+                  employeeData.sort((a, b) =>
+                    a["Company Incorporation Date  "].localeCompare(
+                      b["Company Incorporation Date  "]
+                    )
+                  )
+                );
+              }}
+              name="oldest"
+              id="oldest"
+              value="oldest"
+              checked={incoFilter === "oldest"}
+            />{" "}
+            Oldest
+          </div>
+          <div>
+            <input
+              onChange={(e) => {
+                setIncoFilter(e.target.value);
+                setEmployeeData(
+                  employeeData.sort((a, b) =>
+                    b["Company Incorporation Date  "].localeCompare(
+                      a["Company Incorporation Date  "]
+                    )
+                  )
+                );
+              }}
+              type="checkbox"
+              value="newest"
+              name="newest"
+              id="newest"
+              checked={incoFilter === "newest"}
+            />
+            Newest
+          </div>
+          <div>
+            <input
+              onChange={(e) => {
+                setIncoFilter(e.target.value);
+                setEmployeeData(
+                  employeeData.sort((a, b) =>
+                    b["AssignDate"].localeCompare(a["AssignDate"])
+                  )
+                );
+              }}
+              type="checkbox"
+              value="removeFilter"
+              name="removeFilter"
+              id="removeFilter"
+              checked={incoFilter === "removeFilter"}
+            />
+            None
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Remarks edit icon pop up*/}
       <Dialog
@@ -2369,15 +2484,14 @@ function EmployeePanel() {
       <Drawer anchor="right" open={openProjection} onClose={closeProjection}>
         <div style={{ width: "31em" }} className="container-xl">
           <div className="header d-flex justify-content-between">
-            <h1 className="title">Projection Form</h1>
-            (
-              <IconButton
-                onClick={() => {
-                  setIsEditProjection(true);
-                }}
-              >
-                <EditIcon color="primary"></EditIcon>
-              </IconButton>
+            <h1 className="title">Projection Form</h1>(
+            <IconButton
+              onClick={() => {
+                setIsEditProjection(true);
+              }}
+            >
+              <EditIcon color="primary"></EditIcon>
+            </IconButton>
             )
           </div>
           <div className="body-projection">
@@ -2388,12 +2502,13 @@ function EmployeePanel() {
               <strong>Offered Services :</strong>
               <div className="services mb-3">
                 <Select
-                  styles={{customStyles , 
-                    container : (provided)=>({
-                     
-                      border:'1px solid #ffb900',
-                      borderRadius:'5px'
-                    })}}
+                  styles={{
+                    customStyles,
+                    container: (provided) => ({
+                      border: "1px solid #ffb900",
+                      borderRadius: "5px",
+                    }),
+                  }}
                   isMulti
                   options={options}
                   onChange={(selectedOptions) => {

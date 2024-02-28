@@ -30,6 +30,7 @@ const fastCsv = require('fast-csv');
 const RecentUpdatesModel = require("./models/RecentUpdates");
 const FollowUpModel = require("./models/FollowUp");
 const DraftModel = require("./models/DraftLeadform");
+const { type } = require("os");
 
 
 // const http = require('http');
@@ -1969,8 +1970,8 @@ app.get('/api/exportdatacsv', async (req, res) => {
     ]);
 
 
-    const baseDocumentURL = "http://localhost:3001/api/recieptpdf/";
-    const DocumentURL = "http://localhost:3001/api/otherpdf/";
+    const baseDocumentURL = "https://startupsahay.in/api/recieptpdf/";
+    const DocumentURL = "https://startupsahay.in/api/otherpdf/";
     
     // Push each lead as a row into the csvData array
     leads.forEach((lead, index) => {

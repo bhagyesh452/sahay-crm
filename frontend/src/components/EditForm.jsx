@@ -503,14 +503,14 @@ console.log(companyData)
                     onChange={(e) => {
                       setLeadData((prevLeadData) => ({
                         ...prevLeadData,
-                        bdmType: "Close by",
+                        bdmType: "closeby",
                       }));
                       setCompanyData((prevLeadData) => ({
                         ...prevLeadData,
-                        bdmType: "Close by",
+                        bdmType: "closeby",
                       }));
                     }}
-                    checked={companyData.bdmType === "Close by"}
+                    checked={companyData.bdmType === "closeby"}
                     disabled={!matured}
                   />
                   <span class="form-check-label">Close By</span>
@@ -523,14 +523,14 @@ console.log(companyData)
                     onChange={(e) => {
                       setLeadData((prevLeadData) => ({
                         ...prevLeadData,
-                        bdmType: "Supported by",
+                        bdmType: "supportedBy",
                       }));
                       setCompanyData((prevLeadData) => ({
                         ...prevLeadData,
-                        bdmType: "Supported by",
+                        bdmType: "supportedBy",
                       }));
                     }}
-                    checked={companyData.bdmType === "Supported By"}
+                    checked={companyData.bdmType === "supportedBy"}
                     disabled={!matured}
                   />
                   <span class="form-check-label">Supported By</span>
@@ -595,9 +595,9 @@ console.log(companyData)
                         caCase: e.target.value,
                       }));
                     }}
-                    value="Yes" // Set the value attribute for "Yes"
+                    value="yes" // Set the value attribute for "Yes"
                     checked={
-                      companyData.length !== 0 && companyData.caCase === "Yes"
+                      companyData.caCase === "yes"
                     }
                     disabled={!matured} // Check condition based on state
                   />
@@ -620,7 +620,7 @@ console.log(companyData)
                     }}
                     value="No" // Set the value attribute for "No"
                     checked={
-                      companyData.length !== 0 && companyData.caCase === "No"
+                      companyData.caCase === "No"
                     }
                     disabled={!matured} // Check condition based on state
                   />
