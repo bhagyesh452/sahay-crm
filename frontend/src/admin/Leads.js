@@ -12,6 +12,7 @@ import { IconEye } from "@tabler/icons-react";
 import { useRef, useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import DatePicker from "react-datepicker";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
 import "react-datepicker/dist/react-datepicker.css";
 import "../assets/styles.css";
 import Swal from "sweetalert2";
@@ -32,6 +33,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Modal from "react-modal";
 import { Link, json } from "react-router-dom";
 import Nodata from "../components/Nodata";
+import FilterListIcon from "@mui/icons-material/FilterList";
 
 function Leads() {
   const [open, openchange] = useState(false);
@@ -45,6 +47,7 @@ function Leads() {
   const [csvdata, setCsvData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [data, setData] = useState([]);
+  const [openAssign, setOpenAssign] = useState(false);
   const fileInputRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
@@ -52,6 +55,8 @@ function Leads() {
   const [citySearch, setcitySearch] = useState("");
   const [selectedField, setSelectedField] = useState("Company Name");
   const [employeeSelection, setEmployeeSelection] = useState("Not Alloted");
+  const [incoFilter, setIncoFilter] = useState("");
+ 
   const [newemployeeSelection, setnewEmployeeSelection] =
     useState("Not Alloted");
   const [newempData, setnewEmpData] = useState([]);
@@ -61,6 +66,7 @@ function Leads() {
   const [dataStatus, setDataStatus] = useState("Unassigned");
 
   // Manual Data
+  const [sortOrder, setSortOrder] = useState("asc");
   const [cname, setCname] = useState("");
   const [cemail, setCemail] = useState("");
   const [cnumber, setCnumber] = useState(0);
@@ -73,6 +79,7 @@ function Leads() {
   const [visibilityOther, setVisibilityOther] = useState("block");
   const [visibilityOthernew, setVisibilityOthernew] = useState("none");
   const [subFilterValue, setSubFilterValue] = useState("");
+  const [openIncoDate, setOpenIncoDate] = useState(false);
 
   // Requested Details
   const [requestData, setRequestData] = useState([]);
@@ -93,7 +100,74 @@ function Leads() {
       console.error("Error fetching data:", error.message);
     }
   };
-
+  const handleSort = (sortType) => {
+    switch (sortType) {
+      case "oldest":
+        setIncoFilter("oldest");
+        setmainData(
+          mainData.sort((a, b) => {
+            const dateA = a["Company Incorporation Date  "] || "";
+            const dateB = b["Company Incorporation Date  "] || "";
+            return dateA.localeCompare(dateB);
+          })
+        );
+        setOpenIncoDate(!openIncoDate)
+        break;
+      case "newest":
+        setIncoFilter("newest");
+        setmainData(
+          mainData.sort((a, b) => {
+            const dateA = a["Company Incorporation Date  "] || "";
+            const dateB = b["Company Incorporation Date  "] || "";
+            return dateB.localeCompare(dateA);
+          })
+        );
+        setOpenIncoDate(!openIncoDate)
+        break;
+      case "none":
+        setIncoFilter("none");
+        setmainData(
+          mainData.sort((a, b) => {
+            const dateA = a["AssignDate"] || "";
+            const dateB = b["AssignDate"] || "";
+            return dateB.localeCompare(dateA);
+          })
+        );
+        setOpenIncoDate(!openIncoDate)
+        break;
+      default:
+        break;
+    }
+  };
+  const handleSortAssign = (sortType) => {
+    switch (sortType) {
+      case "oldest":
+      
+        setmainData(
+          mainData.sort((a, b) => {
+            const dateA = a["AssignDate"] || "";
+            const dateB = b["AssignDate"] || "";
+            return dateA.localeCompare(dateB);
+          })
+        );
+        setOpenIncoDate(!openIncoDate)
+        break;
+      case "newest":
+      
+        setmainData(
+          mainData.sort((a, b) => {
+            const dateA = a["AssignDate"] || "";
+            const dateB = b["AssignDate"] || "";
+            return dateB.localeCompare(dateA);
+          })
+        );
+        setOpenIncoDate(!openIncoDate)
+        break;
+      default:
+        break;
+    }
+  };
+  
   useEffect(() => {
     // Fetch data from the Node.js server
     // Call the fetchData function
@@ -124,7 +198,7 @@ function Leads() {
       setSubFilterValue("");
     }
 
-    console.log(selectedField);
+   
   };
   const functionopenpopupNew = () => {
     openchangeNew(true);
@@ -208,8 +282,7 @@ function Leads() {
       const selectedDate = new Date(fieldValue);
       const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
       const selectedYear = selectedDate.getFullYear();
-      console.log(month);
-      console.log(year);
+
       // console.log(selectedMonth);
       //
 
@@ -344,7 +417,7 @@ function Leads() {
   // csvdata.map((item)=>{
   //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
   // })
-  console.log(csvdata);
+
 
   const handleUploadData = async (e) => {
     // Get current date and time
@@ -375,7 +448,7 @@ function Leads() {
           );
           await axios.post(`${secretKey}/employee-history`, newArray);
           // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
-          console.log("Data sent successfully");
+         
           const counter = response.data.counter;
           const successCounter = response.data.sucessCounter;
           if (counter === 0) {
@@ -417,13 +490,17 @@ function Leads() {
         Swal.fire("Please upload data");
       }
     } else {
-      console.log("Assigning Normally");
+  
       if (csvdata.length !== 0) {
+
         setLoading(true); // Move setLoading outside of the loop
 
         try {
+
+
+
           await axios.post(`${secretKey}/leads`, csvdata);
-          console.log("Data sent successfully");
+          
           Swal.fire({
             title: "Data Send!",
             text: "Data successfully sent to the Employee",
@@ -494,7 +571,7 @@ function Leads() {
         AssignDate: new Date(),
       })
       .then((response) => {
-        console.log("Data sent Successfully");
+     
         Swal.fire({
           title: "Data Added!",
           text: "Successfully added new Data!",
@@ -594,7 +671,7 @@ function Leads() {
     // Print the data of the selected rows
 
     const selectedData = data.filter((row) => selectedRows.includes(row._id));
-    console.log("Selected Data:", selectedData);
+
   };
 
   // Fetch Employees Data
@@ -641,7 +718,7 @@ function Leads() {
     if (userConfirmed) {
       handleAssignData();
     } else {
-      console.log("User canceled the assignation.");
+
     }
   };
 
@@ -661,7 +738,7 @@ function Leads() {
       });
       Swal.fire("Data Assigned");
       fetchData();
-      console.log("Data posted successfully");
+     
     } catch (err) {
       console.log("Internal server Error", err);
       Swal.fire("Error Assigning Data");
@@ -811,7 +888,7 @@ function Leads() {
       setRemarksHistory(response.data);
       setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
-      console.log(response.data);
+
     } catch (error) {
       console.error("Error fetching remarks history:", error);
     }
@@ -851,7 +928,12 @@ function Leads() {
     backgroundColor: "#fff",
   };
 
-  console.log(selectedRows);
+  const handleFilterIncoDate = () => {
+    setOpenIncoDate(!openIncoDate);
+  };
+  const handleFilterAssignDate = () => {
+    setOpenAssign(!openAssign);
+  };
   return (
     <div>
       <Header />
@@ -1507,7 +1589,7 @@ function Leads() {
                       className="btn btn-primary mr-1"
                       onClick={exportData}
                     >
-                      + Export Csv
+                      + Export CSV
                     </button>
                   </div>
                 </div>
@@ -1817,7 +1899,7 @@ function Leads() {
                     borderCollapse: "collapse",
                     border: "1px solid #ddd",
                   }}
-                  className="table-vcenter table-nowrap"
+                  className="table-vcenter table-nowrap "
                 >
                   <thead>
                     <tr className="tr-sticky">
@@ -1832,13 +1914,110 @@ function Leads() {
                       <th>Company Name</th>
                       <th>Company Number</th>
                       <th>Company Email</th>
-                      <th>Incorporation Date</th>
+                      <th>
+                              Incorporation Date
+                              <FilterListIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                  marginLeft: "4px",
+                                }}
+                                onClick={handleFilterIncoDate}
+                              />
+                              {openIncoDate && <div className="inco-filter">
+                                <div
+                                
+                                  className="inco-subFilter"
+                                  onClick={(e) => handleSort("oldest")}
+                                >
+                                  <SwapVertIcon style={{ height: "16px" }} />
+                                  Oldest
+                                </div>
+
+                                <div
+                                  className="inco-subFilter"
+                                  onClick={(e) => handleSort("newest")}
+                                >
+                                  <SwapVertIcon style={{ height: "16px" }} />
+                                  Newest
+                                </div>
+
+                                <div
+                                  className="inco-subFilter"
+                                  onClick={(e) => handleSort("none")}
+                                >
+                                  <SwapVertIcon style={{ height: "16px" }} />
+                                  None
+                                </div>
+                              </div>}
+                            </th>
                       <th>City</th>
                       <th>State</th>
                       <th>Status</th>
                       <th>Remarks</th>
-                      <th>Assigned to</th>
-                      <th>Alloted On:</th>
+                      <th>Alloted to</th>
+                      <th>
+                              Assigned on
+                              <FilterListIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                  marginLeft: "4px",
+                                }}
+                                onClick={handleFilterAssignDate}
+                              />
+                              {openAssign && <div className="inco-filter">
+                                <div
+                                
+                                  className="inco-subFilter"
+                                  onClick={(e) => handleSortAssign("oldest")}
+                                >
+                                  <SwapVertIcon style={{ height: "16px" }} />
+                                  Oldest
+                                </div>
+
+                                <div
+                                  className="inco-subFilter"
+                                  onClick={(e) => handleSortAssign("newest")}
+                                >
+                                  <SwapVertIcon style={{ height: "16px" }} />
+                                  Newest
+                                </div>
+
+                                
+                              </div>}
+                            </th>
+                      {/* <th>
+                              Assigned Date
+                              <SwapVertIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  const sortedData = [...mainData].sort(
+                                    (a, b) => {
+                                      if (sortOrder === "asc") {
+                                        return b.AssignDate.localeCompare(
+                                          a.AssignDate
+                                        );
+                                      } else {
+                                        return a.AssignDate.localeCompare(
+                                          b.AssignDate
+                                        );
+                                      }
+                                    }
+                                  );
+                                  setmainData(sortedData);
+                                  setSortOrder(
+                                    sortOrder === "asc" ? "desc" : "asc"
+                                  );
+                                }}
+                              />
+                            </th> */}
                       <th>Action</th>
                     </tr>
                   </thead>

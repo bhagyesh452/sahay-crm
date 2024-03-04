@@ -30,6 +30,10 @@ const requestSchema = new mongoose.Schema({
   },
   cDate:{
     type:String
+  },
+  AssignRead : {
+    type:Boolean,
+    default:false
   }
 });
 

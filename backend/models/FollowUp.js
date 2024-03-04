@@ -28,7 +28,19 @@ const CompanySchema = new mongoose.Schema({
   lastFollowUpdate: {
     type: String,
     required: true
+  },
+  totalPayment:{
+    type:Number,
+    required:true
+  },
+  estPaymentDate:{
+    type:String,
+    required:true
+  },
+  remarks:{
+    type:String
   }
+
 });
 
 

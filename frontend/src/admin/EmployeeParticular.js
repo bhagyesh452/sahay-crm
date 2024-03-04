@@ -6,8 +6,10 @@ import { useParams } from "react-router-dom";
 import { IconBoxPadding, IconChevronLeft, IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { IconButton, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { options } from "../components/Options";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link } from "react-router-dom";
+import Select from "react-select";
 import "../../src/assets/styles.css";
 // import "./styles/table.css";
 import { Drawer } from "@mui/material";
@@ -18,6 +20,7 @@ import LoginDetails from "../components/LoginDetails";
 import Nodata from "../components/Nodata";
 import EditForm from "../components/EditForm";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import FilterListIcon from "@mui/icons-material/FilterList";
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -27,10 +30,23 @@ function EmployeeParticular() {
   const [openAnchor, setOpenAnchor] = useState(false);
   const [openRemarks, openchangeRemarks] = useState(false);
   const [openlocation, openchangelocation] = useState(false);
+  const [projectingCompany, setProjectingCompany] = useState("");
+  const [openProjection, setOpenProjection] = useState(false);
+  const [currentProjection, setCurrentProjection] = useState({
+    companyName: "",
+    ename: "",
+    offeredPrize: 0,
+    offeredServices: [],
+    lastFollowUpdate: "",
+    estPaymentDate: "",
+    date: "",
+    time: "",
+  });
+  const [projectionData, setProjectionData] = useState([]);
   const [loginDetails, setLoginDetails] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [employeeName, setEmployeeName] = useState("");
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortOrder, setSortOrder] = useState("asc");
   const [dataStatus, setdataStatus] = useState("All");
   const [moreEmpData, setmoreEmpData] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -50,6 +66,8 @@ function EmployeeParticular() {
   const [maturedCompanyName, setMaturedCompanyName] = useState("");
   const [companies, setCompanies] = useState([]);
   const [month, setMonth] = useState(0);
+  const [incoFilter, setIncoFilter] = useState("");
+  const [openIncoDate, setOpenIncoDate] = useState(false);
   // const [updateData, setUpdateData] = useState({});
   const [eData, seteData] = useState([]);
   const [year, setYear] = useState(0);
@@ -165,6 +183,7 @@ function EmployeeParticular() {
     fetchEmployeeDetails();
     fetchnewData();
     fetchRemarksHistory();
+    fetchProjections();
     axios
       .get(`${secretKey}/loginDetails`)
       .then((response) => {
@@ -334,7 +353,51 @@ function EmployeeParticular() {
       console.error("Error fetching data:", error.message);
     }
   };
-
+  const handleFilterIncoDate = () => {
+    setOpenIncoDate(!openIncoDate);
+  };
+  const handleSort = (sortType) => {
+    switch (sortType) {
+      case "oldest":
+        setIncoFilter("oldest");
+        setEmployeeData(
+          employeeData.sort((a, b) =>
+            a["Company Incorporation Date  "].localeCompare(
+              b["Company Incorporation Date  "]
+            )
+          )
+        );
+        break;
+      case "newest":
+        setIncoFilter("newest");
+        setEmployeeData(
+          employeeData.sort((a, b) =>
+            b["Company Incorporation Date  "].localeCompare(
+              a["Company Incorporation Date  "]
+            )
+          )
+        );
+        break;
+      case "none":
+        setIncoFilter("none");
+        setEmployeeData(
+          employeeData.sort((a, b) =>
+            b["AssignDate"].localeCompare(a["AssignDate"])
+          )
+        );
+        break;
+      default:
+        break;
+    }
+  };
+  const fetchProjections = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/projection-data`);
+      setProjectionData(response.data);
+    } catch (error) {
+      console.error("Error fetching Projection Data:", error.message);
+    }
+  };
   const functionOpenAssign = () => {
     openchangeAssign(true);
   };
@@ -352,6 +415,38 @@ function EmployeeParticular() {
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
+  };
+  const functionopenprojection = (comName) => {
+    setProjectingCompany(comName);
+    setOpenProjection(true);
+    const findOneprojection =
+      projectionData.length !== 0 &&
+      projectionData.find((item) => item.companyName === comName);
+    if (findOneprojection) {
+      setCurrentProjection({
+        companyName: findOneprojection.companyName,
+        ename: findOneprojection.ename,
+        offeredPrize: findOneprojection.offeredPrize,
+        offeredServices: findOneprojection.offeredServices,
+        lastFollowUpdate: findOneprojection.lastFollowUpdate,
+        estPaymentDate: findOneprojection.estPaymentDate,
+        date: "",
+        time: "",
+      });
+    }
+  };
+  const closeProjection = () => {
+    setOpenProjection(false);
+    setProjectingCompany("");
+    setCurrentProjection({
+      companyName: "",
+      ename: "",
+      offeredPrize: "",
+      offeredServices: "",
+      lastFollowUpdate: "",
+      date: "",
+      time: "",
+    });
   };
 
   const handleUploadData = async (e) => {
@@ -1132,33 +1227,91 @@ function EmployeeParticular() {
                           <th>Company Number</th>
                           <th>Status</th>
                           <th>Remarks</th>
-                      
-                          <th>Incorporation Date</th>
+
+                          <th>
+                            Incorporation Date
+                            <FilterListIcon
+                              style={{
+                                height: "15px",
+                                width: "15px",
+                                cursor: "pointer",
+                                marginLeft: "4px",
+                              }}
+                              // onClick={() => {
+                              //   setEmployeeData(
+                              //     [...moreEmpData].sort((a, b) =>
+                              //       b[
+                              //         "Company Incorporation Date  "
+                              //       ].localeCompare(
+                              //         a["Company Incorporation Date  "]
+                              //       )
+                              //     )
+                              //   );
+                              // }}
+                              onClick={handleFilterIncoDate}
+                            />
+                            {openIncoDate && (
+                              <div className="inco-filter">
+                                <div
+                                  className="inco-subFilter"
+                                  onClick={(e) => handleSort("oldest")}
+                                >
+                                  <SwapVertIcon style={{ height: "16px" }} />
+                                  Oldest
+                                </div>
+
+                                <div
+                                  className="inco-subFilter"
+                                  onClick={(e) => handleSort("newest")}
+                                >
+                                  <SwapVertIcon style={{ height: "16px" }} />
+                                  Newest
+                                </div>
+
+                                <div
+                                  className="inco-subFilter"
+                                  onClick={(e) => handleSort("none")}
+                                >
+                                  <SwapVertIcon style={{ height: "16px" }} />
+                                  None
+                                </div>
+                              </div>
+                            )}
+                          </th>
                           <th>City</th>
                           <th>State</th>
                           <th>Company Email</th>
                           <th>
-  Assigned On
-  <SwapVertIcon
-    style={{
-      height: "15px",
-      width: "15px",
-      cursor: "pointer",
-    }}
-    onClick={() => {
-      const sortedData = [...employeeData].sort((a, b) => {
-        if (sortOrder === 'asc') {
-          return b.AssignDate.localeCompare(a.AssignDate);
-        } else {
-          return a.AssignDate.localeCompare(b.AssignDate);
-        }
-      });
-      setEmployeeData(sortedData);
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    }}
-  />
-</th>
-                          {dataStatus === "Matured" && <th>Action</th>}
+                            Assigned On
+                            <SwapVertIcon
+                              style={{
+                                height: "15px",
+                                width: "15px",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => {
+                                const sortedData = [...employeeData].sort(
+                                  (a, b) => {
+                                    if (sortOrder === "asc") {
+                                      return b.AssignDate.localeCompare(
+                                        a.AssignDate
+                                      );
+                                    } else {
+                                      return a.AssignDate.localeCompare(
+                                        b.AssignDate
+                                      );
+                                    }
+                                  }
+                                );
+                                setEmployeeData(sortedData);
+                                setSortOrder(
+                                  sortOrder === "asc" ? "desc" : "asc"
+                                );
+                              }}
+                            />
+                          </th>
+                          {(dataStatus === "Matured" && <th>Action</th>) ||
+                            (dataStatus === "FollowUp" && <th>Action</th>)}
                         </tr>
                       </thead>
                       {currentData.length !== 0 && dataStatus !== "Matured" && (
@@ -1240,7 +1393,7 @@ function EmployeeParticular() {
                                   </span>
                                 </div>
                               </td>
-                             
+
                               <td>
                                 {formatDate(
                                   company["Company Incorporation Date  "]
@@ -1250,6 +1403,26 @@ function EmployeeParticular() {
                               <td>{company["State"]}</td>
                               <td>{company["Company Email"]}</td>
                               <td>{formatDate(company["AssignDate"])}</td>
+                              {dataStatus === "FollowUp" && (
+                                <td>
+                                  <button
+                                    style={{
+                                      padding: "5px",
+                                      fontSize: "12px",
+                                      backgroundColor: "lightblue",
+                                      // Additional styles for the "View" button
+                                    }}
+                                    className="btn btn-primary d-none d-sm-inline-block"
+                                    onClick={() => {
+                                      functionopenprojection(
+                                        company["Company Name"]
+                                      );
+                                    }}
+                                  >
+                                    View
+                                  </button>
+                                </td>
+                              )}
 
                               {dataStatus === "Matured" && (
                                 <td>
@@ -1332,7 +1505,6 @@ function EmployeeParticular() {
                                   </span>
                                 </div>
                               </td>
-                              <td>{company["Company Email"]}</td>
                               <td>
                                 {formatDate(
                                   company["Company Incorporation Date"]
@@ -1340,6 +1512,7 @@ function EmployeeParticular() {
                               </td>
                               <td>{company["City"]}</td>
                               <td>{company["State"]}</td>
+                              <td>{company["Company Email"]}</td>
                               <td>{formatDate(company["AssignDate"])}</td>
 
                               <td>
@@ -1667,6 +1840,89 @@ function EmployeeParticular() {
             <h1 className="title">LeadForm</h1>
           </div>
           <EditForm companysName={maturedCompanyName} />
+        </div>
+      </Drawer>
+
+      {/* Projecting drawer */}
+      <Drawer
+        style={{ top: "50px" }}
+        anchor="right"
+        open={openProjection}
+        onClose={closeProjection}
+      >
+        <div style={{ width: "31em" }} className="container-xl">
+          <div className="header d-flex justify-content-between align-items-center">
+            <h1 style={{ marginBottom: "0px" }} className="title">
+              Projection Form
+            </h1>
+          </div>
+          <hr style={{ marginBottom: "10px" }} />
+          <div className="body-projection">
+            <div className="header mb-2">
+              <strong style={{ fontSize: "20px" }}>{projectingCompany}</strong>
+            </div>
+            <div className="label">
+              <strong>Offered Services :</strong>
+              <div className="services mb-3">
+                <Select
+                  // styles={{
+                  //   customStyles,
+                  //   container: (provided) => ({
+                  //     border: "1px solid #ffb900",
+                  //     borderRadius: "5px",
+                  //   }),
+                  // }}
+                  isMulti
+                  options={options}
+                  value={
+                    currentProjection.offeredServices.length !== 0 &&
+                    currentProjection.offeredServices.map((value) => ({
+                      value,
+                      label: value,
+                    }))
+                  }
+                  placeholder="Select Services..."
+                  disabled
+                />
+              </div>
+            </div>
+            <div className="label">
+              <strong>Offered prizes:</strong>
+              <div className="services mb-3">
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="Please enter offered Prize"
+                  value={currentProjection.offeredPrize}
+                  disabled
+                />
+              </div>
+            </div>
+            <div className="label">
+              <strong>Last Follow Up Date:</strong>
+              <div className="services mb-3">
+                <input
+                  type="date"
+                  className="form-control"
+                  placeholder="Please enter offered Prize"
+                  value={currentProjection.lastFollowUpdate}
+                  disabled
+                />
+              </div>
+            </div>
+            <div className="label">
+              <strong>Payment Expected on:</strong>
+              <div className="services mb-3">
+                <input
+                  type="date"
+                  className="form-control"
+                  placeholder="Please enter Estimated Payment Date"
+                  value={currentProjection.estPaymentDate}
+                  disabled
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </Drawer>
     </div>

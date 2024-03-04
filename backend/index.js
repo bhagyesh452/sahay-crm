@@ -753,6 +753,7 @@ app.post("/api/requestData", async (req, res) => {
       ename: name,
       cTime: cTime,
       cDate: cDate,
+      AssignRead:false
     });
 
     // Save the data to MongoDB
@@ -765,6 +766,25 @@ app.post("/api/requestData", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+app.post('/api/setMarktrue/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    // Find the object by ID and update the AssignRead property to true
+    const updatedObject = await RequestGModel.findByIdAndUpdate(
+      id,
+      { AssignRead: true },
+      { new: true } // Return the updated object after the update operation
+    );
+    // Optionally, you can send the updated object back in the response
+    res.json(updatedObject);
+    socketIO.emit('request-seen');
+  } catch (error) {
+    // Handle any errors that occur during the update operation
+    console.error('Error updating object:', error);
+    res.status(500).json({ error: 'An error occurred while updating the object.' });
   }
 });
 app.post("/api/requestgData", async (req, res) => {
@@ -853,9 +873,21 @@ app.put("/api/requestgData/:id", async (req, res) => {
     }
 
     res.json(updatedNotification);
+    socketIO.emit("data-sent");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get('/api/edata-particular/:ename', async (req, res) => {
+  try {
+    const { ename } = req.params;
+    const filteredEmployeeData = await CompanyModel.find({ ename }); 
+    res.json(filteredEmployeeData);
+  } catch (error) {
+    console.error('Error fetching employee data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

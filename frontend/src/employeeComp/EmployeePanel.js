@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import EmpNav from "./EmpNav.js";
 import Header from "../components/Header";
 import { useParams } from "react-router-dom";
+import notificationSound from '../assets/media/iphone_sound.mp3';
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import axios from "axios";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
-import { Drawer, IconButton } from "@mui/material";
+import { Drawer, Icon, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
@@ -25,6 +26,8 @@ import { useCallback } from "react";
 import debounce from "lodash/debounce";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import { options } from "../components/Options.js";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import socketIO from 'socket.io-client';
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -32,6 +35,7 @@ function EmployeePanel() {
   const [projectingCompany, setProjectingCompany] = useState("");
   const [sortStatus, setSortStatus] = useState("");
   const [projectionData, setProjectionData] = useState([]);
+  const [requestData, setRequestData] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
@@ -39,6 +43,9 @@ function EmployeePanel() {
     offeredPrize: 0,
     offeredServices: [],
     lastFollowUpdate: "",
+    totalPayment:0,
+    estPaymentDate:"",
+    remarks:"",
     date: "",
     time: "",
   });
@@ -81,19 +88,43 @@ function EmployeePanel() {
   const endIndex = startIndex + itemsPerPage;
   const { userId } = useParams();
   console.log(userId);
-  const customStyles = {
-    option: (provided, state) => ({
-      ...provided,
-      backgroundColor: state.isSelected
-        ? "blue"
-        : state.isDisabled
-        ? "#ffb900"
-        : "white",
-      color: state.isDisabled ? "white" : "black",
-      // Add more styles as needed
-    }),
+  // const customStyles = {
+  //   option: (provided, state) => ({
+  //     ...provided,
+  //     backgroundColor: state.isSelected
+  //       ? "blue"
+  //       : state.isDisabled
+  //       ? "#ffb900"
+  //       : "white",
+  //     color: state.isDisabled ? "white" : "black",
+  //     // Add more styles as needed
+  //   }),
+  // };
+  const playNotificationSound = () => {
+    const audio = new Audio(notificationSound);
+    audio.play();
   };
+  useEffect(() => {
+    const socket = socketIO.connect('http://localhost:3001');
 
+    // Listen for the 'request-seen' event from the server
+    socket.on('request-seen', () => {
+      // Call fetchRequestDetails function to update request details
+      fetchRequestDetails();
+
+    });
+    socket.on('data-sent',()=>{
+      fetchRequestDetails();
+      playNotificationSound();
+
+    
+    })
+
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, []); 
   const functionopenpopup = () => {
     openchange(true);
   };
@@ -110,6 +141,9 @@ function EmployeePanel() {
         offeredPrize: findOneprojection.offeredPrize,
         offeredServices: findOneprojection.offeredServices,
         lastFollowUpdate: findOneprojection.lastFollowUpdate,
+        estPaymentDate:findOneprojection.estPaymentDate,
+        remarks:findOneprojection.remarks,
+        totalPayment:findOneprojection.totalPayment,
         date: "",
         time: "",
       });
@@ -125,11 +159,13 @@ function EmployeePanel() {
       ename: "",
       offeredPrize: "",
       offeredServices: "",
+      totalPayment:0,
       lastFollowUpdate: "",
+      remarks:"",
       date: "",
       time: "",
     });
-
+    setIsEditProjection(false);
     setSelectedValues([]);
   };
   const functionopenAnchor = () => {
@@ -209,14 +245,14 @@ function EmployeePanel() {
     try {
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
-     
+
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
 
       setmoreEmpData(sortedData);
-      
+
       setEmployeeData(
         tempData.filter(
           (obj) =>
@@ -226,43 +262,33 @@ function EmployeePanel() {
         )
       );
       setdataStatus("All");
-      if(sortStatus==="Untouched"){
+      if (sortStatus === "Untouched") {
         setEmployeeData(
           sortedData
             .filter((data) =>
-              [
-                "Busy",
-                "Untouched",
-                "Not Picked Up",
-              ].includes(data.Status)
+              ["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
             )
             .sort((a, b) => {
-              if (a.Status === "Untouched")
-                return -1;
+              if (a.Status === "Untouched") return -1;
               if (b.Status === "Untouched") return 1;
               return 0;
             })
         );
       }
-      if(sortStatus==="Busy"){
+      if (sortStatus === "Busy") {
         setEmployeeData(
           sortedData
             .filter((data) =>
-              [
-                "Busy",
-                "Untouched",
-                "Not Picked Up",
-              ].includes(data.Status)
+              ["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
             )
             .sort((a, b) => {
-              if (a.Status === "Busy")
-                return -1;
+              if (a.Status === "Busy") return -1;
               if (b.Status === "Busy") return 1;
               return 0;
             })
         );
       }
-      
+
       if (!status && sortStatus !== "") {
       }
       if (status === "Not Interested" || status === "Junk") {
@@ -338,6 +364,24 @@ function EmployeePanel() {
     }
   }, [data.ename]);
 
+  const fetchRequestDetails = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/requestgData`);
+      const sortedData = response.data.sort((a, b) => {
+        // Assuming 'timestamp' is the field indicating the time of creation or update
+        return new Date(b.date) - new Date(a.date);
+      });
+      
+      // Find the latest data object with Assignread property as false
+      const latestData = sortedData.find(data => data.AssignRead === false);
+      
+      // Set the latest data as an object
+      setRequestData(latestData);
+    
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
   useEffect(() => {
     fetchData();
   }, [userId]);
@@ -354,10 +398,12 @@ function EmployeePanel() {
       console.error("Error fetching remarks history:", error);
     }
   };
+  console.log(requestData);
   // const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
     fetchRemarksHistory();
     fetchProjections();
+    fetchRequestDetails();
     // let watchId;
     // const successCallback = (position) => {
     //   const userLatitude = position.coords.latitude;
@@ -503,6 +549,41 @@ function EmployeePanel() {
     } catch (error) {
       // Handle any errors that occur during the API call
       console.error("Error updating status:", error.message);
+    }
+  };
+
+  const handleSort = (sortType) => {
+    switch (sortType) {
+      case "oldest":
+        setIncoFilter("oldest");
+        setEmployeeData(
+          employeeData.sort((a, b) =>
+            a["Company Incorporation Date  "].localeCompare(
+              b["Company Incorporation Date  "]
+            )
+          )
+        );
+        break;
+      case "newest":
+        setIncoFilter("newest");
+        setEmployeeData(
+          employeeData.sort((a, b) =>
+            b["Company Incorporation Date  "].localeCompare(
+              a["Company Incorporation Date  "]
+            )
+          )
+        );
+        break;
+      case "none":
+        setIncoFilter("none");
+        setEmployeeData(
+          employeeData.sort((a, b) =>
+            b["AssignDate"].localeCompare(a["AssignDate"])
+          )
+        );
+        break;
+      default:
+        break;
     }
   };
 
@@ -936,6 +1017,7 @@ function EmployeePanel() {
         offeredPrize: 0,
         offeredServices: [],
         lastFollowUpdate: "",
+        remarks:"",
         date: "",
         time: "",
       });
@@ -950,10 +1032,24 @@ function EmployeePanel() {
   const [openIncoDate, setOpenIncoDate] = useState(false);
 
   const handleFilterIncoDate = () => {
-    setOpenIncoDate(true);
+    setOpenIncoDate(!openIncoDate);
   };
   const handleCloseIncoDate = () => {
     setOpenIncoDate(false);
+  };
+  const handleMarktrue = async () => {
+    try {
+      // Assuming 'id' is the ID of the object you want to mark as read
+      const id = requestData._id;
+  
+      // Send a POST request to set the AssignRead property to true for the object with the given ID
+      await axios.post(`${secretKey}/setMarktrue/${id}`);
+  
+      // Optionally, you can also update the state or perform any other actions after successfully marking the object as read
+    } catch (error) {
+      // Handle any errors that occur during the API request
+      console.error('Error marking object as read:', error);
+    }
   };
   return (
     <div>
@@ -966,6 +1062,17 @@ function EmployeePanel() {
           <div className="page-wrapper">
             <div className="page-header d-print-none">
               <div className="container-xl">
+               {requestData!==null && requestData!==undefined && <div className="notification-bar">
+                  <div className="noti-text">
+                    <h1>You have just received {requestData.dAmount} data!</h1>                  
+                  </div>
+                  <div className="close-icon">
+                    <IconButton onClick={handleMarktrue}>
+                      <CloseIcon/>
+                    </IconButton>
+                  </div>
+                 
+                </div>}
                 <div className="row g-2 align-items-center">
                   <div
                     style={{ display: "flex", justifyContent: "space-between" }}
@@ -1075,14 +1182,18 @@ function EmployeePanel() {
                                 e.target.value === "Not Picked Up"
                               ) {
                                 setdataStatus("All");
+                                setEmployeeData(moreEmpData.filter(obj=>obj.Status === "Busy" || obj.Status === "Not Picked Up" || obj.Status === "Untouched"))
                               } else if (
                                 e.target.value === "Junk" ||
                                 e.target.value === "Not Interested"
                               ) {
                                 setdataStatus("NotInterested");
+                                setEmployeeData(moreEmpData.filter(obj=>obj.Status === "Not Interested" || obj.Status === "Junk"))
                               } else if (e.target.value === "Interested") {
                                 setdataStatus("Interested");
+                                setEmployeeData(moreEmpData.filter(obj=>obj.Status === "Interested"))
                               } else if (e.target.value === "Untouched") {
+                                setdataStatus("All")
                                 setEmployeeData(
                                   moreEmpData.filter(
                                     (obj) => obj.Status === "Untouched"
@@ -1201,7 +1312,7 @@ function EmployeePanel() {
                                     )
                                 );
                                 break;
-                             
+
                               default:
                                 // No filtering if default option selected
                                 setdataStatus("All");
@@ -1225,7 +1336,6 @@ function EmployeePanel() {
                           <option value="FollowUp">Follow Up</option>
                           <option value="Interested">Interested</option>
                           <option value="Not Interested">Not Interested</option>
-                         
                         </select>
                       </div>
 
@@ -1593,11 +1703,12 @@ function EmployeePanel() {
 
                             <th>
                               Incorporation Date
-                              <SwapVertIcon
+                              <FilterListIcon
                                 style={{
                                   height: "15px",
                                   width: "15px",
                                   cursor: "pointer",
+                                  marginLeft: "4px",
                                 }}
                                 // onClick={() => {
                                 //   setEmployeeData(
@@ -1612,6 +1723,33 @@ function EmployeePanel() {
                                 // }}
                                 onClick={handleFilterIncoDate}
                               />
+                              {openIncoDate && (
+                                <div className="inco-filter">
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("oldest")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Oldest
+                                  </div>
+
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("newest")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Newest
+                                  </div>
+
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("none")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    None
+                                  </div>
+                                </div>
+                              )}
                             </th>
                             <th>City</th>
                             <th>State</th>
@@ -2168,7 +2306,7 @@ function EmployeePanel() {
         </div>
       </Dialog>
       {/* --------------------------  Inco-filter ---------------- */}
-      <Dialog
+      {/* <Dialog
         open={openIncoDate}
         onClose={handleCloseIncoDate}
         fullWidth
@@ -2177,7 +2315,6 @@ function EmployeePanel() {
         <DialogContent>
           <div>
             <input
-             
               type="checkbox"
               onChange={(e) => {
                 setIncoFilter(e.target.value);
@@ -2236,7 +2373,7 @@ function EmployeePanel() {
             None
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
       {/* Remarks edit icon pop up*/}
       <Dialog
@@ -2259,35 +2396,36 @@ function EmployeePanel() {
 
                 .map((historyItem) => (
                   <div className="col-sm-12" key={historyItem._id}>
-                  <div className="card RemarkCard position-relative">
-                    <div className="d-flex justify-content-between">
-                      <div className="reamrk-card-innerText">
-                        <pre className="remark-text">{historyItem.remarks}</pre>
+                    <div className="card RemarkCard position-relative">
+                      <div className="d-flex justify-content-between">
+                        <div className="reamrk-card-innerText">
+                          <pre className="remark-text">
+                            {historyItem.remarks}
+                          </pre>
+                        </div>
+                        <div className="dlticon">
+                          <DeleteIcon
+                            style={{
+                              cursor: "pointer",
+                              color: "#f70000",
+                              width: "14px",
+                            }}
+                            onClick={() => {
+                              handleDeleteRemarks(
+                                historyItem._id,
+                                historyItem.remarks
+                              );
+                            }}
+                          />
+                        </div>
                       </div>
-                      <div className="dlticon">
-                        <DeleteIcon
-                          style={{
-                            cursor: "pointer",
-                            color: "#f70000",
-                            width: "14px",
-                          }}
-                          onClick={() => {
-                            handleDeleteRemarks(
-                              historyItem._id,
-                              historyItem.remarks
-                            );
-                          }}
-                        />
+
+                      <div className="d-flex card-dateTime justify-content-between">
+                        <div className="date">{historyItem.date}</div>
+                        <div className="time">{historyItem.time}</div>
                       </div>
-                    </div>
-                
-                    <div className="d-flex card-dateTime justify-content-between">
-                      <div className="date">{historyItem.date}</div>
-                      <div className="time">{historyItem.time}</div>
                     </div>
                   </div>
-                </div>
-                
                 ))
             ) : (
               <div className="text-center overflow-hidden">
@@ -2481,10 +2619,11 @@ function EmployeePanel() {
         </div>
       </Drawer>
       {/* Drawer for Follow Up Projection  */}
-      <Drawer anchor="right" open={openProjection} onClose={closeProjection}>
-        <div style={{ width: "31em" }} className="container-xl">
-          <div className="header d-flex justify-content-between">
-            <h1 className="title">Projection Form</h1>(
+      <div>
+      <Drawer style={{top:'50px'}} anchor="right" open={openProjection} onClose={closeProjection}>
+        <div style={{ width: "31em"  }} className="container-xl">
+          <div className="header d-flex justify-content-between align-items-center">
+            <h1 style={{marginBottom:'0px'}} className="title">Projection Form</h1>
             <IconButton
               onClick={() => {
                 setIsEditProjection(true);
@@ -2492,23 +2631,24 @@ function EmployeePanel() {
             >
               <EditIcon color="primary"></EditIcon>
             </IconButton>
-            )
+            
           </div>
+          <hr style={{marginBottom:'10px'}} />
           <div className="body-projection">
-            <div className="header">
-              <strong>{projectingCompany}</strong>
+            <div className="header mb-2" >
+              <strong style={{fontSize:'20px'}}>{projectingCompany}</strong>
             </div>
             <div className="label">
               <strong>Offered Services :</strong>
               <div className="services mb-3">
                 <Select
-                  styles={{
-                    customStyles,
-                    container: (provided) => ({
-                      border: "1px solid #ffb900",
-                      borderRadius: "5px",
-                    }),
-                  }}
+                  // styles={{
+                  //   customStyles,
+                  //   container: (provided) => ({
+                  //     border: "1px solid #ffb900",
+                  //     borderRadius: "5px",
+                  //   }),
+                  // }}
                   isMulti
                   options={options}
                   onChange={(selectedOptions) => {
@@ -2544,6 +2684,24 @@ function EmployeePanel() {
               </div>
             </div>
             <div className="label">
+              <strong>Total Payment:</strong>
+              <div className="services mb-3">
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="Please enter total Payment"
+                  value={currentProjection.totalPayment}
+                  onChange={(e) => {
+                    setCurrentProjection((prevLeadData) => ({
+                      ...prevLeadData,
+                      totalPayment: e.target.value,
+                    }));
+                  }}
+                  disabled={!isEditProjection}
+                />
+              </div>
+            </div>
+            <div className="label">
               <strong>Last Follow Up Date:</strong>
               <div className="services mb-3">
                 <input
@@ -2555,6 +2713,42 @@ function EmployeePanel() {
                     setCurrentProjection((prevLeadData) => ({
                       ...prevLeadData,
                       lastFollowUpdate: e.target.value,
+                    }));
+                  }}
+                  disabled={!isEditProjection}
+                />
+              </div>
+            </div>
+            <div className="label">
+              <strong>Payment Expected on:</strong>
+              <div className="services mb-3">
+                <input
+                  type="date"
+                  className="form-control"
+                  placeholder="Please enter Estimated Payment Date"
+                  value={currentProjection.estPaymentDate}
+                  onChange={(e) => {
+                    setCurrentProjection((prevLeadData) => ({
+                      ...prevLeadData,
+                      estPaymentDate: e.target.value,
+                    }));
+                  }}
+                  disabled={!isEditProjection}
+                />
+              </div>
+            </div>
+            <div className="label">
+              <strong>Remarks:</strong>
+              <div className="remarks mb-3">
+                <textarea
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter any Remarks"
+                  value={currentProjection.remarks}
+                  onChange={(e) => {
+                    setCurrentProjection((prevLeadData) => ({
+                      ...prevLeadData,
+                      remarks: e.target.value,
                     }));
                   }}
                   disabled={!isEditProjection}
@@ -2575,6 +2769,7 @@ function EmployeePanel() {
           </div>
         </div>
       </Drawer>
+      </div>
     </div>
   );
 }

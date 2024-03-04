@@ -558,13 +558,18 @@ padding:6px !important;
     padding: 7px 45px 5px 45px;
   }
   
-  .recent-updates{
+  .recent-updates {
     position: absolute;
     top: 18vh;
     right: 7vw;
     z-index: 9;
     display: none;
-  }
+    transition: opacity 0.3s ease-in-out; /* Add transition effect */
+}
+.recent-updates.show {
+  display: block; /* Show the element */
+  opacity: 1; /* Set opacity to 1 when shown */
+}
   .recent-updates-icon{
     position: absolute;
     z-index: 9;
@@ -618,4 +623,50 @@ padding:6px !important;
     word-wrap: break-word;
     white-space: pre-wrap;
   }
+  .inco-filter {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    width: 10em;
+    text-align: left;
+    margin-left: 100px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
   
+  .inco-filter:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .inco-subFilter {
+    padding: 10px;
+    color: #555;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .inco-subFilter:hover {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+
+
+  /* ----------------------------------------------styling for notification bar------------------------------------------------
+   */
+   
+   .notification-bar{
+    border: 1px solid green;
+    height: 4em;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0px;
+    border-radius: 5px;
+    background-color: lightgreen;
+    display: flex;
+    justify-content: space-between;
+   }
+
+

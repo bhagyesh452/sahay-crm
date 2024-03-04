@@ -119,7 +119,7 @@ export default function BellEmp({ name }) {
         PaperProps={{
           elevation: 0,
           sx: {
-            overflow: "visible",
+            overflow: "scroll",
             filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
             mt: 1.5,
             "& .MuiAvatar-root": {
@@ -146,7 +146,7 @@ export default function BellEmp({ name }) {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         {combinedData.length !== 0 &&
-          combinedData.map((item) => (
+          combinedData.reverse().map((item) => (
             <MenuItem className="request-list">
               <ListItemIcon>
                 <div>

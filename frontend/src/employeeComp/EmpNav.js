@@ -5,6 +5,7 @@ import "../dist/css/tabler-payments.min.css?1684106062";
 import "../dist/css/tabler-vendors.min.css?1684106062";
 import "../dist/css/demo.min.css?1684106062";
 import { Link, useLocation, useParams } from "react-router-dom";
+import BarChartIcon from '@mui/icons-material/BarChart';
 
 function EmpNav({userId}) {
     const location = useLocation();
@@ -14,6 +15,9 @@ function EmpNav({userId}) {
       // Navigate to the /employee-data/:userId/converted-leads route
       window.location.replace(`/converted-leads/${userId}`);
     };
+    const handleDashboardClick = ()=>{
+      window.location.replace(`/employee-dashboard/${userId}`)
+    }
     const handleConvertedLeadsClicksame = () => {
       // Navigate to the /employee-data/:userId/converted-leads route
       window.location.replace(`/employee-data/${userId}`);
@@ -93,6 +97,19 @@ function EmpNav({userId}) {
                     </a>
                  
                 </li> */}
+                
+                 <li  className={
+                  location.pathname === `/employee-dashboard/${userId}` ? "nav-item active" : "nav-item"
+                } onClick={handleDashboardClick}
+                  
+                >
+                  
+                    <a  className="nav-link" href="#">
+                     <BarChartIcon/>
+                      <span className="nav-link-title">Dashboard</span>
+                    </a>
+                 
+                </li> 
                 
               </ul>
               

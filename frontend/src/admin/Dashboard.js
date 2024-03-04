@@ -6,6 +6,7 @@ import Nodata from "../components/Nodata";
 import "../assets/styles.css";
 import { IconButton } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import ViewListIcon from "@mui/icons-material/ViewList";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconEye } from "@tabler/icons-react";
@@ -17,8 +18,12 @@ function Dashboard() {
   const [recentUpdates, setRecentUpdates] = useState([]);
   const [bookingObject, setBookingObject] = useState([]);
   const [openTable, setOpenTable] = useState(false);
+  const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
   const [filteredBooking, setFilteredBooking] = useState([]);
+  const [employeeData, setEmployeeData] = useState([]);
   const [expand, setExpand] = useState(null);
+  const [companyData, setCompanyData] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
   const [dateRange, setDateRange] = useState("by-today");
   const [showUpdates, setShowUpdates] = useState(false);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -26,6 +31,26 @@ function Dashboard() {
     const date = new Date(inputDate);
     const convertedDate = date.toLocaleDateString();
     return convertedDate;
+  };
+  const fetchCompanyData = async () => {
+    fetch(`${secretKey}/leads`)
+      .then((response) => response.json())
+      .then((data) => {
+        setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+  const fetchEmployeeInfo = async () => {
+    fetch(`${secretKey}/einfo`)
+      .then((response) => response.json())
+      .then((data) => {
+        setEmployeeData(data);
+      })
+      .catch((error) => {
+        console.error(`Error Fetching Employee Data `, error);
+      });
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -62,6 +87,8 @@ function Dashboard() {
     // Call the fetchData function when the component mounts
     fetchData();
     fetchCompanies();
+    fetchCompanyData();
+    fetchEmployeeInfo();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -70,7 +97,13 @@ function Dashboard() {
 
   const formatTime = (date, time) => {
     const currentDate = new Date().toLocaleDateString();
-    const pm = time.toLowerCase().includes("pm") ? true : false;
+    const newTime = new Date().toLocaleTimeString();
+    const pm =
+      time !== undefined
+        ? time.toLowerCase().includes("pm")
+          ? true
+          : false
+        : newTime;
     const currentDateTime = new Date().toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
@@ -162,11 +195,31 @@ function Dashboard() {
   const functionOpenTable = () => {
     setOpenTable(true);
   };
+  const functionOpenEmployeeTable = (employee) => {
+    setOpenEmployeeTable(true);
+    setSelectedEmployee(employee);
+  };
+  const closeEmployeeTable = () => {
+    setOpenEmployeeTable(false);
+  };
   const closeTable = () => {
     setOpenTable(false);
     setExpand(null);
   };
-  console.log("Final Filtered Data", filteredBooking);
+
+  const formattedDates =
+    companyData.length !== 0 &&
+    selectedEmployee !== "" &&
+    companyData
+      .filter((data) => data.ename === selectedEmployee) // Filter data based on ename
+      .map((data) => formatDate(data.AssignDate));
+
+  const uniqueArray = formattedDates && [...new Set(formattedDates)];
+
+  const properCompanyData =
+    selectedEmployee !== "" &&
+    companyData.filter((obj) => obj.ename === selectedEmployee);
+
   return (
     <div>
       <Header />
@@ -250,6 +303,7 @@ function Dashboard() {
                       overflowX: "auto",
                       overflowY: "auto",
                       maxHeight: "60vh",
+                      lineHeight: "32px",
                     }}
                   >
                     <table
@@ -257,12 +311,20 @@ function Dashboard() {
                         width: "100%",
                         borderCollapse: "collapse",
                         border: "1px solid #ddd",
+                        marginBottom: "5px",
+                        lineHeight: "32px",
                       }}
                       className="table-vcenter table-nowrap"
                     >
-                      <thead>
-                        <tr>
-                          <th>SR.NO</th>
+                      <thead style={{ lineHeight: "32px" }}>
+                        <tr
+                          style={{
+                            backgroundColor: "#ffb900",
+                            color: "white",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          <th style={{ lineHeight: "32px" }}>SR.NO</th>
                           <th>BDE NAME</th>
                           <th>MATURED CASES</th>
                           <th>NUM OF UNIQUE SERVICES OFFERED</th>
@@ -277,38 +339,42 @@ function Dashboard() {
                             {finalFilteredData.map((obj, index) => (
                               <>
                                 <tr style={{ position: "relative" }}>
-                                  <td>{index + 1}</td>
+                                  <td style={{ lineHeight: "32px" }}>
+                                    {index + 1}
+                                  </td>
                                   <td>{obj.bdeName}</td>
-                                  <td
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    {filteredBooking.filter((data) => {
-                                      return (
-                                        data.bdeName === obj.bdeName &&
-                                        data.bdeName === data.bdmName
-                                      );
-                                    }).length +
-                                      filteredBooking.filter((data) => {
-                                        return (
-                                          data.bdeName === obj.bdeName &&
-                                          data.bdeName !== data.bdmName
-                                        );
-                                      }).length /
-                                        2}{" "}
-                                    <div>
-                                      <IconEye
-                                        style={{
-                                          cursor: "pointer",
-                                          marginLeft: "5px",
-                                        }}
-                                        onClick={() =>
-                                          handleRowClick(index, obj.bdeName)
-                                        }
-                                      />
+                                  <td>
+                                    <div className="row">
+                                      <div
+                                        style={{ textAlign: "right" }}
+                                        className="col"
+                                      >
+                                        {filteredBooking.filter((data) => {
+                                          return (
+                                            data.bdeName === obj.bdeName &&
+                                            data.bdeName === data.bdmName
+                                          );
+                                        }).length +
+                                          filteredBooking.filter((data) => {
+                                            return (
+                                              data.bdeName === obj.bdeName &&
+                                              data.bdeName !== data.bdmName
+                                            );
+                                          }).length /
+                                            2}{" "}
+                                      </div>
+                                      <div className="col-sm-5">
+                                        <IconEye
+                                          style={{
+                                            cursor: "pointer",
+                                            marginLeft: "5px",
+                                            height: "17px",
+                                          }}
+                                          onClick={() =>
+                                            handleRowClick(index, obj.bdeName)
+                                          }
+                                        />
+                                      </div>
                                     </div>
                                   </td>
 
@@ -344,8 +410,12 @@ function Dashboard() {
                                           // Use reduce to calculate the total of totalPayments
                                           return (
                                             totalPayments +
-                                            (obj1.totalPayment
-                                              ? obj1.totalPayment
+                                            (obj1.bdeName === obj1.bdmName
+                                              ? obj1.totalPayment !== 0
+                                                ? obj1.totalPayment
+                                                : 0
+                                              : obj1.totalPayment !== 0
+                                              ? obj1.totalPayment / 2
                                               : 0)
                                           );
                                         }, 0) // Initialize totalPayments as 0
@@ -377,14 +447,19 @@ function Dashboard() {
                                       filteredBooking
                                         .filter(
                                           (data) => data.bdeName === obj.bdeName
-                                        ) // Filter objects with bdeName same as myName
+                                        ) // Filter objects with bdeName same as obj.bdeName
                                         .reduce((totalPayments, obj1) => {
                                           // Use reduce to calculate the total of totalPayments
                                           return (
                                             totalPayments +
-                                            (obj1.firstPayment === 0
-                                              ? obj1.totalPayment
-                                              : obj1.firstPayment)
+                                            (obj1.firstPayment !== 0
+                                              ? obj1.bdeName !== obj1.bdmName
+                                                ? (obj1.totalPayment -
+                                                    obj1.firstPayment) /
+                                                  2 // If bdeName and bdmName are the same
+                                                : obj1.totalPayment -
+                                                  obj1.firstPayment // If bdeName and bdmName are different
+                                              : 0) // If bdeName and bdmName are different
                                           );
                                         }, 0) // Initialize totalPayments as 0
                                     }
@@ -395,8 +470,8 @@ function Dashboard() {
                           </tbody>
 
                           <tfoot>
-                            <tr>
-                              <td colSpan={2}>
+                            <tr style={{ fontWeight: "500" }}>
+                              <td colSpan={2} style={{ lineHeight: "32px" }}>
                                 Total:{finalFilteredData.length}
                               </td>
 
@@ -422,7 +497,11 @@ function Dashboard() {
                               <td>
                                 {filteredBooking.reduce((totalPayment, obj) => {
                                   // Add the totalPayment of the current object to the totalPayment accumulator
-                                  return totalPayment + obj.totalPayment;
+                                  const finalPayment =
+                                    obj.bdeName === obj.bdmName
+                                      ? obj.totalPayment
+                                      : obj.totalPayment / 2;
+                                  return totalPayment + finalPayment;
                                 }, 0)}
                               </td>
 
@@ -432,8 +511,12 @@ function Dashboard() {
                                     // If firstPayment is 0, count totalPayment instead
                                     const paymentToAdd =
                                       obj.firstPayment === 0
-                                        ? obj.bdeName === obj.bdmName ? obj.totalPayment : obj.totalPayment/2
-                                        : obj.bdeName === obj.bdmName ? obj.firstPayment : obj.firstPayment/2
+                                        ? obj.bdeName === obj.bdmName
+                                          ? obj.totalPayment
+                                          : obj.totalPayment / 2
+                                        : obj.bdeName === obj.bdmName
+                                        ? obj.firstPayment
+                                        : obj.firstPayment / 2;
                                     // Add the paymentToAdd to the totalFirstPayment accumulator
                                     return totalFirstPayment + paymentToAdd;
                                   },
@@ -444,11 +527,16 @@ function Dashboard() {
                                 {filteredBooking.reduce(
                                   (totalFirstPayment, obj) => {
                                     // If firstPayment is 0, count totalPayment instead
+
                                     const paymentToAdd =
-                                      obj.firstPayment === 0
+                                      obj.bdeName === obj.bdmName
+                                        ? obj.firstPayment === 0
+                                          ? 0
+                                          : obj.totalPayment - obj.firstPayment
+                                        : obj.firstPayment === 0
                                         ? 0
                                         : obj.totalPayment - obj.firstPayment;
-                                        console.log("this",paymentToAdd)
+
                                     // Add the paymentToAdd to the totalFirstPayment accumulator
                                     return totalFirstPayment + paymentToAdd;
                                   },
@@ -468,6 +556,259 @@ function Dashboard() {
                         </tbody>
                       )}
                     </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* Employee side Dashboard Analysis */}
+              <div className="employee-dashboard ">
+                <div className="card">
+                  <div className="card-header heading">
+                    <h2>Employee Dashboard</h2>
+                  </div>
+                  <div className="card-body">
+                    <div
+                      className="row"
+                      style={{
+                        overflowX: "auto",
+                        overflowY: "auto",
+                        maxHeight: "60vh",
+                        lineHeight: "32px",
+                      }}
+                    >
+                      <table
+                        style={{
+                          width: "100%",
+                          borderCollapse: "collapse",
+                          border: "1px solid #ddd",
+                          marginBottom: "5px",
+                          lineHeight: "32px",
+                        }}
+                        className="table-vcenter table-nowrap"
+                      >
+                        <thead>
+                          <tr
+                            style={{
+                              backgroundColor: "#ffb900",
+                              color: "white",
+                              fontWeight: "bold",
+                              
+                            }}
+                          >
+                            <th
+                              style={{
+                                lineHeight: "32px",
+                              }}
+                            >
+                              Sr. No
+                            </th>
+                            <th>BDE/BDM Name</th>
+                            <th>Untouched</th>
+                            <th>Busy</th>
+                            <th>Not Picked Up</th>
+                            <th>Junk</th>
+                            <th>Follow Up</th>
+                            <th>Interested</th>
+                            <th>Not Interested</th>
+                            <th>Matured</th>
+                            <th>Total Leads</th>
+                            <th>Last Lead Assign Date</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {employeeData.length !== 0 &&
+                            companyData.length !== 0 &&
+                            employeeData.map((obj, index) => (
+                              <React.Fragment key={index}>
+                                <tr>
+                                  <td
+                                    style={{
+                                      lineHeight: "32px",
+                                    }}
+                                    key={`row-${index}-1`}
+                                  >
+                                    {index}
+                                  </td>
+                                  <td key={`row-${index}-2`}>{obj.ename}</td>
+                                  <td key={`row-${index}-3`}>
+                                    {
+                                      companyData.filter(
+                                        (data) =>
+                                          data.ename === obj.ename &&
+                                          data.Status === "Untouched"
+                                      ).length
+                                    }
+                                  </td>
+                                  <td key={`row-${index}-4`}>
+                                    {
+                                      companyData.filter(
+                                        (data) =>
+                                          data.ename === obj.ename &&
+                                          data.Status === "Busy"
+                                      ).length
+                                    }
+                                  </td>
+                                  <td key={`row-${index}-5`}>
+                                    {
+                                      companyData.filter(
+                                        (data) =>
+                                          data.ename === obj.ename &&
+                                          data.Status === "Not Picked Up"
+                                      ).length
+                                    }
+                                  </td>
+                                  <td key={`row-${index}-6`}>
+                                    {
+                                      companyData.filter(
+                                        (data) =>
+                                          data.ename === obj.ename &&
+                                          data.Status === "Junk"
+                                      ).length
+                                    }
+                                  </td>
+                                  <td key={`row-${index}-7`}>
+                                    {
+                                      companyData.filter(
+                                        (data) =>
+                                          data.ename === obj.ename &&
+                                          data.Status === "FollowUp"
+                                      ).length
+                                    }
+                                  </td>
+                                  <td key={`row-${index}-8`}>
+                                    {
+                                      companyData.filter(
+                                        (data) =>
+                                          data.ename === obj.ename &&
+                                          data.Status === "Interested"
+                                      ).length
+                                    }
+                                  </td>
+                                  <td key={`row-${index}-9`}>
+                                    {
+                                      companyData.filter(
+                                        (data) =>
+                                          data.ename === obj.ename &&
+                                          data.Status === "Not Interested"
+                                      ).length
+                                    }
+                                  </td>
+                                  <td key={`row-${index}-10`}>
+                                    {
+                                      companyData.filter(
+                                        (data) =>
+                                          data.ename === obj.ename &&
+                                          data.Status === "Matured"
+                                      ).length
+                                    }
+                                  </td>
+                                  <td key={`row-${index}-11`}>
+                                    {
+                                      companyData.filter(
+                                        (data) => data.ename === obj.ename
+                                      ).length
+                                    }
+                                  </td>
+                                  <td key={`row-${index}-12`}>
+                                    {formatDate(
+                                      companyData
+                                        .filter(
+                                          (data) => data.ename === obj.ename
+                                        )
+                                        .reduce(
+                                          (latestDate, data) => {
+                                            return latestDate.AssignDate >
+                                              data.AssignDate
+                                              ? latestDate
+                                              : data;
+                                          },
+                                          { AssignDate: 0 }
+                                        ).AssignDate
+                                    )}
+                                    <ViewListIcon
+                                      onClick={() => {
+                                        functionOpenEmployeeTable(obj.ename);
+                                      }}
+                                      style={{ cursor: "pointer" }}
+                                    />
+                                  </td>
+                                </tr>
+                              </React.Fragment>
+                            ))}
+                        </tbody>
+                        {employeeData.length !== 0 &&
+                          companyData.length !== 0 && (
+                            <tfoot>
+                              <tr style={{ fontWeight: 500 }}>
+                                <td style={{ lineHeight: "32px" }} colSpan="2">
+                                  Total
+                                </td>
+                                <td>
+                                  {
+                                    companyData.filter(
+                                      (partObj) =>
+                                        partObj.Status === "Untouched"
+                                    ).length
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    companyData.filter(
+                                      (partObj) => partObj.Status === "Busy"
+                                    ).length
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    companyData.filter(
+                                      (partObj) =>
+                                        partObj.Status === "Not Picked Up"
+                                    ).length
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    companyData.filter(
+                                      (partObj) => partObj.Status === "Junk"
+                                    ).length
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    companyData.filter(
+                                      (partObj) => partObj.Status === "FollowUp"
+                                    ).length
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    companyData.filter(
+                                      (partObj) =>
+                                        partObj.Status === "Interested"
+                                    ).length
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    companyData.filter(
+                                      (partObj) =>
+                                        partObj.Status === "Not Interested"
+                                    ).length
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    companyData.filter(
+                                      (partObj) => partObj.Status === "Matured"
+                                    ).length
+                                  }
+                                </td>
+                                <td>{companyData.length}</td>
+                              </tr>
+                            </tfoot>
+                          )}
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -493,6 +834,7 @@ function Dashboard() {
                 width: "100%",
                 borderCollapse: "collapse",
                 border: "1px solid #ddd",
+                marginBottom: "10px",
               }}
               className="table-vcenter table-nowrap"
             >
@@ -537,7 +879,7 @@ function Dashboard() {
                           {
                             mainObj.firstPayment !== 0
                               ? mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.firstPayment  // If bdeName and bdmName are the same
+                                ? mainObj.firstPayment // If bdeName and bdmName are the same
                                 : mainObj.firstPayment / 2 // If bdeName and bdmName are different
                               : mainObj.bdeName === mainObj.bdmName
                               ? mainObj.totalPayment // If firstPayment is 0 and bdeName and bdmName are the same
@@ -610,6 +952,215 @@ function Dashboard() {
                     </>
                   ))}
               </tbody>
+            </table>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={openEmployeeTable}
+        onClose={closeEmployeeTable}
+        fullWidth
+        maxWidth="lg"
+      >
+        <DialogContent>
+          <div
+            id="table-default"
+            style={{
+              overflowX: "auto",
+              overflowY: "auto",
+              maxHeight: "60vh",
+            }}
+          >
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                border: "1px solid #ddd",
+                marginBottom: "10px",
+              }}
+              className="table-vcenter table-nowrap"
+            >
+              <thead stSyle={{ backgroundColor: "grey" }}>
+                <tr
+                  style={{
+                    backgroundColor: "#ffb900",
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <th
+                    style={{
+                      lineHeight: "32px",
+                    }}
+                  >
+                    Sr. No
+                  </th>
+                  <th>Lead Assign Date</th>
+                  <th>Untouched</th>
+                  <th>Busy</th>
+                  <th>Not Picked Up</th>
+                  <th>Junk</th>
+                  <th>Follow Up</th>
+                  <th>Interested</th>
+                  <th>Not Interested</th>
+                  <th>Matured</th>
+                  <th>Total Leads</th>
+                </tr>
+              </thead>
+              <tbody>
+                {uniqueArray &&
+                  uniqueArray.map((obj, index) => (
+                    <tr key={`row-${index}`}>
+                      <td>{index + 1}</td>
+                      <td>{obj}</td>
+                      <td>
+                        {
+                          properCompanyData.filter(
+                            (partObj) =>
+                              formatDate(partObj.AssignDate) === obj &&
+                              partObj.Status === "Untouched"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          properCompanyData.filter(
+                            (partObj) =>
+                              formatDate(partObj.AssignDate) === obj &&
+                              partObj.Status === "Busy"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          properCompanyData.filter(
+                            (partObj) =>
+                              formatDate(partObj.AssignDate) === obj &&
+                              partObj.Status === "Not Picked Up"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          properCompanyData.filter(
+                            (partObj) =>
+                              formatDate(partObj.AssignDate) === obj &&
+                              partObj.Status === "Junk"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          properCompanyData.filter(
+                            (partObj) =>
+                              formatDate(partObj.AssignDate) === obj &&
+                              partObj.Status === "FollowUp"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          properCompanyData.filter(
+                            (partObj) =>
+                              formatDate(partObj.AssignDate) === obj &&
+                              partObj.Status === "Interested"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          properCompanyData.filter(
+                            (partObj) =>
+                              formatDate(partObj.AssignDate) === obj &&
+                              partObj.Status === "Not Interested"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          properCompanyData.filter(
+                            (partObj) =>
+                              formatDate(partObj.AssignDate) === obj &&
+                              partObj.Status === "Matured"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          properCompanyData.filter(
+                            (partObj) => formatDate(partObj.AssignDate) === obj
+                          ).length
+                        }
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+              {uniqueArray && (
+                <tfoot>
+                  <tr style={{ fontWeight: 500 }}>
+                    <td colSpan="2">Total</td>
+                    <td>
+                      {
+                        properCompanyData.filter(
+                          (partObj) => partObj.Status === "Untouched"
+                        ).length
+                      }
+                    </td>
+                    <td style={{
+                        lineHeight: "32px",
+                      }}>
+                      {
+                        properCompanyData.filter(
+                          (partObj) => partObj.Status === "Busy"
+                        ).length
+                      }
+                    </td>
+                    <td>
+                      {
+                        properCompanyData.filter(
+                          (partObj) => partObj.Status === "Not Picked Up"
+                        ).length
+                      }
+                    </td>
+                    <td>
+                      {
+                        properCompanyData.filter(
+                          (partObj) => partObj.Status === "Junk"
+                        ).length
+                      }
+                    </td>
+                    <td>
+                      {
+                        properCompanyData.filter(
+                          (partObj) => partObj.Status === "FollowUp"
+                        ).length
+                      }
+                    </td>
+                    <td>
+                      {
+                        properCompanyData.filter(
+                          (partObj) => partObj.Status === "Interested"
+                        ).length
+                      }
+                    </td>
+                    <td>
+                      {
+                        properCompanyData.filter(
+                          (partObj) => partObj.Status === "Not Interested"
+                        ).length
+                      }
+                    </td>
+                    <td>
+                      {
+                        properCompanyData.filter(
+                          (partObj) => partObj.Status === "Matured"
+                        ).length
+                      }
+                    </td>
+                    <td >{properCompanyData.length}</td>
+                  </tr>
+                </tfoot>
+              )}
             </table>
           </div>
         </DialogContent>

@@ -22,6 +22,7 @@ import BookingsForm from "./admin/BookingsForm.jsx";
 import Nodata from "./Processing/Nodata.jsx";
 import CompanyParticular from "./admin/CompanyParticular.jsx";
 import Analysis_dashboard from "./Processing/Analysis_dashboard.jsx";
+import EmployeeDashboard from "./employeeComp/EmployeeDashboard.jsx";
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -41,6 +42,10 @@ function App() {
           <Route
             path="/employee-data/:userId/"
             element={newtoken ? <EmployeePanel /> : <Navigate to="/" />}
+          ></Route>
+          <Route
+            path="/employee-dashboard/:userId/"
+            element={newtoken ? <EmployeeDashboard /> : <Navigate to="/" />}
           ></Route>
           <Route
             path="/converted-leads/:userId/"
