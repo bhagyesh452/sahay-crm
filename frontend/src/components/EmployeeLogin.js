@@ -4,6 +4,9 @@ import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import Swal from "sweetalert2";
 
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import OTPInput from "react-otp-input";
+
 function EmployeeLogin({ setnewToken }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,6 +14,8 @@ function EmployeeLogin({ setnewToken }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [userId, setUserId] = useState(null);
   const [address1, setAddress] = useState("");
+  const [isSendOpt, setIsSendOpt] = useState(false);
+  const [otp, setOtp] = useState(0);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -22,7 +27,9 @@ function EmployeeLogin({ setnewToken }) {
       console.log(error);
     }
   };
-
+  const sendOTP = () => {
+    const otp = Math.floor(1000 + Math.random() * 9000);
+  };
   const findUserId = () => {
     const user = data.find(
       (user) => user.email === email && user.password === password
@@ -43,27 +50,26 @@ function EmployeeLogin({ setnewToken }) {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
       );
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const data = await response.json();
-      
-  
+
       if (data.error) {
         throw new Error(`Nominatim API error: ${data.error}`);
       }
-  
+
       const { address } = data;
       setAddress(`${address.suburb} ,${address.state_district}`);
-  
+
       // Log the location information
     } catch (error) {
       console.error("Error fetching location:", error.message);
     }
   }
-  
+
   const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
     let watchId;
@@ -73,7 +79,7 @@ function EmployeeLogin({ setnewToken }) {
       setLocationAccess(true);
       getLocationInfo(userLatitude, userLongitude);
     };
-  
+
     const errorCallback = (error) => {
       console.error("Geolocation error:", error.message);
       if (error.code === error.PERMISSION_DENIED) {
@@ -81,24 +87,22 @@ function EmployeeLogin({ setnewToken }) {
       }
       // Handle other error cases if needed
     };
-  
+
     navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-  
+
     // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
-  
+
     // Cleanup function to clear the watch if the component unmounts
     return () => {
       navigator.geolocation.clearWatch(watchId);
     };
   }, []);
-  
 
   // Trigger the findUserId function when email or password changes
   useEffect(() => {
     findUserId();
   }, [email, password]);
 
-  
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendkey = process.env.REACT_APP_FRONTEND_KEY;
 
@@ -123,9 +127,9 @@ function EmployeeLogin({ setnewToken }) {
     e.preventDefault();
     const date = getCurrentDate();
     const time = getCurrentTime();
- ;  const address = address1!=="" ? address1 : "No Location Found"
+    const address = address1 !== "" ? address1 : "No Location Found";
     const ename = email;
-   
+
     try {
       const response = await axios.post(`${secretKey}/employeelogin`, {
         email,
@@ -172,6 +176,7 @@ function EmployeeLogin({ setnewToken }) {
               <img src="./static/logo.svg" height="36" alt="" />
             </a>
           </div>
+
           <div className="login-card card card-md">
             <div className="card-body">
               <h2 className="h2 text-center mb-4">Employee Login</h2>
@@ -242,7 +247,6 @@ function EmployeeLogin({ setnewToken }) {
                     type="submit"
                     onClick={handleSubmit}
                     className="btn btn-primary w-100"
-                   
                   >
                     Submit
                   </button>

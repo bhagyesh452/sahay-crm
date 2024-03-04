@@ -154,9 +154,9 @@ function Dashboard() {
     setTableEmployee(tableEmployee);
     functionOpenTable();
   };
-  const handleExpandRowClick = (index)=>{
-    setExpand(index)
-  }
+  const handleExpandRowClick = (index) => {
+    setExpand(index);
+  };
   // Now finalFilteredData contains an array of objects with unique bdeNames
 
   const functionOpenTable = () => {
@@ -166,7 +166,7 @@ function Dashboard() {
     setOpenTable(false);
     setExpand(null);
   };
-  console.log("Final Filtered Data", finalFilteredData);
+  console.log("Final Filtered Data", filteredBooking);
   return (
     <div>
       <Header />
@@ -269,7 +269,6 @@ function Dashboard() {
                           <th>TOTAL PAYMENT</th>
                           <th>RECEIVED PAYMENT</th>
                           <th>PENDING PAYMENT</th>
-                          
                         </tr>
                       </thead>
                       {finalFilteredData.length !== 0 ? (
@@ -290,13 +289,13 @@ function Dashboard() {
                                     {filteredBooking.filter((data) => {
                                       return (
                                         data.bdeName === obj.bdeName &&
-                                        data.bdeName === obj.bdmName
+                                        data.bdeName === data.bdmName
                                       );
                                     }).length +
                                       filteredBooking.filter((data) => {
                                         return (
                                           data.bdeName === obj.bdeName &&
-                                          data.bdeName !== obj.bdmName
+                                          data.bdeName !== data.bdmName
                                         );
                                       }).length /
                                         2}{" "}
@@ -353,102 +352,44 @@ function Dashboard() {
                                     }
                                   </td>
                                   <td>
-                                    {obj.paymentTerms === "Full Advanced"
-                                      ? obj.totalPayment
-                                      : obj.firstPayment}
-                                  </td>
-                                  <td>
-                                    {obj.paymentTerms === "Full Advanced"
-                                      ? 0
-                                      : obj.totalPayment - obj.firstPayment}
-                                  </td>
-
-                                  {/* <td>
-                                    {obj.bdeName !== obj.bdmName ? "Yes" : "No"}
-                                  </td>
-                                  <td>
-                                    {obj.bdeName !== obj.bdmName
-                                      ? obj.bdmType === "closeby"
-                                        ? `Closed by ${obj.bdmName}`
-                                        : `Supported by ${obj.bdmName}`
-                                      : "Self Closed"}
-                                  </td> */}
-                                </tr>
-                                {/* {expandedRow === index && (
-                                  <table style={{ position: "absolute" }}>
-                                    <thead>
-                                      <tr>
-                                        <th>name</th>
-                                        <th></th>
-                                        <th>sdf</th>
-                                        <th>sdv</th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {filteredBooking
+                                    {
+                                      filteredBooking
                                         .filter(
                                           (data) => data.bdeName === obj.bdeName
-                                        )
-                                        .map((mainObj, index) => (
-                                          <tr>
-                                            <td>{`${expandedRow + 1}(${
-                                              index + 1
-                                            })`}</td>
-                                            <td>{mainObj.bdeName}</td>
-                                            <td>
-                                              {mainObj.bdeName !==
-                                              mainObj.bdmName
-                                                ? 0.5
-                                                : 1}
-                                            </td>
-                                            <td>
-                                              {" "}
-                                              {
-                                                mainObj.services[0]
-                                                  .split(",")
-                                                  .map((service) =>
-                                                    service.trim()
-                                                  ).length
-                                              }
-                                            </td>
-                                            <td> {mainObj.totalPayment} </td>
-                                            <td>
-                                              {" "}
-                                              {mainObj.firstPayment !== 0
-                                                ? mainObj.firstPayment
-                                                : mainObj.totalPayment}{" "}
-                                            </td>
-                                            <td>
-                                              {" "}
-                                              {mainObj.firstPayment !== 0
-                                                ? mainObj.totalPayment -
-                                                  mainObj.firstPayment
-                                                : 0}{" "}
-                                            </td>
-                                            <td>
-                                              {mainObj.bdeName !==
-                                              mainObj.bdmName
-                                                ? "Yes"
-                                                : "No"}
-                                            </td>
-                                            <td>
-                                              {mainObj.bdeName !==
-                                              mainObj.bdmName
-                                                ? mainObj.bdmType === "closeby"
-                                                  ? `Closed by ${obj.bdmName}`
-                                                  : `Supported by ${obj.bdmName}`
-                                                : "Self Closed"}
-                                            </td>
-                                          </tr>
-                                        ))}
-                                    </tbody>
-                                  </table>
-                                )} */}
+                                        ) // Filter objects with bdeName same as obj.bdeName
+                                        .reduce((totalPayments, obj1) => {
+                                          // Use reduce to calculate the total of totalPayments
+                                          return (
+                                            totalPayments +
+                                            (obj1.firstPayment === 0
+                                              ? obj1.bdeName === obj1.bdmName
+                                                ? obj1.totalPayment / 2 // If bdeName and bdmName are the same
+                                                : obj1.totalPayment // If bdeName and bdmName are different
+                                              : obj1.bdeName === obj1.bdmName
+                                              ? obj1.firstPayment // If bdeName and bdmName are the same
+                                              : obj1.firstPayment / 2) // If bdeName and bdmName are different
+                                          );
+                                        }, 0) // Initialize totalPayments as 0
+                                    }
+                                  </td>
+                                  <td>
+                                    {
+                                      filteredBooking
+                                        .filter(
+                                          (data) => data.bdeName === obj.bdeName
+                                        ) // Filter objects with bdeName same as myName
+                                        .reduce((totalPayments, obj1) => {
+                                          // Use reduce to calculate the total of totalPayments
+                                          return (
+                                            totalPayments +
+                                            (obj1.firstPayment === 0
+                                              ? obj1.totalPayment
+                                              : obj1.firstPayment)
+                                          );
+                                        }, 0) // Initialize totalPayments as 0
+                                    }
+                                  </td>
+                                </tr>
                               </>
                             ))}
                           </tbody>
@@ -491,8 +432,8 @@ function Dashboard() {
                                     // If firstPayment is 0, count totalPayment instead
                                     const paymentToAdd =
                                       obj.firstPayment === 0
-                                        ? obj.totalPayment
-                                        : obj.firstPayment;
+                                        ? obj.bdeName === obj.bdmName ? obj.totalPayment : obj.totalPayment/2
+                                        : obj.bdeName === obj.bdmName ? obj.firstPayment : obj.firstPayment/2
                                     // Add the paymentToAdd to the totalFirstPayment accumulator
                                     return totalFirstPayment + paymentToAdd;
                                   },
@@ -507,13 +448,13 @@ function Dashboard() {
                                       obj.firstPayment === 0
                                         ? 0
                                         : obj.totalPayment - obj.firstPayment;
+                                        console.log("this",paymentToAdd)
                                     // Add the paymentToAdd to the totalFirstPayment accumulator
                                     return totalFirstPayment + paymentToAdd;
                                   },
                                   0
                                 )}
                               </td>
-                             
                             </tr>
                           </tfoot>
                         </>
@@ -538,135 +479,139 @@ function Dashboard() {
       {/* Pop Up for Expanding the Data */}
 
       <Dialog open={openTable} onClose={closeTable} fullWidth maxWidth="lg">
-     
         <DialogContent>
-          <table>
-            <thead stSyle={{backgroundColor:'grey'}}>
-              <tr>
-                <th>SR.NO</th>
-                <th>BOOKING DATE&TIME</th>
-                <th>BDE NAME</th>
-                <th>COMPANY NAME</th>
-                <th>COMPANY NUMBER</th>
-                <th>COMPANY EMAIL</th>
-                <th>SERVICES</th>
-                <th>TOTAL PAYMENT</th>
-                <th>RECEIVED PAYMENT</th>
-                <th>PENDING PAYMENT</th>
-                <th>50/50 CASE</th>
-                <th>CLOSED/SUPPORTED BY</th>
-                <th>REMARKS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredBooking
-                .filter((data) => data.bdeName === tableEmployee)
-                .map((mainObj, index) => (
-                  <>
-                  <tr>
-                    <td>{index + 1}</td>
-                    <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime})`}</td>
-                    <td>{mainObj.bdeName}</td>
-                    <td>{mainObj.companyName}</td>
-                    <td>{mainObj.contactNumber}</td>
-                    <td>{mainObj.companyEmail}</td>
-                    <td>{mainObj.services[0]}</td>
-                    
-                  
-                    <td> {mainObj.totalPayment} </td>
-                    <td>
-                      {" "}
-                      {mainObj.firstPayment !== 0
-                        ? mainObj.firstPayment
-                        : mainObj.totalPayment}{" "}
-                    </td>
-                    <td>
-                      {" "}
-                      {mainObj.firstPayment !== 0
-                        ? mainObj.totalPayment - mainObj.firstPayment
-                        : 0}{" "}
-                    </td>
-                    <td>
-                      {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
-                    </td>
-                    <td>
-                      {mainObj.bdeName !== mainObj.bdmName
-                        ? mainObj.bdmType === "closeby"
-                          ? `Closed by ${mainObj.bdmName}`
-                          : `Supported by ${mainObj.bdmName}`
-                        : `Self Closed` } {<AddCircleIcon onClick={()=> setExpand(expand===index ? null : index)} style={{cursor:'pointer'}}/>}
-                    </td>
-                    <td>{mainObj.paymentRemarks}</td>
-                  </tr>
-                  {expand === index  && <><tr>
-                    <td>{`${index + 1}(${1})`}</td>
-                    <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime})`}</td>
-                    <td>{mainObj.bdeName}</td>
-                    <td>{mainObj.companyName}</td>
-                    <td>{mainObj.contactNumber}</td>
-                    <td>{mainObj.companyEmail}</td>
-                    <td>{mainObj.services[0]}</td>
-                    <td> {mainObj.totalPayment/2} </td>
-                    <td>
-                      {mainObj.firstPayment !== 0
-                        ? mainObj.firstPayment/2
-                        : mainObj.totalPayment/2}{" "}
-                    </td>
-                    <td>
-                      {" "}
-                      {mainObj.firstPayment !== 0
-                        ? (mainObj.totalPayment - mainObj.firstPayment/2)
-                        : 0}{" "}
-                    </td>
-                    <td>
-                      { "Yes" }
-                    </td>
-                    <td>
-                      {mainObj.bdeName !== mainObj.bdmName
-                        ? mainObj.bdmType === "closeby"
-                          ? `Closed by ${mainObj.bdmName}`
-                          : `Supported by ${mainObj.bdmName}`
-                        : `Self Closed`}
-                    </td>
-                    <td>{mainObj.paymentRemarks}</td>
-                    </tr>
-                    <tr>
-                    <td>{`${index + 1}(${2})`}</td>
-                    <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime})`}</td>
-                    <td>{mainObj.bdmName}</td>
-                    <td>{mainObj.companyName}</td>
-                    <td>{mainObj.contactNumber}</td>
-                    <td>{mainObj.companyEmail}</td>
-                    <td>{mainObj.services[0]}</td>
-                    <td> {mainObj.totalPayment/2} </td>
-                    <td>
-                      {mainObj.firstPayment !== 0
-                        ? mainObj.firstPayment/2
-                        : mainObj.totalPayment/2}{" "}
-                    </td>
-                    <td>
-                      {" "}
-                      {mainObj.firstPayment !== 0
-                        ? (mainObj.totalPayment - mainObj.firstPayment/2)
-                        : 0}{" "}
-                    </td>
-                    <td>
-                      { "Yes" }
-                    </td>
-                    <td>
-                      {`${mainObj.bdeName}'s Case`}
-                    </td>
-                    <td>{mainObj.paymentRemarks}</td>
-                    </tr>
+          <div
+            id="table-default"
+            style={{
+              overflowX: "auto",
+              overflowY: "auto",
+              maxHeight: "60vh",
+            }}
+          >
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                border: "1px solid #ddd",
+              }}
+              className="table-vcenter table-nowrap"
+            >
+              <thead stSyle={{ backgroundColor: "grey" }}>
+                <tr>
+                  <th>SR.NO</th>
+                  <th>BOOKING DATE & TIME</th>
+                  <th>BDE NAME</th>
+                  <th>COMPANY NAME</th>
+                  <th>COMPANY NUMBER</th>
+                  <th>COMPANY EMAIL</th>
+                  <th>SERVICES</th>
+                  <th>TOTAL PAYMENT</th>
+                  <th>RECEIVED PAYMENT</th>
+                  <th>PENDING PAYMENT</th>
+                  <th>50/50 CASE</th>
+                  <th>CLOSED/SUPPORTED BY</th>
+                  <th>REMARKS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredBooking
+                  .filter((data) => data.bdeName === tableEmployee)
+                  .map((mainObj, index) => (
+                    <>
+                      <tr>
+                        <td>{index + 1}</td>
+                        <td>{`${formatDate(mainObj.bookingDate)}(${
+                          mainObj.bookingTime
+                        })`}</td>
+                        <td>{mainObj.bdeName}</td>
+                        <td>{mainObj.companyName}</td>
+                        <td>{mainObj.contactNumber}</td>
+                        <td>{mainObj.companyEmail}</td>
+                        <td>{mainObj.services[0]}</td>
+                        <td>
+                          {mainObj.bdeName !== mainObj.bdmName
+                            ? mainObj.totalPayment / 2
+                            : mainObj.totalPayment}
+                        </td>
+                        <td>
+                          {
+                            mainObj.firstPayment !== 0
+                              ? mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.firstPayment  // If bdeName and bdmName are the same
+                                : mainObj.firstPayment / 2 // If bdeName and bdmName are different
+                              : mainObj.bdeName === mainObj.bdmName
+                              ? mainObj.totalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                              : mainObj.totalPayment / 2 // If firstPayment is 0 and bdeName and bdmName are different
+                          }
+                        </td>
+                        <td>
+                          {" "}
+                          {mainObj.firstPayment !== 0
+                            ? mainObj.bdeName === mainObj.bdmName
+                              ? mainObj.totalPayment - mainObj.firstPayment
+                              : (mainObj.totalPayment - mainObj.firstPayment) /
+                                2
+                            : 0}{" "}
+                        </td>
+                        <td>
+                          {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
+                        </td>
+                        <td>
+                          {mainObj.bdeName !== mainObj.bdmName
+                            ? mainObj.bdmType === "closeby"
+                              ? `Closed by ${mainObj.bdmName}`
+                              : `Supported by ${mainObj.bdmName}`
+                            : `Self Closed`}{" "}
+                          {mainObj.bdeName !== mainObj.bdmName &&
+                            mainObj.bdmType === "closeby" && (
+                              <AddCircleIcon
+                                onClick={() =>
+                                  setExpand(expand === index ? null : index)
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                            )}
+                        </td>
+                        <td>{mainObj.paymentRemarks}</td>
+                      </tr>
+                      {expand === index && (
+                        <>
+                          <tr>
+                            <td>{`${index + 1}(${1})`}</td>
+                            <td>{`${formatDate(mainObj.bookingDate)}(${
+                              mainObj.bookingTime
+                            })`}</td>
+                            <td>{mainObj.bdmName}</td>
+                            <td>{mainObj.companyName}</td>
+                            <td>{mainObj.contactNumber}</td>
+                            <td>{mainObj.companyEmail}</td>
+                            <td>{mainObj.services[0]}</td>
+                            <td> {mainObj.totalPayment / 2} </td>
+                            <td>
+                              {mainObj.firstPayment !== 0
+                                ? mainObj.firstPayment / 2
+                                : mainObj.totalPayment / 2}{" "}
+                            </td>
+                            <td>
+                              {mainObj.firstPayment !== 0
+                                ? mainObj.bdeName === mainObj.bdmName
+                                  ? mainObj.totalPayment - mainObj.firstPayment
+                                  : (mainObj.totalPayment -
+                                      mainObj.firstPayment) /
+                                    2
+                                : 0}{" "}
+                            </td>
+                            <td>{"Yes"}</td>
+                            <td>{`${mainObj.bdeName}'s Case`}</td>
+                            <td>{mainObj.paymentRemarks}</td>
+                          </tr>
+                        </>
+                      )}
                     </>
-                    
-                    }
-                  </>
-                  
-
-                ))}
-            </tbody>
-          </table>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

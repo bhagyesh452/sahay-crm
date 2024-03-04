@@ -24,6 +24,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.1",
     "react-modal": "^3.16.1",
+    "react-otp-input": "^3.1.1",
     "react-pdf": "^7.7.0",
     "react-pdf-to-image": "^1.0.2",
     "react-pivottable": "^0.11.0",
