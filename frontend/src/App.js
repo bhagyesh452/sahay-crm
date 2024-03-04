@@ -22,6 +22,9 @@ import BookingsForm from "./admin/BookingsForm.jsx";
 import Nodata from "./Processing/Nodata.jsx";
 import CompanyParticular from "./admin/CompanyParticular.jsx";
 import Analysis_dashboard from "./Processing/Analysis_dashboard.jsx";
+import Bellicon_processing from "./Processing/style_processing/Bellicon_processing.js";
+
+
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
@@ -91,6 +94,7 @@ function App() {
           <Route path="/Processing/Dashboard_processing/addbookings" element={<Form/>} /> 
           <Route path="/Processing/Dashboard_processing/nodata" element={<Nodata/>} /> 
           <Route path="/Processing/analysis_dashboard" element={<Analysis_dashboard/>} /> 
+          <Route path="/Processing/bellicon" element={<Bellicon_processing/>} /> 
         </Routes>
       </BrowserRouter>
     </div>

@@ -548,7 +548,7 @@ const Analysis_dashboard = () => {
             <Header_processing />
             <Navbar_processing />
             <div className='container-xl'>
-                <div className='row row-deck row-cards mt-3'>
+                <div className='row row-deck row-cards mt-2'>
                     <div class="col-sm-6 col-lg-3 ">
                         <div class="card firstClass">
                             <div class="card-body">
@@ -597,7 +597,7 @@ const Analysis_dashboard = () => {
                                     <HiMiniCurrencyRupee style={{ width: "50px", height: "50px" }} />
                                 </div>
                                 <div class="d-flex align-items-baseline">
-                                    <div class="h1 mb-0 me-2">&#8377;{totalPayment}</div>
+                                    <div class="h1 mb-0 me-2">&#8377; {totalPayment}</div>
                                     <div class="me-auto">
                                         <span class="text-green d-inline-flex align-items-center lh-1">
 
@@ -617,7 +617,7 @@ const Analysis_dashboard = () => {
                                     <HiMiniCurrencyRupee style={{ width: "50px", height: "50px" }} />
                                 </div>
                                 <div class="d-flex align-items-baseline">
-                                    <div class="h1 mb-0 me-2">&#8377;{revenueCurrentMonth}</div>
+                                    <div class="h1 mb-0 me-2">&#8377; {revenueCurrentMonth}</div>
                                     <div class="me-auto">
                                         <span class="text-green d-inline-flex align-items-center lh-1">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 17l6 -6l4 4l8 -8" /><path d="M14 7l7 0l0 7" /></svg>
@@ -679,7 +679,7 @@ const Analysis_dashboard = () => {
                             <div class="card card-sm ">
                                 <div class="card-body">
                                     <div class="row align-items-center ">
-                                        <div class="col-auto d-flex align-items-center justify-content-between w-100" >
+                                        <div class="col-auto d-flex align-items-center justify-content-between w-100" onClick={handleIconClick} >
                                             <div className='d-flex align-items-center'>
                                                 <span className="bg-facebook text-white avatar">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 448 512" fill='white' strokeWidth="2" stroke="currentColor">
@@ -704,14 +704,12 @@ const Analysis_dashboard = () => {
                                         </div>
                                         <div class="col position-relative">
                                             {displayDateRange && (
-                                                <div class="position-absolute top-100 start-0" style={{ zIndex: "1" }}>
+                                                <div class="position-absolute top-100 start-0" style={{ zIndex: "1" }} >
                                                     <DateRangePicker
                                                         ranges={[selectionRange]}
                                                         onClose={() => setDateRangeDisplay(false)}
                                                         onChange={handleSelect}
-
                                                     />
-
                                                 </div>
                                             )}
                                         </div>
@@ -756,7 +754,7 @@ const Analysis_dashboard = () => {
                                                 <div className='d-flex align-items-center justify-content-between'>
                                                 <div className='service'>{obj.service}</div>
                                                     <div className='count'>{obj.count}</div>
-                                                   
+
                                                 </div>
                                             </div>
                                         ))}
@@ -799,7 +797,7 @@ const Analysis_dashboard = () => {
                                                 <div className='d-flex align-items-center justify-content-between'>
                                                 <div className='service'>{obj.service}</div>
                                                     <div className='count'>{obj.count}</div>
-                                                   
+
                                                 </div>
                                             </div>
                                         ))}
@@ -842,7 +840,7 @@ const Analysis_dashboard = () => {
                                                 <div className='d-flex align-items-center justify-content-between'>
                                                 <div className='service'>{obj.service}</div>
                                                     <div className='count'>{obj.count}</div>
-                                                   
+
                                                 </div>
                                             </div>
                                         ))}
@@ -864,3 +862,8 @@ const Analysis_dashboard = () => {
 }
 
 export default Analysis_dashboard;
+
+
+
+
+

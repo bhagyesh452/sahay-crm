@@ -19,6 +19,7 @@ import CompanyList from "./CompanyList.jsx";
 import {
   IconButton,
 } from "@mui/material";
+import Bellicon_processing from "./style_processing/Bellicon_processing.js";
 
 // import "./styles/header.css"
 
@@ -44,6 +45,8 @@ function Header_processing({ name, designation, data }) {
     if(data){countUnreadCompanies()}
 
   }, [data]);
+
+  //console.log("Data:" , data)
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   useEffect(() => {
@@ -123,8 +126,8 @@ function Header_processing({ name, designation, data }) {
             </a>
           </h1>
           <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
-            <IconButton>
-              {/* Render the bell icon */}
+            {/* <IconButton>
+           
               <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"></path><path d="M9 17v1a3 3 0 0 0 6 0v-1"></path></svg>
               <span style={{
               fontSize: "8px",
@@ -132,7 +135,10 @@ function Header_processing({ name, designation, data }) {
               marginBottom: "9px",
               padding: "2px"
             }} className="badge bg-red">{unreadCount}</span>
-            </IconButton>
+            </IconButton> */}
+
+            <Bellicon_processing data={data}/>
+
             <Avatar sx={{ width: 32, height: 32 }} />
             <div className="nav-item dropdown">
               <button
