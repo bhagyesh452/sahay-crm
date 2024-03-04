@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
+
 .container,
 .container-lg,
 .container-md,
@@ -245,10 +246,17 @@
     width: 119px;
     /* margin-top: 5px; */
     padding: 0px !important;
+    height: 320px;
+    margin-left: 50px;
 }
 .rdrDefinedRangesWrapper {
     font-size: 10px;
+<<<<<<< HEAD
+    height: 340px;
+    display:none;
+=======
     height: 360px;
+>>>>>>> baef448ae0993fc826c5693ac5179c93e715be3e
 }
 .firstClass{
     transition: transform 0.2s ease-in , box-shadow 0.2s ease-in-out;
@@ -317,4 +325,12 @@
     align-items: center;
     justify-content: center;
     box-shadow: 1px 2px lightgrey;
+}
+
+/* ---------------------------------analysis dashboard------------------------------------------- */
+
+.sidebar{
+    width:200px;
+    height:85vh;
+    overflow: auto;
 }

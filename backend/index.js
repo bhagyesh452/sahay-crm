@@ -1605,6 +1605,8 @@ app.post("/api/upload/lead-form", async (req, res) => {
 
         // Save the employee data to the database
         await employee.save();
+
+        socketIO.emit('importcsv' , employee)
         // console.log(excelData)
         // Increment the success counter
         successCounter++;
@@ -1741,6 +1743,8 @@ app.delete("/api/company-delete/:id", async (req, res) => {
         { "Company Name": companyName },
         { $set: { Status: "Untouched" } }
       );
+
+      socketIO.emit('companydeleted')
 
       res.status(200).json({ message: "Company Deleted Successfully" });
     } else {
@@ -2099,6 +2103,8 @@ app.post('/api/uploadAttachment/:companyName', upload.fields([
       
       await company.save();
 
+      socketIO.emit("viewpaymenteciept" , company)
+
       res.status(200).send('Payment receipt updated successfully!');
   } catch (error) {
       console.error('Error updating payment receipt:', error);
@@ -2139,6 +2145,8 @@ app.post('/api/uploadotherdocsAttachment/:companyName', upload.fields([
 
       
       await company.save();
+
+      socketIO.emit("veiwotherdocs" , company)
 
       res.status(200).send('Documents uploaded updated successfully!');
   } catch (error) {

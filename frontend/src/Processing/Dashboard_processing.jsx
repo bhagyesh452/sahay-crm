@@ -6,6 +6,7 @@ import CompanyList from "./CompanyList";
 import CompanyDetails from "./CompanyDetails";
 import Form from "./Form";
 import { Link } from "react-router-dom";
+import socketIO from 'socket.io-client';
 
 function Dashboard_processing() {
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
@@ -24,6 +25,36 @@ function Dashboard_processing() {
   }, []);
 
   useEffect(() => {
+    const socket = socketIO.connect(`http://localhost:3001`);
+
+    // Listen for the 'welcome' event from the server
+    socket.on('read', () => {
+      fetchCompanies(); 
+      //fetchCompanyDetails()// Log the welcome message received from the server
+    });
+
+    socket.on('viewpaymenteciept' , ()=>{
+      fetchCompanyDetails();
+    })
+
+    socket.on('veiwotherdocs' , ()=>{
+      fetchCompanyDetails();
+    })
+
+  socket.on('importcsv' , ()=>{
+    fetchCompanies();
+  })
+  
+  socket.on('companydeleted' , ()=>{
+    fetchCompanies();
+  })
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
     // Fetch company details when selectedCompanyId changes
     if (selectedCompanyId !== null) {
       fetchCompanyDetails();
@@ -35,7 +66,7 @@ function Dashboard_processing() {
       const response = await fetch(`${secretKey}/companies`);
       const data = await response.json();
       const companyData = data.companies
-      console.log(companyData)
+      //console.log(companyData)
   
       // Extract unique booking dates from the fetched data
       const uniqueBookingDates = Array.from(
@@ -47,9 +78,9 @@ function Dashboard_processing() {
       
   
       // Set the details of the first company by default if there are companies available
-      if (companyData.length !== 0) {
-        setSelectedCompanyId(companyData[0].companyName);
-      }
+      // if (companyData.length !== 0) {
+      //   setSelectedCompanyId(companyData[0].companyName);
+      // }
   
       // Update the state with both companies and booking dates
       setCompanies(companyData.reverse());
@@ -60,15 +91,13 @@ function Dashboard_processing() {
       console.error("Error fetching companies:", error);
     }
   };
- 
-  console.log(companies)
 
-  const markCompanyAsRead = (companyId) => {
-    const updatedCompanies = companies.map(company =>
-      company._id === companyId ? { ...company, unread: false } : company
-    );
-    setCompanies(updatedCompanies);
-  };
+  // const markCompanyAsRead = (companyId) => {
+  //   const updatedCompanies = companies.map(company =>
+  //     company._id === companyId ? { ...company, unread: false } : company
+  //   );
+  //   setCompanies(updatedCompanies);
+  // };
 
 
   const fetchCompanyDetails = async () => {

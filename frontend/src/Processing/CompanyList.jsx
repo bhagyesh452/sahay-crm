@@ -24,6 +24,7 @@ function CompanyList({ companies, onCompanyClick }) {
   const [enames, setEnames] = useState([])
   const [searchServices, setSearchServices] = useState(false)
   const [selectedValues, setSelectedValues] = useState([]);
+ 
 
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -53,6 +54,8 @@ function CompanyList({ companies, onCompanyClick }) {
         console.error('Error marking company as read:', error);
       });
   };
+
+
   const customStyles = {
     option: (provided, state) => ({
       ...provided,
@@ -206,7 +209,7 @@ function CompanyList({ companies, onCompanyClick }) {
       setDateRangeDisplay(false);
     }
   };
-
+ 
 
   const FilteredData = companies.filter((company) => {
     const fieldValue = company[selectedField];
@@ -216,8 +219,8 @@ function CompanyList({ companies, onCompanyClick }) {
       return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
     } else if (selectedField === "services") {
       const newselectedValues = selectedValues.join(',').toLowerCase();
-      console.log("fieldvalue:", fieldValue.join(',').toLowerCase())
-      console.log("newselectedvalue:", newselectedValues)
+      //console.log("fieldvalue:", fieldValue.join(',').toLowerCase())
+      //console.log("newselectedvalue:", newselectedValues)
       return (fieldValue.join(",")).toLowerCase().includes(newselectedValues.toLowerCase());
 
     } else if (selectedField === "bookingDate") {
@@ -305,7 +308,7 @@ function CompanyList({ companies, onCompanyClick }) {
               onChange={(e) => handleFieldChange(e.target.value)}
             >
               <option value="companyName">Company Name</option>
-              <option value="bdeName">Bde Name</option>
+              <option value="bdeName">BDE Name</option>
               <option value="services">Services</option>
               <option value="bookingDate">Booking Date</option>
             </select>
@@ -323,7 +326,7 @@ function CompanyList({ companies, onCompanyClick }) {
                   // Update searchTerm directly
                 }}
               >
-                <option value="">Select an admin</option>
+                <option value="">Select BDE</option>
                 {enames.map((name, index) => (
                   <option key={index} value={name} >{name}</option>
                 ))}
@@ -363,14 +366,14 @@ function CompanyList({ companies, onCompanyClick }) {
           )}
         </div>
         {searchServices && (<div className="input-icon w-100 d-flex align-items-center mt-2 searchServices">
-          <Select
+          <Select 
             styles={{
               customStyles,
               // Add custom styles here
               container: (provided) => ({
                 ...provided,
-                display: 'flex !important',
-                width: '100%', // Apply display: flex with !important
+                // display: 'flex !important',
+               // Apply display: flex with !important
                 // Add other custom styles as needed
               }),
               // Add other styles as needed
