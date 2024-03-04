@@ -5,6 +5,7 @@ import axios from "axios";
 import Nodata from "../components/Nodata";
 import "../assets/styles.css";
 import { IconButton } from "@mui/material";
+import { DateRangePicker } from 'react-date-range';
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
@@ -16,9 +17,20 @@ import AnnouncementIcon from "@mui/icons-material/Announcement";
 
 function Dashboard() {
   const [recentUpdates, setRecentUpdates] = useState([]);
+  const [dateRangenew, setDateRangenew] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: 'selection'
+    }
+  ]);
   const [bookingObject, setBookingObject] = useState([]);
+  const [buttonToggle, setButtonToggle] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const [openTable, setOpenTable] = useState(false);
   const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
+  const [displayDateRange, setDateRangeDisplay] = useState(false)
   const [filteredBooking, setFilteredBooking] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [expand, setExpand] = useState(null);
@@ -35,7 +47,7 @@ function Dashboard() {
 
   // https://startupsahay.in/api
   const fetchCompanyData = async () => {
-    fetch(`https://startupsahay.in/api/leads`)
+    fetch(`${secretKey}/leads`)
       .then((response) => response.json())
       .then((data) => {
         setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
@@ -45,7 +57,7 @@ function Dashboard() {
       });
   };
   const fetchEmployeeInfo = async () => {
-    fetch(`https://startupsahay.in/api/einfo`)
+    fetch(`${secretKey}/einfo`)
       .then((response) => response.json())
       .then((data) => {
         setEmployeeData(data);
@@ -85,6 +97,7 @@ function Dashboard() {
         console.error("Error Fetching Booking Details", error.message);
       }
     };
+   
 
     // Call the fetchData function when the component mounts
     fetchData();
@@ -170,6 +183,7 @@ function Dashboard() {
       setFilteredBooking(newfilteredData);
     }
   };
+
   const finalFilteredData = [];
 
   filteredBooking.forEach((obj) => {
@@ -221,6 +235,11 @@ function Dashboard() {
   const properCompanyData =
     selectedEmployee !== "" &&
     companyData.filter((obj) => obj.ename === selectedEmployee);
+
+    const currentDate = new Date();
+
+
+ 
 
   return (
     <div>
@@ -278,6 +297,7 @@ function Dashboard() {
                   </div>
                   <div className="filter d-flex align-items-center">
                     <strong>Filter By :</strong>
+                   
                     <div className="filter-by">
                       <select
                         value={dateRange}
@@ -404,7 +424,7 @@ function Dashboard() {
                                   <td>
                                     {" "}
                                     {
-                                      filteredBooking
+                                     ( filteredBooking
                                         .filter(
                                           (data) => data.bdeName === obj.bdeName
                                         ) // Filter objects with bdeName same as myName
@@ -420,12 +440,12 @@ function Dashboard() {
                                               ? obj1.totalPayment / 2
                                               : 0)
                                           );
-                                        }, 0) // Initialize totalPayments as 0
+                                        }, 0)).toLocaleString() // Initialize totalPayments as 0
                                     }
                                   </td>
                                   <td>
                                     {
-                                      filteredBooking
+                                      (filteredBooking
                                         .filter(
                                           (data) => data.bdeName === obj.bdeName
                                         ) // Filter objects with bdeName same as obj.bdeName
@@ -441,12 +461,12 @@ function Dashboard() {
                                               ? obj1.firstPayment // If bdeName and bdmName are the same
                                               : obj1.firstPayment / 2) // If bdeName and bdmName are different
                                           );
-                                        }, 0) // Initialize totalPayments as 0
+                                        }, 0)).toLocaleString() // Initialize totalPayments as 0
                                     }
                                   </td>
                                   <td>
                                     {
-                                      filteredBooking
+                                      (filteredBooking
                                         .filter(
                                           (data) => data.bdeName === obj.bdeName
                                         ) // Filter objects with bdeName same as obj.bdeName
@@ -463,7 +483,7 @@ function Dashboard() {
                                                   obj1.firstPayment // If bdeName and bdmName are different
                                               : 0) // If bdeName and bdmName are different
                                           );
-                                        }, 0) // Initialize totalPayments as 0
+                                        }, 0)).toLocaleString() // Initialize totalPayments as 0
                                     }
                                   </td>
                                 </tr>
@@ -497,18 +517,18 @@ function Dashboard() {
                               </td>
 
                               <td>
-                                {filteredBooking.reduce((totalPayment, obj) => {
+                                {(filteredBooking.reduce((totalPayment, obj) => {
                                   // Add the totalPayment of the current object to the totalPayment accumulator
                                   const finalPayment =
                                     obj.bdeName === obj.bdmName
                                       ? obj.totalPayment
                                       : obj.totalPayment / 2;
                                   return totalPayment + finalPayment;
-                                }, 0)}
+                                }, 0)).toLocaleString()}
                               </td>
 
                               <td>
-                                {filteredBooking.reduce(
+                                {(filteredBooking.reduce(
                                   (totalFirstPayment, obj) => {
                                     // If firstPayment is 0, count totalPayment instead
                                     const paymentToAdd =
@@ -523,10 +543,10 @@ function Dashboard() {
                                     return totalFirstPayment + paymentToAdd;
                                   },
                                   0
-                                )}
+                                )).toLocaleString()}
                               </td>
                               <td>
-                                {filteredBooking.reduce(
+                                {(filteredBooking.reduce(
                                   (totalFirstPayment, obj) => {
                                     // If firstPayment is 0, count totalPayment instead
 
@@ -543,7 +563,7 @@ function Dashboard() {
                                     return totalFirstPayment + paymentToAdd;
                                   },
                                   0
-                                )}
+                                )).toLocaleString()}
                               </td>
                             </tr>
                           </tfoot>
@@ -632,7 +652,7 @@ function Dashboard() {
                                     }}
                                     key={`row-${index}-1`}
                                   >
-                                    {index}
+                                    {index +1}
                                   </td>
                                   <td key={`row-${index}-2`}>{obj.ename}</td>
                                   <td key={`row-${index}-3`}>
