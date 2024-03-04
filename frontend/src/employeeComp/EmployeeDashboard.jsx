@@ -8,6 +8,7 @@ function EmployeeDashboard() {
   const { userId } = useParams();
   const [data, setData] = useState([]);
   const [empData, setEmpData] = useState([]);
+  const [followData , setFollowData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -49,7 +50,49 @@ function EmployeeDashboard() {
   empData.map((data) => formatDate(data.AssignDate));
 
 const uniqueArray = formattedDates && [...new Set(formattedDates)];
-console.log(uniqueArray)
+//console.log(uniqueArray)
+
+
+// ---------------------------projectiondata-------------------------------------
+
+const fetchFollowUpData = async ()=> {
+ 
+  try {
+    const response = await fetch(`${secretKey}/projection-data/${data.ename}`);
+    const followdata = await response.json();
+    setFollowData (followdata);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return { error: 'Error fetching data' };
+  }
+}
+
+function calculateSum(data) {
+  const initialValue = { totalPaymentSum: 0, offeredPaymentSum: 0, offeredServices: [] };
+
+  const sum = data.reduce((accumulator, currentValue) => {
+    // Concatenate offeredServices from each object into a single array
+    const offeredServices = accumulator.offeredServices.concat(currentValue.offeredServices);
+    
+    return {
+      totalPaymentSum: accumulator.totalPaymentSum + currentValue.totalPayment,
+      offeredPaymentSum: accumulator.offeredPaymentSum + currentValue.offeredPrize,
+      offeredServices: offeredServices
+    };
+  }, initialValue);
+
+  // // Remove duplicate services from the array
+  // sum.offeredServices = Array.from(new Set(sum.offeredServices));
+
+  return sum;
+}
+
+// Calculate the sums
+const { totalPaymentSum, offeredPaymentSum, offeredServices } = calculateSum(followData);
+
+useEffect(() => {
+  fetchFollowUpData();
+}, [data]);
 
   return (
     <div>
@@ -265,6 +308,97 @@ console.log(uniqueArray)
           </div>
         </div>
       </div>
+
+
+{/* -----------------------------------------------projection dashboard-------------------------------------------------- */}
+
+
+<div className="container-xl mt-2">
+        <div className="card">
+          <div className="card-header">
+            <h2>Projection Dashboard</h2>
+          </div>
+          <div className="card-body">
+            <div
+              id="table-default"
+              style={{
+                overflowX: "auto",
+                overflowY: "auto",
+                maxHeight: "60vh",
+              }}
+            >
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  border: "1px solid #ddd",
+                  marginBottom: "10px",
+                }}
+                className="table-vcenter table-nowrap"
+              >
+                <thead stSyle={{ backgroundColor: "grey" }}>
+                  <tr
+                    style={{
+                      backgroundColor: "#ffb900",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <th
+                      style={{
+                        lineHeight: "32px",
+                      }}
+                    >
+                      Sr. No
+                    </th>
+                    <th>Company Name</th>
+                    <th>Offered Services</th>
+                    <th>Total Offered Price</th>
+                    <th>Expected Amount</th>
+                    <th>Employee Projection Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {followData &&
+                  followData.map((obj, index) => (
+                    <tr key={`row-${index}`}>
+                      <td  style={{
+                        lineHeight: "32px",
+                      }}>{index + 1}</td>
+                      <td>{obj.companyName}</td>
+                      <td>{obj.offeredServices.join(', ')}</td>
+                      <td>{obj.totalPayment.toLocaleString()}
+                      </td>
+                      <td>{obj.offeredPrize.toLocaleString()}
+                      </td>
+                      <td>{obj.estPaymentDate}
+                      </td>
+                    </tr>
+                  ))}
+            
+                </tbody>
+                {followData && (
+                <tfoot>
+                  <tr style={{ fontWeight: 500 }}>
+                    <td style={{lineHeight:'32px'}} colSpan="2">Total</td>
+                    <td>{offeredServices.length}
+                    </td>
+                    <td> {totalPaymentSum.toLocaleString()}
+                    </td>
+                    <td>
+                    {offeredPaymentSum.toLocaleString()}
+                    </td>
+                    <td>-
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

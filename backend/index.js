@@ -362,7 +362,8 @@ app.get('/api/projection-data', async (req, res) => {
   try {
     // Fetch all data from the FollowUpModel
     const followUps = await FollowUpModel.find();
-    
+    console.log(followUps)
+    //console.log(query)
     // Return the data as JSON response
     res.json(followUps);
   } catch (error) {
@@ -371,6 +372,24 @@ app.get('/api/projection-data', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
+app.get('/api/projection-data/:ename', async (req, res) => {
+  try {
+    const ename = req.params.ename;
+    // Fetch data from the FollowUpModel based on the employeeName if provided
+    const followUps = await FollowUpModel.find({ename : ename});
+    // Return the data as JSON response
+    res.json(followUps);
+  } catch (error) {
+    // If there's an error, send a 500 internal server error response
+    console.error('Error fetching FollowUp data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
 // Backend API to update or add data to FollowUpModel
 app.post('/api/update-followup', async (req, res) => {
   try {

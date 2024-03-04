@@ -26,6 +26,9 @@ function Dashboard() {
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [dateRange, setDateRange] = useState("by-today");
   const [showUpdates, setShowUpdates] = useState(false);
+  const [followData, setfollowData] = useState([])
+  const [openProjectionTable, setopenProjectionTable] = useState(false)
+  const [projectedEmployee, setProjectedEmployee] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -220,6 +223,148 @@ function Dashboard() {
     selectedEmployee !== "" &&
     companyData.filter((obj) => obj.ename === selectedEmployee);
 
+  // -----------------------------------projection-data--------------------------------------
+
+  const fetchFollowUpData = async () => {
+
+    try {
+      const response = await fetch(`${secretKey}/projection-data`);
+      const followdata = await response.json();
+      setfollowData(followdata)
+      console.log(followData)
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return { error: 'Error fetching data' };
+    }
+  }
+
+  useEffect(() => {
+    fetchFollowUpData();
+  }, []);
+
+  const uniqueEnames = [...new Set(followData.map(item => item.ename))];
+
+  const servicesByEname = followData.reduce((acc, curr) => {
+    // Check if ename already exists in the accumulator
+    if (acc[curr.ename]) {
+      // If exists, concatenate the services array
+      acc[curr.ename] = acc[curr.ename].concat(curr.offeredServices);
+    } else {
+      // If not exists, create a new entry with the services array
+      acc[curr.ename] = curr.offeredServices;
+    }
+    return acc;
+  }, []);
+
+  //console.log(servicesByEname)
+
+  const totalservicesByEname = followData.reduce((acc, curr) => {
+    // Concatenate all offeredServices into a single array
+    acc = acc.concat(curr.offeredServices);
+    return acc;
+  }, []);
+
+  //console.log(totalservicesByEname);
+
+
+  const companiesByEname = followData.reduce((accumulate, current) => {
+    if (accumulate[current.ename]) {
+      if (Array.isArray(accumulate[current.ename])) {
+        accumulate[current.ename].push(current.companyName);
+      } else {
+        accumulate[current.ename] = [accumulate[current.ename], current.companyName];
+      }
+    } else {
+      accumulate[current.ename] = current.companyName;
+    }
+    return accumulate;
+  }, []);
+
+  const totalcompaniesByEname = followData.reduce((accumulate, current) => {
+    accumulate = accumulate.concat(current.companyName);
+    return accumulate
+  }, [])
+
+  console.log(totalcompaniesByEname.length)
+
+  function calculateSum(data) {
+    const initialValue = {};
+
+    const sum = data.reduce((accumulator, current) => {
+      const { ename, totalPayment, offeredPrize } = current;
+
+      // If the ename already exists in the accumulator, accumulate the totalPayment and offeredPrize
+      if (accumulator[ename]) {
+        accumulator[ename].totalPaymentSum += totalPayment;
+        accumulator[ename].offeredPaymentSum += offeredPrize;
+      } else {
+        // If the ename does not exist in the accumulator, initialize it
+        accumulator[ename] = {
+          totalPaymentSum: totalPayment,
+          offeredPaymentSum: offeredPrize
+        };
+      }
+      return accumulator;
+    }, initialValue);
+
+
+    return sum;
+  }
+
+  // Calculate the sums
+  const sums = calculateSum(followData);
+
+  let totalTotalPaymentSum = 0;
+  let totalOfferedPaymentSum = 0;
+
+  for (const key in sums) {
+    totalTotalPaymentSum += sums[key].totalPaymentSum;
+    totalOfferedPaymentSum += sums[key].offeredPaymentSum;
+  }
+
+  //console.log("Total totalPaymentSum:", totalTotalPaymentSum);
+  //console.log("Total offeredPaymentSum:", totalOfferedPaymentSum);
+  const functionOpenProjectionTable = (ename) => {
+    console.log("Ename:" , ename)
+    setopenProjectionTable(true);
+    const projectedData = followData.filter(obj => obj.ename === ename);
+    setProjectedEmployee(projectedData);
+  };
+  console.log(projectedEmployee)
+
+  const closeProjectionTable = () => {
+    setopenProjectionTable(false);
+  };
+
+  function calculateSumPopup(data) {
+    const initialValue = { totalPaymentSumPopup: 0, offeredPaymentSumPopup: 0, offeredServicesPopup: [] };
+  
+    const sum = data.reduce((accumulator, currentValue) => {
+      // Concatenate offeredServices from each object into a single array
+      const offeredServicesPopup = accumulator.offeredServicesPopup.concat(currentValue.offeredServices);
+      
+      return {
+        totalPaymentSumPopup: accumulator.totalPaymentSumPopup + currentValue.totalPayment,
+        offeredPaymentSumPopup: accumulator.offeredPaymentSumPopup + currentValue.offeredPrize,
+        offeredServicesPopup: offeredServicesPopup
+      };
+    }, initialValue);
+  
+    // // Remove duplicate services from the array
+    // sum.offeredServices = Array.from(new Set(sum.offeredServices));
+  
+    return sum;
+  }
+  
+  // Calculate the sums
+  const { totalPaymentSumPopup, offeredPaymentSumPopup, offeredServicesPopup } = calculateSumPopup(projectedEmployee);
+  console.log(totalPaymentSumPopup)
+  console.log(offeredPaymentSumPopup)
+  console.log(offeredServicesPopup)
+
+
+
+
   return (
     <div>
       <Header />
@@ -361,7 +506,7 @@ function Dashboard() {
                                               data.bdeName !== data.bdmName
                                             );
                                           }).length /
-                                            2}{" "}
+                                          2}{" "}
                                       </div>
                                       <div className="col-sm-5">
                                         <IconEye
@@ -390,10 +535,10 @@ function Dashboard() {
                                             totalServices +
                                             (obj.services && obj.services[0]
                                               ? obj.services[0]
-                                                  .split(",")
-                                                  .map((service) =>
-                                                    service.trim()
-                                                  ).length
+                                                .split(",")
+                                                .map((service) =>
+                                                  service.trim()
+                                                ).length
                                               : 0)
                                           );
                                         }, 0) // Initialize totalServices as 0
@@ -415,8 +560,8 @@ function Dashboard() {
                                                 ? obj1.totalPayment
                                                 : 0
                                               : obj1.totalPayment !== 0
-                                              ? obj1.totalPayment / 2
-                                              : 0)
+                                                ? obj1.totalPayment / 2
+                                                : 0)
                                           );
                                         }, 0) // Initialize totalPayments as 0
                                     }
@@ -436,8 +581,8 @@ function Dashboard() {
                                                 ? obj1.totalPayment / 2 // If bdeName and bdmName are the same
                                                 : obj1.totalPayment // If bdeName and bdmName are different
                                               : obj1.bdeName === obj1.bdmName
-                                              ? obj1.firstPayment // If bdeName and bdmName are the same
-                                              : obj1.firstPayment / 2) // If bdeName and bdmName are different
+                                                ? obj1.firstPayment // If bdeName and bdmName are the same
+                                                : obj1.firstPayment / 2) // If bdeName and bdmName are different
                                           );
                                         }, 0) // Initialize totalPayments as 0
                                     }
@@ -455,10 +600,10 @@ function Dashboard() {
                                             (obj1.firstPayment !== 0
                                               ? obj1.bdeName !== obj1.bdmName
                                                 ? (obj1.totalPayment -
-                                                    obj1.firstPayment) /
-                                                  2 // If bdeName and bdmName are the same
+                                                  obj1.firstPayment) /
+                                                2 // If bdeName and bdmName are the same
                                                 : obj1.totalPayment -
-                                                  obj1.firstPayment // If bdeName and bdmName are different
+                                                obj1.firstPayment // If bdeName and bdmName are different
                                               : 0) // If bdeName and bdmName are different
                                           );
                                         }, 0) // Initialize totalPayments as 0
@@ -482,7 +627,7 @@ function Dashboard() {
                                   filteredBooking.filter((data) => {
                                     return data.bdeName !== data.bdmName;
                                   }).length /
-                                    2}
+                                  2}
                               </td>
                               <td>
                                 {filteredBooking.reduce((totalLength, obj) => {
@@ -515,8 +660,8 @@ function Dashboard() {
                                           ? obj.totalPayment
                                           : obj.totalPayment / 2
                                         : obj.bdeName === obj.bdmName
-                                        ? obj.firstPayment
-                                        : obj.firstPayment / 2;
+                                          ? obj.firstPayment
+                                          : obj.firstPayment / 2;
                                     // Add the paymentToAdd to the totalFirstPayment accumulator
                                     return totalFirstPayment + paymentToAdd;
                                   },
@@ -534,8 +679,8 @@ function Dashboard() {
                                           ? 0
                                           : obj.totalPayment - obj.firstPayment
                                         : obj.firstPayment === 0
-                                        ? 0
-                                        : obj.totalPayment - obj.firstPayment;
+                                          ? 0
+                                          : obj.totalPayment - obj.firstPayment;
 
                                     // Add the paymentToAdd to the totalFirstPayment accumulator
                                     return totalFirstPayment + paymentToAdd;
@@ -592,7 +737,7 @@ function Dashboard() {
                               backgroundColor: "#ffb900",
                               color: "white",
                               fontWeight: "bold",
-                              
+
                             }}
                           >
                             <th
@@ -862,9 +1007,8 @@ function Dashboard() {
                     <>
                       <tr>
                         <td>{index + 1}</td>
-                        <td>{`${formatDate(mainObj.bookingDate)}(${
-                          mainObj.bookingTime
-                        })`}</td>
+                        <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                          })`}</td>
                         <td>{mainObj.bdeName}</td>
                         <td>{mainObj.companyName}</td>
                         <td>{mainObj.contactNumber}</td>
@@ -882,8 +1026,8 @@ function Dashboard() {
                                 ? mainObj.firstPayment // If bdeName and bdmName are the same
                                 : mainObj.firstPayment / 2 // If bdeName and bdmName are different
                               : mainObj.bdeName === mainObj.bdmName
-                              ? mainObj.totalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                              : mainObj.totalPayment / 2 // If firstPayment is 0 and bdeName and bdmName are different
+                                ? mainObj.totalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                : mainObj.totalPayment / 2 // If firstPayment is 0 and bdeName and bdmName are different
                           }
                         </td>
                         <td>
@@ -892,7 +1036,7 @@ function Dashboard() {
                             ? mainObj.bdeName === mainObj.bdmName
                               ? mainObj.totalPayment - mainObj.firstPayment
                               : (mainObj.totalPayment - mainObj.firstPayment) /
-                                2
+                              2
                             : 0}{" "}
                         </td>
                         <td>
@@ -920,9 +1064,8 @@ function Dashboard() {
                         <>
                           <tr>
                             <td>{`${index + 1}(${1})`}</td>
-                            <td>{`${formatDate(mainObj.bookingDate)}(${
-                              mainObj.bookingTime
-                            })`}</td>
+                            <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                              })`}</td>
                             <td>{mainObj.bdmName}</td>
                             <td>{mainObj.companyName}</td>
                             <td>{mainObj.contactNumber}</td>
@@ -939,8 +1082,8 @@ function Dashboard() {
                                 ? mainObj.bdeName === mainObj.bdmName
                                   ? mainObj.totalPayment - mainObj.firstPayment
                                   : (mainObj.totalPayment -
-                                      mainObj.firstPayment) /
-                                    2
+                                    mainObj.firstPayment) /
+                                  2
                                 : 0}{" "}
                             </td>
                             <td>{"Yes"}</td>
@@ -1107,8 +1250,8 @@ function Dashboard() {
                       }
                     </td>
                     <td style={{
-                        lineHeight: "32px",
-                      }}>
+                      lineHeight: "32px",
+                    }}>
                       {
                         properCompanyData.filter(
                           (partObj) => partObj.Status === "Busy"
@@ -1165,6 +1308,186 @@ function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* -------------------------------------projection-dashboard--------------------------------------------- */}
+
+      <div className="container-xl mt-2">
+        <div className="card">
+          <div className="card-header">
+            <h2>Projection Dashboard</h2>
+          </div>
+          <div className="card-body">
+            <div
+              id="table-default"
+              style={{
+                overflowX: "auto",
+                overflowY: "auto",
+                maxHeight: "60vh",
+              }}
+            >
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  border: "1px solid #ddd",
+                  marginBottom: "10px",
+                }}
+                className="table-vcenter table-nowrap"
+              >
+                <thead stSyle={{ backgroundColor: "grey" }}>
+                  <tr
+                    style={{
+                      backgroundColor: "#ffb900",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <th
+                      style={{
+                        lineHeight: "32px",
+                      }}
+                    >
+                      Sr. No
+                    </th>
+                    <th>Company Name</th>
+                    <th>Offered Services</th>
+                    <th>Total Offered Price</th>
+                    <th>Expected Amount</th>
+                    <th>Total Companies</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {uniqueEnames &&
+                    uniqueEnames.map((ename, index) => {
+                      // Calculate the count of services for the current ename
+                      const serviceCount = servicesByEname[ename] ? servicesByEname[ename].length : 0;
+                      const companyCount = companiesByEname[ename] ? companiesByEname[ename].length : 0;
+                      const totalPaymentByEname = sums[ename] ? sums[ename].totalPaymentSum : 0;
+                      const offeredPrizeByEname = sums[ename] ? sums[ename].offeredPaymentSum : 0;
+
+                      return (
+                        <tr key={`row-${index}`}>
+                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                          <td>{ename}</td>
+                          <td>{serviceCount}</td>
+                          <td>{totalPaymentByEname.toLocaleString()}</td>
+                          <td>{offeredPrizeByEname.toLocaleString()}</td>
+                          <td>{companyCount}
+                            <ViewListIcon
+                              onClick={() => {
+                                functionOpenProjectionTable(ename);
+                              }}
+                              style={{ cursor: "pointer" }}
+                            /></td>
+                        </tr>
+                      );
+                    })}
+
+                </tbody>
+                {followData && (
+                  <tfoot>
+                    <tr style={{ fontWeight: 500 }}>
+                      <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                      <td>{totalservicesByEname.length}
+                      </td>
+                      <td>{totalTotalPaymentSum.toLocaleString()}
+                      </td>
+                      <td>{totalOfferedPaymentSum.toLocaleString()}
+                      </td>
+                      <td>{totalcompaniesByEname.length}
+                      </td>
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Dialog
+        open={openProjectionTable}
+        onClose={closeProjectionTable}
+        fullWidth
+        maxWidth="lg"
+      >
+        <DialogContent>
+          <div
+            id="table-default"
+            style={{
+              overflowX: "auto",
+              overflowY: "auto",
+              maxHeight: "60vh",
+            }}
+          >
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                border: "1px solid #ddd",
+                marginBottom: "10px",
+              }}
+              className="table-vcenter table-nowrap"
+            >
+              <thead stSyle={{ backgroundColor: "grey" }}>
+                <tr
+                  style={{
+                    backgroundColor: "#ffb900",
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <th
+                    style={{
+                      lineHeight: "32px",
+                    }}
+                  >
+                    Sr. No
+                  </th>
+                  <th>BDE Name</th>
+                  <th>Company Name</th>
+                  <th>Offered Services</th>
+                  <th>Total Offered Price</th>
+                  <th>Expected Amount</th>
+                  <th>Employee Projection Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Map through uniqueEnames array to render rows */}
+                
+                    {projectedEmployee && projectedEmployee.map((obj, Index) => (
+                      
+                      <tr key={`sub-row-${Index}`}>
+                        <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                        {/* Render other employee data */}
+                        <td>{obj.ename}</td>
+                        <td>{obj.companyName}</td>
+                        <td>{obj.offeredServices.join(',')}</td>
+                        <td>{obj.totalPayment.toLocaleString()}</td>
+                        <td>{obj.offeredPrize.toLocaleString()}</td> 
+                        <td>{obj.estPaymentDate}</td> 
+                      </tr>
+                    ))}
+              </tbody>
+              {projectedEmployee &&  (
+                <tfoot>
+                <tr style={{ fontWeight: 500 }}>
+                  <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                  <td>{offeredServicesPopup.length}
+                  </td>
+                  <td>{totalPaymentSumPopup.toLocaleString()}
+                  </td>
+                  <td>{offeredPaymentSumPopup.toLocaleString()}
+                  </td>
+                  <td>-</td>
+                </tr>
+              </tfoot>
+              )}
+            </table>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }

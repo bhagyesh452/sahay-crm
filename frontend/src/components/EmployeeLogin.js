@@ -5,7 +5,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
-import OTPInput from "react-otp-input";
+
 
 function EmployeeLogin({ setnewToken }) {
   const [email, setEmail] = useState("");
