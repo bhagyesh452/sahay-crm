@@ -108,7 +108,7 @@ function EmployeePanel() {
     audio.play();
   };
   useEffect(() => {
-    const socket = socketIO.connect("http://localhost:3001");
+    const socket = socketIO.connect(`${secretKey}`);
 
     // Listen for the 'request-seen' event from the server
     socket.on("request-seen", () => {
