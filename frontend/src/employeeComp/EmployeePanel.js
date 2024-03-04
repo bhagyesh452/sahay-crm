@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import EmpNav from "./EmpNav.js";
 import Header from "../components/Header";
 import { useParams } from "react-router-dom";
-import notificationSound from '../assets/media/iphone_sound.mp3';
+import notificationSound from "../assets/media/iphone_sound.mp3";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import axios from "axios";
@@ -20,6 +20,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Form from "../components/Form.jsx";
 import "../assets/table.css";
 import "../assets/styles.css";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import Nodata from "../components/Nodata.jsx";
 import EditForm from "../components/EditForm.jsx";
 import { useCallback } from "react";
@@ -27,7 +28,8 @@ import debounce from "lodash/debounce";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import { options } from "../components/Options.js";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import socketIO from 'socket.io-client';
+import socketIO from "socket.io-client";
+import AddCircle from "@mui/icons-material/AddCircle.js";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -43,9 +45,9 @@ function EmployeePanel() {
     offeredPrize: 0,
     offeredServices: [],
     lastFollowUpdate: "",
-    totalPayment:0,
-    estPaymentDate:"",
-    remarks:"",
+    totalPayment: 0,
+    estPaymentDate: "",
+    remarks: "",
     date: "",
     time: "",
   });
@@ -54,6 +56,7 @@ function EmployeePanel() {
   const [changeRemarks, setChangeRemarks] = useState("");
   const [open, openchange] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [expandYear, setExpandYear] = useState(0);
   const [openCSV, openchangeCSV] = useState(false);
   const [openRemarks, openchangeRemarks] = useState(false);
   const [openAnchor, setOpenAnchor] = useState(false);
@@ -105,26 +108,23 @@ function EmployeePanel() {
     audio.play();
   };
   useEffect(() => {
-    const socket = socketIO.connect('http://localhost:3001');
+    const socket = socketIO.connect("http://localhost:3001");
 
     // Listen for the 'request-seen' event from the server
-    socket.on('request-seen', () => {
+    socket.on("request-seen", () => {
       // Call fetchRequestDetails function to update request details
       fetchRequestDetails();
-
     });
-    socket.on('data-sent',()=>{
+    socket.on("data-sent", () => {
       fetchRequestDetails();
       playNotificationSound();
-
-    
-    })
+    });
 
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
     };
-  }, []); 
+  }, []);
   const functionopenpopup = () => {
     openchange(true);
   };
@@ -141,9 +141,9 @@ function EmployeePanel() {
         offeredPrize: findOneprojection.offeredPrize,
         offeredServices: findOneprojection.offeredServices,
         lastFollowUpdate: findOneprojection.lastFollowUpdate,
-        estPaymentDate:findOneprojection.estPaymentDate,
-        remarks:findOneprojection.remarks,
-        totalPayment:findOneprojection.totalPayment,
+        estPaymentDate: findOneprojection.estPaymentDate,
+        remarks: findOneprojection.remarks,
+        totalPayment: findOneprojection.totalPayment,
         date: "",
         time: "",
       });
@@ -159,9 +159,9 @@ function EmployeePanel() {
       ename: "",
       offeredPrize: "",
       offeredServices: "",
-      totalPayment:0,
+      totalPayment: 0,
       lastFollowUpdate: "",
-      remarks:"",
+      remarks: "",
       date: "",
       time: "",
     });
@@ -371,13 +371,12 @@ function EmployeePanel() {
         // Assuming 'timestamp' is the field indicating the time of creation or update
         return new Date(b.date) - new Date(a.date);
       });
-      
+
       // Find the latest data object with Assignread property as false
-      const latestData = sortedData.find(data => data.AssignRead === false);
-      
+      const latestData = sortedData.find((data) => data.AssignRead === false);
+
       // Set the latest data as an object
       setRequestData(latestData);
-    
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -1017,7 +1016,7 @@ function EmployeePanel() {
         offeredPrize: 0,
         offeredServices: [],
         lastFollowUpdate: "",
-        remarks:"",
+        remarks: "",
         date: "",
         time: "",
       });
@@ -1041,16 +1040,85 @@ function EmployeePanel() {
     try {
       // Assuming 'id' is the ID of the object you want to mark as read
       const id = requestData._id;
-  
+
       // Send a POST request to set the AssignRead property to true for the object with the given ID
       await axios.post(`${secretKey}/setMarktrue/${id}`);
-  
+
       // Optionally, you can also update the state or perform any other actions after successfully marking the object as read
     } catch (error) {
       // Handle any errors that occur during the API request
-      console.error('Error marking object as read:', error);
+      console.error("Error marking object as read:", error);
     }
   };
+  const createNewArray = (data) => {
+    let dataArray;
+
+    if (dataStatus === "All") {
+      // Filter data for all statuses
+      dataArray = data.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up");
+    } else if (dataStatus === "Interested") {
+      // Filter data for Interested status
+      dataArray = data.filter((obj) => obj.Status === "Interested");
+    } else if (dataStatus === "Not Interested") {
+      // Filter data for Not Interested status
+      dataArray = data.filter((obj) => obj.Status === "Not Interested");
+    } else {
+      // Handle other cases if needed
+      dataArray = data;
+    }
+    const newArray = [];
+
+    // Iterate over each object in the original array
+    dataArray.forEach((obj) => {
+      const date = new Date(obj["Company Incorporation Date  "]);
+      const year = date.getFullYear();
+      const month = date.toLocaleString("default", { month: "short" });
+
+      // Check if year already exists in newArray
+      const yearIndex = newArray.findIndex((item) => item.year === year);
+      if (yearIndex !== -1) {
+        // Year already exists, check if month exists in the corresponding year's month array
+        const monthIndex = newArray[yearIndex].month.findIndex(
+          (m) => m === month
+        );
+        if (monthIndex === -1) {
+          // Month doesn't exist, add it to the month array
+          newArray[yearIndex].month.push(month);
+        }
+      } else {
+        // Year doesn't exist, create a new entry
+        newArray.push({ year: year, month: [month] });
+      }
+    });
+
+    return newArray;
+  };
+
+  // Call the function to create the new array
+  const resultArray = moreEmpData.length!==0 ? createNewArray(moreEmpData) : [];
+
+  const handleYearFilterChange = (e, selectedYear) => {
+    const isChecked = e.target.checked;
+  
+    // Filter the employeeData based on the selected year
+    if (isChecked) {
+      const filteredData = employeeData.filter((data) => {
+        const year = new Date(data["Company Incorporation Date  "]).getFullYear();
+        return year.toString() === selectedYear.toString();
+      });
+      setEmployeeData(filteredData);
+      console.log("Filtered Year data",filteredData)
+    } else {
+      // If the checkbox is unchecked, reset the filter
+      // You can implement this according to your requirements
+      // For example, if you want to reset to the original data, you can fetch it again from the server
+      // setEmployeeData(originalEmployeeData);
+    }
+  };
+const handleMonthFilterChange = ()=>{
+  console.log("Month is filtering")
+}  
+
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
@@ -1062,17 +1130,20 @@ function EmployeePanel() {
           <div className="page-wrapper">
             <div className="page-header d-print-none">
               <div className="container-xl">
-               {requestData!==null && requestData!==undefined && <div className="notification-bar">
-                  <div className="noti-text">
-                    <h1>You have just received {requestData.dAmount} data!</h1>                  
+                {requestData !== null && requestData !== undefined && (
+                  <div className="notification-bar">
+                    <div className="noti-text">
+                      <h1>
+                        You have just received {requestData.dAmount} data!
+                      </h1>
+                    </div>
+                    <div className="close-icon">
+                      <IconButton onClick={handleMarktrue}>
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
                   </div>
-                  <div className="close-icon">
-                    <IconButton onClick={handleMarktrue}>
-                      <CloseIcon/>
-                    </IconButton>
-                  </div>
-                 
-                </div>}
+                )}
                 <div className="row g-2 align-items-center">
                   <div
                     style={{ display: "flex", justifyContent: "space-between" }}
@@ -1182,18 +1253,35 @@ function EmployeePanel() {
                                 e.target.value === "Not Picked Up"
                               ) {
                                 setdataStatus("All");
-                                setEmployeeData(moreEmpData.filter(obj=>obj.Status === "Busy" || obj.Status === "Not Picked Up" || obj.Status === "Untouched"))
+                                setEmployeeData(
+                                  moreEmpData.filter(
+                                    (obj) =>
+                                      obj.Status === "Busy" ||
+                                      obj.Status === "Not Picked Up" ||
+                                      obj.Status === "Untouched"
+                                  )
+                                );
                               } else if (
                                 e.target.value === "Junk" ||
                                 e.target.value === "Not Interested"
                               ) {
                                 setdataStatus("NotInterested");
-                                setEmployeeData(moreEmpData.filter(obj=>obj.Status === "Not Interested" || obj.Status === "Junk"))
+                                setEmployeeData(
+                                  moreEmpData.filter(
+                                    (obj) =>
+                                      obj.Status === "Not Interested" ||
+                                      obj.Status === "Junk"
+                                  )
+                                );
                               } else if (e.target.value === "Interested") {
                                 setdataStatus("Interested");
-                                setEmployeeData(moreEmpData.filter(obj=>obj.Status === "Interested"))
+                                setEmployeeData(
+                                  moreEmpData.filter(
+                                    (obj) => obj.Status === "Interested"
+                                  )
+                                );
                               } else if (e.target.value === "Untouched") {
-                                setdataStatus("All")
+                                setdataStatus("All");
                                 setEmployeeData(
                                   moreEmpData.filter(
                                     (obj) => obj.Status === "Untouched"
@@ -1741,6 +1829,85 @@ function EmployeePanel() {
                                     Newest
                                   </div>
 
+                                  {resultArray.length !== 0 &&
+                                    resultArray.map((obj) => (
+                                      <>
+                                        <div
+                                          style={{ marginLeft: "5px" }}
+                                          className="inco-subFilter d-flex"
+                                        >
+                                          <div style={{ marginRight: "5px" }}>
+                                            <input
+                                              type="checkbox"
+                                              name="year-filter"
+                                              id={`year-filter-${obj.year}`} // Add a unique id for each checkbox
+                                              onChange={(e) =>
+                                                handleYearFilterChange(
+                                                  e,
+                                                  obj.year
+                                                )
+                                              } // Pass event and year to the handler
+                                            />
+                                          </div>
+                                          <div className="year-val">
+                                            {obj.year}
+                                          </div>
+                                          {expandYear !== obj.year && (
+                                            <div
+                                              className="expand-year d-flex"
+                                              onClick={() => {
+                                                setExpandYear(obj.year);
+                                              }}
+                                            >
+                                              <AddCircle
+                                                style={{ height: "15px" }}
+                                              />
+                                            </div>
+                                          )}
+                                          {expandYear === obj.year && (
+                                            <div
+                                              className="expand-year d-flex"
+                                              onClick={() => {
+                                                setExpandYear(0);
+                                              }}
+                                            >
+                                              <RemoveCircleIcon
+                                                style={{ height: "15px" }}
+                                              />
+                                            </div>
+                                          )}
+                                        </div>
+                                        {obj.month.length !== 0 &&
+                                          expandYear === obj.year &&
+                                          obj.month.map((month) => (
+                                            <div
+                                              style={{ marginLeft: "25px" }}
+                                              className="inco-subFilter d-flex"
+                                            >
+                                              <div
+                                                style={{ marginRight: "5px" }}
+                                              >
+                                                <input
+                                                  type="checkbox"
+                                                  name="month-filter"
+                                                  id={`month-filter-${month}`} // Add a unique id for each checkbox
+                                                  onChange={(e) =>
+                                                    handleMonthFilterChange(
+                                                      e,
+                                                      obj.year,
+                                                      month
+                                                    )
+                                                  } // Pass event, year, and month to the handler
+                                                />
+                                              </div>
+                                              <div className="month-val">
+                                                {month}
+                                              </div>
+                                            </div>
+                                          ))}
+                                      </>
+                                    ))}
+
                                   <div
                                     className="inco-subFilter"
                                     onClick={(e) => handleSort("none")}
@@ -1986,7 +2153,7 @@ function EmployeePanel() {
                                     </p>
                                   </div>
                                 </td>
-                                <td>{company["Company Email"]}</td>
+
                                 <td>
                                   {formatDate(
                                     company["Company Incorporation Date"]
@@ -1994,6 +2161,7 @@ function EmployeePanel() {
                                 </td>
                                 <td>{company["City"]}</td>
                                 <td>{company["State"]}</td>
+                                <td>{company["Company Email"]}</td>
                                 <td>{formatDate(company["AssignDate"])}</td>
 
                                 <td>
@@ -2620,155 +2788,163 @@ function EmployeePanel() {
       </Drawer>
       {/* Drawer for Follow Up Projection  */}
       <div>
-      <Drawer style={{top:'50px'}} anchor="right" open={openProjection} onClose={closeProjection}>
-        <div style={{ width: "31em"  }} className="container-xl">
-          <div className="header d-flex justify-content-between align-items-center">
-            <h1 style={{marginBottom:'0px'}} className="title">Projection Form</h1>
-            <IconButton
-              onClick={() => {
-                setIsEditProjection(true);
-              }}
-            >
-              <EditIcon color="primary"></EditIcon>
-            </IconButton>
-            
-          </div>
-          <hr style={{marginBottom:'10px'}} />
-          <div className="body-projection">
-            <div className="header mb-2" >
-              <strong style={{fontSize:'20px'}}>{projectingCompany}</strong>
-            </div>
-            <div className="label">
-              <strong>Offered Services :</strong>
-              <div className="services mb-3">
-                <Select
-                  // styles={{
-                  //   customStyles,
-                  //   container: (provided) => ({
-                  //     border: "1px solid #ffb900",
-                  //     borderRadius: "5px",
-                  //   }),
-                  // }}
-                  isMulti
-                  options={options}
-                  onChange={(selectedOptions) => {
-                    setSelectedValues(
-                      selectedOptions.map((option) => option.value)
-                    );
-                  }}
-                  value={selectedValues.map((value) => ({
-                    value,
-                    label: value,
-                  }))}
-                  placeholder="Select Services..."
-                  disabled={!isEditProjection}
-                />
-              </div>
-            </div>
-            <div className="label">
-              <strong>Offered prizes:</strong>
-              <div className="services mb-3">
-                <input
-                  type="number"
-                  className="form-control"
-                  placeholder="Please enter offered Prize"
-                  value={currentProjection.offeredPrize}
-                  onChange={(e) => {
-                    setCurrentProjection((prevLeadData) => ({
-                      ...prevLeadData,
-                      offeredPrize: e.target.value,
-                    }));
-                  }}
-                  disabled={!isEditProjection}
-                />
-              </div>
-            </div>
-            <div className="label">
-              <strong>Total Payment:</strong>
-              <div className="services mb-3">
-                <input
-                  type="number"
-                  className="form-control"
-                  placeholder="Please enter total Payment"
-                  value={currentProjection.totalPayment}
-                  onChange={(e) => {
-                    setCurrentProjection((prevLeadData) => ({
-                      ...prevLeadData,
-                      totalPayment: e.target.value,
-                    }));
-                  }}
-                  disabled={!isEditProjection}
-                />
-              </div>
-            </div>
-            <div className="label">
-              <strong>Last Follow Up Date:</strong>
-              <div className="services mb-3">
-                <input
-                  type="date"
-                  className="form-control"
-                  placeholder="Please enter offered Prize"
-                  value={currentProjection.lastFollowUpdate}
-                  onChange={(e) => {
-                    setCurrentProjection((prevLeadData) => ({
-                      ...prevLeadData,
-                      lastFollowUpdate: e.target.value,
-                    }));
-                  }}
-                  disabled={!isEditProjection}
-                />
-              </div>
-            </div>
-            <div className="label">
-              <strong>Payment Expected on:</strong>
-              <div className="services mb-3">
-                <input
-                  type="date"
-                  className="form-control"
-                  placeholder="Please enter Estimated Payment Date"
-                  value={currentProjection.estPaymentDate}
-                  onChange={(e) => {
-                    setCurrentProjection((prevLeadData) => ({
-                      ...prevLeadData,
-                      estPaymentDate: e.target.value,
-                    }));
-                  }}
-                  disabled={!isEditProjection}
-                />
-              </div>
-            </div>
-            <div className="label">
-              <strong>Remarks:</strong>
-              <div className="remarks mb-3">
-                <textarea
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter any Remarks"
-                  value={currentProjection.remarks}
-                  onChange={(e) => {
-                    setCurrentProjection((prevLeadData) => ({
-                      ...prevLeadData,
-                      remarks: e.target.value,
-                    }));
-                  }}
-                  disabled={!isEditProjection}
-                />
-              </div>
-            </div>
-            <div className="submitBtn">
-              <button
-                disabled={!isEditProjection}
-                onClick={handleProjectionSubmit}
-                style={{ width: "100%" }}
-                type="submit"
-                class="btn btn-primary mb-3"
+        <Drawer
+          style={{ top: "50px" }}
+          anchor="right"
+          open={openProjection}
+          onClose={closeProjection}
+        >
+          <div style={{ width: "31em" }} className="container-xl">
+            <div className="header d-flex justify-content-between align-items-center">
+              <h1 style={{ marginBottom: "0px" }} className="title">
+                Projection Form
+              </h1>
+              <IconButton
+                onClick={() => {
+                  setIsEditProjection(true);
+                }}
               >
-                Submit
-              </button>
+                <EditIcon color="primary"></EditIcon>
+              </IconButton>
+            </div>
+            <hr style={{ marginBottom: "10px" }} />
+            <div className="body-projection">
+              <div className="header mb-2">
+                <strong style={{ fontSize: "20px" }}>
+                  {projectingCompany}
+                </strong>
+              </div>
+              <div className="label">
+                <strong>Offered Services :</strong>
+                <div className="services mb-3">
+                  <Select
+                    // styles={{
+                    //   customStyles,
+                    //   container: (provided) => ({
+                    //     border: "1px solid #ffb900",
+                    //     borderRadius: "5px",
+                    //   }),
+                    // }}
+                    isMulti
+                    options={options}
+                    onChange={(selectedOptions) => {
+                      setSelectedValues(
+                        selectedOptions.map((option) => option.value)
+                      );
+                    }}
+                    value={selectedValues.map((value) => ({
+                      value,
+                      label: value,
+                    }))}
+                    placeholder="Select Services..."
+                    disabled={!isEditProjection}
+                  />
+                </div>
+              </div>
+              <div className="label">
+                <strong>Offered prizes:</strong>
+                <div className="services mb-3">
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Please enter offered Prize"
+                    value={currentProjection.offeredPrize}
+                    onChange={(e) => {
+                      setCurrentProjection((prevLeadData) => ({
+                        ...prevLeadData,
+                        offeredPrize: e.target.value,
+                      }));
+                    }}
+                    disabled={!isEditProjection}
+                  />
+                </div>
+              </div>
+              <div className="label">
+                <strong>Total Payment:</strong>
+                <div className="services mb-3">
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Please enter total Payment"
+                    value={currentProjection.totalPayment}
+                    onChange={(e) => {
+                      setCurrentProjection((prevLeadData) => ({
+                        ...prevLeadData,
+                        totalPayment: e.target.value,
+                      }));
+                    }}
+                    disabled={!isEditProjection}
+                  />
+                </div>
+              </div>
+              <div className="label">
+                <strong>Last Follow Up Date:</strong>
+                <div className="services mb-3">
+                  <input
+                    type="date"
+                    className="form-control"
+                    placeholder="Please enter offered Prize"
+                    value={currentProjection.lastFollowUpdate}
+                    onChange={(e) => {
+                      setCurrentProjection((prevLeadData) => ({
+                        ...prevLeadData,
+                        lastFollowUpdate: e.target.value,
+                      }));
+                    }}
+                    disabled={!isEditProjection}
+                  />
+                </div>
+              </div>
+              <div className="label">
+                <strong>Payment Expected on:</strong>
+                <div className="services mb-3">
+                  <input
+                    type="date"
+                    className="form-control"
+                    placeholder="Please enter Estimated Payment Date"
+                    value={currentProjection.estPaymentDate}
+                    onChange={(e) => {
+                      setCurrentProjection((prevLeadData) => ({
+                        ...prevLeadData,
+                        estPaymentDate: e.target.value,
+                      }));
+                    }}
+                    disabled={!isEditProjection}
+                  />
+                </div>
+              </div>
+              <div className="label">
+                <strong>Remarks:</strong>
+                <div className="remarks mb-3">
+                  <textarea
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter any Remarks"
+                    value={currentProjection.remarks}
+                    onChange={(e) => {
+                      setCurrentProjection((prevLeadData) => ({
+                        ...prevLeadData,
+                        remarks: e.target.value,
+                      }));
+                    }}
+                    disabled={!isEditProjection}
+                  />
+                </div>
+              </div>
+              <div className="submitBtn">
+                <button
+                  disabled={!isEditProjection}
+                  onClick={handleProjectionSubmit}
+                  style={{ width: "100%" }}
+                  type="submit"
+                  class="btn btn-primary mb-3"
+                >
+                  Submit
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </Drawer>
+        </Drawer>
       </div>
     </div>
   );

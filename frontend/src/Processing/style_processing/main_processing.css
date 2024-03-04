@@ -251,12 +251,7 @@
 }
 .rdrDefinedRangesWrapper {
     font-size: 10px;
-<<<<<<< HEAD
-    height: 340px;
-    display:none;
-=======
     height: 360px;
->>>>>>> baef448ae0993fc826c5693ac5179c93e715be3e
 }
 .firstClass{
     transition: transform 0.2s ease-in , box-shadow 0.2s ease-in-out;
