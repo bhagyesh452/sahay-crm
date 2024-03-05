@@ -66,6 +66,7 @@ function Dashboard_processing() {
       const response = await fetch(`${secretKey}/companies`);
       const data = await response.json();
       const companyData = data.companies
+      console.log(companyData)
       //console.log(companyData)
   
       // Extract unique booking dates from the fetched data

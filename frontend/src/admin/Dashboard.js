@@ -5,15 +5,20 @@ import axios from "axios";
 import Nodata from "../components/Nodata";
 import "../assets/styles.css";
 import { IconButton } from "@mui/material";
-import { DateRangePicker } from "react-date-range";
+
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconEye } from "@tabler/icons-react";
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import { DateRangePicker } from 'react-date-range';
+import { FaChevronDown } from "react-icons/fa6";
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
+import { lastDayOfDecade } from "date-fns";
 // import LoginAdmin from "./LoginAdmin";
 
 function Dashboard() {
@@ -38,10 +43,13 @@ function Dashboard() {
   const [companyData, setCompanyData] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [dateRange, setDateRange] = useState("by-today");
+
+  const [filteredDataDateRange, setFilteredDataDateRange] = useState([]);
   const [showUpdates, setShowUpdates] = useState(false);
   const [followData, setfollowData] = useState([]);
   const [openProjectionTable, setopenProjectionTable] = useState(false);
   const [projectedEmployee, setProjectedEmployee] = useState([]);
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -297,12 +305,15 @@ function Dashboard() {
     return accumulate;
   }, []);
 
+  console.log(companiesByEname)
+
+
   const totalcompaniesByEname = followData.reduce((accumulate, current) => {
     accumulate = accumulate.concat(current.companyName);
     return accumulate;
   }, []);
 
-  console.log(totalcompaniesByEname.length);
+  console.log(totalcompaniesByEname.length)
 
   function calculateSum(data) {
     const initialValue = {};
@@ -338,12 +349,28 @@ function Dashboard() {
     totalOfferedPaymentSum += sums[key].offeredPaymentSum;
   }
 
+  const lastFollowDate = followData.reduce((accumulate, current) => {
+    if (accumulate[current.ename]) {
+      if (Array.isArray(accumulate[current.ename])) {
+        accumulate[current.ename].push(current.lastFollowUpdate);
+      } else {
+        accumulate[current.ename] = [accumulate[current.ename], current.lastFollowUpdate];
+      }
+    } else {
+      accumulate[current.ename] = current.lastFollowUpdate;
+    }
+    return accumulate;
+  }, []);
+
+  console.log(lastFollowDate)
+
+
   //console.log("Total totalPaymentSum:", totalTotalPaymentSum);
   //console.log("Total offeredPaymentSum:", totalOfferedPaymentSum);
   const functionOpenProjectionTable = (ename) => {
-    console.log("Ename:", ename);
+    console.log("Ename:" , ename)
     setopenProjectionTable(true);
-    const projectedData = followData.filter((obj) => obj.ename === ename);
+    const projectedData = followData.filter(obj => obj.ename === ename);
     setProjectedEmployee(projectedData);
   };
   //console.log(projectedEmployee)
@@ -353,18 +380,12 @@ function Dashboard() {
   };
 
   function calculateSumPopup(data) {
-    const initialValue = {
-      totalPaymentSumPopup: 0,
-      offeredPaymentSumPopup: 0,
-      offeredServicesPopup: [],
-    };
-
+    const initialValue = { totalPaymentSumPopup: 0, offeredPaymentSumPopup: 0, offeredServicesPopup: [] };
+  
     const sum = data.reduce((accumulator, currentValue) => {
       // Concatenate offeredServices from each object into a single array
-      const offeredServicesPopup = accumulator.offeredServicesPopup.concat(
-        currentValue.offeredServices
-      );
-
+      const offeredServicesPopup = accumulator.offeredServicesPopup.concat(currentValue.offeredServices);
+      
       return {
         totalPaymentSumPopup:
           accumulator.totalPaymentSumPopup + currentValue.totalPayment,
@@ -387,35 +408,8 @@ function Dashboard() {
   //console.log(offeredPaymentSumPopup)
   // console.log(offeredServicesPopup)
 
-  //  const individualServices = [];
 
-  //  // Iterate over each object in filterBooking
-  //  filteredBooking.filter(boom=>boom.bdeName===tableEmployee).forEach(obj => {
-  //      // Extract services from the current object
-  //      const services = obj.services;
-  //      // Push the services array into individualServices array
-  //      individualServices.push(services);
-  //  });
 
-  // Use flatMap to extract all services into a single array
-  const allServices = filteredBooking
-    .filter((newObj) => newObj.bdeName === tableEmployee)
-    .flatMap((obj) => obj.services);
-
-  // Print the total array of all services
-
-  let totalCount = 0;
-
-  // Iterate over each string in the array
-  allServices.forEach((str) => {
-    // Split the string by commas and count the number of resulting elements
-    const servicesCount = str.split(",").length;
-    // Add the count to the total count
-    totalCount += servicesCount;
-  });
-
-  // Output: 5
-  // Print individual arrays of services
 
   return (
     <div>
@@ -951,16 +945,14 @@ function Dashboard() {
                         </tbody>
                         {employeeData.length !== 0 &&
                           companyData.length !== 0 && (
-                            <tfoot
-                              style={{
-                                position: "sticky", // Make the footer sticky
-                                bottom: -1, // Stick it at the bottom
-                                backgroundColor: "#f6f2e9",
-                                color: "black",
-                                fontWeight: 500,
-                                zIndex: 2, // Ensure it's above the content
-                              }}
-                            >
+                            <tfoot  style={{
+                              position: "sticky", // Make the footer sticky
+                              bottom: -1, // Stick it at the bottom
+                              backgroundColor: "#f6f2e9",
+                              color: "black",
+                              fontWeight: 500,
+                              zIndex: 2, // Ensure it's above the content
+                            }}>
                               <tr style={{ fontWeight: 500 }}>
                                 <td style={{ lineHeight: "32px" }} colSpan="2">
                                   Total
@@ -1592,9 +1584,25 @@ function Dashboard() {
 
       <div className="container-xl mt-2">
         <div className="card">
-          <div className="card-header">
-            <h2>Projection Dashboard</h2>
+          <div className="card-header d-flex align-items-center justify-content-between">
+            <div>
+              <h2>Projection Dashboard</h2>
+            </div>
+            <div><button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+              <FaChevronDown style={{ width: "14px", height: "14px", color: "#bcbaba", }} />
+            </button></div>
+            {displayDateRange && (
+              <div class="position-absolute" style={{ zIndex: "1", top: "15%", left: "75%" }} >
+                <DateRangePicker
+                  ranges={[selectionRange]}
+                  onClose={() => setDateRangeDisplay(false)}
+                  onChange={handleSelect}
+                />
+              </div>
+            )}
+
           </div>
+          <div></div>
           <div className="card-body">
             <div
               id="table-default"
@@ -1629,28 +1637,22 @@ function Dashboard() {
                       Sr. No
                     </th>
                     <th>Company Name</th>
+                    <th>Total Companies</th>
                     <th>Offered Services</th>
                     <th>Total Offered Price</th>
                     <th>Expected Amount</th>
-                    <th>Total Companies</th>
+                    <th>Last Followup Date</th>
+
                   </tr>
                 </thead>
                 <tbody>
                   {uniqueEnames &&
                     uniqueEnames.map((ename, index) => {
                       // Calculate the count of services for the current ename
-                      const serviceCount = servicesByEname[ename]
-                        ? servicesByEname[ename].length
-                        : 0;
-                      const companyCount = companiesByEname[ename]
-                        ? companiesByEname[ename].length
-                        : 0;
-                      const totalPaymentByEname = sums[ename]
-                        ? sums[ename].totalPaymentSum
-                        : 0;
-                      const offeredPrizeByEname = sums[ename]
-                        ? sums[ename].offeredPaymentSum
-                        : 0;
+                      const serviceCount = servicesByEname[ename] ? servicesByEname[ename].length : 0;
+                      const companyCount = companiesByEname[ename] ? companiesByEname[ename].length : 0;
+                      const totalPaymentByEname = sums[ename] ? sums[ename].totalPaymentSum : 0;
+                      const offeredPrizeByEname = sums[ename] ? sums[ename].offeredPaymentSum : 0;
 
                       return (
                         <tr key={`row-${index}`}>
@@ -1659,15 +1661,13 @@ function Dashboard() {
                           <td>{serviceCount}</td>
                           <td>{totalPaymentByEname.toLocaleString()}</td>
                           <td>{offeredPrizeByEname.toLocaleString()}</td>
-                          <td>
-                            {companyCount}
+                          <td>{companyCount}
                             <ViewListIcon
                               onClick={() => {
                                 functionOpenProjectionTable(ename);
                               }}
                               style={{ cursor: "pointer" }}
-                            />
-                          </td>
+                            /></td>
                         </tr>
                       );
                     })}
@@ -1675,22 +1675,24 @@ function Dashboard() {
                 {followData && (
                   <tfoot>
                     <tr style={{ fontWeight: 500 }}>
-                      <td style={{ lineHeight: "32px" }} colSpan="2">
-                        Total
+                      <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                      <td>{totalservicesByEname.length}
                       </td>
-                      <td>{totalservicesByEname.length}</td>
-                      <td>{totalTotalPaymentSum.toLocaleString()}</td>
-                      <td>{totalOfferedPaymentSum.toLocaleString()}</td>
-                      <td>{totalcompaniesByEname.length}</td>
+                      <td>{totalTotalPaymentSum.toLocaleString()}
+                      </td>
+                      <td>{totalOfferedPaymentSum.toLocaleString()}
+                      </td>
+                      <td>{totalcompaniesByEname.length}
+                      </td>
                     </tr>
                   </tfoot>
                 )}
+
               </table>
             </div>
           </div>
         </div>
       </div>
-
       <Dialog
         open={openProjectionTable}
         onClose={closeProjectionTable}
@@ -1740,34 +1742,35 @@ function Dashboard() {
               </thead>
               <tbody>
                 {/* Map through uniqueEnames array to render rows */}
-
-                {projectedEmployee &&
-                  projectedEmployee.map((obj, Index) => (
-                    <tr key={`sub-row-${Index}`}>
-                      <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                      {/* Render other employee data */}
-                      <td>{obj.ename}</td>
-                      <td>{obj.companyName}</td>
-                      <td>{obj.offeredServices.join(",")}</td>
-                      <td>{obj.totalPayment.toLocaleString()}</td>
-                      <td>{obj.offeredPrize.toLocaleString()}</td>
-                      <td>{obj.estPaymentDate}</td>
-                    </tr>
-                  ))}
+                
+                    {projectedEmployee && projectedEmployee.map((obj, Index) => (
+                      
+                      <tr key={`sub-row-${Index}`}>
+                        <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                        {/* Render other employee data */}
+                        <td>{obj.ename}</td>
+                        <td>{obj.companyName}</td>
+                        <td>{obj.offeredServices.join(',')}</td>
+                        <td>{obj.totalPayment.toLocaleString()}</td>
+                        <td>{obj.offeredPrize.toLocaleString()}</td> 
+                        <td>{obj.estPaymentDate}</td> 
+                      </tr>
+                    ))}
               </tbody>
               {projectedEmployee && (
                 <tfoot>
-                  <tr style={{ fontWeight: 500 }}>
-                    <td style={{ lineHeight: "32px" }} colSpan="2">
-                      Total
-                    </td>
-                    <td>{projectedEmployee.length}</td>
-                    <td>{offeredServicesPopup.length}</td>
-                    <td>{totalPaymentSumPopup.toLocaleString()}</td>
-                    <td>{offeredPaymentSumPopup.toLocaleString()}</td>
-                    <td>-</td>
-                  </tr>
-                </tfoot>
+                <tr style={{ fontWeight: 500 }}>
+                  <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                  <td>{projectedEmployee.length}</td>
+                  <td>{offeredServicesPopup.length}
+                  </td>
+                  <td>{totalPaymentSumPopup.toLocaleString()}
+                  </td>
+                  <td>{offeredPaymentSumPopup.toLocaleString()}
+                  </td>
+                  <td>-</td>
+                </tr>
+              </tfoot>
               )}
             </table>
           </div>
