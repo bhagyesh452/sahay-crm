@@ -311,6 +311,21 @@ app.post("/api/update-remarks/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+app.delete("/api/delete-remarks-history/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Update remarks and fetch updated data in a single operation
+  
+
+    // Fetch updated data and remarks history
+    const remarksHistory = await RemarksHistory.findByIdAndDelete({ companyId: id });
+
+    res.status(200).json({ updatedCompany, remarksHistory });
+  } catch (error) {
+    console.error("Error updating remarks:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 app.delete('/api/remarks-delete/:companyId', async (req, res) => {
   const { companyId } = req.params;
@@ -362,7 +377,8 @@ app.get('/api/projection-data', async (req, res) => {
   try {
     // Fetch all data from the FollowUpModel
     const followUps = await FollowUpModel.find();
-    
+    console.log(followUps)
+    //console.log(query)
     // Return the data as JSON response
     res.json(followUps);
   } catch (error) {
@@ -371,6 +387,24 @@ app.get('/api/projection-data', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
+app.get('/api/projection-data/:ename', async (req, res) => {
+  try {
+    const ename = req.params.ename;
+    // Fetch data from the FollowUpModel based on the employeeName if provided
+    const followUps = await FollowUpModel.find({ename : ename});
+    // Return the data as JSON response
+    res.json(followUps);
+  } catch (error) {
+    // If there's an error, send a 500 internal server error response
+    console.error('Error fetching FollowUp data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
 // Backend API to update or add data to FollowUpModel
 app.post('/api/update-followup', async (req, res) => {
   try {
@@ -601,12 +635,16 @@ app.post("/api/assign-new", async (req, res) => {
     // Update CompanyModel for the specific data
     await CompanyModel.updateOne({ _id: data._id }, updatedObj);
 
+    // Delete objects from RemarksHistory collection that match the "Company Name"
+    await RemarksHistory.deleteMany({ companyID : data._id });
+
     res.status(200).json({ message: "Data updated successfully" });
   } catch (error) {
     console.error("Error updating data:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 app.post("/api/company", async (req, res) => {
   const { newemployeeSelection, csvdata } = req.body;

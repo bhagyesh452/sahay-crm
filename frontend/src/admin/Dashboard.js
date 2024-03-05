@@ -5,7 +5,7 @@ import axios from "axios";
 import Nodata from "../components/Nodata";
 import "../assets/styles.css";
 import { IconButton } from "@mui/material";
-import { DateRangePicker } from 'react-date-range';
+import { DateRangePicker } from "react-date-range";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
@@ -21,8 +21,8 @@ function Dashboard() {
     {
       startDate: new Date(),
       endDate: new Date(),
-      key: 'selection'
-    }
+      key: "selection",
+    },
   ]);
   const [bookingObject, setBookingObject] = useState([]);
   const [buttonToggle, setButtonToggle] = useState(false);
@@ -30,7 +30,7 @@ function Dashboard() {
   const [endDate, setEndDate] = useState(new Date());
   const [openTable, setOpenTable] = useState(false);
   const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
-  const [displayDateRange, setDateRangeDisplay] = useState(false)
+  const [displayDateRange, setDateRangeDisplay] = useState(false);
   const [filteredBooking, setFilteredBooking] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [expand, setExpand] = useState(null);
@@ -38,6 +38,9 @@ function Dashboard() {
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [dateRange, setDateRange] = useState("by-today");
   const [showUpdates, setShowUpdates] = useState(false);
+  const [followData, setfollowData] = useState([]);
+  const [openProjectionTable, setopenProjectionTable] = useState(false);
+  const [projectedEmployee, setProjectedEmployee] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -97,7 +100,6 @@ function Dashboard() {
         console.error("Error Fetching Booking Details", error.message);
       }
     };
-   
 
     // Call the fetchData function when the component mounts
     fetchData();
@@ -207,7 +209,7 @@ function Dashboard() {
     setExpand(index);
   };
   // Now finalFilteredData contains an array of objects with unique bdeNames
-
+  console.log("unique bde", uniqueBdeNames);
   const functionOpenTable = () => {
     setOpenTable(true);
   };
@@ -236,10 +238,184 @@ function Dashboard() {
     selectedEmployee !== "" &&
     companyData.filter((obj) => obj.ename === selectedEmployee);
 
-    const currentDate = new Date();
+  // -----------------------------------projection-data--------------------------------------
 
+  const fetchFollowUpData = async () => {
+    try {
+      const response = await fetch(`${secretKey}/projection-data`);
+      const followdata = await response.json();
+      setfollowData(followdata);
+      console.log(followData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return { error: "Error fetching data" };
+    }
+  };
 
- 
+  useEffect(() => {
+    fetchFollowUpData();
+  }, []);
+
+  const uniqueEnames = [...new Set(followData.map((item) => item.ename))];
+
+  const servicesByEname = followData.reduce((acc, curr) => {
+    // Check if ename already exists in the accumulator
+    if (acc[curr.ename]) {
+      // If exists, concatenate the services array
+      acc[curr.ename] = acc[curr.ename].concat(curr.offeredServices);
+    } else {
+      // If not exists, create a new entry with the services array
+      acc[curr.ename] = curr.offeredServices;
+    }
+    return acc;
+  }, []);
+
+  //console.log(servicesByEname)
+
+  const totalservicesByEname = followData.reduce((acc, curr) => {
+    // Concatenate all offeredServices into a single array
+    acc = acc.concat(curr.offeredServices);
+    return acc;
+  }, []);
+
+  //console.log(totalservicesByEname);
+
+  const companiesByEname = followData.reduce((accumulate, current) => {
+    if (accumulate[current.ename]) {
+      if (Array.isArray(accumulate[current.ename])) {
+        accumulate[current.ename].push(current.companyName);
+      } else {
+        accumulate[current.ename] = [
+          accumulate[current.ename],
+          current.companyName,
+        ];
+      }
+    } else {
+      accumulate[current.ename] = current.companyName;
+    }
+    return accumulate;
+  }, []);
+
+  const totalcompaniesByEname = followData.reduce((accumulate, current) => {
+    accumulate = accumulate.concat(current.companyName);
+    return accumulate;
+  }, []);
+
+  console.log(totalcompaniesByEname.length);
+
+  function calculateSum(data) {
+    const initialValue = {};
+
+    const sum = data.reduce((accumulator, current) => {
+      const { ename, totalPayment, offeredPrize } = current;
+
+      // If the ename already exists in the accumulator, accumulate the totalPayment and offeredPrize
+      if (accumulator[ename]) {
+        accumulator[ename].totalPaymentSum += totalPayment;
+        accumulator[ename].offeredPaymentSum += offeredPrize;
+      } else {
+        // If the ename does not exist in the accumulator, initialize it
+        accumulator[ename] = {
+          totalPaymentSum: totalPayment,
+          offeredPaymentSum: offeredPrize,
+        };
+      }
+      return accumulator;
+    }, initialValue);
+
+    return sum;
+  }
+
+  // Calculate the sums
+  const sums = calculateSum(followData);
+
+  let totalTotalPaymentSum = 0;
+  let totalOfferedPaymentSum = 0;
+
+  for (const key in sums) {
+    totalTotalPaymentSum += sums[key].totalPaymentSum;
+    totalOfferedPaymentSum += sums[key].offeredPaymentSum;
+  }
+
+  //console.log("Total totalPaymentSum:", totalTotalPaymentSum);
+  //console.log("Total offeredPaymentSum:", totalOfferedPaymentSum);
+  const functionOpenProjectionTable = (ename) => {
+    console.log("Ename:", ename);
+    setopenProjectionTable(true);
+    const projectedData = followData.filter((obj) => obj.ename === ename);
+    setProjectedEmployee(projectedData);
+  };
+  //console.log(projectedEmployee)
+
+  const closeProjectionTable = () => {
+    setopenProjectionTable(false);
+  };
+
+  function calculateSumPopup(data) {
+    const initialValue = {
+      totalPaymentSumPopup: 0,
+      offeredPaymentSumPopup: 0,
+      offeredServicesPopup: [],
+    };
+
+    const sum = data.reduce((accumulator, currentValue) => {
+      // Concatenate offeredServices from each object into a single array
+      const offeredServicesPopup = accumulator.offeredServicesPopup.concat(
+        currentValue.offeredServices
+      );
+
+      return {
+        totalPaymentSumPopup:
+          accumulator.totalPaymentSumPopup + currentValue.totalPayment,
+        offeredPaymentSumPopup:
+          accumulator.offeredPaymentSumPopup + currentValue.offeredPrize,
+        offeredServicesPopup: offeredServicesPopup,
+      };
+    }, initialValue);
+
+    // // Remove duplicate services from the array
+    // sum.offeredServices = Array.from(new Set(sum.offeredServices));
+
+    return sum;
+  }
+
+  // Calculate the sums
+  const { totalPaymentSumPopup, offeredPaymentSumPopup, offeredServicesPopup } =
+    calculateSumPopup(projectedEmployee);
+  //console.log(totalPaymentSumPopup)
+  //console.log(offeredPaymentSumPopup)
+  // console.log(offeredServicesPopup)
+
+  //  const individualServices = [];
+
+  //  // Iterate over each object in filterBooking
+  //  filteredBooking.filter(boom=>boom.bdeName===tableEmployee).forEach(obj => {
+  //      // Extract services from the current object
+  //      const services = obj.services;
+  //      // Push the services array into individualServices array
+  //      individualServices.push(services);
+  //  });
+
+  // Use flatMap to extract all services into a single array
+  const allServices = filteredBooking
+    .filter((newObj) => newObj.bdeName === tableEmployee)
+    .flatMap((obj) => obj.services);
+
+  // Print the total array of all services
+
+  let totalCount = 0;
+
+  // Iterate over each string in the array
+  allServices.forEach((str) => {
+    // Split the string by commas and count the number of resulting elements
+    const servicesCount = str.split(",").length;
+    // Add the count to the total count
+    totalCount += servicesCount;
+  });
+
+  // Output: 5
+  // Print individual arrays of services
+  console.log("individual", totalCount);
 
   return (
     <div>
@@ -297,7 +473,7 @@ function Dashboard() {
                   </div>
                   <div className="filter d-flex align-items-center">
                     <strong>Filter By :</strong>
-                   
+
                     <div className="filter-by">
                       <select
                         value={dateRange}
@@ -424,7 +600,7 @@ function Dashboard() {
                                   <td>
                                     {" "}
                                     {
-                                     ( filteredBooking
+                                      filteredBooking
                                         .filter(
                                           (data) => data.bdeName === obj.bdeName
                                         ) // Filter objects with bdeName same as myName
@@ -440,12 +616,13 @@ function Dashboard() {
                                               ? obj1.totalPayment / 2
                                               : 0)
                                           );
-                                        }, 0)).toLocaleString() // Initialize totalPayments as 0
+                                        }, 0)
+                                        .toLocaleString() // Initialize totalPayments as 0
                                     }
                                   </td>
                                   <td>
                                     {
-                                      (filteredBooking
+                                      filteredBooking
                                         .filter(
                                           (data) => data.bdeName === obj.bdeName
                                         ) // Filter objects with bdeName same as obj.bdeName
@@ -461,12 +638,13 @@ function Dashboard() {
                                               ? obj1.firstPayment // If bdeName and bdmName are the same
                                               : obj1.firstPayment / 2) // If bdeName and bdmName are different
                                           );
-                                        }, 0)).toLocaleString() // Initialize totalPayments as 0
+                                        }, 0)
+                                        .toLocaleString() // Initialize totalPayments as 0
                                     }
                                   </td>
                                   <td>
                                     {
-                                      (filteredBooking
+                                      filteredBooking
                                         .filter(
                                           (data) => data.bdeName === obj.bdeName
                                         ) // Filter objects with bdeName same as obj.bdeName
@@ -483,7 +661,8 @@ function Dashboard() {
                                                   obj1.firstPayment // If bdeName and bdmName are different
                                               : 0) // If bdeName and bdmName are different
                                           );
-                                        }, 0)).toLocaleString() // Initialize totalPayments as 0
+                                        }, 0)
+                                        .toLocaleString() // Initialize totalPayments as 0
                                     }
                                   </td>
                                 </tr>
@@ -517,19 +696,21 @@ function Dashboard() {
                               </td>
 
                               <td>
-                                {(filteredBooking.reduce((totalPayment, obj) => {
-                                  // Add the totalPayment of the current object to the totalPayment accumulator
-                                  const finalPayment =
-                                    obj.bdeName === obj.bdmName
-                                      ? obj.totalPayment
-                                      : obj.totalPayment / 2;
-                                  return totalPayment + finalPayment;
-                                }, 0)).toLocaleString()}
+                                {filteredBooking
+                                  .reduce((totalPayment, obj) => {
+                                    // Add the totalPayment of the current object to the totalPayment accumulator
+                                    const finalPayment =
+                                      obj.bdeName === obj.bdmName
+                                        ? obj.totalPayment
+                                        : obj.totalPayment / 2;
+                                    return totalPayment + finalPayment;
+                                  }, 0)
+                                  .toLocaleString()}
                               </td>
 
                               <td>
-                                {(filteredBooking.reduce(
-                                  (totalFirstPayment, obj) => {
+                                {filteredBooking
+                                  .reduce((totalFirstPayment, obj) => {
                                     // If firstPayment is 0, count totalPayment instead
                                     const paymentToAdd =
                                       obj.firstPayment === 0
@@ -541,13 +722,12 @@ function Dashboard() {
                                         : obj.firstPayment / 2;
                                     // Add the paymentToAdd to the totalFirstPayment accumulator
                                     return totalFirstPayment + paymentToAdd;
-                                  },
-                                  0
-                                )).toLocaleString()}
+                                  }, 0)
+                                  .toLocaleString()}
                               </td>
                               <td>
-                                {(filteredBooking.reduce(
-                                  (totalFirstPayment, obj) => {
+                                {filteredBooking
+                                  .reduce((totalFirstPayment, obj) => {
                                     // If firstPayment is 0, count totalPayment instead
 
                                     const paymentToAdd =
@@ -561,9 +741,8 @@ function Dashboard() {
 
                                     // Add the paymentToAdd to the totalFirstPayment accumulator
                                     return totalFirstPayment + paymentToAdd;
-                                  },
-                                  0
-                                )).toLocaleString()}
+                                  }, 0)
+                                  .toLocaleString()}
                               </td>
                             </tr>
                           </tfoot>
@@ -609,10 +788,19 @@ function Dashboard() {
                         }}
                         className="table-vcenter table-nowrap"
                       >
+                        {/* <thead>
+                          <tr
+                            style={{
+                              backgroundColor: "#ffb900",
+                              color: "white",
+                              fontWeight: "bold",
+
+                            }}
+                          > */}
                         <thead
                           style={{
                             position: "sticky", // Make the header sticky
-                            top: '-1px', // Stick it at the top
+                            top: "-1px", // Stick it at the top
                             backgroundColor: "#ffb900",
                             color: "black",
                             fontWeight: "bold",
@@ -652,7 +840,7 @@ function Dashboard() {
                                     }}
                                     key={`row-${index}-1`}
                                   >
-                                    {index +1}
+                                    {index + 1}
                                   </td>
                                   <td key={`row-${index}-2`}>{obj.ename}</td>
                                   <td key={`row-${index}-3`}>
@@ -763,14 +951,16 @@ function Dashboard() {
                         </tbody>
                         {employeeData.length !== 0 &&
                           companyData.length !== 0 && (
-                            <tfoot  style={{
-                              position: "sticky", // Make the footer sticky
-                              bottom: -1, // Stick it at the bottom
-                              backgroundColor: "#f6f2e9",
-                              color: "black",
-                              fontWeight: 500,
-                              zIndex: 2, // Ensure it's above the content
-                            }}>
+                            <tfoot
+                              style={{
+                                position: "sticky", // Make the footer sticky
+                                bottom: -1, // Stick it at the bottom
+                                backgroundColor: "#f6f2e9",
+                                color: "black",
+                                fontWeight: 500,
+                                zIndex: 2, // Ensure it's above the content
+                              }}
+                            >
                               <tr style={{ fontWeight: 500 }}>
                                 <td style={{ lineHeight: "32px" }} colSpan="2">
                                   Total
@@ -872,12 +1062,14 @@ function Dashboard() {
               className="table-vcenter table-nowrap"
             >
               <thead stSyle={{ backgroundColor: "grey" }}>
-                <tr  style={{
-                            backgroundColor: "#ffb900",
-                            color: "black",
-                            fontWeight: "bold",
-                          }}>
-                  <th style={{lineHeight:'32px'}}>SR.NO</th>
+                <tr
+                  style={{
+                    backgroundColor: "#ffb900",
+                    color: "black",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <th style={{ lineHeight: "32px" }}>SR.NO</th>
                   <th>BOOKING DATE & TIME</th>
                   <th>BDE NAME</th>
                   <th>COMPANY NAME</th>
@@ -898,7 +1090,7 @@ function Dashboard() {
                   .map((mainObj, index) => (
                     <>
                       <tr>
-                        <td style={{lineHeight:'32px'}}>{index + 1}</td>
+                        <td style={{ lineHeight: "32px" }}>{index + 1}</td>
                         <td>{`${formatDate(mainObj.bookingDate)}(${
                           mainObj.bookingTime
                         })`}</td>
@@ -908,29 +1100,32 @@ function Dashboard() {
                         <td>{mainObj.companyEmail}</td>
                         <td>{mainObj.services[0]}</td>
                         <td>
-                          {mainObj.bdeName !== mainObj.bdmName
+                          {(mainObj.bdeName !== mainObj.bdmName
                             ? mainObj.totalPayment / 2
-                            : mainObj.totalPayment}
+                            : mainObj.totalPayment
+                          ).toLocaleString()}
                         </td>
                         <td>
                           {
-                            mainObj.firstPayment !== 0
+                            (mainObj.firstPayment !== 0
                               ? mainObj.bdeName === mainObj.bdmName
                                 ? mainObj.firstPayment // If bdeName and bdmName are the same
                                 : mainObj.firstPayment / 2 // If bdeName and bdmName are different
                               : mainObj.bdeName === mainObj.bdmName
                               ? mainObj.totalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                              : mainObj.totalPayment / 2 // If firstPayment is 0 and bdeName and bdmName are different
+                              : mainObj.totalPayment / 2
+                            ).toLocaleString() // If firstPayment is 0 and bdeName and bdmName are different
                           }
                         </td>
                         <td>
                           {" "}
-                          {mainObj.firstPayment !== 0
+                          {(mainObj.firstPayment !== 0
                             ? mainObj.bdeName === mainObj.bdmName
                               ? mainObj.totalPayment - mainObj.firstPayment
                               : (mainObj.totalPayment - mainObj.firstPayment) /
                                 2
-                            : 0}{" "}
+                            : 0
+                          ).toLocaleString()}{" "}
                         </td>
                         <td>
                           {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
@@ -956,7 +1151,9 @@ function Dashboard() {
                       {expand === index && (
                         <>
                           <tr>
-                            <td style={{lineHeight:'32px'}}>{`${index + 1}(${1})`}</td>
+                            <td style={{ lineHeight: "32px" }}>{`${
+                              index + 1
+                            }(${1})`}</td>
                             <td>{`${formatDate(mainObj.bookingDate)}(${
                               mainObj.bookingTime
                             })`}</td>
@@ -965,20 +1162,25 @@ function Dashboard() {
                             <td>{mainObj.contactNumber}</td>
                             <td>{mainObj.companyEmail}</td>
                             <td>{mainObj.services[0]}</td>
-                            <td> {mainObj.totalPayment / 2} </td>
                             <td>
-                              {mainObj.firstPayment !== 0
-                                ? mainObj.firstPayment / 2
-                                : mainObj.totalPayment / 2}{" "}
+                              {" "}
+                              {(mainObj.totalPayment / 2).toLocaleString()}{" "}
                             </td>
                             <td>
-                              {mainObj.firstPayment !== 0
+                              {(mainObj.firstPayment !== 0
+                                ? mainObj.firstPayment / 2
+                                : mainObj.totalPayment / 2
+                              ).toLocaleString()}{" "}
+                            </td>
+                            <td>
+                              {(mainObj.firstPayment !== 0
                                 ? mainObj.bdeName === mainObj.bdmName
                                   ? mainObj.totalPayment - mainObj.firstPayment
                                   : (mainObj.totalPayment -
                                       mainObj.firstPayment) /
                                     2
-                                : 0}{" "}
+                                : 0
+                              ).toLocaleString()}{" "}
                             </td>
                             <td>{"Yes"}</td>
                             <td>{`${mainObj.bdeName}'s Case`}</td>
@@ -989,6 +1191,66 @@ function Dashboard() {
                     </>
                   ))}
               </tbody>
+              <tfoot>
+                <tr>
+                  <th colSpan={3}>
+                    <strong>Total</strong>
+                  </th>
+                  <th>
+                    -
+                  </th>
+                  <th>-</th>
+                  <th>-</th>
+                  <th>-</th>
+                  <th>
+                    {filteredBooking
+                      .filter((data) => data.bdeName === tableEmployee)
+                      .reduce((total, obj) => {
+                        return obj.bdeName === obj.bdmName
+                          ? total + obj.totalPayment
+                          : total + obj.totalPayment / 2;
+                      }, 0)
+                      .toLocaleString()}
+                  </th>
+                  <th>
+                    {filteredBooking
+                      .filter((data) => data.bdeName === tableEmployee)
+                      .reduce((total, obj) => {
+                        return obj.bdeName === obj.bdmName
+                          ? obj.firstPayment === 0
+                            ? total + obj.totalPayment
+                            : total + obj.firstPayment
+                          : obj.firstPayment === 0
+                          ? total + obj.totalPayment / 2
+                          : total + obj.firstPayment / 2;
+                      }, 0)
+                      .toLocaleString()}
+                  </th>
+                  <th>
+                    {filteredBooking
+                      .filter((data) => data.bdeName === tableEmployee)
+                      .reduce((total, obj) => {
+                        return obj.bdeName === obj.bdmName
+                          ? obj.firstPayment === 0
+                            ? 0
+                            : total + (obj.totalPayment - obj.firstPayment)
+                          : obj.firstPayment === 0
+                          ? 0
+                          : total + (obj.totalPayment - obj.firstPayment) / 2;
+                      }, 0)
+                      .toLocaleString()}
+                  </th>
+                  <th>
+                   -
+                  </th>
+                  <th>
+                   -
+                  </th>
+                  <th>
+                   -
+                  </th>
+                </tr>
+              </tfoot>
             </table>
           </div>
         </DialogContent>
@@ -1147,6 +1409,11 @@ function Dashboard() {
                       style={{
                         lineHeight: "32px",
                       }}
+                    ></td>
+                    <td
+                      style={{
+                        lineHeight: "32px",
+                      }}
                     >
                       {
                         properCompanyData.filter(
@@ -1197,6 +1464,192 @@ function Dashboard() {
                       }
                     </td>
                     <td>{properCompanyData.length}</td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* -------------------------------------projection-dashboard--------------------------------------------- */}
+
+      <div className="container-xl mt-2">
+        <div className="card">
+          <div className="card-header">
+            <h2>Projection Dashboard</h2>
+          </div>
+          <div className="card-body">
+            <div
+              id="table-default"
+              style={{
+                overflowX: "auto",
+                overflowY: "auto",
+                maxHeight: "60vh",
+              }}
+            >
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  border: "1px solid #ddd",
+                  marginBottom: "10px",
+                }}
+                className="table-vcenter table-nowrap"
+              >
+                <thead stSyle={{ backgroundColor: "grey" }}>
+                  <tr
+                    style={{
+                      backgroundColor: "#ffb900",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <th
+                      style={{
+                        lineHeight: "32px",
+                      }}
+                    >
+                      Sr. No
+                    </th>
+                    <th>Company Name</th>
+                    <th>Offered Services</th>
+                    <th>Total Offered Price</th>
+                    <th>Expected Amount</th>
+                    <th>Total Companies</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {uniqueEnames &&
+                    uniqueEnames.map((ename, index) => {
+                      // Calculate the count of services for the current ename
+                      const serviceCount = servicesByEname[ename]
+                        ? servicesByEname[ename].length
+                        : 0;
+                      const companyCount = companiesByEname[ename]
+                        ? companiesByEname[ename].length
+                        : 0;
+                      const totalPaymentByEname = sums[ename]
+                        ? sums[ename].totalPaymentSum
+                        : 0;
+                      const offeredPrizeByEname = sums[ename]
+                        ? sums[ename].offeredPaymentSum
+                        : 0;
+
+                      return (
+                        <tr key={`row-${index}`}>
+                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                          <td>{ename}</td>
+                          <td>{serviceCount}</td>
+                          <td>{totalPaymentByEname.toLocaleString()}</td>
+                          <td>{offeredPrizeByEname.toLocaleString()}</td>
+                          <td>
+                            {companyCount}
+                            <ViewListIcon
+                              onClick={() => {
+                                functionOpenProjectionTable(ename);
+                              }}
+                              style={{ cursor: "pointer" }}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+                {followData && (
+                  <tfoot>
+                    <tr style={{ fontWeight: 500 }}>
+                      <td style={{ lineHeight: "32px" }} colSpan="2">
+                        Total
+                      </td>
+                      <td>{totalservicesByEname.length}</td>
+                      <td>{totalTotalPaymentSum.toLocaleString()}</td>
+                      <td>{totalOfferedPaymentSum.toLocaleString()}</td>
+                      <td>{totalcompaniesByEname.length}</td>
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Dialog
+        open={openProjectionTable}
+        onClose={closeProjectionTable}
+        fullWidth
+        maxWidth="lg"
+      >
+        <DialogContent>
+          <div
+            id="table-default"
+            style={{
+              overflowX: "auto",
+              overflowY: "auto",
+              maxHeight: "60vh",
+            }}
+          >
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                border: "1px solid #ddd",
+                marginBottom: "10px",
+              }}
+              className="table-vcenter table-nowrap"
+            >
+              <thead stSyle={{ backgroundColor: "grey" }}>
+                <tr
+                  style={{
+                    backgroundColor: "#ffb900",
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <th
+                    style={{
+                      lineHeight: "32px",
+                    }}
+                  >
+                    Sr. No
+                  </th>
+                  <th>BDE Name</th>
+                  <th>Company Name</th>
+                  <th>Offered Services</th>
+                  <th>Total Offered Price</th>
+                  <th>Expected Amount</th>
+                  <th>Employee Projection Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Map through uniqueEnames array to render rows */}
+
+                {projectedEmployee &&
+                  projectedEmployee.map((obj, Index) => (
+                    <tr key={`sub-row-${Index}`}>
+                      <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                      {/* Render other employee data */}
+                      <td>{obj.ename}</td>
+                      <td>{obj.companyName}</td>
+                      <td>{obj.offeredServices.join(",")}</td>
+                      <td>{obj.totalPayment.toLocaleString()}</td>
+                      <td>{obj.offeredPrize.toLocaleString()}</td>
+                      <td>{obj.estPaymentDate}</td>
+                    </tr>
+                  ))}
+              </tbody>
+              {projectedEmployee && (
+                <tfoot>
+                  <tr style={{ fontWeight: 500 }}>
+                    <td style={{ lineHeight: "32px" }} colSpan="2">
+                      Total
+                    </td>
+                    <td>{projectedEmployee.length}</td>
+                    <td>{offeredServicesPopup.length}</td>
+                    <td>{totalPaymentSumPopup.toLocaleString()}</td>
+                    <td>{offeredPaymentSumPopup.toLocaleString()}</td>
+                    <td>-</td>
                   </tr>
                 </tfoot>
               )}

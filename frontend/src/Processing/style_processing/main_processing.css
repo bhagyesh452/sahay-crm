@@ -251,6 +251,8 @@
 }
 .rdrDefinedRangesWrapper {
     font-size: 10px;
+    height: 340px;
+    display:none;
     height: 360px;
 }
 .firstClass{

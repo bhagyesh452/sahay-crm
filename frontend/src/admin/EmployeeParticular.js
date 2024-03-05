@@ -457,7 +457,7 @@ function EmployeeParticular() {
 
     const csvdata = employeeData
       .filter((employee) => selectedRows.includes(employee._id))
-      .map((employee) => ({ ...employee, Status: "Untouched" }));
+      .map((employee) => ({ ...employee, Status: "Untouched" , Remarks : "No Remarks Added" }));
 
     // Create an array to store promises for updating CompanyModel
     const updatePromises = [];
@@ -1621,7 +1621,7 @@ function EmployeeParticular() {
         maxWidth="sm"
       >
         <DialogTitle>
-          Import CSV DATA{" "}
+          Change BDE{" "}
           <IconButton onClick={closepopupAssign} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
           </IconButton>{" "}
