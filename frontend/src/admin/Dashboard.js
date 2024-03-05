@@ -872,8 +872,12 @@ function Dashboard() {
               className="table-vcenter table-nowrap"
             >
               <thead stSyle={{ backgroundColor: "grey" }}>
-                <tr>
-                  <th>SR.NO</th>
+                <tr  style={{
+                            backgroundColor: "#ffb900",
+                            color: "black",
+                            fontWeight: "bold",
+                          }}>
+                  <th style={{lineHeight:'32px'}}>SR.NO</th>
                   <th>BOOKING DATE & TIME</th>
                   <th>BDE NAME</th>
                   <th>COMPANY NAME</th>
@@ -894,7 +898,7 @@ function Dashboard() {
                   .map((mainObj, index) => (
                     <>
                       <tr>
-                        <td>{index + 1}</td>
+                        <td style={{lineHeight:'32px'}}>{index + 1}</td>
                         <td>{`${formatDate(mainObj.bookingDate)}(${
                           mainObj.bookingTime
                         })`}</td>
@@ -952,7 +956,7 @@ function Dashboard() {
                       {expand === index && (
                         <>
                           <tr>
-                            <td>{`${index + 1}(${1})`}</td>
+                            <td style={{lineHeight:'32px'}}>{`${index + 1}(${1})`}</td>
                             <td>{`${formatDate(mainObj.bookingDate)}(${
                               mainObj.bookingTime
                             })`}</td>
