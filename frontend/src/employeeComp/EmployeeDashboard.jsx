@@ -366,7 +366,7 @@ function EmployeeDashboard() {
                         }}>{index + 1}</td>
                         <td>{obj.companyName}</td>
                         <td>{obj.offeredServices.join(', ')}</td>
-                        <td>{obj.totalPayment.toLocaleString()}
+                        <td>{obj.totalPayment  && obj.totalPayment.toLocaleString()}
                         </td>
                         <td>{obj.offeredPrize.toLocaleString()}
                         </td>

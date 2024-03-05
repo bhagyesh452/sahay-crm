@@ -515,7 +515,7 @@ const Analysis_dashboard = () => {
         } else {
             data = companiesToday;
         }
-        console.log(data)
+        //console.log(data)
         // Iterate through each object in the array
         data.forEach(obj => {
             // Split the services string into an array of individual services
@@ -538,7 +538,7 @@ const Analysis_dashboard = () => {
     const countedServicesToday = countServicesToday();
 
     const serviceArrayToday = Object.entries(countedServicesToday).map(([service, count]) => ({ service, count }));
-    console.log(serviceArrayToday)
+    //console.log(serviceArrayToday)
 
 
 

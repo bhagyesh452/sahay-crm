@@ -24,7 +24,7 @@ function CompanyList({ companies, onCompanyClick }) {
   const [enames, setEnames] = useState([])
   const [searchServices, setSearchServices] = useState(false)
   const [selectedValues, setSelectedValues] = useState([]);
- 
+
 
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -209,7 +209,7 @@ function CompanyList({ companies, onCompanyClick }) {
       setDateRangeDisplay(false);
     }
   };
- 
+
 
   const FilteredData = companies.filter((company) => {
     const fieldValue = company[selectedField];
@@ -295,6 +295,9 @@ function CompanyList({ companies, onCompanyClick }) {
   // Slice the companies array to get the companies for the current page
   const currentCompanies = FilteredData.slice(indexOfFirstCompany, indexOfLastCompany);
 
+  console.log(currentCompanies)
+
+
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -366,14 +369,14 @@ function CompanyList({ companies, onCompanyClick }) {
           )}
         </div>
         {searchServices && (<div className="input-icon w-100 d-flex align-items-center mt-2 searchServices">
-          <Select 
+          <Select
             styles={{
               customStyles,
               // Add custom styles here
               container: (provided) => ({
                 ...provided,
                 // display: 'flex !important',
-               // Apply display: flex with !important
+                // Apply display: flex with !important
                 // Add other custom styles as needed
               }),
               // Add other styles as needed
@@ -419,7 +422,7 @@ function CompanyList({ companies, onCompanyClick }) {
       </div>
 
       {companies !== null && companies.length > 0 ? (
-        <div className="list-group list-group-flush list-group-hoverable cmpy-list-body cursor-pointer">
+        <div className="list-group list-group-flush list-group-hoverable cmpy-list-body cursor-pointer w-100">
           {currentCompanies.map((company, index) => (
             <div
               className={`${companyClasses[company.companyName] || "list-group-item list-group-item-action"}`}
@@ -431,27 +434,58 @@ function CompanyList({ companies, onCompanyClick }) {
                 fontFamily: company.red === false && "Merriweather, serif"
               }}
             >
-              <div className="align-items-center" onClick={() => handleCompanyClick(company.companyName, company._id)} >
-                <div className="p-booking-Cname d-flex align-items-center" >
+              <div className="align-items-center w-100" onClick={() => handleCompanyClick(company.companyName, company._id)} >
+                <div className="p-booking-Cname d-flex align-items-center w-100" style={{    backgroundColor: "#eee"}}  >
                   <h4 className="m-0" title={company.companyName}>
                     {company.companyName}
                   </h4>
                   <div className="d-flex align-items-center justify-content-between">
-                  {company.imported && <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={{width:"14px" ,height:"14px" ,fill:"#0b6240"}}><path d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z" /></svg>}
-                  <IconButton onClick={() => handleDelete(company._id, company.companyName)}>
-                    <DeleteIcon
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                        color: "#bf0b0b",
-                      }}
-                    >
-                      Delete
-                    </DeleteIcon>
-                  </IconButton>
+                    {company.imported && <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={{ width: "14px", height: "14px", fill: "#0b6240" }}><path d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z" /></svg>}
+                    <IconButton onClick={() => handleDelete(company._id, company.companyName)}>
+                      <DeleteIcon
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                          color: "#bf0b0b",
+                        }}
+                      >
+                        Delete
+                      </DeleteIcon>
+                    </IconButton>
                   </div>
                 </div>
-                <div className="d-flex justify-content-between aligns-items-center mt-1">
+                <div className="d-flex justify-content-between aligns-items-center mt-3" style={{ fontSize: "10px"}} >
+                  <div className="services-list">
+                    <label className="m-0">{company.services && (
+                      <div className="m-0" title={company.services} style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" ,textWrap:"nowrap"}} ><strong>Services  :</strong>   {company.services}</div>)}</label>
+                  </div>
+                  <div className="bdeName-list">
+                    <label className="m-0">
+                      {company.bdeName && (
+                        <div className="m-0" title={company.bdeName} style={{ width: "125px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" ,textWrap:"nowrap"}} ><strong>BDE Name  :</strong>   {company.bdeName}</div>
+                      )}
+                    </label>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-between aligns-items-center mt-3" style={{fontSize: "10px" }} >
+                  <div className="totalpayment-list" style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <label className="m-0"> <strong>Total Payment  </strong>{company.totalPayment && (
+                      <p className="ml-2">  {company.totalPayment.toLocaleString()}</p>)}</label>
+                  </div>
+                  <div className="recievedpayment">
+                    <label className="m-0"> <strong>Received Payment</strong>
+                      <p className="ml-2">{company.firstPayment === 0 ? company.totalPayment.toLocaleString() : company.firstPayment.toLocaleString() }</p>
+                    </label>
+                  </div>
+                  <div className="bdeName-list">
+                    <label className="m-0"><strong>Pending Payment</strong>
+                      {company.bdeName && (
+                        <p className="ml-2">{company.firstPayment === 0 ? 0 : (company.totalPayment  - company.firstPayment).toLocaleString() }</p>
+                      )}
+                    </label>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-between aligns-items-center mt-2">
                   <div className="time">
                     <label className="m-0">{company.bookingTime && (
                       <p className="m-0">{company.bookingTime}</p>)}</label>
@@ -464,6 +498,7 @@ function CompanyList({ companies, onCompanyClick }) {
                     </label>
                   </div>
                 </div>
+
               </div>
             </div>
           ))}

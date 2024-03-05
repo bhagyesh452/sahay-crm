@@ -29,6 +29,8 @@
 
 .p-booking-Cname {
     justify-content: space-between;
+    padding: 0px 5px;
+    border-radius: 3px;
 }
 
 .p-booking-Cname h4 {

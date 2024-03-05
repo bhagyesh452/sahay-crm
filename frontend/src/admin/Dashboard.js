@@ -10,8 +10,13 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconEye } from "@tabler/icons-react";
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import { DateRangePicker } from 'react-date-range';
+import { FaChevronDown } from "react-icons/fa6";
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
+import { lastDayOfDecade } from "date-fns";
 // import LoginAdmin from "./LoginAdmin";
 
 function Dashboard() {
@@ -25,10 +30,15 @@ function Dashboard() {
   const [companyData, setCompanyData] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [dateRange, setDateRange] = useState("by-today");
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [filteredDataDateRange, setFilteredDataDateRange] = useState([]);
   const [showUpdates, setShowUpdates] = useState(false);
   const [followData, setfollowData] = useState([])
   const [openProjectionTable, setopenProjectionTable] = useState(false)
   const [projectedEmployee, setProjectedEmployee] = useState([]);
+  const [displayDateRange, setDateRangeDisplay] = useState(false)
+  const [buttonToggle, setButtonToggle] = useState(false);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -38,7 +48,7 @@ function Dashboard() {
 
   // https://startupsahay.in/api
   const fetchCompanyData = async () => {
-    fetch(`https://startupsahay.in/api/leads`)
+    fetch(`${secretKey}/leads`)
       .then((response) => response.json())
       .then((data) => {
         setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
@@ -48,7 +58,7 @@ function Dashboard() {
       });
   };
   const fetchEmployeeInfo = async () => {
-    fetch(`https://startupsahay.in/api/einfo`)
+    fetch(`${secretKey}/einfo`)
       .then((response) => response.json())
       .then((data) => {
         setEmployeeData(data);
@@ -282,12 +292,15 @@ function Dashboard() {
     return accumulate;
   }, []);
 
+  console.log(companiesByEname)
+
+
   const totalcompaniesByEname = followData.reduce((accumulate, current) => {
     accumulate = accumulate.concat(current.companyName);
     return accumulate
   }, [])
 
-  console.log(totalcompaniesByEname.length)
+  console.log(totalcompaniesByEname)
 
   function calculateSum(data) {
     const initialValue = {};
@@ -324,12 +337,30 @@ function Dashboard() {
     totalOfferedPaymentSum += sums[key].offeredPaymentSum;
   }
 
+  const lastFollowDate = followData.reduce((accumulate, current) => {
+    if (accumulate[current.ename]) {
+      if (Array.isArray(accumulate[current.ename])) {
+        accumulate[current.ename].push(current.lastFollowUpdate);
+      } else {
+        accumulate[current.ename] = [accumulate[current.ename], current.lastFollowUpdate];
+      }
+    } else {
+      accumulate[current.ename] = current.lastFollowUpdate;
+    }
+    return accumulate;
+  }, []);
+
+  console.log(lastFollowDate)
+
+
   //console.log("Total totalPaymentSum:", totalTotalPaymentSum);
   //console.log("Total offeredPaymentSum:", totalOfferedPaymentSum);
   const functionOpenProjectionTable = (ename) => {
-    console.log("Ename:" , ename)
+    console.log("Ename:", ename)
     setopenProjectionTable(true);
     const projectedData = followData.filter(obj => obj.ename === ename);
+    //const projectedDataDateRange = filteredDataDateRange.filter(obj => obj.ename === ename)
+    //console.log(projectedDataDateRange)
     setProjectedEmployee(projectedData);
   };
   //console.log(projectedEmployee)
@@ -340,29 +371,148 @@ function Dashboard() {
 
   function calculateSumPopup(data) {
     const initialValue = { totalPaymentSumPopup: 0, offeredPaymentSumPopup: 0, offeredServicesPopup: [] };
-  
+
     const sum = data.reduce((accumulator, currentValue) => {
       // Concatenate offeredServices from each object into a single array
       const offeredServicesPopup = accumulator.offeredServicesPopup.concat(currentValue.offeredServices);
-      
+
       return {
         totalPaymentSumPopup: accumulator.totalPaymentSumPopup + currentValue.totalPayment,
         offeredPaymentSumPopup: accumulator.offeredPaymentSumPopup + currentValue.offeredPrize,
         offeredServicesPopup: offeredServicesPopup
       };
     }, initialValue);
-  
+
     // // Remove duplicate services from the array
     // sum.offeredServices = Array.from(new Set(sum.offeredServices));
-  
+
     return sum;
   }
-  
+
   // Calculate the sums
   const { totalPaymentSumPopup, offeredPaymentSumPopup, offeredServicesPopup } = calculateSumPopup(projectedEmployee);
   //console.log(totalPaymentSumPopup)
   //console.log(offeredPaymentSumPopup)
- // console.log(offeredServicesPopup)
+  // console.log(offeredServicesPopup)
+
+  // --------------------------------- date-range-picker-------------------------------------
+
+  const handleIconClick = () => {
+    if (!buttonToggle) {
+      setDateRangeDisplay(true);
+    } else {
+      setDateRangeDisplay(false);
+    }
+    setButtonToggle(!buttonToggle);
+  };
+
+  const selectionRange = {
+    startDate: startDate,
+    endDate: endDate,
+    key: 'selection',
+  };
+
+  const handleSelect = (date) => {
+    const filteredDataDateRange = followData.filter(product => {
+      const productDate = new Date(product["lastFollowUpdate"]);
+      return (
+        productDate >= date.selection.startDate &&
+        productDate <= date.selection.endDate
+      );
+    });
+    setStartDate(date.selection.startDate);
+    setEndDate(date.selection.endDate);
+    setFilteredDataDateRange(filteredDataDateRange);
+    //console.log(filteredDataDateRange)
+  };
+
+  console.log(filteredDataDateRange)
+
+  const servicesByEnameDateRange = filteredDataDateRange.reduce((acc, curr) => {
+    // Check if ename already exists in the accumulator
+    if (acc[curr.ename]) {
+      // If exists, concatenate the services array
+      acc[curr.ename] = acc[curr.ename].concat(curr.offeredServices);
+    } else {
+      // If not exists, create a new entry with the services array
+      acc[curr.ename] = curr.offeredServices;
+    }
+    return acc;
+  }, []);
+
+  //console.log(servicesByEnameDateRange)
+
+  const totalservicesByEnameDateRange = filteredDataDateRange.reduce((acc, curr) => {
+    // Concatenate all offeredServices into a single array
+    acc = acc.concat(curr.offeredServices);
+    return acc;
+  }, []);
+
+  //onsole.log(totalservicesByEnameDateRange)
+
+  const companiesByEnameDateRange = filteredDataDateRange.reduce((accumulate, current) => {
+    if (accumulate[current.ename]) {
+      if (Array.isArray(accumulate[current.ename])) {
+        accumulate[current.ename].push(current.companyName);
+      } else {
+        accumulate[current.ename] = [accumulate[current.ename], current.companyName];
+      }
+    } else {
+      accumulate[current.ename] = [current.companyName];
+    }
+    return accumulate;
+  }, []);
+
+  console.log(companiesByEnameDateRange)
+
+  const totalcompaniesByEnameDateRange = filteredDataDateRange.reduce((accumulate, current) => {
+    accumulate = accumulate.concat(current.companyName);
+    return accumulate
+  }, [])
+
+  console.log(totalcompaniesByEnameDateRange)
+
+
+  function calculateSumDateRange(data) {
+    const initialValue = {};
+
+    const sum = data.reduce((accumulator, current) => {
+      const { ename, totalPayment, offeredPrize } = current;
+
+      // If the ename already exists in the accumulator, accumulate the totalPayment and offeredPrize
+      if (accumulator[ename]) {
+        accumulator[ename].totalPaymentSum += totalPayment;
+        accumulator[ename].offeredPaymentSum += offeredPrize;
+      } else {
+        // If the ename does not exist in the accumulator, initialize it
+        accumulator[ename] = {
+          totalPaymentSum: totalPayment,
+          offeredPaymentSum: offeredPrize
+        };
+      }
+      return accumulator;
+    }, initialValue);
+
+
+    return sum;
+  }
+
+  // Calculate the sums
+  const sumsDateRange = calculateSumDateRange(filteredDataDateRange);
+
+  //console.log(sumsDateRange)
+
+  let totalTotalPaymentSumDateRange = 0;
+  let totalOfferedPaymentSumDateRange = 0;
+
+  // Iterate over the values of sumsDateRange object
+  Object.values(sumsDateRange).forEach(({ totalPaymentSum, offeredPaymentSum }) => {
+    totalTotalPaymentSumDateRange += totalPaymentSum;
+    totalOfferedPaymentSumDateRange += offeredPaymentSum;
+  });
+
+  //console.log("Total Total Payment Sum Date Range:", totalTotalPaymentSumDateRange);
+  //console.log("Total Offered Payment Sum Date Range:", totalOfferedPaymentSumDateRange);
 
 
 
@@ -897,7 +1047,7 @@ function Dashboard() {
                         </tbody>
                         {employeeData.length !== 0 &&
                           companyData.length !== 0 && (
-                            <tfoot  style={{
+                            <tfoot style={{
                               position: "sticky", // Make the footer sticky
                               bottom: -1, // Stick it at the bottom
                               backgroundColor: "#f6f2e9",
@@ -1340,9 +1490,25 @@ function Dashboard() {
 
       <div className="container-xl mt-2">
         <div className="card">
-          <div className="card-header">
-            <h2>Projection Dashboard</h2>
+          <div className="card-header d-flex align-items-center justify-content-between">
+            <div>
+              <h2>Projection Dashboard</h2>
+            </div>
+            <div><button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+              <FaChevronDown style={{ width: "14px", height: "14px", color: "#bcbaba", }} />
+            </button></div>
+            {displayDateRange && (
+              <div class="position-absolute" style={{ zIndex: "1", top: "15%", left: "75%" }} >
+                <DateRangePicker
+                  ranges={[selectionRange]}
+                  onClose={() => setDateRangeDisplay(false)}
+                  onChange={handleSelect}
+                />
+              </div>
+            )}
+
           </div>
+          <div></div>
           <div className="card-body">
             <div
               id="table-default"
@@ -1377,35 +1543,73 @@ function Dashboard() {
                       Sr. No
                     </th>
                     <th>Company Name</th>
+                    <th>Total Companies</th>
                     <th>Offered Services</th>
                     <th>Total Offered Price</th>
                     <th>Expected Amount</th>
-                    <th>Total Companies</th>
+                    <th>Last Followup Date</th>
+
                   </tr>
                 </thead>
                 <tbody>
                   {uniqueEnames &&
                     uniqueEnames.map((ename, index) => {
                       // Calculate the count of services for the current ename
-                      const serviceCount = servicesByEname[ename] ? servicesByEname[ename].length : 0;
-                      const companyCount = companiesByEname[ename] ? companiesByEname[ename].length : 0;
-                      const totalPaymentByEname = sums[ename] ? sums[ename].totalPaymentSum : 0;
-                      const offeredPrizeByEname = sums[ename] ? sums[ename].offeredPaymentSum : 0;
+                      const serviceCount = filteredDataDateRange.length === 0 ? (
+                        // If filteredDataDateRange is empty, use servicesByEname
+                        servicesByEname[ename] ? servicesByEname[ename].length : 0
+                      ) : (
+                        // If filteredDataDateRange is not empty, use servicesByEnameDateRange
+                        servicesByEnameDateRange[ename] ? servicesByEnameDateRange[ename].length : 0
+                      );
+                      // const companyCount = companiesByEname[ename] ? companiesByEname[ename].length : 0;
+
+                      const companyCount = filteredDataDateRange.length === 0 ? (
+                        // If filteredDataDateRange is empty, use companiesByEname
+                        companiesByEname[ename] ? companiesByEname[ename].length : 0
+                      ) : (
+                        // If filteredDataDateRange is not empty, use companiesByEnameDateRange
+                        companiesByEnameDateRange[ename] ? companiesByEnameDateRange[ename].length : 0
+                      );
+                      //const totalPaymentByEname = sums[ename] ? sums[ename].totalPaymentSum : 0;
+                      const totalPaymentByEname = filteredDataDateRange === 0 ?
+                        (sums[ename] ? sums[ename].totalPaymentSum : 0)
+                        :
+                        (sumsDateRange[ename] ? sumsDateRange[ename].totalPaymentSum : 0)
+
+
+                      //const offeredPrizeByEname = sums[ename] ? sums[ename].offeredPaymentSum : 0;
+                      const offeredPrizeByEname = filteredDataDateRange === 0 ?
+                        (sums[ename] ? sums[ename].offeredPaymentSum : 0)
+                        :
+                        (sumsDateRange[ename] ? sumsDateRange[ename].offeredPaymentSum : 0)
+
+
+                      const lastFollowDates = lastFollowDate[ename] || []; // Assuming lastFollowDate[ename] is an array of dates
+
+                      // Get the latest date from the array
+                      const latestDate = new Date(Math.max(...lastFollowDates.map(date => new Date(date))));
+
+                      // Format the latest date into a string
+                      const formattedDate = latestDate.toLocaleDateString(); // Adjust the format as needed
+
 
                       return (
                         <tr key={`row-${index}`}>
                           <td style={{ lineHeight: "32px" }}>{index + 1}</td>
                           <td>{ename}</td>
-                          <td>{serviceCount}</td>
-                          <td>{totalPaymentByEname.toLocaleString()}</td>
-                          <td>{offeredPrizeByEname.toLocaleString()}</td>
                           <td>{companyCount}
                             <ViewListIcon
                               onClick={() => {
                                 functionOpenProjectionTable(ename);
                               }}
-                              style={{ cursor: "pointer" }}
+                              style={{ cursor: "pointer", marginRight: "-79px", marginLeft: "58px" }}
                             /></td>
+                          <td>{serviceCount}</td>
+                          <td>{totalPaymentByEname.toLocaleString()}</td>
+                          <td>{offeredPrizeByEname.toLocaleString()}</td>
+                          <td>{formattedDate}</td>
+
                         </tr>
                       );
                     })}
@@ -1415,23 +1619,57 @@ function Dashboard() {
                   <tfoot>
                     <tr style={{ fontWeight: 500 }}>
                       <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                      <td>{totalservicesByEname.length}
+                      <td>{filteredDataDateRange.length === 0 ? (
+                        // If filteredDataDateRange is empty, use totalservicesByEname
+                        totalcompaniesByEname.length
+                      ) : (
+                        // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
+                        totalcompaniesByEnameDateRange.length
+                      )}
                       </td>
-                      <td>{totalTotalPaymentSum.toLocaleString()}
+                      <td>
+                        {filteredDataDateRange.length === 0 ? (
+                          // If filteredDataDateRange is empty, use totalservicesByEname
+                          totalservicesByEname.length
+                        ) : (
+                          // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
+                          totalservicesByEnameDateRange.length
+                        )}
                       </td>
-                      <td>{totalOfferedPaymentSum.toLocaleString()}
+                      {/* <td>{totalTotalPaymentSum.toLocaleString()}
+                      </td> */}
+                      <td>
+                        {filteredDataDateRange.length === 0 ? (
+                          // If filteredDataDateRange is empty, use totalservicesByEname
+                          totalTotalPaymentSum.toLocaleString()
+                        ) : (
+                          // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
+                          totalTotalPaymentSumDateRange.toLocaleString()
+                        )}
                       </td>
-                      <td>{totalcompaniesByEname.length}
+
+                      {/* <td>{totalOfferedPaymentSum.toLocaleString()}
+                      </td> */}
+
+                      <td>
+                        {filteredDataDateRange.length === 0 ? (
+                          // If filteredDataDateRange is empty, use totalservicesByEname
+                          totalOfferedPaymentSum.toLocaleString()
+                        ) : (
+                          // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
+                          totalOfferedPaymentSumDateRange.toLocaleString()
+                        )}
                       </td>
+
                     </tr>
                   </tfoot>
                 )}
+
               </table>
             </div>
           </div>
         </div>
       </div>
-
       <Dialog
         open={openProjectionTable}
         onClose={closeProjectionTable}
@@ -1481,41 +1719,40 @@ function Dashboard() {
               </thead>
               <tbody>
                 {/* Map through uniqueEnames array to render rows */}
-                
-                    {projectedEmployee && projectedEmployee.map((obj, Index) => (
-                      
-                      <tr key={`sub-row-${Index}`}>
-                        <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                        {/* Render other employee data */}
-                        <td>{obj.ename}</td>
-                        <td>{obj.companyName}</td>
-                        <td>{obj.offeredServices.join(',')}</td>
-                        <td>{obj.totalPayment.toLocaleString()}</td>
-                        <td>{obj.offeredPrize.toLocaleString()}</td> 
-                        <td>{obj.estPaymentDate}</td> 
-                      </tr>
-                    ))}
+
+                {projectedEmployee && projectedEmployee.map((obj, Index) => (
+
+                  <tr key={`sub-row-${Index}`}>
+                    <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                    {/* Render other employee data */}
+                    <td>{obj.ename}</td>
+                    <td>{obj.companyName}</td>
+                    <td>{obj.offeredServices.join(',')}</td>
+                    <td>{obj.totalPayment.toLocaleString()}</td>
+                    <td>{obj.offeredPrize.toLocaleString()}</td>
+                    <td>{obj.estPaymentDate}</td>
+                  </tr>
+                ))}
               </tbody>
-              {projectedEmployee &&  (
+              {projectedEmployee && (
                 <tfoot>
-                <tr style={{ fontWeight: 500 }}>
-                  <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                  <td>{projectedEmployee.length}</td>
-                  <td>{offeredServicesPopup.length}
-                  </td>
-                  <td>{totalPaymentSumPopup.toLocaleString()}
-                  </td>
-                  <td>{offeredPaymentSumPopup.toLocaleString()}
-                  </td>
-                  <td>-</td>
-                </tr>
-              </tfoot>
+                  <tr style={{ fontWeight: 500 }}>
+                    <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                    <td>{projectedEmployee.length}</td>
+                    <td>{offeredServicesPopup.length}
+                    </td>
+                    <td>{totalPaymentSumPopup.toLocaleString()}
+                    </td>
+                    <td>{offeredPaymentSumPopup.toLocaleString()}
+                    </td>
+                    <td>-</td>
+                  </tr>
+                </tfoot>
               )}
             </table>
           </div>
         </DialogContent>
       </Dialog>
-
     </div>
   );
 }

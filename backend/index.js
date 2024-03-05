@@ -362,7 +362,7 @@ app.get('/api/projection-data', async (req, res) => {
   try {
     // Fetch all data from the FollowUpModel
     const followUps = await FollowUpModel.find();
-    console.log(followUps)
+    //console.log(followUps)
     //console.log(query)
     // Return the data as JSON response
     res.json(followUps);
