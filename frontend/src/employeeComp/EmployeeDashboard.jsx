@@ -8,7 +8,7 @@ function EmployeeDashboard() {
   const { userId } = useParams();
   const [data, setData] = useState([]);
   const [empData, setEmpData] = useState([]);
-  const [followData , setFollowData] = useState([])
+  const [followData, setFollowData] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -46,53 +46,53 @@ function EmployeeDashboard() {
     fetchEmployeeData();
   }, [data]);
   const formattedDates =
-  empData.length !== 0 &&
-  empData.map((data) => formatDate(data.AssignDate));
+    empData.length !== 0 &&
+    empData.map((data) => formatDate(data.AssignDate));
 
-const uniqueArray = formattedDates && [...new Set(formattedDates)];
-//console.log(uniqueArray)
+  const uniqueArray = formattedDates && [...new Set(formattedDates)];
+  //console.log(uniqueArray)
 
 
-// ---------------------------projectiondata-------------------------------------
+  // ---------------------------projectiondata-------------------------------------
 
-const fetchFollowUpData = async ()=> {
- 
-  try {
-    const response = await fetch(`${secretKey}/projection-data/${data.ename}`);
-    const followdata = await response.json();
-    setFollowData (followdata);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return { error: 'Error fetching data' };
+  const fetchFollowUpData = async () => {
+
+    try {
+      const response = await fetch(`${secretKey}/projection-data/${data.ename}`);
+      const followdata = await response.json();
+      setFollowData(followdata);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return { error: 'Error fetching data' };
+    }
   }
-}
 
-function calculateSum(data) {
-  const initialValue = { totalPaymentSum: 0, offeredPaymentSum: 0, offeredServices: [] };
+  function calculateSum(data) {
+    const initialValue = { totalPaymentSum: 0, offeredPaymentSum: 0, offeredServices: [] };
 
-  const sum = data.reduce((accumulator, currentValue) => {
-    // Concatenate offeredServices from each object into a single array
-    const offeredServices = accumulator.offeredServices.concat(currentValue.offeredServices);
-    
-    return {
-      totalPaymentSum: accumulator.totalPaymentSum + currentValue.totalPayment,
-      offeredPaymentSum: accumulator.offeredPaymentSum + currentValue.offeredPrize,
-      offeredServices: offeredServices
-    };
-  }, initialValue);
+    const sum = data.reduce((accumulator, currentValue) => {
+      // Concatenate offeredServices from each object into a single array
+      const offeredServices = accumulator.offeredServices.concat(currentValue.offeredServices);
 
-  // // Remove duplicate services from the array
-  // sum.offeredServices = Array.from(new Set(sum.offeredServices));
+      return {
+        totalPaymentSum: accumulator.totalPaymentSum + currentValue.totalPayment,
+        offeredPaymentSum: accumulator.offeredPaymentSum + currentValue.offeredPrize,
+        offeredServices: offeredServices
+      };
+    }, initialValue);
 
-  return sum;
-}
+    // // Remove duplicate services from the array
+    // sum.offeredServices = Array.from(new Set(sum.offeredServices));
 
-// Calculate the sums
-const { totalPaymentSum, offeredPaymentSum, offeredServices } = calculateSum(followData);
+    return sum;
+  }
 
-useEffect(() => {
-  fetchFollowUpData();
-}, [data]);
+  // Calculate the sums
+  const { totalPaymentSum, offeredPaymentSum, offeredServices } = calculateSum(followData);
+
+  useEffect(() => {
+    fetchFollowUpData();
+  }, [data]);
 
   return (
     <div>
@@ -149,160 +149,160 @@ useEffect(() => {
                   </tr>
                 </thead>
                 <tbody>
-                {uniqueArray &&
-                  uniqueArray.map((obj, index) => (
-                    <tr key={`row-${index}`}>
-                      <td  style={{
-                        lineHeight: "32px",
-                      }}>{index + 1}</td>
-                      <td>{obj}</td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Untouched"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Busy"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Not Picked Up"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Junk"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "FollowUp"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Interested"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Not Interested"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Matured"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) => formatDate(partObj.AssignDate) === obj
-                          ).length
-                        }
-                      </td>
-                    </tr>
-                  ))}
-            
+                  {uniqueArray &&
+                    uniqueArray.map((obj, index) => (
+                      <tr key={`row-${index}`}>
+                        <td style={{
+                          lineHeight: "32px",
+                        }}>{index + 1}</td>
+                        <td>{obj}</td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) =>
+                                formatDate(partObj.AssignDate) === obj &&
+                                partObj.Status === "Untouched"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) =>
+                                formatDate(partObj.AssignDate) === obj &&
+                                partObj.Status === "Busy"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) =>
+                                formatDate(partObj.AssignDate) === obj &&
+                                partObj.Status === "Not Picked Up"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) =>
+                                formatDate(partObj.AssignDate) === obj &&
+                                partObj.Status === "Junk"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) =>
+                                formatDate(partObj.AssignDate) === obj &&
+                                partObj.Status === "FollowUp"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) =>
+                                formatDate(partObj.AssignDate) === obj &&
+                                partObj.Status === "Interested"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) =>
+                                formatDate(partObj.AssignDate) === obj &&
+                                partObj.Status === "Not Interested"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) =>
+                                formatDate(partObj.AssignDate) === obj &&
+                                partObj.Status === "Matured"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) => formatDate(partObj.AssignDate) === obj
+                            ).length
+                          }
+                        </td>
+                      </tr>
+                    ))}
+
                 </tbody>
                 {uniqueArray && (
-                <tfoot>
-                  <tr style={{ fontWeight: 500 }}>
-                    <td style={{lineHeight:'32px'}} colSpan="2">Total</td>
-                    <td>
-                      {
-                        empData.filter(
-                          (partObj) => partObj.Status === "Untouched"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        empData.filter(
-                          (partObj) => partObj.Status === "Busy"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        empData.filter(
-                          (partObj) => partObj.Status === "Not Picked Up"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        empData.filter(
-                          (partObj) => partObj.Status === "Junk"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        empData.filter(
-                          (partObj) => partObj.Status === "FollowUp"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        empData.filter(
-                          (partObj) => partObj.Status === "Interested"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        empData.filter(
-                          (partObj) => partObj.Status === "Not Interested"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        empData.filter(
-                          (partObj) => partObj.Status === "Matured"
-                        ).length
-                      }
-                    </td>
-                    <td>{empData.length}</td>
-                  </tr>
-                </tfoot>
-              )}
+                  <tfoot>
+                    <tr style={{ fontWeight: 500 }}>
+                      <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                      <td>
+                        {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Untouched"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Busy"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Not Picked Up"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Junk"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          empData.filter(
+                            (partObj) => partObj.Status === "FollowUp"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Interested"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Not Interested"
+                          ).length
+                        }
+                      </td>
+                      <td>
+                        {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Matured"
+                          ).length
+                        }
+                      </td>
+                      <td>{empData.length}</td>
+                    </tr>
+                  </tfoot>
+                )}
               </table>
             </div>
           </div>
@@ -310,10 +310,9 @@ useEffect(() => {
       </div>
 
 
-{/* -----------------------------------------------projection dashboard-------------------------------------------------- */}
+      {/* -----------------------------------------------projection dashboard-------------------------------------------------- */}
 
-
-<div className="container-xl mt-2">
+      <div className="container-xl mt-2">
         <div className="card">
           <div className="card-header">
             <h2>Projection Dashboard</h2>
@@ -359,46 +358,45 @@ useEffect(() => {
                   </tr>
                 </thead>
                 <tbody>
-                {followData &&
-                  followData.map((obj, index) => (
-                    <tr key={`row-${index}`}>
-                      <td  style={{
-                        lineHeight: "32px",
-                      }}>{index + 1}</td>
-                      <td>{obj.companyName}</td>
-                      <td>{obj.offeredServices.join(', ')}</td>
-                      <td>{obj.totalPayment.toLocaleString()}
-                      </td>
-                      <td>{obj.offeredPrize.toLocaleString()}
-                      </td>
-                      <td>{obj.estPaymentDate}
-                      </td>
-                    </tr>
-                  ))}
-            
+                  {followData &&
+                    followData.map((obj, index) => (
+                      <tr key={`row-${index}`}>
+                        <td style={{
+                          lineHeight: "32px",
+                        }}>{index + 1}</td>
+                        <td>{obj.companyName}</td>
+                        <td>{obj.offeredServices.join(', ')}</td>
+                        <td>{obj.totalPayment.toLocaleString()}
+                        </td>
+                        <td>{obj.offeredPrize.toLocaleString()}
+                        </td>
+                        <td>{obj.estPaymentDate}
+                        </td>
+                      </tr>
+                    ))}
+
                 </tbody>
                 {followData && (
-                <tfoot>
-                  <tr style={{ fontWeight: 500 }}>
-                    <td style={{lineHeight:'32px'}} colSpan="2">Total</td>
-                    <td>{offeredServices.length}
-                    </td>
-                    <td> {totalPaymentSum.toLocaleString()}
-                    </td>
-                    <td>
-                    {offeredPaymentSum.toLocaleString()}
-                    </td>
-                    <td>-
-                    </td>
-                  </tr>
-                </tfoot>
-              )}
+                  <tfoot>
+                    <tr style={{ fontWeight: 500 }}>
+                      <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                      <td>{offeredServices.length}
+                      </td>
+                      <td> {totalPaymentSum.toLocaleString()}
+                      </td>
+                      <td>
+                        {offeredPaymentSum.toLocaleString()}
+                      </td>
+                      <td>-
+                      </td>
+                    </tr>
+                  </tfoot>
+                )}
               </table>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 }

@@ -253,6 +253,7 @@
     font-size: 10px;
     height: 340px;
     display:none;
+    height: 360px;
 }
 .firstClass{
     transition: transform 0.2s ease-in , box-shadow 0.2s ease-in-out;

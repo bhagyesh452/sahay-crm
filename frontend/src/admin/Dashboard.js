@@ -35,8 +35,10 @@ function Dashboard() {
     const convertedDate = date.toLocaleDateString();
     return convertedDate;
   };
+
+  // https://startupsahay.in/api
   const fetchCompanyData = async () => {
-    fetch(`${secretKey}/leads`)
+    fetch(`https://startupsahay.in/api/leads`)
       .then((response) => response.json())
       .then((data) => {
         setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
@@ -46,7 +48,7 @@ function Dashboard() {
       });
   };
   const fetchEmployeeInfo = async () => {
-    fetch(`${secretKey}/einfo`)
+    fetch(`https://startupsahay.in/api/einfo`)
       .then((response) => response.json())
       .then((data) => {
         setEmployeeData(data);
@@ -330,7 +332,7 @@ function Dashboard() {
     const projectedData = followData.filter(obj => obj.ename === ename);
     setProjectedEmployee(projectedData);
   };
-  console.log(projectedEmployee)
+  //console.log(projectedEmployee)
 
   const closeProjectionTable = () => {
     setopenProjectionTable(false);
@@ -358,9 +360,9 @@ function Dashboard() {
   
   // Calculate the sums
   const { totalPaymentSumPopup, offeredPaymentSumPopup, offeredServicesPopup } = calculateSumPopup(projectedEmployee);
-  console.log(totalPaymentSumPopup)
-  console.log(offeredPaymentSumPopup)
-  console.log(offeredServicesPopup)
+  //console.log(totalPaymentSumPopup)
+  //console.log(offeredPaymentSumPopup)
+ // console.log(offeredServicesPopup)
 
 
 
@@ -465,7 +467,7 @@ function Dashboard() {
                         <tr
                           style={{
                             backgroundColor: "#ffb900",
-                            color: "white",
+                            color: "black",
                             fontWeight: "bold",
                           }}
                         >
@@ -728,10 +730,11 @@ function Dashboard() {
                           border: "1px solid #ddd",
                           marginBottom: "5px",
                           lineHeight: "32px",
+                          position: "relative", // Make the table container relative
                         }}
                         className="table-vcenter table-nowrap"
                       >
-                        <thead>
+                        {/* <thead>
                           <tr
                             style={{
                               backgroundColor: "#ffb900",
@@ -739,7 +742,18 @@ function Dashboard() {
                               fontWeight: "bold",
 
                             }}
-                          >
+                          > */}
+                        <thead
+                          style={{
+                            position: "sticky", // Make the header sticky
+                            top: '-1px', // Stick it at the top
+                            backgroundColor: "#ffb900",
+                            color: "black",
+                            fontWeight: "bold",
+                            zIndex: 1, // Ensure it's above other content
+                          }}
+                        >
+                          <tr>
                             <th
                               style={{
                                 lineHeight: "32px",
@@ -883,7 +897,14 @@ function Dashboard() {
                         </tbody>
                         {employeeData.length !== 0 &&
                           companyData.length !== 0 && (
-                            <tfoot>
+                            <tfoot  style={{
+                              position: "sticky", // Make the footer sticky
+                              bottom: -1, // Stick it at the bottom
+                              backgroundColor: "#f6f2e9",
+                              color: "black",
+                              fontWeight: 500,
+                              zIndex: 2, // Ensure it's above the content
+                            }}>
                               <tr style={{ fontWeight: 500 }}>
                                 <td style={{ lineHeight: "32px" }} colSpan="2">
                                   Total
@@ -949,6 +970,7 @@ function Dashboard() {
                                   }
                                 </td>
                                 <td>{companyData.length}</td>
+                                <td>-</td>
                               </tr>
                             </tfoot>
                           )}
@@ -1251,7 +1273,12 @@ function Dashboard() {
                     </td>
                     <td style={{
                       lineHeight: "32px",
-                    }}>
+                    }}></td>
+                    <td
+                      style={{
+                        lineHeight: "32px",
+                      }}
+                    >
                       {
                         properCompanyData.filter(
                           (partObj) => partObj.Status === "Busy"
@@ -1300,7 +1327,7 @@ function Dashboard() {
                         ).length
                       }
                     </td>
-                    <td >{properCompanyData.length}</td>
+                    <td>{properCompanyData.length}</td>
                   </tr>
                 </tfoot>
               )}
@@ -1473,6 +1500,7 @@ function Dashboard() {
                 <tfoot>
                 <tr style={{ fontWeight: 500 }}>
                   <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                  <td>{projectedEmployee.length}</td>
                   <td>{offeredServicesPopup.length}
                   </td>
                   <td>{totalPaymentSumPopup.toLocaleString()}
