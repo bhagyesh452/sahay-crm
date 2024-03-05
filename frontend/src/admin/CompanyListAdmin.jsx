@@ -8,6 +8,8 @@ import {
 } from "@mui/material";
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import Select from "react-select";
+import Nodata from "../components/Nodata";
+
 
 function CompanyListAdmin({ companies, onCompanyClick }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,6 +24,7 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
   const [enames, setEnames] = useState([])
   const [searchServices, setSearchServices] = useState(false)
   const [selectedValues, setSelectedValues] = useState([]);
+
 
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -39,7 +42,8 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
     setCompanyClasses(prevClasses => ({
       [company]: "list-group-item list-group-item-action active"
     }));
-    console.log(company)
+
+
     onCompanyClick(company);
     // Make a PUT request to mark the company as read
     axios.put(`${secretKey}/read/${company}`)
@@ -50,6 +54,8 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
         console.error('Error marking company as read:', error);
       });
   };
+
+
   const customStyles = {
     option: (provided, state) => ({
       ...provided,
@@ -59,16 +65,14 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
           ? "#ffb900"
           : "white",
       color: state.isDisabled ? "white" : "black",
+
       // Add more styles as needed
     }),
   };
   const options = [
-    {
-      value: "Certification Services",
-      label: "Certification Services",
-      isDisabled: true,
-    },
+  
     { value: "Start-Up India Certificate", label: "Start-Up India Certificate" },
+    { value: "Start-Up India Certificate With DSC", label: "Start-Up India Certificate with DSC" },
     { value: "MSME/UYDAM Certificate", label: "MSME/UYDAM Certificate 3" },
     { value: "ISO Certificate", label: "ISO Certificate" },
     { value: "IEC CODE Certificate", label: "IEC CODE Certificate" },
@@ -77,29 +81,38 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
     { value: "FSSAI Certificate", label: "FSSAI Certificate" },
     { value: "APEDA Certificate", label: "APEDA Certificate" },
     { value: "GST Certificate", label: "GST Certificate" },
-    {
-      value: "Documentation Services",
-      label: "Documentation Services",
-      isDisabled: true,
-    },
-    { value: "Pitch Deck Development", label: "Pitch Deck Development" },
+    { value: "Pitch Deck Development ", label: "Pitch Deck Development" },
     { value: "Financial Modeling", label: "Financial Modeling" },
-    { value: "DPR Developmen", label: "DPR Developmen" },
+    { value: "DPR Development", label: "DPR Developmen" },
     { value: "CMA Report Development", label: "CMA Report Development" },
-    { value: "Company Profile", label: "Company Profile" },
+    { value: "Company Profile Write-Up", label: "Company Profile" },
     { value: "Company Brochure", label: "Company Brochure" },
     { value: "Product Catalog", label: "Product Catalog" },
-    {
-      value: "Fund Raising Support Services",
-      label: "Fund Raising Support Services",
-      isDisabled: true,
-    },
+    { value: "Logo Design", label: "Logo Design" },
     { value: "Seed Funding Support", label: "Seed Funding Support" },
     { value: "Angel Funding Support", label: "Angel Funding Support" },
     { value: "VC Funding Support", label: "VC Funding Support" },
     { value: "Crowd Funding Support", label: "Crowd Funding Support" },
-    { value: "Government Funding Support", label: "Government Funding Support" },
-    { value: "Digital Marketing", label: "Digital Marketing", isDisabled: true },
+    { value: "I-Create", label: "I-Create" },
+    { value: "Nidhi Seed Support Scheme", label: "Nidhi Seed Support Scheme  " },
+    { value: "Nidhi Prayash Yojna", label: "Nidhi Prayash Yojna" },
+    { value: "NAIF", label: "NAIF" },
+    { value: "Raftaar", label: "Raftaar" },
+    { value: "CSR Funding", label: "CSR Funding" },
+    {value : 'Stand-Up India' , label : 'Stand-Up India'},
+    {value : 'PMEGP' , label : 'PMEGP'},
+    {value : 'USAID' , label : 'USAID'},
+    {value : 'UP Grant' , label : 'UP Grant'},
+    {value : 'DBS Grant' , label : 'DBS Grant'},
+    {value : 'MSME Innovation' , label : 'MSME Innovation'},
+    {value : 'MSME Hackathon' , label : 'MSME Hackathon'},
+    {value : 'Gujarat Grant' , label : 'Gujarat Grant'},
+    {value : 'CGTMSC' , label : 'CGTMSC'},
+    {value : 'Income Tax Exemption' , label : 'Income Tax Exemption'},
+    {value : 'Mudra Loan' , label : 'Mudra Loan'},
+    {value : 'SIDBI Loan' , label : 'SIDBI Loan'},
+    {value : 'Incubation Support' , label : 'Incubation Support'},
+    {value : 'Digital Marketing' , label : 'Digital Marketing'},
     { value: "SEO Services", label: "SEO Services" },
     { value: "Branding Services", label: "Branding Services" },
     {
@@ -110,7 +123,6 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
     { value: "Digital Content", label: "Digital Content" },
     { value: "Lead Generation", label: "Lead Generation" },
     { value: "Whatsapp Marketing", label: "Whatsapp Marketing" },
-    { value: "IT Services", label: "IT Services", isDisabled: true },
     { value: "Website Development", label: "Website Development" },
     { value: "App Design & Development", label: "App Design & Development" },
     {
@@ -122,41 +134,17 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
     { value: "ERP Development", label: "ERP Development" },
     { value: "E-Commerce Website", label: "E-Commerce Website" },
     { value: "Product Development", label: "Product Development" },
-    {
-      value: "Business Registration",
-      label: "Business Registration",
-      isDisabled: true,
-    },
-    {
-      value: "Sole Proprietorship Registration",
-      label: "Sole Proprietorship Registration",
-    },
-    {
-      value: "Partnership Firm Registration",
-      label: "Partnership Firm Registration",
-    },
-    { value: "LLP Firm Registration", label: "LLP Firm Registration" },
-    {
-      value: "Private Limited Registration",
-      label: "hPrivate Limited Registrationh",
-    },
-    {
-      value: "Public Company Registration",
-      label: "Public Company Registration",
-    },
-    { value: "Nidhi Company Registration", label: "Nidhi Company Registration" },
-    {
-      value: "Producer Company Registration",
-      label: "Producer Company Registration ",
-    },
-    { value: "Trademark & IP", label: "Trademark & IP", isDisabled: true },
+    { value: "Company Incorporation", label: "Company Incorporation" },
     { value: "Trademark Registration", label: "Trademark Registration" },
     { value: "Copyright Registration", label: "Copyright Registration" },
     { value: "Patent Registration", label: "Patent Registration" },
-
+    { value: "Organization DSC", label: "Organization DSC" },
+    { value: "Director DSC", label: "Director DSC" },
+    { value: "Self Certification", label: "Self Certification" },
+    { value: "GeM", label: "GeM" },
+  
     // Add more options as needed
   ];
-
 
   useEffect(() => {
     // Perform the data fetching only once when the component mounts
@@ -170,7 +158,7 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, []); 
+  }, []);
 
   const handleFieldChange = (value) => {
     setSelectedField(value);
@@ -203,28 +191,29 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
     }
   };
 
+
   const FilteredData = companies.filter((company) => {
     const fieldValue = company[selectedField];
 
     if (selectedField === "companyName" || selectedField === "bdeName") {
-        // Handle filtering by company name or Bde name
-        return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
+      // Handle filtering by company name or Bde name
+      return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
     } else if (selectedField === "services") {
       const newselectedValues = selectedValues.join(',').toLowerCase();
-      console.log("fieldvalue:" ,fieldValue.join(',').toLowerCase())
-      console.log("newselectedvalue:" , newselectedValues)
+      //console.log("fieldvalue:", fieldValue.join(',').toLowerCase())
+      //console.log("newselectedvalue:", newselectedValues)
       return (fieldValue.join(",")).toLowerCase().includes(newselectedValues.toLowerCase());
-      
+
     } else if (selectedField === "bookingDate") {
-        // Handle filtering by booking date
-        const dateMatch = dateRange.startDate && dateRange.endDate ?
-            new Date(company.bookingDate) >= new Date(dateRange.startDate) &&
-            new Date(company.bookingDate) <= new Date(dateRange.endDate) :
-            true;
-        return dateMatch && fieldValue;
+      // Handle filtering by booking date
+      const dateMatch = dateRange.startDate && dateRange.endDate ?
+        new Date(company.bookingDate) >= new Date(dateRange.startDate) &&
+        new Date(company.bookingDate) <= new Date(dateRange.endDate) :
+        true;
+      return dateMatch && fieldValue;
     }
     return true;
-});
+  });
 
 
 
@@ -287,6 +276,9 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
   // Slice the companies array to get the companies for the current page
   const currentCompanies = FilteredData.slice(indexOfFirstCompany, indexOfLastCompany);
 
+  console.log(currentCompanies)
+
+
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -300,26 +292,12 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
               onChange={(e) => handleFieldChange(e.target.value)}
             >
               <option value="companyName">Company Name</option>
-              <option value="bdeName">Bde Name</option>
+              <option value="bdeName">BDE Name</option>
               <option value="services">Services</option>
               <option value="bookingDate">Booking Date</option>
             </select>
           </div>
-          {searchServices && (<div className="input-icon w-100 d-flex align-items-center justify-content-between">
-            <Select
-              styles={customStyles}
-              isMulti
-              options={options}
-              onChange={(selectedOptions) => {
-                setSelectedValues(
-                  selectedOptions.map((option) => option.value)
-                );
-              }}
-              value={selectedValues.map((value) => ({ value, label: value }))}
-              placeholder="Select Services..."
-         >
-            </Select>
-          </div>)}
+
           {searchbde && (
             <div className="input-icon w-100 d-flex align-items-center justify-content-between">
               <select
@@ -332,7 +310,7 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
                   // Update searchTerm directly
                 }}
               >
-                <option value="">Select an admin</option>
+                <option value="">Select BDE</option>
                 {enames.map((name, index) => (
                   <option key={index} value={name} >{name}</option>
                 ))}
@@ -371,6 +349,33 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
             </div>
           )}
         </div>
+        {searchServices && (<div className="input-icon w-100 d-flex align-items-center mt-2 searchServices">
+          <Select
+            styles={{
+              customStyles,
+              // Add custom styles here
+              container: (provided) => ({
+                ...provided,
+                // display: 'flex !important',
+                // Apply display: flex with !important
+                // Add other custom styles as needed
+              }),
+              // Add other styles as needed
+              // Make sure to include the default styles for other elements
+            }}
+
+            isMulti
+            options={options}
+            onChange={(selectedOptions) => {
+              setSelectedValues(
+                selectedOptions.map((option) => option.value)
+              );
+            }}
+            value={selectedValues.map((value) => ({ value, label: value }))}
+            placeholder="Select Services..."
+          >
+          </Select>
+        </div>)}
 
         {dateRangeDisplay && (<div className="input-icon d-flex align-items-center justify-content-between w-100 mt-2 gap-2">
 
@@ -397,53 +402,98 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
         </div>)}
       </div>
 
-      <div className="list-group list-group-flush list-group-hoverable cmpy-list-body cursor-pointer">
-        {currentCompanies.map((company, index) => (
-          <div
-            className={`${companyClasses[company.companyName] || "list-group-item list-group-item-action"}`}
-            key={index}
-            style={{
-              backgroundColor: company.read === false && "rgb(237 238 249)",
-              boxShadow: company.read === false && "1px 1px 1px grey",
-              fontWeight: company.read === false && "700 !important",
-              fontFamily: company.red === false && "Merriweather, serif"
-            }}
-          >
-            <div className="align-items-center" onClick={() => handleCompanyClick(company.companyName, company._id)} >
-              <div className="p-booking-Cname d-flex align-items-center" >
-                <h4 className="m-0" title={company.companyName}>
-                  {company.companyName}
-                </h4>
-                <IconButton onClick={() => handleDelete(company._id, company.companyName)}>
-                  <DeleteIcon
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                      color: "#bf0b0b",
-                    }}
-                  >
-                    Delete
-                  </DeleteIcon>
-                </IconButton>
-              </div>
-              <div className="d-flex justify-content-between aligns-items-center mt-1">
-                <div className="time">
-                  <label className="m-0">{company.bookingTime && (
-                    <p className="m-0">{company.bookingTime}</p>)}</label>
+      {companies !== null && companies.length > 0 ? (
+        <div className="list-group list-group-flush list-group-hoverable cmpy-list-body cursor-pointer w-100">
+          {currentCompanies.map((company, index) => (
+            <div
+              className={`${companyClasses[company.companyName] || "list-group-item list-group-item-action"}`}
+              key={index}
+              style={{
+                backgroundColor: company.read === false && "rgb(237 238 249)",
+                boxShadow: company.read === false && "1px 1px 1px grey",
+                fontWeight: company.read === false && "700 !important",
+                fontFamily: company.red === false && "Merriweather, serif"
+              }}
+            >
+              <div className="align-items-center w-100" onClick={() => handleCompanyClick(company.companyName, company._id)} >
+                <div className="p-booking-Cname d-flex align-items-center w-100" style={{    backgroundColor: "#eee"}}  >
+                  <h4 className="m-0" title={company.companyName}>
+                    {company.companyName}
+                  </h4>
+                  <div className="d-flex align-items-center justify-content-between">
+                    {company.imported && <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={{ width: "14px", height: "14px", fill: "#0b6240" }}><path d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z" /></svg>}
+                    <IconButton onClick={() => handleDelete(company._id, company.companyName)}>
+                      <DeleteIcon
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                          color: "#bf0b0b",
+                        }}
+                      >
+                        Delete
+                      </DeleteIcon>
+                    </IconButton>
+                  </div>
                 </div>
-                <div className="bookingdate">
-                  <label className="m-0">
-                    {company.bookingDate && (
-                      <p className="m-0">{formatDatelatest(company.bookingDate)}</p>
-                    )}
-                  </label>
+                <div className="d-flex justify-content-between aligns-items-center mt-3" style={{ fontSize: "10px"}} >
+                  <div className="services-list">
+                    <label className="m-0">{company.services && (
+                      <div className="m-0" title={company.services} style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" ,textWrap:"nowrap"}} ><strong>Services  :</strong>   {company.services}</div>)}</label>
+                  </div>
+                  <div className="bdeName-list">
+                    <label className="m-0">
+                      {company.bdeName && (
+                        <div className="m-0" title={company.bdeName} style={{ width: "125px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" ,textWrap:"nowrap"}} ><strong>BDE Name  :</strong>   {company.bdeName}</div>
+                      )}
+                    </label>
+                  </div>
                 </div>
+                <div className="d-flex justify-content-between aligns-items-center mt-3" style={{fontSize: "10px" }} >
+                  <div className="totalpayment-list" style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <label className="m-0"> <strong>Total Payment  </strong>{company.totalPayment && (
+                      <p className="ml-2">  {company.totalPayment.toLocaleString()}</p>)}</label>
+                  </div>
+                  <div className="recievedpayment">
+                    <label className="m-0"> <strong>Received Payment</strong>
+                      <p className="ml-2">{company.firstPayment === 0 ? company.totalPayment.toLocaleString() : company.firstPayment.toLocaleString() }</p>
+                    </label>
+                  </div>
+                  <div className="bdeName-list">
+                    <label className="m-0"><strong>Pending Payment</strong>
+                      {company.bdeName && (
+                        <p className="ml-2">{company.firstPayment === 0 ? 0 : (company.totalPayment  - company.firstPayment).toLocaleString() }</p>
+                      )}
+                    </label>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-between aligns-items-center mt-2">
+                  <div className="time">
+                    <label className="m-0">{company.bookingTime && (
+                      <p className="m-0">{company.bookingTime}</p>)}</label>
+                  </div>
+                  <div className="bookingdate">
+                    <label className="m-0">
+                      {company.bookingDate && (
+                        <p className="m-0">{formatDatelatest(company.bookingDate)}</p>
+                      )}
+                    </label>
+                  </div>
+                </div>
+
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-      {/* Pagination */}
+          ))}
+        </div>
+      ) : (
+        <Nodata />
+      )}
+
+
+
+
+      {/*---------------------------------- Pagination-------------------------------------- */}
+
+
       <nav className="d-flex align-items-center justify-content-center mt-2">
         <ul className="pagination">
           <li className="page-item">
@@ -480,6 +530,146 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
 }
 
 export default CompanyListAdmin;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -407,7 +407,33 @@ function Dashboard() {
   //console.log(totalPaymentSumPopup)
   //console.log(offeredPaymentSumPopup)
   // console.log(offeredServicesPopup)
+  const handleIconClick = () => {
+    if (!buttonToggle) {
+      setDateRangeDisplay(true);
+    } else {
+      setDateRangeDisplay(false);
+    }
+    setButtonToggle(!buttonToggle);
+  };
 
+  const selectionRange = {
+    startDate: startDate,
+    endDate: endDate,
+    key: 'selection',
+  };
+  const handleSelect = (date) => {
+    const filteredDataDateRange = followData.filter(product => {
+      const productDate = new Date(product["lastFollowUpdate"]);
+      return (
+        productDate >= date.selection.startDate &&
+        productDate <= date.selection.endDate
+      );
+    });
+    setStartDate(date.selection.startDate);
+    setEndDate(date.selection.endDate);
+    setFilteredDataDateRange(filteredDataDateRange);
+    //console.log(filteredDataDateRange)
+ };
 
 
 
