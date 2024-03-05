@@ -217,8 +217,6 @@ function Employees({ onEyeButtonClick }) {
     try {
       const response = await axios.get(`${secretKey}/leads`);
 
-      // Set the retrieved data in the state
-
       setCData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -227,7 +225,7 @@ function Employees({ onEyeButtonClick }) {
   const handleSubmit = async (e) => {
     console.log(jdate);
     // const referenceId = uuidv4();
-
+    const AddedOn = new Date().toLocaleDateString();
     try {
       let dataToSend = {
         email: email,
@@ -235,6 +233,7 @@ function Employees({ onEyeButtonClick }) {
         ename: ename,
         password: password,
         jdate: jdate,
+        AddedOn : AddedOn
       };
 
       // Set designation based on otherDesignation
@@ -245,7 +244,6 @@ function Employees({ onEyeButtonClick }) {
       }
 
       if (isUpdateMode) {
-        
         await axios.put(`${secretKey}/einfo/${selectedDataId}`, dataToSend);
         Swal.fire({
           title: "Name Updated!",
@@ -263,7 +261,6 @@ function Employees({ onEyeButtonClick }) {
                 await axios.put(`${secretKey}/newcompanyname/${item._id}`, {
                   ename,
                 });
-
                 console.log(`Updated ename for ${item._id}`);
               })
             );
@@ -310,7 +307,7 @@ function Employees({ onEyeButtonClick }) {
   const closepopup = () => {
     openchange(false);
   };
-  console.log(companyData);
+
   //   cInfo:{
   //     "Company Name": referenceId + "company",
 
@@ -657,6 +654,11 @@ function Employees({ onEyeButtonClick }) {
                         </button>
                       </th>
                       <th>
+                        <button className="table-sort" data-sort="sort-date">
+                          Added on
+                        </button>
+                      </th>
+                      <th>
                         <button
                           className="table-sort"
                           data-sort="sort-quantity"
@@ -691,6 +693,7 @@ function Employees({ onEyeButtonClick }) {
                             {formatDate(item.jdate)}
                           </td>
                           <td>{item.designation}</td>
+                          <td>{item.AddedOn}</td>
                           <td className="d-flex justify-content-center align-items-center">
                             <div className="icons-btn">
                               <IconTrash

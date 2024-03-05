@@ -41,6 +41,7 @@ function Leads() {
   const [loading, setLoading] = useState(false);
   const [month, setMonth] = useState(0);
   const [selectAllChecked, setSelectAllChecked] = useState(true);
+  const [dayArray, setDayArray] = useState([]);
   const [year, setYear] = useState();
   const [openNew, openchangeNew] = useState(false);
   const [openEmp, openchangeEmp] = useState(false);
@@ -1056,6 +1057,38 @@ const [selectedMonths, setSelectedMonths] = useState([]);
         setmainData(filteredData);
       }
     };
+    const handlemoreMonthFilter = (year, month) => {
+      // Filter data based on the selected year and month
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const bookingObject = 
+      dataStatus === "Unassigned"
+        ? data.filter((obj) => obj.ename === "Not Alloted")
+        :  data.filter((obj) => obj.ename !== "Not Alloted")
+   
+      const filteredData = bookingObject.filter((company) => {
+        const companyDate = new Date(company["Company Incorporation Date  "]);
+      
+        return companyDate.getFullYear() === year && months[companyDate.getMonth()] === month;
+      });
+      const uniqueDates = [];
+    
+      // Iterate over the filtered data to extract unique dates
+      filteredData.forEach((company) => {
+        const companyDate = new Date(company["Company Incorporation Date  "]);
+        const formattedDate = `${companyDate.getDate()}/${companyDate.getMonth() + 1}/${companyDate.getFullYear()}`;
+        if (!uniqueDates.includes(formattedDate)) {
+          uniqueDates.push(formattedDate);
+        }
+      });
+      // Now uniqueDates array contains all unique dates for the selected year and month
+      const dayArray1 = uniqueDates.map(date => {
+        const parts = date.split('/'); // Split the date string by '/'
+        return parts[0]; // Return the first part, which is the day
+    });
+      setDayArray(dayArray1);
+
+    };
+ 
   return (
     <div>
       <Header />
@@ -2131,11 +2164,31 @@ const [selectedMonths, setSelectedMonths] = useState([]);
               />
             </div>
             <div className="month-val">
-              {month}
+              {month} {dayArray.length===0 &&  <AddCircle onClick={(e)=> handlemoreMonthFilter( obj.year, month)} style={{ height: "15px" , marginBottom:'2px' }} />}   
+              {dayArray.length!==0 && <RemoveCircleIcon style={{height:'15px'}} onClick={()=> setDayArray([])}/>}
             </div>
           </div>
         ))
       )}
+      {dayArray.length!==0 && dayArray.map((val)=>(
+          <>
+          <div key={`${val}`} style={{ marginLeft: "35px" }} className="inco-subFilter d-flex">
+            <div style={{ marginRight: "5px" }}>
+              <input
+                type="checkbox"
+                name="day-filter"
+                id={`day-filter-${val}`}
+              />
+            </div>
+            <div className="month-val">
+              {val}  
+            </div>
+
+
+
+          </div>
+          </>
+      )) }
     </div>
   ))}
 

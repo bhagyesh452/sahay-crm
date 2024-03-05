@@ -7,6 +7,7 @@ import "../assets/styles.css";
 import { IconButton } from "@mui/material";
 import { DateRangePicker } from "react-date-range";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -33,7 +34,7 @@ function Dashboard() {
   const [displayDateRange, setDateRangeDisplay] = useState(false);
   const [filteredBooking, setFilteredBooking] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
-  const [expand, setExpand] = useState(null);
+  const [expand, setExpand] = useState("");
   const [companyData, setCompanyData] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [dateRange, setDateRange] = useState("by-today");
@@ -206,7 +207,7 @@ function Dashboard() {
     functionOpenTable();
   };
   const handleExpandRowClick = (index) => {
-    setExpand(index);
+    setExpand("");
   };
   // Now finalFilteredData contains an array of objects with unique bdeNames
   console.log("unique bde", uniqueBdeNames);
@@ -222,7 +223,7 @@ function Dashboard() {
   };
   const closeTable = () => {
     setOpenTable(false);
-    setExpand(null);
+    setExpand("");
   };
 
   const formattedDates =
@@ -415,7 +416,6 @@ function Dashboard() {
 
   // Output: 5
   // Print individual arrays of services
-  console.log("individual", totalCount);
 
   return (
     <div>
@@ -1085,12 +1085,183 @@ function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {filteredBooking
-                  .filter((data) => data.bdeName === tableEmployee)
-                  .map((mainObj, index) => (
-                    <>
-                      <tr>
-                        <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                {expand === "" &&
+                  filteredBooking
+                    .filter((data) => data.bdeName === tableEmployee)
+                    .map((mainObj, index) => (
+                      <>
+                        <tr>
+                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                          <td>{`${formatDate(mainObj.bookingDate)}(${
+                            mainObj.bookingTime
+                          })`}</td>
+                          <td>{mainObj.bdeName}</td>
+                          <td>{mainObj.companyName}</td>
+                          <td>{mainObj.contactNumber}</td>
+                          <td>{mainObj.companyEmail}</td>
+                          <td>{mainObj.services[0]}</td>
+                          <td>
+                            {(mainObj.bdeName !== mainObj.bdmName
+                              ? mainObj.totalPayment / 2
+                              : mainObj.totalPayment
+                            ).toLocaleString()}
+                          </td>
+                          <td>
+                            {
+                              (mainObj.firstPayment !== 0
+                                ? mainObj.bdeName === mainObj.bdmName
+                                  ? mainObj.firstPayment // If bdeName and bdmName are the same
+                                  : mainObj.firstPayment / 2 // If bdeName and bdmName are different
+                                : mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.totalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                : mainObj.totalPayment / 2
+                              ).toLocaleString() // If firstPayment is 0 and bdeName and bdmName are different
+                            }
+                          </td>
+                          <td>
+                            {" "}
+                            {(mainObj.firstPayment !== 0
+                              ? mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.totalPayment - mainObj.firstPayment
+                                : (mainObj.totalPayment -
+                                    mainObj.firstPayment) /
+                                  2
+                              : 0
+                            ).toLocaleString()}{" "}
+                          </td>
+                          <td>
+                            {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
+                          </td>
+                          <td>
+                            {mainObj.bdeName !== mainObj.bdmName
+                              ? mainObj.bdmType === "closeby"
+                                ? `Closed by ${mainObj.bdmName}`
+                                : `Supported by ${mainObj.bdmName}`
+                              : `Self Closed`}{" "}
+                            {mainObj.bdeName !== mainObj.bdmName &&
+                              mainObj.bdmType === "closeby" && (
+                                <AddCircleIcon
+                                  onClick={() => setExpand(mainObj.companyName)}
+                                  style={{ cursor: "pointer" }}
+                                />
+                              )}
+                          </td>
+                          <td>{mainObj.paymentRemarks}</td>
+                        </tr>
+                        {expand === index && (
+                          <>
+                            <tr>
+                              <td style={{ lineHeight: "32px" }}>{`${
+                                index + 1
+                              }(${1})`}</td>
+                              <td>{`${formatDate(mainObj.bookingDate)}(${
+                                mainObj.bookingTime
+                              })`}</td>
+                              <td>{mainObj.bdmName}</td>
+                              <td>{mainObj.companyName}</td>
+                              <td>{mainObj.contactNumber}</td>
+                              <td>{mainObj.companyEmail}</td>
+                              <td>{mainObj.services[0]}</td>
+                              <td>
+                                {" "}
+                                {(
+                                  mainObj.totalPayment / 2
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>
+                                {(mainObj.firstPayment !== 0
+                                  ? mainObj.firstPayment / 2
+                                  : mainObj.totalPayment / 2
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>
+                                {(mainObj.firstPayment !== 0
+                                  ? mainObj.bdeName === mainObj.bdmName
+                                    ? mainObj.totalPayment -
+                                      mainObj.firstPayment
+                                    : (mainObj.totalPayment -
+                                        mainObj.firstPayment) /
+                                      2
+                                  : 0
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>{"Yes"}</td>
+                              <td>{`${mainObj.bdeName}'s Case`}</td>
+                              <td>{mainObj.paymentRemarks}</td>
+                            </tr>
+                          </>
+                        )}
+                      </>
+                    ))}
+              </tbody>
+              {expand === "" && (
+                <tfoot>
+                  <tr>
+                    <th colSpan={3}>
+                      <strong>Total</strong>
+                    </th>
+                    <th>-</th>
+                    <th>-</th>
+                    <th>-</th>
+                    <th>-</th>
+                    <th>
+                      {filteredBooking
+                        .filter((data) => data.bdeName === tableEmployee)
+                        .reduce((total, obj) => {
+                          return obj.bdeName === obj.bdmName
+                            ? total + obj.totalPayment
+                            : total + obj.totalPayment / 2;
+                        }, 0)
+                        .toLocaleString()}
+                    </th>
+                    <th>
+                      {filteredBooking
+                        .filter((data) => data.bdeName === tableEmployee)
+                        .reduce((total, obj) => {
+                          return obj.bdeName === obj.bdmName
+                            ? obj.firstPayment === 0
+                              ? total + obj.totalPayment
+                              : total + obj.firstPayment
+                            : obj.firstPayment === 0
+                            ? total + obj.totalPayment / 2
+                            : total + obj.firstPayment / 2;
+                        }, 0)
+                        .toLocaleString()}
+                    </th>
+                    <th>
+                      {filteredBooking
+                        .filter((data) => data.bdeName === tableEmployee)
+                        .reduce((total, obj) => {
+                          return obj.bdeName === obj.bdmName
+                            ? obj.firstPayment === 0
+                              ? 0
+                              : total + (obj.totalPayment - obj.firstPayment)
+                            : obj.firstPayment === 0
+                            ? 0
+                            : total + (obj.totalPayment - obj.firstPayment) / 2;
+                        }, 0)
+                        .toLocaleString()}
+                    </th>
+                    <th>-</th>
+                    <th>-</th>
+                    <th>-</th>
+                  </tr>
+                </tfoot>
+              )}
+              <tbody>
+                {expand !== "" &&
+                  filteredBooking
+                    .filter(
+                      (obj) =>
+                        obj.bdeName === tableEmployee &&
+                        obj.companyName === expand
+                    )
+                    .map((mainObj, index) => (
+                      <>
+                      <tr key={mainObj._id}>
+                        <td style={{ lineHeight: "32px" }}>{`${
+                          index + 1
+                        }`}</td>
                         <td>{`${formatDate(mainObj.bookingDate)}(${
                           mainObj.bookingTime
                         })`}</td>
@@ -1098,159 +1269,104 @@ function Dashboard() {
                         <td>{mainObj.companyName}</td>
                         <td>{mainObj.contactNumber}</td>
                         <td>{mainObj.companyEmail}</td>
-                        <td>{mainObj.services[0]}</td>
+                        <td>{mainObj.services}</td>
+                        <td>{(mainObj.totalPayment / 2).toLocaleString()}</td>
                         <td>
-                          {(mainObj.bdeName !== mainObj.bdmName
-                            ? mainObj.totalPayment / 2
-                            : mainObj.totalPayment
+                          {(mainObj.firstPayment !== 0
+                            ? mainObj.firstPayment / 2
+                            : mainObj.totalPayment / 2
                           ).toLocaleString()}
                         </td>
                         <td>
-                          {
-                            (mainObj.firstPayment !== 0
-                              ? mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.firstPayment // If bdeName and bdmName are the same
-                                : mainObj.firstPayment / 2 // If bdeName and bdmName are different
-                              : mainObj.bdeName === mainObj.bdmName
-                              ? mainObj.totalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                              : mainObj.totalPayment / 2
-                            ).toLocaleString() // If firstPayment is 0 and bdeName and bdmName are different
-                          }
-                        </td>
-                        <td>
-                          {" "}
                           {(mainObj.firstPayment !== 0
                             ? mainObj.bdeName === mainObj.bdmName
                               ? mainObj.totalPayment - mainObj.firstPayment
                               : (mainObj.totalPayment - mainObj.firstPayment) /
                                 2
                             : 0
-                          ).toLocaleString()}{" "}
+                          ).toLocaleString()}
                         </td>
-                        <td>
-                          {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
-                        </td>
-                        <td>
-                          {mainObj.bdeName !== mainObj.bdmName
-                            ? mainObj.bdmType === "closeby"
-                              ? `Closed by ${mainObj.bdmName}`
-                              : `Supported by ${mainObj.bdmName}`
-                            : `Self Closed`}{" "}
-                          {mainObj.bdeName !== mainObj.bdmName &&
-                            mainObj.bdmType === "closeby" && (
-                              <AddCircleIcon
-                                onClick={() =>
-                                  setExpand(expand === index ? null : index)
-                                }
-                                style={{ cursor: "pointer" }}
-                              />
-                            )}
-                        </td>
+                        <td>Yes</td>
+                        <td>{`Closed by ${mainObj.bdmName}` } <RemoveCircleIcon style={{cursor:'pointer'}} onClick={()=>{
+                          setExpand("")
+                        }}/> </td>
                         <td>{mainObj.paymentRemarks}</td>
                       </tr>
-                      {expand === index && (
-                        <>
-                          <tr>
-                            <td style={{ lineHeight: "32px" }}>{`${
-                              index + 1
-                            }(${1})`}</td>
-                            <td>{`${formatDate(mainObj.bookingDate)}(${
-                              mainObj.bookingTime
-                            })`}</td>
-                            <td>{mainObj.bdmName}</td>
-                            <td>{mainObj.companyName}</td>
-                            <td>{mainObj.contactNumber}</td>
-                            <td>{mainObj.companyEmail}</td>
-                            <td>{mainObj.services[0]}</td>
-                            <td>
-                              {" "}
-                              {(mainObj.totalPayment / 2).toLocaleString()}{" "}
-                            </td>
-                            <td>
-                              {(mainObj.firstPayment !== 0
-                                ? mainObj.firstPayment / 2
-                                : mainObj.totalPayment / 2
-                              ).toLocaleString()}{" "}
-                            </td>
-                            <td>
-                              {(mainObj.firstPayment !== 0
-                                ? mainObj.bdeName === mainObj.bdmName
-                                  ? mainObj.totalPayment - mainObj.firstPayment
-                                  : (mainObj.totalPayment -
-                                      mainObj.firstPayment) /
-                                    2
-                                : 0
-                              ).toLocaleString()}{" "}
-                            </td>
-                            <td>{"Yes"}</td>
-                            <td>{`${mainObj.bdeName}'s Case`}</td>
-                            <td>{mainObj.paymentRemarks}</td>
-                          </tr>
-                        </>
-                      )}
-                    </>
-                  ))}
+                      <tr>
+                              <td style={{ lineHeight: "32px" }}>{`${
+                                index + 2
+                              }`}</td>
+                              <td>{`${formatDate(mainObj.bookingDate)}(${
+                                mainObj.bookingTime
+                              })`}</td>
+                              <td>{mainObj.bdmName}</td>
+                              <td>{mainObj.companyName}</td>
+                              <td>{mainObj.contactNumber}</td>
+                              <td>{mainObj.companyEmail}</td>
+                              <td>{mainObj.services[0]}</td>
+                              <td>
+                                {" "}
+                                {(
+                                  mainObj.totalPayment / 2
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>
+                                {(mainObj.firstPayment !== 0
+                                  ? mainObj.firstPayment / 2
+                                  : mainObj.totalPayment / 2
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>
+                                {(mainObj.firstPayment !== 0
+                                  ? mainObj.bdeName === mainObj.bdmName
+                                    ? mainObj.totalPayment -
+                                      mainObj.firstPayment
+                                    : (mainObj.totalPayment -
+                                        mainObj.firstPayment) /
+                                      2
+                                  : 0
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>{"Yes"}</td>
+                              <td>{`${mainObj.bdeName}'s Case`}</td>
+                              <td>{mainObj.paymentRemarks}</td>
+                            </tr>
+                            
+                      </>
+                    ))}
               </tbody>
               <tfoot>
-                <tr>
-                  <th colSpan={3}>
-                    <strong>Total</strong>
-                  </th>
-                  <th>
-                    -
-                  </th>
-                  <th>-</th>
-                  <th>-</th>
-                  <th>-</th>
-                  <th>
-                    {filteredBooking
-                      .filter((data) => data.bdeName === tableEmployee)
-                      .reduce((total, obj) => {
-                        return obj.bdeName === obj.bdmName
-                          ? total + obj.totalPayment
-                          : total + obj.totalPayment / 2;
-                      }, 0)
-                      .toLocaleString()}
-                  </th>
-                  <th>
-                    {filteredBooking
-                      .filter((data) => data.bdeName === tableEmployee)
-                      .reduce((total, obj) => {
-                        return obj.bdeName === obj.bdmName
-                          ? obj.firstPayment === 0
-                            ? total + obj.totalPayment
-                            : total + obj.firstPayment
-                          : obj.firstPayment === 0
-                          ? total + obj.totalPayment / 2
-                          : total + obj.firstPayment / 2;
-                      }, 0)
-                      .toLocaleString()}
-                  </th>
-                  <th>
-                    {filteredBooking
-                      .filter((data) => data.bdeName === tableEmployee)
-                      .reduce((total, obj) => {
-                        return obj.bdeName === obj.bdmName
-                          ? obj.firstPayment === 0
-                            ? 0
-                            : total + (obj.totalPayment - obj.firstPayment)
-                          : obj.firstPayment === 0
-                          ? 0
-                          : total + (obj.totalPayment - obj.firstPayment) / 2;
-                      }, 0)
-                      .toLocaleString()}
-                  </th>
-                  <th>
-                   -
-                  </th>
-                  <th>
-                   -
-                  </th>
-                  <th>
-                   -
-                  </th>
-                </tr>
+              {expand !== "" && 
+                  filteredBooking
+                    .filter(
+                      (obj) =>
+                        obj.bdeName === tableEmployee &&
+                        obj.companyName === expand
+                    )
+                    .map((mainObj, index) => (
+                      <>
+                      
+                      <tr key={mainObj._id}>
+                       <th colSpan={3}>Total :</th>
+                       <th>-</th>
+                       <th>-</th>
+                       <th>-</th>
+                       <th>-</th>
+                       <th>{(mainObj.totalPayment).toLocaleString()}</th>
+                       <th>{(mainObj.firstPayment!==0 ? mainObj.firstPayment : mainObj.totalPayment ).toLocaleString()}</th>
+                       <th>{(mainObj.firstPayment!==0 ? mainObj.totalPayment - mainObj.firstPayment : 0).toLocaleString()}</th>
+                       <th>-</th>
+                       <th>-</th>
+                       <th>-</th>
+                      </tr>
+                    
+                            
+                      </>
+                    ))}
+
+
               </tfoot>
+              
             </table>
           </div>
         </DialogContent>
