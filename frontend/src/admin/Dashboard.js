@@ -1780,8 +1780,15 @@ const [projectedDataDateRange, setProjectedDataDateRange] = useState([])
               <h2>Projection Dashboard</h2>
             </div>
             <div className="form-control d-flex align-items-center justify-content-between" style={{width:"15vw"}}> 
-              {displayDateRange && (
-                <div className="position-absolute " style={{ zIndex: "1", top: "15%", left: "75%" }} >
+              
+              <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
+              <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black"}} />
+              </button>
+            </div>
+          </div>
+          {displayDateRange && (
+                <div className="position-absolute " style={{ zIndex: "1", top: "30%", left: "75%" }} >
                   <DateRangePicker
                     ranges={[selectionRange]}
                     onClose={() => setDateRangeDisplay(false)}
@@ -1789,12 +1796,6 @@ const [projectedDataDateRange, setProjectedDataDateRange] = useState([])
                   />
                 </div>
               )}
-              <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
-              <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black"}} />
-              </button>
-            </div>
-          </div>
           <div></div>
           <div className="card-body">
             <div
