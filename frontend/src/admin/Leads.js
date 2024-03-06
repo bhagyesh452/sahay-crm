@@ -2163,10 +2163,10 @@ const [selectedMonths, setSelectedMonths] = useState([]);
                 onChange={(e) => handleMonthFilterChange(e, obj.year, month)}
               />
             </div>
-            <div className="month-val">
+           { <div className="month-val">
               {month} {dayArray.length===0 &&  <AddCircle onClick={(e)=> handlemoreMonthFilter( obj.year, month)} style={{ height: "15px" , marginBottom:'2px' }} />}   
               {dayArray.length!==0 && <RemoveCircleIcon style={{height:'15px'}} onClick={()=> setDayArray([])}/>}
-            </div>
+            </div>}
           </div>
         ))
       )}

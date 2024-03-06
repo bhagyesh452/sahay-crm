@@ -5,16 +5,16 @@ import axios from "axios";
 import Nodata from "../components/Nodata";
 import "../assets/styles.css";
 import { IconButton } from "@mui/material";
-
+import { FaRegCalendar } from "react-icons/fa";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconEye } from "@tabler/icons-react";
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
-import { DateRangePicker } from 'react-date-range';
+import "react-date-range/dist/styles.css"; // main style file
+import "react-date-range/dist/theme/default.css"; // theme css file
+import { DateRangePicker } from "react-date-range";
 import { FaChevronDown } from "react-icons/fa6";
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
@@ -23,17 +23,15 @@ import { lastDayOfDecade } from "date-fns";
 
 function Dashboard() {
   const [recentUpdates, setRecentUpdates] = useState([]);
-  const [dateRangenew, setDateRangenew] = useState([
-    {
-      startDate: new Date(),
-      endDate: new Date(),
-      key: "selection",
-    },
-  ]);
+
   const [bookingObject, setBookingObject] = useState([]);
+  const [bookingObjectFiltered, setBookingObjectFiltered] = useState([]);
+  const [showBookingDate, setShowBookingDate] = useState(false)
   const [buttonToggle, setButtonToggle] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
+  const [startDateAnother, setStartDateAnother] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [endDateAnother, setEndDateAnother] = useState(new Date());
   const [openTable, setOpenTable] = useState(false);
   const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
   const [displayDateRange, setDateRangeDisplay] = useState(false);
@@ -43,7 +41,7 @@ function Dashboard() {
   const [companyData, setCompanyData] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [dateRange, setDateRange] = useState("by-today");
-
+const [projectedDataDateRange, setProjectedDataDateRange] = useState([])
   const [filteredDataDateRange, setFilteredDataDateRange] = useState([]);
   const [showUpdates, setShowUpdates] = useState(false);
   const [followData, setfollowData] = useState([]);
@@ -246,26 +244,44 @@ function Dashboard() {
   const properCompanyData =
     selectedEmployee !== "" &&
     companyData.filter((obj) => obj.ename === selectedEmployee);
+    const selectionRangeAnother = {
+      startDate: startDateAnother,
+      endDate: endDateAnother,
+      key: "selection",
+    };
+    const handleSelectAnother = (date) => {
+      const filteredDataDateRange = bookingObject.filter((product) => {
+        const productDate = new Date(product["bookingDate"]);
+        return (
+          productDate >= date.selection.startDate &&
+          productDate <= date.selection.endDate
+        );
+      });
+      setStartDateAnother(date.selection.startDate);
+      setEndDateAnother(date.selection.endDate);
+      setFilteredBooking(filteredDataDateRange);
+    };
 
   // -----------------------------------projection-data--------------------------------------
 
   const fetchFollowUpData = async () => {
+
     try {
       const response = await fetch(`${secretKey}/projection-data`);
       const followdata = await response.json();
-      setfollowData(followdata);
-      console.log(followData);
+      setfollowData(followdata)
+      console.log(followData)
     } catch (error) {
-      console.error("Error fetching data:", error);
-      return { error: "Error fetching data" };
+      console.error('Error fetching data:', error);
+      return { error: 'Error fetching data' };
     }
-  };
+  }
 
   useEffect(() => {
     fetchFollowUpData();
   }, []);
 
-  const uniqueEnames = [...new Set(followData.map((item) => item.ename))];
+  const uniqueEnames = [...new Set(followData.map(item => item.ename))];
 
   const servicesByEname = followData.reduce((acc, curr) => {
     // Check if ename already exists in the accumulator
@@ -289,15 +305,13 @@ function Dashboard() {
 
   //console.log(totalservicesByEname);
 
+
   const companiesByEname = followData.reduce((accumulate, current) => {
     if (accumulate[current.ename]) {
       if (Array.isArray(accumulate[current.ename])) {
         accumulate[current.ename].push(current.companyName);
       } else {
-        accumulate[current.ename] = [
-          accumulate[current.ename],
-          current.companyName,
-        ];
+        accumulate[current.ename] = [accumulate[current.ename], current.companyName];
       }
     } else {
       accumulate[current.ename] = current.companyName;
@@ -305,15 +319,15 @@ function Dashboard() {
     return accumulate;
   }, []);
 
-  console.log(companiesByEname)
+  //console.log(companiesByEname)
 
 
   const totalcompaniesByEname = followData.reduce((accumulate, current) => {
     accumulate = accumulate.concat(current.companyName);
-    return accumulate;
-  }, []);
+    return accumulate
+  }, [])
 
-  console.log(totalcompaniesByEname.length)
+  //console.log(totalcompaniesByEname)
 
   function calculateSum(data) {
     const initialValue = {};
@@ -329,17 +343,20 @@ function Dashboard() {
         // If the ename does not exist in the accumulator, initialize it
         accumulator[ename] = {
           totalPaymentSum: totalPayment,
-          offeredPaymentSum: offeredPrize,
+          offeredPaymentSum: offeredPrize
         };
       }
       return accumulator;
     }, initialValue);
+
 
     return sum;
   }
 
   // Calculate the sums
   const sums = calculateSum(followData);
+
+  //console.log("sum", sums)
 
   let totalTotalPaymentSum = 0;
   let totalOfferedPaymentSum = 0;
@@ -362,18 +379,22 @@ function Dashboard() {
     return accumulate;
   }, []);
 
-  console.log(lastFollowDate)
+  //console.log(lastFollowDate)
 
 
   //console.log("Total totalPaymentSum:", totalTotalPaymentSum);
   //console.log("Total offeredPaymentSum:", totalOfferedPaymentSum);
   const functionOpenProjectionTable = (ename) => {
-    console.log("Ename:" , ename)
+    //console.log("Ename:", ename)
     setopenProjectionTable(true);
     const projectedData = followData.filter(obj => obj.ename === ename);
+    const projectedDataDateRange = filteredDataDateRange.filter(obj => obj.ename === ename)
+    console.log(projectedDataDateRange)
     setProjectedEmployee(projectedData);
+    setProjectedDataDateRange(projectedDataDateRange)
   };
   //console.log(projectedEmployee)
+  console.log(projectedDataDateRange)
 
   const closeProjectionTable = () => {
     setopenProjectionTable(false);
@@ -381,17 +402,15 @@ function Dashboard() {
 
   function calculateSumPopup(data) {
     const initialValue = { totalPaymentSumPopup: 0, offeredPaymentSumPopup: 0, offeredServicesPopup: [] };
-  
+
     const sum = data.reduce((accumulator, currentValue) => {
       // Concatenate offeredServices from each object into a single array
       const offeredServicesPopup = accumulator.offeredServicesPopup.concat(currentValue.offeredServices);
-      
+
       return {
-        totalPaymentSumPopup:
-          accumulator.totalPaymentSumPopup + currentValue.totalPayment,
-        offeredPaymentSumPopup:
-          accumulator.offeredPaymentSumPopup + currentValue.offeredPrize,
-        offeredServicesPopup: offeredServicesPopup,
+        totalPaymentSumPopup: accumulator.totalPaymentSumPopup + currentValue.totalPayment,
+        offeredPaymentSumPopup: accumulator.offeredPaymentSumPopup + currentValue.offeredPrize,
+        offeredServicesPopup: offeredServicesPopup
       };
     }, initialValue);
 
@@ -402,11 +421,13 @@ function Dashboard() {
   }
 
   // Calculate the sums
-  const { totalPaymentSumPopup, offeredPaymentSumPopup, offeredServicesPopup } =
-    calculateSumPopup(projectedEmployee);
+  const { totalPaymentSumPopup, offeredPaymentSumPopup, offeredServicesPopup } = calculateSumPopup(projectedEmployee);
   //console.log(totalPaymentSumPopup)
   //console.log(offeredPaymentSumPopup)
   // console.log(offeredServicesPopup)
+
+  // --------------------------------- date-range-picker-------------------------------------
+
   const handleIconClick = () => {
     if (!buttonToggle) {
       setDateRangeDisplay(true);
@@ -420,7 +441,8 @@ function Dashboard() {
     startDate: startDate,
     endDate: endDate,
     key: 'selection',
-  };
+  };
+
   const handleSelect = (date) => {
     const filteredDataDateRange = followData.filter(product => {
       const productDate = new Date(product["lastFollowUpdate"]);
@@ -433,9 +455,124 @@ function Dashboard() {
     setEndDate(date.selection.endDate);
     setFilteredDataDateRange(filteredDataDateRange);
     //console.log(filteredDataDateRange)
- };
+  };
+
+  //console.log("kuch" , filteredDataDateRange)
+
+  const servicesByEnameDateRange = filteredDataDateRange.reduce((acc, curr) => {
+    // Check if ename already exists in the accumulator
+    if (acc[curr.ename]) {
+      // If exists, concatenate the services array
+      acc[curr.ename] = acc[curr.ename].concat(curr.offeredServices);
+    } else {
+      // If not exists, create a new entry with the services array
+      acc[curr.ename] = curr.offeredServices;
+    }
+    return acc;
+  }, []);
+
+  //console.log(servicesByEnameDateRange)
+
+  const totalservicesByEnameDateRange = filteredDataDateRange.reduce((acc, curr) => {
+    // Concatenate all offeredServices into a single array
+    acc = acc.concat(curr.offeredServices);
+    return acc;
+  }, []);
+
+  //onsole.log(totalservicesByEnameDateRange)
+
+  const companiesByEnameDateRange = filteredDataDateRange.reduce((accumulate, current) => {
+    if (accumulate[current.ename]) {
+      if (Array.isArray(accumulate[current.ename])) {
+        accumulate[current.ename].push(current.companyName);
+      } else {
+        accumulate[current.ename] = [accumulate[current.ename], current.companyName];
+      }
+    } else {
+      accumulate[current.ename] = [current.companyName];
+    }
+    return accumulate;
+  }, []);
+
+  //console.log(companiesByEnameDateRange)
+
+  const totalcompaniesByEnameDateRange = filteredDataDateRange.reduce((accumulate, current) => {
+    accumulate = accumulate.concat(current.companyName);
+    return accumulate
+  }, [])
+
+  //console.log(totalcompaniesByEnameDateRange)
 
 
+  function calculateSumDateRange(data) {
+    const initialValue = {};
+
+    const sum = data.reduce((accumulator, current) => {
+      const { ename, totalPayment, offeredPrize } = current;
+
+      // If the ename already exists in the accumulator, accumulate the totalPayment and offeredPrize
+      if (accumulator[ename]) {
+        accumulator[ename].totalPaymentSum += totalPayment;
+        accumulator[ename].offeredPaymentSum += offeredPrize;
+      } else {
+        // If the ename does not exist in the accumulator, initialize it
+        accumulator[ename] = {
+          totalPaymentSum: totalPayment,
+          offeredPaymentSum: offeredPrize
+        };
+      }
+      return accumulator;
+    }, initialValue);
+
+
+    return sum;
+  }
+
+  // Calculate the sums
+  const sumsDateRange = calculateSumDateRange(filteredDataDateRange);
+
+  //console.log(sumsDateRange)
+
+  let totalTotalPaymentSumDateRange = 0;
+  let totalOfferedPaymentSumDateRange = 0;
+
+  // Iterate over the values of sumsDateRange object
+  Object.values(sumsDateRange).forEach(({ totalPaymentSum, offeredPaymentSum }) => {
+    totalTotalPaymentSumDateRange += totalPaymentSum;
+    totalOfferedPaymentSumDateRange += offeredPaymentSum;
+  });
+
+  //console.log("Total Total Payment Sum Date Range:", totalTotalPaymentSumDateRange);
+  //console.log("Total Offered Payment Sum Date Range:", totalOfferedPaymentSumDateRange);
+
+  function calculateSumPopupDateRange(data) {
+    const initialValue = { totalPaymentSumPopupDateRange: 0, offeredPaymentSumPopupDateRange: 0, offeredServicesPopupDateRange: [] };
+
+    const sum = data.reduce((accumulator, currentValue) => {
+      // Concatenate offeredServices from each object into a single array
+      const offeredServicesPopupDateRange = accumulator.offeredServicesPopupDateRange.concat(currentValue.offeredServices);
+
+      return {
+        totalPaymentSumPopupDateRange: accumulator.totalPaymentSumPopupDateRange + currentValue.totalPayment,
+        offeredPaymentSumPopupDateRange: accumulator.offeredPaymentSumPopupDateRange + currentValue.offeredPrize,
+        offeredServicesPopupDateRange: offeredServicesPopupDateRange
+      };
+    }, initialValue);
+
+    // // Remove duplicate services from the array
+    // sum.offeredServices = Array.from(new Set(sum.offeredServices));
+
+    return sum;
+  }
+
+  // Calculate the sums
+  const { totalPaymentSumPopupDateRange, offeredPaymentSumPopupDateRange, offeredServicesPopupDateRange } = calculateSumPopupDateRange(projectedDataDateRange);
+  console.log(totalPaymentSumPopupDateRange)
+  console.log(offeredPaymentSumPopupDateRange)
+  console.log(offeredServicesPopupDateRange)
+
+
+ 
 
   return (
     <div>
@@ -492,8 +629,27 @@ function Dashboard() {
                     <h2>Total Booking</h2>
                   </div>
                   <div className="filter d-flex align-items-center">
-                    <strong>Filter By :</strong>
+                    <strong>Select:</strong>
+                    <div style={{cursor:'pointer'}} onClick={()=>setShowBookingDate(!showBookingDate)} className="form-control">
+                      {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
+                    </div>
+                    {showBookingDate && <div
+                      style={{
+                        position: "absolute",
+                        top: "65px",
+                        zIndex: 9,
+                        right: "157px",
+                      }}
+                      className="booking-filter"
+                    >
+                      <DateRangePicker
+                        ranges={[selectionRangeAnother]}
+                        onChange={handleSelectAnother}
+                        onClose={()=>setShowBookingDate(false)}
+                      />
+                    </div>}
 
+                    {/* 
                     <div className="filter-by">
                       <select
                         value={dateRange}
@@ -511,7 +667,7 @@ function Dashboard() {
                         <option value="by-month">Month</option>
                         <option value="by-year">Year</option>
                       </select>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div className="card-body">
@@ -971,14 +1127,16 @@ function Dashboard() {
                         </tbody>
                         {employeeData.length !== 0 &&
                           companyData.length !== 0 && (
-                            <tfoot  style={{
-                              position: "sticky", // Make the footer sticky
-                              bottom: -1, // Stick it at the bottom
-                              backgroundColor: "#f6f2e9",
-                              color: "black",
-                              fontWeight: 500,
-                              zIndex: 2, // Ensure it's above the content
-                            }}>
+                            <tfoot
+                              style={{
+                                position: "sticky", // Make the footer sticky
+                                bottom: -1, // Stick it at the bottom
+                                backgroundColor: "#f6f2e9",
+                                color: "black",
+                                fontWeight: 500,
+                                zIndex: 2, // Ensure it's above the content
+                              }}
+                            >
                               <tr style={{ fontWeight: 500 }}>
                                 <td style={{ lineHeight: "32px" }} colSpan="2">
                                   Total
@@ -1276,85 +1434,88 @@ function Dashboard() {
                     )
                     .map((mainObj, index) => (
                       <>
-                      <tr key={mainObj._id}>
-                        <td style={{ lineHeight: "32px" }}>{`${
-                          index + 1
-                        }`}</td>
-                        <td>{`${formatDate(mainObj.bookingDate)}(${
-                          mainObj.bookingTime
-                        })`}</td>
-                        <td>{mainObj.bdeName}</td>
-                        <td>{mainObj.companyName}</td>
-                        <td>{mainObj.contactNumber}</td>
-                        <td>{mainObj.companyEmail}</td>
-                        <td>{mainObj.services}</td>
-                        <td>{(mainObj.totalPayment / 2).toLocaleString()}</td>
-                        <td>
-                          {(mainObj.firstPayment !== 0
-                            ? mainObj.firstPayment / 2
-                            : mainObj.totalPayment / 2
-                          ).toLocaleString()}
-                        </td>
-                        <td>
-                          {(mainObj.firstPayment !== 0
-                            ? mainObj.bdeName === mainObj.bdmName
-                              ? mainObj.totalPayment - mainObj.firstPayment
-                              : (mainObj.totalPayment - mainObj.firstPayment) /
-                                2
-                            : 0
-                          ).toLocaleString()}
-                        </td>
-                        <td>Yes</td>
-                        <td>{`Closed by ${mainObj.bdmName}` } <RemoveCircleIcon style={{cursor:'pointer'}} onClick={()=>{
-                          setExpand("")
-                        }}/> </td>
-                        <td>{mainObj.paymentRemarks}</td>
-                      </tr>
-                      <tr>
-                              <td style={{ lineHeight: "32px" }}>{`${
-                                index + 2
-                              }`}</td>
-                              <td>{`${formatDate(mainObj.bookingDate)}(${
-                                mainObj.bookingTime
-                              })`}</td>
-                              <td>{mainObj.bdmName}</td>
-                              <td>{mainObj.companyName}</td>
-                              <td>{mainObj.contactNumber}</td>
-                              <td>{mainObj.companyEmail}</td>
-                              <td>{mainObj.services[0]}</td>
-                              <td>
-                                {" "}
-                                {(
-                                  mainObj.totalPayment / 2
-                                ).toLocaleString()}{" "}
-                              </td>
-                              <td>
-                                {(mainObj.firstPayment !== 0
-                                  ? mainObj.firstPayment / 2
-                                  : mainObj.totalPayment / 2
-                                ).toLocaleString()}{" "}
-                              </td>
-                              <td>
-                                {(mainObj.firstPayment !== 0
-                                  ? mainObj.bdeName === mainObj.bdmName
-                                    ? mainObj.totalPayment -
-                                      mainObj.firstPayment
-                                    : (mainObj.totalPayment -
-                                        mainObj.firstPayment) /
-                                      2
-                                  : 0
-                                ).toLocaleString()}{" "}
-                              </td>
-                              <td>{"Yes"}</td>
-                              <td>{`${mainObj.bdeName}'s Case`}</td>
-                              <td>{mainObj.paymentRemarks}</td>
-                            </tr>
-                            
+                        <tr key={mainObj._id}>
+                          <td style={{ lineHeight: "32px" }}>{`${
+                            index + 1
+                          }`}</td>
+                          <td>{`${formatDate(mainObj.bookingDate)}(${
+                            mainObj.bookingTime
+                          })`}</td>
+                          <td>{mainObj.bdeName}</td>
+                          <td>{mainObj.companyName}</td>
+                          <td>{mainObj.contactNumber}</td>
+                          <td>{mainObj.companyEmail}</td>
+                          <td>{mainObj.services}</td>
+                          <td>{(mainObj.totalPayment / 2).toLocaleString()}</td>
+                          <td>
+                            {(mainObj.firstPayment !== 0
+                              ? mainObj.firstPayment / 2
+                              : mainObj.totalPayment / 2
+                            ).toLocaleString()}
+                          </td>
+                          <td>
+                            {(mainObj.firstPayment !== 0
+                              ? mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.totalPayment - mainObj.firstPayment
+                                : (mainObj.totalPayment -
+                                    mainObj.firstPayment) /
+                                  2
+                              : 0
+                            ).toLocaleString()}
+                          </td>
+                          <td>Yes</td>
+                          <td>
+                            {`Closed by ${mainObj.bdmName}`}{" "}
+                            <RemoveCircleIcon
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                setExpand("");
+                              }}
+                            />{" "}
+                          </td>
+                          <td>{mainObj.paymentRemarks}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ lineHeight: "32px" }}>{`${
+                            index + 2
+                          }`}</td>
+                          <td>{`${formatDate(mainObj.bookingDate)}(${
+                            mainObj.bookingTime
+                          })`}</td>
+                          <td>{mainObj.bdmName}</td>
+                          <td>{mainObj.companyName}</td>
+                          <td>{mainObj.contactNumber}</td>
+                          <td>{mainObj.companyEmail}</td>
+                          <td>{mainObj.services[0]}</td>
+                          <td>
+                            {" "}
+                            {(mainObj.totalPayment / 2).toLocaleString()}{" "}
+                          </td>
+                          <td>
+                            {(mainObj.firstPayment !== 0
+                              ? mainObj.firstPayment / 2
+                              : mainObj.totalPayment / 2
+                            ).toLocaleString()}{" "}
+                          </td>
+                          <td>
+                            {(mainObj.firstPayment !== 0
+                              ? mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.totalPayment - mainObj.firstPayment
+                                : (mainObj.totalPayment -
+                                    mainObj.firstPayment) /
+                                  2
+                              : 0
+                            ).toLocaleString()}{" "}
+                          </td>
+                          <td>{"Yes"}</td>
+                          <td>{`${mainObj.bdeName}'s Case`}</td>
+                          <td>{mainObj.paymentRemarks}</td>
+                        </tr>
                       </>
                     ))}
               </tbody>
               <tfoot>
-              {expand !== "" && 
+                {expand !== "" &&
                   filteredBooking
                     .filter(
                       (obj) =>
@@ -1363,28 +1524,32 @@ function Dashboard() {
                     )
                     .map((mainObj, index) => (
                       <>
-                      
-                      <tr key={mainObj._id}>
-                       <th colSpan={3}>Total :</th>
-                       <th>-</th>
-                       <th>-</th>
-                       <th>-</th>
-                       <th>-</th>
-                       <th>{(mainObj.totalPayment).toLocaleString()}</th>
-                       <th>{(mainObj.firstPayment!==0 ? mainObj.firstPayment : mainObj.totalPayment ).toLocaleString()}</th>
-                       <th>{(mainObj.firstPayment!==0 ? mainObj.totalPayment - mainObj.firstPayment : 0).toLocaleString()}</th>
-                       <th>-</th>
-                       <th>-</th>
-                       <th>-</th>
-                      </tr>
-                    
-                            
+                        <tr key={mainObj._id}>
+                          <th colSpan={3}>Total :</th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>{mainObj.totalPayment.toLocaleString()}</th>
+                          <th>
+                            {(mainObj.firstPayment !== 0
+                              ? mainObj.firstPayment
+                              : mainObj.totalPayment
+                            ).toLocaleString()}
+                          </th>
+                          <th>
+                            {(mainObj.firstPayment !== 0
+                              ? mainObj.totalPayment - mainObj.firstPayment
+                              : 0
+                            ).toLocaleString()}
+                          </th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>-</th>
+                        </tr>
                       </>
                     ))}
-
-
               </tfoot>
-              
             </table>
           </div>
         </DialogContent>
@@ -1611,22 +1776,24 @@ function Dashboard() {
       <div className="container-xl mt-2">
         <div className="card">
           <div className="card-header d-flex align-items-center justify-content-between">
-            <div>
+            <div onClick={handleIconClick}>
               <h2>Projection Dashboard</h2>
             </div>
-            <div><button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-              <FaChevronDown style={{ width: "14px", height: "14px", color: "#bcbaba", }} />
-            </button></div>
-            {displayDateRange && (
-              <div class="position-absolute" style={{ zIndex: "1", top: "15%", left: "75%" }} >
-                <DateRangePicker
-                  ranges={[selectionRange]}
-                  onClose={() => setDateRangeDisplay(false)}
-                  onChange={handleSelect}
-                />
-              </div>
-            )}
-
+            <div className="form-control d-flex align-items-center justify-content-between" style={{width:"15vw"}}> 
+              {displayDateRange && (
+                <div className="position-absolute " style={{ zIndex: "1", top: "15%", left: "75%" }} >
+                  <DateRangePicker
+                    ranges={[selectionRange]}
+                    onClose={() => setDateRangeDisplay(false)}
+                    onChange={handleSelect}
+                  />
+                </div>
+              )}
+              <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
+              <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black"}} />
+              </button>
+            </div>
           </div>
           <div></div>
           <div className="card-body">
@@ -1675,41 +1842,111 @@ function Dashboard() {
                   {uniqueEnames &&
                     uniqueEnames.map((ename, index) => {
                       // Calculate the count of services for the current ename
-                      const serviceCount = servicesByEname[ename] ? servicesByEname[ename].length : 0;
-                      const companyCount = companiesByEname[ename] ? companiesByEname[ename].length : 0;
-                      const totalPaymentByEname = sums[ename] ? sums[ename].totalPaymentSum : 0;
-                      const offeredPrizeByEname = sums[ename] ? sums[ename].offeredPaymentSum : 0;
+                      const serviceCount = filteredDataDateRange.length === 0 ? (
+                        // If filteredDataDateRange is empty, use servicesByEname
+                        servicesByEname[ename] ? servicesByEname[ename].length : 0
+                      ) : (
+                        // If filteredDataDateRange is not empty, use servicesByEnameDateRange
+                        servicesByEnameDateRange[ename] ? servicesByEnameDateRange[ename].length : 0
+                      );
+                      // const companyCount = companiesByEname[ename] ? companiesByEname[ename].length : 0;
+
+                      const companyCount = filteredDataDateRange.length === 0 ? (
+                        // If filteredDataDateRange is empty, use companiesByEname
+                        companiesByEname[ename] ? companiesByEname[ename].length : 0
+                      ) : (
+                        // If filteredDataDateRange is not empty, use companiesByEnameDateRange
+                        companiesByEnameDateRange[ename] ? companiesByEnameDateRange[ename].length : 0
+                      );
+                      //const totalPaymentByEname = sums[ename] ? sums[ename].totalPaymentSum : 0;
+                      const totalPaymentByEname = filteredDataDateRange.length === 0 ?
+                        (sums[ename] ? sums[ename].totalPaymentSum : 0) :
+                        (sumsDateRange[ename] ? sumsDateRange[ename].totalPaymentSum : 0);
+
+
+                      //const offeredPrizeByEname = sums[ename] ? sums[ename].offeredPaymentSum : 0;
+                      const offeredPrizeByEname = filteredDataDateRange.length === 0 ?
+                        (sums[ename] ? sums[ename].offeredPaymentSum : 0)
+                        :
+                        (sumsDateRange[ename] ? sumsDateRange[ename].offeredPaymentSum : 0)
+
+
+                      const lastFollowDates = lastFollowDate[ename] || []; // Assuming lastFollowDate[ename] is an array of dates
+
+                      // Get the latest date from the array
+                      const latestDate = new Date(Math.max(...lastFollowDates.map(date => new Date(date))));
+
+                      // Format the latest date into a string
+                      const formattedDate = latestDate.toLocaleDateString(); // Adjust the format as needed
+
 
                       return (
                         <tr key={`row-${index}`}>
                           <td style={{ lineHeight: "32px" }}>{index + 1}</td>
                           <td>{ename}</td>
-                          <td>{serviceCount}</td>
-                          <td>{totalPaymentByEname.toLocaleString()}</td>
-                          <td>{offeredPrizeByEname.toLocaleString()}</td>
                           <td>{companyCount}
                             <ViewListIcon
                               onClick={() => {
                                 functionOpenProjectionTable(ename);
                               }}
-                              style={{ cursor: "pointer" }}
+                              style={{ cursor: "pointer", marginRight: "-79px", marginLeft: "58px" }}
                             /></td>
+                          <td>{serviceCount}</td>
+                          <td>{totalPaymentByEname}</td>
+                          <td>{offeredPrizeByEname}</td>
+                          <td>{formattedDate}</td>
+
                         </tr>
                       );
                     })}
+
                 </tbody>
                 {followData && (
                   <tfoot>
                     <tr style={{ fontWeight: 500 }}>
                       <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                      <td>{totalservicesByEname.length}
+                      <td>{filteredDataDateRange.length === 0 ? (
+                        // If filteredDataDateRange is empty, use totalservicesByEname
+                        totalcompaniesByEname.length
+                      ) : (
+                        // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
+                        totalcompaniesByEnameDateRange.length
+                      )}
                       </td>
-                      <td>{totalTotalPaymentSum.toLocaleString()}
+                      <td>
+                        {filteredDataDateRange.length === 0 ? (
+                          // If filteredDataDateRange is empty, use totalservicesByEname
+                          totalservicesByEname.length
+                        ) : (
+                          // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
+                          totalservicesByEnameDateRange.length
+                        )}
                       </td>
-                      <td>{totalOfferedPaymentSum.toLocaleString()}
+                      {/* <td>{totalTotalPaymentSum.toLocaleString()}
+                      </td> */}
+                      <td>
+                        {filteredDataDateRange.length === 0 ? (
+                          // If filteredDataDateRange is empty, use totalservicesByEname
+                          totalTotalPaymentSum.toLocaleString()
+                        ) : (
+                          // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
+                          totalTotalPaymentSumDateRange.toLocaleString()
+                        )}
                       </td>
-                      <td>{totalcompaniesByEname.length}
+
+                      {/* <td>{totalOfferedPaymentSum.toLocaleString()}
+                      </td> */}
+
+                      <td>
+                        {filteredDataDateRange.length === 0 ? (
+                          // If filteredDataDateRange is empty, use totalservicesByEname
+                          totalOfferedPaymentSum.toLocaleString()
+                        ) : (
+                          // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
+                          totalOfferedPaymentSumDateRange.toLocaleString()
+                        )}
                       </td>
+
                     </tr>
                   </tfoot>
                 )}
@@ -1768,35 +2005,56 @@ function Dashboard() {
               </thead>
               <tbody>
                 {/* Map through uniqueEnames array to render rows */}
-                
-                    {projectedEmployee && projectedEmployee.map((obj, Index) => (
-                      
-                      <tr key={`sub-row-${Index}`}>
-                        <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                        {/* Render other employee data */}
-                        <td>{obj.ename}</td>
-                        <td>{obj.companyName}</td>
-                        <td>{obj.offeredServices.join(',')}</td>
-                        <td>{obj.totalPayment.toLocaleString()}</td>
-                        <td>{obj.offeredPrize.toLocaleString()}</td> 
-                        <td>{obj.estPaymentDate}</td> 
-                      </tr>
-                    ))}
+
+                {projectedDataDateRange.length === 0 ?
+                  (projectedEmployee.map((obj, Index) => (
+                    <tr key={`sub-row-${Index}`}>
+                      <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                      {/* Render other employee data */}
+                      <td>{obj.ename}</td>
+                      <td>{obj.companyName}</td>
+                      <td>{obj.offeredServices.join(',')}</td>
+                      <td>{obj.totalPayment.toLocaleString()}</td>
+                      <td>{obj.offeredPrize.toLocaleString()}</td>
+                      <td>{obj.estPaymentDate}</td>
+                    </tr>
+                  ))) :
+                  (projectedDataDateRange.map((obj, Index) => (
+                    <tr key={`sub-row-${Index}`}>
+                      <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                      {/* Render other employee data */}
+                      <td>{obj.ename}</td>
+                      <td>{obj.companyName}</td>
+                      <td>{obj.offeredServices.join(',')}</td>
+                      <td>{obj.totalPayment.toLocaleString()}</td>
+                      <td>{obj.offeredPrize.toLocaleString()}</td>
+                      <td>{obj.estPaymentDate}</td>
+                    </tr>
+                  )))
+                }
               </tbody>
               {projectedEmployee && (
                 <tfoot>
-                <tr style={{ fontWeight: 500 }}>
-                  <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                  <td>{projectedEmployee.length}</td>
-                  <td>{offeredServicesPopup.length}
-                  </td>
-                  <td>{totalPaymentSumPopup.toLocaleString()}
-                  </td>
-                  <td>{offeredPaymentSumPopup.toLocaleString()}
-                  </td>
-                  <td>-</td>
-                </tr>
-              </tfoot>
+                  <tr style={{ fontWeight: 500 }}>
+                    <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                    {/* <td>{projectedEmployee.length}</td> */}
+                    <td>
+                      {projectedDataDateRange.length === 0 ? projectedEmployee.length : projectedDataDateRange.length}
+                    </td>
+                    {/* <td>{offeredServicesPopup.length}
+                    </td> */}
+                    <td>{projectedDataDateRange.length === 0 ? offeredServicesPopup.length : offeredServicesPopupDateRange.length}</td>
+                    {/* <td>{totalPaymentSumPopup.toLocaleString()}
+                    </td> */}
+                    <td>
+                      {projectedDataDateRange.length === 0 ? totalPaymentSumPopup.toLocaleString() : totalPaymentSumPopupDateRange.toLocaleString()}
+                    </td>
+                    {/* <td>{offeredPaymentSumPopup.toLocaleString()}
+                    </td> */}
+                    <td>{projectedDataDateRange.length === 0 ? offeredPaymentSumPopup.toLocaleString() : offeredPaymentSumPopupDateRange.toLocaleString()}</td>
+                    <td>-</td>
+                  </tr>
+                </tfoot>
               )}
             </table>
           </div>
