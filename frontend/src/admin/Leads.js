@@ -4,6 +4,7 @@ import Header from "./Header";
 import Navbar from "./Navbar";
 import axios from "axios";
 import { IconChevronLeft } from "@tabler/icons-react";
+import debounce from 'lodash/debounce';
 import { IconChevronRight } from "@tabler/icons-react";
 import CircularProgress from "@mui/material/CircularProgress";
 import UndoIcon from "@mui/icons-material/Undo";
@@ -16,8 +17,7 @@ import SwapVertIcon from "@mui/icons-material/SwapVert";
 import "react-datepicker/dist/react-datepicker.css";
 import "../assets/styles.css";
 import Swal from "sweetalert2";
-import AddCircle from "@mui/icons-material/AddCircle.js";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+
 import {
   Button,
   Dialog,
@@ -40,8 +40,6 @@ function Leads() {
   const [open, openchange] = useState(false);
   const [loading, setLoading] = useState(false);
   const [month, setMonth] = useState(0);
-  const [selectAllChecked, setSelectAllChecked] = useState(true);
-  const [dayArray, setDayArray] = useState([]);
   const [year, setYear] = useState();
   const [openNew, openchangeNew] = useState(false);
   const [openEmp, openchangeEmp] = useState(false);
@@ -53,8 +51,6 @@ function Leads() {
   const [openAssign, setOpenAssign] = useState(false);
   const fileInputRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedYears, setSelectedYears] = useState([]);
-const [selectedMonths, setSelectedMonths] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [citySearch, setcitySearch] = useState("");
@@ -77,7 +73,6 @@ const [selectedMonths, setSelectedMonths] = useState([]);
   const [cnumber, setCnumber] = useState(0);
   const [state, setState] = useState("");
   const [openRemarks, openchangeRemarks] = useState(false);
-  const [expandYear, setExpandYear] = useState(0);
   const [city, setCity] = useState("");
   const [cidate, setCidate] = useState(null);
   const itemsPerPage = 500;
@@ -94,7 +89,7 @@ const [selectedMonths, setSelectedMonths] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
   //fetch data
-  const fetchData = async () => {
+  const fetchDatadebounce = async () => {
     try {
       const response = await axios.get(`${secretKey}/leads`);
 
@@ -106,6 +101,16 @@ const [selectedMonths, setSelectedMonths] = useState([]);
       console.error("Error fetching data:", error.message);
     }
   };
+  const fetchData = debounce(async () => {
+    const data = await fetchDatadebounce();
+    if (data) {
+      setData(data.reverse());
+      setmainData(data.filter((item) => item.ename === 'Not Alloted'));
+    }
+  }, 300); // Adjust debounce delay as needed
+  
+  // Fetch data automatically when the component mounts
+
   const handleSort = (sortType) => {
     switch (sortType) {
       case "oldest":
@@ -940,155 +945,18 @@ const [selectedMonths, setSelectedMonths] = useState([]);
   const handleFilterAssignDate = () => {
     setOpenAssign(!openAssign);
   };
-  const createNewArray = (data) => {
-    let dataArray;
 
-    if (dataStatus === "Unassigned") {
-      // Filter data for all statuses
-      dataArray = data.filter(
-        (obj) =>
-          obj.ename === "Not Alloted"
-         
-      );
-    }  else {
-      // Handle other cases if needed
-      dataArray = data.filter(
-        (obj) =>
-          obj.ename !== "Not Alloted"
-         
-      );
+  const debouncedFilterData = debounce((status) => {
+    // Filtering logic to set the mainData based on the status
+    if(status === "Assigned"){
+      setmainData(data.filter((item) => item.ename !== "Not Alloted"));
     }
-    const newArray = [];
-
-    // Iterate over each object in the original array
-    dataArray.forEach((obj) => {
-      const date = new Date(obj["Company Incorporation Date  "]);
-      const year = date.getFullYear();
-      const month = date.toLocaleString("default", { month: "short" });
-     
-      // Check if year already exists in newArray
-      const yearIndex = newArray.findIndex((item) => item.year === year);
-      if (yearIndex !== -1) {
-        // Year already exists, check if month exists in the corresponding year's month array
-        const monthIndex = newArray[yearIndex].month.findIndex(
-          (m) => m === month
-        );
-        if (monthIndex === -1) {
-          // Month doesn't exist, add it to the month array
-          newArray[yearIndex].month.push(month);
-        }
-      } else {
-        // Year doesn't exist, create a new entry
-        newArray.push({ year: year, month: [month] });
-      }
-    });
-
-    return newArray;
-  };
-
-  // Call the function to create the new array
-  const resultArray =
-    data.length !== 0 ? createNewArray(data) : [];
-    const handleSelectAllChange = (e) => {
-      const isChecked = e.target.checked;
-      setSelectAllChecked(isChecked);
-      if (isChecked) {
-        const newEmpData = 
-        dataStatus === "Unassigned"
-          ? data.filter((obj) => obj.ename === "Not Alloted")
-          :  data.filter((obj) => obj.ename !== "Not Alloted")
-         
-        setmainData(newEmpData);
-        setSelectedYears([...new Set(newEmpData.map(data => new Date(data["Company Incorporation Date  "]).getFullYear().toString()))]);
-        setSelectedMonths([]);
-      } else {
-        setmainData([]);
-        setSelectedYears([]);
-        setSelectedMonths([]);
-      }
-    };
+    else{
+      setmainData(data.filter((item) => item.ename === "Not Alloted"));
+    }
     
-    // Handle year checkbox change
-    const handleYearFilterChange = (e, selectedYear) => {
-      const isChecked = e.target.checked;
-      setSelectAllChecked(false); // Uncheck "Select All" when a year checkbox is clicked
-      if (isChecked) {
-        const newEmpData = 
-        dataStatus === "Unassigned"
-          ? data.filter((obj) => obj.ename === "Not Alloted")
-          :  data.filter((obj) => obj.ename !== "Not Alloted")
-        setSelectedYears([...selectedYears, selectedYear]); // Add selected year to the list
-        const filteredData = newEmpData.filter(data => new Date(data["Company Incorporation Date  "]).getFullYear() === selectedYear);
-    
-        setmainData([...mainData, ...filteredData]); // Add filtered data to the existing employeeData
-      } else {
-        setSelectedYears(selectedYears.filter(year => year !== selectedYear)); // Remove selected year from the list
-        const filteredData = mainData.filter(data => new Date(data["Company Incorporation Date  "]).getFullYear() !== selectedYear);
-        setmainData(filteredData); // Update employeeData with filtered data
-      }
-    };
-    
-    // Handle month checkbox change
-    const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
-      const isChecked = e.target.checked;
-      if (isChecked) {
-        
-        setSelectedMonths([...selectedMonths, selectedMonth]);
-        
-        const newEmpData = 
-        dataStatus === "Unassigned"
-          ? data.filter((obj) => obj.ename === "Not Alloted")
-          :  data.filter((obj) => obj.ename !== "Not Alloted")
-        const filteredData = newEmpData.filter(data => {
-          const year = new Date(data["Company Incorporation Date  "]).getFullYear().toString();
-          const month = new Date(data["Company Incorporation Date  "]).toLocaleString("default", { month: "short" });
-
-          return year === selectedYear.toString() && month === selectedMonth.toString();
-        });
-        setmainData(filteredData);
-      } else {
-        setSelectedMonths(selectedMonths.filter(month => month !== selectedMonth));
-        const filteredData = mainData.filter(data => {
-          const year = new Date(data["Company Incorporation Date  "]).getFullYear().toString();
-          const month = new Date(data["Company Incorporation Date  "]).toLocaleString('default', { month: 'short' });
-         
-          return year !== selectedYear.toString() || month !== selectedMonth.toString();
-        });
-        setmainData(filteredData);
-      }
-    };
-    const handlemoreMonthFilter = (year, month) => {
-      // Filter data based on the selected year and month
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const bookingObject = 
-      dataStatus === "Unassigned"
-        ? data.filter((obj) => obj.ename === "Not Alloted")
-        :  data.filter((obj) => obj.ename !== "Not Alloted")
-   
-      const filteredData = bookingObject.filter((company) => {
-        const companyDate = new Date(company["Company Incorporation Date  "]);
-      
-        return companyDate.getFullYear() === year && months[companyDate.getMonth()] === month;
-      });
-      const uniqueDates = [];
-    
-      // Iterate over the filtered data to extract unique dates
-      filteredData.forEach((company) => {
-        const companyDate = new Date(company["Company Incorporation Date  "]);
-        const formattedDate = `${companyDate.getDate()}/${companyDate.getMonth() + 1}/${companyDate.getFullYear()}`;
-        if (!uniqueDates.includes(formattedDate)) {
-          uniqueDates.push(formattedDate);
-        }
-      });
-      // Now uniqueDates array contains all unique dates for the selected year and month
-      const dayArray1 = uniqueDates.map(date => {
-        const parts = date.split('/'); // Split the date string by '/'
-        return parts[0]; // Return the first part, which is the day
-    });
-      setDayArray(dayArray1);
-
-    };
- 
+    setDataStatus(status)
+  }, 300); 
   return (
     <div>
       <Header />
@@ -2001,11 +1869,8 @@ const [selectedMonths, setSelectedMonths] = useState([]);
                       : "nav-link"
                   }
                   data-bs-toggle="tab"
-                  onClick={() => {
-                    setDataStatus("Unassigned");
-                    setmainData(
-                      data.filter((item) => item.ename === "Not Alloted")
-                    );
+                  onClick={()=>{
+                    debouncedFilterData("Unassigned")
                   }}
                 >
                   UnAssigned
@@ -2023,11 +1888,8 @@ const [selectedMonths, setSelectedMonths] = useState([]);
                       : "nav-link"
                   }
                   data-bs-toggle="tab"
-                  onClick={() => {
-                    setDataStatus("Assigned");
-                    setmainData(
-                      data.filter((item) => item.ename !== "Not Alloted")
-                    );
+                  onClick={()=>{
+                    debouncedFilterData("Assigned")
                   }}
                 >
                   Assigned
@@ -2097,100 +1959,6 @@ const [selectedMonths, setSelectedMonths] = useState([]);
                                   <SwapVertIcon style={{ height: "16px" }} />
                                   Newest
                                 </div>
-                                <div style={{ marginLeft: "5px" }} className="inco-subFilter d-flex">
-  <div style={{ marginRight: "5px" }}>
-    <input
-      type="checkbox"
-      name="year-filter"
-      id={`year-filter-all`}
-      checked={selectAllChecked}
-      onChange={(e) => handleSelectAllChange(e)}
-    />
-  </div>
-  <div className="year-val">
-    Select All
-  </div>
-</div>
-
-{resultArray.length !== 0 &&
-  resultArray.map((obj) => (
-    <div key={obj.year}>
-      <div style={{ marginLeft: "5px" }} className="inco-subFilter d-flex">
-        <div style={{ marginRight: "5px" }}>
-          <input
-            type="checkbox"
-            name="year-filter"
-            id={`year-filter-${obj.year}`}
-            checked={selectedYears.includes(obj.year)}
-            onChange={(e) => handleYearFilterChange(e, obj.year)}
-          />
-        </div>
-        <div className="year-val">
-          {obj.year}
-        </div>
-        
-        {expandYear !== obj.year && (
-          <div
-            className="expand-year d-flex"
-            onClick={() => {
-              setExpandYear(obj.year);
-            }}
-          >
-            <AddCircle style={{ height: "15px" }} />
-          </div>
-        )}
-        {expandYear === obj.year && (
-          <div
-            className="expand-year d-flex"
-            onClick={() => {
-              setExpandYear(0);
-            }}
-            
-          >
-            <RemoveCircleIcon style={{ height: "15px" }} />
-          </div>
-        )}
-      </div>
-      {obj.month.length !== 0 && expandYear === obj.year && (
-        obj.month.map((month) => (
-          <div key={`${obj.year}-${month}`} style={{ marginLeft: "25px" }} className="inco-subFilter d-flex">
-            <div style={{ marginRight: "5px" }}>
-              <input
-                type="checkbox"
-                name="month-filter"
-                id={`month-filter-${month}`}
-                checked={selectedMonths.includes(month)}
-                onChange={(e) => handleMonthFilterChange(e, obj.year, month)}
-              />
-            </div>
-           { <div className="month-val">
-              {month} {dayArray.length===0 &&  <AddCircle onClick={(e)=> handlemoreMonthFilter( obj.year, month)} style={{ height: "15px" , marginBottom:'2px' }} />}   
-              {dayArray.length!==0 && <RemoveCircleIcon style={{height:'15px'}} onClick={()=> setDayArray([])}/>}
-            </div>}
-          </div>
-        ))
-      )}
-      {dayArray.length!==0 && dayArray.map((val)=>(
-          <>
-          <div key={`${val}`} style={{ marginLeft: "35px" }} className="inco-subFilter d-flex">
-            <div style={{ marginRight: "5px" }}>
-              <input
-                type="checkbox"
-                name="day-filter"
-                id={`day-filter-${val}`}
-              />
-            </div>
-            <div className="month-val">
-              {val}  
-            </div>
-
-
-
-          </div>
-          </>
-      )) }
-    </div>
-  ))}
 
                                 <div
                                   className="inco-subFilter"
@@ -2205,7 +1973,7 @@ const [selectedMonths, setSelectedMonths] = useState([]);
                       <th>State</th>
                       <th>Status</th>
                       <th>Remarks</th>
-                      <th>Alloted to</th>
+                      <th>Assigned to</th>
                       <th>
                               Assigned on
                               <FilterListIcon

@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const compression = require('compression');
 // const { Server } = require("socket.io");
 // const http = require("http");
 // const server = http.createServer(app);
@@ -40,6 +41,7 @@ require("dotenv").config();
 const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(cors());
+app.use(compression());
 var http = require("http").createServer(app);
 var socketIO = require("socket.io")(http, {
   cors: {
@@ -366,8 +368,47 @@ app.get("/api/einfo", async (req, res) => {
 });
 app.get("/api/leads", async (req, res) => {
   try {
-    const data = await CompanyModel.find();
-    res.json(data);
+    // Fetch data using lean queries to retrieve plain JavaScript objects
+    const data = await CompanyModel.find().lean();
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+app.get("/api/new-leads", async (req, res) => {
+  try {
+    const { startIndex, endIndex } = req.query;
+    const start = parseInt(startIndex) || 0;
+    const end = parseInt(endIndex) || 500;
+
+    const data = await CompanyModel.find({ ename: "Not Alloted" })
+      .skip(start)
+      .limit(end - start)
+      .lean();
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/api/leads2", async (req, res) => {
+  try {
+    // Get the query parameters for pagination
+    const { startIndex, endIndex } = req.query;
+
+    // Convert startIndex and endIndex to numbers
+    const start = parseInt(startIndex);
+    const end = parseInt(endIndex);
+
+    // Fetch data using lean queries to retrieve plain JavaScript objects
+    const data = await CompanyModel.find().skip(start).limit(end - start).lean();
+
+    // Send the data as the API response
+    res.send(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });

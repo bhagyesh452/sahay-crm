@@ -3,6 +3,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Navigate, Route } from "react-router-dom";
 import { useState } from "react";
 
+
 import EmployeeLogin from "./components/EmployeeLogin";
 import ConveertedLeads from "./components/ConveertedLeads";
 import EmployeePanel from "./employeeComp/EmployeePanel";
@@ -24,6 +25,7 @@ import CompanyParticular from "./admin/CompanyParticular.jsx";
 import Analysis_dashboard from "./Processing/Analysis_dashboard.jsx";
 import EmployeeDashboard from "./employeeComp/EmployeeDashboard.jsx";
 import Bellicon_processing from "./Processing/style_processing/Bellicon_processing.js";
+import NewLeads from "./admin/NewLeads.jsx";
 
 
 
@@ -65,6 +67,7 @@ function App() {
             <>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/employees" element={<Employees />} />
+              <Route path="/admin/new-leads" element={<NewLeads/>}/>
               <Route
                 path="/admin/employees/:id"
                 element={<EmployeeParticular />}
