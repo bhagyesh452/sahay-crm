@@ -11,6 +11,7 @@ import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import Select from "react-select";
 import Nodata from "./Nodata";
 
+
 function CompanyList({ companies, onCompanyClick }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedField, setSelectedField] = useState("companyName");

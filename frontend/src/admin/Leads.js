@@ -4,6 +4,7 @@ import Header from "./Header";
 import Navbar from "./Navbar";
 import axios from "axios";
 import { IconChevronLeft } from "@tabler/icons-react";
+import debounce from 'lodash/debounce';
 import { IconChevronRight } from "@tabler/icons-react";
 import CircularProgress from "@mui/material/CircularProgress";
 import UndoIcon from "@mui/icons-material/Undo";
@@ -88,7 +89,7 @@ function Leads() {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
   //fetch data
-  const fetchData = async () => {
+  const fetchDatadebounce = async () => {
     try {
       const response = await axios.get(`${secretKey}/leads`);
 
@@ -100,6 +101,16 @@ function Leads() {
       console.error("Error fetching data:", error.message);
     }
   };
+  const fetchData = debounce(async () => {
+    const data = await fetchDatadebounce();
+    if (data) {
+      setData(data.reverse());
+      setmainData(data.filter((item) => item.ename === 'Not Alloted'));
+    }
+  }, 300); // Adjust debounce delay as needed
+  
+  // Fetch data automatically when the component mounts
+
   const handleSort = (sortType) => {
     switch (sortType) {
       case "oldest":
@@ -934,6 +945,18 @@ function Leads() {
   const handleFilterAssignDate = () => {
     setOpenAssign(!openAssign);
   };
+
+  const debouncedFilterData = debounce((status) => {
+    // Filtering logic to set the mainData based on the status
+    if(status === "Assigned"){
+      setmainData(data.filter((item) => item.ename !== "Not Alloted"));
+    }
+    else{
+      setmainData(data.filter((item) => item.ename === "Not Alloted"));
+    }
+    
+    setDataStatus(status)
+  }, 300); 
   return (
     <div>
       <Header />
@@ -1846,11 +1869,8 @@ function Leads() {
                       : "nav-link"
                   }
                   data-bs-toggle="tab"
-                  onClick={() => {
-                    setDataStatus("Unassigned");
-                    setmainData(
-                      data.filter((item) => item.ename === "Not Alloted")
-                    );
+                  onClick={()=>{
+                    debouncedFilterData("Unassigned")
                   }}
                 >
                   UnAssigned
@@ -1868,11 +1888,8 @@ function Leads() {
                       : "nav-link"
                   }
                   data-bs-toggle="tab"
-                  onClick={() => {
-                    setDataStatus("Assigned");
-                    setmainData(
-                      data.filter((item) => item.ename !== "Not Alloted")
-                    );
+                  onClick={()=>{
+                    debouncedFilterData("Assigned")
                   }}
                 >
                   Assigned
@@ -1956,7 +1973,7 @@ function Leads() {
                       <th>State</th>
                       <th>Status</th>
                       <th>Remarks</th>
-                      <th>Alloted to</th>
+                      <th>Assigned to</th>
                       <th>
                               Assigned on
                               <FilterListIcon

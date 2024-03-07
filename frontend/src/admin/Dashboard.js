@@ -14,6 +14,12 @@ import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
 import { FaChevronDown } from "react-icons/fa6";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
+import { options } from "../components/Options.js";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import { FaRegCalendar } from "react-icons/fa";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import { FcDatabase } from "react-icons/fc";
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import { lastDayOfDecade } from "date-fns";
@@ -26,7 +32,7 @@ function Dashboard() {
   const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
   const [filteredBooking, setFilteredBooking] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
-  const [expand, setExpand] = useState(null);
+  const [expand, setExpand] = useState("");
   const [companyData, setCompanyData] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [dateRange, setDateRange] = useState("by-today");
@@ -38,7 +44,14 @@ function Dashboard() {
   const [openProjectionTable, setopenProjectionTable] = useState(false)
   const [projectedEmployee, setProjectedEmployee] = useState([]);
   const [displayDateRange, setDateRangeDisplay] = useState(false)
+  const [displayDateRangeEmployee, setDateRangeDisplayEmployee] = useState(false)
   const [buttonToggle, setButtonToggle] = useState(false);
+  const [projectedDataDateRange, setProjectedDataDateRange] = useState([])
+  const [startDateEmployee, setStartDateEmployee] = useState(new Date());
+  const [endDateEmployee, setEndDateEmployee] = useState(new Date());
+  const [showBookingDate, setShowBookingDate] = useState(false)
+  const [startDateAnother, setStartDateAnother] = useState(new Date());
+  const [endDateAnother, setEndDateAnother] = useState(new Date());
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -52,6 +65,8 @@ function Dashboard() {
       .then((response) => response.json())
       .then((data) => {
         setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
+        setcompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted"));
+
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -219,7 +234,7 @@ function Dashboard() {
   };
   const closeTable = () => {
     setOpenTable(false);
-    setExpand(null);
+    setExpand("");
   };
 
   const formattedDates =
@@ -235,7 +250,26 @@ function Dashboard() {
     selectedEmployee !== "" &&
     companyData.filter((obj) => obj.ename === selectedEmployee);
 
-  // -----------------------------------projection-data--------------------------------------
+  const selectionRangeAnother = {
+    startDate: startDateAnother,
+    endDate: endDateAnother,
+    key: "selection",
+  };
+  const handleSelectAnother = (date) => {
+    const filteredDataDateRange = bookingObject.filter((product) => {
+      const productDate = new Date(product["bookingDate"]);
+      return (
+        productDate >= date.selection.startDate &&
+        productDate <= date.selection.endDate
+      );
+    });
+    setStartDateAnother(date.selection.startDate);
+    setEndDateAnother(date.selection.endDate);
+    setFilteredBooking(filteredDataDateRange);
+  };
+
+
+  // ----------------------------------projection-dashboard-----------------------------------------------
 
   const fetchFollowUpData = async () => {
 
@@ -243,7 +277,7 @@ function Dashboard() {
       const response = await fetch(`${secretKey}/projection-data`);
       const followdata = await response.json();
       setfollowData(followdata)
-      console.log(followData)
+      console.log("followdata", followdata)
     } catch (error) {
       console.error('Error fetching data:', error);
       return { error: 'Error fetching data' };
@@ -292,7 +326,7 @@ function Dashboard() {
     return accumulate;
   }, []);
 
-  console.log(companiesByEname)
+  //console.log(companiesByEname)
 
 
   const totalcompaniesByEname = followData.reduce((accumulate, current) => {
@@ -300,7 +334,7 @@ function Dashboard() {
     return accumulate
   }, [])
 
-  console.log(totalcompaniesByEname)
+  //console.log(totalcompaniesByEname)
 
   function calculateSum(data) {
     const initialValue = {};
@@ -329,6 +363,8 @@ function Dashboard() {
   // Calculate the sums
   const sums = calculateSum(followData);
 
+  //console.log("sum", sums)
+
   let totalTotalPaymentSum = 0;
   let totalOfferedPaymentSum = 0;
 
@@ -352,18 +388,20 @@ function Dashboard() {
 
   console.log(lastFollowDate)
 
-
+  console.log(followData)
   //console.log("Total totalPaymentSum:", totalTotalPaymentSum);
   //console.log("Total offeredPaymentSum:", totalOfferedPaymentSum);
   const functionOpenProjectionTable = (ename) => {
-    console.log("Ename:", ename)
+    //console.log("Ename:", ename)
     setopenProjectionTable(true);
     const projectedData = followData.filter(obj => obj.ename === ename);
-    //const projectedDataDateRange = filteredDataDateRange.filter(obj => obj.ename === ename)
-    //console.log(projectedDataDateRange)
+    const projectedDataDateRange = filteredDataDateRange.filter(obj => obj.ename === ename)
+    console.log(projectedDataDateRange)
     setProjectedEmployee(projectedData);
+    setProjectedDataDateRange(projectedDataDateRange)
   };
   //console.log(projectedEmployee)
+  console.log(projectedDataDateRange)
 
   const closeProjectionTable = () => {
     setopenProjectionTable(false);
@@ -415,10 +453,17 @@ function Dashboard() {
   const handleSelect = (date) => {
     const filteredDataDateRange = followData.filter(product => {
       const productDate = new Date(product["lastFollowUpdate"]);
-      return (
-        productDate >= date.selection.startDate &&
-        productDate <= date.selection.endDate
-      );
+      if (formatDate(date.selection.startDate) === formatDate(date.selection.endDate)) {
+        console.log(formatDate(date.selection.startDate))
+        console.log(formatDate(date.selection.endDate))
+        console.log(formatDate(productDate))
+        return formatDate(productDate) === formatDate(date.selection.startDate);
+      } else {
+        return (
+          productDate >= date.selection.startDate &&
+          productDate <= date.selection.endDate
+        );
+      }
     });
     setStartDate(date.selection.startDate);
     setEndDate(date.selection.endDate);
@@ -426,7 +471,7 @@ function Dashboard() {
     //console.log(filteredDataDateRange)
   };
 
-  console.log(filteredDataDateRange)
+  //console.log("kuch" , filteredDataDateRange)
 
   const servicesByEnameDateRange = filteredDataDateRange.reduce((acc, curr) => {
     // Check if ename already exists in the accumulator
@@ -463,14 +508,14 @@ function Dashboard() {
     return accumulate;
   }, []);
 
-  console.log(companiesByEnameDateRange)
+  //console.log(companiesByEnameDateRange)
 
   const totalcompaniesByEnameDateRange = filteredDataDateRange.reduce((accumulate, current) => {
     accumulate = accumulate.concat(current.companyName);
     return accumulate
   }, [])
 
-  console.log(totalcompaniesByEnameDateRange)
+  //console.log(totalcompaniesByEnameDateRange)
 
 
   function calculateSumDateRange(data) {
@@ -514,6 +559,170 @@ function Dashboard() {
   //console.log("Total Total Payment Sum Date Range:", totalTotalPaymentSumDateRange);
   //console.log("Total Offered Payment Sum Date Range:", totalOfferedPaymentSumDateRange);
 
+  function calculateSumPopupDateRange(data) {
+    const initialValue = { totalPaymentSumPopupDateRange: 0, offeredPaymentSumPopupDateRange: 0, offeredServicesPopupDateRange: [] };
+
+    const sum = data.reduce((accumulator, currentValue) => {
+      // Concatenate offeredServices from each object into a single array
+      const offeredServicesPopupDateRange = accumulator.offeredServicesPopupDateRange.concat(currentValue.offeredServices);
+
+      return {
+        totalPaymentSumPopupDateRange: accumulator.totalPaymentSumPopupDateRange + currentValue.totalPayment,
+        offeredPaymentSumPopupDateRange: accumulator.offeredPaymentSumPopupDateRange + currentValue.offeredPrize,
+        offeredServicesPopupDateRange: offeredServicesPopupDateRange
+      };
+    }, initialValue);
+
+    // // Remove duplicate services from the array
+    // sum.offeredServices = Array.from(new Set(sum.offeredServices));
+
+    return sum;
+  }
+
+  // Calculate the sums
+  const { totalPaymentSumPopupDateRange, offeredPaymentSumPopupDateRange, offeredServicesPopupDateRange } = calculateSumPopupDateRange(projectedDataDateRange);
+  console.log(totalPaymentSumPopupDateRange)
+  console.log(offeredPaymentSumPopupDateRange)
+  console.log(offeredServicesPopupDateRange)
+
+
+
+  // -------------------------------------------------------------sorting ascending-descending------------------------------------------
+
+  const [incoFilter, setIncoFilter] = useState("");
+  const [originalEmployeeData, setOriginalEmployeeData] = useState([]);
+  const [openFilters, setOpenFilters] = useState({
+    untouched: false,
+    busy: false,
+    notPickedUp: false,
+    junk: false,
+    followUp: false,
+    interested: false,
+    notInterested: false,
+    matured: false,
+    totalLeads: false,
+  });
+
+
+  const handleFilterIncoDate = (header) => {
+    setOpenFilters(prevState => {
+      const updatedState = {};
+      for (const key in prevState) {
+        updatedState[key] = key === header ? !prevState[header] : false;
+      }
+      return updatedState;
+    });
+  };
+
+  const handleSort = (sortType) => {
+
+    switch (sortType) {
+      case "ascending":
+        setIncoFilter("ascending");
+        const untouchedCountAscending = {}
+        companyData.forEach((company) => {
+          if ((openFilters.untouched && company.Status === "Untouched") ||
+            (openFilters.busy && company.Status === "Busy") ||
+            (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
+            (openFilters.junk && company.Status === "Junk") ||
+            (openFilters.followUp && company.Status === "FollowUp") ||
+            (openFilters.interested && company.Status === "Interested") ||
+            (openFilters.notInterested && company.Status === "Not Interested") ||
+            (openFilters.matured && company.Status === "Matured") ||
+            (openFilters.totalLeads)
+          ) {
+            untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+          }
+        });
+
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+        employeeData.sort((a, b) => {
+          const countA = untouchedCountAscending[a.ename] || 0;
+          const countB = untouchedCountAscending[b.ename] || 0;
+          return countA - countB; // Sort in ascending order of "Untouched" count
+        });
+        break;
+      case "descending":
+        setIncoFilter("descending");
+        const untouchedCount = {};
+        companyData.forEach((company) => {
+          if ((openFilters.untouched && company.Status === "Untouched") ||
+            (openFilters.busy && company.Status === "Busy") ||
+            (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
+            (openFilters.junk && company.Status === "Junk") ||
+            (openFilters.followUp && company.Status === "FollowUp") ||
+            (openFilters.interested && company.Status === "Interested") ||
+            (openFilters.notInterested && company.Status === "Not Interested") ||
+            (openFilters.matured && company.Status === "Matured") ||
+            (openFilters.totalLeads)
+          ) {
+            untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+          }
+        });
+
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses
+        employeeData.sort((a, b) => {
+          const countA = untouchedCount[a.ename] || 0;
+          const countB = untouchedCount[b.ename] || 0;
+          return countB - countA; // Sort in descending order of "Untouched" count
+        });
+        break;
+      case "none":
+        setIncoFilter("none");
+        if (originalEmployeeData.length > 0) {
+          // Restore to previous state
+          setEmployeeData(originalEmployeeData);
+        }
+        break;
+      default:
+        break;
+
+    }
+  };
+  useEffect(() => {
+    setOriginalEmployeeData([...employeeData]); // Store original state of employeeData
+  }, [employeeData]);
+
+  const handleIconClickEmployee = () => {
+    if (!buttonToggle) {
+      setDateRangeDisplayEmployee(true);
+    } else {
+      setDateRangeDisplayEmployee(false);
+    }
+    setButtonToggle(!buttonToggle);
+  };
+
+  const selectionRangeEmployee = {
+    startDate: startDateEmployee,
+    endDate: endDateEmployee,
+    key: 'selection',
+  };
+
+  const [companyDataFilter, setcompanyDataFilter] = useState([])
+
+  const handleSelectEmployee = (date) => {
+    const filteredDataDateRange = companyDataFilter.filter(product => {
+      const productDate = new Date(product["AssignDate"]);
+      if (formatDate(date.selection.startDate) === formatDate(date.selection.endDate)) {
+        console.log(formatDate(date.selection.startDate))
+        console.log(formatDate(date.selection.endDate))
+        console.log(formatDate(productDate))
+        return formatDate(productDate) === formatDate(date.selection.startDate);
+      } else {
+        return (
+          productDate >= date.selection.startDate &&
+          productDate <= date.selection.endDate
+        );
+      }
+    });
+    setStartDateEmployee(date.selection.startDate);
+    setEndDateEmployee(date.selection.endDate);
+    setCompanyData(filteredDataDateRange);
+    setcompanyDataFilter(filteredDataDateRange)
+    //console.log(filteredDataDateRange)
+  };
+
+  console.log(companyData)
 
 
 
@@ -567,32 +776,57 @@ function Dashboard() {
                 </div>
               </div>
               <div className="col card todays-booking m-2">
-                <div className="card-header d-flex justify-content-between ">
-                  <div className="heading">
-                    <h2>Total Booking</h2>
+                <div className="card-header d-flex align-items-center justify-content-between" onClick={() => setShowBookingDate(!showBookingDate)} >
+                  <div>
+                    <h2>TotaL Booking</h2>
                   </div>
-                  <div className="filter d-flex align-items-center">
-                    <strong>Filter By :</strong>
-                    <div className="filter-by">
-                      <select
-                        value={dateRange}
-                        onChange={(e) => {
-                          handleChangeDate(e.target.value);
-                        }}
-                        name="filter-by"
-                        id="filter-by"
-                        className="form-select"
-                      >
-                        <option value="by-today" selected>
-                          today
-                        </option>
-                        <option value="by-week">Week</option>
-                        <option value="by-month">Month</option>
-                        <option value="by-year">Year</option>
-                      </select>
+                  <div className=" form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
+                    <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
+                      {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
                     </div>
+                    <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                      <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                    </button>
                   </div>
                 </div>
+                {showBookingDate && <div
+                  style={{
+                    position: "absolute",
+                    top: "65px",
+                    zIndex: 9,
+                    right: "157px",
+                  }}
+                  className="booking-filter"
+                >
+                  <DateRangePicker
+                    ranges={[selectionRangeAnother]}
+                    onChange={handleSelectAnother}
+                    onClose={() => setShowBookingDate(false)}
+                  />
+                </div>}
+
+                {/* <div className="filter d-flex align-items-center">
+                    <strong>Select:</strong>
+                    <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)} className="form-control">
+                      {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
+                    </div>
+                    {showBookingDate && <div
+                      style={{
+                        position: "absolute",
+                        top: "65px",
+                        zIndex: 9,
+                        right: "157px",
+                      }}
+                      className="booking-filter"
+                    >
+                      <DateRangePicker
+                        ranges={[selectionRangeAnother]}
+                        onChange={handleSelectAnother}
+                        onClose={() => setShowBookingDate(false)}
+                      />
+                    </div>}
+                  </div>
+                </div> */}
                 <div className="card-body">
                   <div
                     className="row"
@@ -605,6 +839,7 @@ function Dashboard() {
                   >
                     <table
                       style={{
+                        position:"sticky",
                         width: "100%",
                         borderCollapse: "collapse",
                         border: "1px solid #ddd",
@@ -698,7 +933,7 @@ function Dashboard() {
                                   </td>
                                   <td>
                                     {" "}
-                                    {
+                                    ₹{
                                       filteredBooking
                                         .filter(
                                           (data) => data.bdeName === obj.bdeName
@@ -708,18 +943,19 @@ function Dashboard() {
                                           return (
                                             totalPayments +
                                             (obj1.bdeName === obj1.bdmName
-                                              ? obj1.totalPayment !== 0
-                                                ? obj1.totalPayment
+                                              ? obj1.originalTotalPayment !== 0
+                                                ? obj1.originalTotalPayment
                                                 : 0
-                                              : obj1.totalPayment !== 0
-                                                ? obj1.totalPayment / 2
+                                              : obj1.originalTotalPayment !== 0
+                                                ? obj1.originalTotalPayment / 2
                                                 : 0)
                                           );
-                                        }, 0) // Initialize totalPayments as 0
+                                        }, 0)
+                                        .toLocaleString() // Initialize totalPayments as 0
                                     }
                                   </td>
                                   <td>
-                                    {
+                                    ₹{
                                       filteredBooking
                                         .filter(
                                           (data) => data.bdeName === obj.bdeName
@@ -730,17 +966,18 @@ function Dashboard() {
                                             totalPayments +
                                             (obj1.firstPayment === 0
                                               ? obj1.bdeName === obj1.bdmName
-                                                ? obj1.totalPayment / 2 // If bdeName and bdmName are the same
-                                                : obj1.totalPayment // If bdeName and bdmName are different
+                                                ? obj1.originalTotalPayment / 2 // If bdeName and bdmName are the same
+                                                : obj1.originalTotalPayment // If bdeName and bdmName are different
                                               : obj1.bdeName === obj1.bdmName
-                                                ? obj1.firstPayment // If bdeName and bdmName are the same
-                                                : obj1.firstPayment / 2) // If bdeName and bdmName are different
+                                                ? obj1.originalTotalPayment// If bdeName and bdmName are the same
+                                                : obj1.originalTotalPayment / 2) // If bdeName and bdmName are different
                                           );
-                                        }, 0) // Initialize totalPayments as 0
+                                        }, 0)
+                                        .toLocaleString() // Initialize totalPayments as 0
                                     }
                                   </td>
                                   <td>
-                                    {
+                                    ₹{
                                       filteredBooking
                                         .filter(
                                           (data) => data.bdeName === obj.bdeName
@@ -751,14 +988,15 @@ function Dashboard() {
                                             totalPayments +
                                             (obj1.firstPayment !== 0
                                               ? obj1.bdeName !== obj1.bdmName
-                                                ? (obj1.totalPayment -
+                                                ? (obj1.originalTotalPayment -
                                                   obj1.firstPayment) /
                                                 2 // If bdeName and bdmName are the same
-                                                : obj1.totalPayment -
+                                                : obj1.originalTotalPayment -
                                                 obj1.firstPayment // If bdeName and bdmName are different
                                               : 0) // If bdeName and bdmName are different
                                           );
-                                        }, 0) // Initialize totalPayments as 0
+                                        }, 0)
+                                        .toLocaleString() // Initialize totalPayments as 0
                                     }
                                   </td>
                                 </tr>
@@ -792,53 +1030,53 @@ function Dashboard() {
                               </td>
 
                               <td>
-                                {filteredBooking.reduce((totalPayment, obj) => {
-                                  // Add the totalPayment of the current object to the totalPayment accumulator
-                                  const finalPayment =
-                                    obj.bdeName === obj.bdmName
-                                      ? obj.totalPayment
-                                      : obj.totalPayment / 2;
-                                  return totalPayment + finalPayment;
-                                }, 0)}
+                                ₹{filteredBooking
+                                  .reduce((totalPayment, obj) => {
+                                    // Add the totalPayment of the current object to the totalPayment accumulator
+                                    const finalPayment =
+                                      obj.bdeName === obj.bdmName
+                                        ? obj.originalTotalPayment
+                                        : obj.originalTotalPayment / 2;
+                                    return totalPayment + finalPayment;
+                                  }, 0)
+                                  .toLocaleString()}
                               </td>
 
                               <td>
-                                {filteredBooking.reduce(
-                                  (totalFirstPayment, obj) => {
+                                ₹{filteredBooking
+                                  .reduce((totalFirstPayment, obj) => {
                                     // If firstPayment is 0, count totalPayment instead
                                     const paymentToAdd =
                                       obj.firstPayment === 0
                                         ? obj.bdeName === obj.bdmName
-                                          ? obj.totalPayment
-                                          : obj.totalPayment / 2
+                                          ? obj.originalTotalPayment
+                                          : obj.originalTotalPayment / 2
                                         : obj.bdeName === obj.bdmName
                                           ? obj.firstPayment
                                           : obj.firstPayment / 2;
                                     // Add the paymentToAdd to the totalFirstPayment accumulator
                                     return totalFirstPayment + paymentToAdd;
-                                  },
-                                  0
-                                )}
+                                  }, 0)
+                                  .toLocaleString()}
                               </td>
                               <td>
-                                {filteredBooking.reduce(
-                                  (totalFirstPayment, obj) => {
+                                ₹{filteredBooking
+                                  .reduce((totalFirstPayment, obj) => {
                                     // If firstPayment is 0, count totalPayment instead
 
                                     const paymentToAdd =
                                       obj.bdeName === obj.bdmName
                                         ? obj.firstPayment === 0
                                           ? 0
-                                          : obj.totalPayment - obj.firstPayment
+                                          : obj.originalTotalPayment - obj.firstPayment
                                         : obj.firstPayment === 0
                                           ? 0
-                                          : obj.totalPayment - obj.firstPayment;
+                                          : obj.originalTotalPayment - obj.firstPayment;
 
                                     // Add the paymentToAdd to the totalFirstPayment accumulator
                                     return totalFirstPayment + paymentToAdd;
-                                  },
-                                  0
-                                )}
+                                  }, 0)
+                                  .toLocaleString()}
                               </td>
                             </tr>
                           </tfoot>
@@ -860,9 +1098,26 @@ function Dashboard() {
               {/* Employee side Dashboard Analysis */}
               <div className="employee-dashboard ">
                 <div className="card">
-                  <div className="card-header heading">
-                    <h2>Employee Dashboard</h2>
+                  <div className="card-header d-flex align-items-center justify-content-between" onClick={handleIconClickEmployee}>
+                    <div>
+                      <h2>Employee Dashboard</h2>
+                    </div>
+                    <div className="form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
+                      <div>{`${formatDate(startDateEmployee)} - ${formatDate(endDateEmployee)}`}</div>
+                      <button onClick={handleIconClickEmployee} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                        <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                      </button>
+                    </div>
                   </div>
+                  {displayDateRangeEmployee && (
+                    <div className="position-absolute " style={{ zIndex: "1000", top: "15%", left: "75%" }} >
+                      <DateRangePicker
+                        ranges={[selectionRangeEmployee]}
+                        onClose={() => setDateRangeDisplayEmployee(false)}
+                        onChange={handleSelectEmployee}
+                      />
+                    </div>
+                  )}
                   <div className="card-body">
                     <div
                       className="row"
@@ -912,15 +1167,339 @@ function Dashboard() {
                               Sr. No
                             </th>
                             <th>BDE/BDM Name</th>
-                            <th>Untouched</th>
-                            <th>Busy</th>
-                            <th>Not Picked Up</th>
-                            <th>Junk</th>
-                            <th>Follow Up</th>
-                            <th>Interested</th>
-                            <th>Not Interested</th>
-                            <th>Matured</th>
-                            <th>Total Leads</th>
+                            <th>Untouched
+                              <FilterListIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                  marginLeft: "4px",
+                                }}
+                                onClick={() => handleFilterIncoDate('untouched')}
+                              />
+                              {openFilters.untouched && (
+                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("ascending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Ascending
+                                  </div>
+
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("descending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Descedning
+                                  </div>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("none")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    None
+                                  </div>
+                                </div>
+                              )}
+                            </th>
+                            <th>Busy
+                              <FilterListIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                  marginLeft: "4px",
+                                }}
+                                onClick={() => handleFilterIncoDate('busy')}
+                              />
+                              {openFilters.busy && (
+                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("ascending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Ascending
+                                  </div>
+
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("descending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Descedning
+                                  </div>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("none")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    None
+                                  </div>
+                                </div>
+                              )}
+                            </th>
+                            <th>Not Picked Up
+                              <FilterListIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                  marginLeft: "4px",
+                                }}
+                                onClick={() => handleFilterIncoDate('notPickedUp')}
+                              />
+                              {openFilters.notPickedUp && (
+                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("ascending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Ascending
+                                  </div>
+
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("descending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Descedning
+                                  </div>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("none")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    None
+                                  </div>
+                                </div>
+                              )}
+                            </th>
+                            <th>Junk
+                              <FilterListIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                  marginLeft: "4px",
+                                }}
+                                onClick={() => handleFilterIncoDate('junk')}
+                              />
+                              {openFilters.junk && (
+                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("ascending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Ascending
+                                  </div>
+
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("descending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Descedning
+                                  </div>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("none")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    None
+                                  </div>
+                                </div>
+                              )}
+                            </th>
+                            <th>Follow Up
+                              <FilterListIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                  marginLeft: "4px",
+                                }}
+                                onClick={() => handleFilterIncoDate('followUp')}
+                              />
+                              {openFilters.followUp && (
+                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("ascending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Ascending
+                                  </div>
+
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("descending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Descedning
+                                  </div>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("none")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    None
+                                  </div>
+                                </div>
+                              )}
+                            </th>
+                            <th>Interested
+                              <FilterListIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                  marginLeft: "4px",
+                                }}
+                                onClick={() => handleFilterIncoDate('interested')}
+                              />
+                              {openFilters.interested && (
+                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("ascending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Ascending
+                                  </div>
+
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("descending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Descedning
+                                  </div>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("none")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    None
+                                  </div>
+                                </div>
+                              )}
+                            </th>
+                            <th>Not Interested
+                              <FilterListIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                  marginLeft: "4px",
+                                }}
+                                onClick={() => handleFilterIncoDate('notInterested')}
+                              />
+                              {openFilters.notInterested && (
+                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("ascending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Ascending
+                                  </div>
+
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("descending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Descedning
+                                  </div>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("none")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    None
+                                  </div>
+                                </div>
+                              )}
+                            </th>
+                            <th>Matured
+                              <FilterListIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                  marginLeft: "4px",
+                                }}
+                                onClick={() => handleFilterIncoDate('matured')}
+                              />
+                              {openFilters.matured && (
+                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("ascending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Ascending
+                                  </div>
+
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("descending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Descedning
+                                  </div>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("none")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    None
+                                  </div>
+                                </div>
+                              )}
+                            </th>
+                            <th>Total Leads
+                              <FilterListIcon
+                                style={{
+                                  height: "15px",
+                                  width: "15px",
+                                  cursor: "pointer",
+                                  marginLeft: "4px",
+                                }}
+                                onClick={() => handleFilterIncoDate('totalLeads')}
+                              />
+                              {openFilters.totalLeads && (
+                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("ascending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Ascending
+                                  </div>
+
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("descending")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    Descedning
+                                  </div>
+                                  <div
+                                    className="inco-subFilter"
+                                    onClick={(e) => handleSort("none")}
+                                  >
+                                    <SwapVertIcon style={{ height: "16px" }} />
+                                    None
+                                  </div>
+                                </div>
+                              )}
+                            </th>
                             <th>Last Lead Assign Date</th>
                           </tr>
                         </thead>
@@ -1034,11 +1613,11 @@ function Dashboard() {
                                           { AssignDate: 0 }
                                         ).AssignDate
                                     )}
-                                    <ViewListIcon
+                                    <FcDatabase
                                       onClick={() => {
                                         functionOpenEmployeeTable(obj.ename);
                                       }}
-                                      style={{ cursor: "pointer" }}
+                                      style={{ cursor: "pointer", marginRight: "-41px", marginLeft: "21px" }}
                                     />
                                   </td>
                                 </tr>
@@ -1156,8 +1735,14 @@ function Dashboard() {
               className="table-vcenter table-nowrap"
             >
               <thead stSyle={{ backgroundColor: "grey" }}>
-                <tr>
-                  <th>SR.NO</th>
+                <tr
+                  style={{
+                    backgroundColor: "#ffb900",
+                    color: "black",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <th style={{ lineHeight: "32px" }}>SR.NO</th>
                   <th>BOOKING DATE & TIME</th>
                   <th>BDE NAME</th>
                   <th>COMPANY NAME</th>
@@ -1173,100 +1758,288 @@ function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {filteredBooking
-                  .filter((data) => data.bdeName === tableEmployee)
-                  .map((mainObj, index) => (
-                    <>
-                      <tr>
-                        <td>{index + 1}</td>
-                        <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
-                          })`}</td>
-                        <td>{mainObj.bdeName}</td>
-                        <td>{mainObj.companyName}</td>
-                        <td>{mainObj.contactNumber}</td>
-                        <td>{mainObj.companyEmail}</td>
-                        <td>{mainObj.services[0]}</td>
-                        <td>
-                          {mainObj.bdeName !== mainObj.bdmName
-                            ? mainObj.totalPayment / 2
-                            : mainObj.totalPayment}
-                        </td>
-                        <td>
-                          {
-                            mainObj.firstPayment !== 0
-                              ? mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.firstPayment // If bdeName and bdmName are the same
-                                : mainObj.firstPayment / 2 // If bdeName and bdmName are different
-                              : mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.totalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                                : mainObj.totalPayment / 2 // If firstPayment is 0 and bdeName and bdmName are different
-                          }
-                        </td>
-                        <td>
-                          {" "}
-                          {mainObj.firstPayment !== 0
-                            ? mainObj.bdeName === mainObj.bdmName
-                              ? mainObj.totalPayment - mainObj.firstPayment
-                              : (mainObj.totalPayment - mainObj.firstPayment) /
-                              2
-                            : 0}{" "}
-                        </td>
-                        <td>
-                          {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
-                        </td>
-                        <td>
-                          {mainObj.bdeName !== mainObj.bdmName
-                            ? mainObj.bdmType === "closeby"
-                              ? `Closed by ${mainObj.bdmName}`
-                              : `Supported by ${mainObj.bdmName}`
-                            : `Self Closed`}{" "}
-                          {mainObj.bdeName !== mainObj.bdmName &&
-                            mainObj.bdmType === "closeby" && (
-                              <AddCircleIcon
-                                onClick={() =>
-                                  setExpand(expand === index ? null : index)
-                                }
-                                style={{ cursor: "pointer" }}
-                              />
-                            )}
-                        </td>
-                        <td>{mainObj.paymentRemarks}</td>
-                      </tr>
-                      {expand === index && (
-                        <>
-                          <tr>
-                            <td>{`${index + 1}(${1})`}</td>
-                            <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
-                              })`}</td>
-                            <td>{mainObj.bdmName}</td>
-                            <td>{mainObj.companyName}</td>
-                            <td>{mainObj.contactNumber}</td>
-                            <td>{mainObj.companyEmail}</td>
-                            <td>{mainObj.services[0]}</td>
-                            <td> {mainObj.totalPayment / 2} </td>
-                            <td>
-                              {mainObj.firstPayment !== 0
-                                ? mainObj.firstPayment / 2
-                                : mainObj.totalPayment / 2}{" "}
-                            </td>
-                            <td>
-                              {mainObj.firstPayment !== 0
+                {expand === "" &&
+                  filteredBooking
+                    .filter((data) => data.bdeName === tableEmployee)
+                    .map((mainObj, index) => (
+                      <>
+                        <tr>
+                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                          <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                            })`}</td>
+                          <td>{mainObj.bdeName}</td>
+                          <td>{mainObj.companyName}</td>
+                          <td>{mainObj.contactNumber}</td>
+                          <td>{mainObj.companyEmail}</td>
+                          <td>{mainObj.services[0]}</td>
+                          <td>
+                            ₹{(mainObj.bdeName !== mainObj.bdmName
+                              ? mainObj.originalTotalPayment / 2
+                              : mainObj.originalTotalPayment
+                            ).toLocaleString()}
+                          </td>
+                          <td>
+                            ₹{
+                              (mainObj.firstPayment !== 0
                                 ? mainObj.bdeName === mainObj.bdmName
-                                  ? mainObj.totalPayment - mainObj.firstPayment
-                                  : (mainObj.totalPayment -
-                                    mainObj.firstPayment) /
-                                  2
-                                : 0}{" "}
-                            </td>
-                            <td>{"Yes"}</td>
-                            <td>{`${mainObj.bdeName}'s Case`}</td>
-                            <td>{mainObj.paymentRemarks}</td>
-                          </tr>
-                        </>
-                      )}
-                    </>
-                  ))}
+                                  ? mainObj.firstPayment // If bdeName and bdmName are the same
+                                  : mainObj.firstPayment / 2 // If bdeName and bdmName are different
+                                : mainObj.bdeName === mainObj.bdmName
+                                  ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                  : mainObj.originalTotalPayment / 2
+                              ).toLocaleString() // If firstPayment is 0 and bdeName and bdmName are different
+                            }
+                          </td>
+                          <td>
+                            {" "}
+                            ₹{(mainObj.firstPayment !== 0
+                              ? mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                : (mainObj.originalTotalPayment -
+                                  mainObj.firstPayment) /
+                                2
+                              : 0
+                            ).toLocaleString()}{" "}
+                          </td>
+                          <td>
+                            {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
+                          </td>
+                          <td>
+                            {mainObj.bdeName !== mainObj.bdmName
+                              ? mainObj.bdmType === "closeby"
+                                ? `Closed by ${mainObj.bdmName}`
+                                : `Supported by ${mainObj.bdmName}`
+                              : `Self Closed`}{" "}
+                            {mainObj.bdeName !== mainObj.bdmName &&
+                              mainObj.bdmType === "closeby" && (
+                                <AddCircleIcon
+                                  onClick={() => setExpand(mainObj.companyName)}
+                                  style={{ cursor: "pointer" }}
+                                />
+                              )}
+                          </td>
+                          <td>{mainObj.paymentRemarks}</td>
+                        </tr>
+                        {expand === index && (
+                          <>
+                            <tr>
+                              <td style={{ lineHeight: "32px" }}>{`${index + 1
+                                }(${1})`}</td>
+                              <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                                })`}</td>
+                              <td>{mainObj.bdmName}</td>
+                              <td>{mainObj.companyName}</td>
+                              <td>{mainObj.contactNumber}</td>
+                              <td>{mainObj.companyEmail}</td>
+                              <td>{mainObj.services[0]}</td>
+                              <td>
+                                {" "}
+                                {(
+                                  mainObj.totalPayment / 2
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>
+                                ₹{(mainObj.firstPayment !== 0
+                                  ? mainObj.firstPayment / 2
+                                  : mainObj.originalTotalPayment / 2
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>
+                                ₹{(mainObj.firstPayment !== 0
+                                  ? mainObj.bdeName === mainObj.bdmName
+                                    ? mainObj.totalPayment -
+                                    mainObj.firstPayment
+                                    : (mainObj.originalTotalPayment -
+                                      mainObj.firstPayment) /
+                                    2
+                                  : 0
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>{"Yes"}</td>
+                              <td>{`${mainObj.bdeName}'s Case`}</td>
+                              <td>{mainObj.paymentRemarks}</td>
+                            </tr>
+                          </>
+                        )}
+                      </>
+                    ))}
               </tbody>
+              {expand === "" && (
+                <tfoot>
+                  <tr>
+                    <th colSpan={3}>
+                      <strong>Total</strong>
+                    </th>
+                    <th>-</th>
+                    <th>-</th>
+                    <th>-</th>
+                    <th>-</th>
+                    <th>
+                      ₹{filteredBooking
+                        .filter((data) => data.bdeName === tableEmployee)
+                        .reduce((total, obj) => {
+                          return obj.bdeName === obj.bdmName
+                            ? total + obj.originalTotalPayment
+                            : total + obj.originalTotalPayment / 2;
+                        }, 0)
+                        .toLocaleString()}
+                    </th>
+                    <th>
+                      ₹{filteredBooking
+                        .filter((data) => data.bdeName === tableEmployee)
+                        .reduce((total, obj) => {
+                          return obj.bdeName === obj.bdmName
+                            ? obj.firstPayment === 0
+                              ? total + obj.originalTotalPayment
+                              : total + obj.firstPayment
+                            : obj.firstPayment === 0
+                              ? total + obj.originalTotalPayment / 2
+                              : total + obj.firstPayment / 2;
+                        }, 0)
+                        .toLocaleString()}
+                    </th>
+                    <th>
+                      ₹{filteredBooking
+                        .filter((data) => data.bdeName === tableEmployee)
+                        .reduce((total, obj) => {
+                          return obj.bdeName === obj.bdmName
+                            ? obj.firstPayment === 0
+                              ? 0
+                              : total + (obj.originalTotalPayment - obj.firstPayment)
+                            : obj.firstPayment === 0
+                              ? 0
+                              : total + (obj.originalTotalPayment - obj.firstPayment) / 2;
+                        }, 0)
+                        .toLocaleString()}
+                    </th>
+                    <th>-</th>
+                    <th>-</th>
+                    <th>-</th>
+                  </tr>
+                </tfoot>
+              )}
+              <tbody>
+                {expand !== "" &&
+                  filteredBooking
+                    .filter(
+                      (obj) =>
+                        obj.bdeName === tableEmployee &&
+                        obj.companyName === expand
+                    )
+                    .map((mainObj, index) => (
+                      <>
+                        <tr key={mainObj._id}>
+                          <td style={{ lineHeight: "32px" }}>{`${index + 1
+                            }`}</td>
+                          <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                            })`}</td>
+                          <td>{mainObj.bdeName}</td>
+                          <td>{mainObj.companyName}</td>
+                          <td>{mainObj.contactNumber}</td>
+                          <td>{mainObj.companyEmail}</td>
+                          <td>{mainObj.services}</td>
+                          <td>{(mainObj.totalPayment / 2).toLocaleString()}</td>
+                          <td>
+                            ₹{(mainObj.firstPayment !== 0
+                              ? mainObj.firstPayment / 2
+                              : mainObj.totalPayment / 2
+                            ).toLocaleString()}
+                          </td>
+                          <td>
+                            ₹{(mainObj.firstPayment !== 0
+                              ? mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                : (mainObj.originalTotalPayment -
+                                  mainObj.firstPayment) /
+                                2
+                              : 0
+                            ).toLocaleString()}
+                          </td>
+                          <td>Yes</td>
+                          <td>
+                            {`Closed by ${mainObj.bdmName}`}{" "}
+                            <RemoveCircleIcon
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                setExpand("");
+                              }}
+                            />{" "}
+                          </td>
+                          <td>{mainObj.paymentRemarks}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ lineHeight: "32px" }}>{`${index + 2
+                            }`}</td>
+                          <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                            })`}</td>
+                          <td>{mainObj.bdmName}</td>
+                          <td>{mainObj.companyName}</td>
+                          <td>{mainObj.contactNumber}</td>
+                          <td>{mainObj.companyEmail}</td>
+                          <td>{mainObj.services[0]}</td>
+                          <td>
+                            {" "}
+                            {(mainObj.originalTotalPayment / 2).toLocaleString()}{" "}
+                          </td>
+                          <td>
+                            ₹{(mainObj.firstPayment !== 0
+                              ? mainObj.firstPayment / 2
+                              : mainObj.originalTotalPayment / 2
+                            ).toLocaleString()}{" "}
+                          </td>
+                          <td>
+                            ₹{(mainObj.firstPayment !== 0
+                              ? mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                : (mainObj.originalTotalPayment -
+                                  mainObj.firstPayment) /
+                                2
+                              : 0
+                            ).toLocaleString()}{" "}
+                          </td>
+                          <td>{"Yes"}</td>
+                          <td>{`${mainObj.bdeName}'s Case`}</td>
+                          <td>{mainObj.paymentRemarks}</td>
+                        </tr>
+                      </>
+                    ))}
+              </tbody>
+              <tfoot>
+                {expand !== "" &&
+                  filteredBooking
+                    .filter(
+                      (obj) =>
+                        obj.bdeName === tableEmployee &&
+                        obj.companyName === expand
+                    )
+                    .map((mainObj, index) => (
+                      <>
+                        <tr key={mainObj._id}>
+                          <th colSpan={3}>Total :</th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>{mainObj.originalTotalPayment.toLocaleString()}</th>
+                          <th>
+                            ₹{(mainObj.firstPayment !== 0
+                              ? mainObj.firstPayment
+                              : mainObj.originalTotalPayment
+                            ).toLocaleString()}
+                          </th>
+                          <th>
+                            ₹{(mainObj.firstPayment !== 0
+                              ? mainObj.originalTotalPayment - mainObj.firstPayment
+                              : 0
+                            ).toLocaleString()}
+                          </th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>-</th>
+                        </tr>
+                      </>
+                    ))}
+              </tfoot>
             </table>
           </div>
         </DialogContent>
@@ -1490,25 +2263,26 @@ function Dashboard() {
 
       <div className="container-xl mt-2">
         <div className="card">
-          <div className="card-header d-flex align-items-center justify-content-between">
+          <div className="card-header d-flex align-items-center justify-content-between" onClick={handleIconClick}>
             <div>
               <h2>Projection Dashboard</h2>
             </div>
-            <div><button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-              <FaChevronDown style={{ width: "14px", height: "14px", color: "#bcbaba", }} />
-            </button></div>
-            {displayDateRange && (
-              <div class="position-absolute" style={{ zIndex: "1", top: "15%", left: "75%" }} >
-                <DateRangePicker
-                  ranges={[selectionRange]}
-                  onClose={() => setDateRangeDisplay(false)}
-                  onChange={handleSelect}
-                />
-              </div>
-            )}
-
+            <div className="form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
+              <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
+              <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+              </button>
+            </div>
           </div>
-          <div></div>
+          {displayDateRange && (
+            <div className="position-absolute " style={{ zIndex: "1", top: "15%", left: "75%" }} >
+              <DateRangePicker
+                ranges={[selectionRange]}
+                onClose={() => setDateRangeDisplay(false)}
+                onChange={handleSelect}
+              />
+            </div>
+          )}
           <div className="card-body">
             <div
               id="table-default"
@@ -1555,43 +2329,43 @@ function Dashboard() {
                   {uniqueEnames &&
                     uniqueEnames.map((ename, index) => {
                       // Calculate the count of services for the current ename
-                      const serviceCount = filteredDataDateRange.length === 0 ? (
-                        // If filteredDataDateRange is empty, use servicesByEname
-                        servicesByEname[ename] ? servicesByEname[ename].length : 0
-                      ) : (
+                      const serviceCount = filteredDataDateRange && (
                         // If filteredDataDateRange is not empty, use servicesByEnameDateRange
                         servicesByEnameDateRange[ename] ? servicesByEnameDateRange[ename].length : 0
                       );
                       // const companyCount = companiesByEname[ename] ? companiesByEname[ename].length : 0;
 
-                      const companyCount = filteredDataDateRange.length === 0 ? (
-                        // If filteredDataDateRange is empty, use companiesByEname
-                        companiesByEname[ename] ? companiesByEname[ename].length : 0
-                      ) : (
+                      const companyCount = filteredDataDateRange && (
                         // If filteredDataDateRange is not empty, use companiesByEnameDateRange
                         companiesByEnameDateRange[ename] ? companiesByEnameDateRange[ename].length : 0
                       );
                       //const totalPaymentByEname = sums[ename] ? sums[ename].totalPaymentSum : 0;
-                      const totalPaymentByEname = filteredDataDateRange === 0 ?
-                        (sums[ename] ? sums[ename].totalPaymentSum : 0)
-                        :
-                        (sumsDateRange[ename] ? sumsDateRange[ename].totalPaymentSum : 0)
+                      const totalPaymentByEname = filteredDataDateRange &&
+                        (sumsDateRange[ename] ? sumsDateRange[ename].totalPaymentSum : 0);
 
 
                       //const offeredPrizeByEname = sums[ename] ? sums[ename].offeredPaymentSum : 0;
-                      const offeredPrizeByEname = filteredDataDateRange === 0 ?
-                        (sums[ename] ? sums[ename].offeredPaymentSum : 0)
-                        :
+                      const offeredPrizeByEname = filteredDataDateRange.length &&
                         (sumsDateRange[ename] ? sumsDateRange[ename].offeredPaymentSum : 0)
 
 
-                      const lastFollowDates = lastFollowDate[ename] || []; // Assuming lastFollowDate[ename] is an array of dates
+                      const lastFollowDates = lastFollowDate[ename] || []; // Assuming lastFollowDate[ename] is an array of dates or undefined
 
                       // Get the latest date from the array
-                      const latestDate = new Date(Math.max(...lastFollowDates.map(date => new Date(date))));
+                      let latestDate;
+
+                      if (Array.isArray(lastFollowDates) && lastFollowDates.length > 0) {
+                        latestDate = new Date(Math.max(...lastFollowDates.map(date => new Date(date))));
+                      } else if (lastFollowDates instanceof Date) {
+                        // If lastFollowDates is a single date, directly assign it to latestDate
+                        latestDate = lastFollowDates;
+                      } else {
+                        // Handle the case when lastFollowDates is not an array or a date
+                        latestDate = new Date(); // Assigning current date as default value
+                      }
 
                       // Format the latest date into a string
-                      const formattedDate = latestDate.toLocaleDateString(); // Adjust the format as needed
+                      const formattedDate = latestDate.toLocaleDateString(); //
 
 
                       return (
@@ -1599,15 +2373,15 @@ function Dashboard() {
                           <td style={{ lineHeight: "32px" }}>{index + 1}</td>
                           <td>{ename}</td>
                           <td>{companyCount}
-                            <ViewListIcon
+                            <FcDatabase
                               onClick={() => {
                                 functionOpenProjectionTable(ename);
                               }}
-                              style={{ cursor: "pointer", marginRight: "-79px", marginLeft: "58px" }}
+                              style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "58px" }}
                             /></td>
                           <td>{serviceCount}</td>
-                          <td>{totalPaymentByEname.toLocaleString()}</td>
-                          <td>{offeredPrizeByEname.toLocaleString()}</td>
+                          <td>{totalPaymentByEname}</td>
+                          <td>{offeredPrizeByEname}</td>
                           <td>{formattedDate}</td>
 
                         </tr>
@@ -1619,19 +2393,13 @@ function Dashboard() {
                   <tfoot>
                     <tr style={{ fontWeight: 500 }}>
                       <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                      <td>{filteredDataDateRange.length === 0 ? (
-                        // If filteredDataDateRange is empty, use totalservicesByEname
-                        totalcompaniesByEname.length
-                      ) : (
+                      <td>{filteredDataDateRange && (
                         // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
                         totalcompaniesByEnameDateRange.length
                       )}
                       </td>
                       <td>
-                        {filteredDataDateRange.length === 0 ? (
-                          // If filteredDataDateRange is empty, use totalservicesByEname
-                          totalservicesByEname.length
-                        ) : (
+                        {filteredDataDateRange && (
                           // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
                           totalservicesByEnameDateRange.length
                         )}
@@ -1639,10 +2407,7 @@ function Dashboard() {
                       {/* <td>{totalTotalPaymentSum.toLocaleString()}
                       </td> */}
                       <td>
-                        {filteredDataDateRange.length === 0 ? (
-                          // If filteredDataDateRange is empty, use totalservicesByEname
-                          totalTotalPaymentSum.toLocaleString()
-                        ) : (
+                        {filteredDataDateRange && (
                           // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
                           totalTotalPaymentSumDateRange.toLocaleString()
                         )}
@@ -1652,10 +2417,7 @@ function Dashboard() {
                       </td> */}
 
                       <td>
-                        {filteredDataDateRange.length === 0 ? (
-                          // If filteredDataDateRange is empty, use totalservicesByEname
-                          totalOfferedPaymentSum.toLocaleString()
-                        ) : (
+                        {filteredDataDateRange.length && (
                           // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
                           totalOfferedPaymentSumDateRange.toLocaleString()
                         )}
@@ -1720,31 +2482,52 @@ function Dashboard() {
               <tbody>
                 {/* Map through uniqueEnames array to render rows */}
 
-                {projectedEmployee && projectedEmployee.map((obj, Index) => (
-
-                  <tr key={`sub-row-${Index}`}>
-                    <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                    {/* Render other employee data */}
-                    <td>{obj.ename}</td>
-                    <td>{obj.companyName}</td>
-                    <td>{obj.offeredServices.join(',')}</td>
-                    <td>{obj.totalPayment.toLocaleString()}</td>
-                    <td>{obj.offeredPrize.toLocaleString()}</td>
-                    <td>{obj.estPaymentDate}</td>
-                  </tr>
-                ))}
+                {projectedDataDateRange &&
+                  // (projectedEmployee.map((obj, Index) => (
+                  //   <tr key={`sub-row-${Index}`}>
+                  //     <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                  //     {/* Render other employee data */}
+                  //     <td>{obj.ename}</td>
+                  //     <td>{obj.companyName}</td>
+                  //     <td>{obj.offeredServices.join(',')}</td>
+                  //     <td>{obj.totalPayment.toLocaleString()}</td>
+                  //     <td>{obj.offeredPrize.toLocaleString()}</td>
+                  //     <td>{obj.estPaymentDate}</td>
+                  //   </tr>
+                  // ))) :
+                  (projectedDataDateRange.map((obj, Index) => (
+                    <tr key={`sub-row-${Index}`}>
+                      <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                      {/* Render other employee data */}
+                      <td>{obj.ename}</td>
+                      <td>{obj.companyName}</td>
+                      <td>{obj.offeredServices.join(',')}</td>
+                      <td>{obj.totalPayment.toLocaleString()}</td>
+                      <td>{obj.offeredPrize.toLocaleString()}</td>
+                      <td>{obj.estPaymentDate}</td>
+                    </tr>
+                  )))
+                }
               </tbody>
               {projectedEmployee && (
                 <tfoot>
                   <tr style={{ fontWeight: 500 }}>
                     <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                    <td>{projectedEmployee.length}</td>
-                    <td>{offeredServicesPopup.length}
+                    {/* <td>{projectedEmployee.length}</td> */}
+                    <td>
+                      {projectedDataDateRange && projectedDataDateRange.length}
                     </td>
-                    <td>{totalPaymentSumPopup.toLocaleString()}
+                    {/* <td>{offeredServicesPopup.length}
+                    </td> */}
+                    <td>{projectedDataDateRange && offeredServicesPopupDateRange.length}</td>
+                    {/* <td>{totalPaymentSumPopup.toLocaleString()}
+                    </td> */}
+                    <td>
+                      {projectedDataDateRange && totalPaymentSumPopupDateRange.toLocaleString()}
                     </td>
-                    <td>{offeredPaymentSumPopup.toLocaleString()}
-                    </td>
+                    {/* <td>{offeredPaymentSumPopup.toLocaleString()}
+                    </td> */}
+                    <td>{projectedDataDateRange && offeredPaymentSumPopupDateRange.toLocaleString()}</td>
                     <td>-</td>
                   </tr>
                 </tfoot>
@@ -1753,6 +2536,8 @@ function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+
     </div>
   );
 }

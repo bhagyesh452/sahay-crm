@@ -57,7 +57,7 @@ const Analysis_dashboard = () => {
 
             const allPayments = companyData.flatMap(obj => obj.totalPayment)
 
-            const totalPaymentSum = allPayments.reduce((acc, payment) => acc + payment, 0);
+            const totalPaymentSum = (allPayments.reduce((acc, payment) => acc + payment, 0)).toFixed(2);
 
             // console.log(allBookingDates);
 
@@ -90,7 +90,7 @@ const Analysis_dashboard = () => {
 
             const revenueCurrentMonth = companiesThisMonth.flatMap(obj => obj.totalPayment)
 
-            const totalPaymentCurrentMonthSum = revenueCurrentMonth.reduce((acc, payment) => acc + payment, 0);
+            const totalPaymentCurrentMonthSum = (revenueCurrentMonth.reduce((acc, payment) => acc + payment, 0)).toFixed(2);
 
             setCompleteData(companyData)
             setrevenueCurrentMonth(totalPaymentCurrentMonthSum)
@@ -105,8 +105,9 @@ const Analysis_dashboard = () => {
     };
     //console.log(companiesThisMonth)
     //console.log(companiesToday)
-
-    const options = [
+    console.log("total payment" , totalPayment)
+    
+const options = [
         {
             value: "Certification Services",
             label: "Certification Services",
@@ -308,36 +309,7 @@ const Analysis_dashboard = () => {
 
     }
     const filteredCompaniesTotal = filterCompaniesByServiceTotal(selectedValues);
-    //console.log(filteredCompaniesTotal)
-
-    // function countServices(companies) {
-    //     const serviceCounts = {};
-
-    //     // Iterate over each company
-    //     companies.forEach(company => {
-    //         const services = company.services[0];
-
-    //         //console.log(services)
-
-    //         // Iterate over each service within the company
-    //         services.filter(service => {
-    //             if (serviceCounts.hasOwnProperty(service)) {
-    //                 serviceCounts[service]++;
-    //             } else {
-    //                 serviceCounts[service] = 1;
-    //             }
-    //         });
-    //     });
-
-    //     return serviceCounts;
-    // }
-
-    // // Calculate the number of each service
-    // const serviceCounts = countServices(filteredCompaniesTotal);
-    // console.log(serviceCounts);
-
-
-
+   
     const companieswithServicesInCurrentMonthTotal = filteredCompaniesTotal.filter(company => {
         const bookingDate = new Date(company.bookingDate);
         const bookingMonth = bookingDate.getMonth() + 1; // Months are zero-indexed, so we add 1
