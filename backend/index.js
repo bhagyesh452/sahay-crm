@@ -428,6 +428,20 @@ app.get('/api/projection-data', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+app.get("/api/card-leads", async (req, res) => {
+  try {
+    const { dAmount } = req.query; // Get the dAmount parameter from the query
+
+    // Fetch data from the database with the specified limit
+    const data = await CompanyModel.find({ ename: { $in: ["Select Employee", "Not Alloted"] } }).limit(parseInt(dAmount)).lean();
+
+    // Send the data as the API response
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 app.get('/api/projection-data/:ename', async (req, res) => {

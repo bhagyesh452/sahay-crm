@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from "react";
+
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import Swal from 'sweetalert2';
@@ -9,6 +9,7 @@ import {
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import Select from "react-select";
 import Nodata from "../components/Nodata";
+
 
 
 function CompanyListAdmin({ companies, onCompanyClick }) {
@@ -70,9 +71,12 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
     }),
   };
   const options = [
-  
+    {
+      value: "Certification Services",
+      label: "Certification Services",
+      isDisabled: true,
+    },
     { value: "Start-Up India Certificate", label: "Start-Up India Certificate" },
-    { value: "Start-Up India Certificate With DSC", label: "Start-Up India Certificate with DSC" },
     { value: "MSME/UYDAM Certificate", label: "MSME/UYDAM Certificate 3" },
     { value: "ISO Certificate", label: "ISO Certificate" },
     { value: "IEC CODE Certificate", label: "IEC CODE Certificate" },
@@ -81,38 +85,29 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
     { value: "FSSAI Certificate", label: "FSSAI Certificate" },
     { value: "APEDA Certificate", label: "APEDA Certificate" },
     { value: "GST Certificate", label: "GST Certificate" },
-    { value: "Pitch Deck Development ", label: "Pitch Deck Development" },
+    {
+      value: "Documentation Services",
+      label: "Documentation Services",
+      isDisabled: true,
+    },
+    { value: "Pitch Deck Development", label: "Pitch Deck Development" },
     { value: "Financial Modeling", label: "Financial Modeling" },
-    { value: "DPR Development", label: "DPR Developmen" },
+    { value: "DPR Developmen", label: "DPR Developmen" },
     { value: "CMA Report Development", label: "CMA Report Development" },
-    { value: "Company Profile Write-Up", label: "Company Profile" },
+    { value: "Company Profile", label: "Company Profile" },
     { value: "Company Brochure", label: "Company Brochure" },
     { value: "Product Catalog", label: "Product Catalog" },
-    { value: "Logo Design", label: "Logo Design" },
+    {
+      value: "Fund Raising Support Services",
+      label: "Fund Raising Support Services",
+      isDisabled: true,
+    },
     { value: "Seed Funding Support", label: "Seed Funding Support" },
     { value: "Angel Funding Support", label: "Angel Funding Support" },
     { value: "VC Funding Support", label: "VC Funding Support" },
     { value: "Crowd Funding Support", label: "Crowd Funding Support" },
-    { value: "I-Create", label: "I-Create" },
-    { value: "Nidhi Seed Support Scheme", label: "Nidhi Seed Support Scheme  " },
-    { value: "Nidhi Prayash Yojna", label: "Nidhi Prayash Yojna" },
-    { value: "NAIF", label: "NAIF" },
-    { value: "Raftaar", label: "Raftaar" },
-    { value: "CSR Funding", label: "CSR Funding" },
-    {value : 'Stand-Up India' , label : 'Stand-Up India'},
-    {value : 'PMEGP' , label : 'PMEGP'},
-    {value : 'USAID' , label : 'USAID'},
-    {value : 'UP Grant' , label : 'UP Grant'},
-    {value : 'DBS Grant' , label : 'DBS Grant'},
-    {value : 'MSME Innovation' , label : 'MSME Innovation'},
-    {value : 'MSME Hackathon' , label : 'MSME Hackathon'},
-    {value : 'Gujarat Grant' , label : 'Gujarat Grant'},
-    {value : 'CGTMSC' , label : 'CGTMSC'},
-    {value : 'Income Tax Exemption' , label : 'Income Tax Exemption'},
-    {value : 'Mudra Loan' , label : 'Mudra Loan'},
-    {value : 'SIDBI Loan' , label : 'SIDBI Loan'},
-    {value : 'Incubation Support' , label : 'Incubation Support'},
-    {value : 'Digital Marketing' , label : 'Digital Marketing'},
+    { value: "Government Funding Support", label: "Government Funding Support" },
+    { value: "Digital Marketing", label: "Digital Marketing", isDisabled: true },
     { value: "SEO Services", label: "SEO Services" },
     { value: "Branding Services", label: "Branding Services" },
     {
@@ -123,6 +118,7 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
     { value: "Digital Content", label: "Digital Content" },
     { value: "Lead Generation", label: "Lead Generation" },
     { value: "Whatsapp Marketing", label: "Whatsapp Marketing" },
+    { value: "IT Services", label: "IT Services", isDisabled: true },
     { value: "Website Development", label: "Website Development" },
     { value: "App Design & Development", label: "App Design & Development" },
     {
@@ -134,17 +130,41 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
     { value: "ERP Development", label: "ERP Development" },
     { value: "E-Commerce Website", label: "E-Commerce Website" },
     { value: "Product Development", label: "Product Development" },
-    { value: "Company Incorporation", label: "Company Incorporation" },
+    {
+      value: "Business Registration",
+      label: "Business Registration",
+      isDisabled: true,
+    },
+    {
+      value: "Sole Proprietorship Registration",
+      label: "Sole Proprietorship Registration",
+    },
+    {
+      value: "Partnership Firm Registration",
+      label: "Partnership Firm Registration",
+    },
+    { value: "LLP Firm Registration", label: "LLP Firm Registration" },
+    {
+      value: "Private Limited Registration",
+      label: "hPrivate Limited Registrationh",
+    },
+    {
+      value: "Public Company Registration",
+      label: "Public Company Registration",
+    },
+    { value: "Nidhi Company Registration", label: "Nidhi Company Registration" },
+    {
+      value: "Producer Company Registration",
+      label: "Producer Company Registration ",
+    },
+    { value: "Trademark & IP", label: "Trademark & IP", isDisabled: true },
     { value: "Trademark Registration", label: "Trademark Registration" },
     { value: "Copyright Registration", label: "Copyright Registration" },
     { value: "Patent Registration", label: "Patent Registration" },
-    { value: "Organization DSC", label: "Organization DSC" },
-    { value: "Director DSC", label: "Director DSC" },
-    { value: "Self Certification", label: "Self Certification" },
-    { value: "GeM", label: "GeM" },
-  
+
     // Add more options as needed
   ];
+
 
   useEffect(() => {
     // Perform the data fetching only once when the component mounts
@@ -386,11 +406,7 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
             style={{ paddingRight: "10px" }}
             onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
           />
-
-
           <span className="date-range-separator">to</span>
-
-
           <input
             type="date"
             value={dateRange.endDate}
@@ -416,70 +432,57 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
               }}
             >
               <div className="align-items-center w-100" onClick={() => handleCompanyClick(company.companyName, company._id)} >
-                <div className="p-booking-Cname d-flex align-items-center w-100" style={{    backgroundColor: "#eee"}}  >
-                  <h4 className="m-0" title={company.companyName}>
-                    {company.companyName}
-                  </h4>
-                  <div className="d-flex align-items-center justify-content-between">
-                    {company.imported && <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={{ width: "14px", height: "14px", fill: "#0b6240" }}><path d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z" /></svg>}
-                    <IconButton onClick={() => handleDelete(company._id, company.companyName)}>
-                      <DeleteIcon
-                        style={{
-                          width: "16px",
-                          height: "16px",
-                          color: "#bf0b0b",
-                        }}
-                      >
-                        Delete
-                      </DeleteIcon>
-                    </IconButton>
+                <div className="card w-100">
+                  <div className="card-header w-100 d-flex align-items-center justify-content-between" style={{ backgroundColor: "#f8efef" ,padding:"11px 0px" }}>
+                    <div className="d-flex align-items-center justify-content-between p-booking-Cname" title={company.companyName} >
+                      <h5 style={{ width: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textWrap: "nowrap" ,fontSize:"14px" }}>{company.companyName}</h5>
+                    </div>
+                    <div className="d-flex align-items-center justify-content-between">
+                      {company.imported && <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={{ width: "14px", height: "14px", fill: "#0b6240" }}><path d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z" /></svg>}
+                      <IconButton onClick={() => handleDelete(company._id, company.companyName)}>
+                        <DeleteIcon
+                          style={{
+                            width: "16px",
+                            height: "16px",
+                            color: "#bf0b0b",
+                          }}
+                        >
+                          Delete
+                        </DeleteIcon>
+                      </IconButton>
+                    </div>
                   </div>
-                </div>
-                <div className="d-flex justify-content-between aligns-items-center mt-3" style={{ fontSize: "10px"}} >
-                  <div className="services-list">
-                    <label className="m-0">{company.services && (
-                      <div className="m-0" title={company.services} style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" ,textWrap:"nowrap"}} ><strong>Services  :</strong>   {company.services}</div>)}</label>
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-lg-6 services-cmpy-list">
+                        {company.services && (
+                          <div className="m-0" title={company.services} style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textWrap: "nowrap" }} ><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{width:"10px" , height:"10px" , marginRight:"5px"}}><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>{company.services}</div>)}
+                        {company.bdeName && (
+                          <div className="m-0" title={company.bdeName} style={{ width: "125px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textWrap: "nowrap" }} ><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{width:"10px" , height:"10px" , marginRight:"5px"}}><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" /></svg>{company.bdeName}</div>
+                        )}
+                      </div>
+                      <div className="col-lg-6 payments-cmpy-list">
+                        <p><span style={{ color: "#336667" }}>Total Payment:</span>{company.totalPayment && (
+                          <span > ₹{company.totalPayment.toLocaleString()}</span>)}</p>
+                        <p><span style={{ color: "#336667" }}>Recieved Payment:</span>{company.firstPayment && (
+                          <span > ₹{company.firstPayment === 0 ? company.totalPayment.toLocaleString() : company.firstPayment.toLocaleString()}</span>)}</p>
+                        <p><span style={{ color: "#336667" }}>Pending Payment:</span>{company.totalPayment && (
+                          <span > ₹{company.firstPayment === 0 ? 0 : (company.totalPayment - company.firstPayment).toLocaleString()}</span>)}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bdeName-list">
-                    <label className="m-0">
-                      {company.bdeName && (
-                        <div className="m-0" title={company.bdeName} style={{ width: "125px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" ,textWrap:"nowrap"}} ><strong>BDE Name  :</strong>   {company.bdeName}</div>
-                      )}
-                    </label>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between aligns-items-center mt-3" style={{fontSize: "10px" }} >
-                  <div className="totalpayment-list" style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    <label className="m-0"> <strong>Total Payment  </strong>{company.totalPayment && (
-                      <p className="ml-2">  {company.totalPayment.toLocaleString()}</p>)}</label>
-                  </div>
-                  <div className="recievedpayment">
-                    <label className="m-0"> <strong>Received Payment</strong>
-                      <p className="ml-2">{company.firstPayment === 0 ? company.totalPayment.toLocaleString() : company.firstPayment.toLocaleString() }</p>
-                    </label>
-                  </div>
-                  <div className="bdeName-list">
-                    <label className="m-0"><strong>Pending Payment</strong>
-                      {company.bdeName && (
-                        <p className="ml-2">{company.firstPayment === 0 ? 0 : (company.totalPayment  - company.firstPayment).toLocaleString() }</p>
-                      )}
-                    </label>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between aligns-items-center mt-2">
-                  <div className="time">
-                    <label className="m-0">{company.bookingTime && (
-                      <p className="m-0">{company.bookingTime}</p>)}</label>
-                  </div>
-                  <div className="bookingdate">
-                    <label className="m-0">
+                  <div className="card-footer d-flex align-items-center justify-content-between w-100" style={{ display: "flex" }}>
+                    <div className="time">
+                      {company.bookingTime && (
+                        <p className="m-0">{company.bookingTime}</p>)}
+                    </div>
+                    <div className="bookingdate">
                       {company.bookingDate && (
                         <p className="m-0">{formatDatelatest(company.bookingDate)}</p>
                       )}
-                    </label>
+                    </div>
                   </div>
                 </div>
-
               </div>
             </div>
           ))}
@@ -530,6 +533,155 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
 }
 
 export default CompanyListAdmin;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

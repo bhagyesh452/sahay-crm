@@ -627,7 +627,7 @@ padding:6px !important;
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: fixed;
+    position: absolute;
     width: 10em;
     text-align: left;
     margin-left: 100px;
@@ -669,4 +669,26 @@ padding:6px !important;
     justify-content: space-between;
    }
 
+   .g-card{
+    transition: .3s;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+   }
+   .show-time-card{
+
+    margin-bottom: 4px;
+   
+color: #4e884e;
+    font-size: 13px;
+    font-weight: bold;
+   }
+   .inco-filter .searchforbde input::placeholder{
+    color:lightgrey;
+  }
+  .inco-filter .searchforbde input{
+    color: black;
+    font-size: 12px;
+    font-weight: 400;
+    font-family: sans-serif;
+    border:none;
+  }
 

@@ -20,6 +20,10 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { FaRegCalendar } from "react-icons/fa";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { FcDatabase } from "react-icons/fc";
+import { MdPersonSearch } from "react-icons/md";
+import { CiSearch } from "react-icons/ci";
+import { IoIosCloseCircleOutline } from "react-icons/io";
+import { IoCloseSharp } from "react-icons/io5";
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import { lastDayOfDecade } from "date-fns";
@@ -32,6 +36,7 @@ function Dashboard() {
   const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
   const [filteredBooking, setFilteredBooking] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
+  const [employeeDataFilter, setEmployeeDataFilter] = useState([]);
   const [expand, setExpand] = useState("");
   const [companyData, setCompanyData] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
@@ -52,6 +57,8 @@ function Dashboard() {
   const [showBookingDate, setShowBookingDate] = useState(false)
   const [startDateAnother, setStartDateAnother] = useState(new Date());
   const [endDateAnother, setEndDateAnother] = useState(new Date());
+  const [searchOption, setSearchOption] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -77,6 +84,8 @@ function Dashboard() {
       .then((response) => response.json())
       .then((data) => {
         setEmployeeData(data);
+        setEmployeeDataFilter(data)
+        // setEmployeeDataFilter(data.filter)
       })
       .catch((error) => {
         console.error(`Error Fetching Employee Data `, error);
@@ -249,6 +258,12 @@ function Dashboard() {
   const properCompanyData =
     selectedEmployee !== "" &&
     companyData.filter((obj) => obj.ename === selectedEmployee);
+
+  const handleCloseIconClickAnother = () => {
+    if (showBookingDate) {
+      setShowBookingDate(false)
+    }
+  }
 
   const selectionRangeAnother = {
     startDate: startDateAnother,
@@ -435,14 +450,21 @@ function Dashboard() {
 
   // --------------------------------- date-range-picker-------------------------------------
 
-  const handleIconClick = () => {
-    if (!buttonToggle) {
-      setDateRangeDisplay(true);
-    } else {
-      setDateRangeDisplay(false);
+  // const handleIconClick = () => {
+  //   if (!buttonToggle) {
+  //     setDateRangeDisplay(true);
+  //   } else {
+  //     setDateRangeDisplay(false);
+  //   }
+  //   setButtonToggle(!buttonToggle);
+  // };
+
+
+  const handleCloseIconClick = () => {
+    if (displayDateRange) {
+      setDateRangeDisplay(false)
     }
-    setButtonToggle(!buttonToggle);
-  };
+  }
 
   const selectionRange = {
     startDate: startDate,
@@ -683,15 +705,20 @@ function Dashboard() {
     setOriginalEmployeeData([...employeeData]); // Store original state of employeeData
   }, [employeeData]);
 
-  const handleIconClickEmployee = () => {
-    if (!buttonToggle) {
-      setDateRangeDisplayEmployee(true);
-    } else {
-      setDateRangeDisplayEmployee(false);
-    }
-    setButtonToggle(!buttonToggle);
-  };
+  // const handleIconClickEmployee = () => {
+  //   if (!buttonToggle) {
+  //     setDateRangeDisplayEmployee(true);
+  //   } else {
+  //     setDateRangeDisplayEmployee(false);
+  //   }
+  //   setButtonToggle(!buttonToggle);
+  // };
 
+  const handleCloseIconClickEmployee = () => {
+    if (displayDateRangeEmployee) {
+      setDateRangeDisplayEmployee(false)
+    }
+  }
   const selectionRangeEmployee = {
     startDate: startDateEmployee,
     endDate: endDateEmployee,
@@ -724,7 +751,20 @@ function Dashboard() {
 
   console.log(companyData)
 
+// ------------------------------------------search bde name---------------------------------------------------
 
+const handleCloseSearch = () => {
+  if (searchOption) {
+    setSearchOption(false)
+  }
+}
+
+function filterSearch(searchTerm) {
+  setSearchTerm(searchTerm)
+  setEmployeeData(employeeDataFilter.filter(company => 
+    company.ename.toLowerCase().includes(searchTerm.toLowerCase())
+  ));
+}
 
   return (
     <div>
@@ -775,8 +815,8 @@ function Dashboard() {
                   )}
                 </div>
               </div>
-              <div className="col card todays-booking m-2">
-                <div className="card-header d-flex align-items-center justify-content-between" onClick={() => setShowBookingDate(!showBookingDate)} >
+              <div className="col card todays-booking m-2" onClick={handleCloseIconClickAnother}>
+                <div className="card-header d-flex align-items-center justify-content-between">
                   <div>
                     <h2>TotaL Booking</h2>
                   </div>
@@ -839,7 +879,7 @@ function Dashboard() {
                   >
                     <table
                       style={{
-                        position:"sticky",
+                        position: "sticky",
                         width: "100%",
                         borderCollapse: "collapse",
                         border: "1px solid #ddd",
@@ -1096,15 +1136,15 @@ function Dashboard() {
               </div>
 
               {/* Employee side Dashboard Analysis */}
-              <div className="employee-dashboard ">
+              <div className="employee-dashboard " onClick={handleCloseIconClickEmployee}>
                 <div className="card">
-                  <div className="card-header d-flex align-items-center justify-content-between" onClick={handleIconClickEmployee}>
+                  <div className="card-header d-flex align-items-center justify-content-between">
                     <div>
                       <h2>Employee Dashboard</h2>
                     </div>
                     <div className="form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
                       <div>{`${formatDate(startDateEmployee)} - ${formatDate(endDateEmployee)}`}</div>
-                      <button onClick={handleIconClickEmployee} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                      <button onClick={() => setDateRangeDisplayEmployee(!displayDateRangeEmployee)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
                         <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
                       </button>
                     </div>
@@ -1128,7 +1168,7 @@ function Dashboard() {
                         lineHeight: "32px",
                       }}
                     >
-                      <table
+                      <table 
                         style={{
                           width: "100%",
                           borderCollapse: "collapse",
@@ -1166,7 +1206,39 @@ function Dashboard() {
                             >
                               Sr. No
                             </th>
-                            <th>BDE/BDM Name</th>
+                            <th>BDE/BDM Name
+                              <MdPersonSearch
+                              style={{
+                                height: "15px",
+                                width: "15px",
+                                cursor: "pointer",
+                                marginLeft: "9px",
+                              }} 
+                              onClick={()=>setSearchOption(true)}
+                               />
+                               {searchOption && (
+                                <div className="inco-filter" style={{ marginLeft: "60px",width: "13.5rem" }}>
+                                  <div className="searchforbde" style={{
+                                    padding : "10px 9px",
+                                    borderRadius:"8px",
+                                    border: "0px solid #fbb900",
+                                    backgroundColor:" white",
+                                    Color:"black"
+                                  }}
+                                  //onClick={(e) => handleSort("ascending")}
+                                  > <span><CiSearch style={{width: "19px",
+                                    height: "20px",
+                                    marginRight: "5px" ,
+                                    color:"grey"}} /></span>
+                                    <input 
+                                  placeholder="Search BDE Name..." 
+                                  value={searchTerm}
+                                  onChange={(e)=>filterSearch(e.target.value)}
+                                /><span><IoCloseSharp onClick={handleCloseSearch} style={{color:"grey"}} /></span>        
+                                  </div>
+                                </div>
+                              )}
+                            </th>
                             <th>Untouched
                               <FilterListIcon
                                 style={{
@@ -2261,15 +2333,15 @@ function Dashboard() {
 
       {/* -------------------------------------projection-dashboard--------------------------------------------- */}
 
-      <div className="container-xl mt-2">
+      <div className="container-xl mt-2" onClick={handleCloseIconClick}>
         <div className="card">
-          <div className="card-header d-flex align-items-center justify-content-between" onClick={handleIconClick}>
+          <div className="card-header d-flex align-items-center justify-content-between" >
             <div>
               <h2>Projection Dashboard</h2>
             </div>
             <div className="form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
               <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
-              <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+              <button onClick={() => setDateRangeDisplay(!displayDateRange)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
                 <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
               </button>
             </div>
@@ -2278,7 +2350,7 @@ function Dashboard() {
             <div className="position-absolute " style={{ zIndex: "1", top: "15%", left: "75%" }} >
               <DateRangePicker
                 ranges={[selectionRange]}
-                onClose={() => setDateRangeDisplay(false)}
+                //onClose={() => setDateRangeDisplay(false)}
                 onChange={handleSelect}
               />
             </div>
@@ -2476,7 +2548,8 @@ function Dashboard() {
                   <th>Offered Services</th>
                   <th>Total Offered Price</th>
                   <th>Expected Amount</th>
-                  <th>Employee Projection Date</th>
+                  <th>Estimated Payment Date</th>
+                  <th>Remarks</th>
                 </tr>
               </thead>
               <tbody>
@@ -2505,6 +2578,7 @@ function Dashboard() {
                       <td>{obj.totalPayment.toLocaleString()}</td>
                       <td>{obj.offeredPrize.toLocaleString()}</td>
                       <td>{obj.estPaymentDate}</td>
+                      <td>{obj.remarks}</td>
                     </tr>
                   )))
                 }
@@ -2523,11 +2597,11 @@ function Dashboard() {
                     {/* <td>{totalPaymentSumPopup.toLocaleString()}
                     </td> */}
                     <td>
-                      {projectedDataDateRange && totalPaymentSumPopupDateRange.toLocaleString()}
+                      ₹{projectedDataDateRange && totalPaymentSumPopupDateRange.toLocaleString()}
                     </td>
                     {/* <td>{offeredPaymentSumPopup.toLocaleString()}
                     </td> */}
-                    <td>{projectedDataDateRange && offeredPaymentSumPopupDateRange.toLocaleString()}</td>
+                    <td> ₹{projectedDataDateRange && offeredPaymentSumPopupDateRange.toLocaleString()}</td>
                     <td>-</td>
                   </tr>
                 </tfoot>

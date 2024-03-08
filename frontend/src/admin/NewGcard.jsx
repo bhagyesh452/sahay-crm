@@ -3,7 +3,6 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -139,74 +138,106 @@ export default function NewGCard({ id, name, damount, assignStatus,cDate,cTime }
     setfilteredData(filteredextraData);
     functionopenpopup();
   };
-  console.log(selectedRows);
+  const isToday = (dateString) => {
+    const today = new Date().toLocaleDateString();
+    const date = new Date(dateString).toLocaleDateString();
+    
+
+    return (
+      date === today 
+    );
+  };
+  
 
   return (
-    <Box sx={{ minWidth: 275, width: "28vw" }}>
-      <Card
+    <Box sx={{ minWidth: 200, width: "28vw" }}>
+  <Card
+    className="g-card"
+    style={{
+      padding: "8px",
+      backgroundColor: assignStatus ? "#d3d2d2de" : "inherit",
+      margin: "10px 0px",
+      borderRadius: "8px",
+      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+      transition: "transform 0.3s",
+      "&:hover": {
+        transform: "scale(1.02)",
+      },
+    }}
+    variant="outlined"
+  >
+    <React.Fragment>
+      <CardContent>
+        <div className="main-content-card d-flex justify-content-between">
+
+        <div
+          style={{
+            fontSize: "16px",
+           
+            marginBottom: "8px",
+            color: "#333",
+          }}
+          variant="h5"
+          component="div"
+        >
+         <strong>{name}</strong>  is requesting for {damount} Data
+        </div>
+
+        <div className="show-time-card">
+          {isToday(cDate) ? cTime : cDate}
+        </div>
+        </div>
+      </CardContent>
+
+      <div
         style={{
-          padding: "10px",
-          backgroundColor: assignStatus && "#d3d2d2de",
-          margin: "10px 0px",
+          display: "flex",
+          justifyContent: "space-around",
+          marginTop: "auto",
         }}
-        variant="outlined"
+        className="footerbutton"
       >
-        <React.Fragment>
-          <CardContent>
-            <Typography
-              style={{ fontSize: "18px" }}
-              variant="h5"
-              component="div"
-            >
-              {name} is requesting for Data
-            </Typography>
+        <button
+          style={{
+            width: "45%",
+            borderRadius: "4px",
+            backgroundColor: assignStatus ? "#ceedce" : "#2e830b",
+            color: assignStatus ? "#2e830b" : "#ffffff",
+            border: "none",
+            padding: "6px",
+            cursor: assignStatus ? "not-allowed" : "pointer",
+            transition: "background-color 0.3s",
+            fontSize: "14px",
+          }}
+          className="btn btn-primary d-none d-sm-inline-block"
+          onClick={handleDirectAssign}
+          disabled={assignStatus}
+        >
+          Accept
+        </button>
+        <button
+          style={{
+            width: "45%",
+            borderRadius: "4px",
+            backgroundColor: assignStatus ? "#f4d0d0" : "#bc2929",
+            color: assignStatus ? "#bc2929" : "#ffffff",
+            border: "none",
+            padding: "6px",
+            cursor: assignStatus ? "not-allowed" : "pointer",
+            transition: "background-color 0.3s",
+            fontSize: "14px",
+          }}
+          className="btn btn-primary d-none d-sm-inline-block"
+          onClick={handleManualAssign}
+          disabled={assignStatus}
+        >
+          Assign Manually
+        </button>
+      </div>
+    </React.Fragment>
+  </Card>
 
-            <Typography color="text.secondary">
-              Number of Data : {damount}
-            </Typography>
-            <div className="d-flex justify-content-between">
-              <Typography color="text.secondary">{cDate}</Typography>
-              <Typography color="text.secondary">{cTime}</Typography>
-            </div>
-          </CardContent>
 
-          <div
-            style={{ display: "flex", justifyContent: "space-around" }}
-            className="footerbutton"
-          >
-            <button
-              style={{
-                width: "100vw",
-                borderRadius: "0px",
-                backgroundColor: "#ceedce",
-                color: "#2e830b",
-                "&:hover": {
-                  backgroundColor: "#aabbcc !important",
-                  color: "#ffffff !important",
-                },
-              }}
-              className="btn btn-primary d-none d-sm-inline-block"
-              onClick={handleDirectAssign}
-              disabled={assignStatus}
-            >
-              Accept
-            </button>
-            <button
-              style={{
-                width: "100vw",
-                borderRadius: "0px",
-                backgroundColor: "#f4d0d0",
-                color: "#bc2929",
-              }}
-              className="btn btn-primary d-none d-sm-inline-block"
-              onClick={handleManualAssign}
-              disabled={assignStatus}
-            >
-              Assign Manually
-            </button>
-          </div>
-        </React.Fragment>
-      </Card>
       <Dialog open={open} onClose={closepopup} fullWidth maxWidth="lg">
         <DialogTitle>
           No of results {filteredData.length}

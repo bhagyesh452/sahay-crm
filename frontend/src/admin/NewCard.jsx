@@ -38,14 +38,12 @@ export default function NewCard({id, name, year, ctype, damount,assignStatus , c
   };
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/leads`);
+      const response = await axios.get(`${secretKey}/card-leads` , damount);
 
       // Set the retrieved data in the state
-      const filteredData = response.data.filter(
-        (item) => item.ename === "Select Employee" || item.ename === "Not Alloted"
-      );
+    
 
-      setData(filteredData);
+      setData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -173,76 +171,113 @@ export default function NewCard({id, name, year, ctype, damount,assignStatus , c
       functionopenpopup();
     }
   };
+  const isToday = (dateString) => {
+    const today = new Date().toLocaleDateString();
+    const date = new Date(dateString).toLocaleDateString();
+    
+
+    return (
+      date === today 
+    );
+  };
 
   return (
-    <Box sx={{ minWidth: 275, width: "28vw" }}>
-      <Card style={{ padding: "10px" , margin:"10px 0px",
-    backgroundColor: assignStatus && "#d3d2d2de" ,
-    }} variant="outlined">
-        <React.Fragment>
-          <CardContent>
-            <Typography
-              style={{ fontSize: "18px" }}
-              variant="h5"
-              component="div"
-            >
-              {name} is requesting for Data
-            </Typography>
-            <Typography color="text.secondary">Year : {year}</Typography>
-            <Typography color="text.secondary">
-              Company Type : {ctype}
-            </Typography>
-            <Typography color="text.secondary">
-              Number of Data : {damount}
-            </Typography>
-            <div className="d-flex justify-content-between">
-            <Typography color="text.secondary">
-              {cDate}
-            </Typography>
-            <Typography color="text.secondary">
-               {cTime}
-            </Typography>
+    <Box sx={{ minWidth: 200, width: "28vw" }}>
+  <Card
+    className="g-card"
+    style={{
+      padding: "8px",
+      backgroundColor: assignStatus ? "#d3d2d2de" : "inherit",
+      margin: "10px 0px",
+      borderRadius: "8px",
+      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+      transition: "transform 0.3s",
+      "&:hover": {
+        transform: "scale(1.02)",
+      },
+    }}
+    variant="outlined"
+  >
+    <React.Fragment>
+      <CardContent>
+        <div className="main-content-card d-flex justify-content-between">
 
-            </div>
-          </CardContent>
-
-          <div
-            style={{ display: "flex", justifyContent: "space-around" }}
-            className="footerbutton"
-          >
-            <button
-              style={{
-                width: "100vw",
-                borderRadius: "0px",
-                backgroundColor: "#ceedce",
-                color:"#2e830b",
-                "&:hover": {
-                  backgroundColor: "#aabbcc !important",
-                  color: "#ffffff !important"
-                },
-              }}
-              className="btn btn-primary d-none d-sm-inline-block"
-              onClick={handleDirectAssign}
-              disabled={assignStatus}
-            >
-              Accept
-            </button>
-            <button
-              style={{
-                width: "100vw",
-                borderRadius: "0px",
-                backgroundColor: "#f4d0d0",
-                color:"#bc2929"
-              }}
-              className="btn btn-primary d-none d-sm-inline-block"
-              onClick={handleManualAssign}
-              disabled={assignStatus}
-            >
-              Assign Manually
-            </button>
+        <div
+          style={{
+            fontSize: "16px",
+           
+            marginBottom: "8px",
+            color: "#333",
+          }}
+          variant="h5"
+          component="div"
+        >
+         <strong>{name}</strong>  is requesting for {damount} Data
+         <div className="data-type d-flex justify-content-between"  style={{fontSize:'12px'}}>
+          <div style={{color:'#797878'}} className="c-type">
+          COMPANY TYPE: <strong>{ctype}</strong>
           </div>
-        </React.Fragment>
-      </Card>
+          <div style={{color:'#797878'}} className="c-year">
+          YEAR: <strong>{year}</strong> 
+          </div>
+         </div>
+        
+        </div>
+        
+
+        <div className="show-time-card">
+          {isToday(cDate) ? cTime : cDate}
+        </div>
+        </div>
+      </CardContent>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+          marginTop: "auto",
+        }}
+        className="footerbutton"
+      >
+        <button
+          style={{
+            width: "45%",
+            borderRadius: "4px",
+            backgroundColor: assignStatus ? "#ceedce" : "#2e830b",
+            color: assignStatus ? "#2e830b" : "#ffffff",
+            border: "none",
+            padding: "6px",
+            cursor: assignStatus ? "not-allowed" : "pointer",
+            transition: "background-color 0.3s",
+            fontSize: "14px",
+          }}
+          className="btn btn-primary d-none d-sm-inline-block"
+          onClick={handleDirectAssign}
+          disabled={assignStatus}
+        >
+          Accept
+        </button>
+        <button
+          style={{
+            width: "45%",
+            borderRadius: "4px",
+            backgroundColor: assignStatus ? "#f4d0d0" : "#bc2929",
+            color: assignStatus ? "#bc2929" : "#ffffff",
+            border: "none",
+            padding: "6px",
+            cursor: assignStatus ? "not-allowed" : "pointer",
+            transition: "background-color 0.3s",
+            fontSize: "14px",
+          }}
+          className="btn btn-primary d-none d-sm-inline-block"
+          onClick={handleManualAssign}
+          disabled={assignStatus}
+        >
+          Assign Manually
+        </button>
+      </div>
+    </React.Fragment>
+  </Card>
       <Dialog open={open} onClose={closepopup} fullWidth maxWidth="lg">
         <DialogTitle>
           No of results {filteredData.length}

@@ -236,7 +236,7 @@ const [selectedMonths, setSelectedMonths] = useState([]);
   };
   const fetchProjections = async () => {
     try {
-      const response = await axios.get(`${secretKey}/projection-data`);
+      const response = await axios.get(`${secretKey}/projection-data/${data.ename}`);
       setProjectionData(response.data);
     } catch (error) {
       console.error("Error fetching Projection Data:", error.message);
@@ -402,9 +402,12 @@ const [selectedMonths, setSelectedMonths] = useState([]);
   };
   console.log(requestData);
   // const [locationAccess, setLocationAccess] = useState(false);
+  useEffect(()=>{
+    fetchProjections();
+  },[data])
   useEffect(() => {
     fetchRemarksHistory();
-    fetchProjections();
+  
     fetchRequestDetails();
     // let watchId;
     // const successCallback = (position) => {
@@ -999,12 +1002,32 @@ const [selectedMonths, setSelectedMonths] = useState([]);
 
   const handleProjectionSubmit = async () => {
     try {
+     
       const finalData = {
         ...currentProjection,
         companyName: projectingCompany,
         ename: data.ename,
         offeredServices: selectedValues,
       };
+      if(finalData.offeredServices.length === 0){
+        Swal.fire({title:'Services is required!' , icon:'warning'});
+      }else if(finalData.remarks === ""){
+        Swal.fire({title:'Remarks is required!' , icon:'warning'});
+      }else if(finalData.totalPayment === 0){
+        Swal.fire({title:'Payment is required!' , icon:'warning'});
+      }
+      else if(finalData.offeredPrize === 0){
+        Swal.fire({title:'Offered Prize is required!' , icon:'warning'});
+      }
+      else if(finalData.lastFollowUpdate === null){
+        Swal.fire({title:'Last FollowUp Date is required!' , icon:'warning'});
+      }
+      else if(finalData.estPaymentDate === 0){
+        Swal.fire({title:'Estimated Payment Date is required!' , icon:'warning'});
+      }
+   
+   
+   
 
       // Send data to backend API
       const response = await axios.post(
@@ -1025,7 +1048,7 @@ const [selectedMonths, setSelectedMonths] = useState([]);
       });
       fetchProjections();
 
-      console.log(response.data); // Log success message
+  // Log success message
     } catch (error) {
       console.error("Error updating or adding data:", error.message);
     }
@@ -2046,7 +2069,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                             </th>
 
                             {(dataStatus === "Matured" && <th>Action</th>) ||
-                              (dataStatus === "FollowUp" && <th>Action</th>)}
+                              (dataStatus === "FollowUp" && <th>Action</th>) || (dataStatus === "Interested" && <th>Action</th>)} 
                           </tr>
                         </thead>
                         {currentData.length !== 0 &&
@@ -2189,7 +2212,8 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                                   <td>{company["Company Email"]}</td>
                                   <td>{formatDate(company["AssignDate"])}</td>
 
-                                  {dataStatus === "FollowUp" && (
+                                  {(dataStatus === "FollowUp" || 
+                                  dataStatus === "Interested") && (
                                     <td>
                                       <button
                                         style={{
@@ -2909,7 +2933,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                 </strong>
               </div>
               <div className="label">
-                <strong>Offered Services :</strong>
+                <strong>Offered Services {selectedValues.length === 0 && <span style={{ color: "red" }}>*</span>} :</strong>
                 <div className="services mb-3">
                   <Select
                     // styles={{
@@ -2936,7 +2960,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                 </div>
               </div>
               <div className="label">
-                <strong>Offered prizes:</strong>
+                <strong>Offered prizes {!currentProjection.offeredPrize && <span style={{ color: "red" }}>*</span>} :</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -2954,7 +2978,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                 </div>
               </div>
               <div className="label">
-                <strong>Total Payment:</strong>
+                <strong>Total Payment {currentProjection.totalPayment === 0 && <span style={{ color: "red" }}>*</span>} :</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -2972,7 +2996,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                 </div>
               </div>
               <div className="label">
-                <strong>Last Follow Up Date:</strong>
+                <strong>Last Follow Up Date {!currentProjection.lastFollowUpdate && <span style={{ color: "red" }}>*</span>}: </strong>
                 <div className="services mb-3">
                   <input
                     type="date"
@@ -2990,7 +3014,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                 </div>
               </div>
               <div className="label">
-                <strong>Payment Expected on:</strong>
+                <strong>Payment Expected on {!currentProjection.estPaymentDate  && <span style={{ color: "red" }}>*</span>}:</strong>
                 <div className="services mb-3">
                   <input
                     type="date"
@@ -3008,7 +3032,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                 </div>
               </div>
               <div className="label">
-                <strong>Remarks:</strong>
+                <strong>Remarks {currentProjection.remarks === "" && <span style={{ color: "red" }}>*</span>}:</strong>
                 <div className="remarks mb-3">
                   <textarea
                     type="text"
