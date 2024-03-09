@@ -8,6 +8,7 @@ const CompanySchema = new mongoose.Schema({
   },
   ename:{
     type:String,
+    required:true
   },
   date: {
     type: String,
@@ -39,7 +40,11 @@ const CompanySchema = new mongoose.Schema({
   },
   remarks:{
     type:String,
+<<<<<<< HEAD
     default:"no remarks added"
+=======
+    required:true
+>>>>>>> b41092a18069d94425d6576af1a9f34ea515b2ed
   }
 
 });

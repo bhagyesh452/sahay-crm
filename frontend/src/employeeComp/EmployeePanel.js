@@ -72,6 +72,9 @@ function EmployeePanel() {
   const [selectedField, setSelectedField] = useState("Company Name");
   const [cname, setCname] = useState("");
   const [cemail, setCemail] = useState("");
+  const [selectAllChecked, setSelectAllChecked] = useState(true);
+const [selectedYears, setSelectedYears] = useState([]);
+const [selectedMonths, setSelectedMonths] = useState([]);
   const [cnumber, setCnumber] = useState(0);
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
@@ -233,7 +236,7 @@ function EmployeePanel() {
   };
   const fetchProjections = async () => {
     try {
-      const response = await axios.get(`${secretKey}/projection-data`);
+      const response = await axios.get(`${secretKey}/projection-data/${data.ename}`);
       setProjectionData(response.data);
     } catch (error) {
       console.error("Error fetching Projection Data:", error.message);
@@ -399,9 +402,12 @@ function EmployeePanel() {
   };
   console.log(requestData);
   // const [locationAccess, setLocationAccess] = useState(false);
+  useEffect(()=>{
+    fetchProjections();
+  },[data])
   useEffect(() => {
     fetchRemarksHistory();
-    fetchProjections();
+  
     fetchRequestDetails();
     // let watchId;
     // const successCallback = (position) => {
@@ -996,12 +1002,32 @@ function EmployeePanel() {
 
   const handleProjectionSubmit = async () => {
     try {
+     
       const finalData = {
         ...currentProjection,
         companyName: projectingCompany,
         ename: data.ename,
         offeredServices: selectedValues,
       };
+      if(finalData.offeredServices.length === 0){
+        Swal.fire({title:'Services is required!' , icon:'warning'});
+      }else if(finalData.remarks === ""){
+        Swal.fire({title:'Remarks is required!' , icon:'warning'});
+      }else if(finalData.totalPayment === 0){
+        Swal.fire({title:'Payment is required!' , icon:'warning'});
+      }
+      else if(finalData.offeredPrize === 0){
+        Swal.fire({title:'Offered Prize is required!' , icon:'warning'});
+      }
+      else if(finalData.lastFollowUpdate === null){
+        Swal.fire({title:'Last FollowUp Date is required!' , icon:'warning'});
+      }
+      else if(finalData.estPaymentDate === 0){
+        Swal.fire({title:'Estimated Payment Date is required!' , icon:'warning'});
+      }
+   
+   
+   
 
       // Send data to backend API
       const response = await axios.post(
@@ -1022,7 +1048,7 @@ function EmployeePanel() {
       });
       fetchProjections();
 
-      console.log(response.data); // Log success message
+  // Log success message
     } catch (error) {
       console.error("Error updating or adding data:", error.message);
     }
@@ -1055,7 +1081,12 @@ function EmployeePanel() {
 
     if (dataStatus === "All") {
       // Filter data for all statuses
-      dataArray = data.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up");
+      dataArray = data.filter(
+        (obj) =>
+          obj.Status === "Untouched" ||
+          obj.Status === "Busy" ||
+          obj.Status === "Not Picked Up"
+      );
     } else if (dataStatus === "Interested") {
       // Filter data for Interested status
       dataArray = data.filter((obj) => obj.Status === "Interested");
@@ -1073,7 +1104,7 @@ function EmployeePanel() {
       const date = new Date(obj["Company Incorporation Date  "]);
       const year = date.getFullYear();
       const month = date.toLocaleString("default", { month: "short" });
-
+     
       // Check if year already exists in newArray
       const yearIndex = newArray.findIndex((item) => item.year === year);
       if (yearIndex !== -1) {
@@ -1095,29 +1126,120 @@ function EmployeePanel() {
   };
 
   // Call the function to create the new array
-  const resultArray = moreEmpData.length!==0 ? createNewArray(moreEmpData) : [];
+  const resultArray =
+    moreEmpData.length !== 0 ? createNewArray(moreEmpData) : [];
 
-  const handleYearFilterChange = (e, selectedYear) => {
-    const isChecked = e.target.checked;
+  // const handleYearFilterChange = (e, selectedYear) => {
+  //   const isChecked = e.target.checked;
+
+  //   // Filter the employeeData based on the selected year
+  //   if (isChecked) {
+  //     const filteredData = employeeData.filter((data) => {
+  //       const year = new Date(
+  //         data["Company Incorporation Date  "]
+  //       ).getFullYear();
+  //       return year.toString() === selectedYear.toString();
+  //     });
+  //     setEmployeeData(filteredData);
+  //     console.log("Filtered Year data", filteredData);
+  //   } else {
+  //     // If the checkbox is unchecked, reset the filter
+  //     // You can implement this according to your requirements
+  //     // For example, if you want to reset to the original data, you can fetch it again from the server
+  //     // setEmployeeData(originalEmployeeData);
+  //   }
+  // };
+  // const handleMonthFilterChange = () => {
+  //   console.log("Month is filtering");
+  // };
+
+  // Handle "Select All" checkbox change
+const handleSelectAllChange = (e) => {
+  const isChecked = e.target.checked;
+  setSelectAllChecked(isChecked);
+  if (isChecked) {
+    const newEmpData = 
+    dataStatus === "All"
+      ? moreEmpData.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up")
+      : dataStatus === "Interested"
+      ? moreEmpData.filter((obj) => obj.Status === "Interested")
+      : dataStatus === "Not Interested"
+      ? moreEmpData.filter((obj) => obj.Status === "Not Interested" || obj.Status === "Junk")
+      : dataStatus === "FollowUp"
+      ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+      : [];
   
-    // Filter the employeeData based on the selected year
-    if (isChecked) {
-      const filteredData = employeeData.filter((data) => {
-        const year = new Date(data["Company Incorporation Date  "]).getFullYear();
-        return year.toString() === selectedYear.toString();
-      });
-      setEmployeeData(filteredData);
-      console.log("Filtered Year data",filteredData)
-    } else {
-      // If the checkbox is unchecked, reset the filter
-      // You can implement this according to your requirements
-      // For example, if you want to reset to the original data, you can fetch it again from the server
-      // setEmployeeData(originalEmployeeData);
-    }
-  };
-const handleMonthFilterChange = ()=>{
-  console.log("Month is filtering")
-}  
+    setEmployeeData(newEmpData);
+    setSelectedYears([...new Set(newEmpData.map(data => new Date(data["Company Incorporation Date  "]).getFullYear().toString()))]);
+    setSelectedMonths([]);
+  } else {
+    setEmployeeData([]);
+    setSelectedYears([]);
+    setSelectedMonths([]);
+  }
+};
+
+// Handle year checkbox change
+const handleYearFilterChange = (e, selectedYear) => {
+  const isChecked = e.target.checked;
+  setSelectAllChecked(false); // Uncheck "Select All" when a year checkbox is clicked
+  if (isChecked) {
+    const newEmpData = 
+    dataStatus === "All"
+      ? moreEmpData.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up")
+      : dataStatus === "Interested"
+      ? moreEmpData.filter((obj) => obj.Status === "Interested")
+      : dataStatus === "Not Interested"
+      ? moreEmpData.filter((obj) => obj.Status === "Not Interested" || obj.Status === "Junk")
+      : dataStatus === "FollowUp"
+      ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+      : [];
+    setSelectedYears([...selectedYears, selectedYear]); // Add selected year to the list
+    const filteredData = newEmpData.filter(data => new Date(data["Company Incorporation Date  "]).getFullYear() === selectedYear);
+
+    setEmployeeData([...employeeData, ...filteredData]); // Add filtered data to the existing employeeData
+  } else {
+    setSelectedYears(selectedYears.filter(year => year !== selectedYear)); // Remove selected year from the list
+    const filteredData = employeeData.filter(data => new Date(data["Company Incorporation Date  "]).getFullYear() !== selectedYear);
+    setEmployeeData(filteredData); // Update employeeData with filtered data
+  }
+};
+
+// Handle month checkbox change
+const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
+  const isChecked = e.target.checked;
+  if (isChecked) {
+    
+    setSelectedMonths([...selectedMonths, selectedMonth]);
+    const newEmpData = 
+    dataStatus === "All"
+      ? moreEmpData.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up")
+      : dataStatus === "Interested"
+      ? moreEmpData.filter((obj) => obj.Status === "Interested")
+      : dataStatus === "Not Interested"
+      ? moreEmpData.filter((obj) => obj.Status === "Not Interested" || obj.Status === "Junk")
+      : dataStatus === "FollowUp"
+      ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+      : [];
+    const filteredData = newEmpData.filter(data => {
+      const year = new Date(data["Company Incorporation Date  "]).getFullYear().toString();
+      const month = new Date(data["Company Incorporation Date  "]).toLocaleString("default", { month: "short" });
+      console.log("Year :" ,year , selectedYear.toString() );
+      console.log("Month :" ,month , selectedMonth.toString() );
+      return year === selectedYear.toString() && month === selectedMonth.toString();
+    });
+    setEmployeeData(filteredData);
+  } else {
+    setSelectedMonths(selectedMonths.filter(month => month !== selectedMonth));
+    const filteredData = employeeData.filter(data => {
+      const year = new Date(data["Company Incorporation Date  "]).getFullYear().toString();
+      const month = new Date(data["Company Incorporation Date  "]).toLocaleString('default', { month: 'short' });
+     
+      return year !== selectedYear.toString() || month !== selectedMonth.toString();
+    });
+    setEmployeeData(filteredData);
+  }
+};
 
   return (
     <div>
@@ -1828,85 +1950,80 @@ const handleMonthFilterChange = ()=>{
                                     <SwapVertIcon style={{ height: "16px" }} />
                                     Newest
                                   </div>
+                                  
 
-                                  {resultArray.length !== 0 &&
-                                    resultArray.map((obj) => (
-                                      <>
-                                        <div
-                                          style={{ marginLeft: "5px" }}
-                                          className="inco-subFilter d-flex"
-                                        >
-                                          <div style={{ marginRight: "5px" }}>
-                                            <input
-                                              type="checkbox"
-                                              name="year-filter"
-                                              id={`year-filter-${obj.year}`} // Add a unique id for each checkbox
-                                              onChange={(e) =>
-                                                handleYearFilterChange(
-                                                  e,
-                                                  obj.year
-                                                )
-                                              } // Pass event and year to the handler
-                                            />
-                                          </div>
-                                          <div className="year-val">
-                                            {obj.year}
-                                          </div>
-                                          {expandYear !== obj.year && (
-                                            <div
-                                              className="expand-year d-flex"
-                                              onClick={() => {
-                                                setExpandYear(obj.year);
-                                              }}
-                                            >
-                                              <AddCircle
-                                                style={{ height: "15px" }}
-                                              />
-                                            </div>
-                                          )}
-                                          {expandYear === obj.year && (
-                                            <div
-                                              className="expand-year d-flex"
-                                              onClick={() => {
-                                                setExpandYear(0);
-                                              }}
-                                            >
-                                              <RemoveCircleIcon
-                                                style={{ height: "15px" }}
-                                              />
-                                            </div>
-                                          )}
-                                        </div>
-                                        {obj.month.length !== 0 &&
-                                          expandYear === obj.year &&
-                                          obj.month.map((month) => (
-                                            <div
-                                              style={{ marginLeft: "25px" }}
-                                              className="inco-subFilter d-flex"
-                                            >
-                                              <div
-                                                style={{ marginRight: "5px" }}
-                                              >
-                                                <input
-                                                  type="checkbox"
-                                                  name="month-filter"
-                                                  id={`month-filter-${month}`} // Add a unique id for each checkbox
-                                                  onChange={(e) =>
-                                                    handleMonthFilterChange(
-                                                      e,
-                                                      obj.year,
-                                                      month
-                                                    )
-                                                  } // Pass event, year, and month to the handler
-                                                />
-                                              </div>
-                                              <div className="month-val">
-                                                {month}
-                                              </div>
-                                            </div>
-                                          ))}
-                                      </>
-                                    ))}
+                                  <div style={{ marginLeft: "5px" }} className="inco-subFilter d-flex">
+  <div style={{ marginRight: "5px" }}>
+    <input
+      type="checkbox"
+      name="year-filter"
+      id={`year-filter-all`}
+      checked={selectAllChecked}
+      onChange={(e) => handleSelectAllChange(e)}
+    />
+  </div>
+  <div className="year-val">
+    Select All
+  </div>
+</div>
+
+{resultArray.length !== 0 &&
+  resultArray.map((obj) => (
+    <div key={obj.year}>
+      <div style={{ marginLeft: "5px" }} className="inco-subFilter d-flex">
+        <div style={{ marginRight: "5px" }}>
+          <input
+            type="checkbox"
+            name="year-filter"
+            id={`year-filter-${obj.year}`}
+            checked={selectedYears.includes(obj.year)}
+            onChange={(e) => handleYearFilterChange(e, obj.year)}
+          />
+        </div>
+        <div className="year-val">
+          {obj.year}
+        </div>
+        {expandYear !== obj.year && (
+          <div
+            className="expand-year d-flex"
+            onClick={() => {
+              setExpandYear(obj.year);
+            }}
+          >
+            <AddCircle style={{ height: "15px" }} />
+          </div>
+        )}
+        {expandYear === obj.year && (
+          <div
+            className="expand-year d-flex"
+            onClick={() => {
+              setExpandYear(0);
+            }}
+          >
+            <RemoveCircleIcon style={{ height: "15px" }} />
+          </div>
+        )}
+      </div>
+      {obj.month.length !== 0 && expandYear === obj.year && (
+        obj.month.map((month) => (
+          <div key={`${obj.year}-${month}`} style={{ marginLeft: "25px" }} className="inco-subFilter d-flex">
+            <div style={{ marginRight: "5px" }}>
+              <input
+                type="checkbox"
+                name="month-filter"
+                id={`month-filter-${month}`}
+                checked={selectedMonths.includes(month)}
+                onChange={(e) => handleMonthFilterChange(e, obj.year, month)}
+              />
+            </div>
+            <div className="month-val">
+              {month}
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  ))}
 
                                   <div
                                     className="inco-subFilter"
@@ -1952,7 +2069,7 @@ const handleMonthFilterChange = ()=>{
                             </th>
 
                             {(dataStatus === "Matured" && <th>Action</th>) ||
-                              (dataStatus === "FollowUp" && <th>Action</th>)}
+                              (dataStatus === "FollowUp" && <th>Action</th>) || (dataStatus === "Interested" && <th>Action</th>)} 
                           </tr>
                         </thead>
                         {currentData.length !== 0 &&
@@ -2095,7 +2212,8 @@ const handleMonthFilterChange = ()=>{
                                   <td>{company["Company Email"]}</td>
                                   <td>{formatDate(company["AssignDate"])}</td>
 
-                                  {dataStatus === "FollowUp" && (
+                                  {(dataStatus === "FollowUp" || 
+                                  dataStatus === "Interested") && (
                                     <td>
                                       <button
                                         style={{
@@ -2815,7 +2933,7 @@ const handleMonthFilterChange = ()=>{
                 </strong>
               </div>
               <div className="label">
-                <strong>Offered Services :</strong>
+                <strong>Offered Services {selectedValues.length === 0 && <span style={{ color: "red" }}>*</span>} :</strong>
                 <div className="services mb-3">
                   <Select
                     // styles={{
@@ -2842,7 +2960,7 @@ const handleMonthFilterChange = ()=>{
                 </div>
               </div>
               <div className="label">
-                <strong>Offered prizes:</strong>
+                <strong>Offered prizes {!currentProjection.offeredPrize && <span style={{ color: "red" }}>*</span>} :</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -2860,7 +2978,7 @@ const handleMonthFilterChange = ()=>{
                 </div>
               </div>
               <div className="label">
-                <strong>Total Payment:</strong>
+                <strong>Total Payment {currentProjection.totalPayment === 0 && <span style={{ color: "red" }}>*</span>} :</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -2878,7 +2996,7 @@ const handleMonthFilterChange = ()=>{
                 </div>
               </div>
               <div className="label">
-                <strong>Last Follow Up Date:</strong>
+                <strong>Last Follow Up Date {!currentProjection.lastFollowUpdate && <span style={{ color: "red" }}>*</span>}: </strong>
                 <div className="services mb-3">
                   <input
                     type="date"
@@ -2896,7 +3014,7 @@ const handleMonthFilterChange = ()=>{
                 </div>
               </div>
               <div className="label">
-                <strong>Payment Expected on:</strong>
+                <strong>Payment Expected on {!currentProjection.estPaymentDate  && <span style={{ color: "red" }}>*</span>}:</strong>
                 <div className="services mb-3">
                   <input
                     type="date"
@@ -2914,7 +3032,7 @@ const handleMonthFilterChange = ()=>{
                 </div>
               </div>
               <div className="label">
-                <strong>Remarks:</strong>
+                <strong>Remarks {currentProjection.remarks === "" && <span style={{ color: "red" }}>*</span>}:</strong>
                 <div className="remarks mb-3">
                   <textarea
                     type="text"

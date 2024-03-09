@@ -21,6 +21,9 @@ const yourSchema = new mongoose.Schema({
   },
   designation:{
     type: String
+  },
+  AddedOn:{
+    type:String
   }
 });
 

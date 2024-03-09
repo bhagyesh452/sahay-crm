@@ -457,7 +457,7 @@ function EmployeeParticular() {
 
     const csvdata = employeeData
       .filter((employee) => selectedRows.includes(employee._id))
-      .map((employee) => ({ ...employee, Status: "Untouched" }));
+      .map((employee) => ({ ...employee, Status: "Untouched" , Remarks : "No Remarks Added" }));
 
     // Create an array to store promises for updating CompanyModel
     const updatePromises = [];
@@ -1311,7 +1311,8 @@ function EmployeeParticular() {
                             />
                           </th>
                           {(dataStatus === "Matured" && <th>Action</th>) ||
-                            (dataStatus === "FollowUp" && <th>Action</th>)}
+                            (dataStatus === "FollowUp" && <th>Action</th>)||
+                            (dataStatus === "Interested" && <th>Action</th>)}
                         </tr>
                       </thead>
                       {currentData.length !== 0 && dataStatus !== "Matured" && (
@@ -1403,7 +1404,7 @@ function EmployeeParticular() {
                               <td>{company["State"]}</td>
                               <td>{company["Company Email"]}</td>
                               <td>{formatDate(company["AssignDate"])}</td>
-                              {dataStatus === "FollowUp" && (
+                              {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
                                 <td>
                                   <button
                                     style={{
@@ -1621,7 +1622,7 @@ function EmployeeParticular() {
         maxWidth="sm"
       >
         <DialogTitle>
-          Import CSV DATA{" "}
+          Change BDE{" "}
           <IconButton onClick={closepopupAssign} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
           </IconButton>{" "}
@@ -1881,7 +1882,7 @@ function EmployeeParticular() {
                       label: value,
                     }))
                   }
-                  placeholder="Select Services..."
+                  placeholder="No Services Selected"
                   disabled
                 />
               </div>
@@ -1892,7 +1893,7 @@ function EmployeeParticular() {
                 <input
                   type="number"
                   className="form-control"
-                  placeholder="Please enter offered Prize"
+                  placeholder="0"
                   value={currentProjection.offeredPrize}
                   disabled
                 />
@@ -1904,24 +1905,38 @@ function EmployeeParticular() {
                 <input
                   type="date"
                   className="form-control"
-                  placeholder="Please enter offered Prize"
+                  placeholder="Lasf followUp date is not mentioned"
                   value={currentProjection.lastFollowUpdate}
                   disabled
                 />
               </div>
             </div>
             <div className="label">
+                <strong>Total Payment  :</strong>
+                <div className="services mb-3">
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Total Payment is not mentioned"
+                    value={currentProjection.totalPayment}
+                   
+                    disabled
+                  />
+                </div>
+              </div>
+            <div className="label">
               <strong>Payment Expected on:</strong>
               <div className="services mb-3">
                 <input
                   type="date"
                   className="form-control"
-                  placeholder="Please enter Estimated Payment Date"
+                  placeholder="Estimated Date not mentioned"
                   value={currentProjection.estPaymentDate}
                   disabled
                 />
               </div>
             </div>
+            
           </div>
         </div>
       </Drawer>

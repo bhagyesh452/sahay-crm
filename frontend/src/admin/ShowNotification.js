@@ -23,7 +23,7 @@ function ShowNotification() {
   const fetchRequestDetails = async () => {
     try {
       const response = await axios.get(`${secretKey}/requestData`);
-      setRequestData(response.data);
+      setRequestData(response.data.reverse());
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -31,7 +31,7 @@ function ShowNotification() {
   const fetchRequestGDetails = async () => {
     try {
       const response = await axios.get(`${secretKey}/requestgData`);
-      setRequestGData(response.data);
+      setRequestGData(response.data.reverse());
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -39,7 +39,7 @@ function ShowNotification() {
   const fetchDataDelete = async () => {
     try {
       const response = await axios.get(`${secretKey}/deleterequestbybde`);
-      setDeleteData(response.data); // Assuming your data is returned as an array
+      setDeleteData(response.data.reverse()); // Assuming your data is returned as an array
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -64,12 +64,12 @@ function ShowNotification() {
       console.error("Error fetching data:", error);
     }
   };
-  console.log(editData);
+ 
 
   const fetchApproveRequests = async () => {
     try {
       const response = await axios.get(`${secretKey}/requestCompanyData`);
-      setRequestApprovals(response.data);
+      setRequestApprovals(response.data.reverse());
       const uniqueEnames = response.data.reduce((acc, curr) => {
         if (!acc.some((item) => item.ename === curr.ename)) {
           const [dateString, timeString] = formatDateAndTime(
@@ -214,7 +214,7 @@ function ShowNotification() {
                 </ul>
               </div>
               <div
-                style={{ backgroundColor: "#f2f2f2" }}
+                style={{ backgroundColor: "#f2f2f2" , overflow:'scroll', height:'70vh' }}
                 className="maincontent row"
               >
                 {dataType === "Manual" &&

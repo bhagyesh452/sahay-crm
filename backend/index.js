@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const compression = require('compression');
 // const { Server } = require("socket.io");
 // const http = require("http");
 // const server = http.createServer(app);
@@ -40,6 +41,7 @@ require("dotenv").config();
 const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(cors());
+app.use(compression());
 var http = require("http").createServer(app);
 var socketIO = require("socket.io")(http, {
   cors: {
@@ -311,6 +313,21 @@ app.post("/api/update-remarks/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+app.delete("/api/delete-remarks-history/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Update remarks and fetch updated data in a single operation
+  
+
+    // Fetch updated data and remarks history
+    const remarksHistory = await RemarksHistory.findByIdAndDelete({ companyId: id });
+
+    res.status(200).json({ updatedCompany, remarksHistory });
+  } catch (error) {
+    console.error("Error updating remarks:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 app.delete('/api/remarks-delete/:companyId', async (req, res) => {
   const { companyId } = req.params;
@@ -351,8 +368,47 @@ app.get("/api/einfo", async (req, res) => {
 });
 app.get("/api/leads", async (req, res) => {
   try {
-    const data = await CompanyModel.find();
-    res.json(data);
+    // Fetch data using lean queries to retrieve plain JavaScript objects
+    const data = await CompanyModel.find().lean();
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+app.get("/api/new-leads", async (req, res) => {
+  try {
+    const { startIndex, endIndex } = req.query;
+    const start = parseInt(startIndex) || 0;
+    const end = parseInt(endIndex) || 500;
+
+    const data = await CompanyModel.find({ ename: "Not Alloted" })
+      .skip(start)
+      .limit(end - start)
+      .lean();
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/api/leads2", async (req, res) => {
+  try {
+    // Get the query parameters for pagination
+    const { startIndex, endIndex } = req.query;
+
+    // Convert startIndex and endIndex to numbers
+    const start = parseInt(startIndex);
+    const end = parseInt(endIndex);
+
+    // Fetch data using lean queries to retrieve plain JavaScript objects
+    const data = await CompanyModel.find().skip(start).limit(end - start).lean();
+
+    // Send the data as the API response
+    res.send(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
@@ -370,6 +426,20 @@ app.get('/api/projection-data', async (req, res) => {
     // If there's an error, send a 500 internal server error response
     console.error('Error fetching FollowUp data:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+app.get("/api/card-leads", async (req, res) => {
+  try {
+    const { dAmount } = req.query; // Get the dAmount parameter from the query
+
+    // Fetch data from the database with the specified limit
+    const data = await CompanyModel.find({ ename: { $in: ["Select Employee", "Not Alloted"] } }).limit(parseInt(dAmount)).lean();
+
+    // Send the data as the API response
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -620,12 +690,16 @@ app.post("/api/assign-new", async (req, res) => {
     // Update CompanyModel for the specific data
     await CompanyModel.updateOne({ _id: data._id }, updatedObj);
 
+    // Delete objects from RemarksHistory collection that match the "Company Name"
+    await RemarksHistory.deleteMany({ companyID : data._id });
+
     res.status(200).json({ message: "Data updated successfully" });
   } catch (error) {
     console.error("Error updating data:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 app.post("/api/company", async (req, res) => {
   const { newemployeeSelection, csvdata } = req.body;
@@ -1030,7 +1104,7 @@ app.post(
       } = req.body;
       const bdeName = empName;
       const bdeEmail = empEmail;
-
+   
       const otherDocs =
         req.files["otherDocs"] && req.files["otherDocs"].length > 0
           ? req.files["otherDocs"].map((file) => file.filename)
@@ -1064,7 +1138,7 @@ app.post(
         originalTotalPayment,
         totalPayment,
         paymentTerms,
-        paymentMethod,
+        paymentMethod : paymentMethod[0],
         firstPayment,
         secondPayment,
         thirdPayment,
@@ -1381,7 +1455,7 @@ app.post(
                         margin-top: 10px;
                         border-radius: 6px;
                         color: #724f0d;">
-                        ${paymentMethod}
+                        ${paymentMethod[0]}
                     </div>
                 </div>
                 <div style="width: 33%;  margin-left: 10px;">
@@ -1437,7 +1511,7 @@ app.post(
         paymentDoc
       );
 
-      // console.log("Data sent Via Email");
+      console.log("Data sent Via Email");
       res
         .status(200)
         .json(savedEmployee || { message: "Data sent successfully" });
@@ -1511,7 +1585,7 @@ app.post(
         originalTotalPayment,
         totalPayment,
         paymentTerms,
-        paymentMethod,
+        paymentMethod : paymentMethod[0],
         firstPayment,
         secondPayment,
         thirdPayment,
