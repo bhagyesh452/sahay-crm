@@ -20,6 +20,13 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { FaRegCalendar } from "react-icons/fa";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { FcDatabase } from "react-icons/fc";
+import { MdPersonSearch } from "react-icons/md";
+import { CiSearch } from "react-icons/ci";
+import { IoIosCloseCircleOutline } from "react-icons/io";
+import { IoCloseSharp } from "react-icons/io5";
+import { FaArrowRightArrowLeft } from "react-icons/fa6";
+import { FaArrowAltCircleRight } from "react-icons/fa";
+import { FaArrowAltCircleLeft } from "react-icons/fa";
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import { lastDayOfDecade } from "date-fns";
@@ -32,6 +39,7 @@ function Dashboard() {
   const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
   const [filteredBooking, setFilteredBooking] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
+  const [employeeDataFilter, setEmployeeDataFilter] = useState([]);
   const [expand, setExpand] = useState("");
   const [companyData, setCompanyData] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
@@ -52,6 +60,10 @@ function Dashboard() {
   const [showBookingDate, setShowBookingDate] = useState(false)
   const [startDateAnother, setStartDateAnother] = useState(new Date());
   const [endDateAnother, setEndDateAnother] = useState(new Date());
+  const [searchOption, setSearchOption] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [sideBar, setsideBar] = useState(false)
+  const [displayArrow, setDisplayArrow] = useState(true)
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -77,6 +89,8 @@ function Dashboard() {
       .then((response) => response.json())
       .then((data) => {
         setEmployeeData(data);
+        setEmployeeDataFilter(data)
+        // setEmployeeDataFilter(data.filter)
       })
       .catch((error) => {
         console.error(`Error Fetching Employee Data `, error);
@@ -249,6 +263,12 @@ function Dashboard() {
   const properCompanyData =
     selectedEmployee !== "" &&
     companyData.filter((obj) => obj.ename === selectedEmployee);
+
+  const handleCloseIconClickAnother = () => {
+    if (showBookingDate) {
+      setShowBookingDate(false)
+    }
+  }
 
   const selectionRangeAnother = {
     startDate: startDateAnother,
@@ -435,14 +455,21 @@ function Dashboard() {
 
   // --------------------------------- date-range-picker-------------------------------------
 
-  const handleIconClick = () => {
-    if (!buttonToggle) {
-      setDateRangeDisplay(true);
-    } else {
-      setDateRangeDisplay(false);
+  // const handleIconClick = () => {
+  //   if (!buttonToggle) {
+  //     setDateRangeDisplay(true);
+  //   } else {
+  //     setDateRangeDisplay(false);
+  //   }
+  //   setButtonToggle(!buttonToggle);
+  // };
+
+
+  const handleCloseIconClick = () => {
+    if (displayDateRange) {
+      setDateRangeDisplay(false)
     }
-    setButtonToggle(!buttonToggle);
-  };
+  }
 
   const selectionRange = {
     startDate: startDate,
@@ -601,6 +628,7 @@ function Dashboard() {
     notInterested: false,
     matured: false,
     totalLeads: false,
+    lastleadassign: false,
   });
 
 
@@ -629,7 +657,8 @@ function Dashboard() {
             (openFilters.interested && company.Status === "Interested") ||
             (openFilters.notInterested && company.Status === "Not Interested") ||
             (openFilters.matured && company.Status === "Matured") ||
-            (openFilters.totalLeads)
+            (openFilters.totalLeads) ||
+            (openFilters.lastleadassign)
           ) {
             untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
           }
@@ -654,7 +683,8 @@ function Dashboard() {
             (openFilters.interested && company.Status === "Interested") ||
             (openFilters.notInterested && company.Status === "Not Interested") ||
             (openFilters.matured && company.Status === "Matured") ||
-            (openFilters.totalLeads)
+            (openFilters.totalLeads) ||
+            (openFilters.lastleadassign)
           ) {
             untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
           }
@@ -683,15 +713,20 @@ function Dashboard() {
     setOriginalEmployeeData([...employeeData]); // Store original state of employeeData
   }, [employeeData]);
 
-  const handleIconClickEmployee = () => {
-    if (!buttonToggle) {
-      setDateRangeDisplayEmployee(true);
-    } else {
-      setDateRangeDisplayEmployee(false);
-    }
-    setButtonToggle(!buttonToggle);
-  };
+  // const handleIconClickEmployee = () => {
+  //   if (!buttonToggle) {
+  //     setDateRangeDisplayEmployee(true);
+  //   } else {
+  //     setDateRangeDisplayEmployee(false);
+  //   }
+  //   setButtonToggle(!buttonToggle);
+  // };
 
+  const handleCloseIconClickEmployee = () => {
+    if (displayDateRangeEmployee) {
+      setDateRangeDisplayEmployee(false)
+    }
+  }
   const selectionRangeEmployee = {
     startDate: startDateEmployee,
     endDate: endDateEmployee,
@@ -724,91 +759,113 @@ function Dashboard() {
 
   console.log(companyData)
 
+  // ------------------------------------------search bde name---------------------------------------------------
 
+  const handleCloseSearch = () => {
+    if (searchOption) {
+      setSearchOption(false)
+    }
+  }
+
+  function filterSearch(searchTerm) {
+    setSearchTerm(searchTerm)
+    setEmployeeData(employeeDataFilter.filter(company =>
+      company.ename.toLowerCase().includes(searchTerm.toLowerCase())
+    ));
+  }
+
+  // ------------------------------------------sidebar---------------------------------------------------------------
+
+  const handleArrow=()=>{
+    setDisplayArrow(false)
+    setsideBar(true)
+  }
+
+  const handleArrowClose=()=>{
+    setDisplayArrow(true)
+    setsideBar(false)
+  }
 
   return (
     <div>
       <Header />
       <Navbar />
-      <div className="page-wrapper">
-        <div className="recent-updates-icon">
-          <IconButton
-            style={{ backgroundColor: "#ffb900", color: "white" }}
-            onClick={changeUpdate}
-          >
-            <AnnouncementIcon />
-          </IconButton>
-        </div>
-        <div className="page-header d-print-none">
-          <div className="container-xl">
-            <div className="row">
-              <div
-                style={{ display: showUpdates ? "block" : "none" }}
-                className="col-sm-4 card recent-updates m-2"
+      <div className="d-flex align-items-center">
+        { displayArrow &&<div className="container-xl card" style={{
+          backgroundColor: "white", marginLeft: "3px", width: "10vw",
+          height: "128vh",
+          marginRight: "-36px",
+          overflow: " auto"
+        }}>
+          <FaArrowAltCircleRight  onClick={handleArrow}/>
+          </div>}
+        {sideBar && <div className="container-xl card" style={{
+          backgroundColor: "white", marginLeft: "3px", width: " 43vw",
+          height: "130vh",
+          maxWidth: "248px",
+          marginRight: "-36px",
+          overflow: " auto"
+        }}> <FaArrowAltCircleLeft onClick={handleArrowClose}/>
+        </div>}
+        <div>
+          <div className="page-wrapper">
+            <div className="recent-updates-icon">
+              <IconButton
+                style={{ backgroundColor: "#ffb900", color: "white" }}
+                onClick={changeUpdate}
               >
-                <div className="card-header">
-                  <h2>Recent Updates</h2>
-                </div>
+                <AnnouncementIcon />
+              </IconButton>
+            </div>
+            <div className="page-header d-print-none">
+              <div className="container-xl">
+                <div className="row">
+                  <div
+                    style={{ display: showUpdates ? "block" : "none" }}
+                    className="col-sm-4 card recent-updates m-2"
+                  >
+                    <div className="card-header">
+                      <h2>Recent Updates</h2>
+                    </div>
 
-                <div className="card-body">
-                  {recentUpdates.length !== 0 ? (
-                    recentUpdates.map((obj) => (
-                      <div className="row update-card ">
-                        <div className="col">
-                          <div className="text-truncate">
-                            <strong>{obj.title}</strong>
+                    <div className="card-body">
+                      {recentUpdates.length !== 0 ? (
+                        recentUpdates.map((obj) => (
+                          <div className="row update-card ">
+                            <div className="col">
+                              <div className="text-truncate">
+                                <strong>{obj.title}</strong>
+                              </div>
+                              <div className="text-muted">
+                                {" "}
+                                {formatTime(obj.date, obj.time)}
+                              </div>
+                            </div>
+                            <div className="col-auto align-self-center">
+                              <div className="badge bg-primary"></div>
+                            </div>
                           </div>
-                          <div className="text-muted">
-                            {" "}
-                            {formatTime(obj.date, obj.time)}
-                          </div>
+                        ))
+                      ) : (
+                        <div>
+                          <Nodata />
                         </div>
-                        <div className="col-auto align-self-center">
-                          <div className="badge bg-primary"></div>
-                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col card todays-booking m-2" onClick={handleCloseIconClickAnother}>
+                    <div className="card-header d-flex align-items-center justify-content-between">
+                      <div>
+                        <h2>TotaL Booking</h2>
                       </div>
-                    ))
-                  ) : (
-                    <div>
-                      <Nodata />
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="col card todays-booking m-2">
-                <div className="card-header d-flex align-items-center justify-content-between" onClick={() => setShowBookingDate(!showBookingDate)} >
-                  <div>
-                    <h2>TotaL Booking</h2>
-                  </div>
-                  <div className=" form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
-                    <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
-                      {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
-                    </div>
-                    <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                      <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
-                    </button>
-                  </div>
-                </div>
-                {showBookingDate && <div
-                  style={{
-                    position: "absolute",
-                    top: "65px",
-                    zIndex: 9,
-                    right: "157px",
-                  }}
-                  className="booking-filter"
-                >
-                  <DateRangePicker
-                    ranges={[selectionRangeAnother]}
-                    onChange={handleSelectAnother}
-                    onClose={() => setShowBookingDate(false)}
-                  />
-                </div>}
-
-                {/* <div className="filter d-flex align-items-center">
-                    <strong>Select:</strong>
-                    <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)} className="form-control">
-                      {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
+                      <div className=" form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
+                        <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
+                          {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
+                        </div>
+                        <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                          <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                        </button>
+                      </div>
                     </div>
                     {showBookingDate && <div
                       style={{
@@ -825,321 +882,319 @@ function Dashboard() {
                         onClose={() => setShowBookingDate(false)}
                       />
                     </div>}
-                  </div>
-                </div> */}
-                <div className="card-body">
-                  <div
-                    className="row"
-                    style={{
-                      overflowX: "auto",
-                      overflowY: "auto",
-                      maxHeight: "60vh",
-                      lineHeight: "32px",
-                    }}
-                  >
-                    <table
-                      style={{
-                        position:"sticky",
-                        width: "100%",
-                        borderCollapse: "collapse",
-                        border: "1px solid #ddd",
-                        marginBottom: "5px",
-                        lineHeight: "32px",
-                      }}
-                      className="table-vcenter table-nowrap"
-                    >
-                      <thead style={{ lineHeight: "32px" }}>
-                        <tr
+                    <div className="card-body">
+                      <div
+                        className="row"
+                        style={{
+                          overflowX: "auto",
+                          overflowY: "auto",
+                          maxHeight: "60vh",
+                          lineHeight: "32px",
+                        }}
+                      >
+                        <table
                           style={{
-                            backgroundColor: "#ffb900",
-                            color: "black",
-                            fontWeight: "bold",
+                            position: "sticky",
+                            width: "100%",
+                            borderCollapse: "collapse",
+                            border: "1px solid #ddd",
+                            marginBottom: "5px",
+                            lineHeight: "32px",
                           }}
+                          className="table-vcenter table-nowrap"
                         >
-                          <th style={{ lineHeight: "32px" }}>SR.NO</th>
-                          <th>BDE NAME</th>
-                          <th>MATURED CASES</th>
-                          <th>NUM OF UNIQUE SERVICES OFFERED</th>
-                          <th>TOTAL PAYMENT</th>
-                          <th>RECEIVED PAYMENT</th>
-                          <th>PENDING PAYMENT</th>
-                        </tr>
-                      </thead>
-                      {finalFilteredData.length !== 0 ? (
-                        <>
-                          <tbody>
-                            {finalFilteredData.map((obj, index) => (
-                              <>
-                                <tr style={{ position: "relative" }}>
-                                  <td style={{ lineHeight: "32px" }}>
-                                    {index + 1}
-                                  </td>
-                                  <td>{obj.bdeName}</td>
-                                  <td>
-                                    <div className="row">
-                                      <div
-                                        style={{ textAlign: "right" }}
-                                        className="col"
-                                      >
-                                        {filteredBooking.filter((data) => {
-                                          return (
-                                            data.bdeName === obj.bdeName &&
-                                            data.bdeName === data.bdmName
-                                          );
-                                        }).length +
-                                          filteredBooking.filter((data) => {
-                                            return (
-                                              data.bdeName === obj.bdeName &&
-                                              data.bdeName !== data.bdmName
-                                            );
-                                          }).length /
-                                          2}{" "}
-                                      </div>
-                                      <div className="col-sm-5">
-                                        <IconEye
-                                          style={{
-                                            cursor: "pointer",
-                                            marginLeft: "5px",
-                                            height: "17px",
-                                          }}
-                                          onClick={() =>
-                                            handleRowClick(index, obj.bdeName)
-                                          }
-                                        />
-                                      </div>
-                                    </div>
+                          <thead style={{ lineHeight: "32px" }}>
+                            <tr
+                              style={{
+                                backgroundColor: "#ffb900",
+                                color: "black",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              <th style={{ lineHeight: "32px" }}>SR.NO</th>
+                              <th>BDE NAME</th>
+                              <th>MATURED CASES</th>
+                              <th>NUM OF UNIQUE SERVICES OFFERED</th>
+                              <th>TOTAL PAYMENT</th>
+                              <th>RECEIVED PAYMENT</th>
+                              <th>PENDING PAYMENT</th>
+                            </tr>
+                          </thead>
+                          {finalFilteredData.length !== 0 ? (
+                            <>
+                              <tbody>
+                                {finalFilteredData.map((obj, index) => (
+                                  <>
+                                    <tr style={{ position: "relative" }}>
+                                      <td style={{ lineHeight: "32px" }}>
+                                        {index + 1}
+                                      </td>
+                                      <td>{obj.bdeName}</td>
+                                      <td>
+                                        <div className="row">
+                                          <div
+                                            style={{ textAlign: "right" }}
+                                            className="col"
+                                          >
+                                            {filteredBooking.filter((data) => {
+                                              return (
+                                                data.bdeName === obj.bdeName &&
+                                                data.bdeName === data.bdmName
+                                              );
+                                            }).length +
+                                              filteredBooking.filter((data) => {
+                                                return (
+                                                  data.bdeName === obj.bdeName &&
+                                                  data.bdeName !== data.bdmName
+                                                );
+                                              }).length /
+                                              2}{" "}
+                                          </div>
+                                          <div className="col-sm-5">
+                                            <IconEye
+                                              style={{
+                                                cursor: "pointer",
+                                                marginLeft: "5px",
+                                                height: "17px",
+                                              }}
+                                              onClick={() =>
+                                                handleRowClick(index, obj.bdeName)
+                                              }
+                                            />
+                                          </div>
+                                        </div>
+                                      </td>
+
+                                      <td>
+                                        {
+                                          filteredBooking
+                                            .filter(
+                                              (data) => data.bdeName === obj.bdeName
+                                            ) // Filter objects with bdeName same as myName
+                                            .reduce((totalServices, obj) => {
+                                              // Use reduce to calculate the total number of services
+                                              return (
+                                                totalServices +
+                                                (obj.services && obj.services[0]
+                                                  ? obj.services[0]
+                                                    .split(",")
+                                                    .map((service) =>
+                                                      service.trim()
+                                                    ).length
+                                                  : 0)
+                                              );
+                                            }, 0) // Initialize totalServices as 0
+                                        }
+                                      </td>
+                                      <td>
+                                        {" "}
+                                        ₹{
+                                          filteredBooking
+                                            .filter(
+                                              (data) => data.bdeName === obj.bdeName
+                                            ) // Filter objects with bdeName same as myName
+                                            .reduce((totalPayments, obj1) => {
+                                              // Use reduce to calculate the total of totalPayments
+                                              return (
+                                                totalPayments +
+                                                (obj1.bdeName === obj1.bdmName
+                                                  ? obj1.originalTotalPayment !== 0
+                                                    ? obj1.originalTotalPayment
+                                                    : 0
+                                                  : obj1.originalTotalPayment !== 0
+                                                    ? obj1.originalTotalPayment / 2
+                                                    : 0)
+                                              );
+                                            }, 0)
+                                            .toLocaleString() // Initialize totalPayments as 0
+                                        }
+                                      </td>
+                                      <td>
+                                        ₹{
+                                          filteredBooking
+                                            .filter(
+                                              (data) => data.bdeName === obj.bdeName
+                                            ) // Filter objects with bdeName same as obj.bdeName
+                                            .reduce((totalPayments, obj1) => {
+                                              // Use reduce to calculate the total of totalPayments
+                                              return (
+                                                totalPayments +
+                                                (obj1.firstPayment === 0
+                                                  ? obj1.bdeName === obj1.bdmName
+                                                    ? obj1.originalTotalPayment / 2 // If bdeName and bdmName are the same
+                                                    : obj1.originalTotalPayment // If bdeName and bdmName are different
+                                                  : obj1.bdeName === obj1.bdmName
+                                                    ? obj1.originalTotalPayment// If bdeName and bdmName are the same
+                                                    : obj1.originalTotalPayment / 2) // If bdeName and bdmName are different
+                                              );
+                                            }, 0)
+                                            .toLocaleString() // Initialize totalPayments as 0
+                                        }
+                                      </td>
+                                      <td>
+                                        ₹{
+                                          filteredBooking
+                                            .filter(
+                                              (data) => data.bdeName === obj.bdeName
+                                            ) // Filter objects with bdeName same as obj.bdeName
+                                            .reduce((totalPayments, obj1) => {
+                                              // Use reduce to calculate the total of totalPayments
+                                              return (
+                                                totalPayments +
+                                                (obj1.firstPayment !== 0
+                                                  ? obj1.bdeName !== obj1.bdmName
+                                                    ? (obj1.originalTotalPayment -
+                                                      obj1.firstPayment) /
+                                                    2 // If bdeName and bdmName are the same
+                                                    : obj1.originalTotalPayment -
+                                                    obj1.firstPayment // If bdeName and bdmName are different
+                                                  : 0) // If bdeName and bdmName are different
+                                              );
+                                            }, 0)
+                                            .toLocaleString() // Initialize totalPayments as 0
+                                        }
+                                      </td>
+                                    </tr>
+                                  </>
+                                ))}
+                              </tbody>
+
+                              <tfoot>
+                                <tr style={{ fontWeight: "500" }}>
+                                  <td colSpan={2} style={{ lineHeight: "32px" }}>
+                                    Total:{finalFilteredData.length}
                                   </td>
 
                                   <td>
-                                    {
-                                      filteredBooking
-                                        .filter(
-                                          (data) => data.bdeName === obj.bdeName
-                                        ) // Filter objects with bdeName same as myName
-                                        .reduce((totalServices, obj) => {
-                                          // Use reduce to calculate the total number of services
-                                          return (
-                                            totalServices +
-                                            (obj.services && obj.services[0]
-                                              ? obj.services[0]
-                                                .split(",")
-                                                .map((service) =>
-                                                  service.trim()
-                                                ).length
-                                              : 0)
-                                          );
-                                        }, 0) // Initialize totalServices as 0
-                                    }
+                                    {filteredBooking.filter((data) => {
+                                      return data.bdeName === data.bdmName;
+                                    }).length +
+                                      filteredBooking.filter((data) => {
+                                        return data.bdeName !== data.bdmName;
+                                      }).length /
+                                      2}
                                   </td>
                                   <td>
-                                    {" "}
-                                    ₹{
-                                      filteredBooking
-                                        .filter(
-                                          (data) => data.bdeName === obj.bdeName
-                                        ) // Filter objects with bdeName same as myName
-                                        .reduce((totalPayments, obj1) => {
-                                          // Use reduce to calculate the total of totalPayments
-                                          return (
-                                            totalPayments +
-                                            (obj1.bdeName === obj1.bdmName
-                                              ? obj1.originalTotalPayment !== 0
-                                                ? obj1.originalTotalPayment
-                                                : 0
-                                              : obj1.originalTotalPayment !== 0
-                                                ? obj1.originalTotalPayment / 2
-                                                : 0)
-                                          );
-                                        }, 0)
-                                        .toLocaleString() // Initialize totalPayments as 0
-                                    }
+                                    {filteredBooking.reduce((totalLength, obj) => {
+                                      // Split the services string by commas and calculate the length of the resulting array
+                                      const serviceLength =
+                                        obj.services[0].split(",").length;
+                                      // Add the length of services for the current object to the total length
+                                      return totalLength + serviceLength;
+                                    }, 0)}
+                                  </td>
+
+                                  <td>
+                                    ₹{filteredBooking
+                                      .reduce((totalPayment, obj) => {
+                                        // Add the totalPayment of the current object to the totalPayment accumulator
+                                        const finalPayment =
+                                          obj.bdeName === obj.bdmName
+                                            ? obj.originalTotalPayment
+                                            : obj.originalTotalPayment / 2;
+                                        return totalPayment + finalPayment;
+                                      }, 0)
+                                      .toLocaleString()}
+                                  </td>
+
+                                  <td>
+                                    ₹{filteredBooking
+                                      .reduce((totalFirstPayment, obj) => {
+                                        // If firstPayment is 0, count totalPayment instead
+                                        const paymentToAdd =
+                                          obj.firstPayment === 0
+                                            ? obj.bdeName === obj.bdmName
+                                              ? obj.originalTotalPayment
+                                              : obj.originalTotalPayment / 2
+                                            : obj.bdeName === obj.bdmName
+                                              ? obj.firstPayment
+                                              : obj.firstPayment / 2;
+                                        // Add the paymentToAdd to the totalFirstPayment accumulator
+                                        return totalFirstPayment + paymentToAdd;
+                                      }, 0)
+                                      .toLocaleString()}
                                   </td>
                                   <td>
-                                    ₹{
-                                      filteredBooking
-                                        .filter(
-                                          (data) => data.bdeName === obj.bdeName
-                                        ) // Filter objects with bdeName same as obj.bdeName
-                                        .reduce((totalPayments, obj1) => {
-                                          // Use reduce to calculate the total of totalPayments
-                                          return (
-                                            totalPayments +
-                                            (obj1.firstPayment === 0
-                                              ? obj1.bdeName === obj1.bdmName
-                                                ? obj1.originalTotalPayment / 2 // If bdeName and bdmName are the same
-                                                : obj1.originalTotalPayment // If bdeName and bdmName are different
-                                              : obj1.bdeName === obj1.bdmName
-                                                ? obj1.originalTotalPayment// If bdeName and bdmName are the same
-                                                : obj1.originalTotalPayment / 2) // If bdeName and bdmName are different
-                                          );
-                                        }, 0)
-                                        .toLocaleString() // Initialize totalPayments as 0
-                                    }
-                                  </td>
-                                  <td>
-                                    ₹{
-                                      filteredBooking
-                                        .filter(
-                                          (data) => data.bdeName === obj.bdeName
-                                        ) // Filter objects with bdeName same as obj.bdeName
-                                        .reduce((totalPayments, obj1) => {
-                                          // Use reduce to calculate the total of totalPayments
-                                          return (
-                                            totalPayments +
-                                            (obj1.firstPayment !== 0
-                                              ? obj1.bdeName !== obj1.bdmName
-                                                ? (obj1.originalTotalPayment -
-                                                  obj1.firstPayment) /
-                                                2 // If bdeName and bdmName are the same
-                                                : obj1.originalTotalPayment -
-                                                obj1.firstPayment // If bdeName and bdmName are different
-                                              : 0) // If bdeName and bdmName are different
-                                          );
-                                        }, 0)
-                                        .toLocaleString() // Initialize totalPayments as 0
-                                    }
+                                    ₹{filteredBooking
+                                      .reduce((totalFirstPayment, obj) => {
+                                        // If firstPayment is 0, count totalPayment instead
+
+                                        const paymentToAdd =
+                                          obj.bdeName === obj.bdmName
+                                            ? obj.firstPayment === 0
+                                              ? 0
+                                              : obj.originalTotalPayment - obj.firstPayment
+                                            : obj.firstPayment === 0
+                                              ? 0
+                                              : obj.originalTotalPayment - obj.firstPayment;
+
+                                        // Add the paymentToAdd to the totalFirstPayment accumulator
+                                        return totalFirstPayment + paymentToAdd;
+                                      }, 0)
+                                      .toLocaleString()}
                                   </td>
                                 </tr>
-                              </>
-                            ))}
-                          </tbody>
+                              </tfoot>
+                            </>
+                          ) : (
+                            <tbody>
+                              <tr>
+                                <td className="particular" colSpan={9}>
+                                  <Nodata />
+                                </td>
+                              </tr>
+                            </tbody>
+                          )}
+                        </table>
+                      </div>
+                    </div>
+                  </div>
 
-                          <tfoot>
-                            <tr style={{ fontWeight: "500" }}>
-                              <td colSpan={2} style={{ lineHeight: "32px" }}>
-                                Total:{finalFilteredData.length}
-                              </td>
-
-                              <td>
-                                {filteredBooking.filter((data) => {
-                                  return data.bdeName === data.bdmName;
-                                }).length +
-                                  filteredBooking.filter((data) => {
-                                    return data.bdeName !== data.bdmName;
-                                  }).length /
-                                  2}
-                              </td>
-                              <td>
-                                {filteredBooking.reduce((totalLength, obj) => {
-                                  // Split the services string by commas and calculate the length of the resulting array
-                                  const serviceLength =
-                                    obj.services[0].split(",").length;
-                                  // Add the length of services for the current object to the total length
-                                  return totalLength + serviceLength;
-                                }, 0)}
-                              </td>
-
-                              <td>
-                                ₹{filteredBooking
-                                  .reduce((totalPayment, obj) => {
-                                    // Add the totalPayment of the current object to the totalPayment accumulator
-                                    const finalPayment =
-                                      obj.bdeName === obj.bdmName
-                                        ? obj.originalTotalPayment
-                                        : obj.originalTotalPayment / 2;
-                                    return totalPayment + finalPayment;
-                                  }, 0)
-                                  .toLocaleString()}
-                              </td>
-
-                              <td>
-                                ₹{filteredBooking
-                                  .reduce((totalFirstPayment, obj) => {
-                                    // If firstPayment is 0, count totalPayment instead
-                                    const paymentToAdd =
-                                      obj.firstPayment === 0
-                                        ? obj.bdeName === obj.bdmName
-                                          ? obj.originalTotalPayment
-                                          : obj.originalTotalPayment / 2
-                                        : obj.bdeName === obj.bdmName
-                                          ? obj.firstPayment
-                                          : obj.firstPayment / 2;
-                                    // Add the paymentToAdd to the totalFirstPayment accumulator
-                                    return totalFirstPayment + paymentToAdd;
-                                  }, 0)
-                                  .toLocaleString()}
-                              </td>
-                              <td>
-                                ₹{filteredBooking
-                                  .reduce((totalFirstPayment, obj) => {
-                                    // If firstPayment is 0, count totalPayment instead
-
-                                    const paymentToAdd =
-                                      obj.bdeName === obj.bdmName
-                                        ? obj.firstPayment === 0
-                                          ? 0
-                                          : obj.originalTotalPayment - obj.firstPayment
-                                        : obj.firstPayment === 0
-                                          ? 0
-                                          : obj.originalTotalPayment - obj.firstPayment;
-
-                                    // Add the paymentToAdd to the totalFirstPayment accumulator
-                                    return totalFirstPayment + paymentToAdd;
-                                  }, 0)
-                                  .toLocaleString()}
-                              </td>
-                            </tr>
-                          </tfoot>
-                        </>
-                      ) : (
-                        <tbody>
-                          <tr>
-                            <td className="particular" colSpan={9}>
-                              <Nodata />
-                            </td>
-                          </tr>
-                        </tbody>
+                  {/* Employee side Dashboard Analysis */}
+                  <div className="employee-dashboard " onClick={handleCloseIconClickEmployee}>
+                    <div className="card">
+                      <div className="card-header d-flex align-items-center justify-content-between">
+                        <div>
+                          <h2>Employee Dashboard</h2>
+                        </div>
+                        <div className="form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
+                          <div>{`${formatDate(startDateEmployee)} - ${formatDate(endDateEmployee)}`}</div>
+                          <button onClick={() => setDateRangeDisplayEmployee(!displayDateRangeEmployee)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                            <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                          </button>
+                        </div>
+                      </div>
+                      {displayDateRangeEmployee && (
+                        <div className="position-absolute " style={{ zIndex: "1000", top: "15%", left: "75%" }} >
+                          <DateRangePicker
+                            ranges={[selectionRangeEmployee]}
+                            onClose={() => setDateRangeDisplayEmployee(false)}
+                            onChange={handleSelectEmployee}
+                          />
+                        </div>
                       )}
-                    </table>
-                  </div>
-                </div>
-              </div>
-
-              {/* Employee side Dashboard Analysis */}
-              <div className="employee-dashboard ">
-                <div className="card">
-                  <div className="card-header d-flex align-items-center justify-content-between" onClick={handleIconClickEmployee}>
-                    <div>
-                      <h2>Employee Dashboard</h2>
-                    </div>
-                    <div className="form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
-                      <div>{`${formatDate(startDateEmployee)} - ${formatDate(endDateEmployee)}`}</div>
-                      <button onClick={handleIconClickEmployee} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                        <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
-                      </button>
-                    </div>
-                  </div>
-                  {displayDateRangeEmployee && (
-                    <div className="position-absolute " style={{ zIndex: "1000", top: "15%", left: "75%" }} >
-                      <DateRangePicker
-                        ranges={[selectionRangeEmployee]}
-                        onClose={() => setDateRangeDisplayEmployee(false)}
-                        onChange={handleSelectEmployee}
-                      />
-                    </div>
-                  )}
-                  <div className="card-body">
-                    <div
-                      className="row"
-                      style={{
-                        overflowX: "auto",
-                        overflowY: "auto",
-                        maxHeight: "60vh",
-                        lineHeight: "32px",
-                      }}
-                    >
-                      <table
-                        style={{
-                          width: "100%",
-                          borderCollapse: "collapse",
-                          border: "1px solid #ddd",
-                          marginBottom: "5px",
-                          lineHeight: "32px",
-                          position: "relative", // Make the table container relative
-                        }}
-                        className="table-vcenter table-nowrap"
-                      >
-                        {/* <thead>
+                      <div className="card-body">
+                        <div
+                          className="row"
+                          style={{
+                            overflowX: "auto",
+                            overflowY: "auto",
+                            maxHeight: "60vh",
+                            lineHeight: "32px",
+                          }}
+                        >
+                          <table
+                            style={{
+                              width: "100%",
+                              borderCollapse: "collapse",
+                              border: "1px solid #ddd",
+                              marginBottom: "5px",
+                              lineHeight: "32px",
+                              position: "relative", // Make the table container relative
+                            }}
+                            className="table-vcenter table-nowrap"
+                          >
+                            {/* <thead>
                           <tr
                             style={{
                               backgroundColor: "#ffb900",
@@ -1148,683 +1203,899 @@ function Dashboard() {
 
                             }}
                           > */}
-                        <thead
-                          style={{
-                            position: "sticky", // Make the header sticky
-                            top: '-1px', // Stick it at the top
-                            backgroundColor: "#ffb900",
-                            color: "black",
-                            fontWeight: "bold",
-                            zIndex: 1, // Ensure it's above other content
-                          }}
-                        >
-                          <tr>
-                            <th
+                            <thead
                               style={{
-                                lineHeight: "32px",
+                                position: "sticky", // Make the header sticky
+                                top: '-1px', // Stick it at the top
+                                backgroundColor: "#ffb900",
+                                color: "black",
+                                fontWeight: "bold",
+                                zIndex: 1, // Ensure it's above other content
                               }}
                             >
-                              Sr. No
-                            </th>
-                            <th>BDE/BDM Name</th>
-                            <th>Untouched
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                onClick={() => handleFilterIncoDate('untouched')}
-                              />
-                              {openFilters.untouched && (
-                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("ascending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Ascending
-                                  </div>
-
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("descending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Descedning
-                                  </div>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("none")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    None
-                                  </div>
-                                </div>
-                              )}
-                            </th>
-                            <th>Busy
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                onClick={() => handleFilterIncoDate('busy')}
-                              />
-                              {openFilters.busy && (
-                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("ascending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Ascending
-                                  </div>
-
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("descending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Descedning
-                                  </div>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("none")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    None
-                                  </div>
-                                </div>
-                              )}
-                            </th>
-                            <th>Not Picked Up
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                onClick={() => handleFilterIncoDate('notPickedUp')}
-                              />
-                              {openFilters.notPickedUp && (
-                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("ascending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Ascending
-                                  </div>
-
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("descending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Descedning
-                                  </div>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("none")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    None
-                                  </div>
-                                </div>
-                              )}
-                            </th>
-                            <th>Junk
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                onClick={() => handleFilterIncoDate('junk')}
-                              />
-                              {openFilters.junk && (
-                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("ascending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Ascending
-                                  </div>
-
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("descending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Descedning
-                                  </div>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("none")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    None
-                                  </div>
-                                </div>
-                              )}
-                            </th>
-                            <th>Follow Up
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                onClick={() => handleFilterIncoDate('followUp')}
-                              />
-                              {openFilters.followUp && (
-                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("ascending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Ascending
-                                  </div>
-
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("descending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Descedning
-                                  </div>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("none")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    None
-                                  </div>
-                                </div>
-                              )}
-                            </th>
-                            <th>Interested
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                onClick={() => handleFilterIncoDate('interested')}
-                              />
-                              {openFilters.interested && (
-                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("ascending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Ascending
-                                  </div>
-
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("descending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Descedning
-                                  </div>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("none")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    None
-                                  </div>
-                                </div>
-                              )}
-                            </th>
-                            <th>Not Interested
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                onClick={() => handleFilterIncoDate('notInterested')}
-                              />
-                              {openFilters.notInterested && (
-                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("ascending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Ascending
-                                  </div>
-
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("descending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Descedning
-                                  </div>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("none")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    None
-                                  </div>
-                                </div>
-                              )}
-                            </th>
-                            <th>Matured
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                onClick={() => handleFilterIncoDate('matured')}
-                              />
-                              {openFilters.matured && (
-                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("ascending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Ascending
-                                  </div>
-
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("descending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Descedning
-                                  </div>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("none")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    None
-                                  </div>
-                                </div>
-                              )}
-                            </th>
-                            <th>Total Leads
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                onClick={() => handleFilterIncoDate('totalLeads')}
-                              />
-                              {openFilters.totalLeads && (
-                                <div className="inco-filter" style={{ marginLeft: "60px" }}>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("ascending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Ascending
-                                  </div>
-
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("descending")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Descedning
-                                  </div>
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("none")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    None
-                                  </div>
-                                </div>
-                              )}
-                            </th>
-                            <th>Last Lead Assign Date</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {employeeData.length !== 0 &&
-                            companyData.length !== 0 &&
-                            employeeData.map((obj, index) => (
-                              <React.Fragment key={index}>
-                                <tr>
-                                  <td
+                              <tr>
+                                <th
+                                  style={{
+                                    lineHeight: "32px",
+                                  }}
+                                >
+                                  Sr. No
+                                </th>
+                                <th>BDE/BDM Name
+                                  <MdPersonSearch
                                     style={{
-                                      lineHeight: "32px",
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "9px",
                                     }}
-                                    key={`row-${index}-1`}
-                                  >
-                                    {index}
-                                  </td>
-                                  <td key={`row-${index}-2`}>{obj.ename}</td>
-                                  <td key={`row-${index}-3`}>
-                                    {
-                                      companyData.filter(
-                                        (data) =>
-                                          data.ename === obj.ename &&
-                                          data.Status === "Untouched"
-                                      ).length
-                                    }
-                                  </td>
-                                  <td key={`row-${index}-4`}>
-                                    {
-                                      companyData.filter(
-                                        (data) =>
-                                          data.ename === obj.ename &&
-                                          data.Status === "Busy"
-                                      ).length
-                                    }
-                                  </td>
-                                  <td key={`row-${index}-5`}>
-                                    {
-                                      companyData.filter(
-                                        (data) =>
-                                          data.ename === obj.ename &&
-                                          data.Status === "Not Picked Up"
-                                      ).length
-                                    }
-                                  </td>
-                                  <td key={`row-${index}-6`}>
-                                    {
-                                      companyData.filter(
-                                        (data) =>
-                                          data.ename === obj.ename &&
-                                          data.Status === "Junk"
-                                      ).length
-                                    }
-                                  </td>
-                                  <td key={`row-${index}-7`}>
-                                    {
-                                      companyData.filter(
-                                        (data) =>
-                                          data.ename === obj.ename &&
-                                          data.Status === "FollowUp"
-                                      ).length
-                                    }
-                                  </td>
-                                  <td key={`row-${index}-8`}>
-                                    {
-                                      companyData.filter(
-                                        (data) =>
-                                          data.ename === obj.ename &&
-                                          data.Status === "Interested"
-                                      ).length
-                                    }
-                                  </td>
-                                  <td key={`row-${index}-9`}>
-                                    {
-                                      companyData.filter(
-                                        (data) =>
-                                          data.ename === obj.ename &&
-                                          data.Status === "Not Interested"
-                                      ).length
-                                    }
-                                  </td>
-                                  <td key={`row-${index}-10`}>
-                                    {
-                                      companyData.filter(
-                                        (data) =>
-                                          data.ename === obj.ename &&
-                                          data.Status === "Matured"
-                                      ).length
-                                    }
-                                  </td>
-                                  <td key={`row-${index}-11`}>
-                                    {
-                                      companyData.filter(
-                                        (data) => data.ename === obj.ename
-                                      ).length
-                                    }
-                                  </td>
-                                  <td key={`row-${index}-12`}>
-                                    {formatDate(
-                                      companyData
-                                        .filter(
-                                          (data) => data.ename === obj.ename
-                                        )
-                                        .reduce(
-                                          (latestDate, data) => {
-                                            return latestDate.AssignDate >
-                                              data.AssignDate
-                                              ? latestDate
-                                              : data;
-                                          },
-                                          { AssignDate: 0 }
-                                        ).AssignDate
-                                    )}
-                                    <FcDatabase
-                                      onClick={() => {
-                                        functionOpenEmployeeTable(obj.ename);
+                                    onClick={() => setSearchOption(true)}
+                                  />
+                                  {searchOption && (
+                                    <div className="inco-filter" style={{ marginLeft: "60px", width: "13.5rem" }}>
+                                      <div className="searchforbde" style={{
+                                        padding: "10px 9px",
+                                        borderRadius: "8px",
+                                        border: "0px solid #fbb900",
+                                        backgroundColor: " white",
+                                        Color: "black"
                                       }}
-                                      style={{ cursor: "pointer", marginRight: "-41px", marginLeft: "21px" }}
-                                    />
-                                  </td>
-                                </tr>
-                              </React.Fragment>
-                            ))}
-                        </tbody>
-                        {employeeData.length !== 0 &&
-                          companyData.length !== 0 && (
-                            <tfoot style={{
-                              position: "sticky", // Make the footer sticky
-                              bottom: -1, // Stick it at the bottom
-                              backgroundColor: "#f6f2e9",
-                              color: "black",
-                              fontWeight: 500,
-                              zIndex: 2, // Ensure it's above the content
-                            }}>
-                              <tr style={{ fontWeight: 500 }}>
-                                <td style={{ lineHeight: "32px" }} colSpan="2">
-                                  Total
-                                </td>
-                                <td>
-                                  {
-                                    companyData.filter(
-                                      (partObj) =>
-                                        partObj.Status === "Untouched"
-                                    ).length
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    companyData.filter(
-                                      (partObj) => partObj.Status === "Busy"
-                                    ).length
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    companyData.filter(
-                                      (partObj) =>
-                                        partObj.Status === "Not Picked Up"
-                                    ).length
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    companyData.filter(
-                                      (partObj) => partObj.Status === "Junk"
-                                    ).length
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    companyData.filter(
-                                      (partObj) => partObj.Status === "FollowUp"
-                                    ).length
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    companyData.filter(
-                                      (partObj) =>
-                                        partObj.Status === "Interested"
-                                    ).length
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    companyData.filter(
-                                      (partObj) =>
-                                        partObj.Status === "Not Interested"
-                                    ).length
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    companyData.filter(
-                                      (partObj) => partObj.Status === "Matured"
-                                    ).length
-                                  }
-                                </td>
-                                <td>{companyData.length}</td>
-                                <td>-</td>
+                                      //onClick={(e) => handleSort("ascending")}
+                                      > <span><CiSearch style={{
+                                        width: "19px",
+                                        height: "20px",
+                                        marginRight: "5px",
+                                        color: "grey"
+                                      }} /></span>
+                                        <input
+                                          placeholder="Search BDE Name..."
+                                          value={searchTerm}
+                                          onChange={(e) => filterSearch(e.target.value)}
+                                        /><span><IoCloseSharp onClick={handleCloseSearch} style={{ color: "grey" }} /></span>
+                                      </div>
+                                    </div>
+                                  )}
+                                </th>
+                                <th>Untouched
+                                  <FilterListIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => handleFilterIncoDate('untouched')}
+                                  />
+                                  {openFilters.untouched && (
+                                    <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("ascending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Ascending
+                                      </div>
+
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("descending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Descedning
+                                      </div>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("none")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        None
+                                      </div>
+                                    </div>
+                                  )}
+                                </th>
+                                <th>Busy
+                                  <FilterListIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => handleFilterIncoDate('busy')}
+                                  />
+                                  {openFilters.busy && (
+                                    <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("ascending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Ascending
+                                      </div>
+
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("descending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Descedning
+                                      </div>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("none")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        None
+                                      </div>
+                                    </div>
+                                  )}
+                                </th>
+                                <th>Not Picked Up
+                                  <FilterListIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => handleFilterIncoDate('notPickedUp')}
+                                  />
+                                  {openFilters.notPickedUp && (
+                                    <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("ascending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Ascending
+                                      </div>
+
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("descending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Descedning
+                                      </div>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("none")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        None
+                                      </div>
+                                    </div>
+                                  )}
+                                </th>
+                                <th>Junk
+                                  <FilterListIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => handleFilterIncoDate('junk')}
+                                  />
+                                  {openFilters.junk && (
+                                    <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("ascending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Ascending
+                                      </div>
+
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("descending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Descedning
+                                      </div>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("none")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        None
+                                      </div>
+                                    </div>
+                                  )}
+                                </th>
+                                <th>Follow Up
+                                  <FilterListIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => handleFilterIncoDate('followUp')}
+                                  />
+                                  {openFilters.followUp && (
+                                    <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("ascending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Ascending
+                                      </div>
+
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("descending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Descedning
+                                      </div>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("none")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        None
+                                      </div>
+                                    </div>
+                                  )}
+                                </th>
+                                <th>Interested
+                                  <FilterListIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => handleFilterIncoDate('interested')}
+                                  />
+                                  {openFilters.interested && (
+                                    <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("ascending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Ascending
+                                      </div>
+
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("descending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Descedning
+                                      </div>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("none")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        None
+                                      </div>
+                                    </div>
+                                  )}
+                                </th>
+                                <th>Not Interested
+                                  <FilterListIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => handleFilterIncoDate('notInterested')}
+                                  />
+                                  {openFilters.notInterested && (
+                                    <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("ascending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Ascending
+                                      </div>
+
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("descending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Descedning
+                                      </div>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("none")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        None
+                                      </div>
+                                    </div>
+                                  )}
+                                </th>
+                                <th>Matured
+                                  <FilterListIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => handleFilterIncoDate('matured')}
+                                  />
+                                  {openFilters.matured && (
+                                    <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("ascending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Ascending
+                                      </div>
+
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("descending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Descedning
+                                      </div>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("none")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        None
+                                      </div>
+                                    </div>
+                                  )}
+                                </th>
+                                <th>Total Leads
+                                  <FilterListIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => handleFilterIncoDate('totalLeads')}
+                                  />
+                                  {openFilters.totalLeads && (
+                                    <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("ascending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Ascending
+                                      </div>
+
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("descending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Descedning
+                                      </div>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("none")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        None
+                                      </div>
+                                    </div>
+                                  )}
+                                </th>
+                                <th>Last Lead Assign Date
+                                  <FilterListIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => handleFilterIncoDate('lastleadassign')}
+                                  />
+                                  {openFilters.lastleadassign && (
+                                    <div className="inco-filter" style={{ marginLeft: "60px" }}>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("ascending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Ascending
+                                      </div>
+
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("descending")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        Descedning
+                                      </div>
+                                      <div
+                                        className="inco-subFilter"
+                                        onClick={(e) => handleSort("none")}
+                                      >
+                                        <SwapVertIcon style={{ height: "16px" }} />
+                                        None
+                                      </div>
+                                    </div>
+                                  )}
+
+                                </th>
                               </tr>
-                            </tfoot>
-                          )}
-                      </table>
+                            </thead>
+                            <tbody>
+                              {employeeData.length !== 0 &&
+                                companyData.length !== 0 &&
+                                employeeData.map((obj, index) => (
+                                  <React.Fragment key={index}>
+                                    <tr>
+                                      <td
+                                        style={{
+                                          lineHeight: "32px",
+                                        }}
+                                        key={`row-${index}-1`}
+                                      >
+                                        {index + 1}
+                                      </td>
+                                      <td key={`row-${index}-2`}>{obj.ename}</td>
+                                      <td key={`row-${index}-3`}>
+                                        {
+                                          companyData.filter(
+                                            (data) =>
+                                              data.ename === obj.ename &&
+                                              data.Status === "Untouched"
+                                          ).length
+                                        }
+                                      </td>
+                                      <td key={`row-${index}-4`}>
+                                        {
+                                          companyData.filter(
+                                            (data) =>
+                                              data.ename === obj.ename &&
+                                              data.Status === "Busy"
+                                          ).length
+                                        }
+                                      </td>
+                                      <td key={`row-${index}-5`}>
+                                        {
+                                          companyData.filter(
+                                            (data) =>
+                                              data.ename === obj.ename &&
+                                              data.Status === "Not Picked Up"
+                                          ).length
+                                        }
+                                      </td>
+                                      <td key={`row-${index}-6`}>
+                                        {
+                                          companyData.filter(
+                                            (data) =>
+                                              data.ename === obj.ename &&
+                                              data.Status === "Junk"
+                                          ).length
+                                        }
+                                      </td>
+                                      <td key={`row-${index}-7`}>
+                                        {
+                                          companyData.filter(
+                                            (data) =>
+                                              data.ename === obj.ename &&
+                                              data.Status === "FollowUp"
+                                          ).length
+                                        }
+                                      </td>
+                                      <td key={`row-${index}-8`}>
+                                        {
+                                          companyData.filter(
+                                            (data) =>
+                                              data.ename === obj.ename &&
+                                              data.Status === "Interested"
+                                          ).length
+                                        }
+                                      </td>
+                                      <td key={`row-${index}-9`}>
+                                        {
+                                          companyData.filter(
+                                            (data) =>
+                                              data.ename === obj.ename &&
+                                              data.Status === "Not Interested"
+                                          ).length
+                                        }
+                                      </td>
+                                      <td key={`row-${index}-10`}>
+                                        {
+                                          companyData.filter(
+                                            (data) =>
+                                              data.ename === obj.ename &&
+                                              data.Status === "Matured"
+                                          ).length
+                                        }
+                                      </td>
+                                      <td key={`row-${index}-11`}>
+                                        {
+                                          companyData.filter(
+                                            (data) => data.ename === obj.ename
+                                          ).length
+                                        }
+                                      </td>
+                                      <td key={`row-${index}-12`}>
+                                        {formatDate(
+                                          companyData
+                                            .filter(
+                                              (data) => data.ename === obj.ename
+                                            )
+                                            .reduce(
+                                              (latestDate, data) => {
+                                                return latestDate.AssignDate >
+                                                  data.AssignDate
+                                                  ? latestDate
+                                                  : data;
+                                              },
+                                              { AssignDate: 0 }
+                                            ).AssignDate
+                                        )}
+                                        <FcDatabase
+                                          onClick={() => {
+                                            functionOpenEmployeeTable(obj.ename);
+                                          }}
+                                          style={{ cursor: "pointer", marginRight: "-41px", marginLeft: "21px" }}
+                                        />
+                                      </td>
+                                    </tr>
+                                  </React.Fragment>
+                                ))}
+                            </tbody>
+                            {employeeData.length !== 0 &&
+                              companyData.length !== 0 && (
+                                <tfoot style={{
+                                  position: "sticky", // Make the footer sticky
+                                  bottom: -1, // Stick it at the bottom
+                                  backgroundColor: "#f6f2e9",
+                                  color: "black",
+                                  fontWeight: 500,
+                                  zIndex: 2, // Ensure it's above the content
+                                }}>
+                                  <tr style={{ fontWeight: 500 }}>
+                                    <td style={{ lineHeight: "32px" }} colSpan="2">
+                                      Total
+                                    </td>
+                                    <td>
+                                      {
+                                        companyData.filter(
+                                          (partObj) =>
+                                            partObj.Status === "Untouched"
+                                        ).length
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        companyData.filter(
+                                          (partObj) => partObj.Status === "Busy"
+                                        ).length
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        companyData.filter(
+                                          (partObj) =>
+                                            partObj.Status === "Not Picked Up"
+                                        ).length
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        companyData.filter(
+                                          (partObj) => partObj.Status === "Junk"
+                                        ).length
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        companyData.filter(
+                                          (partObj) => partObj.Status === "FollowUp"
+                                        ).length
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        companyData.filter(
+                                          (partObj) =>
+                                            partObj.Status === "Interested"
+                                        ).length
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        companyData.filter(
+                                          (partObj) =>
+                                            partObj.Status === "Not Interested"
+                                        ).length
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        companyData.filter(
+                                          (partObj) => partObj.Status === "Matured"
+                                        ).length
+                                      }
+                                    </td>
+                                    <td>{companyData.length}</td>
+                                    <td>-</td>
+                                  </tr>
+                                </tfoot>
+                              )}
+                          </table>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Pop Up for Expanding the Data */}
+          {/* Pop Up for Expanding the Data */}
 
-      <Dialog open={openTable} onClose={closeTable} fullWidth maxWidth="lg">
-        <DialogContent>
-          <div
-            id="table-default"
-            style={{
-              overflowX: "auto",
-              overflowY: "auto",
-              maxHeight: "60vh",
-            }}
-          >
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                border: "1px solid #ddd",
-                marginBottom: "10px",
-              }}
-              className="table-vcenter table-nowrap"
-            >
-              <thead stSyle={{ backgroundColor: "grey" }}>
-                <tr
+          <Dialog open={openTable} onClose={closeTable} fullWidth maxWidth="lg">
+            <DialogContent>
+              <div
+                id="table-default"
+                style={{
+                  overflowX: "auto",
+                  overflowY: "auto",
+                  maxHeight: "60vh",
+                }}
+              >
+                <table
                   style={{
-                    backgroundColor: "#ffb900",
-                    color: "black",
-                    fontWeight: "bold",
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                    marginBottom: "10px",
                   }}
+                  className="table-vcenter table-nowrap"
                 >
-                  <th style={{ lineHeight: "32px" }}>SR.NO</th>
-                  <th>BOOKING DATE & TIME</th>
-                  <th>BDE NAME</th>
-                  <th>COMPANY NAME</th>
-                  <th>COMPANY NUMBER</th>
-                  <th>COMPANY EMAIL</th>
-                  <th>SERVICES</th>
-                  <th>TOTAL PAYMENT</th>
-                  <th>RECEIVED PAYMENT</th>
-                  <th>PENDING PAYMENT</th>
-                  <th>50/50 CASE</th>
-                  <th>CLOSED/SUPPORTED BY</th>
-                  <th>REMARKS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {expand === "" &&
-                  filteredBooking
-                    .filter((data) => data.bdeName === tableEmployee)
-                    .map((mainObj, index) => (
-                      <>
-                        <tr>
-                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                          <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
-                            })`}</td>
-                          <td>{mainObj.bdeName}</td>
-                          <td>{mainObj.companyName}</td>
-                          <td>{mainObj.contactNumber}</td>
-                          <td>{mainObj.companyEmail}</td>
-                          <td>{mainObj.services[0]}</td>
-                          <td>
-                            ₹{(mainObj.bdeName !== mainObj.bdmName
-                              ? mainObj.originalTotalPayment / 2
-                              : mainObj.originalTotalPayment
-                            ).toLocaleString()}
-                          </td>
-                          <td>
-                            ₹{
-                              (mainObj.firstPayment !== 0
-                                ? mainObj.bdeName === mainObj.bdmName
-                                  ? mainObj.firstPayment // If bdeName and bdmName are the same
-                                  : mainObj.firstPayment / 2 // If bdeName and bdmName are different
-                                : mainObj.bdeName === mainObj.bdmName
-                                  ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                                  : mainObj.originalTotalPayment / 2
-                              ).toLocaleString() // If firstPayment is 0 and bdeName and bdmName are different
-                            }
-                          </td>
-                          <td>
-                            {" "}
-                            ₹{(mainObj.firstPayment !== 0
-                              ? mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.originalTotalPayment - mainObj.firstPayment
-                                : (mainObj.originalTotalPayment -
-                                  mainObj.firstPayment) /
-                                2
-                              : 0
-                            ).toLocaleString()}{" "}
-                          </td>
-                          <td>
-                            {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
-                          </td>
-                          <td>
-                            {mainObj.bdeName !== mainObj.bdmName
-                              ? mainObj.bdmType === "closeby"
-                                ? `Closed by ${mainObj.bdmName}`
-                                : `Supported by ${mainObj.bdmName}`
-                              : `Self Closed`}{" "}
-                            {mainObj.bdeName !== mainObj.bdmName &&
-                              mainObj.bdmType === "closeby" && (
-                                <AddCircleIcon
-                                  onClick={() => setExpand(mainObj.companyName)}
-                                  style={{ cursor: "pointer" }}
-                                />
-                              )}
-                          </td>
-                          <td>{mainObj.paymentRemarks}</td>
-                        </tr>
-                        {expand === index && (
+                  <thead stSyle={{ backgroundColor: "grey" }}>
+                    <tr
+                      style={{
+                        backgroundColor: "#ffb900",
+                        color: "black",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <th style={{ lineHeight: "32px" }}>SR.NO</th>
+                      <th>BOOKING DATE & TIME</th>
+                      <th>BDE NAME</th>
+                      <th>COMPANY NAME</th>
+                      <th>COMPANY NUMBER</th>
+                      <th>COMPANY EMAIL</th>
+                      <th>SERVICES</th>
+                      <th>TOTAL PAYMENT</th>
+                      <th>RECEIVED PAYMENT</th>
+                      <th>PENDING PAYMENT</th>
+                      <th>50/50 CASE</th>
+                      <th>CLOSED/SUPPORTED BY</th>
+                      <th>REMARKS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {expand === "" &&
+                      filteredBooking
+                        .filter((data) => data.bdeName === tableEmployee)
+                        .map((mainObj, index) => (
                           <>
                             <tr>
+                              <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                              <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                                })`}</td>
+                              <td>{mainObj.bdeName}</td>
+                              <td>{mainObj.companyName}</td>
+                              <td>{mainObj.contactNumber}</td>
+                              <td>{mainObj.companyEmail}</td>
+                              <td>{mainObj.services[0]}</td>
+                              <td>
+                                ₹{(mainObj.bdeName !== mainObj.bdmName
+                                  ? mainObj.originalTotalPayment / 2
+                                  : mainObj.originalTotalPayment
+                                ).toLocaleString()}
+                              </td>
+                              <td>
+                                ₹{
+                                  (mainObj.firstPayment !== 0
+                                    ? mainObj.bdeName === mainObj.bdmName
+                                      ? mainObj.firstPayment // If bdeName and bdmName are the same
+                                      : mainObj.firstPayment / 2 // If bdeName and bdmName are different
+                                    : mainObj.bdeName === mainObj.bdmName
+                                      ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                      : mainObj.originalTotalPayment / 2
+                                  ).toLocaleString() // If firstPayment is 0 and bdeName and bdmName are different
+                                }
+                              </td>
+                              <td>
+                                {" "}
+                                ₹{(mainObj.firstPayment !== 0
+                                  ? mainObj.bdeName === mainObj.bdmName
+                                    ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                    : (mainObj.originalTotalPayment -
+                                      mainObj.firstPayment) /
+                                    2
+                                  : 0
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>
+                                {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
+                              </td>
+                              <td>
+                                {mainObj.bdeName !== mainObj.bdmName
+                                  ? mainObj.bdmType === "closeby"
+                                    ? `Closed by ${mainObj.bdmName}`
+                                    : `Supported by ${mainObj.bdmName}`
+                                  : `Self Closed`}{" "}
+                                {mainObj.bdeName !== mainObj.bdmName &&
+                                  mainObj.bdmType === "closeby" && (
+                                    <AddCircleIcon
+                                      onClick={() => setExpand(mainObj.companyName)}
+                                      style={{ cursor: "pointer" }}
+                                    />
+                                  )}
+                              </td>
+                              <td>{mainObj.paymentRemarks}</td>
+                            </tr>
+                            {expand === index && (
+                              <>
+                                <tr>
+                                  <td style={{ lineHeight: "32px" }}>{`${index + 1
+                                    }(${1})`}</td>
+                                  <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                                    })`}</td>
+                                  <td>{mainObj.bdmName}</td>
+                                  <td>{mainObj.companyName}</td>
+                                  <td>{mainObj.contactNumber}</td>
+                                  <td>{mainObj.companyEmail}</td>
+                                  <td>{mainObj.services[0]}</td>
+                                  <td>
+                                    {" "}
+                                    {(
+                                      mainObj.totalPayment / 2
+                                    ).toLocaleString()}{" "}
+                                  </td>
+                                  <td>
+                                    ₹{(mainObj.firstPayment !== 0
+                                      ? mainObj.firstPayment / 2
+                                      : mainObj.originalTotalPayment / 2
+                                    ).toLocaleString()}{" "}
+                                  </td>
+                                  <td>
+                                    ₹{(mainObj.firstPayment !== 0
+                                      ? mainObj.bdeName === mainObj.bdmName
+                                        ? mainObj.totalPayment -
+                                        mainObj.firstPayment
+                                        : (mainObj.originalTotalPayment -
+                                          mainObj.firstPayment) /
+                                        2
+                                      : 0
+                                    ).toLocaleString()}{" "}
+                                  </td>
+                                  <td>{"Yes"}</td>
+                                  <td>{`${mainObj.bdeName}'s Case`}</td>
+                                  <td>{mainObj.paymentRemarks}</td>
+                                </tr>
+                              </>
+                            )}
+                          </>
+                        ))}
+                  </tbody>
+                  {expand === "" && (
+                    <tfoot>
+                      <tr>
+                        <th colSpan={3}>
+                          <strong>Total</strong>
+                        </th>
+                        <th>-</th>
+                        <th>-</th>
+                        <th>-</th>
+                        <th>-</th>
+                        <th>
+                          ₹{filteredBooking
+                            .filter((data) => data.bdeName === tableEmployee)
+                            .reduce((total, obj) => {
+                              return obj.bdeName === obj.bdmName
+                                ? total + obj.originalTotalPayment
+                                : total + obj.originalTotalPayment / 2;
+                            }, 0)
+                            .toLocaleString()}
+                        </th>
+                        <th>
+                          ₹{filteredBooking
+                            .filter((data) => data.bdeName === tableEmployee)
+                            .reduce((total, obj) => {
+                              return obj.bdeName === obj.bdmName
+                                ? obj.firstPayment === 0
+                                  ? total + obj.originalTotalPayment
+                                  : total + obj.firstPayment
+                                : obj.firstPayment === 0
+                                  ? total + obj.originalTotalPayment / 2
+                                  : total + obj.firstPayment / 2;
+                            }, 0)
+                            .toLocaleString()}
+                        </th>
+                        <th>
+                          ₹{filteredBooking
+                            .filter((data) => data.bdeName === tableEmployee)
+                            .reduce((total, obj) => {
+                              return obj.bdeName === obj.bdmName
+                                ? obj.firstPayment === 0
+                                  ? 0
+                                  : total + (obj.originalTotalPayment - obj.firstPayment)
+                                : obj.firstPayment === 0
+                                  ? 0
+                                  : total + (obj.originalTotalPayment - obj.firstPayment) / 2;
+                            }, 0)
+                            .toLocaleString()}
+                        </th>
+                        <th>-</th>
+                        <th>-</th>
+                        <th>-</th>
+                      </tr>
+                    </tfoot>
+                  )}
+                  <tbody>
+                    {expand !== "" &&
+                      filteredBooking
+                        .filter(
+                          (obj) =>
+                            obj.bdeName === tableEmployee &&
+                            obj.companyName === expand
+                        )
+                        .map((mainObj, index) => (
+                          <>
+                            <tr key={mainObj._id}>
                               <td style={{ lineHeight: "32px" }}>{`${index + 1
-                                }(${1})`}</td>
+                                }`}</td>
+                              <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                                })`}</td>
+                              <td>{mainObj.bdeName}</td>
+                              <td>{mainObj.companyName}</td>
+                              <td>{mainObj.contactNumber}</td>
+                              <td>{mainObj.companyEmail}</td>
+                              <td>{mainObj.services}</td>
+                              <td>{(mainObj.totalPayment / 2).toLocaleString()}</td>
+                              <td>
+                                ₹{(mainObj.firstPayment !== 0
+                                  ? mainObj.firstPayment / 2
+                                  : mainObj.totalPayment / 2
+                                ).toLocaleString()}
+                              </td>
+                              <td>
+                                ₹{(mainObj.firstPayment !== 0
+                                  ? mainObj.bdeName === mainObj.bdmName
+                                    ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                    : (mainObj.originalTotalPayment -
+                                      mainObj.firstPayment) /
+                                    2
+                                  : 0
+                                ).toLocaleString()}
+                              </td>
+                              <td>Yes</td>
+                              <td>
+                                {`Closed by ${mainObj.bdmName}`}{" "}
+                                <RemoveCircleIcon
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => {
+                                    setExpand("");
+                                  }}
+                                />{" "}
+                              </td>
+                              <td>{mainObj.paymentRemarks}</td>
+                            </tr>
+                            <tr>
+                              <td style={{ lineHeight: "32px" }}>{`${index + 2
+                                }`}</td>
                               <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
                                 })`}</td>
                               <td>{mainObj.bdmName}</td>
@@ -1834,9 +2105,7 @@ function Dashboard() {
                               <td>{mainObj.services[0]}</td>
                               <td>
                                 {" "}
-                                {(
-                                  mainObj.totalPayment / 2
-                                ).toLocaleString()}{" "}
+                                {(mainObj.originalTotalPayment / 2).toLocaleString()}{" "}
                               </td>
                               <td>
                                 ₹{(mainObj.firstPayment !== 0
@@ -1847,8 +2116,7 @@ function Dashboard() {
                               <td>
                                 ₹{(mainObj.firstPayment !== 0
                                   ? mainObj.bdeName === mainObj.bdmName
-                                    ? mainObj.totalPayment -
-                                    mainObj.firstPayment
+                                    ? mainObj.originalTotalPayment - mainObj.firstPayment
                                     : (mainObj.originalTotalPayment -
                                       mainObj.firstPayment) /
                                     2
@@ -1860,685 +2128,545 @@ function Dashboard() {
                               <td>{mainObj.paymentRemarks}</td>
                             </tr>
                           </>
-                        )}
-                      </>
-                    ))}
-              </tbody>
-              {expand === "" && (
-                <tfoot>
-                  <tr>
-                    <th colSpan={3}>
-                      <strong>Total</strong>
-                    </th>
-                    <th>-</th>
-                    <th>-</th>
-                    <th>-</th>
-                    <th>-</th>
-                    <th>
-                      ₹{filteredBooking
-                        .filter((data) => data.bdeName === tableEmployee)
-                        .reduce((total, obj) => {
-                          return obj.bdeName === obj.bdmName
-                            ? total + obj.originalTotalPayment
-                            : total + obj.originalTotalPayment / 2;
-                        }, 0)
-                        .toLocaleString()}
-                    </th>
-                    <th>
-                      ₹{filteredBooking
-                        .filter((data) => data.bdeName === tableEmployee)
-                        .reduce((total, obj) => {
-                          return obj.bdeName === obj.bdmName
-                            ? obj.firstPayment === 0
-                              ? total + obj.originalTotalPayment
-                              : total + obj.firstPayment
-                            : obj.firstPayment === 0
-                              ? total + obj.originalTotalPayment / 2
-                              : total + obj.firstPayment / 2;
-                        }, 0)
-                        .toLocaleString()}
-                    </th>
-                    <th>
-                      ₹{filteredBooking
-                        .filter((data) => data.bdeName === tableEmployee)
-                        .reduce((total, obj) => {
-                          return obj.bdeName === obj.bdmName
-                            ? obj.firstPayment === 0
-                              ? 0
-                              : total + (obj.originalTotalPayment - obj.firstPayment)
-                            : obj.firstPayment === 0
-                              ? 0
-                              : total + (obj.originalTotalPayment - obj.firstPayment) / 2;
-                        }, 0)
-                        .toLocaleString()}
-                    </th>
-                    <th>-</th>
-                    <th>-</th>
-                    <th>-</th>
-                  </tr>
-                </tfoot>
-              )}
-              <tbody>
-                {expand !== "" &&
-                  filteredBooking
-                    .filter(
-                      (obj) =>
-                        obj.bdeName === tableEmployee &&
-                        obj.companyName === expand
-                    )
-                    .map((mainObj, index) => (
-                      <>
-                        <tr key={mainObj._id}>
-                          <td style={{ lineHeight: "32px" }}>{`${index + 1
-                            }`}</td>
-                          <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
-                            })`}</td>
-                          <td>{mainObj.bdeName}</td>
-                          <td>{mainObj.companyName}</td>
-                          <td>{mainObj.contactNumber}</td>
-                          <td>{mainObj.companyEmail}</td>
-                          <td>{mainObj.services}</td>
-                          <td>{(mainObj.totalPayment / 2).toLocaleString()}</td>
-                          <td>
-                            ₹{(mainObj.firstPayment !== 0
-                              ? mainObj.firstPayment / 2
-                              : mainObj.totalPayment / 2
-                            ).toLocaleString()}
-                          </td>
-                          <td>
-                            ₹{(mainObj.firstPayment !== 0
-                              ? mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.originalTotalPayment - mainObj.firstPayment
-                                : (mainObj.originalTotalPayment -
-                                  mainObj.firstPayment) /
-                                2
-                              : 0
-                            ).toLocaleString()}
-                          </td>
-                          <td>Yes</td>
-                          <td>
-                            {`Closed by ${mainObj.bdmName}`}{" "}
-                            <RemoveCircleIcon
-                              style={{ cursor: "pointer" }}
-                              onClick={() => {
-                                setExpand("");
-                              }}
-                            />{" "}
-                          </td>
-                          <td>{mainObj.paymentRemarks}</td>
-                        </tr>
-                        <tr>
-                          <td style={{ lineHeight: "32px" }}>{`${index + 2
-                            }`}</td>
-                          <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
-                            })`}</td>
-                          <td>{mainObj.bdmName}</td>
-                          <td>{mainObj.companyName}</td>
-                          <td>{mainObj.contactNumber}</td>
-                          <td>{mainObj.companyEmail}</td>
-                          <td>{mainObj.services[0]}</td>
-                          <td>
-                            {" "}
-                            {(mainObj.originalTotalPayment / 2).toLocaleString()}{" "}
-                          </td>
-                          <td>
-                            ₹{(mainObj.firstPayment !== 0
-                              ? mainObj.firstPayment / 2
-                              : mainObj.originalTotalPayment / 2
-                            ).toLocaleString()}{" "}
-                          </td>
-                          <td>
-                            ₹{(mainObj.firstPayment !== 0
-                              ? mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.originalTotalPayment - mainObj.firstPayment
-                                : (mainObj.originalTotalPayment -
-                                  mainObj.firstPayment) /
-                                2
-                              : 0
-                            ).toLocaleString()}{" "}
-                          </td>
-                          <td>{"Yes"}</td>
-                          <td>{`${mainObj.bdeName}'s Case`}</td>
-                          <td>{mainObj.paymentRemarks}</td>
-                        </tr>
-                      </>
-                    ))}
-              </tbody>
-              <tfoot>
-                {expand !== "" &&
-                  filteredBooking
-                    .filter(
-                      (obj) =>
-                        obj.bdeName === tableEmployee &&
-                        obj.companyName === expand
-                    )
-                    .map((mainObj, index) => (
-                      <>
-                        <tr key={mainObj._id}>
-                          <th colSpan={3}>Total :</th>
-                          <th>-</th>
-                          <th>-</th>
-                          <th>-</th>
-                          <th>-</th>
-                          <th>{mainObj.originalTotalPayment.toLocaleString()}</th>
-                          <th>
-                            ₹{(mainObj.firstPayment !== 0
-                              ? mainObj.firstPayment
-                              : mainObj.originalTotalPayment
-                            ).toLocaleString()}
-                          </th>
-                          <th>
-                            ₹{(mainObj.firstPayment !== 0
-                              ? mainObj.originalTotalPayment - mainObj.firstPayment
-                              : 0
-                            ).toLocaleString()}
-                          </th>
-                          <th>-</th>
-                          <th>-</th>
-                          <th>-</th>
-                        </tr>
-                      </>
-                    ))}
-              </tfoot>
-            </table>
-          </div>
-        </DialogContent>
-      </Dialog>
-      <Dialog
-        open={openEmployeeTable}
-        onClose={closeEmployeeTable}
-        fullWidth
-        maxWidth="lg"
-      >
-        <DialogContent>
-          <div
-            id="table-default"
-            style={{
-              overflowX: "auto",
-              overflowY: "auto",
-              maxHeight: "60vh",
-            }}
+                        ))}
+                  </tbody>
+                  <tfoot>
+                    {expand !== "" &&
+                      filteredBooking
+                        .filter(
+                          (obj) =>
+                            obj.bdeName === tableEmployee &&
+                            obj.companyName === expand
+                        )
+                        .map((mainObj, index) => (
+                          <>
+                            <tr key={mainObj._id}>
+                              <th colSpan={3}>Total :</th>
+                              <th>-</th>
+                              <th>-</th>
+                              <th>-</th>
+                              <th>-</th>
+                              <th>{mainObj.originalTotalPayment.toLocaleString()}</th>
+                              <th>
+                                ₹{(mainObj.firstPayment !== 0
+                                  ? mainObj.firstPayment
+                                  : mainObj.originalTotalPayment
+                                ).toLocaleString()}
+                              </th>
+                              <th>
+                                ₹{(mainObj.firstPayment !== 0
+                                  ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                  : 0
+                                ).toLocaleString()}
+                              </th>
+                              <th>-</th>
+                              <th>-</th>
+                              <th>-</th>
+                            </tr>
+                          </>
+                        ))}
+                  </tfoot>
+                </table>
+              </div>
+            </DialogContent>
+          </Dialog>
+          <Dialog
+            open={openEmployeeTable}
+            onClose={closeEmployeeTable}
+            fullWidth
+            maxWidth="lg"
           >
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                border: "1px solid #ddd",
-                marginBottom: "10px",
-              }}
-              className="table-vcenter table-nowrap"
-            >
-              <thead stSyle={{ backgroundColor: "grey" }}>
-                <tr
+            <DialogContent>
+              <div
+                id="table-default"
+                style={{
+                  overflowX: "auto",
+                  overflowY: "auto",
+                  maxHeight: "60vh",
+                }}
+              >
+                <table
                   style={{
-                    backgroundColor: "#ffb900",
-                    color: "white",
-                    fontWeight: "bold",
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                    marginBottom: "10px",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
+                  <thead stSyle={{ backgroundColor: "grey" }}>
+                    <tr
+                      style={{
+                        backgroundColor: "#ffb900",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <th
+                        style={{
+                          lineHeight: "32px",
+                        }}
+                      >
+                        Sr. No
+                      </th>
+                      <th>Lead Assign Date</th>
+                      <th>Untouched</th>
+                      <th>Busy</th>
+                      <th>Not Picked Up</th>
+                      <th>Junk</th>
+                      <th>Follow Up</th>
+                      <th>Interested</th>
+                      <th>Not Interested</th>
+                      <th>Matured</th>
+                      <th>Total Leads</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {uniqueArray &&
+                      uniqueArray.map((obj, index) => (
+                        <tr key={`row-${index}`}>
+                          <td>{index + 1}</td>
+                          <td>{obj}</td>
+                          <td>
+                            {
+                              properCompanyData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Untouched"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              properCompanyData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Busy"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              properCompanyData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Not Picked Up"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              properCompanyData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Junk"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              properCompanyData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "FollowUp"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              properCompanyData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Interested"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              properCompanyData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Not Interested"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              properCompanyData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Matured"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              properCompanyData.filter(
+                                (partObj) => formatDate(partObj.AssignDate) === obj
+                              ).length
+                            }
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                  {uniqueArray && (
+                    <tfoot>
+                      <tr style={{ fontWeight: 500 }}>
+                        <td colSpan="2">Total</td>
+                        <td>
+                          {
+                            properCompanyData.filter(
+                              (partObj) => partObj.Status === "Untouched"
+                            ).length
+                          }
+                        </td>
+                        <td style={{
+                          lineHeight: "32px",
+                        }}></td>
+                        <td
+                          style={{
+                            lineHeight: "32px",
+                          }}
+                        >
+                          {
+                            properCompanyData.filter(
+                              (partObj) => partObj.Status === "Busy"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            properCompanyData.filter(
+                              (partObj) => partObj.Status === "Not Picked Up"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            properCompanyData.filter(
+                              (partObj) => partObj.Status === "Junk"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            properCompanyData.filter(
+                              (partObj) => partObj.Status === "FollowUp"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            properCompanyData.filter(
+                              (partObj) => partObj.Status === "Interested"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            properCompanyData.filter(
+                              (partObj) => partObj.Status === "Not Interested"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            properCompanyData.filter(
+                              (partObj) => partObj.Status === "Matured"
+                            ).length
+                          }
+                        </td>
+                        <td>{properCompanyData.length}</td>
+                      </tr>
+                    </tfoot>
+                  )}
+                </table>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* -------------------------------------projection-dashboard--------------------------------------------- */}
+
+          <div className="container-xl mt-2" onClick={handleCloseIconClick}>
+            <div className="card">
+              <div className="card-header d-flex align-items-center justify-content-between" >
+                <div>
+                  <h2>Projection Dashboard</h2>
+                </div>
+                <div className="form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
+                  <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
+                  <button onClick={() => setDateRangeDisplay(!displayDateRange)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                    <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                  </button>
+                </div>
+              </div>
+              {displayDateRange && (
+                <div className="position-absolute " style={{ zIndex: "1", top: "15%", left: "75%" }} >
+                  <DateRangePicker
+                    ranges={[selectionRange]}
+                    //onClose={() => setDateRangeDisplay(false)}
+                    onChange={handleSelect}
+                  />
+                </div>
+              )}
+              <div className="card-body">
+                <div
+                  id="table-default"
+                  style={{
+                    overflowX: "auto",
+                    overflowY: "auto",
+                    maxHeight: "60vh",
                   }}
                 >
-                  <th
+                  <table
                     style={{
-                      lineHeight: "32px",
+                      width: "100%",
+                      borderCollapse: "collapse",
+                      border: "1px solid #ddd",
+                      marginBottom: "10px",
                     }}
+                    className="table-vcenter table-nowrap"
                   >
-                    Sr. No
-                  </th>
-                  <th>Lead Assign Date</th>
-                  <th>Untouched</th>
-                  <th>Busy</th>
-                  <th>Not Picked Up</th>
-                  <th>Junk</th>
-                  <th>Follow Up</th>
-                  <th>Interested</th>
-                  <th>Not Interested</th>
-                  <th>Matured</th>
-                  <th>Total Leads</th>
-                </tr>
-              </thead>
-              <tbody>
-                {uniqueArray &&
-                  uniqueArray.map((obj, index) => (
-                    <tr key={`row-${index}`}>
-                      <td>{index + 1}</td>
-                      <td>{obj}</td>
-                      <td>
-                        {
-                          properCompanyData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Untouched"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          properCompanyData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Busy"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          properCompanyData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Not Picked Up"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          properCompanyData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Junk"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          properCompanyData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "FollowUp"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          properCompanyData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Interested"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          properCompanyData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Not Interested"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          properCompanyData.filter(
-                            (partObj) =>
-                              formatDate(partObj.AssignDate) === obj &&
-                              partObj.Status === "Matured"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          properCompanyData.filter(
-                            (partObj) => formatDate(partObj.AssignDate) === obj
-                          ).length
-                        }
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-              {uniqueArray && (
-                <tfoot>
-                  <tr style={{ fontWeight: 500 }}>
-                    <td colSpan="2">Total</td>
-                    <td>
-                      {
-                        properCompanyData.filter(
-                          (partObj) => partObj.Status === "Untouched"
-                        ).length
-                      }
-                    </td>
-                    <td style={{
-                      lineHeight: "32px",
-                    }}></td>
-                    <td
-                      style={{
-                        lineHeight: "32px",
-                      }}
-                    >
-                      {
-                        properCompanyData.filter(
-                          (partObj) => partObj.Status === "Busy"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        properCompanyData.filter(
-                          (partObj) => partObj.Status === "Not Picked Up"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        properCompanyData.filter(
-                          (partObj) => partObj.Status === "Junk"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        properCompanyData.filter(
-                          (partObj) => partObj.Status === "FollowUp"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        properCompanyData.filter(
-                          (partObj) => partObj.Status === "Interested"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        properCompanyData.filter(
-                          (partObj) => partObj.Status === "Not Interested"
-                        ).length
-                      }
-                    </td>
-                    <td>
-                      {
-                        properCompanyData.filter(
-                          (partObj) => partObj.Status === "Matured"
-                        ).length
-                      }
-                    </td>
-                    <td>{properCompanyData.length}</td>
-                  </tr>
-                </tfoot>
-              )}
-            </table>
-          </div>
-        </DialogContent>
-      </Dialog>
+                    <thead stSyle={{ backgroundColor: "grey" }}>
+                      <tr
+                        style={{
+                          backgroundColor: "#ffb900",
+                          color: "white",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        <th
+                          style={{
+                            lineHeight: "32px",
+                          }}
+                        >
+                          Sr. No
+                        </th>
+                        <th>Company Name</th>
+                        <th>Total Companies</th>
+                        <th>Offered Services</th>
+                        <th>Total Offered Price</th>
+                        <th>Expected Amount</th>
+                        <th>Last Followup Date</th>
 
-      {/* -------------------------------------projection-dashboard--------------------------------------------- */}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {uniqueEnames &&
+                        uniqueEnames.map((ename, index) => {
+                          // Calculate the count of services for the current ename
+                          const serviceCount = filteredDataDateRange && (
+                            // If filteredDataDateRange is not empty, use servicesByEnameDateRange
+                            servicesByEnameDateRange[ename] ? servicesByEnameDateRange[ename].length : 0
+                          );
+                          // const companyCount = companiesByEname[ename] ? companiesByEname[ename].length : 0;
 
-      <div className="container-xl mt-2">
-        <div className="card">
-          <div className="card-header d-flex align-items-center justify-content-between" onClick={handleIconClick}>
-            <div>
-              <h2>Projection Dashboard</h2>
-            </div>
-            <div className="form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
-              <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
-              <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
-              </button>
-            </div>
-          </div>
-          {displayDateRange && (
-            <div className="position-absolute " style={{ zIndex: "1", top: "15%", left: "75%" }} >
-              <DateRangePicker
-                ranges={[selectionRange]}
-                onClose={() => setDateRangeDisplay(false)}
-                onChange={handleSelect}
-              />
-            </div>
-          )}
-          <div className="card-body">
-            <div
-              id="table-default"
-              style={{
-                overflowX: "auto",
-                overflowY: "auto",
-                maxHeight: "60vh",
-              }}
-            >
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  border: "1px solid #ddd",
-                  marginBottom: "10px",
-                }}
-                className="table-vcenter table-nowrap"
-              >
-                <thead stSyle={{ backgroundColor: "grey" }}>
-                  <tr
-                    style={{
-                      backgroundColor: "#ffb900",
-                      color: "white",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    <th
-                      style={{
-                        lineHeight: "32px",
-                      }}
-                    >
-                      Sr. No
-                    </th>
-                    <th>Company Name</th>
-                    <th>Total Companies</th>
-                    <th>Offered Services</th>
-                    <th>Total Offered Price</th>
-                    <th>Expected Amount</th>
-                    <th>Last Followup Date</th>
-
-                  </tr>
-                </thead>
-                <tbody>
-                  {uniqueEnames &&
-                    uniqueEnames.map((ename, index) => {
-                      // Calculate the count of services for the current ename
-                      const serviceCount = filteredDataDateRange && (
-                        // If filteredDataDateRange is not empty, use servicesByEnameDateRange
-                        servicesByEnameDateRange[ename] ? servicesByEnameDateRange[ename].length : 0
-                      );
-                      // const companyCount = companiesByEname[ename] ? companiesByEname[ename].length : 0;
-
-                      const companyCount = filteredDataDateRange && (
-                        // If filteredDataDateRange is not empty, use companiesByEnameDateRange
-                        companiesByEnameDateRange[ename] ? companiesByEnameDateRange[ename].length : 0
-                      );
-                      //const totalPaymentByEname = sums[ename] ? sums[ename].totalPaymentSum : 0;
-                      const totalPaymentByEname = filteredDataDateRange &&
-                        (sumsDateRange[ename] ? sumsDateRange[ename].totalPaymentSum : 0);
+                          const companyCount = filteredDataDateRange && (
+                            // If filteredDataDateRange is not empty, use companiesByEnameDateRange
+                            companiesByEnameDateRange[ename] ? companiesByEnameDateRange[ename].length : 0
+                          );
+                          //const totalPaymentByEname = sums[ename] ? sums[ename].totalPaymentSum : 0;
+                          const totalPaymentByEname = filteredDataDateRange &&
+                            (sumsDateRange[ename] ? sumsDateRange[ename].totalPaymentSum : 0);
 
 
-                      //const offeredPrizeByEname = sums[ename] ? sums[ename].offeredPaymentSum : 0;
-                      const offeredPrizeByEname = filteredDataDateRange.length &&
-                        (sumsDateRange[ename] ? sumsDateRange[ename].offeredPaymentSum : 0)
+                          //const offeredPrizeByEname = sums[ename] ? sums[ename].offeredPaymentSum : 0;
+                          const offeredPrizeByEname = filteredDataDateRange.length &&
+                            (sumsDateRange[ename] ? sumsDateRange[ename].offeredPaymentSum : 0)
 
 
-                      const lastFollowDates = lastFollowDate[ename] || []; // Assuming lastFollowDate[ename] is an array of dates or undefined
+                          const lastFollowDates = lastFollowDate[ename] || []; // Assuming lastFollowDate[ename] is an array of dates or undefined
 
-                      // Get the latest date from the array
-                      let latestDate;
+                          // Get the latest date from the array
+                          let latestDate;
 
-                      if (Array.isArray(lastFollowDates) && lastFollowDates.length > 0) {
-                        latestDate = new Date(Math.max(...lastFollowDates.map(date => new Date(date))));
-                      } else if (lastFollowDates instanceof Date) {
-                        // If lastFollowDates is a single date, directly assign it to latestDate
-                        latestDate = lastFollowDates;
-                      } else {
-                        // Handle the case when lastFollowDates is not an array or a date
-                        latestDate = new Date(); // Assigning current date as default value
-                      }
+                          if (Array.isArray(lastFollowDates) && lastFollowDates.length > 0) {
+                            latestDate = new Date(Math.max(...lastFollowDates.map(date => new Date(date))));
+                          } else if (lastFollowDates instanceof Date) {
+                            // If lastFollowDates is a single date, directly assign it to latestDate
+                            latestDate = lastFollowDates;
+                          } else {
+                            // Handle the case when lastFollowDates is not an array or a date
+                            latestDate = new Date(); // Assigning current date as default value
+                          }
 
-                      // Format the latest date into a string
-                      const formattedDate = latestDate.toLocaleDateString(); //
+                          // Format the latest date into a string
+                          const formattedDate = latestDate.toLocaleDateString(); //
 
 
-                      return (
-                        <tr key={`row-${index}`}>
-                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                          <td>{ename}</td>
-                          <td>{companyCount}
-                            <FcDatabase
-                              onClick={() => {
-                                functionOpenProjectionTable(ename);
-                              }}
-                              style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "58px" }}
-                            /></td>
-                          <td>{serviceCount}</td>
-                          <td>{totalPaymentByEname}</td>
-                          <td>{offeredPrizeByEname}</td>
-                          <td>{formattedDate}</td>
+                          return (
+                            <tr key={`row-${index}`}>
+                              <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                              <td>{ename}</td>
+                              <td>{companyCount}
+                                <FcDatabase
+                                  onClick={() => {
+                                    functionOpenProjectionTable(ename);
+                                  }}
+                                  style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "58px" }}
+                                /></td>
+                              <td>{serviceCount}</td>
+                              <td>{totalPaymentByEname}</td>
+                              <td>{offeredPrizeByEname}</td>
+                              <td>{formattedDate}</td>
+
+                            </tr>
+                          );
+                        })}
+
+                    </tbody>
+                    {followData && (
+                      <tfoot>
+                        <tr style={{ fontWeight: 500 }}>
+                          <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                          <td>{filteredDataDateRange && (
+                            // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
+                            totalcompaniesByEnameDateRange.length
+                          )}
+                          </td>
+                          <td>
+                            {filteredDataDateRange && (
+                              // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
+                              totalservicesByEnameDateRange.length
+                            )}
+                          </td>
+                          {/* <td>{totalTotalPaymentSum.toLocaleString()}
+                      </td> */}
+                          <td>
+                            {filteredDataDateRange && (
+                              // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
+                              totalTotalPaymentSumDateRange.toLocaleString()
+                            )}
+                          </td>
+
+                          {/* <td>{totalOfferedPaymentSum.toLocaleString()}
+                      </td> */}
+
+                          <td>
+                            {filteredDataDateRange.length && (
+                              // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
+                              totalOfferedPaymentSumDateRange.toLocaleString()
+                            )}
+                          </td>
 
                         </tr>
-                      );
-                    })}
+                      </tfoot>
+                    )}
 
-                </tbody>
-                {followData && (
-                  <tfoot>
-                    <tr style={{ fontWeight: 500 }}>
-                      <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                      <td>{filteredDataDateRange && (
-                        // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
-                        totalcompaniesByEnameDateRange.length
-                      )}
-                      </td>
-                      <td>
-                        {filteredDataDateRange && (
-                          // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
-                          totalservicesByEnameDateRange.length
-                        )}
-                      </td>
-                      {/* <td>{totalTotalPaymentSum.toLocaleString()}
-                      </td> */}
-                      <td>
-                        {filteredDataDateRange && (
-                          // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
-                          totalTotalPaymentSumDateRange.toLocaleString()
-                        )}
-                      </td>
-
-                      {/* <td>{totalOfferedPaymentSum.toLocaleString()}
-                      </td> */}
-
-                      <td>
-                        {filteredDataDateRange.length && (
-                          // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
-                          totalOfferedPaymentSumDateRange.toLocaleString()
-                        )}
-                      </td>
-
-                    </tr>
-                  </tfoot>
-                )}
-
-              </table>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
+          <Dialog
+            open={openProjectionTable}
+            onClose={closeProjectionTable}
+            fullWidth
+            maxWidth="lg"
+          >
+            <DialogContent>
+              <div
+                id="table-default"
+                style={{
+                  overflowX: "auto",
+                  overflowY: "auto",
+                  maxHeight: "60vh",
+                }}
+              >
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                    marginBottom: "10px",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
+                  <thead stSyle={{ backgroundColor: "grey" }}>
+                    <tr
+                      style={{
+                        backgroundColor: "#ffb900",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <th
+                        style={{
+                          lineHeight: "32px",
+                        }}
+                      >
+                        Sr. No
+                      </th>
+                      <th>BDE Name</th>
+                      <th>Company Name</th>
+                      <th>Offered Services</th>
+                      <th>Total Offered Price</th>
+                      <th>Expected Amount</th>
+                      <th>Estimated Payment Date</th>
+                      <th>Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Map through uniqueEnames array to render rows */}
+
+                    {projectedDataDateRange &&
+                      // (projectedEmployee.map((obj, Index) => (
+                      //   <tr key={`sub-row-${Index}`}>
+                      //     <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                      //     {/* Render other employee data */}
+                      //     <td>{obj.ename}</td>
+                      //     <td>{obj.companyName}</td>
+                      //     <td>{obj.offeredServices.join(',')}</td>
+                      //     <td>{obj.totalPayment.toLocaleString()}</td>
+                      //     <td>{obj.offeredPrize.toLocaleString()}</td>
+                      //     <td>{obj.estPaymentDate}</td>
+                      //   </tr>
+                      // ))) :
+                      (projectedDataDateRange.map((obj, Index) => (
+                        <tr key={`sub-row-${Index}`}>
+                          <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                          {/* Render other employee data */}
+                          <td>{obj.ename}</td>
+                          <td>{obj.companyName}</td>
+                          <td>{obj.offeredServices.join(',')}</td>
+                          <td>{obj.totalPayment.toLocaleString()}</td>
+                          <td>{obj.offeredPrize.toLocaleString()}</td>
+                          <td>{obj.estPaymentDate}</td>
+                          <td>{obj.remarks}</td>
+                        </tr>
+                      )))
+                    }
+                  </tbody>
+                  {projectedEmployee && (
+                    <tfoot>
+                      <tr style={{ fontWeight: 500 }}>
+                        <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                        {/* <td>{projectedEmployee.length}</td> */}
+                        <td>
+                          {projectedDataDateRange && projectedDataDateRange.length}
+                        </td>
+                        {/* <td>{offeredServicesPopup.length}
+                    </td> */}
+                        <td>{projectedDataDateRange && offeredServicesPopupDateRange.length}</td>
+                        {/* <td>{totalPaymentSumPopup.toLocaleString()}
+                    </td> */}
+                        <td>
+                          ₹{projectedDataDateRange && totalPaymentSumPopupDateRange.toLocaleString()}
+                        </td>
+                        {/* <td>{offeredPaymentSumPopup.toLocaleString()}
+                    </td> */}
+                        <td> ₹{projectedDataDateRange && offeredPaymentSumPopupDateRange.toLocaleString()}</td>
+                        <td>-</td>
+                      </tr>
+                    </tfoot>
+                  )}
+                </table>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
-      <Dialog
-        open={openProjectionTable}
-        onClose={closeProjectionTable}
-        fullWidth
-        maxWidth="lg"
-      >
-        <DialogContent>
-          <div
-            id="table-default"
-            style={{
-              overflowX: "auto",
-              overflowY: "auto",
-              maxHeight: "60vh",
-            }}
-          >
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                border: "1px solid #ddd",
-                marginBottom: "10px",
-              }}
-              className="table-vcenter table-nowrap"
-            >
-              <thead stSyle={{ backgroundColor: "grey" }}>
-                <tr
-                  style={{
-                    backgroundColor: "#ffb900",
-                    color: "white",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <th
-                    style={{
-                      lineHeight: "32px",
-                    }}
-                  >
-                    Sr. No
-                  </th>
-                  <th>BDE Name</th>
-                  <th>Company Name</th>
-                  <th>Offered Services</th>
-                  <th>Total Offered Price</th>
-                  <th>Expected Amount</th>
-                  <th>Employee Projection Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Map through uniqueEnames array to render rows */}
-
-                {projectedDataDateRange &&
-                  // (projectedEmployee.map((obj, Index) => (
-                  //   <tr key={`sub-row-${Index}`}>
-                  //     <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                  //     {/* Render other employee data */}
-                  //     <td>{obj.ename}</td>
-                  //     <td>{obj.companyName}</td>
-                  //     <td>{obj.offeredServices.join(',')}</td>
-                  //     <td>{obj.totalPayment.toLocaleString()}</td>
-                  //     <td>{obj.offeredPrize.toLocaleString()}</td>
-                  //     <td>{obj.estPaymentDate}</td>
-                  //   </tr>
-                  // ))) :
-                  (projectedDataDateRange.map((obj, Index) => (
-                    <tr key={`sub-row-${Index}`}>
-                      <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                      {/* Render other employee data */}
-                      <td>{obj.ename}</td>
-                      <td>{obj.companyName}</td>
-                      <td>{obj.offeredServices.join(',')}</td>
-                      <td>{obj.totalPayment.toLocaleString()}</td>
-                      <td>{obj.offeredPrize.toLocaleString()}</td>
-                      <td>{obj.estPaymentDate}</td>
-                    </tr>
-                  )))
-                }
-              </tbody>
-              {projectedEmployee && (
-                <tfoot>
-                  <tr style={{ fontWeight: 500 }}>
-                    <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                    {/* <td>{projectedEmployee.length}</td> */}
-                    <td>
-                      {projectedDataDateRange && projectedDataDateRange.length}
-                    </td>
-                    {/* <td>{offeredServicesPopup.length}
-                    </td> */}
-                    <td>{projectedDataDateRange && offeredServicesPopupDateRange.length}</td>
-                    {/* <td>{totalPaymentSumPopup.toLocaleString()}
-                    </td> */}
-                    <td>
-                      {projectedDataDateRange && totalPaymentSumPopupDateRange.toLocaleString()}
-                    </td>
-                    {/* <td>{offeredPaymentSumPopup.toLocaleString()}
-                    </td> */}
-                    <td>{projectedDataDateRange && offeredPaymentSumPopupDateRange.toLocaleString()}</td>
-                    <td>-</td>
-                  </tr>
-                </tfoot>
-              )}
-            </table>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-
-    </div>
+    </div >
   );
 }
 

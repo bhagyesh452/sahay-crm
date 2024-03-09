@@ -38,7 +38,8 @@ const CompanySchema = new mongoose.Schema({
     required:true
   },
   remarks:{
-    type:String
+    type:String,
+    default:"no remarks added"
   }
 
 });

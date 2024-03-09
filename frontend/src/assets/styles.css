@@ -653,6 +653,17 @@ padding:6px !important;
     color: #333;
   }
 
+  .inco-filter .searchforbde input::placeholder{
+    color:lightgrey;
+  }
+  .inco-filter .searchforbde input{
+    color: black;
+    font-size: 12px;
+    font-weight: 400;
+    font-family: sans-serif;
+    border: none;
+  }
+
 
   /* ----------------------------------------------styling for notification bar------------------------------------------------
    */
