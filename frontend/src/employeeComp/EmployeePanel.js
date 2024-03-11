@@ -89,6 +89,7 @@ function EmployeePanel() {
   const [currentRemarks, setCurrentRemarks] = useState("");
   const itemsPerPage = 500;
   const [year, setYear] = useState(0);
+  const [socketID, setSocketID] = useState("");
   const [incoFilter, setIncoFilter] = useState("");
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -100,7 +101,11 @@ function EmployeePanel() {
     audio.play();
   };
   useEffect(() => {
-    const socket = socketIO.connect(`http://locahost:3001`);
+    const socket = socketIO.connect(`${secretKey}`);
+    socket.on("connect", () => {
+      console.log("Socket connected with ID:", socket.id);
+      setSocketID(socket.id);
+    });
 
     socket.on("request-seen", () => {
       // Call fetchRequestDetails function to update request details
@@ -114,6 +119,7 @@ function EmployeePanel() {
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
+      
     };
   }, []);
   const functionopenpopup = () => {
@@ -345,15 +351,50 @@ function EmployeePanel() {
       setSearchText("");
     }
   };
-
+  const activeStatus = async () => {
+    try {
+    
+      const id = data._id;
+      const response = await axios.put(`${secretKey}/online-status/${id}/${socketID}`);
+      console.log(response.data); // Log response for debugging
+      return response.data; // Return response data if needed
+    } catch (error) {
+      console.error('Error:', error);
+      throw error; // Throw error for handling in the caller function
+    } 
+  };
+  const leaveStatus = async () => {
+    try {
+      const id = data._id;
+      const response = await axios.put(`${secretKey}/online-status/${id}/disconnect`);
+      console.log(response.data); // Log response for debugging
+      return response.data; // Return response data if needed
+    } catch (error) {
+      console.error('Error:', error);
+      throw error; // Throw error for handling in the caller function
+    } 
+  };
   useEffect(() => {
     if (data.ename) {
       console.log("Employee found");
       fetchNewData();
+      
     } else {
       console.log("No employees found");
     }
   }, [data.ename]);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      activeStatus();
+    }, 2000);
+  
+    // Clean up the timer when the component unmounts or when the dependency changes
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [socketID]); 
+  
 
   const fetchRequestDetails = async () => {
     try {
@@ -515,20 +556,23 @@ function EmployeePanel() {
       setFormOpen(true);
       return true;
     }
-
+    const title = `${data.ename} changed ${cname} status from ${oldStatus} to ${newStatus}`;
+    const DT = new Date();
+    const date = DT.toLocaleDateString();
+    const time = DT.toLocaleTimeString();
     try {
       // Make an API call to update the employee status in the database
       const response = await axios.post(
         `${secretKey}/update-status/${employeeId}`,
         {
-          newStatus,
+          newStatus,title,date,time
         }
       );
 
       // Check if the API call was successful
       if (response.status === 200) {
         // Assuming fetchData is a function to fetch updated employee data
-        console.log("Sort Status :", sortStatus);
+        
         fetchNewData(oldStatus);
 
         // if(newStatus==="Interested"){

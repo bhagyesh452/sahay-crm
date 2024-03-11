@@ -14,7 +14,7 @@ import { IconTrash } from "@tabler/icons-react";
 import "../assets/styles.css";
 import "../assets/table.css";
 import Swal from "sweetalert2";
-import socketIO from 'socket.io-client';
+import socketIO from "socket.io-client";
 // import EmployeeTable from "./EmployeeTable";
 import {
   Button,
@@ -36,16 +36,32 @@ function Employees({ onEyeButtonClick }) {
   //   setIsLoggedIn(true)
   // }
   const handleEyeButtonClick = (id) => {
-
     onEyeButtonClick(id);
     console.log(id);
   };
-  
+  useEffect(() => {
+    const socket = socketIO.connect(`${secretKey}`);
+    socket.on("employee-entered", () => {
+      console.log("One user Entered");
+      setTimeout(() => {
+        fetchData();
+      }, 5000); // Delay execution by 5 seconds (5000 milliseconds)
+    });
+
+    socket.on("user-disconnected", () => {
+      fetchData();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [companyDdata, setCompanyDdata] = useState([]);
   const [nametodelete, setnametodelete] = useState("");
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleDeleteClick = (itemId, nametochange) => {
     // Open the confirm delete modal
@@ -188,6 +204,7 @@ function Employees({ onEyeButtonClick }) {
     // console.log(formattedDateString); // Output: "04-01-2024"
     //     console.log(jdate);
   };
+
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${secretKey}/einfo/${id}`);
@@ -214,7 +231,46 @@ function Employees({ onEyeButtonClick }) {
     fetchData();
     fetchCData();
   }, []);
+  function formatDateWP(dateString) {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
 
+    if (isSameDay(date, today)) {
+      // If the date is today, format as "Last seen today on HH:MM AM/PM"
+      return `Last seen today on ${formatTime(date)}`;
+    } else if (isSameDay(date, yesterday)) {
+      // If the date is yesterday, format as "Last seen yesterday on HH:MM AM/PM"
+      return `Last seen yesterday on ${formatTime(date)}`;
+    } else {
+      // Otherwise, format as "Last seen on DD/MM/YYYY"
+      return `Last seen on ${formatDateTime(date)}`;
+    }
+  }
+
+  function isSameDay(date1, date2) {
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
+  }
+
+  function formatTime(date) {
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12;
+    return `${formattedHours}:${minutes} ${ampm}`;
+  }
+
+  function formatDateTime(date) {
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
   const fetchCData = async () => {
     try {
       const response = await axios.get(`${secretKey}/leads`);
@@ -235,7 +291,7 @@ function Employees({ onEyeButtonClick }) {
         ename: ename,
         password: password,
         jdate: jdate,
-        AddedOn : AddedOn
+        AddedOn: AddedOn,
       };
 
       // Set designation based on otherDesignation
@@ -442,29 +498,28 @@ function Employees({ onEyeButtonClick }) {
                   </div>
 
                   <div className="col-lg-6 mb-3">
-    <label className="form-label">Password</label>
-    <div className="input-group">
-        <input
-            type={showPassword ? "text" : "password"}
-            value={password}
-            className="form-control"
-            name="example-text-input"
-            placeholder="Your report name"
-            required
-            onChange={(e) => {
-                setPassword(e.target.value);
-            }}
-        />
-        <button
-            className="btn btn-outline-secondary"
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-        >
-            {showPassword ? "Hide" : "Show"}
-        </button>
-    </div>
-</div>
-
+                    <label className="form-label">Password</label>
+                    <div className="input-group">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your report name"
+                        required
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                        }}
+                      />
+                      <button
+                        className="btn btn-outline-secondary"
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? "Hide" : "Show"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 {/* If the designation is others */}
                 {designation === "Others" && (
@@ -614,7 +669,10 @@ function Employees({ onEyeButtonClick }) {
         >
           <div className="card">
             <div style={{ padding: "0px" }} className="card-body">
-              <div id="table-default" style={{overflow: "auto", maxHeight: "70vh"}}>
+              <div
+                id="table-default"
+                style={{ overflow: "auto", maxHeight: "70vh" }}
+              >
                 <table
                   style={{
                     width: "100%",
@@ -661,6 +719,11 @@ function Employees({ onEyeButtonClick }) {
                         </button>
                       </th>
                       <th>
+                        <button className="table-sort" data-sort="sort-date">
+                          Status
+                        </button>
+                      </th>
+                      <th>
                         <button
                           className="table-sort"
                           data-sort="sort-quantity"
@@ -673,29 +736,59 @@ function Employees({ onEyeButtonClick }) {
                   {filteredData.length == 0 ? (
                     <tbody>
                       <tr>
-                        <td className="particular" colSpan="10" style={{ textAlign: "center" }}>
-                          <Nodata/>
+                        <td
+                          className="particular"
+                          colSpan="10"
+                          style={{ textAlign: "center" }}
+                        >
+                          <Nodata />
                         </td>
                       </tr>
                     </tbody>
                   ) : (
                     <tbody className="table-tbody">
-                   { filteredData.map((item, index) => (
-                     
+                      {filteredData.map((item, index) => (
                         <tr key={index} style={{ border: "1px solid #ddd" }}>
-                          <td
-                           className="td-sticky"
-                          >
-                            {index + 1}
-                          </td>
-                          <td >{item.ename}</td>
+                          <td className="td-sticky">{index + 1}</td>
+                          <td>{item.ename}</td>
                           <td>{item.number}</td>
                           <td>{item.email}</td>
-                          <td>
-                            {formatDate(item.jdate)}
-                          </td>
+                          <td>{formatDate(item.jdate)}</td>
                           <td>{item.designation}</td>
                           <td>{item.AddedOn}</td>
+                          <td>
+                            {item.Active && item.Active.includes("GMT") ? (
+                              <div>
+                                <span
+                                  style={{ color: "red", marginRight: "5px" }}
+                                >
+                                  ●
+                                </span>
+                                <span
+                                  style={{
+                                    fontWeight: "bold",
+                                    color: "rgb(170 144 144)",
+                                  }}
+                                >
+                                  {formatDateWP(item.Active)}
+                                </span>
+                              </div>
+                            ) : (
+                              <div>
+                                <span
+                                  style={{ color: "green", marginRight: "5px" }}
+                                >
+                                  ●
+                                </span>
+                                <span
+                                  style={{ fontWeight: "bold", color: "green" }}
+                                >
+                                  Online
+                                </span>
+                              </div>
+                            )}
+                          </td>
+
                           <td className="d-flex justify-content-center align-items-center">
                             <div className="icons-btn">
                               <IconTrash
@@ -703,7 +796,7 @@ function Employees({ onEyeButtonClick }) {
                                   cursor: "pointer",
                                   color: "red",
                                   width: "18px",
-                                  height: "18px"
+                                  height: "18px",
                                 }}
                                 onClick={() =>
                                   handleDeleteClick(item._id, item.ename)
@@ -717,14 +810,13 @@ function Employees({ onEyeButtonClick }) {
                                   cursor: "pointer",
                                   color: "#a29d9d",
                                   width: "18px",
-                                  height: "18px"
+                                  height: "18px",
                                 }}
                                 onClick={() => {
                                   functionopenpopup();
                                   handleUpdateClick(item._id, item.ename);
                                 }}
                               />
-                              
                             </div>
                             <div className="icons-btn">
                               <Link
@@ -734,16 +826,15 @@ function Employees({ onEyeButtonClick }) {
                                 <IconEye
                                   style={{
                                     width: "18px",
-                                  height: "18px",
-                                  color:"#d6a10c"
+                                    height: "18px",
+                                    color: "#d6a10c",
                                   }}
                                 />
                               </Link>
                             </div>
                           </td>
                         </tr>
-                     
-                    ))}
+                      ))}
                     </tbody>
                   )}
                   <tbody className="table-tbody"></tbody>

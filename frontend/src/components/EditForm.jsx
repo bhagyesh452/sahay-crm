@@ -161,13 +161,14 @@ console.log(companyData)
   const [companyDataLoaded, setCompanyDataLoaded] = useState(false);
 
   useEffect(() => {
-    if (companyData !== null && !companyDataLoaded) {
+    
       changeCount();
       setCompanyDataLoaded(true);
-    }
-  }, [companyData, companyDataLoaded]);
+    
+  }, [companyData]);
   
   const changeCount = () => {
+
     setOldPaymentCount(
       companyData.paymentTerms === "Full Advanced" ? 1 :
       companyData.thirdPayment === 0 ? 2 :

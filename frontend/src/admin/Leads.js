@@ -621,12 +621,18 @@ function Leads() {
       });
     }
   };
+  console.log(selectedRows);
   const exportData = async () => {
     try {
       const response = await axios.get(
         `${secretKey}/exportLeads/${dataStatus}`,
-        { responseType: "blob" }
-      );
+        {
+            responseType: "blob",
+            params: {
+                selectedRows: selectedRows
+            }
+        }
+    );
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -1930,7 +1936,7 @@ function Leads() {
                       <th>Sr.No</th>
                       <th>Company Name</th>
                       <th>Company Number</th>
-                      <th>Company Email</th>
+                      
                       <th>
                               Incorporation Date
                               <FilterListIcon
@@ -1971,9 +1977,11 @@ function Leads() {
                             </th>
                       <th>City</th>
                       <th>State</th>
+                      <th>Company Email</th>
                       <th>Status</th>
                       <th>Remarks</th>
                       <th>Assigned to</th>
+         
                       <th>
                               Assigned on
                               <FilterListIcon
@@ -2069,7 +2077,6 @@ function Leads() {
                           <td>{startIndex + index + 1}</td>
                           <td>{company["Company Name"]}</td>
                           <td>{company["Company Number"]}</td>
-                          <td>{company["Company Email"]}</td>
                           <td>
                             {formatDate(
                               company["Company Incorporation Date  "]
@@ -2077,6 +2084,7 @@ function Leads() {
                           </td>
                           <td>{company["City"]}</td>
                           <td>{company["State"]}</td>
+                          <td>{company["Company Email"]}</td>
                           <td>{company["Status"]}</td>
                           <td>
                             {company["Remarks"]}{" "}

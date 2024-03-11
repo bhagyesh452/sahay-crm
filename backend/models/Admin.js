@@ -24,6 +24,9 @@ const yourSchema = new mongoose.Schema({
   },
   AddedOn:{
     type:String
+  },
+  Active:{
+    type : String
   }
 });
 

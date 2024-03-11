@@ -335,7 +335,11 @@ function Form({
         : formData.append("companyName", leadData.companyName);
     }
 
-    formData.append("contactNumber", leadData.contactNumber);
+    {
+      matured
+        ? formData.append("contactNumber", companyNumber)
+        : formData.append("contactNumber", leadData.contactNumber);
+    }
     {
       matured
         ? formData.append("companyEmail", companysEmail)
