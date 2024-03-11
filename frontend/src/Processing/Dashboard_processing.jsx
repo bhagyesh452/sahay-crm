@@ -12,6 +12,7 @@ function Dashboard_processing() {
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [companyDetails, setCompanyDetails] = useState(null);
+  const [duplicateCompany, setduplicateCompany] = useState([]);
   const [bookingDates, setBookingDates] = useState([]);
   const [bookingTime, setBookingTime] = useState([]);
   
@@ -105,8 +106,12 @@ function Dashboard_processing() {
     try {
       if (selectedCompanyId !== null) {
         const response = await fetch(`${secretKey}/company/${selectedCompanyId}`);
+        const response2 = await fetch(`${secretKey}/duplicate-company/${selectedCompanyId}`);
+     
         const data = await response.json();
+        const data2 = await response2.json()
         setCompanyDetails(data);
+        setduplicateCompany(data2);
       }
     } catch (error) {
       console.error("Error fetching company details:", error);
@@ -147,7 +152,7 @@ function Dashboard_processing() {
                                 />
                             </div>
                             <div className="col-sm-8">
-                                    <CompanyDetails company={companyDetails} />
+                                    <CompanyDetails companyDetails={companyDetails} duplicateCompany={duplicateCompany} />
                             </div>
                         </div>
                     </div>

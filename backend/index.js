@@ -27,11 +27,11 @@ const RequestDeleteByBDE = require("./models/Deleterequestbybde");
 const BookingsRequestModel = require("./models/BookingsEdit");
 const json2csv = require('json2csv').parse;
 const fastCsv = require('fast-csv');
-
 const RecentUpdatesModel = require("./models/RecentUpdates");
 const FollowUpModel = require("./models/FollowUp");
 const DraftModel = require("./models/DraftLeadform");
 const { type } = require("os");
+const LeadModel_2 = require("./models/Leadform_2");
 
 
 // const http = require('http');
@@ -67,7 +67,6 @@ app.get("/api", (req, res) => {
   console.log(req.url);
   res.send("hello from backend!");
 });
-
 
 
 app.post("/api/admin/login-admin", async (req, res) => {
@@ -1704,14 +1703,27 @@ app.post("/api/upload/lead-form", async (req, res) => {
         // Increment the success counter
         successCounter++;
       } catch (error) {
-        // If an error occurs during data insertion, increment the error counter
-        errorCounter++;
-        console.error("Error saving employee:", error.message);
+        // If an error occurs during data insertion, check if it's due to duplicate companyName
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.companyName) {
+          // Duplicate companyName detected, save the data to LeadModel_2
+          try {
+            await LeadModel_2.create(data);
+            console.log("Data saved to LeadModel_2 due to duplicate companyName:", data);
+            successCounter++; // Increment success counter as data was successfully saved to LeadModel_2
+          } catch (err) {
+            // Error saving to LeadModel_2
+            console.error("Error saving data to LeadModel_2:", err.message);
+            errorCounter++; // Increment error counter
+          }
+        } else {
+          // Error other than duplicate companyName, increment error counter
+          errorCounter++;
+          console.error("Error saving employee:", error.message);
+        }
       }
     }
 
     // Respond with success and error counters
-  
     res.status(200).json({ message: "Data sent successfully", successCounter, errorCounter });
   } catch (error) {
     // If an error occurs at the outer try-catch block, handle it here
@@ -1719,6 +1731,7 @@ app.post("/api/upload/lead-form", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error", errorCounter });
   }
 });
+
 app.post('/api/accept-booking-request/:companyName', async (req, res) => {
   const companyName = req.params.companyName;
   const requestData = req.body;
@@ -1799,6 +1812,38 @@ app.get("/api/company/:companyName", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+app.get("/api/company-ename/:ename", async (req, res) => {
+  const bdeName = req.params.ename;
+
+  try {
+    // Fetch details for the specified company name from the LeadModel
+    const companyDetails = await LeadModel.find({ bdeName });
+    if (!companyDetails) {
+      return res.status(404).json({ error: "Company not found" });
+    }
+    res.json(companyDetails);
+  } catch (error) {
+    console.error("Error fetching company details:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+app.get("/api/duplicate-company/:companyName", async (req, res) => {
+  const companyName = req.params.companyName;
+
+  try {
+    // Fetch details for the specified company name from the LeadModel
+    const companyDetails = await LeadModel_2.find({ companyName }).lean();
+
+    if (!companyDetails) {
+      return res.status(404).json({ error: "Company not found" });
+    }
+    res.json(companyDetails);
+  } catch (error) {
+    console.error("Error fetching company details:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 app.delete("/api/reverse-delete/:companyName", async (req, res) => {
   try {

@@ -18,7 +18,12 @@ function EmployeeDashboard() {
   const [data, setData] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
+  const [showBookingDate, setShowBookingDate] = useState(false)
+  const [startDateAnother, setStartDateAnother] = useState(new Date());
+  const [endDateAnother, setEndDateAnother] = useState(new Date());
   const [openProjection, setOpenProjection] = useState(false);
+  const [totalBooking, setTotalBooking] = useState([]);
+  const [filteredBooking, setFilteredBooking] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
@@ -66,7 +71,7 @@ function EmployeeDashboard() {
         console.error("Error fetching data:", error);
       });
   };
-
+  const tableEmployee = data.ename;
   useEffect(() => {
     fetchData();
   }, []);
@@ -78,6 +83,43 @@ function EmployeeDashboard() {
 
   const uniqueArray = formattedDates && [...new Set(formattedDates)];
   //console.log(uniqueArray)
+  // ---------------------------Bookings Part --------------------------------------
+  useEffect(() => {
+    const fetchBookingDetails = async () => {
+      try {
+        const response = await axios.get(`${secretKey}/company-ename/${data.ename}`);
+        setTotalBooking(response.data);
+        setFilteredBooking(response.data);
+      } catch (error) {
+        console.error("Error fetching company details:", error.message);
+      }
+    };
+    fetchBookingDetails();
+  }, [data.ename]);
+
+  const handleCloseIconClickAnother = () => {
+    if (showBookingDate) {
+      setShowBookingDate(false)
+    }
+  }
+
+  const selectionRangeAnother = {
+    startDate: startDateAnother,
+    endDate: endDateAnother,
+    key: "selection",
+  };
+  const handleSelectAnother = (date) => {
+    const filteredDataDateRange = totalBooking.filter((product) => {
+      const productDate = new Date(product["bookingDate"]);
+      return (
+        productDate >= date.selection.startDate &&
+        productDate <= date.selection.endDate
+      );
+    });
+    setStartDateAnother(date.selection.startDate);
+    setEndDateAnother(date.selection.endDate);
+    setFilteredBooking(filteredDataDateRange);
+  };
 
   // ---------------------------projectiondata-------------------------------------
 
@@ -94,7 +136,7 @@ function EmployeeDashboard() {
     }
   };
 
-  console.log(followData)
+  console.log(followData);
 
   function calculateSum(data) {
     const initialValue = {
@@ -133,7 +175,6 @@ function EmployeeDashboard() {
   }, [data]);
 
   const functionopenprojection = (comName) => {
-    
     setProjectingCompany(comName);
     setOpenProjection(true);
     const findOneprojection =
@@ -147,8 +188,8 @@ function EmployeeDashboard() {
         offeredServices: findOneprojection.offeredServices,
         lastFollowUpdate: findOneprojection.lastFollowUpdate,
         estPaymentDate: findOneprojection.estPaymentDate,
-        totalPayment:findOneprojection.totalPayment,
-        remarks:findOneprojection.remarks,
+        totalPayment: findOneprojection.totalPayment,
+        remarks: findOneprojection.remarks,
         date: "",
         time: "",
       });
@@ -169,35 +210,34 @@ function EmployeeDashboard() {
     });
     setSelectedValues([]);
   };
-  
+
   const handleProjectionSubmit = async () => {
     try {
-     
       const finalData = {
         ...currentProjection,
         companyName: projectingCompany,
         ename: data.ename,
         offeredServices: selectedValues,
       };
-      if(finalData.offeredServices.length === 0){
-        Swal.fire({title:'Services is required!' , icon:'warning'});
-      }else if(finalData.remarks === ""){
-        Swal.fire({title:'Remarks is required!' , icon:'warning'});
-      }else if(finalData.totalPayment === 0){
-        Swal.fire({title:'Payment is required!' , icon:'warning'});
+      if (finalData.offeredServices.length === 0) {
+        Swal.fire({ title: "Services is required!", icon: "warning" });
+      } else if (finalData.remarks === "") {
+        Swal.fire({ title: "Remarks is required!", icon: "warning" });
+      } else if (finalData.totalPayment === 0) {
+        Swal.fire({ title: "Payment is required!", icon: "warning" });
+      } else if (finalData.offeredPrize === 0) {
+        Swal.fire({ title: "Offered Prize is required!", icon: "warning" });
+      } else if (finalData.lastFollowUpdate === null) {
+        Swal.fire({
+          title: "Last FollowUp Date is required!",
+          icon: "warning",
+        });
+      } else if (finalData.estPaymentDate === 0) {
+        Swal.fire({
+          title: "Estimated Payment Date is required!",
+          icon: "warning",
+        });
       }
-      else if(finalData.offeredPrize === 0){
-        Swal.fire({title:'Offered Prize is required!' , icon:'warning'});
-      }
-      else if(finalData.lastFollowUpdate === null){
-        Swal.fire({title:'Last FollowUp Date is required!' , icon:'warning'});
-      }
-      else if(finalData.estPaymentDate === 0){
-        Swal.fire({title:'Estimated Payment Date is required!' , icon:'warning'});
-      }
-   
-   
-   
 
       // Send data to backend API
       const response = await axios.post(
@@ -218,7 +258,7 @@ function EmployeeDashboard() {
       });
       fetchFollowUpData();
 
-  // Log success message
+      // Log success message
     } catch (error) {
       console.error("Error updating or adding data:", error.message);
     }
@@ -298,7 +338,7 @@ function EmployeeDashboard() {
     offeredServicesFilter,
   } = calculateSumFilter(filteredDataDateRange);
 
-console.log('follow data:' , currentProjection)
+  console.log("follow data:", currentProjection);
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
@@ -637,7 +677,8 @@ console.log('follow data:' , currentProjection)
                         <td>{obj.companyName}</td>
                         <td>{obj.offeredServices.join(", ")}</td>
                         <td>
-                        ₹{obj.totalPayment &&
+                          ₹
+                          {obj.totalPayment &&
                             obj.totalPayment.toLocaleString()}
                         </td>
                         <td>₹{obj.offeredPrize.toLocaleString()}</td>
@@ -689,6 +730,208 @@ console.log('follow data:' , currentProjection)
           </div>
         </div>
       </div>
+      {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
+      <div className="container-xl mt-2">
+        <div className="card">
+          <div
+            className="card-header d-flex align-items-center justify-content-between"
+            
+          >
+            <div>
+              <h2>Bookings Dashboard</h2>
+            </div>
+            <div
+              className="form-control d-flex align-items-center justify-content-between"
+              style={{ width: "15vw" }}
+            >
+              {/* <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div> */}
+              <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
+                          {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
+                        </div>
+                        <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                          <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                        </button>
+            </div>
+          </div>
+          {showBookingDate && <div
+                      style={{
+                        position: "absolute",
+                        top: "65px",
+                        zIndex: 9,
+                        right: "157px",
+                      }}
+                      className="booking-filter"
+                    >
+                      <DateRangePicker
+                        ranges={[selectionRangeAnother]}
+                        onChange={handleSelectAnother}
+                        onClose={() => setShowBookingDate(false)}
+                      />
+                    </div>}
+          <div className="card-body">
+            <div
+              id="table-default"
+              style={{
+                overflowX: "auto",
+                overflowY: "auto",
+                maxHeight: "60vh",
+              }}
+            >
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  border: "1px solid #ddd",
+                  marginBottom: "10px",
+                }}
+                className="table-vcenter table-nowrap"
+              >
+                <thead stSyle={{ backgroundColor: "grey" }}>
+                  <tr
+                    style={{
+                      backgroundColor: "#ffb900",
+                      color: "black",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <th style={{ lineHeight: "32px" }}>SR.NO</th>
+                    <th>BOOKING DATE & TIME</th>
+                    <th>COMPANY NAME</th>
+                    <th>COMPANY NUMBER</th>
+                    <th>COMPANY EMAIL</th>
+                    <th>SERVICES</th>
+                    <th>TOTAL PAYMENT</th>
+                    <th>RECEIVED PAYMENT</th>
+                    <th>PENDING PAYMENT</th>
+                    <th>50/50 CASE</th>
+                    <th>CLOSED/SUPPORTED BY</th>
+                    <th>REMARKS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredBooking.map((mainObj, index) => (
+                    <>
+                      <tr>
+                        <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                        <td>{`${formatDate(mainObj.bookingDate)}(${
+                          mainObj.bookingTime
+                        })`}</td>
+                        <td>{mainObj.companyName}</td>
+                        <td>{mainObj.contactNumber}</td>
+                        <td>{mainObj.companyEmail}</td>
+                        <td>{mainObj.services[0]}</td>
+                        <td>
+                          ₹
+                          {(mainObj.bdeName !== mainObj.bdmName
+                            ? mainObj.originalTotalPayment / 2
+                            : mainObj.originalTotalPayment
+                          ).toLocaleString()}
+                        </td>
+                        <td>
+                          ₹
+                          {
+                            (mainObj.firstPayment !== 0
+                              ? mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.firstPayment // If bdeName and bdmName are the same
+                                : mainObj.firstPayment / 2 // If bdeName and bdmName are different
+                              : mainObj.bdeName === mainObj.bdmName
+                              ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                              : mainObj.originalTotalPayment / 2
+                            ).toLocaleString() // If firstPayment is 0 and bdeName and bdmName are different
+                          }
+                        </td>
+                        <td>
+                          {" "}
+                          ₹
+                          {(mainObj.firstPayment !== 0
+                            ? mainObj.bdeName === mainObj.bdmName
+                              ? mainObj.originalTotalPayment -
+                                mainObj.firstPayment
+                              : (mainObj.originalTotalPayment -
+                                  mainObj.firstPayment) /
+                                2
+                            : 0
+                          ).toLocaleString()}{" "}
+                        </td>
+                        <td>
+                          {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
+                        </td>
+                        <td>
+                          {mainObj.bdeName !== mainObj.bdmName
+                            ? mainObj.bdmType === "closeby"
+                              ? `Closed by ${mainObj.bdmName}`
+                              : `Supported by ${mainObj.bdmName}`
+                            : `Self Closed`}{" "}
+                        </td>
+                        <td>{mainObj.paymentRemarks}</td>
+                      </tr>
+                    </>
+                  ))}
+                </tbody>
+                {
+                  <tfoot>
+                    <tr>
+                      <th colSpan={3}>
+                        <strong>Total</strong>
+                      </th>
+                     
+                      <th>-</th>
+                      <th>-</th>
+                      <th>-</th>
+                      <th>
+                        ₹
+                        {filteredBooking
+                        
+                          .reduce((total, obj) => {
+                            return obj.bdeName === obj.bdmName
+                              ? total + obj.originalTotalPayment
+                              : total + obj.originalTotalPayment / 2;
+                          }, 0)
+                          .toLocaleString()}
+                      </th>
+                      <th>
+                        ₹
+                        {filteredBooking
+                          
+                          .reduce((total, obj) => {
+                            return obj.bdeName === obj.bdmName
+                              ? obj.firstPayment === 0
+                                ? total + obj.originalTotalPayment
+                                : total + obj.firstPayment
+                              : obj.firstPayment === 0
+                              ? total + obj.originalTotalPayment / 2
+                              : total + obj.firstPayment / 2;
+                          }, 0)
+                          .toLocaleString()}
+                      </th>
+                      <th>
+                        ₹
+                        {filteredBooking
+                          
+                          .reduce((total, obj) => {
+                            return obj.bdeName === obj.bdmName
+                              ? obj.firstPayment === 0
+                                ? total + obj.originalTotalPayment
+                                : total + obj.firstPayment
+                              : obj.firstPayment === 0
+                              ? total + obj.originalTotalPayment / 2
+                              : total + obj.firstPayment / 2;
+                          }, 0)
+                          .toLocaleString()}
+                      
+                      </th>
+                      <th>-</th>
+                      <th>-</th>
+                      <th>-</th>
+                    </tr>
+                  </tfoot>
+                }
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Drawer for Follow Up Projection  */}
       <div>
         <Drawer
@@ -709,7 +952,7 @@ console.log('follow data:' , currentProjection)
             <hr style={{ marginBottom: "10px" }} />
             <div className="body-projection">
               <div className="header mb-2">
-              <strong style={{ fontSize: "20px" }}>
+                <strong style={{ fontSize: "20px" }}>
                   {projectingCompany}
                 </strong>
               </div>
@@ -804,7 +1047,6 @@ console.log('follow data:' , currentProjection)
                         estPaymentDate: e.target.value,
                       }));
                     }}
-                 
                   />
                 </div>
               </div>

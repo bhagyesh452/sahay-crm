@@ -14,6 +14,7 @@ import { IconTrash } from "@tabler/icons-react";
 import "../assets/styles.css";
 import "../assets/table.css";
 import Swal from "sweetalert2";
+import socketIO from 'socket.io-client';
 // import EmployeeTable from "./EmployeeTable";
 import {
   Button,
@@ -35,10 +36,11 @@ function Employees({ onEyeButtonClick }) {
   //   setIsLoggedIn(true)
   // }
   const handleEyeButtonClick = (id) => {
-    // Call the callback function provided by the parent component
+
     onEyeButtonClick(id);
     console.log(id);
   };
+  
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [companyDdata, setCompanyDdata] = useState([]);

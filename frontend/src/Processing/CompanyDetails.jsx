@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import './style_processing/main_processing.css'
 import { pdfuploader } from "../documents/pdf1.pdf";
 import Dashboard_processing from "./Dashboard_processing";
@@ -37,13 +37,15 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 
 
-const CompanyDetails = ({ company }) => {
+const CompanyDetails = ({ companyDetails , duplicateCompany }) => {
   // const [field, setField] = useState(false)
   const [isOpen, setIsOpen] = useState(false);
   const [open, openchange] = useState(false);
+  const [company , setCompany] = useState(null);
   const [csvdata, setCsvData] = useState([]);
   const [excelData, setExcelData] = useState([]);
   const [displayForm, setDisplayForm] = useState(false)
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedFile, setSelectedFile] = useState()
   const [selectedDocuments, setSelectedDocuments] = useState([])
   const [openPaymentReceipt, setOpenPaymentReceipt] = useState(false);
@@ -62,7 +64,18 @@ const CompanyDetails = ({ company }) => {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
+useEffect(() => {
+  setCompany(companyDetails)
 
+
+}, [companyDetails])
+
+const handleNextClick = () => {
+  if (currentIndex < duplicateCompany.length) {
+    setCompany(duplicateCompany[currentIndex]);
+    setCurrentIndex(prevIndex => prevIndex + 1);
+  }
+};
 
   // Function to close the popup
   // const handleClosePopup = () => {
@@ -471,6 +484,7 @@ const CompanyDetails = ({ company }) => {
             <h3 class="card-title">Booking Details</h3>
           </div>
           <div className="buttons d-flex align-items-center justify-content-around" style={{ gap: "5px" }}>
+            
             <div>
               <button
                 className="btn btn-primary mr-1" onClick={exportData}>
@@ -536,6 +550,13 @@ const CompanyDetails = ({ company }) => {
                 </button>
               </Link>
             </div>
+            {duplicateCompany.length!==0 && <div>
+                <button
+                  className="btn btn-primary" onClick={handleNextClick}
+                  disabled={currentIndex >= duplicateCompany.length}>
+                  Next
+                </button>
+            </div>}
           </div>
         </div>
       </div>

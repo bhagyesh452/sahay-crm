@@ -23,7 +23,7 @@ function Header({ name, designation}) {
 
     // Listen for the 'welcome' event from the server
     socket.on('welcome', (message) => {
-      console.log(message); // Log the welcome message received from the server
+      console.log(message); 
     });
     fetchRequestDetails();
     fetchRequestGDetails();
@@ -42,9 +42,7 @@ function Header({ name, designation}) {
     };
   }, []);
  
-  useEffect(() => {
  
-  },[]);
   const [requestData, setRequestData] = useState([]);
   const [requestGData, setRequestGData] = useState([]);
   const [requestAppData, setRequestAppData] = useState([]);

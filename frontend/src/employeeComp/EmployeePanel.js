@@ -73,8 +73,8 @@ function EmployeePanel() {
   const [cname, setCname] = useState("");
   const [cemail, setCemail] = useState("");
   const [selectAllChecked, setSelectAllChecked] = useState(true);
-const [selectedYears, setSelectedYears] = useState([]);
-const [selectedMonths, setSelectedMonths] = useState([]);
+  const [selectedYears, setSelectedYears] = useState([]);
+  const [selectedMonths, setSelectedMonths] = useState([]);
   const [cnumber, setCnumber] = useState(0);
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
@@ -94,26 +94,14 @@ const [selectedMonths, setSelectedMonths] = useState([]);
   const endIndex = startIndex + itemsPerPage;
   const { userId } = useParams();
   console.log(userId);
-  // const customStyles = {
-  //   option: (provided, state) => ({
-  //     ...provided,
-  //     backgroundColor: state.isSelected
-  //       ? "blue"
-  //       : state.isDisabled
-  //       ? "#ffb900"
-  //       : "white",
-  //     color: state.isDisabled ? "white" : "black",
-  //     // Add more styles as needed
-  //   }),
-  // };
+
   const playNotificationSound = () => {
     const audio = new Audio(notificationSound);
     audio.play();
   };
   useEffect(() => {
-    const socket = socketIO.connect(`${secretKey}`);
+    const socket = socketIO.connect(`http://locahost:3001`);
 
-    // Listen for the 'request-seen' event from the server
     socket.on("request-seen", () => {
       // Call fetchRequestDetails function to update request details
       fetchRequestDetails();

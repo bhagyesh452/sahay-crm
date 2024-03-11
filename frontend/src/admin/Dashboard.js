@@ -396,12 +396,12 @@ function Dashboard() {
   const lastFollowDate = followData.reduce((accumulate, current) => {
     if (accumulate[current.ename]) {
       if (Array.isArray(accumulate[current.ename])) {
-        accumulate[current.ename].push(current.lastFollowUpdate);
+        accumulate[current.ename].push(current.estPaymentDate);
       } else {
-        accumulate[current.ename] = [accumulate[current.ename], current.lastFollowUpdate];
+        accumulate[current.ename] = [accumulate[current.ename], current.estPaymentDate];
       }
     } else {
-      accumulate[current.ename] = current.lastFollowUpdate;
+      accumulate[current.ename] = current.estPaymentDate;
     }
     return accumulate;
   }, []);
@@ -455,14 +455,14 @@ function Dashboard() {
 
   // --------------------------------- date-range-picker-------------------------------------
 
-  // const handleIconClick = () => {
-  //   if (!buttonToggle) {
-  //     setDateRangeDisplay(true);
-  //   } else {
-  //     setDateRangeDisplay(false);
-  //   }
-  //   setButtonToggle(!buttonToggle);
-  // };
+  const handleIconClick = () => {
+    if (!buttonToggle) {
+      setDateRangeDisplay(true);
+    } else {
+      setDateRangeDisplay(false);
+    }
+    setButtonToggle(!buttonToggle);
+  };
 
 
   const handleCloseIconClick = () => {
@@ -479,7 +479,7 @@ function Dashboard() {
 
   const handleSelect = (date) => {
     const filteredDataDateRange = followData.filter(product => {
-      const productDate = new Date(product["lastFollowUpdate"]);
+      const productDate = new Date(product["estPaymentDate"]);
       if (formatDate(date.selection.startDate) === formatDate(date.selection.endDate)) {
         console.log(formatDate(date.selection.startDate))
         console.log(formatDate(date.selection.endDate))
@@ -713,14 +713,14 @@ function Dashboard() {
     setOriginalEmployeeData([...employeeData]); // Store original state of employeeData
   }, [employeeData]);
 
-  // const handleIconClickEmployee = () => {
-  //   if (!buttonToggle) {
-  //     setDateRangeDisplayEmployee(true);
-  //   } else {
-  //     setDateRangeDisplayEmployee(false);
-  //   }
-  //   setButtonToggle(!buttonToggle);
-  // };
+  const handleIconClickEmployee = () => {
+    if (!buttonToggle) {
+      setDateRangeDisplayEmployee(true);
+    } else {
+      setDateRangeDisplayEmployee(false);
+    }
+    setButtonToggle(!buttonToggle);
+  };
 
   const handleCloseIconClickEmployee = () => {
     if (displayDateRangeEmployee) {
@@ -791,22 +791,7 @@ function Dashboard() {
       <Header />
       <Navbar />
       <div className="d-flex align-items-center">
-        { displayArrow &&<div className="container-xl card" style={{
-          backgroundColor: "white", marginLeft: "3px", width: "10vw",
-          height: "128vh",
-          marginRight: "-36px",
-          overflow: " auto"
-        }}>
-          <FaArrowAltCircleRight  onClick={handleArrow}/>
-          </div>}
-        {sideBar && <div className="container-xl card" style={{
-          backgroundColor: "white", marginLeft: "3px", width: " 43vw",
-          height: "130vh",
-          maxWidth: "248px",
-          marginRight: "-36px",
-          overflow: " auto"
-        }}> <FaArrowAltCircleLeft onClick={handleArrowClose}/>
-        </div>}
+        
         <div>
           <div className="page-wrapper">
             <div className="recent-updates-icon">
@@ -853,10 +838,11 @@ function Dashboard() {
                       )}
                     </div>
                   </div>
-                  <div className="col card todays-booking m-2" onClick={handleCloseIconClickAnother}>
+                  {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
+                  <div className="col card todays-booking m-2" >
                     <div className="card-header d-flex align-items-center justify-content-between">
                       <div>
-                        <h2>TotaL Booking</h2>
+                        <h2>Total Booking</h2>
                       </div>
                       <div className=" form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
                         <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
@@ -997,7 +983,7 @@ function Dashboard() {
                                               // Use reduce to calculate the total of totalPayments
                                               return (
                                                 totalPayments +
-                                                (obj1.bdeName === obj1.bdmName
+                                                (obj1.bdeName === obj1.bdmName && obj.bdmType !== "closeby"
                                                   ? obj1.originalTotalPayment !== 0
                                                     ? obj1.originalTotalPayment
                                                     : 0
@@ -1151,7 +1137,7 @@ function Dashboard() {
                   </div>
 
                   {/* Employee side Dashboard Analysis */}
-                  <div className="employee-dashboard " onClick={handleCloseIconClickEmployee}>
+                  <div className="employee-dashboard ">
                     <div className="card">
                       <div className="card-header d-flex align-items-center justify-content-between">
                         <div>
@@ -2447,7 +2433,7 @@ function Dashboard() {
                         <th>Offered Services</th>
                         <th>Total Offered Price</th>
                         <th>Expected Amount</th>
-                        <th>Last Followup Date</th>
+                        <th>Est. Payment Date</th>
 
                       </tr>
                     </thead>
@@ -2603,6 +2589,7 @@ function Dashboard() {
                       <th>Total Offered Price</th>
                       <th>Expected Amount</th>
                       <th>Estimated Payment Date</th>
+                      <th>Last Follow Up Date</th>
                       <th>Remarks</th>
                     </tr>
                   </thead>
@@ -2632,6 +2619,7 @@ function Dashboard() {
                           <td>{obj.totalPayment.toLocaleString()}</td>
                           <td>{obj.offeredPrize.toLocaleString()}</td>
                           <td>{obj.estPaymentDate}</td>
+                          <td>{obj.lastFollowUpdate}</td>
                           <td>{obj.remarks}</td>
                         </tr>
                       )))
