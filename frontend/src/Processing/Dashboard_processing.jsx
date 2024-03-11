@@ -26,7 +26,7 @@ function Dashboard_processing() {
   }, []);
 
   useEffect(() => {
-    const socket = socketIO.connect(`http://localhost:3001`);
+    const socket = socketIO.connect(`${secretKey}`);
 
     // Listen for the 'welcome' event from the server
     socket.on('read', () => {
