@@ -14,7 +14,7 @@ import { IconTrash } from "@tabler/icons-react";
 import "../assets/styles.css";
 import "../assets/table.css";
 import Swal from "sweetalert2";
-import socketIO from "socket.io-client";
+import io from "socket.io-client";
 // import EmployeeTable from "./EmployeeTable";
 import {
   Button,
@@ -40,7 +40,7 @@ function Employees({ onEyeButtonClick }) {
     console.log(id);
   };
   useEffect(() => {
-    const socket = socketIO.connect(`${secretKey}`);
+    const socket = io('http://localhost:3001');
     socket.on("employee-entered", () => {
       console.log("One user Entered");
       setTimeout(() => {
@@ -756,8 +756,8 @@ function Employees({ onEyeButtonClick }) {
                           <td>{formatDate(item.jdate)}</td>
                           <td>{item.designation}</td>
                           <td>{item.AddedOn}</td>
-                          <td>
-                            {item.Active && item.Active.includes("GMT") ? (
+                          {item.designation !== "Admin Team" ? <td>
+                            {(item.Active && item.Active.includes("GMT")) ? (
                               <div>
                                 <span
                                   style={{ color: "red", marginRight: "5px" }}
@@ -787,7 +787,23 @@ function Employees({ onEyeButtonClick }) {
                                 </span>
                               </div>
                             )}
-                          </td>
+                          </td> : <td>
+                          <div>
+                                <span
+                                  style={{ color: "red", marginRight: "5px" }}
+                                >
+                                  ●
+                                </span>
+                                <span
+                                  style={{
+                                    fontWeight: "bold",
+                                    color: "rgb(170 144 144)",
+                                  }}
+                                >
+                                  {formatDateWP("Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)")}
+                                </span>
+                              </div>
+                            </td>}
 
                           <td className="d-flex justify-content-center align-items-center">
                             <div className="icons-btn">

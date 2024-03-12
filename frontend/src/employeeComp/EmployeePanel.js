@@ -28,7 +28,7 @@ import debounce from "lodash/debounce";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import { options } from "../components/Options.js";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import socketIO from "socket.io-client";
+import io from "socket.io-client";
 import AddCircle from "@mui/icons-material/AddCircle.js";
 
 function EmployeePanel() {
@@ -101,7 +101,7 @@ function EmployeePanel() {
     audio.play();
   };
   useEffect(() => {
-    const socket = socketIO.connect(`${secretKey}`);
+    const socket = io('https://startupsahay.in/api');
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
@@ -352,7 +352,7 @@ function EmployeePanel() {
     }
   };
   const activeStatus = async () => {
-    try {
+   if(data._id && socketID){ try {
     
       const id = data._id;
       const response = await axios.put(`${secretKey}/online-status/${id}/${socketID}`);
@@ -361,19 +361,9 @@ function EmployeePanel() {
     } catch (error) {
       console.error('Error:', error);
       throw error; // Throw error for handling in the caller function
-    } 
+    } }
   };
-  const leaveStatus = async () => {
-    try {
-      const id = data._id;
-      const response = await axios.put(`${secretKey}/online-status/${id}/disconnect`);
-      console.log(response.data); // Log response for debugging
-      return response.data; // Return response data if needed
-    } catch (error) {
-      console.error('Error:', error);
-      throw error; // Throw error for handling in the caller function
-    } 
-  };
+
   useEffect(() => {
     if (data.ename) {
       console.log("Employee found");
@@ -388,8 +378,7 @@ function EmployeePanel() {
     const timerId = setTimeout(() => {
       activeStatus();
     }, 2000);
-  
-    // Clean up the timer when the component unmounts or when the dependency changes
+ 
     return () => {
       clearTimeout(timerId);
     };
