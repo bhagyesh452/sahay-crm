@@ -16,8 +16,6 @@ function Dashboard_processing() {
   const [bookingDates, setBookingDates] = useState([]);
   const [bookingTime, setBookingTime] = useState([]);
   
-
-
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   useEffect(() => {
@@ -26,7 +24,7 @@ function Dashboard_processing() {
   }, []);
 
   useEffect(() => {
-    const socket = socketIO.connect(`${secretKey}`);
+    const socket = socketIO.connect(`https://startupsahay.in/api`);
 
     // Listen for the 'welcome' event from the server
     socket.on('read', () => {
@@ -67,10 +65,8 @@ function Dashboard_processing() {
       const response = await fetch(`${secretKey}/companies`);
       const data = await response.json();
       const companyData = data.companies
-      console.log(companyData)
-      //console.log(companyData)
-  
-      // Extract unique booking dates from the fetched data
+
+
       const uniqueBookingDates = Array.from(
         new Set(companyData.map((company) => company.bookingDate))
       );
@@ -148,11 +144,10 @@ function Dashboard_processing() {
                                     onCompanyClick={handleCompanyClick}
                                     selectedBookingDate={formattedDates}
                                     bookingTime={bookingTime}
-                                   
                                 />
                             </div>
                             <div className="col-sm-8">
-                                    <CompanyDetails companyDetails={companyDetails} duplicateCompany={duplicateCompany} />
+                                    <CompanyDetails companyDetails={companyDetails} duplicateCompany={duplicateCompany}/>
                             </div>
                         </div>
                     </div>

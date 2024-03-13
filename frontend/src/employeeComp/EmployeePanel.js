@@ -101,7 +101,7 @@ function EmployeePanel() {
     audio.play();
   };
   useEffect(() => {
-    const socket = io('https://startupsahay.in/api');
+    const socket = io('http://localhost:3001');
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);

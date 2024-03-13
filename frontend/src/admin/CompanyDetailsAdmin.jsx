@@ -721,7 +721,7 @@ const CompanyDetailsAdmin = ({ company }) => {
             {(company.originalTotalPayment || company.originalTotalPayment === " ") && (<div className="col-sm-3">
               <div className="booking-fields-view">
                 <div className="fields-view-title">Original Total Payment :</div>
-                <div className="fields-view-value"><span style={{ color: 'black', fontWeight: "bolder", marginRight: "-120px" }}>&#8377;</span>{company.originalTotalPayment}
+                <div className="fields-view-value"><span style={{ color: 'black', fontWeight: "bolder", marginRight: "-120px" }}>&#8377;</span>{(company.originalTotalPayment).toLocaleString()}
                   <span className="copy-icon" onClick={() => copyToClipboard(`${company.originalTotalPayment}`)}>
                     {/* Replace with your clipboard icon */}
                     <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px", cursor: "pointer" }} />
@@ -731,7 +731,7 @@ const CompanyDetailsAdmin = ({ company }) => {
             {(company.totalPayment || company.totalPayment === " ") && (<div className="col-sm-3">
               <div className="booking-fields-view">
                 <div className="fields-view-title">Total Payment :</div>
-                <div className="fields-view-value"><span style={{ color: 'black', fontWeight: "bolder", marginRight: "-120px" }}>&#8377;</span>{company.totalPayment}
+                <div className="fields-view-value"><span style={{ color: 'black', fontWeight: "bolder", marginRight: "-120px" }}>&#8377;</span>{(company.totalPayment).toLocaleString()}
                   <span className="copy-icon" onClick={() => copyToClipboard(`${company.totalPayment}`)}>
                     {/* Replace with your clipboard icon */}
                     <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px", cursor: "pointer" }} />
@@ -743,7 +743,7 @@ const CompanyDetailsAdmin = ({ company }) => {
             {(company.firstPayment || company.firstPayment === " ") && (<div className="col-sm-3">
               <div className="booking-fields-view">
                 <div className="fields-view-title">First Payment :</div>
-                <div className="fields-view-value"><span style={{ color: 'black', fontWeight: "bolder", marginRight: "-120px" }}>&#8377;</span>{company.firstPayment}
+                <div className="fields-view-value"><span style={{ color: 'black', fontWeight: "bolder", marginRight: "-120px" }}>&#8377;</span>{(company.firstPayment).toLocaleString()}
                   <span className="copy-icon" onClick={() => copyToClipboard(`${company.firstPayment}`)}>
                     {/* Replace with your clipboard icon */}
                     <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px", cursor: "pointer" }} />
@@ -753,7 +753,7 @@ const CompanyDetailsAdmin = ({ company }) => {
             {(company.secondPayment || company.secondPayment === " ") && (<div className="col-sm-3">
               <div className="booking-fields-view">
                 <div className="fields-view-title">Second Payment :</div>
-                <div className="fields-view-value"><span style={{ color: 'black', fontWeight: "bolder", marginRight: "-120px" }}>&#8377;</span>{company.secondPayment}
+                <div className="fields-view-value"><span style={{ color: 'black', fontWeight: "bolder", marginRight: "-120px" }}>&#8377;</span>{(company.secondPayment).toLocaleString()}
                   <span className="copy-icon" onClick={() => copyToClipboard(`${company.secondPayment}`)}>
                     {/* Replace with your clipboard icon */}
                     <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px", cursor: "pointer" }} />
@@ -763,7 +763,7 @@ const CompanyDetailsAdmin = ({ company }) => {
             {(company.thirdPayment || company.thirdPayment === " ") && (<div className="col-sm-3">
               <div className="booking-fields-view">
                 <div className="fields-view-title">Third Payment :</div>
-                <div className="fields-view-value"><span style={{ color: 'black', fontWeight: "bolder", marginRight: "-120px" }}>&#8377;</span>{company.thirdPayment}
+                <div className="fields-view-value"><span style={{ color: 'black', fontWeight: "bolder", marginRight: "-120px" }}>&#8377;</span>{(company.thirdPayment).toLocaleString()}
                   <span className="copy-icon" onClick={() => copyToClipboard(`${company.thirdPayment}`)}>
                     {/* Replace with your clipboard icon */}
                     <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px", cursor: "pointer" }} />
@@ -773,7 +773,7 @@ const CompanyDetailsAdmin = ({ company }) => {
             {(company.fourthPayment || company.fourthPayment === " ") && (<div className="col-sm-3">
               <div className="booking-fields-view">
                 <div className="fields-view-title">Fourth Payment :</div>
-                <div className="fields-view-value"><span style={{ color: 'black', fontWeight: "bolder", marginRight: "-120px" }}>&#8377;</span>{company.fourthPayment}
+                <div className="fields-view-value"><span style={{ color: 'black', fontWeight: "bolder", marginRight: "-120px" }}>&#8377;</span>{(company.fourthPayment).toLocaleString()}
                   <span className="copy-icon" onClick={() => copyToClipboard(`${company.fourthPayment}`)}>
                     {/* Replace with your clipboard icon */}
                     <FaRegCopy style={{ width: "15px", height: "15px", marginLeft: "5px", cursor: "pointer" }} />
