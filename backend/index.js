@@ -1665,6 +1665,43 @@ app.post(
 );
 
 // --------------------api for importing excel data on processing dashboard----------------------------
+app.get('/api/booking-model-filter', async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    // Convert start and end dates to JavaScript Date objects
+    const formattedStartDate = new Date(startDate);
+    const formattedEndDate = new Date(endDate);
+
+    // Convert the start date to match the format of the bookingDate field
+    const formattedBookingStartDate = formattedStartDate.toISOString().split('T')[0];
+
+    // Define the filter criteria based on the date range
+    let filterCriteria = {};
+    if (formattedStartDate.getTime() === formattedEndDate.getTime()) {
+      // If start and end dates are the same, filter by a single date
+      filterCriteria = { bookingDate: formattedBookingStartDate };
+    } else {
+      // If start and end dates are different, filter by a date range
+      filterCriteria = {
+        bookingDate: {
+          $gte: formattedBookingStartDate,
+          $lte: formattedEndDate.toISOString().split('T')[0]
+        }
+      };
+    }
+
+    // Fetch leads from the database filtered by the specified date range
+    const leads = await LeadModel.find(filterCriteria);
+
+    res.json({ leads });
+  } catch (error) {
+    console.error('Error fetching leads:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 
 app.post("/api/upload/lead-form", async (req, res) => {
   let successCounter = 0;
@@ -1673,7 +1710,7 @@ app.post("/api/upload/lead-form", async (req, res) => {
   try {
     const excelData = req.body; // Assuming req.body is an array of objects
 
-    // Loop through each object in the array and save it to the database
+
     for (const data of excelData) {
       try {
         // Destructure data object

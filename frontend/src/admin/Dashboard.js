@@ -28,6 +28,9 @@ import { IoCloseSharp } from "react-icons/io5";
 import { FaArrowRightArrowLeft } from "react-icons/fa6";
 import { FaArrowAltCircleRight } from "react-icons/fa";
 import { FaArrowAltCircleLeft } from "react-icons/fa";
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { debounce } from 'lodash';
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import { lastDayOfDecade } from "date-fns";
@@ -35,6 +38,7 @@ import { lastDayOfDecade } from "date-fns";
 
 function Dashboard() {
   const [recentUpdates, setRecentUpdates] = useState([]);
+  const [bookingDateFilter, setbookingDateFilter] = useState(new Date().toISOString().slice(0, 10));
   const [bookingObject, setBookingObject] = useState([]);
   const [openTable, setOpenTable] = useState(false);
   const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
@@ -110,6 +114,11 @@ function Dashboard() {
         console.error(`Error Fetching Employee Data `, error);
       });
   };
+  const debounceDelay = 300;
+
+// Wrap the fetch functions with debounce
+const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
+const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
   const fetchData = async () => {
    if(showUpdates){ try {
       // Make a GET request to fetch recent updates data
@@ -122,37 +131,46 @@ function Dashboard() {
       setRecentUpdates([]);
     }
   };
+  const fetchCompanies = async () => {
+    try {
+      let url;
+      if (startDateAnother === endDateAnother) {
+        // If start and end dates are the same, fetch data for a single date
+        url = `${secretKey}/booking-model-filter?date=${startDateAnother}`;
+      } else {
+        // If start and end dates are different, fetch data for a date range
+        url = `${secretKey}/booking-model-filter?startDate=${startDateAnother}&endDate=${endDateAnother}`;
+      }
+
+      const response = await axios.get(url);
+      const data = response.data.leads;
+      console.log(` startDate : ${startDateAnother} , endDate : ${endDateAnother}` , data);
+      
+      // Update state with the fetched data
+      setBookingObject(data);
+      setFilteredBooking(data);
+    } catch (error) {
+      console.error("Error Fetching Booking Details", error.message);
+    }
+  };
   useEffect(() => {
  
 
-    const fetchCompanies = async () => {
-      try {
-        const response = await axios.get(`${secretKey}/companies`);
-        const today = new Date().toLocaleDateString();
-        const data = response.data.companies;
-
-        const filteredData = data.filter((company) => {
-          // Assuming bookingDate is in the format of a string representing a date (e.g., "YYYY-MM-DD")
-          const companyDate = formatDate(company.bookingDate);
-
-          return companyDate === today;
-        });
-
-        setBookingObject(data);
-        setFilteredBooking(filteredData);
-      } catch (error) {
-        console.error("Error Fetching Booking Details", error.message);
-      }
-    };
+   
 
     // Call the fetchData function when the component mounts
 
     fetchCompanies();
-    fetchCompanyData();
-    fetchEmployeeInfo();
+    debouncedFetchCompanyData();
+    debouncedFetchEmployeeInfo();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  
+
+  useEffect(()=>{
+    fetchCompanies();
+  },[startDateAnother , endDateAnother])
 
 useEffect(()=>{
   fetchData();
@@ -666,8 +684,13 @@ useEffect(()=>{
   const handleSortUntouched = (sortBy1) => {
     setSortType(prevData => ({
       ...prevData,
-      untouched: prevData.untouched === "ascending" ? "descending" : "ascending"
+      untouched: prevData.untouched === "ascending"
+        ? "descending"
+        : prevData.untouched === "descending"
+        ? "none"
+        : "ascending"
     }));
+    
     switch (sortBy1) {
 
       case "ascending":
@@ -735,13 +758,94 @@ useEffect(()=>{
 
     }
   }; 
+  const handleSortNotPickedUp = (sortBy1) => {
+    setSortType(prevData => ({
+      ...prevData,
+      notPickedUp: prevData.notPickedUp === "ascending"
+        ? "descending"
+        : prevData.notPickedUp === "descending"
+        ? "none"
+        : "ascending"
+    }));
+    
+    switch (sortBy1) {
+
+      case "ascending":
+        setIncoFilter("ascending");
+        const untouchedCountAscending = {}
+        companyData.forEach((company) => {
+          if ((company.Status === "Not Picked Up") 
+            // (openFilters.busy && company.Status === "Busy") ||
+            // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
+            // (openFilters.junk && company.Status === "Junk") ||
+            // (openFilters.followUp && company.Status === "FollowUp") ||
+            // (openFilters.interested && company.Status === "Interested") ||
+            // (openFilters.notInterested && company.Status === "Not Interested") ||
+            // (openFilters.matured && company.Status === "Matured") ||
+            // (openFilters.totalLeads) ||
+            // (openFilters.lastleadassign)
+          ) {
+            untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+          }
+        });
+
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+        employeeData.sort((a, b) => {
+          const countA = untouchedCountAscending[a.ename] || 0;
+          const countB = untouchedCountAscending[b.ename] || 0;
+          return countA - countB; // Sort in ascending order of "Untouched" count
+        });
+        // ||
+        // (openFilters.busy && company.Status === "Busy") ||
+        // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
+        // (openFilters.junk && company.Status === "Junk") ||
+        // (openFilters.followUp && company.Status === "FollowUp") ||
+        // (openFilters.interested && company.Status === "Interested") ||
+        // (openFilters.notInterested && company.Status === "Not Interested") ||
+        // (openFilters.matured && company.Status === "Matured") ||
+        // (openFilters.totalLeads) ||
+        // (openFilters.lastleadassign)
+        break;
+      case "descending":
+        setIncoFilter("descending");
+        const untouchedCount = {};
+        companyData.forEach((company) => {
+          if ((company.Status === "Not Picked Up")
+          ) {
+            untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+          }
+        });
+
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses
+        employeeData.sort((a, b) => {
+          const countA = untouchedCount[a.ename] || 0;
+          const countB = untouchedCount[b.ename] || 0;
+          return countB - countA; // Sort in descending order of "Untouched" count
+        });
+        break;
+      case "none":
+        setIncoFilter("none");
+        if (originalEmployeeData.length > 0) {
+          // Restore to previous state
+          setEmployeeData(originalEmployeeData);
+        }
+        break;
+      default:
+        break;
+
+    }
+  }; 
 
   // for busy
   
   const handleSortbusy = (sortBy1) => {
     setSortType(prevData => ({
       ...prevData,
-      busy: prevData.busy === "ascending" ? "descending" : "ascending"
+      busy: prevData.busy === "ascending"
+        ? "descending"
+        : prevData.busy === "descending"
+        ? "none"
+        : "ascending"
     }));
     switch (sortBy1) {
 
@@ -813,7 +917,11 @@ useEffect(()=>{
   const handleSortInterested = (sortBy1) => {
     setSortType(prevData => ({
       ...prevData,
-      interested: prevData.interested === "ascending" ? "descending" : "ascending"
+      interested: prevData.interested === "ascending"
+        ? "descending"
+        : prevData.interested === "descending"
+        ? "none"
+        : "ascending"
     }));
     switch (sortBy1) {
 
@@ -885,7 +993,11 @@ useEffect(()=>{
   const handleSortMatured = (sortBy1) => {
     setSortType(prevData => ({
       ...prevData,
-      matured: prevData.matured === "ascending" ? "descending" : "ascending"
+      matured: prevData.matured === "ascending"
+        ? "descending"
+        : prevData.matured === "descending"
+        ? "none"
+        : "ascending"
     }));
     switch (sortBy1) {
 
@@ -957,7 +1069,11 @@ useEffect(()=>{
   const handleSortNotInterested = (sortBy1) => {
     setSortType(prevData => ({
       ...prevData,
-      notInterested: prevData.notInterested === "ascending" ? "descending" : "ascending"
+      notInterested: prevData.notInterested === "ascending"
+        ? "descending"
+        : prevData.notInterested === "descending"
+        ? "none"
+        : "ascending"
     }));
     switch (sortBy1) {
 
@@ -1029,7 +1145,11 @@ useEffect(()=>{
   const handleSortJunk = (sortBy1) => {
     setSortType(prevData => ({
       ...prevData,
-      junk: prevData.junk === "ascending" ? "descending" : "ascending"
+      junk: prevData.junk === "ascending"
+        ? "descending"
+        : prevData.junk === "descending"
+        ? "none"
+        : "ascending"
     }));
     switch (sortBy1) {
 
@@ -1093,7 +1213,11 @@ useEffect(()=>{
   const handleSortFollowUp = (sortBy1) => {
     setSortType(prevData => ({
       ...prevData,
-      followUp: prevData.followUp === "ascending" ? "descending" : "ascending"
+      followUp: prevData.followUp === "ascending"
+        ? "descending"
+        : prevData.followUp === "descending"
+        ? "none"
+        : "ascending"
     }));
     switch (sortBy1) {
 
@@ -1165,7 +1289,11 @@ useEffect(()=>{
   const handleSortLastLead = (sortBy1) => {
     setSortType(prevData => ({
       ...prevData,
-      followUp: prevData.followUp === "ascending" ? "descending" : "ascending"
+      lastLead: prevData.lastLead === "ascending"
+        ? "descending"
+        : prevData.lastLead === "descending"
+        ? "none"
+        : "ascending"
     }));
     switch (sortBy1) {
 
@@ -1173,19 +1301,9 @@ useEffect(()=>{
         setIncoFilter("ascending");
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
-          if ((company.Status === "Follow Up") 
-            // (openFilters.busy && company.Status === "Busy") ||
-            // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
-            // (openFilters.junk && company.Status === "Junk") ||
-            // (openFilters.followUp && company.Status === "FollowUp") ||
-            // (openFilters.interested && company.Status === "Interested") ||
-            // (openFilters.notInterested && company.Status === "Not Interested") ||
-            // (openFilters.matured && company.Status === "Matured") ||
-            // (openFilters.totalLeads) ||
-            // (openFilters.lastleadassign)
-          ) {
+          
             untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
-          }
+          
         });
 
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -1209,10 +1327,9 @@ useEffect(()=>{
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-          if ((company.Status === "FollowUp")
-          ) {
+         
             untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
-          }
+          
         });
 
         // Step 2: Sort employeeData based on the count of "Untouched" statuses
@@ -1353,8 +1470,11 @@ useEffect(()=>{
     }
   }
 
+  const debouncedFilterSearch = debounce(filterSearch, 100);
+
+  // Modified filterSearch function with debounce
   function filterSearch(searchTerm) {
-    setSearchTerm(searchTerm)
+    setSearchTerm(searchTerm);
     setEmployeeData(employeeDataFilter.filter(company =>
       company.ename.toLowerCase().includes(searchTerm.toLowerCase())
     ));
@@ -1732,7 +1852,7 @@ useEffect(()=>{
                           </div>
                           <div className="dashboard-searchbar form-control d-flex justify-content-center align-items-center">
                             <input  value={searchTerm}
-                                          onChange={(e) => filterSearch(e.target.value)} placeholder="Enter BDE Name..." style={{border:"none"}} type="text" name="bdeName-search" id="bdeName-search" />
+                                          onChange={(e) => debouncedFilterSearch(e.target.value)} placeholder="Enter BDE Name..." style={{border:"none"}} type="text" name="bdeName-search" id="bdeName-search" />
                             <CiSearch style={{
                                         width: "19px",
                                         height: "20px",
@@ -1810,125 +1930,165 @@ useEffect(()=>{
                                 <th>BDE/BDM Name
                                  
                                 </th>
-                                <th>Untouched
-                                  <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => handleSortUntouched(sortType.untouched === "ascending" ? "descending" : 'ascending')}
-                                  />
-                                  
+                                <th style={{cursor:'pointer'}} onClick={(e) => {
+  let newSortType;
+  if (sortType.untouched === "ascending") {
+    newSortType = "descending";
+  } else if (sortType.untouched === "descending") {
+    newSortType = "none";
+  } else {
+    newSortType = "ascending";
+  }
+  handleSortUntouched(newSortType);
+}}>Untouched
+                             
+                               <ArrowDropUpIcon style={{ color: sortType.untouched === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                <ArrowDropDownIcon style={{color: sortType.untouched === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
                                 </th>
-                                <th>Busy
-                                  <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => handleSortbusy(sortType.busy === "ascending" ? "descending" : 'ascending')}
-                                  />
-                                  
+                                <th style={{cursor:'pointer'}} onClick={(e) => {
+  let newSortType;
+  if (sortType.busy === "ascending") {
+    newSortType = "descending";
+  } else if (sortType.untouched === "descending") {
+    newSortType = "none";
+  } else {
+    newSortType = "ascending";
+  }
+  handleSortbusy(newSortType);
+}}>Busy
+                             
+                               <ArrowDropUpIcon style={{ color: sortType.busy === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                <ArrowDropDownIcon style={{color: sortType.busy === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
                                 </th>
-                                <th>Not Picked Up
-                                  <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => handleSortFollowUp(sortType.followUp === "ascending" ? "descending" : 'ascending')}
-                                  />
-                                 
+                                <th style={{cursor:'pointer'}} onClick={(e) => {
+  let newSortType;
+  if (sortType.notPickedUp === "ascending") {
+    newSortType = "descending";
+  } else if (sortType.notPickedUp === "descending") {
+    newSortType = "none";
+  } else {
+    newSortType = "ascending";
+  }
+  handleSortNotPickedUp(newSortType);
+}}>Not Picked Up
+                             
+                               <ArrowDropUpIcon style={{ color: sortType.notPickedUp === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                <ArrowDropDownIcon style={{color: sortType.notPickedUp === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
                                 </th>
-                                <th>Junk
-                                  <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => handleSortJunk(sortType.junk === "ascending" ? "descending" : 'ascending')}
-                                  />
-                                  
+                                <th style={{cursor:'pointer'}} onClick={(e) => {
+  let newSortType;
+  if (sortType.junk === "ascending") {
+    newSortType = "descending";
+  } else if (sortType.junk === "descending") {
+    newSortType = "none";
+  } else {
+    newSortType = "ascending";
+  }
+  handleSortJunk(newSortType);
+}}>Junk
+                             
+                               <ArrowDropUpIcon style={{ color: sortType.junk === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                <ArrowDropDownIcon style={{color: sortType.junk === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
                                 </th>
-                                <th>Follow Up
-                                  <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => handleSortFollowUp(sortType.followUp === "ascending" ? "descending" : 'ascending')}
-                                  />
-                                  
+                                <th style={{cursor:'pointer'}} onClick={(e) => {
+  let newSortType;
+  if (sortType.followUp === "ascending") {
+    newSortType = "descending";
+  } else if (sortType.followUp === "descending") {
+    newSortType = "none";
+  } else {
+    newSortType = "ascending";
+  }
+  handleSortFollowUp(newSortType);
+}}>Follow Up
+                             
+                               <ArrowDropUpIcon style={{ color: sortType.followUp === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                <ArrowDropDownIcon style={{color: sortType.followUp === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
                                 </th>
-                                <th>Interested
-                                  <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => handleSortInterested(sortType.interested === "ascending" ? "descending" : 'ascending')}
-                                  />
-                                 
+                                <th style={{cursor:'pointer'}} onClick={(e) => {
+  let newSortType;
+  if (sortType.interested === "ascending") {
+    newSortType = "descending";
+  } else if (sortType.interested === "descending") {
+    newSortType = "none";
+  } else {
+    newSortType = "ascending";
+  }
+  handleSortInterested(newSortType);
+}}>Interested
+                             
+                               <ArrowDropUpIcon style={{ color: sortType.interested === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                <ArrowDropDownIcon style={{color: sortType.interested === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
                                 </th>
-                                <th>Not Interested
-                                  <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => handleSortNotInterested(sortType.notInterested === "ascending" ? "descending" : 'ascending')}
-                                  />
-                                  
+                                <th style={{cursor:'pointer'}} onClick={(e) => {
+  let newSortType;
+  if (sortType.notInterested === "ascending") {
+    newSortType = "descending";
+  } else if (sortType.notInterested === "descending") {
+    newSortType = "none";
+  } else {
+    newSortType = "ascending";
+  }
+  handleSortNotInterested(newSortType);
+}}>Not Interested
+                             
+                               <ArrowDropUpIcon style={{ color: sortType.notInterested === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                <ArrowDropDownIcon style={{color: sortType.notInterested === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
                                 </th>
-                                <th>Matured
-                                  <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => handleSortMatured(sortType.matured === "ascending" ? "descending" : 'ascending')}
-                                  />
-                                  
+                                <th style={{cursor:'pointer'}} onClick={(e) => {
+  let newSortType;
+  if (sortType.matured === "ascending") {
+    newSortType = "descending";
+  } else if (sortType.matured === "descending") {
+    newSortType = "none";
+  } else {
+    newSortType = "ascending";
+  }
+  handleSortMatured(newSortType);
+}}>Matured
+                             
+                               <ArrowDropUpIcon style={{ color: sortType.matured === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                <ArrowDropDownIcon style={{color: sortType.matured === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
                                 </th>
-                                <th>Total Leads
-                                  <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => handleSortTotalLeads(sortType.totalLeads === "ascending" ? "descending" : 'ascending')}
-                                  />
-                                 
+                                <th style={{cursor:'pointer'}} onClick={(e) => {
+  let newSortType;
+  if (sortType.totalLeads === "ascending") {
+    newSortType = "descending";
+  } else if (sortType.totalLeads === "descending") {
+    newSortType = "none";
+  } else {
+    newSortType = "ascending";
+  }
+  handleSortTotalLeads(newSortType);
+}}>Total Leads
+                             
+                               <ArrowDropUpIcon style={{ color: sortType.totalLeads === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                <ArrowDropDownIcon style={{color: sortType.totalLeads === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
                                 </th>
-                                <th>Last Lead Assign Date
-                                  <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => handleSortInterested(sortType.interested === "ascending" ? "descending" : 'ascending')}
-                                  />
-                                 
+                                <th style={{cursor:'pointer'}} onClick={(e) => {
+  let newSortType;
+  if (sortType.lastLead === "ascending") {
+    newSortType = "descending";
+  } else if (sortType.lastLead === "descending") {
+    newSortType = "none";
+  } else {
+    newSortType = "ascending";
+  }
+  handleSortLastLead(newSortType);
+}}>Last lead Assign Date
+                             
+                               <ArrowDropUpIcon style={{ color: sortType.lastLead === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                <ArrowDropDownIcon style={{color: sortType.lastLead === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
                                 </th>
                               </tr>
                             </thead>
