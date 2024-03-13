@@ -66,16 +66,16 @@ function Dashboard() {
   const [startDateAnother, setStartDateAnother] = useState(new Date());
   const [endDateAnother, setEndDateAnother] = useState(new Date());
   const [sortType, setSortType] = useState({
-    untouched: "ascending",
-    notPickedUp: "ascending",
-    busy: "ascending",
-    junk: "ascending",
-    notInterested: "ascending",
-    followUp: "ascending",
-    matured: "ascending",
-    interested: "ascending",
-    lastLead: "ascending",
-    totalLeads : 'ascending'
+    untouched: "none",
+    notPickedUp: "none",
+    busy: "none",
+    junk: "none",
+    notInterested: "none",
+    followUp: "none",
+    matured: "none",
+    interested: "none",
+    lastLead: "none",
+    totalLeads : 'none'
   });
   
   const [searchOption, setSearchOption] = useState(false)
@@ -698,15 +698,6 @@ useEffect(()=>{
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
           if ((company.Status === "Untouched") 
-            // (openFilters.busy && company.Status === "Busy") ||
-            // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
-            // (openFilters.junk && company.Status === "Junk") ||
-            // (openFilters.followUp && company.Status === "FollowUp") ||
-            // (openFilters.interested && company.Status === "Interested") ||
-            // (openFilters.notInterested && company.Status === "Not Interested") ||
-            // (openFilters.matured && company.Status === "Matured") ||
-            // (openFilters.totalLeads) ||
-            // (openFilters.lastleadassign)
           ) {
             untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
           }
@@ -718,16 +709,7 @@ useEffect(()=>{
           const countB = untouchedCountAscending[b.ename] || 0;
           return countA - countB; // Sort in ascending order of "Untouched" count
         });
-        // ||
-        // (openFilters.busy && company.Status === "Busy") ||
-        // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
-        // (openFilters.junk && company.Status === "Junk") ||
-        // (openFilters.followUp && company.Status === "FollowUp") ||
-        // (openFilters.interested && company.Status === "Interested") ||
-        // (openFilters.notInterested && company.Status === "Not Interested") ||
-        // (openFilters.matured && company.Status === "Matured") ||
-        // (openFilters.totalLeads) ||
-        // (openFilters.lastleadassign)
+
         break;
       case "descending":
         setIncoFilter("descending");
@@ -2109,81 +2091,81 @@ useEffect(()=>{
                                       <td key={`row-${index}-2`}>{obj.ename}</td>
                                       <td key={`row-${index}-3`}>
                                         {
-                                          companyData.filter(
+                                         ( companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Untouched"
-                                          ).length
+                                          ).length).toLocaleString()
                                         }
                                       </td>
                                       <td key={`row-${index}-4`}>
                                         {
-                                          companyData.filter(
+                                         ( companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Busy"
-                                          ).length
+                                          ).length).toLocaleString()
                                         }
                                       </td>
                                       <td key={`row-${index}-5`}>
                                         {
-                                          companyData.filter(
+                                         ( companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Not Picked Up"
-                                          ).length
+                                          ).length).toLocaleString()
                                         }
                                       </td>
                                       <td key={`row-${index}-6`}>
                                         {
-                                          companyData.filter(
+                                         ( companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Junk"
-                                          ).length
+                                          ).length).toLocaleString()
                                         }
                                       </td>
                                       <td key={`row-${index}-7`}>
                                         {
-                                          companyData.filter(
+                                         ( companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "FollowUp"
-                                          ).length
+                                          ).length).toLocaleString()
                                         }
                                       </td>
                                       <td key={`row-${index}-8`}>
                                         {
-                                          companyData.filter(
+                                         ( companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Interested"
-                                          ).length
+                                          ).length).toLocaleString()
                                         }
                                       </td>
                                       <td key={`row-${index}-9`}>
                                         {
-                                          companyData.filter(
+                                          (companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Not Interested"
-                                          ).length
+                                          ).length).toLocaleString()
                                         }
                                       </td>
                                       <td key={`row-${index}-10`}>
                                         {
-                                          companyData.filter(
+                                         ( companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Matured"
-                                          ).length
+                                          ).length).toLocaleString()
                                         }
                                       </td>
                                       <td key={`row-${index}-11`}>
                                         {
-                                          companyData.filter(
+                                          (companyData.filter(
                                             (data) => data.ename === obj.ename
-                                          ).length
+                                          ).length).toLocaleString()
                                         }
                                       </td>
                                       <td key={`row-${index}-12`}>
@@ -2230,65 +2212,65 @@ useEffect(()=>{
                                     </td>
                                     <td>
                                       {
-                                        companyData.filter(
+                                        (companyData.filter(
                                           (partObj) =>
                                             partObj.Status === "Untouched"
-                                        ).length
+                                        ).length).toLocaleString()
                                       }
                                     </td>
                                     <td>
                                       {
-                                        companyData.filter(
+                                        (companyData.filter(
                                           (partObj) => partObj.Status === "Busy"
-                                        ).length
+                                        ).length).toLocaleString()
                                       }
                                     </td>
                                     <td>
                                       {
-                                        companyData.filter(
+                                       ( companyData.filter(
                                           (partObj) =>
                                             partObj.Status === "Not Picked Up"
-                                        ).length
+                                        ).length).toLocaleString()
                                       }
                                     </td>
                                     <td>
                                       {
-                                        companyData.filter(
+                                        (companyData.filter(
                                           (partObj) => partObj.Status === "Junk"
-                                        ).length
+                                        ).length).toLocaleString()
                                       }
                                     </td>
                                     <td>
                                       {
-                                        companyData.filter(
+                                        (companyData.filter(
                                           (partObj) => partObj.Status === "FollowUp"
-                                        ).length
+                                        ).length).toLocaleString()
                                       }
                                     </td>
                                     <td>
                                       {
-                                        companyData.filter(
+                                        (companyData.filter(
                                           (partObj) =>
                                             partObj.Status === "Interested"
-                                        ).length
+                                        ).length).toLocaleString()
                                       }
                                     </td>
                                     <td>
                                       {
-                                        companyData.filter(
+                                        (companyData.filter(
                                           (partObj) =>
                                             partObj.Status === "Not Interested"
-                                        ).length
+                                        ).length).toLocaleString()
                                       }
                                     </td>
                                     <td>
                                       {
-                                        companyData.filter(
+                                        (companyData.filter(
                                           (partObj) => partObj.Status === "Matured"
-                                        ).length
+                                        ).length).toLocaleString()
                                       }
                                     </td>
-                                    <td>{companyData.length}</td>
+                                    <td>{(companyData.length).toLocaleString()}</td>
                                     <td>-</td>
                                   </tr>
                                 </tfoot>
@@ -2708,81 +2690,81 @@ useEffect(()=>{
                           }}>{obj}</td>
                           <td>
                             {
-                              properCompanyData.filter(
+                              (properCompanyData.filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Untouched"
-                              ).length
+                              ).length).toLocaleString()
                             }
                           </td>
                           <td>
                             {
-                              properCompanyData.filter(
+                              (properCompanyData.filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Busy"
-                              ).length
+                              ).length).toLocaleString()
                             }
                           </td>
                           <td>
                             {
-                              properCompanyData.filter(
+                              (properCompanyData.filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Not Picked Up"
-                              ).length
+                              ).length).toLocaleString()
                             }
                           </td>
                           <td>
                             {
-                              properCompanyData.filter(
+                              (properCompanyData.filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Junk"
-                              ).length
+                              ).length).toLocaleString()
                             }
                           </td>
                           <td>
                             {
-                              properCompanyData.filter(
+                             ( properCompanyData.filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "FollowUp"
-                              ).length
+                              ).length).toLocaleString()
                             }
                           </td>
                           <td>
                             {
-                              properCompanyData.filter(
+                              (properCompanyData.filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Interested"
-                              ).length
+                              ).length).toLocaleString()
                             }
                           </td>
                           <td>
                             {
-                              properCompanyData.filter(
+                              (properCompanyData.filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Not Interested"
-                              ).length
+                              ).length).toLocaleString()
                             }
                           </td>
                           <td>
                             {
-                              properCompanyData.filter(
+                              (properCompanyData.filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Matured"
-                              ).length
+                              ).length).toLocaleString()
                             }
                           </td>
                           <td>
                             {
-                              properCompanyData.filter(
+                              (properCompanyData.filter(
                                 (partObj) => formatDate(partObj.AssignDate) === obj
-                              ).length
+                              ).length).toLocaleString()
                             }
                           </td>
                         </tr>
@@ -2794,9 +2776,9 @@ useEffect(()=>{
                         <td colSpan="2">Total</td>
                         <td>
                           {
-                            properCompanyData.filter(
+                            (properCompanyData.filter(
                               (partObj) => partObj.Status === "Untouched"
-                            ).length
+                            ).length).toLocaleString()
                           }
                         </td>
                       
@@ -2806,54 +2788,54 @@ useEffect(()=>{
                           }}
                         >
                           {
-                            properCompanyData.filter(
+                            (properCompanyData.filter(
                               (partObj) => partObj.Status === "Busy"
-                            ).length
+                            ).length).toLocaleString()
                           }
                         </td>
                         <td>
                           {
-                            properCompanyData.filter(
+                            (properCompanyData.filter(
                               (partObj) => partObj.Status === "Not Picked Up"
-                            ).length
+                            ).length).toLocaleString()
                           }
                         </td>
                         <td>
                           {
-                            properCompanyData.filter(
+                            (properCompanyData.filter(
                               (partObj) => partObj.Status === "Junk"
-                            ).length
+                            ).length).toLocaleString()
                           }
                         </td>
                         <td>
                           {
-                            properCompanyData.filter(
+                            (properCompanyData.filter(
                               (partObj) => partObj.Status === "FollowUp"
-                            ).length
+                            ).length).toLocaleString()
                           }
                         </td>
                         <td>
                           {
-                            properCompanyData.filter(
+                            (properCompanyData.filter(
                               (partObj) => partObj.Status === "Interested"
-                            ).length
+                            ).length).toLocaleString()
                           }
                         </td>
                         <td>
                           {
-                            properCompanyData.filter(
+                            (properCompanyData.filter(
                               (partObj) => partObj.Status === "Not Interested"
-                            ).length
+                            ).length).toLocaleString()
                           }
                         </td>
                         <td>
                           {
-                            properCompanyData.filter(
+                            (properCompanyData.filter(
                               (partObj) => partObj.Status === "Matured"
-                            ).length
+                            ).length).toLocaleString()
                           }
                         </td>
-                        <td>{properCompanyData.length}</td>
+                        <td>{(properCompanyData.length).toLocaleString()}</td>
                       </tr>
                     </tfoot>
                   )}

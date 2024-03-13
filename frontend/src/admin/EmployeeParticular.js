@@ -4,10 +4,12 @@ import Navbar from "./Navbar";
 import Header from "./Header";
 import { useParams } from "react-router-dom";
 import { IconBoxPadding, IconChevronLeft, IconEye } from "@tabler/icons-react";
+import PageviewIcon from '@mui/icons-material/Pageview';
 import { IconChevronRight } from "@tabler/icons-react";
 import { IconButton, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { options } from "../components/Options";
 import CloseIcon from "@mui/icons-material/Close";
+import KeyboardTabIcon from '@mui/icons-material/KeyboardTab';
 import { Link } from "react-router-dom";
 import Select from "react-select";
 import "../../src/assets/styles.css";
@@ -619,6 +621,14 @@ function EmployeeParticular() {
                   </Link>
 
                   <h2 className="page-title">{employeeName}</h2>
+                  <div className="nextBtn">
+                    <IconButton onClick={handleChangeUrl}>
+                      <KeyboardTabIcon style={{backgroundColor: "#fbb900",
+    borderRadius: "5px",
+    padding: "2px",
+    color: "white"}} />
+                    </IconButton>
+                  </div>
                 </div>
                 <div className="d-flex">
                   {selectedRows.length !== 0 && (
@@ -765,11 +775,7 @@ function EmployeeParticular() {
                       Login Details
                     </button>
                   </Link>
-                  <div className="nextBtn">
-                    <IconButton onClick={handleChangeUrl}>
-                      <ArrowForwardIosIcon />
-                    </IconButton>
-                  </div>
+                 
                 </div>
               </div>
 
@@ -1406,22 +1412,19 @@ function EmployeeParticular() {
                               <td>{formatDate(company["AssignDate"])}</td>
                               {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
                                 <td>
-                                  <button
-                                    style={{
+                                  <IconButton  style={{
                                       padding: "5px",
                                       fontSize: "12px",
-                                      backgroundColor: "lightblue",
+                                      
                                       // Additional styles for the "View" button
-                                    }}
-                                    className="btn btn-primary d-none d-sm-inline-block"
-                                    onClick={() => {
+                                    }}    onClick={() => {
                                       functionopenprojection(
                                         company["Company Name"]
                                       );
-                                    }}
-                                  >
-                                    View
-                                  </button>
+                                    }}>
+                                    <IconEye style={{color:'#fbb900'}}/>
+                                  </IconButton>
+                                 
                                 </td>
                               )}
 

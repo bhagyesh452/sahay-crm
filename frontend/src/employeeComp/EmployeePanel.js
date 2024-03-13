@@ -6,7 +6,7 @@ import notificationSound from "../assets/media/iphone_sound.mp3";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import axios from "axios";
-import { IconChevronLeft } from "@tabler/icons-react";
+import { IconChevronLeft , IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { Drawer, Icon, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -2236,22 +2236,15 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                                   {(dataStatus === "FollowUp" || 
                                   dataStatus === "Interested") && (
                                     <td>
-                                      <button
-                                        style={{
-                                          padding: "5px",
-                                          fontSize: "12px",
-                                          backgroundColor: "lightblue",
-                                          // Additional styles for the "View" button
-                                        }}
-                                        className="btn btn-primary d-none d-sm-inline-block"
-                                        onClick={() => {
+                                      
+                                      <IconEye onClick={() => {
                                           functionopenprojection(
                                             company["Company Name"]
                                           );
-                                        }}
-                                      >
-                                        View
-                                      </button>
+                                        }} style={{color:'#fbb900' , cursor:'pointer'}}/>
+                                 
+                                    
+                                      
                                     </td>
                                   )}
                                 </tr>

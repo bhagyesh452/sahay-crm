@@ -435,9 +435,9 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
                 <div className="card w-100">
                   <div className="card-header w-100 d-flex align-items-center justify-content-between" style={{ backgroundColor: "#f8efef" ,padding:"11px 0px" }}>
                     <div className="d-flex align-items-center justify-content-between p-booking-Cname" title={company.companyName} >
-                      <div><h5 style={{ width: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textWrap: "nowrap" ,fontSize:"14px" }}>{company.companyName}</h5>
+                      <div><h5 style={{ width: "310px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textWrap: "nowrap" ,fontSize:"14px" }}>{company.companyName}</h5>
                       {company.bdeName && (
-                          <div className="m-0 bdeName-cmpy-list" title={company.bdeName} ><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{ width: "10px", height: "10px", marginRight: "5px" }}><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" /></svg>{company.bdeName}</div>)}
+                          <div className="m-0 bdeName-cmpy-list d-flex justify-content-between" title={company.bdeName} ><span><strong>BDE :</strong>{company.bdeName}</span> <span><strong>BDM :</strong>{company.bdmName}</span></div>)}
                     </div>
                     </div>
                     <div className="d-flex align-items-center justify-content-between">
@@ -463,13 +463,13 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
                             {company.services[0].split(',').map((service, index) => (
                               <div key={index} title={service.trim()} style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", textWrap: "nowrap" }}>
                                 <span
-                                  style={{ color: "green", marginRight: "5px" }}
+                                  style={{ marginRight: "5px" }}
                                 >
                                   ●</span>{service.trim()}
                               </div>
                             ))}
                           </div>
-                        )}
+      )}
                         
                       </div>
                       <div className="col-lg-6 payments-cmpy-list">
