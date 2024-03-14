@@ -19,7 +19,7 @@ import io from 'socket.io-client';
 function Header({ name, designation}) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   useEffect(() => {
-    const socket = io('http://localhost:3001');
+    const socket = io('https://startupsahay.in/api');
 
     // Listen for the 'welcome' event from the server
     socket.on('welcome', (message) => {
