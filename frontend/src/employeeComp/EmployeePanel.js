@@ -6,7 +6,7 @@ import notificationSound from "../assets/media/iphone_sound.mp3";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import axios from "axios";
-import { IconChevronLeft } from "@tabler/icons-react";
+import { IconChevronLeft , IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { Drawer, Icon, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -105,7 +105,7 @@ function EmployeePanel() {
     audio.play();
   };
   useEffect(() => {
-    const socket = io('http://localhost:3001');
+    const socket = io('http://62.72.56.202/api');
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
