@@ -77,7 +77,7 @@ function Dashboard() {
     lastLead: "none",
     totalLeads : 'none'
   });
-  
+
   const [searchOption, setSearchOption] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [sideBar, setsideBar] = useState(false)
@@ -120,14 +120,16 @@ function Dashboard() {
 const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
 const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
   const fetchData = async () => {
-   if(showUpdates){ try {
-      // Make a GET request to fetch recent updates data
-      const response = await axios.get(`${secretKey}/recent-updates`);
-      // Set the retrieved data in the state
-      setRecentUpdates(response.data);
-    } catch (error) {
-      console.error("Error fetching recent updates:", error.message);
-    }}else{
+    if (showUpdates) {
+      try {
+        // Make a GET request to fetch recent updates data
+        const response = await axios.get(`${secretKey}/recent-updates`);
+        // Set the retrieved data in the state
+        setRecentUpdates(response.data);
+      } catch (error) {
+        console.error("Error fetching recent updates:", error.message);
+      }
+    } else {
       setRecentUpdates([]);
     }
   };
@@ -154,7 +156,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
     }
   };
   useEffect(() => {
- 
+
 
    
 
@@ -172,9 +174,9 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
     fetchCompanies();
   },[startDateAnother , endDateAnother])
 
-useEffect(()=>{
-  fetchData();
-} , [showUpdates])
+  useEffect(() => {
+    fetchData();
+  }, [showUpdates])
 
   const uniqueBdeNames = new Set();
 
@@ -680,7 +682,7 @@ useEffect(()=>{
       return updatedState;
     });
   };
-//-------------------------- Sort filteres for different status  -------------------------------------------------------------------------
+  //-------------------------- Sort filteres for different status  -------------------------------------------------------------------------
   const handleSortUntouched = (sortBy1) => {
     setSortType(prevData => ({
       ...prevData,
@@ -805,7 +807,7 @@ useEffect(()=>{
           return countB - countA; // Sort in descending order of "Untouched" count
         });
         break;
-      case "none":
+        case "none":
         setIncoFilter("none");
         if (originalEmployeeData.length > 0) {
           // Restore to previous state
@@ -816,10 +818,10 @@ useEffect(()=>{
         break;
 
     }
-  }; 
+  };
 
   // for busy
-  
+
   const handleSortbusy = (sortBy1) => {
     setSortType(prevData => ({
       ...prevData,
@@ -835,16 +837,8 @@ useEffect(()=>{
         setIncoFilter("ascending");
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
-          if ((company.Status === "Busy") 
-            // (openFilters.busy && company.Status === "Busy") ||
-            // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
-            // (openFilters.junk && company.Status === "Junk") ||
-            // (openFilters.followUp && company.Status === "FollowUp") ||
-            // (openFilters.interested && company.Status === "Interested") ||
-            // (openFilters.notInterested && company.Status === "Not Interested") ||
-            // (openFilters.matured && company.Status === "Matured") ||
-            // (openFilters.totalLeads) ||
-            // (openFilters.lastleadassign)
+          if ((company.Status === "Busy")
+            
           ) {
             untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
           }
@@ -856,16 +850,7 @@ useEffect(()=>{
           const countB = untouchedCountAscending[b.ename] || 0;
           return countA - countB; // Sort in ascending order of "Untouched" count
         });
-        // ||
-        // (openFilters.busy && company.Status === "Busy") ||
-        // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
-        // (openFilters.junk && company.Status === "Junk") ||
-        // (openFilters.followUp && company.Status === "FollowUp") ||
-        // (openFilters.interested && company.Status === "Interested") ||
-        // (openFilters.notInterested && company.Status === "Not Interested") ||
-        // (openFilters.matured && company.Status === "Matured") ||
-        // (openFilters.totalLeads) ||
-        // (openFilters.lastleadassign)
+       
         break;
       case "descending":
         setIncoFilter("descending");
@@ -911,7 +896,7 @@ useEffect(()=>{
         setIncoFilter("ascending");
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
-          if ((company.Status === "Interested") 
+          if ((company.Status === "Interested")
             // (openFilters.busy && company.Status === "Busy") ||
             // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
             // (openFilters.junk && company.Status === "Junk") ||
@@ -987,7 +972,7 @@ useEffect(()=>{
         setIncoFilter("ascending");
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
-          if ((company.Status === "Matured") 
+          if ((company.Status === "Matured")
             // (openFilters.busy && company.Status === "Busy") ||
             // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
             // (openFilters.junk && company.Status === "Junk") ||
@@ -1063,7 +1048,7 @@ useEffect(()=>{
         setIncoFilter("ascending");
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
-          if ((company.Status === "Not Interested") 
+          if ((company.Status === "Not Interested")
             // (openFilters.busy && company.Status === "Busy") ||
             // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
             // (openFilters.junk && company.Status === "Junk") ||
@@ -1139,8 +1124,8 @@ useEffect(()=>{
         setIncoFilter("ascending");
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
-          if ((company.Status === "Junk") 
-  
+          if ((company.Status === "Junk")
+
           ) {
             untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
           }
@@ -1207,7 +1192,7 @@ useEffect(()=>{
         setIncoFilter("ascending");
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
-          if ((company.Status === "Follow Up") 
+          if ((company.Status === "Follow Up")
             // (openFilters.busy && company.Status === "Busy") ||
             // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
             // (openFilters.junk && company.Status === "Junk") ||
@@ -1344,9 +1329,9 @@ useEffect(()=>{
         setIncoFilter("ascending");
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
-          
-            untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
-          
+
+          untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+
         });
 
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -1370,9 +1355,9 @@ useEffect(()=>{
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-          
-            untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
-          
+
+          untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+
         });
 
         // Step 2: Sort employeeData based on the count of "Untouched" statuses
@@ -1464,12 +1449,12 @@ useEffect(()=>{
 
   // ------------------------------------------sidebar---------------------------------------------------------------
 
-  const handleArrow=()=>{
+  const handleArrow = () => {
     setDisplayArrow(false)
     setsideBar(true)
   }
 
-  const handleArrowClose=()=>{
+  const handleArrowClose = () => {
     setDisplayArrow(true)
     setsideBar(false)
   }
@@ -1479,7 +1464,7 @@ useEffect(()=>{
       <Header />
       <Navbar />
       <div className="d-flex align-items-center">
-        
+
         <div>
           <div className="page-wrapper">
             <div className="recent-updates-icon">
@@ -1829,20 +1814,20 @@ useEffect(()=>{
                     <div className="card">
                       <div className="card-header d-flex align-items-center justify-content-between">
                         <div className="d-flex justify-content-between">
-                          <div style={{minWidth:'14vw'}} className="dashboard-title">
-                          <h2 style={{marginBottom:'5px'}}>Employee Dashboard</h2>
+                          <div style={{ minWidth: '14vw' }} className="dashboard-title">
+                            <h2 style={{ marginBottom: '5px' }}>Employee Dashboard</h2>
                           </div>
                           <div className="dashboard-searchbar form-control d-flex justify-content-center align-items-center">
                             <input  value={searchTerm}
                                           onChange={(e) => debouncedFilterSearch(e.target.value)} placeholder="Enter BDE Name..." style={{border:"none"}} type="text" name="bdeName-search" id="bdeName-search" />
                             <CiSearch style={{
-                                        width: "19px",
-                                        height: "20px",
-                                        marginRight: "5px",
-                                        color: "grey"
-                                      }} />
+                              width: "19px",
+                              height: "20px",
+                              marginRight: "5px",
+                              color: "grey"
+                            }} />
                           </div>
-                          
+
 
                         </div>
                         <div className="form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
@@ -1910,7 +1895,7 @@ useEffect(()=>{
                                   Sr. No
                                 </th>
                                 <th>BDE/BDM Name
-                                 
+
                                 </th>
                                 <th style={{cursor:'pointer'}} onClick={(e) => {
   let newSortType;
@@ -2187,9 +2172,9 @@ useEffect(()=>{
                                         <OpenInNewIcon
                                           onClick={() => {
                                             functionOpenEmployeeTable(obj.ename);
-                                            
+
                                           }}
-                                          style={{ cursor: "pointer", marginRight: "-41px", marginLeft: "21px" , fontSize:'17px' }}
+                                          style={{ cursor: "pointer", marginRight: "-41px", marginLeft: "21px", fontSize: '17px' }}
                                         />
                                       </td>
                                     </tr>
@@ -2624,16 +2609,16 @@ useEffect(()=>{
           >
             <DialogTitle>
               <div className="title-header d-flex justify-content-between">
-                      <div className="title-name">
-                      <strong>
-                {selectedEmployee}
-              </strong>
-                      </div>
-                      <div style={{cursor:'pointer'}} className="closeIcon" onClick={closeEmployeeTable}>
-                        <CloseIcon/>
-                      </div>
+                <div className="title-name">
+                  <strong>
+                    {selectedEmployee}
+                  </strong>
+                </div>
+                <div style={{ cursor: 'pointer' }} className="closeIcon" onClick={closeEmployeeTable}>
+                  <CloseIcon />
+                </div>
               </div>
-              
+
             </DialogTitle>
             <DialogContent>
               <div
@@ -2685,7 +2670,7 @@ useEffect(()=>{
                       uniqueArray.map((obj, index) => (
                         <tr key={`row-${index}`}>
                           <td>{index + 1}</td>
-                          <td  style={{
+                          <td style={{
                             lineHeight: "32px",
                           }}>{obj}</td>
                           <td>
@@ -2781,7 +2766,7 @@ useEffect(()=>{
                             ).length).toLocaleString()
                           }
                         </td>
-                      
+
                         <td
                           style={{
                             lineHeight: "32px",

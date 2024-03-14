@@ -475,6 +475,7 @@ app.get('/api/projection-data', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 app.get("/api/card-leads", async (req, res) => {
   try {
     const { dAmount } = req.query; // Get the dAmount parameter from the query
@@ -501,6 +502,31 @@ app.get('/api/projection-data/:ename', async (req, res) => {
   } catch (error) {
     // If there's an error, send a 500 internal server error response
     console.error('Error fetching FollowUp data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ----------------------------------api to delete projection data-----------------------------------
+
+app.delete('/api/delete-followup/:companyName', async (req, res) => {
+  try {
+    // Extract the company name from the request parameters
+    const { companyName } = req.params;
+    
+    // Check if a document with the given company name exists
+    const existingData = await FollowUpModel.findOne({ companyName });
+
+    if (existingData) {
+      // If the document exists, delete it
+      await FollowUpModel.findOneAndDelete({ companyName });
+      res.status(200).json({ message: 'Data deleted successfully' });
+    } else {
+      // If no document with the given company name exists, return a 404 Not Found response
+      res.status(404).json({ error: 'Company not found' });
+    }
+  } catch (error) {
+    // If there's an error during the deletion process, send a 500 Internal Server Error response
+    console.error('Error deleting data:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

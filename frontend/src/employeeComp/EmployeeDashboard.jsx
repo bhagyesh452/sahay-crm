@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, CSSProperties } from "react";
 import Header from "../components/Header";
 import EmpNav from "./EmpNav";
 import axios from "axios";
@@ -14,7 +14,11 @@ import Select from "react-select";
 import EditIcon from "@mui/icons-material/Edit";
 import { CiSearch } from "react-icons/ci";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
-import io from "socket.io-client";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import ScaleLoader from "react-spinners/ScaleLoader";
+import ClipLoader from "react-spinners/ClipLoader";
+import AddCircle from "@mui/icons-material/AddCircle.js";
 
 function EmployeeDashboard() {
   const { userId } = useParams();
@@ -31,6 +35,7 @@ function EmployeeDashboard() {
   const [filteredBooking, setFilteredBooking] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
   const [searchTerm, setSearchTerm] = useState("")
+  const [loading, setLoading] = useState(true);
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
     ename: "",
@@ -100,9 +105,19 @@ function EmployeeDashboard() {
         console.error("Error fetching data:", error);
       });
   };
-console.log("empData",empData)
+  console.log("empData", empData)
 
-
+  // const fetchEmployeeData = async () => {
+  //   try {
+  //     const response = await fetch(`${secretKey}/edata-particular/${data.ename}`);
+  //     const data = await response.json();
+  //     setEmpData(data);
+  //     setLoading(false); // Set loading to false when data is fetched
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     setLoading(false); // Also set loading to false in case of error
+  //   }
+  // };
 
   const tableEmployee = data.ename;
   useEffect(() => {
@@ -134,7 +149,7 @@ console.log("Formatted Dates",formattedDates)
     fetchBookingDetails();
   }, [data.ename]);
 
-  console.log("filteredBookings" , filteredBooking)
+  console.log("filteredBookings", filteredBooking)
 
   const handleCloseIconClickAnother = () => {
     if (showBookingDate) {
@@ -209,7 +224,7 @@ console.log("Formatted Dates",formattedDates)
     }
   };
 
- // console.log(followData);
+  // console.log(followData);
 
   function calculateSum(data) {
     const initialValue = {
@@ -428,488 +443,541 @@ console.log("Formatted Dates",formattedDates)
   }
   //console.log(filteredDataDateRange)
   const [newSearchTerm, setNewSearchTerm] = useState("")
- 
-  function filterSearchBooking(newSearchTerm){
-  setNewSearchTerm(newSearchTerm)
-  setFilteredBooking(totalBooking.filter(company=>
-    company.companyName.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
-    company.contactNumber.toString() === newSearchTerm ||
-    company.companyEmail.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
-    company.services.some(service=>
-      service.toLowerCase().includes(newSearchTerm.toLowerCase())) ||
-    company.totalPayment.toString() === newSearchTerm || 
-    //(company.firstPayment ? company.firstPayment.toString() : company.totalPayment.toString()) === newSearchTerm
-    company.bdmName.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
-    new Date(company.bookingDate).toLocaleDateString().includes(newSearchTerm)
-  ))
- }
 
-//  -----------------------------------sorting- your -dashboard-----------------------------------
-const handleSortUntouched = (sortBy1) => {
-  const tempEmpData = empData.filter(obj => obj.Status === "Untouched");
-  switch (sortBy1) {
-    case "ascending":
-      // Create an object to store the count of "Untouched" statuses for each AssignDate
-      const untouchedCountAscending = {};
-      
-      tempEmpData.forEach((company) => {
-      
-          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
-        
-      });
-
-      // Sort uniqueArray based on the count of "Untouched" statuses for each AssignDate
-      uniqueArray.sort((a, b) => {
-        const countA = untouchedCountAscending[a] || 0;
-        const countB = untouchedCountAscending[b] || 0;
-
-        // Sort first by the count of "Untouched" statuses
-        if (countA !== countB) {
-          return countA - countB;
-        } else {
-          // If counts are equal, sort by AssignDate in ascending order
-          return new Date(a) - new Date(b);
-        }
-      });
-
-      console.log("After Ascending Data:", uniqueArray);
-      break;
-
-    case "descending":
-      // Create an object to store the count of "Untouched" statuses for each AssignDate
-      const untouchedCountDescending = {};
-      tempEmpData.forEach((company) => {
-        if (company.Status === "Untouched") {
-          untouchedCountDescending[company.AssignDate] = (untouchedCountDescending[company.AssignDate] || 0) + 1;
-        }
-      });
-
-      // Sort uniqueArray based on the count of "Untouched" statuses for each AssignDate in descending order
-      uniqueArray.sort((a, b) => {
-        const countA = untouchedCountDescending[a] || 0;
-        const countB = untouchedCountDescending[b] || 0;
-
-        // Sort first by the count of "Untouched" statuses in descending order
-        if (countA !== countB) {
-          return countB - countA;
-        } else {
-          // If counts are equal, sort by AssignDate in descending order
-          return new Date(b) - new Date(a);
-        }
-      });
-
-      console.log("After Descending Data:", uniqueArray);
-      break;
-
-    default:
-      break;
+  function filterSearchBooking(newSearchTerm) {
+    setNewSearchTerm(newSearchTerm)
+    setFilteredBooking(totalBooking.filter(company =>
+      company.companyName.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+      company.contactNumber.toString() === newSearchTerm ||
+      company.companyEmail.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+      company.services.some(service =>
+        service.toLowerCase().includes(newSearchTerm.toLowerCase())) ||
+      company.totalPayment.toString() === newSearchTerm ||
+      //(company.firstPayment ? company.firstPayment.toString() : company.totalPayment.toString()) === newSearchTerm
+      company.bdmName.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+      new Date(company.bookingDate).toLocaleDateString().includes(newSearchTerm)
+    ))
   }
-};
 
+  //  -----------------------------------sorting- your -dashboard-----------------------------------
 
-
-
-const handleSortBusy = (sortBy1) => {
-  setSortType(prevData => ({
-    ...prevData,
-    busy: prevData.busy === "ascending"
-      ? "descending"
-      : prevData.untouched === "descending"
-      ? "none"
-      : "ascending"
-}));
-  switch (sortBy1) {
+  const handleSortUntouched = (sortBy1) => {
+    setSortType(prevData => ({
+      ...prevData,
+      untouched: prevData.untouched === "ascending"
+        ? "descending"
+        : prevData.untouched === "descending"
+          ? "none"
+          : "ascending"
+    }));
+    switch (sortBy1) {
       case "ascending":
-      setIncoFilter("ascending");
-      const untouchedCountAscending = {}
-      empData.forEach((company) => {
-        if ((company.Status === "Busy")
-         
-        ) {
-          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
-        }
-      });
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-      empData.sort((a, b) => {
-        const countA = untouchedCountAscending[a.AssignDate] || 0;
-        const countB = untouchedCountAscending[b.AssignDate] || 0;
-        return countA - countB; // Sort in ascending order of "Untouched" count
-      });
-      break;
-    
+        setIncoFilter("ascending");
+        const untouchedCountAscending = {}
+        console.log("ascending is working")
+        empData.forEach((company) => {
+          if (company.Status === "Untouched") {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          }
+        });
+
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses
+        empData.sort((a, b) => {
+          const countA = untouchedCountAscending[a.AssignDate] || 0;
+          const countB = untouchedCountAscending[b.AssignDate] || 0;
+          return countA - countB; // Sort in ascending order of "Untouched" count
+        });
+        break;
+
       case "descending":
-      setIncoFilter("descending");
-      const untouchedCount = {};
-      empData.forEach((company) => {
-        if ((company.Status === "Busy")
-        ) {
-          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
-        }
-      });
+        setIncoFilter("descending");
+        const untouchedCount = {};
+        console.log("descending is working")
+        empData.forEach((company) => {
+          if ((company.Status === "Untouched")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          }
+        });
 
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses
-      empData.sort((a, b) => {
-        const countA = untouchedCount[a.AssignDate] || 0;
-        const countB = untouchedCount[b.AssignDate] || 0;
-        return countB - countA; // Sort in descending order of "Untouched" count
-      });
-      break;
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses
+        empData.sort((a, b) => {
+          const countA = untouchedCount[a.AssignDate] || 0;
+          const countB = untouchedCount[b.AssignDate] || 0;
+          return countB - countA; // Sort in descending order of "Untouched" count
+        });
+        break;
 
-     case "none":
-      setIncoFilter("none");
-      
-      break;
-    
+      case "none":
+        setIncoFilter("none");
+
+        break;
+
       default:
-      break;
+        break;
 
-  }
-};
-const handleSortJunk = (sortBy1) => {
-  setSortType(prevData => ({
-    ...prevData,
-    junk: prevData.junk === "ascending"
-      ? "descending"
-      : prevData.junk === "descending"
-      ? "none"
-      : "ascending"
-}));
-  switch (sortBy1) {
+    }
+  };
+
+  const handleSortBusy = (sortBy1) => {
+    setSortType(prevData => ({
+      ...prevData,
+      busy: prevData.busy === "ascending"
+        ? "descending"
+        : prevData.untouched === "descending"
+          ? "none"
+          : "ascending"
+    }));
+    switch (sortBy1) {
       case "ascending":
-      setIncoFilter("ascending");
-      const untouchedCountAscending = {}
-      empData.forEach((company) => {
-        if ((company.Status === "Junk")
-         
-        ) {
-          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
-        }
-      });
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-      empData.sort((a, b) => {
-        const countA = untouchedCountAscending[a.AssignDate] || 0;
-        const countB = untouchedCountAscending[b.AssignDate] || 0;
-        return countA - countB; // Sort in ascending order of "Untouched" count
-      });
-      break;
-    
+        setIncoFilter("ascending");
+        const untouchedCountAscending = {}
+        empData.forEach((company) => {
+          if ((company.Status === "Busy")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          }
+        });
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+        empData.sort((a, b) => {
+          const countA = untouchedCountAscending[a.AssignDate] || 0;
+          const countB = untouchedCountAscending[b.AssignDate] || 0;
+          return countA - countB; // Sort in ascending order of "Untouched" count
+        });
+        break;
+
       case "descending":
-      setIncoFilter("descending");
-      const untouchedCount = {};
-      empData.forEach((company) => {
-        if ((company.Status === "Junk")
-        ) {
-          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
-        }
-      });
+        setIncoFilter("descending");
+        const untouchedCount = {};
+        empData.forEach((company) => {
+          if ((company.Status === "Busy")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          }
+        });
 
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses
-      empData.sort((a, b) => {
-        const countA = untouchedCount[a.AssignDate] || 0;
-        const countB = untouchedCount[b.AssignDate] || 0;
-        return countB - countA; // Sort in descending order of "Untouched" count
-      });
-      break;
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses
+        empData.sort((a, b) => {
+          const countA = untouchedCount[a.AssignDate] || 0;
+          const countB = untouchedCount[b.AssignDate] || 0;
+          return countB - countA; // Sort in descending order of "Untouched" count
+        });
+        break;
 
-     case "none":
-      setIncoFilter("none");
-      
-      break;
-    
+      case "none":
+        setIncoFilter("none");
+
+        break;
+
       default:
-      break;
+        break;
 
-  }
-};
-const handleSortNotPickedUp = (sortBy1) => {
-  setSortType(prevData => ({
-    ...prevData,
-    notPickedUp: prevData.notPickedUp === "ascending"
-      ? "descending"
-      : prevData.notPickedUp === "descending"
-      ? "none"
-      : "ascending"
-}));
-  switch (sortBy1) {
+    }
+  };
+  const handleSortJunk = (sortBy1) => {
+    setSortType(prevData => ({
+      ...prevData,
+      junk: prevData.junk === "ascending"
+        ? "descending"
+        : prevData.junk === "descending"
+          ? "none"
+          : "ascending"
+    }));
+    switch (sortBy1) {
       case "ascending":
-      setIncoFilter("ascending");
-      const untouchedCountAscending = {}
-      empData.forEach((company) => {
-        if ((company.Status === "Not Picked Up")
-         
-        ) {
-          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
-        }
-      });
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-      empData.sort((a, b) => {
-        const countA = untouchedCountAscending[a.AssignDate] || 0;
-        const countB = untouchedCountAscending[b.AssignDate] || 0;
-        return countA - countB; // Sort in ascending order of "Untouched" count
-      });
-      break;
-    
+        setIncoFilter("ascending");
+        const untouchedCountAscending = {}
+        empData.forEach((company) => {
+          if ((company.Status === "Junk")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          }
+        });
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+        empData.sort((a, b) => {
+          const countA = untouchedCountAscending[a.AssignDate] || 0;
+          const countB = untouchedCountAscending[b.AssignDate] || 0;
+          return countA - countB; // Sort in ascending order of "Untouched" count
+        });
+        break;
+
       case "descending":
-      setIncoFilter("descending");
-      const untouchedCount = {};
-      empData.forEach((company) => {
-        if ((company.Status === "Not Picked Up")
-        ) {
-          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
-        }
-      });
+        setIncoFilter("descending");
+        const untouchedCount = {};
+        empData.forEach((company) => {
+          if ((company.Status === "Junk")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          }
+        });
 
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses
-      empData.sort((a, b) => {
-        const countA = untouchedCount[a.AssignDate] || 0;
-        const countB = untouchedCount[b.AssignDate] || 0;
-        return countB - countA; // Sort in descending order of "Untouched" count
-      });
-      break;
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses
+        empData.sort((a, b) => {
+          const countA = untouchedCount[a.AssignDate] || 0;
+          const countB = untouchedCount[b.AssignDate] || 0;
+          return countB - countA; // Sort in descending order of "Untouched" count
+        });
+        break;
 
-     case "none":
-      setIncoFilter("none");
-      
-      break;
-    
+      case "none":
+        setIncoFilter("none");
+
+        break;
+
       default:
-      break;
+        break;
 
-  }
-};
-
-const handleSortFollowUp = (sortBy1) => {
-  setSortType(prevData => ({
-    ...prevData,
-    followUp: prevData.followUp === "ascending"
-      ? "descending"
-      : prevData.followUp === "descending"
-      ? "none"
-      : "ascending"
-}));
-  switch (sortBy1) {
+    }
+  };
+  const handleSortNotPickedUp = (sortBy1) => {
+    setSortType(prevData => ({
+      ...prevData,
+      notPickedUp: prevData.notPickedUp === "ascending"
+        ? "descending"
+        : prevData.notPickedUp === "descending"
+          ? "none"
+          : "ascending"
+    }));
+    switch (sortBy1) {
       case "ascending":
-      setIncoFilter("ascending");
-      const untouchedCountAscending = {}
-      empData.forEach((company) => {
-        if ((company.Status === "FollowUp")
-         
-        ) {
-          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
-        }
-      });
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-      empData.sort((a, b) => {
-        const countA = untouchedCountAscending[a.AssignDate] || 0;
-        const countB = untouchedCountAscending[b.AssignDate] || 0;
-        return countA - countB; // Sort in ascending order of "Untouched" count
-      });
-      break;
-    
+        setIncoFilter("ascending");
+        const untouchedCountAscending = {}
+        empData.forEach((company) => {
+          if ((company.Status === "Not Picked Up")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          }
+        });
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+        empData.sort((a, b) => {
+          const countA = untouchedCountAscending[a.AssignDate] || 0;
+          const countB = untouchedCountAscending[b.AssignDate] || 0;
+          return countA - countB; // Sort in ascending order of "Untouched" count
+        });
+        break;
+
       case "descending":
-      setIncoFilter("descending");
-      const untouchedCount = {};
-      empData.forEach((company) => {
-        if ((company.Status === "FollowUp")
-        ) {
-          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
-        }
-      });
+        setIncoFilter("descending");
+        const untouchedCount = {};
+        empData.forEach((company) => {
+          if ((company.Status === "Not Picked Up")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          }
+        });
 
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses
-      empData.sort((a, b) => {
-        const countA = untouchedCount[a.AssignDate] || 0;
-        const countB = untouchedCount[b.AssignDate] || 0;
-        return countB - countA; // Sort in descending order of "Untouched" count
-      });
-      break;
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses
+        empData.sort((a, b) => {
+          const countA = untouchedCount[a.AssignDate] || 0;
+          const countB = untouchedCount[b.AssignDate] || 0;
+          return countB - countA; // Sort in descending order of "Untouched" count
+        });
+        break;
 
-     case "none":
-      setIncoFilter("none");
-      
-      break;
-    
+      case "none":
+        setIncoFilter("none");
+
+        break;
+
       default:
-      break;
+        break;
 
-  }
-};
+    }
+  };
 
-const handleSortInterested = (sortBy1) => {
-  setSortType(prevData => ({
-    ...prevData,
-    interested: prevData.interested === "ascending"
-      ? "descending"
-      : prevData.interested === "descending"
-      ? "none"
-      : "ascending"
-}));
-  switch (sortBy1) {
+  const handleSortFollowUp = (sortBy1) => {
+    setSortType(prevData => ({
+      ...prevData,
+      followUp: prevData.followUp === "ascending"
+        ? "descending"
+        : prevData.followUp === "descending"
+          ? "none"
+          : "ascending"
+    }));
+    switch (sortBy1) {
       case "ascending":
-      setIncoFilter("ascending");
-      const untouchedCountAscending = {}
-      empData.forEach((company) => {
-        if ((company.Status === "Interested")
-         
-        ) {
-          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
-        }
-      });
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-      empData.sort((a, b) => {
-        const countA = untouchedCountAscending[a.AssignDate] || 0;
-        const countB = untouchedCountAscending[b.AssignDate] || 0;
-        return countA - countB; // Sort in ascending order of "Untouched" count
-      });
-      break;
-    
+        setIncoFilter("ascending");
+        const untouchedCountAscending = {}
+        empData.forEach((company) => {
+          if ((company.Status === "FollowUp")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          }
+        });
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+        empData.sort((a, b) => {
+          const countA = untouchedCountAscending[a.AssignDate] || 0;
+          const countB = untouchedCountAscending[b.AssignDate] || 0;
+          return countA - countB; // Sort in ascending order of "Untouched" count
+        });
+        break;
+
       case "descending":
-      setIncoFilter("descending");
-      const untouchedCount = {};
-      empData.forEach((company) => {
-        if ((company.Status === "Interested")
-        ) {
-          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
-        }
-      });
+        setIncoFilter("descending");
+        const untouchedCount = {};
+        empData.forEach((company) => {
+          if ((company.Status === "FollowUp")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          }
+        });
 
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses
-      empData.sort((a, b) => {
-        const countA = untouchedCount[a.AssignDate] || 0;
-        const countB = untouchedCount[b.AssignDate] || 0;
-        return countB - countA; // Sort in descending order of "Untouched" count
-      });
-      break;
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses
+        empData.sort((a, b) => {
+          const countA = untouchedCount[a.AssignDate] || 0;
+          const countB = untouchedCount[b.AssignDate] || 0;
+          return countB - countA; // Sort in descending order of "Untouched" count
+        });
+        break;
 
-     case "none":
-      setIncoFilter("none");
-      
-      break;
-    
+      case "none":
+        setIncoFilter("none");
+
+        break;
+
       default:
-      break;
+        break;
 
-  }
-};
+    }
+  };
 
-const handleSortNotInterested = (sortBy1) => {
-  setSortType(prevData => ({
-    ...prevData,
-    notInterested: prevData.notInterested === "ascending"
-      ? "descending"
-      : prevData.notInterested === "descending"
-      ? "none"
-      : "ascending"
-}));
-  switch (sortBy1) {
+  const handleSortInterested = (sortBy1) => {
+    setSortType(prevData => ({
+      ...prevData,
+      interested: prevData.interested === "ascending"
+        ? "descending"
+        : prevData.interested === "descending"
+          ? "none"
+          : "ascending"
+    }));
+    switch (sortBy1) {
       case "ascending":
-      setIncoFilter("ascending");
-      const untouchedCountAscending = {}
-      empData.forEach((company) => {
-        if ((company.Status === "Not Interested")
-         
-        ) {
-          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
-        }
-      });
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-      empData.sort((a, b) => {
-        const countA = untouchedCountAscending[a.AssignDate] || 0;
-        const countB = untouchedCountAscending[b.AssignDate] || 0;
-        return countA - countB; // Sort in ascending order of "Untouched" count
-      });
-      break;
-    
+        setIncoFilter("ascending");
+        const untouchedCountAscending = {}
+        empData.forEach((company) => {
+          if ((company.Status === "Interested")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          }
+        });
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+        empData.sort((a, b) => {
+          const countA = untouchedCountAscending[a.AssignDate] || 0;
+          const countB = untouchedCountAscending[b.AssignDate] || 0;
+          return countA - countB; // Sort in ascending order of "Untouched" count
+        });
+        break;
+
       case "descending":
-      setIncoFilter("descending");
-      const untouchedCount = {};
-      empData.forEach((company) => {
-        if ((company.Status === "Not Interested")
-        ) {
-          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
-        }
-      });
+        setIncoFilter("descending");
+        const untouchedCount = {};
+        empData.forEach((company) => {
+          if ((company.Status === "Interested")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          }
+        });
 
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses
-      empData.sort((a, b) => {
-        const countA = untouchedCount[a.AssignDate] || 0;
-        const countB = untouchedCount[b.AssignDate] || 0;
-        return countB - countA; // Sort in descending order of "Untouched" count
-      });
-      break;
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses
+        empData.sort((a, b) => {
+          const countA = untouchedCount[a.AssignDate] || 0;
+          const countB = untouchedCount[b.AssignDate] || 0;
+          return countB - countA; // Sort in descending order of "Untouched" count
+        });
+        break;
 
-     case "none":
-      setIncoFilter("none");
-      
-      break;
-    
+      case "none":
+        setIncoFilter("none");
+
+        break;
+
       default:
-      break;
+        break;
 
-  }
-};
+    }
+  };
 
-const handleSortMatured = (sortBy1) => {
-  setSortType(prevData => ({
-    ...prevData,
-    matured: prevData.matured === "ascending"
-      ? "descending"
-      : prevData.matured === "descending"
-      ? "none"
-      : "ascending"
-}));
-  switch (sortBy1) {
+  const handleSortNotInterested = (sortBy1) => {
+    setSortType(prevData => ({
+      ...prevData,
+      notInterested: prevData.notInterested === "ascending"
+        ? "descending"
+        : prevData.notInterested === "descending"
+          ? "none"
+          : "ascending"
+    }));
+    switch (sortBy1) {
       case "ascending":
-      setIncoFilter("ascending");
-      const untouchedCountAscending = {}
-      empData.forEach((company) => {
-        if ((company.Status === "Matured")
-         
-        ) {
-          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
-        }
-      });
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
-      empData.sort((a, b) => {
-        const countA = untouchedCountAscending[a.AssignDate] || 0;
-        const countB = untouchedCountAscending[b.AssignDate] || 0;
-        return countA - countB; // Sort in ascending order of "Untouched" count
-      });
-      break;
-    
+        setIncoFilter("ascending");
+        const untouchedCountAscending = {}
+        empData.forEach((company) => {
+          if ((company.Status === "Not Interested")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          }
+        });
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+        empData.sort((a, b) => {
+          const countA = untouchedCountAscending[a.AssignDate] || 0;
+          const countB = untouchedCountAscending[b.AssignDate] || 0;
+          return countA - countB; // Sort in ascending order of "Untouched" count
+        });
+        break;
+
       case "descending":
-      setIncoFilter("descending");
-      const untouchedCount = {};
-      empData.forEach((company) => {
-        if ((company.Status === "Matured")
-        ) {
-          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
-        }
-      });
+        setIncoFilter("descending");
+        const untouchedCount = {};
+        empData.forEach((company) => {
+          if ((company.Status === "Not Interested")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          }
+        });
 
-      // Step 2: Sort employeeData based on the count of "Untouched" statuses
-      empData.sort((a, b) => {
-        const countA = untouchedCount[a.AssignDate] || 0;
-        const countB = untouchedCount[b.AssignDate] || 0;
-        return countB - countA; // Sort in descending order of "Untouched" count
-      });
-      break;
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses
+        empData.sort((a, b) => {
+          const countA = untouchedCount[a.AssignDate] || 0;
+          const countB = untouchedCount[b.AssignDate] || 0;
+          return countB - countA; // Sort in descending order of "Untouched" count
+        });
+        break;
 
-     case "none":
-      setIncoFilter("none");
-      
-      break;
-    
+      case "none":
+        setIncoFilter("none");
+
+        break;
+
       default:
-      break;
+        break;
 
-  }
-};
-const handleSortTotalLeads = (sortBy1) => {
- console.log()
-};
+    }
+  };
 
-console.log(sortType.untouched , "sort type")
+  const handleSortMatured = (sortBy1) => {
+    setSortType(prevData => ({
+      ...prevData,
+      matured: prevData.matured === "ascending"
+        ? "descending"
+        : prevData.matured === "descending"
+          ? "none"
+          : "ascending"
+    }));
+    switch (sortBy1) {
+      case "ascending":
+        setIncoFilter("ascending");
+        const untouchedCountAscending = {}
+        empData.forEach((company) => {
+          if ((company.Status === "Matured")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          }
+        });
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+        empData.sort((a, b) => {
+          const countA = untouchedCountAscending[a.AssignDate] || 0;
+          const countB = untouchedCountAscending[b.AssignDate] || 0;
+          return countA - countB; // Sort in ascending order of "Untouched" count
+        });
+        break;
+
+      case "descending":
+        setIncoFilter("descending");
+        const untouchedCount = {};
+        empData.forEach((company) => {
+          if ((company.Status === "Matured")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          }
+        });
+
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses
+        empData.sort((a, b) => {
+          const countA = untouchedCount[a.AssignDate] || 0;
+          const countB = untouchedCount[b.AssignDate] || 0;
+          return countB - countA; // Sort in descending order of "Untouched" count
+        });
+        break;
+
+      case "none":
+        setIncoFilter("none");
+
+        break;
+
+      default:
+        break;
+
+    }
+  };
+  const handleSortTotalLeads = (sortBy1) => {
+    setSortType(prevData => ({
+      ...prevData,
+      totalLeads: prevData.totalLeads === "ascending"
+        ? "descending"
+        : prevData.totalLeads === "descending"
+          ? "none"
+          : "ascending"
+    }));
+    switch (sortBy1) {
+      case "ascending":
+        setIncoFilter("ascending");
+        const untouchedCountAscending = {}
+        empData.forEach((company) => {
+          if ((company)
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          }
+        });
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+        empData.sort((a, b) => {
+          const countA = untouchedCountAscending[a.AssignDate] || 0;
+          const countB = untouchedCountAscending[b.AssignDate] || 0;
+          return countA - countB; // Sort in ascending order of "Untouched" count
+        });
+        break;
+
+      case "descending":
+        setIncoFilter("descending");
+        const untouchedCount = {};
+        empData.forEach((company) => {
+          if ((company)
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          }
+        });
+
+        // Step 2: Sort employeeData based on the count of "Untouched" statuses
+        empData.sort((a, b) => {
+          const countA = untouchedCount[a.AssignDate] || 0;
+          const countB = untouchedCount[b.AssignDate] || 0;
+          return countB - countA; // Sort in descending order of "Untouched" count
+        });
+        break;
+
+      case "none":
+        setIncoFilter("none");
+
+        break;
+
+      default:
+        break;
+
+    }
+  };
+
+  const override = {
+    display: "block",
+    margin: "0 auto",
+    borderColor: "red",
+    width: "20px",
+  };
 
   return (
     <div>
@@ -983,197 +1051,199 @@ console.log(sortType.untouched , "sort type")
                     </th>
                     <th>Lead Assign Date</th>
                     <th>Untouched
-                    <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => {
-                                      let newSortType;
-                                      if (sortType.untouched === "ascending") {
-                                        newSortType = "descending";
-                                      } else {
-                                        newSortType = "ascending";
-                                      }
-                                      handleSortUntouched("ascending");
-                                    }}
-                                  />
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={(e) => {
+                          let newSortType;
+                          if (sortType.untouched === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortType.untouched === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortUntouched(newSortType);
+                        }}
+                      />
 
                     </th>
                     <th>Busy
-                    <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => {
-                                      let newSortType;
-                                      if (sortType.busy === "ascending") {
-                                        newSortType = "descending";
-                                      } else if (sortType.busy === "descending") {
-                                        newSortType = "none";
-                                      } else {
-                                        newSortType = "ascending";
-                                      }
-                                      handleSortBusy(newSortType);
-                                    }}
-                                  />
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={(e) => {
+                          let newSortType;
+                          if (sortType.busy === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortType.busy === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortBusy(newSortType);
+                        }}
+                      />
                     </th>
                     <th>Not Picked Up
-                    <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => {
-                                      let newSortType;
-                                      if (sortType.notPickedUp === "ascending") {
-                                        newSortType = "descending";
-                                      } else if (sortType.notPickedUp === "descending") {
-                                        newSortType = "none";
-                                      } else {
-                                        newSortType = "ascending";
-                                      }
-                                      handleSortNotPickedUp(newSortType);
-                                    }}
-                                  />
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={(e) => {
+                          let newSortType;
+                          if (sortType.notPickedUp === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortType.notPickedUp === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortNotPickedUp(newSortType);
+                        }}
+                      />
                     </th>
                     <th>Junk
-                    <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => {
-                                      let newSortType;
-                                      if (sortType.junk === "ascending") {
-                                        newSortType = "descending";
-                                      } else if (sortType.junk === "descending") {
-                                        newSortType = "none";
-                                      } else {
-                                        newSortType = "ascending";
-                                      }
-                                      handleSortJunk(newSortType);
-                                    }}
-                                  />
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={(e) => {
+                          let newSortType;
+                          if (sortType.junk === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortType.junk === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortJunk(newSortType);
+                        }}
+                      />
                     </th>
                     <th>Follow Up
-                    <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => {
-                                      let newSortType;
-                                      if (sortType.followUp === "ascending") {
-                                        newSortType = "descending";
-                                      } else if (sortType.followUp === "descending") {
-                                        newSortType = "none";
-                                      } else {
-                                        newSortType = "ascending";
-                                      }
-                                      handleSortFollowUp(newSortType);
-                                    }}
-                                  />
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={(e) => {
+                          let newSortType;
+                          if (sortType.followUp === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortType.followUp === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortFollowUp(newSortType);
+                        }}
+                      />
                     </th>
                     <th>Interested
-                    <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => {
-                                      let newSortType;
-                                      if (sortType.interested === "ascending") {
-                                        newSortType = "descending";
-                                      } else if (sortType.interested === "descending") {
-                                        newSortType = "none";
-                                      } else {
-                                        newSortType = "ascending";
-                                      }
-                                      handleSortInterested(newSortType);
-                                    }}
-                                  />
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={(e) => {
+                          let newSortType;
+                          if (sortType.interested === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortType.interested === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortInterested(newSortType);
+                        }}
+                      />
                     </th>
                     <th>Not Interested
-                    <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => {
-                                      let newSortType;
-                                      if (sortType.notInterested === "ascending") {
-                                        newSortType = "descending";
-                                      } else if (sortType.notInterested === "descending") {
-                                        newSortType = "none";
-                                      } else {
-                                        newSortType = "ascending";
-                                      }
-                                      handleSortNotInterested(newSortType);
-                                    }}
-                                  />
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={(e) => {
+                          let newSortType;
+                          if (sortType.notInterested === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortType.notInterested === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortNotInterested(newSortType);
+                        }}
+                      />
                     </th>
                     <th>Matured
-                    <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => {
-                                      let newSortType;
-                                      if (sortType.matured === "ascending") {
-                                        newSortType = "descending";
-                                      } else if (sortType.matured === "descending") {
-                                        newSortType = "none";
-                                      } else {
-                                        newSortType = "ascending";
-                                      }
-                                      handleSortMatured(newSortType);
-                                    }}
-                                  />
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={(e) => {
+                          let newSortType;
+                          if (sortType.matured === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortType.matured === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortMatured(newSortType);
+                        }}
+                      />
                     </th>
                     <th>Total Leads
-                    <SwapVertIcon
-                                    style={{
-                                      height: "15px",
-                                      width: "15px",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                    onClick={(e) => {
-                                      let newSortType;
-                                      if (sortType.totalLeads === "ascending") {
-                                        newSortType = "descending";
-                                      } else if (sortType.totalLeads === "descending") {
-                                        newSortType = "none";
-                                      } else {
-                                        newSortType = "ascending";
-                                      }
-                                      handleSortTotalLeads(newSortType);
-                                    }}
-                                  />
+                      <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={(e) => {
+                          let newSortType;
+                          if (sortType.totalLeads === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortType.totalLeads === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortTotalLeads(newSortType);
+                        }}
+                      />
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {uniqueArray &&
+                  {uniqueArray ? (
                     uniqueArray.map((obj, index) => (
                       <tr key={`row-${index}`}>
                         <td
@@ -1265,8 +1335,23 @@ console.log(sortType.untouched , "sort type")
                           }
                         </td>
                       </tr>
-                    ))}
+                    ))
+                  ) : (<tr>
+                    <td style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
+                      <ScaleLoader
+                        color="lightgrey"
+                        loading
+                        cssOverride={override}
+                        size={10}
+                        //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                      />
+                    </td>
+                  </tr>)
+                  }
                 </tbody>
+
                 {uniqueArray && (
                   <tfoot>
                     <tr style={{ fontWeight: 500 }}>
@@ -1345,7 +1430,7 @@ console.log(sortType.untouched , "sort type")
             <div className="dashboard-title">
               <h2 style={{ marginBottom: '5px' }}>Employee Dashboard</h2>
             </div>
-            <div className="d-flex justify-content-between" style={{gap:"10px"}}>
+            <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
               <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
                 <input
                   className=""
@@ -1448,7 +1533,7 @@ console.log(sortType.untouched , "sort type")
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredDataDateRange &&
+                  {filteredDataDateRange ? (
                     // (
                     //   followData.map((obj, index) => (
                     //     <tr key={`row-${index}`}>
@@ -1494,25 +1579,22 @@ console.log(sortType.untouched , "sort type")
                           </IconButton>
                         </td>
                       </tr>
-                    ))}
+                    ))
+                  ) : (<tr>
+                    <td style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
+                      <ScaleLoader
+                        color="lightgrey"
+                        loading
+                        cssOverride={override}
+                        size={10}
+                        //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                      />
+                    </td>
+                  </tr>)}
                 </tbody>
                 {filteredDataDateRange && (
-                  // (
-                  //   <tfoot>
-                  //     <tr style={{ fontWeight: 500 }}>
-                  //       <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                  //       <td>{offeredServices.length}
-                  //       </td>
-                  //       <td> {totalPaymentSum.toLocaleString()}
-                  //       </td>
-                  //       <td>
-                  //         {offeredPaymentSum.toLocaleString()}
-                  //       </td>
-                  //       <td>-
-                  //       </td>
-                  //     </tr>
-                  //   </tfoot>
-                  // ) :
                   <tfoot>
                     <tr style={{ fontWeight: 500 }}>
                       <td style={{ lineHeight: "32px" }} colSpan="2">
@@ -1531,13 +1613,15 @@ console.log(sortType.untouched , "sort type")
         </div>
       </div>
       {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
+
+
       <div className="container-xl mt-2">
         <div className="card">
           <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
             <div>
               <h2>Bookings Dashboard</h2>
             </div>
-            <div className="d-flex justify-content-between" style={{gap:"10px"}}>
+            <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
               <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
                 <input
                   className=""
@@ -1553,7 +1637,7 @@ console.log(sortType.untouched , "sort type")
                   name="bdeName-search"
                   id="bdeName-search"
                 />
-                 {/* <CiSearch
+                {/* <CiSearch
                   style={{
                     width: "19px",
                     height: "20px",
@@ -1628,63 +1712,70 @@ console.log(sortType.untouched , "sort type")
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredBooking.map((mainObj, index) => (
+                  {filteredBooking ? (
                     <>
-                      <tr>
-                        <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                        <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
-                          })`}</td>
-                        <td>{mainObj.companyName}</td>
-                        <td>{mainObj.contactNumber}</td>
-                        <td>{mainObj.companyEmail}</td>
-                        <td>{mainObj.services[0]}</td>
-                        <td>
-                          ₹
-                          {(mainObj.bdeName !== mainObj.bdmName
-                            ? mainObj.originalTotalPayment / 2
-                            : mainObj.originalTotalPayment
-                          ).toLocaleString()}
-                        </td>
-                        <td>
-                          ₹
-                          {
-                            (mainObj.firstPayment !== 0
+                      {filteredBooking.map((mainObj, index) => (
+                        <tr key={index}>
+                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                          <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime})`}</td>
+                          <td>{mainObj.companyName}</td>
+                          <td>{mainObj.contactNumber}</td>
+                          <td>{mainObj.companyEmail}</td>
+                          <td>{mainObj.services[0]}</td>
+                          <td>
+                            ₹
+                            {(mainObj.bdeName !== mainObj.bdmName
+                              ? mainObj.originalTotalPayment / 2
+                              : mainObj.originalTotalPayment
+                            ).toLocaleString()}
+                          </td>
+                          <td>
+                            ₹
+                            {(mainObj.firstPayment !== 0
                               ? mainObj.bdeName === mainObj.bdmName
                                 ? mainObj.firstPayment // If bdeName and bdmName are the same
                                 : mainObj.firstPayment / 2 // If bdeName and bdmName are different
                               : mainObj.bdeName === mainObj.bdmName
                                 ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
                                 : mainObj.originalTotalPayment / 2
-                            ).toLocaleString() // If firstPayment is 0 and bdeName and bdmName are different
-                          }
-                        </td>
-                        <td>
-                          {" "}
-                          ₹
-                          {(mainObj.firstPayment !== 0
-                            ? mainObj.bdeName === mainObj.bdmName
-                              ? mainObj.originalTotalPayment -
-                              mainObj.firstPayment
-                              : (mainObj.originalTotalPayment -
-                                mainObj.firstPayment) /
-                              2
-                            : 0
-                          ).toLocaleString()}{" "}
-                        </td>
-                        <td>
-                          {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
-                        </td>
-                        <td>
-                          {mainObj.bdeName !== mainObj.bdmName
-                            ? mainObj.bdmType === "closeby"
-                              ? `Closed by ${mainObj.bdmName}`
-                              : `Supported by ${mainObj.bdmName}`
-                            : `Self Closed`}{" "}
-                        </td>
-                        <td>{mainObj.paymentRemarks}</td>
-                      </tr>
+                            ).toLocaleString()}{" "}
+                          </td>
+                          <td>
+                            ₹
+                            {(mainObj.firstPayment !== 0
+                              ? mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                : (mainObj.originalTotalPayment - mainObj.firstPayment) / 2
+                              : 0
+                            ).toLocaleString()}{" "}
+                          </td>
+                          <td>{mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}</td>
+                          <td>
+                            {mainObj.bdeName !== mainObj.bdmName
+                              ? mainObj.bdmType === "closeby"
+                                ? `Closed by ${mainObj.bdmName}`
+                                : `Supported by ${mainObj.bdmName}`
+                              : `Self Closed`}{" "}
+                          </td>
+                          <td>{mainObj.paymentRemarks}</td>
+                        </tr>
+                      ))}
                     </>
-                  ))}
+                  ) : (
+                    <tr>
+                      <td style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
+                        <ScaleLoader
+                          color="lightgrey"
+                          loading
+                          cssOverride={override}
+                          size={10}
+                          aria-label="Loading Spinner"
+                          data-testid="loader"
+                        />
+                      </td>
+                    </tr>
+                  )}
+
                 </tbody>
                 {
                   <tfoot>
