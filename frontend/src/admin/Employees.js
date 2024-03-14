@@ -40,7 +40,7 @@ function Employees({ onEyeButtonClick }) {
     console.log(id);
   };
   useEffect(() => {
-    const socket = io('http://localhost:3001');
+    const socket = io('/socket.io');
     socket.on("employee-entered", () => {
       console.log("One user Entered");
       setTimeout(() => {

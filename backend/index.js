@@ -1963,9 +1963,9 @@ app.delete("/api/company-delete/:id", async (req, res) => {
       // Find the same company name in the CompanyModel and update its Status to "Untouched"
       const companyName = deletedCompany.companyName;
 
-      await CompanyModel.findOneAndUpdate(
+      await CompanyModel.findOneAndDelete(
         { "Company Name": companyName },
-        { $set: { Status: "Untouched" } }
+       
       );
 
       socketIO.emit('companydeleted')

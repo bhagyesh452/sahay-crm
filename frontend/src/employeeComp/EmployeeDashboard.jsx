@@ -12,6 +12,9 @@ import { Drawer, IconButton } from "@mui/material";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import EditIcon from "@mui/icons-material/Edit";
+import { CiSearch } from "react-icons/ci";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
+import io from "socket.io-client";
 
 function EmployeeDashboard() {
   const { userId } = useParams();
@@ -22,9 +25,12 @@ function EmployeeDashboard() {
   const [startDateAnother, setStartDateAnother] = useState(new Date());
   const [endDateAnother, setEndDateAnother] = useState(new Date());
   const [openProjection, setOpenProjection] = useState(false);
+  const [socketID, setSocketID] = useState("");
   const [totalBooking, setTotalBooking] = useState([]);
+  const [uniqueArray, setuniqueArray] = useState([])
   const [filteredBooking, setFilteredBooking] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("")
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
     ename: "",
@@ -37,11 +43,33 @@ function EmployeeDashboard() {
   });
   const [empData, setEmpData] = useState([]);
   const [followData, setFollowData] = useState([]);
+  const [followDataFilter, setFollowDataFilter] = useState([]);
   const [displayDateRange, setDateRangeDisplay] = useState(false);
   const [buttonToggle, setButtonToggle] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [filteredDataDateRange, setFilteredDataDateRange] = useState([]);
+  const [sortType, setSortType] = useState({
+    untouched: "ascending",
+    notPickedUp: "ascending",
+    busy: "ascending",
+    junk: "ascending",
+    notInterested: "ascending",
+    followUp: "ascending",
+    matured: "ascending",
+    interested: "ascending",
+    lastLead: "ascending",
+    totalLeads:'ascending'
+});
+  const [incoFilter, setIncoFilter] = useState("");
+
+
+
+
+
+
+
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -60,6 +88,7 @@ function EmployeeDashboard() {
       console.error("Error fetching data:", error.message);
     }
   };
+  console.log(data)
 
   const fetchEmployeeData = async () => {
     fetch(`${secretKey}/edata-particular/${data.ename}`)
@@ -71,6 +100,10 @@ function EmployeeDashboard() {
         console.error("Error fetching data:", error);
       });
   };
+console.log("empData",empData)
+
+
+
   const tableEmployee = data.ename;
   useEffect(() => {
     fetchData();
@@ -78,11 +111,15 @@ function EmployeeDashboard() {
   useEffect(() => {
     fetchEmployeeData();
   }, [data]);
-  const formattedDates =
-    empData.length !== 0 && empData.map((data) => formatDate(data.AssignDate));
+  useEffect(()=>{
 
-  const uniqueArray = formattedDates && [...new Set(formattedDates)];
-  //console.log(uniqueArray)
+    const formattedDates =
+    empData.length !== 0 && empData.map((data) => formatDate(data.AssignDate));
+console.log("Formatted Dates",formattedDates)
+  const faltu = formattedDates && [...new Set(formattedDates)];
+  setuniqueArray(faltu)
+  },[sortType])
+
   // ---------------------------Bookings Part --------------------------------------
   useEffect(() => {
     const fetchBookingDetails = async () => {
@@ -97,11 +134,46 @@ function EmployeeDashboard() {
     fetchBookingDetails();
   }, [data.ename]);
 
+  console.log("filteredBookings" , filteredBooking)
+
   const handleCloseIconClickAnother = () => {
     if (showBookingDate) {
       setShowBookingDate(false)
     }
   }
+  useEffect(() => {
+    const socket = io('/socket.io');
+    socket.on("connect", () => {
+      console.log("Socket connected with ID:", socket.id);
+      setSocketID(socket.id);
+    });
+  
+    return () => {
+      socket.disconnect();
+      
+    };
+  }, []);
+  const activeStatus = async () => {
+    if(data._id && socketID){ try {
+     
+       const id = data._id;
+       const response = await axios.put(`${secretKey}/online-status/${id}/${socketID}`);
+       console.log(response.data); // Log response for debugging
+       return response.data; // Return response data if needed
+     } catch (error) {
+       console.error('Error:', error);
+       throw error; // Throw error for handling in the caller function
+     } }
+   };
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      activeStatus();
+    }, 2000);
+ 
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [socketID]); 
 
   const selectionRangeAnother = {
     startDate: startDateAnother,
@@ -130,13 +202,14 @@ function EmployeeDashboard() {
       );
       const followdata = await response.json();
       setFollowData(followdata);
+      setFollowDataFilter(followData)
     } catch (error) {
       console.error("Error fetching data:", error);
       return { error: "Error fetching data" };
     }
   };
 
-  console.log(followData);
+ // console.log(followData);
 
   function calculateSum(data) {
     const initialValue = {
@@ -300,7 +373,7 @@ function EmployeeDashboard() {
     setStartDate(date.selection.startDate);
     setEndDate(date.selection.endDate);
     setFilteredDataDateRange(filteredDataDateRange);
-    console.log(filteredDataDateRange);
+    //console.log(filteredDataDateRange);
   };
 
   function calculateSumFilter(data) {
@@ -338,15 +411,542 @@ function EmployeeDashboard() {
     offeredServicesFilter,
   } = calculateSumFilter(filteredDataDateRange);
 
-  console.log("follow data:", currentProjection);
+  //console.log("follow data:", currentProjection);
+  // -----------------------------------------------------general-search--------------------------------------------
+
+  function filterSearch(searchTerm) {
+    setSearchTerm(searchTerm);
+    setFilteredDataDateRange(followData.filter(company =>
+      company.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.offeredServices.some(service =>
+        service.toLowerCase().includes(searchTerm.toLowerCase())
+      ) ||
+      company.totalPayment.toString() === searchTerm ||
+      company.offeredPrize.toString() === searchTerm
+
+    ));
+  }
+  //console.log(filteredDataDateRange)
+  const [newSearchTerm, setNewSearchTerm] = useState("")
+ 
+  function filterSearchBooking(newSearchTerm){
+  setNewSearchTerm(newSearchTerm)
+  setFilteredBooking(totalBooking.filter(company=>
+    company.companyName.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+    company.contactNumber.toString() === newSearchTerm ||
+    company.companyEmail.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+    company.services.some(service=>
+      service.toLowerCase().includes(newSearchTerm.toLowerCase())) ||
+    company.totalPayment.toString() === newSearchTerm || 
+    //(company.firstPayment ? company.firstPayment.toString() : company.totalPayment.toString()) === newSearchTerm
+    company.bdmName.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+    new Date(company.bookingDate).toLocaleDateString().includes(newSearchTerm)
+  ))
+ }
+
+//  -----------------------------------sorting- your -dashboard-----------------------------------
+const handleSortUntouched = (sortBy1) => {
+  const tempEmpData = empData.filter(obj => obj.Status === "Untouched");
+  switch (sortBy1) {
+    case "ascending":
+      // Create an object to store the count of "Untouched" statuses for each AssignDate
+      const untouchedCountAscending = {};
+      
+      tempEmpData.forEach((company) => {
+      
+          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+        
+      });
+
+      // Sort uniqueArray based on the count of "Untouched" statuses for each AssignDate
+      uniqueArray.sort((a, b) => {
+        const countA = untouchedCountAscending[a] || 0;
+        const countB = untouchedCountAscending[b] || 0;
+
+        // Sort first by the count of "Untouched" statuses
+        if (countA !== countB) {
+          return countA - countB;
+        } else {
+          // If counts are equal, sort by AssignDate in ascending order
+          return new Date(a) - new Date(b);
+        }
+      });
+
+      console.log("After Ascending Data:", uniqueArray);
+      break;
+
+    case "descending":
+      // Create an object to store the count of "Untouched" statuses for each AssignDate
+      const untouchedCountDescending = {};
+      tempEmpData.forEach((company) => {
+        if (company.Status === "Untouched") {
+          untouchedCountDescending[company.AssignDate] = (untouchedCountDescending[company.AssignDate] || 0) + 1;
+        }
+      });
+
+      // Sort uniqueArray based on the count of "Untouched" statuses for each AssignDate in descending order
+      uniqueArray.sort((a, b) => {
+        const countA = untouchedCountDescending[a] || 0;
+        const countB = untouchedCountDescending[b] || 0;
+
+        // Sort first by the count of "Untouched" statuses in descending order
+        if (countA !== countB) {
+          return countB - countA;
+        } else {
+          // If counts are equal, sort by AssignDate in descending order
+          return new Date(b) - new Date(a);
+        }
+      });
+
+      console.log("After Descending Data:", uniqueArray);
+      break;
+
+    default:
+      break;
+  }
+};
+
+
+
+
+const handleSortBusy = (sortBy1) => {
+  setSortType(prevData => ({
+    ...prevData,
+    busy: prevData.busy === "ascending"
+      ? "descending"
+      : prevData.untouched === "descending"
+      ? "none"
+      : "ascending"
+}));
+  switch (sortBy1) {
+      case "ascending":
+      setIncoFilter("ascending");
+      const untouchedCountAscending = {}
+      empData.forEach((company) => {
+        if ((company.Status === "Busy")
+         
+        ) {
+          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+        }
+      });
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+      empData.sort((a, b) => {
+        const countA = untouchedCountAscending[a.AssignDate] || 0;
+        const countB = untouchedCountAscending[b.AssignDate] || 0;
+        return countA - countB; // Sort in ascending order of "Untouched" count
+      });
+      break;
+    
+      case "descending":
+      setIncoFilter("descending");
+      const untouchedCount = {};
+      empData.forEach((company) => {
+        if ((company.Status === "Busy")
+        ) {
+          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+        }
+      });
+
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses
+      empData.sort((a, b) => {
+        const countA = untouchedCount[a.AssignDate] || 0;
+        const countB = untouchedCount[b.AssignDate] || 0;
+        return countB - countA; // Sort in descending order of "Untouched" count
+      });
+      break;
+
+     case "none":
+      setIncoFilter("none");
+      
+      break;
+    
+      default:
+      break;
+
+  }
+};
+const handleSortJunk = (sortBy1) => {
+  setSortType(prevData => ({
+    ...prevData,
+    junk: prevData.junk === "ascending"
+      ? "descending"
+      : prevData.junk === "descending"
+      ? "none"
+      : "ascending"
+}));
+  switch (sortBy1) {
+      case "ascending":
+      setIncoFilter("ascending");
+      const untouchedCountAscending = {}
+      empData.forEach((company) => {
+        if ((company.Status === "Junk")
+         
+        ) {
+          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+        }
+      });
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+      empData.sort((a, b) => {
+        const countA = untouchedCountAscending[a.AssignDate] || 0;
+        const countB = untouchedCountAscending[b.AssignDate] || 0;
+        return countA - countB; // Sort in ascending order of "Untouched" count
+      });
+      break;
+    
+      case "descending":
+      setIncoFilter("descending");
+      const untouchedCount = {};
+      empData.forEach((company) => {
+        if ((company.Status === "Junk")
+        ) {
+          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+        }
+      });
+
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses
+      empData.sort((a, b) => {
+        const countA = untouchedCount[a.AssignDate] || 0;
+        const countB = untouchedCount[b.AssignDate] || 0;
+        return countB - countA; // Sort in descending order of "Untouched" count
+      });
+      break;
+
+     case "none":
+      setIncoFilter("none");
+      
+      break;
+    
+      default:
+      break;
+
+  }
+};
+const handleSortNotPickedUp = (sortBy1) => {
+  setSortType(prevData => ({
+    ...prevData,
+    notPickedUp: prevData.notPickedUp === "ascending"
+      ? "descending"
+      : prevData.notPickedUp === "descending"
+      ? "none"
+      : "ascending"
+}));
+  switch (sortBy1) {
+      case "ascending":
+      setIncoFilter("ascending");
+      const untouchedCountAscending = {}
+      empData.forEach((company) => {
+        if ((company.Status === "Not Picked Up")
+         
+        ) {
+          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+        }
+      });
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+      empData.sort((a, b) => {
+        const countA = untouchedCountAscending[a.AssignDate] || 0;
+        const countB = untouchedCountAscending[b.AssignDate] || 0;
+        return countA - countB; // Sort in ascending order of "Untouched" count
+      });
+      break;
+    
+      case "descending":
+      setIncoFilter("descending");
+      const untouchedCount = {};
+      empData.forEach((company) => {
+        if ((company.Status === "Not Picked Up")
+        ) {
+          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+        }
+      });
+
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses
+      empData.sort((a, b) => {
+        const countA = untouchedCount[a.AssignDate] || 0;
+        const countB = untouchedCount[b.AssignDate] || 0;
+        return countB - countA; // Sort in descending order of "Untouched" count
+      });
+      break;
+
+     case "none":
+      setIncoFilter("none");
+      
+      break;
+    
+      default:
+      break;
+
+  }
+};
+
+const handleSortFollowUp = (sortBy1) => {
+  setSortType(prevData => ({
+    ...prevData,
+    followUp: prevData.followUp === "ascending"
+      ? "descending"
+      : prevData.followUp === "descending"
+      ? "none"
+      : "ascending"
+}));
+  switch (sortBy1) {
+      case "ascending":
+      setIncoFilter("ascending");
+      const untouchedCountAscending = {}
+      empData.forEach((company) => {
+        if ((company.Status === "FollowUp")
+         
+        ) {
+          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+        }
+      });
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+      empData.sort((a, b) => {
+        const countA = untouchedCountAscending[a.AssignDate] || 0;
+        const countB = untouchedCountAscending[b.AssignDate] || 0;
+        return countA - countB; // Sort in ascending order of "Untouched" count
+      });
+      break;
+    
+      case "descending":
+      setIncoFilter("descending");
+      const untouchedCount = {};
+      empData.forEach((company) => {
+        if ((company.Status === "FollowUp")
+        ) {
+          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+        }
+      });
+
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses
+      empData.sort((a, b) => {
+        const countA = untouchedCount[a.AssignDate] || 0;
+        const countB = untouchedCount[b.AssignDate] || 0;
+        return countB - countA; // Sort in descending order of "Untouched" count
+      });
+      break;
+
+     case "none":
+      setIncoFilter("none");
+      
+      break;
+    
+      default:
+      break;
+
+  }
+};
+
+const handleSortInterested = (sortBy1) => {
+  setSortType(prevData => ({
+    ...prevData,
+    interested: prevData.interested === "ascending"
+      ? "descending"
+      : prevData.interested === "descending"
+      ? "none"
+      : "ascending"
+}));
+  switch (sortBy1) {
+      case "ascending":
+      setIncoFilter("ascending");
+      const untouchedCountAscending = {}
+      empData.forEach((company) => {
+        if ((company.Status === "Interested")
+         
+        ) {
+          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+        }
+      });
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+      empData.sort((a, b) => {
+        const countA = untouchedCountAscending[a.AssignDate] || 0;
+        const countB = untouchedCountAscending[b.AssignDate] || 0;
+        return countA - countB; // Sort in ascending order of "Untouched" count
+      });
+      break;
+    
+      case "descending":
+      setIncoFilter("descending");
+      const untouchedCount = {};
+      empData.forEach((company) => {
+        if ((company.Status === "Interested")
+        ) {
+          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+        }
+      });
+
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses
+      empData.sort((a, b) => {
+        const countA = untouchedCount[a.AssignDate] || 0;
+        const countB = untouchedCount[b.AssignDate] || 0;
+        return countB - countA; // Sort in descending order of "Untouched" count
+      });
+      break;
+
+     case "none":
+      setIncoFilter("none");
+      
+      break;
+    
+      default:
+      break;
+
+  }
+};
+
+const handleSortNotInterested = (sortBy1) => {
+  setSortType(prevData => ({
+    ...prevData,
+    notInterested: prevData.notInterested === "ascending"
+      ? "descending"
+      : prevData.notInterested === "descending"
+      ? "none"
+      : "ascending"
+}));
+  switch (sortBy1) {
+      case "ascending":
+      setIncoFilter("ascending");
+      const untouchedCountAscending = {}
+      empData.forEach((company) => {
+        if ((company.Status === "Not Interested")
+         
+        ) {
+          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+        }
+      });
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+      empData.sort((a, b) => {
+        const countA = untouchedCountAscending[a.AssignDate] || 0;
+        const countB = untouchedCountAscending[b.AssignDate] || 0;
+        return countA - countB; // Sort in ascending order of "Untouched" count
+      });
+      break;
+    
+      case "descending":
+      setIncoFilter("descending");
+      const untouchedCount = {};
+      empData.forEach((company) => {
+        if ((company.Status === "Not Interested")
+        ) {
+          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+        }
+      });
+
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses
+      empData.sort((a, b) => {
+        const countA = untouchedCount[a.AssignDate] || 0;
+        const countB = untouchedCount[b.AssignDate] || 0;
+        return countB - countA; // Sort in descending order of "Untouched" count
+      });
+      break;
+
+     case "none":
+      setIncoFilter("none");
+      
+      break;
+    
+      default:
+      break;
+
+  }
+};
+
+const handleSortMatured = (sortBy1) => {
+  setSortType(prevData => ({
+    ...prevData,
+    matured: prevData.matured === "ascending"
+      ? "descending"
+      : prevData.matured === "descending"
+      ? "none"
+      : "ascending"
+}));
+  switch (sortBy1) {
+      case "ascending":
+      setIncoFilter("ascending");
+      const untouchedCountAscending = {}
+      empData.forEach((company) => {
+        if ((company.Status === "Matured")
+         
+        ) {
+          untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+        }
+      });
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
+      empData.sort((a, b) => {
+        const countA = untouchedCountAscending[a.AssignDate] || 0;
+        const countB = untouchedCountAscending[b.AssignDate] || 0;
+        return countA - countB; // Sort in ascending order of "Untouched" count
+      });
+      break;
+    
+      case "descending":
+      setIncoFilter("descending");
+      const untouchedCount = {};
+      empData.forEach((company) => {
+        if ((company.Status === "Matured")
+        ) {
+          untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+        }
+      });
+
+      // Step 2: Sort employeeData based on the count of "Untouched" statuses
+      empData.sort((a, b) => {
+        const countA = untouchedCount[a.AssignDate] || 0;
+        const countB = untouchedCount[b.AssignDate] || 0;
+        return countB - countA; // Sort in descending order of "Untouched" count
+      });
+      break;
+
+     case "none":
+      setIncoFilter("none");
+      
+      break;
+    
+      default:
+      break;
+
+  }
+};
+const handleSortTotalLeads = (sortBy1) => {
+ console.log()
+};
+
+console.log(sortType.untouched , "sort type")
+
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
       <EmpNav userId={userId} />
       <div className="container-xl mt-2">
         <div className="card">
-          <div className="card-header">
-            <h2>Your Dashboard</h2>
+          <div className="card-header employeedashboard">
+            <div className="d-flex justify-content-between">
+              <div style={{ minWidth: '14vw' }} className="dashboard-title">
+                <h2 style={{ marginBottom: '5px' }}>Your Dashboard</h2>
+              </div>
+              {/* <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
+                <input
+                  className=""
+                  value={searchTerm}
+                  // onChange={(e) => filterSearch(e.target.value)}
+                  // placeholder="Enter BDE Name..."
+                  style={{
+                    border: "none",
+                    padding:"0px"
+                      // Add a bottom border for the input field itself
+                   }}
+                  type="text"
+                  name="bdeName-search"
+                  id="bdeName-search"
+                />
+                 <CiSearch
+                  style={{
+                    width: "19px",
+                    height: "20px",
+                    marginRight: "5px",
+                    color: "grey"
+                  }}
+                /> 
+              </div> */}
+            </div>
           </div>
           <div className="card-body">
             <div
@@ -382,15 +982,194 @@ function EmployeeDashboard() {
                       Sr. No
                     </th>
                     <th>Lead Assign Date</th>
-                    <th>Untouched</th>
-                    <th>Busy</th>
-                    <th>Not Picked Up</th>
-                    <th>Junk</th>
-                    <th>Follow Up</th>
-                    <th>Interested</th>
-                    <th>Not Interested</th>
-                    <th>Matured</th>
-                    <th>Total Leads</th>
+                    <th>Untouched
+                    <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={(e) => {
+                                      let newSortType;
+                                      if (sortType.untouched === "ascending") {
+                                        newSortType = "descending";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortUntouched("ascending");
+                                    }}
+                                  />
+
+                    </th>
+                    <th>Busy
+                    <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={(e) => {
+                                      let newSortType;
+                                      if (sortType.busy === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortType.busy === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortBusy(newSortType);
+                                    }}
+                                  />
+                    </th>
+                    <th>Not Picked Up
+                    <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={(e) => {
+                                      let newSortType;
+                                      if (sortType.notPickedUp === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortType.notPickedUp === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortNotPickedUp(newSortType);
+                                    }}
+                                  />
+                    </th>
+                    <th>Junk
+                    <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={(e) => {
+                                      let newSortType;
+                                      if (sortType.junk === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortType.junk === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortJunk(newSortType);
+                                    }}
+                                  />
+                    </th>
+                    <th>Follow Up
+                    <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={(e) => {
+                                      let newSortType;
+                                      if (sortType.followUp === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortType.followUp === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortFollowUp(newSortType);
+                                    }}
+                                  />
+                    </th>
+                    <th>Interested
+                    <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={(e) => {
+                                      let newSortType;
+                                      if (sortType.interested === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortType.interested === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortInterested(newSortType);
+                                    }}
+                                  />
+                    </th>
+                    <th>Not Interested
+                    <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={(e) => {
+                                      let newSortType;
+                                      if (sortType.notInterested === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortType.notInterested === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortNotInterested(newSortType);
+                                    }}
+                                  />
+                    </th>
+                    <th>Matured
+                    <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={(e) => {
+                                      let newSortType;
+                                      if (sortType.matured === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortType.matured === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortMatured(newSortType);
+                                    }}
+                                  />
+                    </th>
+                    <th>Total Leads
+                    <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={(e) => {
+                                      let newSortType;
+                                      if (sortType.totalLeads === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortType.totalLeads === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortTotalLeads(newSortType);
+                                    }}
+                                  />
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -562,35 +1341,56 @@ function EmployeeDashboard() {
 
       <div className="container-xl mt-2">
         <div className="card">
-          <div
-            className="card-header d-flex align-items-center justify-content-between"
-            onClick={handleIconClick}
-          >
-            <div>
-              <h2>Projection Dashboard</h2>
+          <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
+            <div className="dashboard-title">
+              <h2 style={{ marginBottom: '5px' }}>Employee Dashboard</h2>
             </div>
-            <div
-              className="form-control d-flex align-items-center justify-content-between"
-              style={{ width: "15vw" }}
-            >
-              <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
-              <button
-                onClick={handleIconClick}
-                style={{
-                  border: "none",
-                  padding: "0px",
-                  backgroundColor: "white",
-                }}
-              >
-                <FaRegCalendar
+            <div className="d-flex justify-content-between" style={{gap:"10px"}}>
+              <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
+                <input
+                  className=""
+                  value={searchTerm}
+                  onChange={(e) => filterSearch(e.target.value)}
+                  placeholder="Search here....."
                   style={{
-                    width: "20px",
-                    height: "20px",
-                    color: "#bcbaba",
-                    color: "black",
+                    border: "none",
+                    padding: "0px"
+                    // Add a bottom border for the input field itself
                   }}
+                  type="text"
+                  name="bdeName-search"
+                  id="bdeName-search"
                 />
-              </button>
+                {/* <CiSearch
+                  style={{
+                    width: "19px",
+                    height: "20px",
+                    marginRight: "5px",
+                    color: "grey"
+                  }}
+                /> */}
+              </div>
+              <div
+                className="form-control d-flex align-items-center justify-content-between date-range-picker">
+                <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
+                <button
+                  onClick={handleIconClick}
+                  style={{
+                    border: "none",
+                    padding: "0px",
+                    backgroundColor: "white",
+                  }}
+                >
+                  <FaRegCalendar
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      color: "#bcbaba",
+                      color: "black",
+                    }}
+                  />
+                </button>
+              </div>
             </div>
           </div>
           {displayDateRange && (
@@ -733,41 +1533,60 @@ function EmployeeDashboard() {
       {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
       <div className="container-xl mt-2">
         <div className="card">
-          <div
-            className="card-header d-flex align-items-center justify-content-between"
-            
-          >
+          <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
             <div>
               <h2>Bookings Dashboard</h2>
             </div>
-            <div
-              className="form-control d-flex align-items-center justify-content-between"
-              style={{ width: "15vw" }}
-            >
-              {/* <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div> */}
-              <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
-                          {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
-                        </div>
-                        <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                          <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
-                        </button>
+            <div className="d-flex justify-content-between" style={{gap:"10px"}}>
+              <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
+                <input
+                  className=""
+                  value={newSearchTerm}
+                  onChange={(e) => filterSearchBooking(e.target.value)}
+                  placeholder="Search here....."
+                  style={{
+                    border: "none",
+                    padding: "0px"
+                    // Add a bottom border for the input field itself
+                  }}
+                  type="text"
+                  name="bdeName-search"
+                  id="bdeName-search"
+                />
+                 {/* <CiSearch
+                  style={{
+                    width: "19px",
+                    height: "20px",
+                    marginRight: "5px",
+                    color: "grey"
+                  }} 
+                /> */}
+              </div>
+              <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
+                <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
+                  {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
+                </div>
+                <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                  <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                </button>
+              </div>
             </div>
           </div>
           {showBookingDate && <div
-                      style={{
-                        position: "absolute",
-                        top: "65px",
-                        zIndex: 9,
-                        right: "157px",
-                      }}
-                      className="booking-filter"
-                    >
-                      <DateRangePicker
-                        ranges={[selectionRangeAnother]}
-                        onChange={handleSelectAnother}
-                        onClose={() => setShowBookingDate(false)}
-                      />
-                    </div>}
+            style={{
+              position: "absolute",
+              top: "65px",
+              zIndex: 9,
+              right: "157px",
+            }}
+            className="booking-filter"
+          >
+            <DateRangePicker
+              ranges={[selectionRangeAnother]}
+              onChange={handleSelectAnother}
+              onClose={() => setShowBookingDate(false)}
+            />
+          </div>}
           <div className="card-body">
             <div
               id="table-default"
@@ -790,7 +1609,7 @@ function EmployeeDashboard() {
                   <tr
                     style={{
                       backgroundColor: "#ffb900",
-                      color: "black",
+                      color: "white",
                       fontWeight: "bold",
                     }}
                   >
@@ -813,9 +1632,8 @@ function EmployeeDashboard() {
                     <>
                       <tr>
                         <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                        <td>{`${formatDate(mainObj.bookingDate)}(${
-                          mainObj.bookingTime
-                        })`}</td>
+                        <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                          })`}</td>
                         <td>{mainObj.companyName}</td>
                         <td>{mainObj.contactNumber}</td>
                         <td>{mainObj.companyEmail}</td>
@@ -835,8 +1653,8 @@ function EmployeeDashboard() {
                                 ? mainObj.firstPayment // If bdeName and bdmName are the same
                                 : mainObj.firstPayment / 2 // If bdeName and bdmName are different
                               : mainObj.bdeName === mainObj.bdmName
-                              ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                              : mainObj.originalTotalPayment / 2
+                                ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                : mainObj.originalTotalPayment / 2
                             ).toLocaleString() // If firstPayment is 0 and bdeName and bdmName are different
                           }
                         </td>
@@ -846,10 +1664,10 @@ function EmployeeDashboard() {
                           {(mainObj.firstPayment !== 0
                             ? mainObj.bdeName === mainObj.bdmName
                               ? mainObj.originalTotalPayment -
-                                mainObj.firstPayment
+                              mainObj.firstPayment
                               : (mainObj.originalTotalPayment -
-                                  mainObj.firstPayment) /
-                                2
+                                mainObj.firstPayment) /
+                              2
                             : 0
                           ).toLocaleString()}{" "}
                         </td>
@@ -874,14 +1692,14 @@ function EmployeeDashboard() {
                       <th colSpan={3}>
                         <strong>Total</strong>
                       </th>
-                     
+
                       <th>-</th>
                       <th>-</th>
                       <th>-</th>
                       <th>
                         ₹
                         {filteredBooking
-                        
+
                           .reduce((total, obj) => {
                             return obj.bdeName === obj.bdmName
                               ? total + obj.originalTotalPayment
@@ -892,33 +1710,33 @@ function EmployeeDashboard() {
                       <th>
                         ₹
                         {filteredBooking
-                          
+
                           .reduce((total, obj) => {
                             return obj.bdeName === obj.bdmName
                               ? obj.firstPayment === 0
                                 ? total + obj.originalTotalPayment
                                 : total + obj.firstPayment
                               : obj.firstPayment === 0
-                              ? total + obj.originalTotalPayment / 2
-                              : total + obj.firstPayment / 2;
+                                ? total + obj.originalTotalPayment / 2
+                                : total + obj.firstPayment / 2;
                           }, 0)
                           .toLocaleString()}
                       </th>
                       <th>
                         ₹
                         {filteredBooking
-                          
+
                           .reduce((total, obj) => {
                             return obj.bdeName === obj.bdmName
                               ? obj.firstPayment === 0
                                 ? total + obj.originalTotalPayment
                                 : total + obj.firstPayment
                               : obj.firstPayment === 0
-                              ? total + obj.originalTotalPayment / 2
-                              : total + obj.firstPayment / 2;
+                                ? total + obj.originalTotalPayment / 2
+                                : total + obj.firstPayment / 2;
                           }, 0)
                           .toLocaleString()}
-                      
+
                       </th>
                       <th>-</th>
                       <th>-</th>
