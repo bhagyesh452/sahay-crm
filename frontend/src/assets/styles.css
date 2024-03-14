@@ -703,3 +703,29 @@ color: #4e884e;
     border:none;
   }
 
+/* ------------------------------employee dashboard------------------------------------- */
+
+.employeedashboard{
+  padding: 0px;
+}
+.employeedashboard h2 {
+  font-size: 15px;
+  font-family: 'Poppins';
+  margin-left: 27px;
+  margin-top: 15px;
+  margin-bottom:0px;
+  font-weight: 500;
+}
+.date-range-picker{
+  width: 13vw;
+    margin-right: 27px;
+    padding: 5px 21px;
+    font-size: 12px;
+    height: 37px;
+    margin-top: 3px;
+}
+.general-searchbar{
+  height: 37px;
+  margin-top: 2px;
+  width: 13vw;
+}

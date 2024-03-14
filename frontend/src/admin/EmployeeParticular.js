@@ -21,6 +21,10 @@ import Nodata from "../components/Nodata";
 import EditForm from "../components/EditForm";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { HiOutlineEye } from "react-icons/hi";
+import { RiEditCircleFill } from "react-icons/ri";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { MdOutlineEditOff } from "react-icons/md";
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -68,6 +72,7 @@ function EmployeeParticular() {
   const [month, setMonth] = useState(0);
   const [incoFilter, setIncoFilter] = useState("");
   const [openIncoDate, setOpenIncoDate] = useState(false);
+
   // const [updateData, setUpdateData] = useState({});
   const [eData, seteData] = useState([]);
   const [year, setYear] = useState(0);
@@ -457,7 +462,7 @@ function EmployeeParticular() {
 
     const csvdata = employeeData
       .filter((employee) => selectedRows.includes(employee._id))
-      .map((employee) => ({ ...employee, Status: "Untouched" , Remarks : "No Remarks Added" }));
+      .map((employee) => ({ ...employee, Status: "Untouched", Remarks: "No Remarks Added" }));
 
     // Create an array to store promises for updating CompanyModel
     const updatePromises = [];
@@ -1310,9 +1315,9 @@ function EmployeeParticular() {
                               }}
                             />
                           </th>
-                          {(dataStatus === "Matured" && <th>Action</th>) ||
-                            (dataStatus === "FollowUp" && <th>Action</th>)||
-                            (dataStatus === "Interested" && <th>Action</th>)}
+                          {(dataStatus === "Matured" && <th>Add Projection</th>) ||
+                            (dataStatus === "FollowUp" && <th>Add Projection</th>) ||
+                            (dataStatus === "Interested" && <th>Add Projection</th>)}
                         </tr>
                       </thead>
                       {currentData.length !== 0 && dataStatus !== "Matured" && (
@@ -1377,7 +1382,7 @@ function EmployeeParticular() {
                                     {company.Remarks}
                                   </p>
                                   <span>
-                                    <IconEye
+                                    {/* <IconEye
                                       onClick={() => {
                                         functionopenpopupremarks(
                                           company._id,
@@ -1390,7 +1395,22 @@ function EmployeeParticular() {
                                         color: "#d6a10c",
                                         cursor: "pointer",
                                       }}
-                                    />
+                                    /> */}
+                                    <HiOutlineEye style={{
+                                      fontSize: "15px",
+                                      color: "#fbb900"
+                                      //backgroundColor: "lightblue",
+                                      // Additional styles for the "View" button
+                                    }}
+                                      //className="btn btn-primary d-none d-sm-inline-block"
+                                      onClick={() => {
+                                        functionopenpopupremarks(
+                                          company._id,
+                                          company.Status
+                                        );
+                                      }} />
+
+
                                   </span>
                                 </div>
                               </td>
@@ -1406,7 +1426,7 @@ function EmployeeParticular() {
                               <td>{formatDate(company["AssignDate"])}</td>
                               {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
                                 <td>
-                                  <button
+                                  {/* <button
                                     style={{
                                       padding: "5px",
                                       fontSize: "12px",
@@ -1420,14 +1440,49 @@ function EmployeeParticular() {
                                       );
                                     }}
                                   >
-                                    View
-                                  </button>
+                                  <HiOutlineEye />
+                                  </button> */}
+                                  {/* <HiOutlineEye style={{
+                                    fontSize: "15px",
+                                    color: "#fbb900"
+                                    //backgroundColor: "lightblue",
+                                    // Additional styles for the "View" button
+                                  }}
+                                    //className="btn btn-primary d-none d-sm-inline-block"
+                                    onClick={() => {
+                                      functionopenprojection(
+                                        company["Company Name"]
+                                      );
+                                    }} /> */}
+                                  {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
+                                    <>
+                                     <IconButton>
+                                      <MdOutlineEditOff 
+                                        // onClick={() => {
+                                        //   functionopenprojection(company["Company Name"]);
+                                        // }}
+                                        style={{ cursor: "pointer", width: "17px", height: "17px"}}
+                                        color="grey"
+                                      />
+                                    </IconButton>
+                                    </>
+                                  ) : (
+                                    <IconButton>
+                                      <AddCircleIcon
+                                        onClick={() => {
+                                          functionopenprojection(company["Company Name"]);
+                                        }}
+                                        style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                                      />
+                                    </IconButton>
+                                  )}
+
                                 </td>
                               )}
 
                               {dataStatus === "Matured" && (
                                 <td>
-                                  <button
+                                  {/* <button
                                     style={{
                                       padding: "5px",
                                       fontSize: "12px",
@@ -1443,7 +1498,20 @@ function EmployeeParticular() {
                                     }}
                                   >
                                     View
-                                  </button>
+                                  </button> */}
+                                  <HiOutlineEye style={{
+                                    fontSize: "15px",
+                                    color: "#fbb900"
+                                    //backgroundColor: "lightblue",
+                                    // Additional styles for the "View" button
+                                  }}
+                                    //className="btn btn-primary d-none d-sm-inline-block"
+                                    onClick={() => {
+                                      functionopenAnchor();
+                                      setMaturedCompanyName(
+                                        company["Company Name"]
+                                      );
+                                    }} />
                                 </td>
                               )}
                             </tr>
@@ -1489,7 +1557,7 @@ function EmployeeParticular() {
                                     {company.Remarks}
                                   </p>
                                   <span>
-                                    <IconEye
+                                    {/* <IconEye
                                       onClick={() => {
                                         functionopenpopupremarks(
                                           company._id,
@@ -1502,7 +1570,20 @@ function EmployeeParticular() {
                                         color: "#d6a10c",
                                         cursor: "pointer",
                                       }}
-                                    />
+                                    /> */}
+                                    <HiOutlineEye style={{
+                                      fontSize: "15px",
+                                      color: "#fbb900"
+                                      //backgroundColor: "lightblue",
+                                      // Additional styles for the "View" button
+                                    }}
+                                      //className="btn btn-primary d-none d-sm-inline-block"
+                                      onClick={() => {
+                                        functionopenpopupremarks(
+                                          company._id,
+                                          company.Status
+                                        );
+                                      }} />
                                   </span>
                                 </div>
                               </td>
@@ -1517,7 +1598,7 @@ function EmployeeParticular() {
                               <td>{formatDate(company["AssignDate"])}</td>
 
                               <td>
-                                <button
+                                {/* <button
                                   style={{
                                     padding: "5px",
                                     fontSize: "12px",
@@ -1533,7 +1614,33 @@ function EmployeeParticular() {
                                   }}
                                 >
                                   View
-                                </button>
+                                </button> */}
+                                {/* <HiOutlineEye style={{
+                                  fontSize: "15px",
+                                  color: "#fbb900"
+                                  //backgroundColor: "lightblue",
+                                  // Additional styles for the "View" button
+                                }}
+                                  //className="btn btn-primary d-none d-sm-inline-block"
+                                  onClick={() => {
+                                    functionopenAnchor();
+                                    setMaturedCompanyName(
+                                      company["Company Name"]
+                                    );
+                                  }} /> */}
+                                <IconButton>
+                                  <RiEditCircleFill
+                                    onClick={() => {
+                                      functionopenAnchor();
+                                      setMaturedCompanyName(
+                                        company["Company Name"]
+                                      );
+                                    }}
+                                    style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                                    color="#9696f8"
+                                  />
+                                </IconButton>
+
                               </td>
                             </tr>
                           ))}
@@ -1597,7 +1704,7 @@ function EmployeeParticular() {
                           Math.ceil(filteredData.length / itemsPerPage) - 1
                         }
                       >
-                        <IconChevronRight />
+                        {/* <IconChevronRight /> */}
                       </IconButton>
                     </div>
                   )}
@@ -1634,15 +1741,15 @@ function EmployeeParticular() {
                 style={
                   selectedOption === "direct"
                     ? {
-                        backgroundColor: "#e9eae9",
-                        margin: "10px 10px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "#e9eae9",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                    }
                     : {
-                        backgroundColor: "white",
-                        margin: "10px 10px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "white",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                    }
                 }
                 onClick={() => {
                   setSelectedOption("direct");
@@ -1665,15 +1772,15 @@ function EmployeeParticular() {
                 style={
                   selectedOption === "someoneElse"
                     ? {
-                        backgroundColor: "#e9eae9",
-                        margin: "10px 0px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "#e9eae9",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                    }
                     : {
-                        backgroundColor: "white",
-                        margin: "10px 0px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "white",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                    }
                 }
                 className="indirect form-control"
                 onClick={() => {
@@ -1895,7 +2002,7 @@ function EmployeeParticular() {
                   className="form-control"
                   placeholder="0"
                   value={currentProjection.offeredPrize}
-                  disabled
+                  //disabled
                 />
               </div>
             </div>
@@ -1907,23 +2014,23 @@ function EmployeeParticular() {
                   className="form-control"
                   placeholder="Lasf followUp date is not mentioned"
                   value={currentProjection.lastFollowUpdate}
-                  disabled
+                  //disabled
                 />
               </div>
             </div>
             <div className="label">
-                <strong>Total Payment  :</strong>
-                <div className="services mb-3">
-                  <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Total Payment is not mentioned"
-                    value={currentProjection.totalPayment}
-                   
-                    disabled
-                  />
-                </div>
+              <strong>Total Payment  :</strong>
+              <div className="services mb-3">
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="Total Payment is not mentioned"
+                  value={currentProjection.totalPayment}
+
+                  //disabled
+                />
               </div>
+            </div>
             <div className="label">
               <strong>Payment Expected on:</strong>
               <div className="services mb-3">
@@ -1932,11 +2039,11 @@ function EmployeeParticular() {
                   className="form-control"
                   placeholder="Estimated Date not mentioned"
                   value={currentProjection.estPaymentDate}
-                  disabled
+                  //disabled
                 />
               </div>
             </div>
-            
+
           </div>
         </div>
       </Drawer>

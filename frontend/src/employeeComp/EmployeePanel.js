@@ -28,8 +28,12 @@ import debounce from "lodash/debounce";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import { options } from "../components/Options.js";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import socketIO from "socket.io-client";
+import io from "socket.io-client";
 import AddCircle from "@mui/icons-material/AddCircle.js";
+import { HiOutlineEye } from "react-icons/hi";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { RiEditCircleFill } from "react-icons/ri";
+
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -73,8 +77,8 @@ function EmployeePanel() {
   const [cname, setCname] = useState("");
   const [cemail, setCemail] = useState("");
   const [selectAllChecked, setSelectAllChecked] = useState(true);
-const [selectedYears, setSelectedYears] = useState([]);
-const [selectedMonths, setSelectedMonths] = useState([]);
+  const [selectedYears, setSelectedYears] = useState([]);
+  const [selectedMonths, setSelectedMonths] = useState([]);
   const [cnumber, setCnumber] = useState(0);
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
@@ -89,31 +93,24 @@ const [selectedMonths, setSelectedMonths] = useState([]);
   const [currentRemarks, setCurrentRemarks] = useState("");
   const itemsPerPage = 500;
   const [year, setYear] = useState(0);
+  const [socketID, setSocketID] = useState("");
   const [incoFilter, setIncoFilter] = useState("");
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const { userId } = useParams();
   console.log(userId);
-  // const customStyles = {
-  //   option: (provided, state) => ({
-  //     ...provided,
-  //     backgroundColor: state.isSelected
-  //       ? "blue"
-  //       : state.isDisabled
-  //       ? "#ffb900"
-  //       : "white",
-  //     color: state.isDisabled ? "white" : "black",
-  //     // Add more styles as needed
-  //   }),
-  // };
+
   const playNotificationSound = () => {
     const audio = new Audio(notificationSound);
     audio.play();
   };
   useEffect(() => {
-    const socket = socketIO.connect(`${secretKey}`);
+    const socket = io('http://localhost:3001');
+    socket.on("connect", () => {
+      console.log("Socket connected with ID:", socket.id);
+      setSocketID(socket.id);
+    });
 
-    // Listen for the 'request-seen' event from the server
     socket.on("request-seen", () => {
       // Call fetchRequestDetails function to update request details
       fetchRequestDetails();
@@ -126,11 +123,14 @@ const [selectedMonths, setSelectedMonths] = useState([]);
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
+
     };
   }, []);
   const functionopenpopup = () => {
     openchange(true);
   };
+
+  console.log("projectingcompnay", projectingCompany)
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
     setOpenProjection(true);
@@ -242,6 +242,7 @@ const [selectedMonths, setSelectedMonths] = useState([]);
       console.error("Error fetching Projection Data:", error.message);
     }
   };
+  console.log(projectionData)
   const [moreEmpData, setmoreEmpData] = useState([]);
 
   const fetchNewData = async (status) => {
@@ -357,15 +358,41 @@ const [selectedMonths, setSelectedMonths] = useState([]);
       setSearchText("");
     }
   };
+  const activeStatus = async () => {
+    if (data._id && socketID) {
+      try {
+
+        const id = data._id;
+        const response = await axios.put(`${secretKey}/online-status/${id}/${socketID}`);
+        console.log(response.data); // Log response for debugging
+        return response.data; // Return response data if needed
+      } catch (error) {
+        console.error('Error:', error);
+        throw error; // Throw error for handling in the caller function
+      }
+    }
+  };
 
   useEffect(() => {
     if (data.ename) {
       console.log("Employee found");
       fetchNewData();
+
     } else {
       console.log("No employees found");
     }
   }, [data.ename]);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      activeStatus();
+    }, 2000);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [socketID]);
+
 
   const fetchRequestDetails = async () => {
     try {
@@ -402,12 +429,12 @@ const [selectedMonths, setSelectedMonths] = useState([]);
   };
   console.log(requestData);
   // const [locationAccess, setLocationAccess] = useState(false);
-  useEffect(()=>{
+  useEffect(() => {
     fetchProjections();
-  },[data])
+  }, [data])
   useEffect(() => {
     fetchRemarksHistory();
-  
+
     fetchRequestDetails();
     // let watchId;
     // const successCallback = (position) => {
@@ -527,20 +554,23 @@ const [selectedMonths, setSelectedMonths] = useState([]);
       setFormOpen(true);
       return true;
     }
-
+    const title = `${data.ename} changed ${cname} status from ${oldStatus} to ${newStatus}`;
+    const DT = new Date();
+    const date = DT.toLocaleDateString();
+    const time = DT.toLocaleTimeString();
     try {
       // Make an API call to update the employee status in the database
       const response = await axios.post(
         `${secretKey}/update-status/${employeeId}`,
         {
-          newStatus,
+          newStatus, title, date, time
         }
       );
 
       // Check if the API call was successful
       if (response.status === 200) {
         // Assuming fetchData is a function to fetch updated employee data
-        console.log("Sort Status :", sortStatus);
+
         fetchNewData(oldStatus);
 
         // if(newStatus==="Interested"){
@@ -822,7 +852,7 @@ const [selectedMonths, setSelectedMonths] = useState([]);
     if (
       file &&
       file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ) {
       const reader = new FileReader();
 
@@ -1002,32 +1032,32 @@ const [selectedMonths, setSelectedMonths] = useState([]);
 
   const handleProjectionSubmit = async () => {
     try {
-     
+
       const finalData = {
         ...currentProjection,
         companyName: projectingCompany,
         ename: data.ename,
         offeredServices: selectedValues,
       };
-      if(finalData.offeredServices.length === 0){
-        Swal.fire({title:'Services is required!' , icon:'warning'});
-      }else if(finalData.remarks === ""){
-        Swal.fire({title:'Remarks is required!' , icon:'warning'});
-      }else if(finalData.totalPayment === 0){
-        Swal.fire({title:'Payment is required!' , icon:'warning'});
+      if (finalData.offeredServices.length === 0) {
+        Swal.fire({ title: 'Services is required!', icon: 'warning' });
+      } else if (finalData.remarks === "") {
+        Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
+      } else if (finalData.totalPayment === 0) {
+        Swal.fire({ title: 'Payment is required!', icon: 'warning' });
       }
-      else if(finalData.offeredPrize === 0){
-        Swal.fire({title:'Offered Prize is required!' , icon:'warning'});
+      else if (finalData.offeredPrize === 0) {
+        Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
       }
-      else if(finalData.lastFollowUpdate === null){
-        Swal.fire({title:'Last FollowUp Date is required!' , icon:'warning'});
+      else if (finalData.lastFollowUpdate === null) {
+        Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
       }
-      else if(finalData.estPaymentDate === 0){
-        Swal.fire({title:'Estimated Payment Date is required!' , icon:'warning'});
+      else if (finalData.estPaymentDate === 0) {
+        Swal.fire({ title: 'Estimated Payment Date is required!', icon: 'warning' });
       }
-   
-   
-   
+
+
+
 
       // Send data to backend API
       const response = await axios.post(
@@ -1048,7 +1078,7 @@ const [selectedMonths, setSelectedMonths] = useState([]);
       });
       fetchProjections();
 
-  // Log success message
+      // Log success message
     } catch (error) {
       console.error("Error updating or adding data:", error.message);
     }
@@ -1104,7 +1134,7 @@ const [selectedMonths, setSelectedMonths] = useState([]);
       const date = new Date(obj["Company Incorporation Date  "]);
       const year = date.getFullYear();
       const month = date.toLocaleString("default", { month: "short" });
-     
+
       // Check if year already exists in newArray
       const yearIndex = newArray.findIndex((item) => item.year === year);
       if (yearIndex !== -1) {
@@ -1154,92 +1184,127 @@ const [selectedMonths, setSelectedMonths] = useState([]);
   // };
 
   // Handle "Select All" checkbox change
-const handleSelectAllChange = (e) => {
-  const isChecked = e.target.checked;
-  setSelectAllChecked(isChecked);
-  if (isChecked) {
-    const newEmpData = 
-    dataStatus === "All"
-      ? moreEmpData.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up")
-      : dataStatus === "Interested"
-      ? moreEmpData.filter((obj) => obj.Status === "Interested")
-      : dataStatus === "Not Interested"
-      ? moreEmpData.filter((obj) => obj.Status === "Not Interested" || obj.Status === "Junk")
-      : dataStatus === "FollowUp"
-      ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-      : [];
-  
-    setEmployeeData(newEmpData);
-    setSelectedYears([...new Set(newEmpData.map(data => new Date(data["Company Incorporation Date  "]).getFullYear().toString()))]);
-    setSelectedMonths([]);
-  } else {
-    setEmployeeData([]);
-    setSelectedYears([]);
-    setSelectedMonths([]);
-  }
-};
+  const handleSelectAllChange = (e) => {
+    const isChecked = e.target.checked;
+    setSelectAllChecked(isChecked);
+    if (isChecked) {
+      const newEmpData =
+        dataStatus === "All"
+          ? moreEmpData.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up")
+          : dataStatus === "Interested"
+            ? moreEmpData.filter((obj) => obj.Status === "Interested")
+            : dataStatus === "Not Interested"
+              ? moreEmpData.filter((obj) => obj.Status === "Not Interested" || obj.Status === "Junk")
+              : dataStatus === "FollowUp"
+                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                : [];
 
-// Handle year checkbox change
-const handleYearFilterChange = (e, selectedYear) => {
-  const isChecked = e.target.checked;
-  setSelectAllChecked(false); // Uncheck "Select All" when a year checkbox is clicked
-  if (isChecked) {
-    const newEmpData = 
-    dataStatus === "All"
-      ? moreEmpData.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up")
-      : dataStatus === "Interested"
-      ? moreEmpData.filter((obj) => obj.Status === "Interested")
-      : dataStatus === "Not Interested"
-      ? moreEmpData.filter((obj) => obj.Status === "Not Interested" || obj.Status === "Junk")
-      : dataStatus === "FollowUp"
-      ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-      : [];
-    setSelectedYears([...selectedYears, selectedYear]); // Add selected year to the list
-    const filteredData = newEmpData.filter(data => new Date(data["Company Incorporation Date  "]).getFullYear() === selectedYear);
+      setEmployeeData(newEmpData);
+      setSelectedYears([...new Set(newEmpData.map(data => new Date(data["Company Incorporation Date  "]).getFullYear().toString()))]);
+      setSelectedMonths([]);
+    } else {
+      setEmployeeData([]);
+      setSelectedYears([]);
+      setSelectedMonths([]);
+    }
+  };
 
-    setEmployeeData([...employeeData, ...filteredData]); // Add filtered data to the existing employeeData
-  } else {
-    setSelectedYears(selectedYears.filter(year => year !== selectedYear)); // Remove selected year from the list
-    const filteredData = employeeData.filter(data => new Date(data["Company Incorporation Date  "]).getFullYear() !== selectedYear);
-    setEmployeeData(filteredData); // Update employeeData with filtered data
-  }
-};
+  // Handle year checkbox change
+  const handleYearFilterChange = (e, selectedYear) => {
+    const isChecked = e.target.checked;
+    setSelectAllChecked(false); // Uncheck "Select All" when a year checkbox is clicked
+    if (isChecked) {
+      const newEmpData =
+        dataStatus === "All"
+          ? moreEmpData.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up")
+          : dataStatus === "Interested"
+            ? moreEmpData.filter((obj) => obj.Status === "Interested")
+            : dataStatus === "Not Interested"
+              ? moreEmpData.filter((obj) => obj.Status === "Not Interested" || obj.Status === "Junk")
+              : dataStatus === "FollowUp"
+                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                : [];
+      setSelectedYears([...selectedYears, selectedYear]); // Add selected year to the list
+      const filteredData = newEmpData.filter(data => new Date(data["Company Incorporation Date  "]).getFullYear() === selectedYear);
 
-// Handle month checkbox change
-const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
-  const isChecked = e.target.checked;
-  if (isChecked) {
-    
-    setSelectedMonths([...selectedMonths, selectedMonth]);
-    const newEmpData = 
-    dataStatus === "All"
-      ? moreEmpData.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up")
-      : dataStatus === "Interested"
-      ? moreEmpData.filter((obj) => obj.Status === "Interested")
-      : dataStatus === "Not Interested"
-      ? moreEmpData.filter((obj) => obj.Status === "Not Interested" || obj.Status === "Junk")
-      : dataStatus === "FollowUp"
-      ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-      : [];
-    const filteredData = newEmpData.filter(data => {
-      const year = new Date(data["Company Incorporation Date  "]).getFullYear().toString();
-      const month = new Date(data["Company Incorporation Date  "]).toLocaleString("default", { month: "short" });
-      console.log("Year :" ,year , selectedYear.toString() );
-      console.log("Month :" ,month , selectedMonth.toString() );
-      return year === selectedYear.toString() && month === selectedMonth.toString();
+      setEmployeeData([...employeeData, ...filteredData]); // Add filtered data to the existing employeeData
+    } else {
+      setSelectedYears(selectedYears.filter(year => year !== selectedYear)); // Remove selected year from the list
+      const filteredData = employeeData.filter(data => new Date(data["Company Incorporation Date  "]).getFullYear() !== selectedYear);
+      setEmployeeData(filteredData); // Update employeeData with filtered data
+    }
+  };
+
+  // Handle month checkbox change
+  const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
+    const isChecked = e.target.checked;
+    if (isChecked) {
+
+      setSelectedMonths([...selectedMonths, selectedMonth]);
+      const newEmpData =
+        dataStatus === "All"
+          ? moreEmpData.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up")
+          : dataStatus === "Interested"
+            ? moreEmpData.filter((obj) => obj.Status === "Interested")
+            : dataStatus === "Not Interested"
+              ? moreEmpData.filter((obj) => obj.Status === "Not Interested" || obj.Status === "Junk")
+              : dataStatus === "FollowUp"
+                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                : [];
+      const filteredData = newEmpData.filter(data => {
+        const year = new Date(data["Company Incorporation Date  "]).getFullYear().toString();
+        const month = new Date(data["Company Incorporation Date  "]).toLocaleString("default", { month: "short" });
+        console.log("Year :", year, selectedYear.toString());
+        console.log("Month :", month, selectedMonth.toString());
+        return year === selectedYear.toString() && month === selectedMonth.toString();
+      });
+      setEmployeeData(filteredData);
+    } else {
+      setSelectedMonths(selectedMonths.filter(month => month !== selectedMonth));
+      const filteredData = employeeData.filter(data => {
+        const year = new Date(data["Company Incorporation Date  "]).getFullYear().toString();
+        const month = new Date(data["Company Incorporation Date  "]).toLocaleString('default', { month: 'short' });
+
+        return year !== selectedYear.toString() || month !== selectedMonth.toString();
+      });
+      setEmployeeData(filteredData);
+    }
+  };
+
+
+  // -----------------------------------------------------delete-projection-data-------------------------------
+
+
+  const handleDelete = async (company) => {
+    const companyName = company;
+    console.log(companyName);
+
+    // Display a confirmation dialog using SweetAlert
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this data!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          // Send a DELETE request to the backend API endpoint
+          const response = await axios.delete(`${secretKey}/delete-followup/${companyName}`);
+          console.log(response.data.message); // Log the response message
+          // Show a success message after successful deletion
+          Swal.fire('Deleted!', 'Your data has been deleted.', 'success');
+          fetchProjections();
+        } catch (error) {
+          console.error('Error deleting data:', error);
+          // Show an error message if deletion fails
+          Swal.fire('Error!', 'Follow Up Not Found.', 'error');
+        }
+      }
     });
-    setEmployeeData(filteredData);
-  } else {
-    setSelectedMonths(selectedMonths.filter(month => month !== selectedMonth));
-    const filteredData = employeeData.filter(data => {
-      const year = new Date(data["Company Incorporation Date  "]).getFullYear().toString();
-      const month = new Date(data["Company Incorporation Date  "]).toLocaleString('default', { month: 'short' });
-     
-      return year !== selectedYear.toString() || month !== selectedMonth.toString();
-    });
-    setEmployeeData(filteredData);
-  }
-};
+  };
 
   return (
     <div>
@@ -1950,80 +2015,80 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                                     <SwapVertIcon style={{ height: "16px" }} />
                                     Newest
                                   </div>
-                                  
+
 
                                   <div style={{ marginLeft: "5px" }} className="inco-subFilter d-flex">
-  <div style={{ marginRight: "5px" }}>
-    <input
-      type="checkbox"
-      name="year-filter"
-      id={`year-filter-all`}
-      checked={selectAllChecked}
-      onChange={(e) => handleSelectAllChange(e)}
-    />
-  </div>
-  <div className="year-val">
-    Select All
-  </div>
-</div>
+                                    <div style={{ marginRight: "5px" }}>
+                                      <input
+                                        type="checkbox"
+                                        name="year-filter"
+                                        id={`year-filter-all`}
+                                        checked={selectAllChecked}
+                                        onChange={(e) => handleSelectAllChange(e)}
+                                      />
+                                    </div>
+                                    <div className="year-val">
+                                      Select All
+                                    </div>
+                                  </div>
 
-{resultArray.length !== 0 &&
-  resultArray.map((obj) => (
-    <div key={obj.year}>
-      <div style={{ marginLeft: "5px" }} className="inco-subFilter d-flex">
-        <div style={{ marginRight: "5px" }}>
-          <input
-            type="checkbox"
-            name="year-filter"
-            id={`year-filter-${obj.year}`}
-            checked={selectedYears.includes(obj.year)}
-            onChange={(e) => handleYearFilterChange(e, obj.year)}
-          />
-        </div>
-        <div className="year-val">
-          {obj.year}
-        </div>
-        {expandYear !== obj.year && (
-          <div
-            className="expand-year d-flex"
-            onClick={() => {
-              setExpandYear(obj.year);
-            }}
-          >
-            <AddCircle style={{ height: "15px" }} />
-          </div>
-        )}
-        {expandYear === obj.year && (
-          <div
-            className="expand-year d-flex"
-            onClick={() => {
-              setExpandYear(0);
-            }}
-          >
-            <RemoveCircleIcon style={{ height: "15px" }} />
-          </div>
-        )}
-      </div>
-      {obj.month.length !== 0 && expandYear === obj.year && (
-        obj.month.map((month) => (
-          <div key={`${obj.year}-${month}`} style={{ marginLeft: "25px" }} className="inco-subFilter d-flex">
-            <div style={{ marginRight: "5px" }}>
-              <input
-                type="checkbox"
-                name="month-filter"
-                id={`month-filter-${month}`}
-                checked={selectedMonths.includes(month)}
-                onChange={(e) => handleMonthFilterChange(e, obj.year, month)}
-              />
-            </div>
-            <div className="month-val">
-              {month}
-            </div>
-          </div>
-        ))
-      )}
-    </div>
-  ))}
+                                  {resultArray.length !== 0 &&
+                                    resultArray.map((obj) => (
+                                      <div key={obj.year}>
+                                        <div style={{ marginLeft: "5px" }} className="inco-subFilter d-flex">
+                                          <div style={{ marginRight: "5px" }}>
+                                            <input
+                                              type="checkbox"
+                                              name="year-filter"
+                                              id={`year-filter-${obj.year}`}
+                                              checked={selectedYears.includes(obj.year)}
+                                              onChange={(e) => handleYearFilterChange(e, obj.year)}
+                                            />
+                                          </div>
+                                          <div className="year-val">
+                                            {obj.year}
+                                          </div>
+                                          {expandYear !== obj.year && (
+                                            <div
+                                              className="expand-year d-flex"
+                                              onClick={() => {
+                                                setExpandYear(obj.year);
+                                              }}
+                                            >
+                                              <AddCircle style={{ height: "15px" }} />
+                                            </div>
+                                          )}
+                                          {expandYear === obj.year && (
+                                            <div
+                                              className="expand-year d-flex"
+                                              onClick={() => {
+                                                setExpandYear(0);
+                                              }}
+                                            >
+                                              <RemoveCircleIcon style={{ height: "15px" }} />
+                                            </div>
+                                          )}
+                                        </div>
+                                        {obj.month.length !== 0 && expandYear === obj.year && (
+                                          obj.month.map((month) => (
+                                            <div key={`${obj.year}-${month}`} style={{ marginLeft: "25px" }} className="inco-subFilter d-flex">
+                                              <div style={{ marginRight: "5px" }}>
+                                                <input
+                                                  type="checkbox"
+                                                  name="month-filter"
+                                                  id={`month-filter-${month}`}
+                                                  checked={selectedMonths.includes(month)}
+                                                  onChange={(e) => handleMonthFilterChange(e, obj.year, month)}
+                                                />
+                                              </div>
+                                              <div className="month-val">
+                                                {month}
+                                              </div>
+                                            </div>
+                                          ))
+                                        )}
+                                      </div>
+                                    ))}
 
                                   <div
                                     className="inco-subFilter"
@@ -2068,8 +2133,8 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                               />
                             </th>
 
-                            {(dataStatus === "Matured" && <th>Action</th>) ||
-                              (dataStatus === "FollowUp" && <th>Action</th>) || (dataStatus === "Interested" && <th>Action</th>)} 
+                            {(dataStatus === "Matured" && <th>Add Projection</th>) ||
+                              (dataStatus === "FollowUp" && <th>Add Projection</th>) || (dataStatus === "Interested" && <th>Add Projection</th>)}
                           </tr>
                         </thead>
                         {currentData.length !== 0 &&
@@ -2109,7 +2174,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                                             company["Company Name"],
                                             company["Company Email"],
                                             company[
-                                              "Company Incorporation Date  "
+                                            "Company Incorporation Date  "
                                             ],
                                             company["Company Number"],
                                             company["Status"]
@@ -2212,27 +2277,61 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                                   <td>{company["Company Email"]}</td>
                                   <td>{formatDate(company["AssignDate"])}</td>
 
-                                  {(dataStatus === "FollowUp" || 
-                                  dataStatus === "Interested") && (
-                                    <td>
-                                      <button
-                                        style={{
-                                          padding: "5px",
-                                          fontSize: "12px",
-                                          backgroundColor: "lightblue",
+                                  {(dataStatus === "FollowUp" ||
+                                    dataStatus === "Interested") && (
+                                      <td>
+                                        {/* <button
+                                          style={{
+                                            padding: "5px",
+                                            fontSize: "12px",
+                                            backgroundColor: "lightblue",
+                                            // Additional styles for the "View" button
+                                          }}
+                                          className="btn btn-primary d-none d-sm-inline-block"
+                                          onClick={() => {
+                                            functionopenprojection(
+                                              company["Company Name"]
+                                            );
+                                          }}
+                                        >
+                                          
+                                        </button> */}
+                                        {/* <HiOutlineEye style={{
+                                          fontSize: "15px",
+                                          color: "#fbb900"
+                                          //backgroundColor: "lightblue",
                                           // Additional styles for the "View" button
                                         }}
-                                        className="btn btn-primary d-none d-sm-inline-block"
-                                        onClick={() => {
-                                          functionopenprojection(
-                                            company["Company Name"]
-                                          );
-                                        }}
-                                      >
-                                        View
-                                      </button>
-                                    </td>
-                                  )}
+                                          //className="btn btn-primary d-none d-sm-inline-block"
+                                          onClick={() => {
+                                            functionopenprojection(
+                                              company["Company Name"]
+                                            );
+                                          }} /> */}
+                                        {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
+                                          <>
+                                            <IconButton>
+                                              <RiEditCircleFill
+                                                onClick={() => {
+                                                  functionopenprojection(company["Company Name"]);
+                                                }}
+                                                style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                                                color="#9696f8"
+                                              />
+                                            </IconButton>
+                                          </>
+                                        ) : (
+                                          <IconButton>
+                                            <AddCircleIcon
+                                              onClick={() => {
+                                                functionopenprojection(company["Company Name"]);
+                                              }}
+                                              style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                                            />
+                                          </IconButton>
+                                        )}
+                                      </td>
+                                    )}
                                 </tr>
                               ))}
                             </tbody>
@@ -2283,7 +2382,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                                 <td>{formatDate(company["AssignDate"])}</td>
 
                                 <td>
-                                  <button
+                                  {/* <button
                                     style={{
                                       padding: "5px",
                                       fontSize: "12px",
@@ -2299,7 +2398,20 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                                     }}
                                   >
                                     View
-                                  </button>
+                                  </button> */}
+                                  <HiOutlineEye style={{
+                                    fontSize: "15px",
+                                    color: "#fbb900"
+                                    //backgroundColor: "lightblue",
+                                    // Additional styles for the "View" button
+                                  }}
+                                    //className="btn btn-primary d-none d-sm-inline-block"
+                                    onClick={() => {
+                                      functionopenAnchor();
+                                      setMaturedCompanyName(
+                                        company["Company Name"]
+                                      );
+                                    }} />
                                 </td>
                               </tr>
                             ))}
@@ -2356,7 +2468,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                               Math.min(
                                 prevPage + 1,
                                 Math.ceil(filteredData.length / itemsPerPage) -
-                                  1
+                                1
                               )
                             )
                           }
@@ -2450,16 +2562,16 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                 style={
                   selectedOption === "general"
                     ? {
-                        backgroundColor: "#ffb900",
-                        margin: "10px 10px 0px 0px",
-                        cursor: "pointer",
-                        color: "white",
-                      }
+                      backgroundColor: "#ffb900",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                      color: "white",
+                    }
                     : {
-                        backgroundColor: "white",
-                        margin: "10px 10px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "white",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                    }
                 }
                 onClick={() => {
                   setSelectedOption("general");
@@ -2482,16 +2594,16 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                 style={
                   selectedOption === "notgeneral"
                     ? {
-                        backgroundColor: "#ffb900",
-                        margin: "10px 0px 0px 0px",
-                        cursor: "pointer",
-                        color: "white",
-                      }
+                      backgroundColor: "#ffb900",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                      color: "white",
+                    }
                     : {
-                        backgroundColor: "white",
-                        margin: "10px 0px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "white",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                    }
                 }
                 className="notgeneral form-control col"
                 onClick={() => {
@@ -2917,13 +3029,25 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
               <h1 style={{ marginBottom: "0px" }} className="title">
                 Projection Form
               </h1>
-              <IconButton
+              {/* <IconButton
                 onClick={() => {
                   setIsEditProjection(true);
                 }}
               >
                 <EditIcon color="primary"></EditIcon>
+              </IconButton> */}
+              <IconButton onClick={() => handleDelete(projectingCompany)}>
+                <DeleteIcon
+                  style={{
+                    width: "16px",
+                    height: "16px",
+                    color: "#bf0b0b",
+                  }}
+                >
+                  Delete
+                </DeleteIcon>
               </IconButton>
+
             </div>
             <hr style={{ marginBottom: "10px" }} />
             <div className="body-projection">
@@ -2955,7 +3079,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                       label: value,
                     }))}
                     placeholder="Select Services..."
-                    disabled={!isEditProjection}
+                  //disabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -2973,7 +3097,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                         offeredPrize: e.target.value,
                       }));
                     }}
-                    disabled={!isEditProjection}
+                  //disabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -2991,7 +3115,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                         totalPayment: e.target.value,
                       }));
                     }}
-                    disabled={!isEditProjection}
+                  //disabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -3009,12 +3133,12 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                         lastFollowUpdate: e.target.value,
                       }));
                     }}
-                    disabled={!isEditProjection}
+                  //disabled={!isEditProjection}
                   />
                 </div>
               </div>
               <div className="label">
-                <strong>Payment Expected on {!currentProjection.estPaymentDate  && <span style={{ color: "red" }}>*</span>}:</strong>
+                <strong>Payment Expected on {!currentProjection.estPaymentDate && <span style={{ color: "red" }}>*</span>}:</strong>
                 <div className="services mb-3">
                   <input
                     type="date"
@@ -3027,7 +3151,7 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                         estPaymentDate: e.target.value,
                       }));
                     }}
-                    disabled={!isEditProjection}
+                  //disabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -3045,13 +3169,13 @@ const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
                         remarks: e.target.value,
                       }));
                     }}
-                    disabled={!isEditProjection}
+                  //disabled={!isEditProjection}
                   />
                 </div>
               </div>
               <div className="submitBtn">
                 <button
-                  disabled={!isEditProjection}
+                  //disabled={!isEditProjection}
                   onClick={handleProjectionSubmit}
                   style={{ width: "100%" }}
                   type="submit"

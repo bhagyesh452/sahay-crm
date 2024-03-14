@@ -13,7 +13,6 @@ import BellEmp from "./BellEmp";
 
 
 function Header({ name, designation}) {
-
   
   return (
     <div>

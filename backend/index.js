@@ -27,11 +27,11 @@ const RequestDeleteByBDE = require("./models/Deleterequestbybde");
 const BookingsRequestModel = require("./models/BookingsEdit");
 const json2csv = require('json2csv').parse;
 const fastCsv = require('fast-csv');
-
 const RecentUpdatesModel = require("./models/RecentUpdates");
 const FollowUpModel = require("./models/FollowUp");
 const DraftModel = require("./models/DraftLeadform");
 const { type } = require("os");
+const LeadModel_2 = require("./models/Leadform_2");
 
 
 // const http = require('http');
@@ -67,7 +67,6 @@ app.get("/api", (req, res) => {
   console.log(req.url);
   res.send("hello from backend!");
 });
-
 
 
 app.post("/api/admin/login-admin", async (req, res) => {
@@ -111,8 +110,35 @@ app.post("/api/employeelogin", async (req, res) => {
       expiresIn: "10h",
     });
     res.json({ newtoken });
+    socketIO.emit('Employee-login');
+   
+    
   } else {
     res.status(401).json({ message: "Invalid credentials" });
+  }
+});
+
+app.put('/api/online-status/:id/:socketID', async (req, res) => {
+  const { id } = req.params;
+  const { socketID }  = req.params;
+console.log(socketID)
+  try {
+    const admin = await adminModel.findByIdAndUpdate(id, { Active: socketID }, { new: true });
+    res.status(200).json(admin);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.put('/api/online-status/:id/disconnect', async (req, res) => {
+  const { id } = req.params;
+  const date = new Date().toString();
+  try {
+    const admin = await adminModel.findByIdAndUpdate(id, { Active: date }, { new: true });
+    res.status(200).json(admin);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 app.post("/api/processingLogin", async (req, res) => {
@@ -282,11 +308,19 @@ app.post("/api/manual", async (req, res) => {
 
 app.post("/api/update-status/:id", async (req, res) => {
   const { id } = req.params;
-  const { newStatus } = req.body;
+  const { newStatus, title, date, time } = req.body; // Destructure the required properties from req.body
 
   try {
     // Update the status field in the database based on the employee id
     await CompanyModel.findByIdAndUpdate(id, { Status: newStatus });
+    
+    // Create and save a new document in the RecentUpdatesModel collection
+    const newUpdate = new RecentUpdatesModel({
+      title: title,
+      date: date,
+      time: time,
+    });
+    await newUpdate.save();
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -294,6 +328,7 @@ app.post("/api/update-status/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 app.post("/api/update-remarks/:id", async (req, res) => {
   const { id } = req.params;
@@ -377,6 +412,18 @@ app.get("/api/leads", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+app.get("/api/leads/:companyName", async (req, res) => {
+  const companyName = req.params.companyName;
+  try {
+    // Fetch data using lean queries to retrieve plain JavaScript objects
+    const data = await CompanyModel.findOne({"Company Name" : companyName}).lean();
+  
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 app.get("/api/new-leads", async (req, res) => {
   try {
     const { startIndex, endIndex } = req.query;
@@ -428,6 +475,7 @@ app.get('/api/projection-data', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 app.get("/api/card-leads", async (req, res) => {
   try {
     const { dAmount } = req.query; // Get the dAmount parameter from the query
@@ -454,6 +502,31 @@ app.get('/api/projection-data/:ename', async (req, res) => {
   } catch (error) {
     // If there's an error, send a 500 internal server error response
     console.error('Error fetching FollowUp data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ----------------------------------api to delete projection data-----------------------------------
+
+app.delete('/api/delete-followup/:companyName', async (req, res) => {
+  try {
+    // Extract the company name from the request parameters
+    const { companyName } = req.params;
+    
+    // Check if a document with the given company name exists
+    const existingData = await FollowUpModel.findOne({ companyName });
+
+    if (existingData) {
+      // If the document exists, delete it
+      await FollowUpModel.findOneAndDelete({ companyName });
+      res.status(200).json({ message: 'Data deleted successfully' });
+    } else {
+      // If no document with the given company name exists, return a 404 Not Found response
+      res.status(404).json({ error: 'Company not found' });
+    }
+  } catch (error) {
+    // If there's an error during the deletion process, send a 500 Internal Server Error response
+    console.error('Error deleting data:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -1104,6 +1177,7 @@ app.post(
       } = req.body;
       const bdeName = empName;
       const bdeEmail = empEmail;
+
    
       const otherDocs =
         req.files["otherDocs"] && req.files["otherDocs"].length > 0
@@ -1704,14 +1778,27 @@ app.post("/api/upload/lead-form", async (req, res) => {
         // Increment the success counter
         successCounter++;
       } catch (error) {
-        // If an error occurs during data insertion, increment the error counter
-        errorCounter++;
-        console.error("Error saving employee:", error.message);
+        // If an error occurs during data insertion, check if it's due to duplicate companyName
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.companyName) {
+          // Duplicate companyName detected, save the data to LeadModel_2
+          try {
+            await LeadModel_2.create(data);
+            console.log("Data saved to LeadModel_2 due to duplicate companyName:", data);
+            successCounter++; // Increment success counter as data was successfully saved to LeadModel_2
+          } catch (err) {
+            // Error saving to LeadModel_2
+            console.error("Error saving data to LeadModel_2:", err.message);
+            errorCounter++; // Increment error counter
+          }
+        } else {
+          // Error other than duplicate companyName, increment error counter
+          errorCounter++;
+          console.error("Error saving employee:", error.message);
+        }
       }
     }
 
     // Respond with success and error counters
-  
     res.status(200).json({ message: "Data sent successfully", successCounter, errorCounter });
   } catch (error) {
     // If an error occurs at the outer try-catch block, handle it here
@@ -1719,6 +1806,7 @@ app.post("/api/upload/lead-form", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error", errorCounter });
   }
 });
+
 app.post('/api/accept-booking-request/:companyName', async (req, res) => {
   const companyName = req.params.companyName;
   const requestData = req.body;
@@ -1799,6 +1887,38 @@ app.get("/api/company/:companyName", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+app.get("/api/company-ename/:ename", async (req, res) => {
+  const bdeName = req.params.ename;
+
+  try {
+    // Fetch details for the specified company name from the LeadModel
+    const companyDetails = await LeadModel.find({ bdeName });
+    if (!companyDetails) {
+      return res.status(404).json({ error: "Company not found" });
+    }
+    res.json(companyDetails);
+  } catch (error) {
+    console.error("Error fetching company details:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+app.get("/api/duplicate-company/:companyName", async (req, res) => {
+  const companyName = req.params.companyName;
+
+  try {
+    // Fetch details for the specified company name from the LeadModel
+    const companyDetails = await LeadModel_2.find({ companyName }).lean();
+
+    if (!companyDetails) {
+      return res.status(404).json({ error: "Company not found" });
+    }
+    res.json(companyDetails);
+  } catch (error) {
+    console.error("Error fetching company details:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 app.delete("/api/reverse-delete/:companyName", async (req, res) => {
   try {
@@ -2159,6 +2279,73 @@ app.get('/api/exportdatacsv', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+app.get('/api/exportLeads/:dataType' , async (req , res)=>{
+  try {
+    const dataType = req.params.dataType;
+    const selectedIds = req.query.selectedRows;
+
+    const leads =   await CompanyModel.find({ 
+      _id: { $in: selectedIds }
+  }) ;
+
+    const csvData = [];
+
+    // Push the headers as the first row
+    csvData.push([
+      "SR. NO",
+      "Company Name",
+      "Company Number",
+      "Company Email",
+      "Company Incorporation Date  ",
+      "City",
+      "State",
+      "ename",
+      "AssignDate", 
+      "Status",
+      "Remarks"
+    ]);
+
+    // Push each lead as a row into the csvData array
+    leads.forEach((lead, index) => {
+      const rowData = [
+        index + 1,
+        lead["Company Name"],
+        lead["Contact Number"],
+        lead["Company Email"],
+        lead["Company Incorporation Date  "],
+        lead["City"],
+        lead["State"],
+        lead["ename"],
+        lead["AssignDate"],
+        lead['Status'],
+        lead["Remarks"],
+      ];
+      csvData.push(rowData);
+      // console.log("rowData:" , rowData)
+    });
+
+    // Use fast-csv to stringify the csvData array
+    res.setHeader('Content-Type' , 'text/csv')
+    if(dataType=== "Assigned"){
+      res.setHeader('Content-Disposition' , 'attachment; filename=AssignedData.csv');
+    }else{
+      res.setHeader('Content-Disposition' , 'attachment; filename=UnassignedData.csv');
+    }
+ 
+    
+    const csvString = csvData.map(row => row.join(',')).join('\n');
+    // Send response with CSV data
+    // Send response with CSV data
+    res.status(200).end(csvString);
+    // console.log(csvString)
+     // Here you're ending the response
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+  
+})
 
 // ------------------------------api to upload docs from processing window------------------------------
 
@@ -2249,14 +2436,25 @@ app.post('/api/uploadotherdocsAttachment/:companyName', upload.fields([
 });
 
 
-
 http.listen(3001, function () {
   console.log("Server started...");
   socketIO.on("connection", function (socket) {
     console.log("User connected: " + socket.id);
+    socketIO.emit('employee-entered'); 
+
+    socket.on("disconnect", async function () {
+      const date = new Date().toString();
+      console.log("User disconnected: " + socket.id);
+      socketIO.emit("user-disconnected");
+      try {
+        await adminModel.updateOne({ Active: socket.id }, { Active: date });
+        console.log('Admin updated: ' + socket.id);
+      } catch (error) {
+        console.error('Error updating admin:', error);
+      }
+    });
   });
 });
 
-// app.listen(3001,(req,res)=>{
-//   console.log("Server is running")
-// })
+
+

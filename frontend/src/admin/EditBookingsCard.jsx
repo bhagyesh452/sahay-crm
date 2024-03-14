@@ -27,15 +27,15 @@ function EditBookingsCard({ name, date, time, request, companyName }) {
   };
   const fetchApproveRequestsReal = async () => {
     try {
-      const response = await axios.get(`${secretKey}/companies`);
+      const response = await axios.get(`${secretKey}/company/${companyName}`);
       setCompanyReal(
-        response.data.find((obj) => obj.companyName === companyName)
+        response.data
       );
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
-
+console.log("Company data current:" , companyName)
   useEffect(() => {
     fetchApproveRequests();
     fetchApproveRequestsReal();

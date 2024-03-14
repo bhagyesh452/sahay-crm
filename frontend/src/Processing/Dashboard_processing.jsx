@@ -12,11 +12,10 @@ function Dashboard_processing() {
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [companyDetails, setCompanyDetails] = useState(null);
+  const [duplicateCompany, setduplicateCompany] = useState([]);
   const [bookingDates, setBookingDates] = useState([]);
   const [bookingTime, setBookingTime] = useState([]);
   
-
-
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
   useEffect(() => {
@@ -25,7 +24,7 @@ function Dashboard_processing() {
   }, []);
 
   useEffect(() => {
-    const socket = socketIO.connect(`http://localhost:3001`);
+    const socket = socketIO.connect(`https://startupsahay.in/api`);
 
     // Listen for the 'welcome' event from the server
     socket.on('read', () => {
@@ -66,10 +65,8 @@ function Dashboard_processing() {
       const response = await fetch(`${secretKey}/companies`);
       const data = await response.json();
       const companyData = data.companies
-      console.log(companyData)
-      //console.log(companyData)
-  
-      // Extract unique booking dates from the fetched data
+
+
       const uniqueBookingDates = Array.from(
         new Set(companyData.map((company) => company.bookingDate))
       );
@@ -105,8 +102,12 @@ function Dashboard_processing() {
     try {
       if (selectedCompanyId !== null) {
         const response = await fetch(`${secretKey}/company/${selectedCompanyId}`);
+        const response2 = await fetch(`${secretKey}/duplicate-company/${selectedCompanyId}`);
+     
         const data = await response.json();
+        const data2 = await response2.json()
         setCompanyDetails(data);
+        setduplicateCompany(data2);
       }
     } catch (error) {
       console.error("Error fetching company details:", error);
@@ -143,11 +144,10 @@ function Dashboard_processing() {
                                     onCompanyClick={handleCompanyClick}
                                     selectedBookingDate={formattedDates}
                                     bookingTime={bookingTime}
-                                   
                                 />
                             </div>
                             <div className="col-sm-8">
-                                    <CompanyDetails company={companyDetails} />
+                                    <CompanyDetails companyDetails={companyDetails} duplicateCompany={duplicateCompany}/>
                             </div>
                         </div>
                     </div>

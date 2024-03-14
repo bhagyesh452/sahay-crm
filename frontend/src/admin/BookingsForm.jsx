@@ -207,6 +207,7 @@ function BookingsForm({
 
   // Add other fields as needed
 
+
   const handleSubmitForm = async () => {
     const currentTime = new Date();
     const formattedTime = formatTime(currentTime);
@@ -232,10 +233,14 @@ function BookingsForm({
     {
       matured
         ? formData.append("companyName", companysName)
+        
         : formData.append("companyName", leadData.companyName);
     }
-
-    formData.append("contactNumber", leadData.contactNumber);
+    {
+      matured
+        ? formData.append("contactNumber", companyNumber)
+        : formData.append("contactNumber", leadData.contactNumber);
+    }
     {
       matured
         ? formData.append("companyEmail", companysEmail)
@@ -723,7 +728,7 @@ function BookingsForm({
                     <input
                       type="number"
                       defaultValue={
-                        matured ? companyNumber : leadData.companyNumber
+                        matured ? companyNumber : leadData.contactNumber
                       }
                       name="company-contact"
                       id="company-contact"

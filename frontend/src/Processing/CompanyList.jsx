@@ -509,14 +509,9 @@ function CompanyList({ companies, onCompanyClick }) {
 
 
       <nav className="d-flex align-items-center justify-content-center mt-2">
-        <ul className="pagination">
-          <li className="page-item">
-            <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className="page-link">
-              <FaArrowLeft />
-            </button>
-          </li>
+        <ul className="pagination mt-1">
           {Array.from({ length: Math.ceil(FilteredData.length / perPage) }).map((_, index) => {
-            if (index + 1 === currentPage || index + 2 === currentPage || index + 3 === currentPage || index === currentPage) {
+            if (index + 1 === currentPage || index + 2 === currentPage || index + 3 === currentPage || index === currentPage || index + 1 === Math.ceil(FilteredData.length / perPage) || index === 0) {
               return (
                 <li key={index} className="page-item ml-1">
                   <button onClick={() => paginate(index + 1)} className={`page-link ${currentPage === index + 1 ? 'active' : ''}`} style={{
@@ -532,13 +527,17 @@ function CompanyList({ companies, onCompanyClick }) {
             }
             return null;
           })}
-          <li className="page-item">
-            <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === Math.ceil(FilteredData.length / perPage)} className="page-link">
-              <FaArrowRight />
-            </button>
-          </li>
         </ul>
+        <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className="page-link" style={{ position: 'absolute', left: '20px', marginBottom: "10px" }}>
+          <FaArrowLeft />
+        </button>
+        <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === Math.ceil(FilteredData.length / perPage)} className="page-link" style={{ position: 'absolute', right: '20px', marginBottom: "10px" }}>
+          <FaArrowRight />
+        </button>
       </nav>
+
+
+
     </div>
   );
 }

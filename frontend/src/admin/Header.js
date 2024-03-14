@@ -12,18 +12,18 @@ import Notification from "./Notification";
 import Avatar from '@mui/material/Avatar';
 import axios from "axios";
 import Bellicon from "./Bellicon";
-import socketIO from 'socket.io-client';
+import io from 'socket.io-client';
 // import "./styles/header.css"
 
 
 function Header({ name, designation}) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   useEffect(() => {
-    const socket = socketIO.connect(`${secretKey}`);
+    const socket = io('http://localhost:3001');
 
     // Listen for the 'welcome' event from the server
     socket.on('welcome', (message) => {
-      console.log(message); // Log the welcome message received from the server
+      console.log(message); 
     });
     fetchRequestDetails();
     fetchRequestGDetails();
@@ -42,9 +42,7 @@ function Header({ name, designation}) {
     };
   }, []);
  
-  useEffect(() => {
  
-  },[]);
   const [requestData, setRequestData] = useState([]);
   const [requestGData, setRequestGData] = useState([]);
   const [requestAppData, setRequestAppData] = useState([]);

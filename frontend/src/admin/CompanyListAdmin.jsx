@@ -435,7 +435,10 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
                 <div className="card w-100">
                   <div className="card-header w-100 d-flex align-items-center justify-content-between" style={{ backgroundColor: "#f8efef" ,padding:"11px 0px" }}>
                     <div className="d-flex align-items-center justify-content-between p-booking-Cname" title={company.companyName} >
-                      <h5 style={{ width: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textWrap: "nowrap" ,fontSize:"14px" }}>{company.companyName}</h5>
+                      <div><h5 style={{ width: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textWrap: "nowrap" ,fontSize:"14px" }}>{company.companyName}</h5>
+                      {company.bdeName && (
+                          <div className="m-0 bdeName-cmpy-list" title={company.bdeName} ><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{ width: "10px", height: "10px", marginRight: "5px" }}><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" /></svg>{company.bdeName}</div>)}
+                    </div>
                     </div>
                     <div className="d-flex align-items-center justify-content-between">
                       {company.imported && <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={{ width: "14px", height: "14px", fill: "#0b6240" }}><path d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z" /></svg>}
@@ -455,11 +458,19 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
                   <div className="card-body">
                     <div className="row">
                       <div className="col-lg-6 services-cmpy-list">
-                        {company.services && (
-                          <div className="m-0" title={company.services} style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textWrap: "nowrap" }} ><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{width:"10px" , height:"10px" , marginRight:"5px"}}><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>{company.services}</div>)}
-                        {company.bdeName && (
-                          <div className="m-0" title={company.bdeName} style={{ width: "125px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textWrap: "nowrap" }} ><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{width:"10px" , height:"10px" , marginRight:"5px"}}><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" /></svg>{company.bdeName}</div>
-                        )}
+                      {company.services && (
+                          <div className="m-0" style={{ maxWidth: "200px", overflow: "hidden" }}>
+                            {company.services[0].split(',').map((service, index) => (
+                              <div key={index} title={service.trim()} style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", textWrap: "nowrap" }}>
+                                <span
+                                  style={{ color: "green", marginRight: "5px" }}
+                                >
+                                  ●</span>{service.trim()}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        
                       </div>
                       <div className="col-lg-6 payments-cmpy-list">
                         <p><span style={{ color: "#336667" }}>Total Payment:</span>{company.totalPayment && (
