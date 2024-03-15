@@ -1718,7 +1718,8 @@ function EmployeeDashboard() {
                     <th>REMARKS</th>
                   </tr>
                 </thead>
-                <tbody>
+
+                {/* <tbody>
                   {filteredBooking && filteredBooking.length > 0 ? (
                     <>
                       {filteredBooking.map((mainObj, index) => (
@@ -1786,8 +1787,6 @@ function EmployeeDashboard() {
                       </td>
                     </tr>
                   )}
-
-
                 </tbody>
                 {
                   <tfoot>
@@ -1813,7 +1812,6 @@ function EmployeeDashboard() {
                       <th>
                         ₹
                         {filteredBooking
-
                           .reduce((total, obj) => {
                             return obj.bdeName === obj.bdmName
                               ? obj.firstPayment === 0
@@ -1828,7 +1826,6 @@ function EmployeeDashboard() {
                       <th>
                         ₹
                         {filteredBooking
-
                           .reduce((total, obj) => {
                             return obj.bdeName === obj.bdmName
                               ? obj.firstPayment === 0
@@ -1846,7 +1843,125 @@ function EmployeeDashboard() {
                       <th>-</th>
                     </tr>
                   </tfoot>
-                }
+                } */}
+                {filteredBooking && filteredBooking.length > 0 ? (
+                  <>
+                    <tbody>
+                      {filteredBooking.map((mainObj, index) => (
+                        <tr key={index}>
+                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                          <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime})`}</td>
+                          <td>{mainObj.companyName}</td>
+                          <td>{mainObj.contactNumber}</td>
+                          <td>{mainObj.companyEmail}</td>
+                          <td>{mainObj.services[0]}</td>
+                          <td>
+                            ₹
+                            {(mainObj.bdeName !== mainObj.bdmName
+                              ? mainObj.originalTotalPayment / 2
+                              : mainObj.originalTotalPayment
+                            ).toLocaleString()}
+                          </td>
+                          <td>
+                            ₹
+                            {(mainObj.firstPayment !== 0
+                              ? mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.firstPayment // If bdeName and bdmName are the same
+                                : mainObj.firstPayment / 2 // If bdeName and bdmName are different
+                              : mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                : mainObj.originalTotalPayment / 2
+                            ).toLocaleString()}{" "}
+                          </td>
+                          <td>
+                            ₹
+                            {(mainObj.firstPayment !== 0
+                              ? mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                : (mainObj.originalTotalPayment - mainObj.firstPayment) / 2
+                              : 0
+                            ).toLocaleString()}{" "}
+                          </td>
+                          <td>{mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}</td>
+                          <td>
+                            {mainObj.bdeName !== mainObj.bdmName
+                              ? mainObj.bdmType === "closeby"
+                                ? `Closed by ${mainObj.bdmName}`
+                                : `Supported by ${mainObj.bdmName}`
+                              : `Self Closed`}{" "}
+                          </td>
+                          <td>{mainObj.paymentRemarks}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th colSpan={3}>
+                          <strong>Total</strong>
+                        </th>
+                        <th>-</th>
+                        <th>-</th>
+                        <th>-</th>
+                        <th>
+                          ₹
+                          {filteredBooking.reduce((total, obj) => {
+                            return obj.bdeName === obj.bdmName
+                              ? total + obj.originalTotalPayment
+                              : total + obj.originalTotalPayment / 2;
+                          }, 0).toLocaleString()}
+                        </th>
+                        <th>
+                          ₹
+                          {filteredBooking.reduce((total, obj) => {
+                            return obj.bdeName === obj.bdmName
+                              ? obj.firstPayment === 0
+                                ? total + obj.originalTotalPayment
+                                : total + obj.firstPayment
+                              : obj.firstPayment === 0
+                                ? total + obj.originalTotalPayment / 2
+                                : total + obj.firstPayment / 2;
+                          }, 0).toLocaleString()}
+                        </th>
+                        <th>
+                          ₹
+                          {filteredBooking.reduce((total, obj) => {
+                            return obj.bdeName === obj.bdmName
+                              ? obj.firstPayment === 0
+                                ? total + obj.originalTotalPayment
+                                : total + obj.firstPayment
+                              : obj.firstPayment === 0
+                                ? total + obj.originalTotalPayment / 2
+                                : total + obj.firstPayment / 2;
+                          }, 0).toLocaleString()}
+                        </th>
+                        <th>-</th>
+                        <th>-</th>
+                        <th>-</th>
+                      </tr>
+                    </tfoot>
+                  </>
+                ) : filteredBooking && filteredBooking.length === 0 ? (
+                  <tr>
+                    <td colSpan={12} style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
+                      <ScaleLoader
+                        color="lightgrey"
+                        loading
+                        cssOverride={override}
+                        size={10}
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                      />
+                    </td>
+                  </tr>
+
+                ) : ( 
+                  <tr>
+                    <td colSpan={12} style={{ textAlign: 'center'}}><Nodata /></td>
+                  </tr>
+
+                )}
+
+
               </table>
             </div>
           </div>
