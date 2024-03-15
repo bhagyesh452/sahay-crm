@@ -129,6 +129,7 @@ function EmployeeDashboard() {
   useEffect(() => {
     fetchEmployeeData();
   }, [data]);
+  
   const formattedDates =
     empData.length !== 0 &&
     empData.map((data) => formatDate(data.AssignDate));
@@ -1961,8 +1962,6 @@ function EmployeeDashboard() {
                   </tr>
 
                 )}
-
-
               </table>
             </div>
           </div>
