@@ -32,6 +32,7 @@ import { HiChevronDoubleRight } from "react-icons/hi";
 import { TbChevronLeftPipe } from "react-icons/tb";
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa6";
+import { IoClose } from "react-icons/io5";
 
 
 
@@ -110,19 +111,19 @@ function EmployeeParticular() {
       // Find the employee by id and set the name
       const selectedEmployee = response.data.find(
         (employee) => employee._id === id
-        );
-        console.log(selectedEmployee._id)
+      );
+      //console.log(selectedEmployee._id)
 
-      console.log("eData" , eData[0])
-      console.log(salesExecutivesIds)
+      //console.log("eData", eData[0])
+      //console.log(salesExecutivesIds)
 
       if (salesExecutivesIds.length > 0 && salesExecutivesIds[0] === selectedEmployee._id) {
         // If it's at 0th position, set the visibility of the back button to false
         setBackButton(false); // assuming backButton is your back button element
-    } else {
+      } else {
         // Otherwise, set the visibility to true
         setBackButton(true) // or any other appropriate display style
-    }
+      }
 
       if (selectedEmployee) {
         setEmployeeName(selectedEmployee.ename);
@@ -134,7 +135,7 @@ function EmployeeParticular() {
       console.error("Error fetching employee details:", error.message);
     }
   };
-
+console.log(currentProjection)
   const functionopenAnchor = () => {
     setOpenAnchor(true);
   };
@@ -457,6 +458,7 @@ function EmployeeParticular() {
         offeredServices: findOneprojection.offeredServices,
         lastFollowUpdate: findOneprojection.lastFollowUpdate,
         estPaymentDate: findOneprojection.estPaymentDate,
+        totalPayment:findOneprojection.totalPayment,
         date: "",
         time: "",
       });
@@ -639,13 +641,13 @@ function EmployeeParticular() {
       const prevIndex = (currentIndex - 1 + eData.length) % eData.length;
 
       if (currentIndex === 0) {
-       
+
         // If it's the first page, navigate to the employees page
         window.location.replace(`/admin/employees`);
         //setBackButton(false)
       } else {
         // Get the previousId from the eData array
-        
+
         const prevId = eData[prevIndex];
         window.location.replace(`/admin/employees/${prevId}`);
       }
@@ -699,7 +701,7 @@ function EmployeeParticular() {
                   </div>
                 </div>
                 <div className="d-flex align-items-center justify-content-center">
-                 
+
                   {selectedRows.length !== 0 && (
                     <div className="request">
                       <div className="btn-list">
@@ -845,14 +847,14 @@ function EmployeeParticular() {
                     </button>
                   </Link>
 
-                  {backButton &&  <div><Link
+                  {backButton && <div><Link
                     to={`/admin/employees`}
                     style={{ marginLeft: "10px" }}>
                     <button className="btn btn-primary d-none d-sm-inline-block">
-                      <span><FaArrowLeft style={{marginRight:"10px",marginBottom:"3px"}} /></span>
+                      <span><FaArrowLeft style={{ marginRight: "10px", marginBottom: "3px" }} /></span>
                       Back
                     </button>
-                  </Link></div> }
+                  </Link></div>}
 
 
                 </div>
@@ -1395,9 +1397,9 @@ function EmployeeParticular() {
                               }}
                             />
                           </th>
-                          {(dataStatus === "Matured" && <th>Add Projection</th>) ||
-                            (dataStatus === "FollowUp" && <th>Add Projection</th>) ||
-                            (dataStatus === "Interested" && <th>Add Projection</th>)}
+                          {(dataStatus === "Matured" && <th>View Projection</th>) ||
+                            (dataStatus === "FollowUp" && <th>View Projection</th>) ||
+                            (dataStatus === "Interested" && <th>View Projection</th>)}
                         </tr>
                       </thead>
                       {currentData.length !== 0 && dataStatus !== "Matured" && (
@@ -1535,22 +1537,21 @@ function EmployeeParticular() {
                                   {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
                                     <>
                                       <IconButton>
-                                        <MdOutlineEditOff
-                                          // onClick={() => {
-                                          //   functionopenprojection(company["Company Name"]);
-                                          // }}
-                                          style={{ cursor: "pointer", width: "17px", height: "17px" }}
-                                          color="grey"
+                                        <HiOutlineEye
+                                          onClick={() => {
+                                            functionopenprojection(company["Company Name"]);
+                                          }}
+                                          style={{ cursor: "pointer", width: "17px", height: "17px", color: "fbb900" }}
                                         />
                                       </IconButton>
+
                                     </>
                                   ) : (
                                     <IconButton>
-                                      <AddCircleIcon
-                                        onClick={() => {
-                                          functionopenprojection(company["Company Name"]);
-                                        }}
+
+                                      <HiOutlineEye
                                         style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                                        color="lightgrey"
                                       />
                                     </IconButton>
                                   )}
@@ -1560,23 +1561,6 @@ function EmployeeParticular() {
 
                               {dataStatus === "Matured" && (
                                 <td>
-                                  {/* <button
-                                    style={{
-                                      padding: "5px",
-                                      fontSize: "12px",
-                                      backgroundColor: "lightblue",
-                                      // Additional styles for the "View" button
-                                    }}
-                                    className="btn btn-primary d-none d-sm-inline-block"
-                                    onClick={() => {
-                                      functionopenAnchor();
-                                      setMaturedCompanyName(
-                                        company["Company Name"]
-                                      );
-                                    }}
-                                  >
-                                    View
-                                  </button> */}
                                   <HiOutlineEye style={{
                                     fontSize: "15px",
                                     color: "#fbb900"
@@ -2037,27 +2021,36 @@ function EmployeeParticular() {
         onClose={closeProjection}
       >
         <div style={{ width: "31em" }} className="container-xl">
-          <div className="header d-flex justify-content-between align-items-center">
+          {/* <div className="header d-flex justify-content-between align-items-center">
             <h1 style={{ marginBottom: "0px" }} className="title">
               Projection Form
             </h1>
+          </div> */}
+          <div className="header d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
+            <h1 style={{ marginBottom: "0px", fontSize: "23px", }} className="title">
+              Projection Form
+            </h1>
+            <IconButton>
+              <IoClose onClick={closeProjection} />
+            </IconButton>
           </div>
-          <hr style={{ marginBottom: "10px" }} />
+          <hr style={{ margin: "0px" }} />
           <div className="body-projection">
             <div className="header mb-2">
-              <strong style={{ fontSize: "20px" }}>{projectingCompany}</strong>
+              <h1 style={{
+                fontSize: "14px",
+                textShadow: "none",
+                fontFamily: "sans-serif",
+                fontWeight: "400",
+
+                fontFamily: "Poppins, sans-serif",
+                margin: "10px 0px"
+              }}>{projectingCompany}</h1>
             </div>
             <div className="label">
-              <strong>Offered Services :</strong>
+              <strong>Offered Services</strong>
               <div className="services mb-3">
                 <Select
-                  // styles={{
-                  //   customStyles,
-                  //   container: (provided) => ({
-                  //     border: "1px solid #ffb900",
-                  //     borderRadius: "5px",
-                  //   }),
-                  // }}
                   isMulti
                   options={options}
                   value={
@@ -2073,7 +2066,7 @@ function EmployeeParticular() {
               </div>
             </div>
             <div className="label">
-              <strong>Offered prizes:</strong>
+              <strong>Offered Price</strong>
               <div className="services mb-3">
                 <input
                   type="number"
@@ -2085,7 +2078,7 @@ function EmployeeParticular() {
               </div>
             </div>
             <div className="label">
-              <strong>Last Follow Up Date:</strong>
+              <strong>Last Follow Up Date</strong>
               <div className="services mb-3">
                 <input
                   type="date"
@@ -2097,7 +2090,7 @@ function EmployeeParticular() {
               </div>
             </div>
             <div className="label">
-              <strong>Total Payment  :</strong>
+              <strong>Expected Price(With GST)</strong>
               <div className="services mb-3">
                 <input
                   type="number"
@@ -2110,7 +2103,7 @@ function EmployeeParticular() {
               </div>
             </div>
             <div className="label">
-              <strong>Payment Expected on:</strong>
+              <strong>Payment Expected on</strong>
               <div className="services mb-3">
                 <input
                   type="date"

@@ -6,7 +6,7 @@ import notificationSound from "../assets/media/iphone_sound.mp3";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import axios from "axios";
-import { IconChevronLeft , IconEye } from "@tabler/icons-react";
+import { IconChevronLeft, IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { Drawer, Icon, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -33,6 +33,8 @@ import AddCircle from "@mui/icons-material/AddCircle.js";
 import { HiOutlineEye } from "react-icons/hi";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { RiEditCircleFill } from "react-icons/ri";
+import { IoCloseCircleOutline } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 
 
 function EmployeePanel() {
@@ -54,6 +56,7 @@ function EmployeePanel() {
     remarks: "",
     date: "",
     time: "",
+    editCount:-1
   });
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
@@ -107,24 +110,24 @@ function EmployeePanel() {
   useEffect(() => {
     const socket = io('/api/socket.io'); // Connects to the same host and port as the client
     socket.on("connect", () => {
-        console.log("Socket connected with ID:", socket.id);
+      console.log("Socket connected with ID:", socket.id);
     });
 
     socket.on("request-seen", () => {
-        // Call fetchRequestDetails function to update request details
-        fetchRequestDetails();
+      // Call fetchRequestDetails function to update request details
+      fetchRequestDetails();
     });
 
     socket.on("data-sent", () => {
-        fetchRequestDetails();
-        playNotificationSound();
+      fetchRequestDetails();
+      playNotificationSound();
     });
 
     // Clean up the socket connection when the component unmounts
     return () => {
-        socket.disconnect();
+      socket.disconnect();
     };
-}, []);
+  }, []);
   const functionopenpopup = () => {
     openchange(true);
   };
@@ -148,6 +151,7 @@ function EmployeePanel() {
         totalPayment: findOneprojection.totalPayment,
         date: "",
         time: "",
+        editCount:findOneprojection.editCount,
       });
       setSelectedValues(findOneprojection.offeredServices);
     }
@@ -1029,59 +1033,114 @@ function EmployeePanel() {
   }, [data]);
   console.log(companies);
 
+  // const handleProjectionSubmit = async () => {
+  //   try {
+
+  //     const finalData = {
+  //       ...currentProjection,
+  //       companyName: projectingCompany,
+  //       ename: data.ename,
+  //       offeredServices: selectedValues,
+  //     };
+  //     if (finalData.offeredServices.length === 0) {
+  //       Swal.fire({ title: 'Services is required!', icon: 'warning' });
+  //     } else if (finalData.remarks === "") {
+  //       Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
+  //     } else if (finalData.totalPayment === 0) {
+  //       Swal.fire({ title: 'Payment is required!', icon: 'warning' });
+  //     }
+  //     else if (finalData.offeredPrize === 0) {
+  //       Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
+  //     }
+  //     else if (finalData.lastFollowUpdate === null) {
+  //       Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
+  //     }
+  //     else if (finalData.estPaymentDate === 0) {
+  //       Swal.fire({ title: 'Estimated Payment Date is required!', icon: 'warning' });
+  //     }
+  //     // Send data to backend API
+  //     const response = await axios.post(
+  //       `${secretKey}/update-followup`,
+  //       finalData
+  //     );
+  //     Swal.fire({ title: "Projection Submitted!", icon: "success" });
+  //     setOpenProjection(false);
+  //     setCurrentProjection({
+  //       companyName: "",
+  //       ename: "",
+  //       offeredPrize: 0,
+  //       offeredServices: [],
+  //       lastFollowUpdate: "",
+  //       remarks: "",
+  //       date: "",
+  //       time: "",
+  //       editCount:
+  //     });
+  //     fetchProjections();
+  //     setSelectedValues([])
+
+  //     // Log success message
+  //   } catch (error) {
+  //     console.error("Error updating or adding data:", error.message);
+  //   }
+  // };
+
   const handleProjectionSubmit = async () => {
+    console.log("currentProjection" , currentProjection)
     try {
+      const newEditCount = currentProjection.editCount === -1 ? 0 : currentProjection.editCount + 1;
 
-      const finalData = {
-        ...currentProjection,
-        companyName: projectingCompany,
-        ename: data.ename,
-        offeredServices: selectedValues,
-      };
-      if (finalData.offeredServices.length === 0) {
-        Swal.fire({ title: 'Services is required!', icon: 'warning' });
-      } else if (finalData.remarks === "") {
-        Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
-      } else if (finalData.totalPayment === 0) {
-        Swal.fire({ title: 'Payment is required!', icon: 'warning' });
-      }
-      else if (finalData.offeredPrize === 0) {
-        Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
-      }
-      else if (finalData.lastFollowUpdate === null) {
-        Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
-      }
-      else if (finalData.estPaymentDate === 0) {
-        Swal.fire({ title: 'Estimated Payment Date is required!', icon: 'warning' });
-      }
+        const finalData = {
+            ...currentProjection,
+            companyName: projectingCompany,
+            ename: data.ename,
+            offeredServices: selectedValues,
+            editCount: currentProjection.editCount + 1, // Increment editCount
+        };
+        if (finalData.offeredServices.length === 0) {
+            Swal.fire({ title: 'Services is required!', icon: 'warning' });
+        } else if (finalData.remarks === "") {
+            Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
+        } else if (finalData.totalPayment === 0) {
+            Swal.fire({ title: 'Payment is required!', icon: 'warning' });
+        }
+        else if (finalData.offeredPrize === 0) {
+            Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
+        }
+        else if (finalData.lastFollowUpdate === null) {
+            Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
+        }
+        else if (finalData.estPaymentDate === 0) {
+            Swal.fire({ title: 'Estimated Payment Date is required!', icon: 'warning' });
+        }
+        // Send data to backend API
+        const response = await axios.post(
+            `${secretKey}/update-followup`,
+            finalData
+        );
+        Swal.fire({ title: "Projection Submitted!", icon: "success" });
+        setOpenProjection(false);
+        setCurrentProjection({
+            companyName: "",
+            ename: "",
+            offeredPrize: 0,
+            offeredServices: [],
+            lastFollowUpdate: "",
+            remarks: "",
+            date: "",
+            time: "",
+            editCount: newEditCount, // Increment editCount
+        });
+        fetchProjections();
+        setSelectedValues([])
 
-
-
-
-      // Send data to backend API
-      const response = await axios.post(
-        `${secretKey}/update-followup`,
-        finalData
-      );
-      Swal.fire({ title: "Projection Submitted!", icon: "success" });
-      setOpenProjection(false);
-      setCurrentProjection({
-        companyName: "",
-        ename: "",
-        offeredPrize: 0,
-        offeredServices: [],
-        lastFollowUpdate: "",
-        remarks: "",
-        date: "",
-        time: "",
-      });
-      fetchProjections();
-
-      // Log success message
+        // Log success message
     } catch (error) {
-      console.error("Error updating or adding data:", error.message);
+        console.error("Error updating or adding data:", error.message);
     }
-  };
+};
+
+
 
   const [openIncoDate, setOpenIncoDate] = useState(false);
 
@@ -1274,36 +1333,83 @@ function EmployeePanel() {
   // -----------------------------------------------------delete-projection-data-------------------------------
 
 
+  // const handleDelete = async (company) => {
+  //   const companyName = company;
+  //   console.log(companyName);
+
+  //   // Display a confirmation dialog using SweetAlert
+  //   Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: 'You will not be able to recover this data!',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#3085d6',
+  //     cancelButtonColor: '#d33',
+  //     confirmButtonText: 'Yes, delete it!'
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //         // Send a DELETE request to the backend API endpoint
+  //         const response = await axios.delete(`${secretKey}/delete-followup/${companyName}`);
+  //         console.log(response.data.message); // Log the response message
+  //         // Show a success message after successful deletion
+  //         Swal.fire('Deleted!', 'Your data has been deleted.', 'success');
+  //         setCurrentProjection({
+  //           companyName: "",
+  //           ename: "",
+  //           offeredPrize: 0,
+  //           offeredServices: [],
+  //           lastFollowUpdate: "",
+  //           totalPayment: 0,
+  //           estPaymentDate: "",
+  //           remarks: "",
+  //           date: "",
+  //           time: "",
+  //         });
+  //         setSelectedValues([])
+  //         fetchProjections();
+  //       } catch (error) {
+  //         console.error('Error deleting data:', error);
+  //         // Show an error message if deletion fails
+  //         Swal.fire('Error!', 'Follow Up Not Found.', 'error');
+  //       }
+  //     }
+  //   });
+  // };
+  // console.log("projections", currentProjection)
+
   const handleDelete = async (company) => {
     const companyName = company;
     console.log(companyName);
 
-    // Display a confirmation dialog using SweetAlert
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'You will not be able to recover this data!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          // Send a DELETE request to the backend API endpoint
-          const response = await axios.delete(`${secretKey}/delete-followup/${companyName}`);
-          console.log(response.data.message); // Log the response message
-          // Show a success message after successful deletion
-          Swal.fire('Deleted!', 'Your data has been deleted.', 'success');
-          fetchProjections();
-        } catch (error) {
-          console.error('Error deleting data:', error);
-          // Show an error message if deletion fails
-          Swal.fire('Error!', 'Follow Up Not Found.', 'error');
-        }
-      }
-    });
+    try {
+      // Send a DELETE request to the backend API endpoint
+      const response = await axios.delete(`${secretKey}/delete-followup/${companyName}`);
+      console.log(response.data.message); // Log the response message
+      // Show a success message after successful deletion
+      console.log('Deleted!', 'Your data has been deleted.', 'success');
+      setCurrentProjection({
+        companyName: "",
+        ename: "",
+        offeredPrize: 0,
+        offeredServices: [],
+        lastFollowUpdate: "",
+        totalPayment: 0,
+        estPaymentDate: "",
+        remarks: "",
+        date: "",
+        time: "",
+      });
+      setSelectedValues([]);
+      fetchProjections();
+    } catch (error) {
+      console.error('Error deleting data:', error);
+      // Show an error message if deletion fails
+      console.log('Error!', 'Follow Up Not Found.', 'error');
+    }
   };
+  //console.log("projections", currentProjection);
+
 
   return (
     <div>
@@ -2315,7 +2421,7 @@ function EmployeePanel() {
                                                   functionopenprojection(company["Company Name"]);
                                                 }}
                                                 style={{ cursor: "pointer", width: "17px", height: "17px" }}
-                                                color="#9696f8"
+                                                color={projectionData.find(item => item.editCount > 0) ? "green" : "#fbb900"}
                                               />
                                             </IconButton>
                                           </>
@@ -3024,36 +3130,60 @@ function EmployeePanel() {
           onClose={closeProjection}
         >
           <div style={{ width: "31em" }} className="container-xl">
-            <div className="header d-flex justify-content-between align-items-center">
-              <h1 style={{ marginBottom: "0px" }} className="title">
+            <div className="header d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
+              <h1 style={{ marginBottom: "0px", fontSize: "23px", }} className="title">
                 Projection Form
               </h1>
-              {/* <IconButton
-                onClick={() => {
-                  setIsEditProjection(true);
-                }}
-              >
-                <EditIcon color="primary"></EditIcon>
-              </IconButton> */}
-              <IconButton onClick={() => handleDelete(projectingCompany)}>
-                <DeleteIcon
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    color: "#bf0b0b",
-                  }}
-                >
-                  Delete
-                </DeleteIcon>
-              </IconButton>
-
+              <div>
+                <IconButton
+                  onClick={() => {
+                    setIsEditProjection(true);
+                  }}>
+                  <EditIcon color="primary"></EditIcon>
+                </IconButton>
+                {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
+                  <DeleteIcon
+                    style={{
+                      width: "16px",
+                      height: "16px",
+                      color: "#bf0b0b",
+                    }}
+                  >
+                    Delete
+                  </DeleteIcon>
+                </IconButton> */}
+                <IconButton>
+                  <IoClose onClick={closeProjection} />
+                </IconButton>
+              </div>
             </div>
-            <hr style={{ marginBottom: "10px" }} />
+            <hr style={{ margin: "0px" }} />
             <div className="body-projection">
-              <div className="header mb-2">
-                <strong style={{ fontSize: "20px" }}>
-                  {projectingCompany}
-                </strong>
+              <div className="header d-flex align-items-center justify-content-between">
+                <div>
+                  <h1 title={projectingCompany} style={{
+                    fontSize: "14px",
+                    textShadow: "none",
+                    fontFamily: "sans-serif",
+                    fontWeight: "400",
+                    fontFamily: "Poppins, sans-serif",
+                    margin: "10px 0px",
+                    width: "200px",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}>
+                    {projectingCompany}
+                  </h1>
+                </div>
+                <div>
+                  <button
+                    onClick={() => handleDelete(projectingCompany)}
+                    className="btn btn-primary"
+                  >
+                    Clear Form
+                  </button>
+                </div>
               </div>
               <div className="label">
                 <strong>Offered Services {selectedValues.length === 0 && <span style={{ color: "red" }}>*</span>} :</strong>
@@ -3083,7 +3213,7 @@ function EmployeePanel() {
                 </div>
               </div>
               <div className="label">
-                <strong>Offered prizes {!currentProjection.offeredPrize && <span style={{ color: "red" }}>*</span>} :</strong>
+                <strong>Offered Prices {!currentProjection.offeredPrize && <span style={{ color: "red" }}>*</span>} :</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -3101,7 +3231,7 @@ function EmployeePanel() {
                 </div>
               </div>
               <div className="label">
-                <strong>Total Payment {currentProjection.totalPayment === 0 && <span style={{ color: "red" }}>*</span>} :</strong>
+                <strong>Expected Price (With GST){currentProjection.totalPayment === 0 && <span style={{ color: "red" }}>*</span>} :</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
