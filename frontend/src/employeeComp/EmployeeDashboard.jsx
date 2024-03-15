@@ -1341,7 +1341,7 @@ function EmployeeDashboard() {
                         </tr>
                       ))) : (
                       <tr>
-                        <td colSpan="11" style={{ textAlign: 'center' }}><Nodata/></td>
+                        <td colSpan="11" style={{ textAlign: 'center' }}><Nodata /></td>
                       </tr>
                     )
                   ) : (<tr style={{ minHeight: "350px" }}><td colSpan={11}>
@@ -1720,7 +1720,7 @@ function EmployeeDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredBooking ? (
+                  {filteredBooking && filteredBooking.length > 0 ? (
                     <>
                       {filteredBooking.map((mainObj, index) => (
                         <tr key={index}>
@@ -1769,9 +1769,13 @@ function EmployeeDashboard() {
                         </tr>
                       ))}
                     </>
+                  ) : filteredBooking && filteredBooking.length === 0 ? (
+                    <tr>
+                      <td colSpan={12} style={{ textAlign: 'center' }}><Nodata /></td>
+                    </tr>
                   ) : (
                     <tr>
-                      <td style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
+                      <td colSpan={12} style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
                         <ScaleLoader
                           color="lightgrey"
                           loading
@@ -1783,6 +1787,7 @@ function EmployeeDashboard() {
                       </td>
                     </tr>
                   )}
+
 
                 </tbody>
                 {
