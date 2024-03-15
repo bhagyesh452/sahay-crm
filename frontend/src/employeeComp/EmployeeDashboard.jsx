@@ -72,6 +72,7 @@ function EmployeeDashboard() {
   const [incoFilter, setIncoFilter] = useState("");
 
 
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -1249,8 +1250,7 @@ function EmployeeDashboard() {
                     </th>
                   </tr>
                 </thead>
-                
-                <tbody>
+                {/* <tbody>
                   {uniqueArray ? (
                     uniqueArray.length > 0 ? (
                       uniqueArray.map((obj, index) => (
@@ -1428,8 +1428,8 @@ function EmployeeDashboard() {
                       <td>{empData.length}</td>
                     </tr>
                   </tfoot>
-                )}
-                {/* {uniqueArray && uniqueArray.length > 0 ? (
+                )} */}
+                {uniqueArray && uniqueArray.length > 0 ? (
                   <>
                     <tbody>
                       {uniqueArray.map((obj, index) => (
@@ -1557,7 +1557,7 @@ function EmployeeDashboard() {
                       <Nodata />
                     </td>
                   </tr>
-                )} */}
+                )}
 
 
 
