@@ -2347,7 +2347,7 @@ app.get('/api/exportLeads/:dataType' , async (req , res)=>{
       const rowData = [
         index + 1,
         lead["Company Name"],
-        lead["Contact Number"],
+        lead["Company Number"],
         lead["Company Email"],
         lead["Company Incorporation Date  "],
         lead["City"],
