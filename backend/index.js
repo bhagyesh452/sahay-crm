@@ -541,7 +541,7 @@ app.post('/api/update-followup', async (req, res) => {
     const time = todayDate.toLocaleTimeString();
     const date = todayDate.toLocaleDateString();
     const finalData = { ...req.body, date, time };
-    
+    console.log(finalData)
     // Check if a document with companyName exists
     const existingData = await FollowUpModel.findOne({ companyName });
     

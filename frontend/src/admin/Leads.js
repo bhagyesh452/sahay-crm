@@ -86,21 +86,30 @@ function Leads() {
   const [requestData, setRequestData] = useState([]);
   const [requestGData, setRequestGData] = useState([]);
   const [mainData, setmainData] = useState([]);
+  const [isLoading , setIsLoading] = useState(false)
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
   //fetch data
   const fetchDatadebounce = async () => {
     try {
+      // Set isLoading to true while fetching data
+      setIsLoading(true);
+
       const response = await axios.get(`${secretKey}/leads`);
 
       // Set the retrieved data in the state
-
       setData(response.data.reverse());
       setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
+
+      // Set isLoading back to false after data is fetched
+      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error.message);
+      // Set isLoading back to false if an error occurs
+      setIsLoading(false);
     }
-  };
+};
+
   const fetchData = debounce(async () => {
     const data = await fetchDatadebounce();
     if (data) {

@@ -75,7 +75,7 @@ function Dashboard() {
     matured: "none",
     interested: "none",
     lastLead: "none",
-    totalLeads : 'none'
+    totalLeads: 'none'
   });
 
   const [searchOption, setSearchOption] = useState(false)
@@ -116,9 +116,9 @@ function Dashboard() {
   };
   const debounceDelay = 300;
 
-// Wrap the fetch functions with debounce
-const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
-const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
+  // Wrap the fetch functions with debounce
+  const debouncedFetchCompanyData = debounce(fetchCompanyData, debounceDelay);
+  const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
   const fetchData = async () => {
     if (showUpdates) {
       try {
@@ -146,8 +146,8 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
 
       const response = await axios.get(url);
       const data = response.data.leads;
-      console.log(` startDate : ${startDateAnother} , endDate : ${endDateAnother}` , data);
-      
+      console.log(` startDate : ${startDateAnother} , endDate : ${endDateAnother}`, data);
+
       // Update state with the fetched data
       setBookingObject(data);
       setFilteredBooking(data);
@@ -158,7 +158,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
   useEffect(() => {
 
 
-   
+
 
     // Call the fetchData function when the component mounts
 
@@ -168,11 +168,11 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
 
-  useEffect(()=>{
+
+  useEffect(() => {
     fetchCompanies();
-  },[startDateAnother , endDateAnother])
+  }, [startDateAnother, endDateAnother])
 
   useEffect(() => {
     fetchData();
@@ -689,17 +689,17 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
       untouched: prevData.untouched === "ascending"
         ? "descending"
         : prevData.untouched === "descending"
-        ? "none"
-        : "ascending"
+          ? "none"
+          : "ascending"
     }));
-    
+
     switch (sortBy1) {
 
       case "ascending":
         setIncoFilter("ascending");
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
-          if ((company.Status === "Untouched") 
+          if ((company.Status === "Untouched")
           ) {
             untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
           }
@@ -741,24 +741,24 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
         break;
 
     }
-  }; 
+  };
   const handleSortNotPickedUp = (sortBy1) => {
     setSortType(prevData => ({
       ...prevData,
       notPickedUp: prevData.notPickedUp === "ascending"
         ? "descending"
         : prevData.notPickedUp === "descending"
-        ? "none"
-        : "ascending"
+          ? "none"
+          : "ascending"
     }));
-    
+
     switch (sortBy1) {
 
       case "ascending":
         setIncoFilter("ascending");
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
-          if ((company.Status === "Not Picked Up") 
+          if ((company.Status === "Not Picked Up")
             // (openFilters.busy && company.Status === "Busy") ||
             // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
             // (openFilters.junk && company.Status === "Junk") ||
@@ -807,7 +807,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
           return countB - countA; // Sort in descending order of "Untouched" count
         });
         break;
-        case "none":
+      case "none":
         setIncoFilter("none");
         if (originalEmployeeData.length > 0) {
           // Restore to previous state
@@ -828,8 +828,8 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
       busy: prevData.busy === "ascending"
         ? "descending"
         : prevData.busy === "descending"
-        ? "none"
-        : "ascending"
+          ? "none"
+          : "ascending"
     }));
     switch (sortBy1) {
 
@@ -838,7 +838,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
           if ((company.Status === "Busy")
-            
+
           ) {
             untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
           }
@@ -850,7 +850,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
           const countB = untouchedCountAscending[b.ename] || 0;
           return countA - countB; // Sort in ascending order of "Untouched" count
         });
-       
+
         break;
       case "descending":
         setIncoFilter("descending");
@@ -887,8 +887,8 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
       interested: prevData.interested === "ascending"
         ? "descending"
         : prevData.interested === "descending"
-        ? "none"
-        : "ascending"
+          ? "none"
+          : "ascending"
     }));
     switch (sortBy1) {
 
@@ -963,8 +963,8 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
       matured: prevData.matured === "ascending"
         ? "descending"
         : prevData.matured === "descending"
-        ? "none"
-        : "ascending"
+          ? "none"
+          : "ascending"
     }));
     switch (sortBy1) {
 
@@ -1039,8 +1039,8 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
       notInterested: prevData.notInterested === "ascending"
         ? "descending"
         : prevData.notInterested === "descending"
-        ? "none"
-        : "ascending"
+          ? "none"
+          : "ascending"
     }));
     switch (sortBy1) {
 
@@ -1115,8 +1115,8 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
       junk: prevData.junk === "ascending"
         ? "descending"
         : prevData.junk === "descending"
-        ? "none"
-        : "ascending"
+          ? "none"
+          : "ascending"
     }));
     switch (sortBy1) {
 
@@ -1183,8 +1183,8 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
       followUp: prevData.followUp === "ascending"
         ? "descending"
         : prevData.followUp === "descending"
-        ? "none"
-        : "ascending"
+          ? "none"
+          : "ascending"
     }));
     switch (sortBy1) {
 
@@ -1259,8 +1259,8 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
       lastLead: prevData.lastLead === "ascending"
         ? "descending"
         : prevData.lastLead === "descending"
-        ? "none"
-        : "ascending"
+          ? "none"
+          : "ascending"
     }));
     switch (sortBy1) {
 
@@ -1268,9 +1268,9 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
         setIncoFilter("ascending");
         const untouchedCountAscending = {}
         companyData.forEach((company) => {
-          
-            untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
-          
+
+          untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+
         });
 
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -1294,9 +1294,9 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-         
-            untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
-          
+
+          untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+
         });
 
         // Step 2: Sort employeeData based on the count of "Untouched" statuses
@@ -1513,11 +1513,11 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                   </div>
                   {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
                   <div className="col card todays-booking m-2" >
-                    <div className="card-header d-flex align-items-center justify-content-between">
+                    <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                       <div>
                         <h2>Total Booking</h2>
                       </div>
-                      <div className=" form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
+                      <div className=" form-control date-range-picker d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
                         <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
                           {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
                         </div>
@@ -1812,14 +1812,17 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                   {/* Employee side Dashboard Analysis */}
                   <div className="employee-dashboard ">
                     <div className="card">
-                      <div className="card-header d-flex align-items-center justify-content-between">
+                      <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                         <div className="d-flex justify-content-between">
                           <div style={{ minWidth: '14vw' }} className="dashboard-title">
                             <h2 style={{ marginBottom: '5px' }}>Employee Dashboard</h2>
                           </div>
-                          <div className="dashboard-searchbar form-control d-flex justify-content-center align-items-center">
-                            <input  value={searchTerm}
-                                          onChange={(e) => debouncedFilterSearch(e.target.value)} placeholder="Enter BDE Name..." style={{border:"none"}} type="text" name="bdeName-search" id="bdeName-search" />
+                        </div>
+                        <div className="d-flex gap-2">
+
+                          <div className="general-searchbar form-control d-flex justify-content-center align-items-center">
+                            <input value={searchTerm}
+                              onChange={(e) => debouncedFilterSearch(e.target.value)} placeholder="Enter BDE Name..." style={{ border: "none" }} type="text" name="bdeName-search" id="bdeName-search" />
                             <CiSearch style={{
                               width: "19px",
                               height: "20px",
@@ -1827,16 +1830,15 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                               color: "grey"
                             }} />
                           </div>
-
-
-                        </div>
-                        <div className="form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
-                          <div>{`${formatDate(startDateEmployee)} - ${formatDate(endDateEmployee)}`}</div>
-                          <button onClick={() => setDateRangeDisplayEmployee(!displayDateRangeEmployee)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                            <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
-                          </button>
+                          <div className="form-control d-flex align-items-center justify-content-between date-range-picker" style={{ width: "15vw" }}>
+                            <div>{`${formatDate(startDateEmployee)} - ${formatDate(endDateEmployee)}`}</div>
+                            <button onClick={() => setDateRangeDisplayEmployee(!displayDateRangeEmployee)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                              <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                            </button>
+                          </div>
                         </div>
                       </div>
+
                       {displayDateRangeEmployee && (
                         <div className="position-absolute " style={{ zIndex: "1000", top: "15%", left: "75%" }} >
                           <DateRangePicker
@@ -1897,165 +1899,165 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                                 <th>BDE/BDM Name
 
                                 </th>
-                                <th style={{cursor:'pointer'}} onClick={(e) => {
-  let newSortType;
-  if (sortType.untouched === "ascending") {
-    newSortType = "descending";
-  } else if (sortType.untouched === "descending") {
-    newSortType = "none";
-  } else {
-    newSortType = "ascending";
-  }
-  handleSortUntouched(newSortType);
-}}>Untouched
-                             
-                               <ArrowDropUpIcon style={{ color: sortType.untouched === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
+                                  let newSortType;
+                                  if (sortType.untouched === "ascending") {
+                                    newSortType = "descending";
+                                  } else if (sortType.untouched === "descending") {
+                                    newSortType = "none";
+                                  } else {
+                                    newSortType = "ascending";
+                                  }
+                                  handleSortUntouched(newSortType);
+                                }}>Untouched
 
-                                <ArrowDropDownIcon style={{color: sortType.untouched === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
+                                  <ArrowDropUpIcon style={{ color: sortType.untouched === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                  <ArrowDropDownIcon style={{ color: sortType.untouched === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
                                 </th>
-                                <th style={{cursor:'pointer'}} onClick={(e) => {
-  let newSortType;
-  if (sortType.busy === "ascending") {
-    newSortType = "descending";
-  } else if (sortType.untouched === "descending") {
-    newSortType = "none";
-  } else {
-    newSortType = "ascending";
-  }
-  handleSortbusy(newSortType);
-}}>Busy
-                             
-                               <ArrowDropUpIcon style={{ color: sortType.busy === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
+                                  let newSortType;
+                                  if (sortType.busy === "ascending") {
+                                    newSortType = "descending";
+                                  } else if (sortType.untouched === "descending") {
+                                    newSortType = "none";
+                                  } else {
+                                    newSortType = "ascending";
+                                  }
+                                  handleSortbusy(newSortType);
+                                }}>Busy
 
-                                <ArrowDropDownIcon style={{color: sortType.busy === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
+                                  <ArrowDropUpIcon style={{ color: sortType.busy === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                  <ArrowDropDownIcon style={{ color: sortType.busy === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
                                 </th>
-                                <th style={{cursor:'pointer'}} onClick={(e) => {
-  let newSortType;
-  if (sortType.notPickedUp === "ascending") {
-    newSortType = "descending";
-  } else if (sortType.notPickedUp === "descending") {
-    newSortType = "none";
-  } else {
-    newSortType = "ascending";
-  }
-  handleSortNotPickedUp(newSortType);
-}}>Not Picked Up
-                             
-                               <ArrowDropUpIcon style={{ color: sortType.notPickedUp === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
+                                  let newSortType;
+                                  if (sortType.notPickedUp === "ascending") {
+                                    newSortType = "descending";
+                                  } else if (sortType.notPickedUp === "descending") {
+                                    newSortType = "none";
+                                  } else {
+                                    newSortType = "ascending";
+                                  }
+                                  handleSortNotPickedUp(newSortType);
+                                }}>Not Picked Up
 
-                                <ArrowDropDownIcon style={{color: sortType.notPickedUp === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
+                                  <ArrowDropUpIcon style={{ color: sortType.notPickedUp === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                  <ArrowDropDownIcon style={{ color: sortType.notPickedUp === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
                                 </th>
-                                <th style={{cursor:'pointer'}} onClick={(e) => {
-  let newSortType;
-  if (sortType.junk === "ascending") {
-    newSortType = "descending";
-  } else if (sortType.junk === "descending") {
-    newSortType = "none";
-  } else {
-    newSortType = "ascending";
-  }
-  handleSortJunk(newSortType);
-}}>Junk
-                             
-                               <ArrowDropUpIcon style={{ color: sortType.junk === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
+                                  let newSortType;
+                                  if (sortType.junk === "ascending") {
+                                    newSortType = "descending";
+                                  } else if (sortType.junk === "descending") {
+                                    newSortType = "none";
+                                  } else {
+                                    newSortType = "ascending";
+                                  }
+                                  handleSortJunk(newSortType);
+                                }}>Junk
 
-                                <ArrowDropDownIcon style={{color: sortType.junk === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
+                                  <ArrowDropUpIcon style={{ color: sortType.junk === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                  <ArrowDropDownIcon style={{ color: sortType.junk === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
                                 </th>
-                                <th style={{cursor:'pointer'}} onClick={(e) => {
-  let newSortType;
-  if (sortType.followUp === "ascending") {
-    newSortType = "descending";
-  } else if (sortType.followUp === "descending") {
-    newSortType = "none";
-  } else {
-    newSortType = "ascending";
-  }
-  handleSortFollowUp(newSortType);
-}}>Follow Up
-                             
-                               <ArrowDropUpIcon style={{ color: sortType.followUp === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
+                                  let newSortType;
+                                  if (sortType.followUp === "ascending") {
+                                    newSortType = "descending";
+                                  } else if (sortType.followUp === "descending") {
+                                    newSortType = "none";
+                                  } else {
+                                    newSortType = "ascending";
+                                  }
+                                  handleSortFollowUp(newSortType);
+                                }}>Follow Up
 
-                                <ArrowDropDownIcon style={{color: sortType.followUp === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
+                                  <ArrowDropUpIcon style={{ color: sortType.followUp === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                  <ArrowDropDownIcon style={{ color: sortType.followUp === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
                                 </th>
-                                <th style={{cursor:'pointer'}} onClick={(e) => {
-  let newSortType;
-  if (sortType.interested === "ascending") {
-    newSortType = "descending";
-  } else if (sortType.interested === "descending") {
-    newSortType = "none";
-  } else {
-    newSortType = "ascending";
-  }
-  handleSortInterested(newSortType);
-}}>Interested
-                             
-                               <ArrowDropUpIcon style={{ color: sortType.interested === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
+                                  let newSortType;
+                                  if (sortType.interested === "ascending") {
+                                    newSortType = "descending";
+                                  } else if (sortType.interested === "descending") {
+                                    newSortType = "none";
+                                  } else {
+                                    newSortType = "ascending";
+                                  }
+                                  handleSortInterested(newSortType);
+                                }}>Interested
 
-                                <ArrowDropDownIcon style={{color: sortType.interested === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
+                                  <ArrowDropUpIcon style={{ color: sortType.interested === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                  <ArrowDropDownIcon style={{ color: sortType.interested === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
                                 </th>
-                                <th style={{cursor:'pointer'}} onClick={(e) => {
-  let newSortType;
-  if (sortType.notInterested === "ascending") {
-    newSortType = "descending";
-  } else if (sortType.notInterested === "descending") {
-    newSortType = "none";
-  } else {
-    newSortType = "ascending";
-  }
-  handleSortNotInterested(newSortType);
-}}>Not Interested
-                             
-                               <ArrowDropUpIcon style={{ color: sortType.notInterested === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
+                                  let newSortType;
+                                  if (sortType.notInterested === "ascending") {
+                                    newSortType = "descending";
+                                  } else if (sortType.notInterested === "descending") {
+                                    newSortType = "none";
+                                  } else {
+                                    newSortType = "ascending";
+                                  }
+                                  handleSortNotInterested(newSortType);
+                                }}>Not Interested
 
-                                <ArrowDropDownIcon style={{color: sortType.notInterested === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
+                                  <ArrowDropUpIcon style={{ color: sortType.notInterested === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                  <ArrowDropDownIcon style={{ color: sortType.notInterested === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
                                 </th>
-                                <th style={{cursor:'pointer'}} onClick={(e) => {
-  let newSortType;
-  if (sortType.matured === "ascending") {
-    newSortType = "descending";
-  } else if (sortType.matured === "descending") {
-    newSortType = "none";
-  } else {
-    newSortType = "ascending";
-  }
-  handleSortMatured(newSortType);
-}}>Matured
-                             
-                               <ArrowDropUpIcon style={{ color: sortType.matured === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
+                                  let newSortType;
+                                  if (sortType.matured === "ascending") {
+                                    newSortType = "descending";
+                                  } else if (sortType.matured === "descending") {
+                                    newSortType = "none";
+                                  } else {
+                                    newSortType = "ascending";
+                                  }
+                                  handleSortMatured(newSortType);
+                                }}>Matured
 
-                                <ArrowDropDownIcon style={{color: sortType.matured === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
+                                  <ArrowDropUpIcon style={{ color: sortType.matured === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                  <ArrowDropDownIcon style={{ color: sortType.matured === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
                                 </th>
-                                <th style={{cursor:'pointer'}} onClick={(e) => {
-  let newSortType;
-  if (sortType.totalLeads === "ascending") {
-    newSortType = "descending";
-  } else if (sortType.totalLeads === "descending") {
-    newSortType = "none";
-  } else {
-    newSortType = "ascending";
-  }
-  handleSortTotalLeads(newSortType);
-}}>Total Leads
-                             
-                               <ArrowDropUpIcon style={{ color: sortType.totalLeads === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
+                                  let newSortType;
+                                  if (sortType.totalLeads === "ascending") {
+                                    newSortType = "descending";
+                                  } else if (sortType.totalLeads === "descending") {
+                                    newSortType = "none";
+                                  } else {
+                                    newSortType = "ascending";
+                                  }
+                                  handleSortTotalLeads(newSortType);
+                                }}>Total Leads
 
-                                <ArrowDropDownIcon style={{color: sortType.totalLeads === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
+                                  <ArrowDropUpIcon style={{ color: sortType.totalLeads === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                  <ArrowDropDownIcon style={{ color: sortType.totalLeads === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
                                 </th>
-                                <th style={{cursor:'pointer'}} onClick={(e) => {
-  let newSortType;
-  if (sortType.lastLead === "ascending") {
-    newSortType = "descending";
-  } else if (sortType.lastLead === "descending") {
-    newSortType = "none";
-  } else {
-    newSortType = "ascending";
-  }
-  handleSortLastLead(newSortType);
-}}>Last lead Assign Date
-                             
-                               <ArrowDropUpIcon style={{ color: sortType.lastLead === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
+                                  let newSortType;
+                                  if (sortType.lastLead === "ascending") {
+                                    newSortType = "descending";
+                                  } else if (sortType.lastLead === "descending") {
+                                    newSortType = "none";
+                                  } else {
+                                    newSortType = "ascending";
+                                  }
+                                  handleSortLastLead(newSortType);
+                                }}>Last lead Assign Date
 
-                                <ArrowDropDownIcon style={{color: sortType.lastLead === "ascending" ? "black" : "#9d8f8f",marginTop: "3px"}}/>
+                                  <ArrowDropUpIcon style={{ color: sortType.lastLead === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
+
+                                  <ArrowDropDownIcon style={{ color: sortType.lastLead === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
                                 </th>
                               </tr>
                             </thead>
@@ -2076,7 +2078,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                                       <td key={`row-${index}-2`}>{obj.ename}</td>
                                       <td key={`row-${index}-3`}>
                                         {
-                                         ( companyData.filter(
+                                          (companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Untouched"
@@ -2085,7 +2087,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                                       </td>
                                       <td key={`row-${index}-4`}>
                                         {
-                                         ( companyData.filter(
+                                          (companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Busy"
@@ -2094,7 +2096,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                                       </td>
                                       <td key={`row-${index}-5`}>
                                         {
-                                         ( companyData.filter(
+                                          (companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Not Picked Up"
@@ -2103,7 +2105,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                                       </td>
                                       <td key={`row-${index}-6`}>
                                         {
-                                         ( companyData.filter(
+                                          (companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Junk"
@@ -2112,7 +2114,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                                       </td>
                                       <td key={`row-${index}-7`}>
                                         {
-                                         ( companyData.filter(
+                                          (companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "FollowUp"
@@ -2121,7 +2123,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                                       </td>
                                       <td key={`row-${index}-8`}>
                                         {
-                                         ( companyData.filter(
+                                          (companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Interested"
@@ -2139,7 +2141,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                                       </td>
                                       <td key={`row-${index}-10`}>
                                         {
-                                         ( companyData.filter(
+                                          (companyData.filter(
                                             (data) =>
                                               data.ename === obj.ename &&
                                               data.Status === "Matured"
@@ -2212,7 +2214,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                                     </td>
                                     <td>
                                       {
-                                       ( companyData.filter(
+                                        (companyData.filter(
                                           (partObj) =>
                                             partObj.Status === "Not Picked Up"
                                         ).length).toLocaleString()
@@ -2711,7 +2713,7 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
                           </td>
                           <td>
                             {
-                             ( properCompanyData.filter(
+                              (properCompanyData.filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "FollowUp"
@@ -2833,11 +2835,11 @@ const debouncedFetchEmployeeInfo = debounce(fetchEmployeeInfo, debounceDelay);
 
           <div className="container-xl mt-2" onClick={handleCloseIconClick}>
             <div className="card">
-              <div className="card-header d-flex align-items-center justify-content-between" >
+              <div className="card-header employeedashboard d-flex align-items-center justify-content-between" >
                 <div>
                   <h2>Projection Dashboard</h2>
                 </div>
-                <div className="form-control d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
+                <div className="form-control date-range-picker d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
                   <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
                   <button onClick={() => setDateRangeDisplay(!displayDateRange)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
                     <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
