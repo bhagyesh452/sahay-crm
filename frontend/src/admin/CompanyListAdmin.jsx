@@ -235,18 +235,34 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
     return true;
   });
 
-
+  // const handleDeleteConfirm = async () => {
+  //   // Assuming you have an API endpoint for deleting a company
+  //   try {
+  //     const response = await axios.delete(
+  //       `${secretKey}/company-delete/${companyId}`
+  //     );
+  //     if (response.status === 200) {
+  //       await axios.delete(`${secretKey}/deleterequestbybde/${companyName}`);
+  //     }
+  //     console.log("Deleted booking:", response.data);
+  //     Swal.fire({ title: "Booking Deleted", icon: "success" });
+  //     // Handle success or update state as needed
+  //   } catch (error) {
+  //     console.error("Error deleting company:", error);
+  //     Swal.fire({ title: "Failed to Delete booking", icon: "error" });
+  //   }
+  // };
 
   const handleDelete = (companyId, companyName) => {
     const ename = localStorage.getItem("username");
 
     Swal.fire({
-      title: `Are you sure you want to request deletion for ${companyName}?`,
+      title: `Are you sure you want to Delete ${companyName}?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, request deletion!'
+      confirmButtonText: 'Yes, Confirm deletion!'
     }).then((result) => {
       if (result.isConfirmed) {
         const date = new Date().toLocaleDateString();
@@ -260,8 +276,8 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
           ename
         };
 
-        fetch(`${secretKey}/deleterequestbybde`, {
-          method: 'POST',
+        fetch(`${secretKey}/company-delete/${companyId}`, {
+          method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -271,13 +287,13 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
             if (response.ok) {
               Swal.fire(
                 'Success!',
-                'Delete request details stored successfully',
+                'Company Deleted',
                 'success'
               );
             } else {
               Swal.fire(
                 'Error!',
-                'Failed to store delete request details',
+                'Failed to Delete Company',
                 'error'
               );
             }
