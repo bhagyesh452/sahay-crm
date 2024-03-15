@@ -32,6 +32,7 @@ const FollowUpModel = require("./models/FollowUp");
 const DraftModel = require("./models/DraftLeadform");
 const { type } = require("os");
 const LeadModel_2 = require("./models/Leadform_2");
+const RedesignedLeadformModel = require("./models/RedesignedLeadform");
 
 
 // const http = require('http');
@@ -1232,358 +1233,358 @@ app.post(
 
       const savedEmployee = await employee.save();
 
-      const recipients = [
-        "bookings@startupsahay.com",
-        "documents@startupsahay.com",
-        `${bdmEmail}`,
-        `${bdeName}`,
-      ];
+      // const recipients = [
+      //   "bookings@startupsahay.com",
+      //   "documents@startupsahay.com",
+      //   `${bdmEmail}`,
+      //   `${bdeName}`,
+      // ];
 
-      sendMail(
-        recipients,
-        "Mail received",
-        ``,
-        `<div style="width: 80%; margin: 50px auto;">
-            <h2 style="text-align: center;">Lead Information</h2>
-            <div style="display: flex;">
-                <div style="width: 48%;">
-                    <label>BDE Name:</label>
-                    <div style="    padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${empName}
-                    </div>
-                </div>
-                <div style="width: 48%;margin-left: 15px;">
-                    <label>BDE Email Address:</label>
-                    <div style="    padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${empEmail}
-                    </div>
-                </div>
-            </div>
-            <div style="display: flex; margin-top: 20px;">
-                <div style="width: 48%;">
-                    <label>BDM Name:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${bdmName}
-                    </div>
-                </div>
-                <div style="width: 48%;margin-left: 15px;">
-                    <label>BDM Email Address:</label>
-                    <div style="    padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${bdmEmail}
-                    </div>
-                </div>
-            </div>
-            <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-            </div>
-            <div style="display: flex; margin-top: 20px;">
-                <div style="width: 48%;">
-                    <label>Booking Date:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${bookingDate}
-                    </div>
-                </div>
+      // sendMail(
+      //   recipients,
+      //   "Mail received",
+      //   ``,
+      //   `<div style="width: 80%; margin: 50px auto;">
+      //       <h2 style="text-align: center;">Lead Information</h2>
+      //       <div style="display: flex;">
+      //           <div style="width: 48%;">
+      //               <label>BDE Name:</label>
+      //               <div style="    padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${empName}
+      //               </div>
+      //           </div>
+      //           <div style="width: 48%;margin-left: 15px;">
+      //               <label>BDE Email Address:</label>
+      //               <div style="    padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${empEmail}
+      //               </div>
+      //           </div>
+      //       </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 48%;">
+      //               <label>BDM Name:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${bdmName}
+      //               </div>
+      //           </div>
+      //           <div style="width: 48%;margin-left: 15px;">
+      //               <label>BDM Email Address:</label>
+      //               <div style="    padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${bdmEmail}
+      //               </div>
+      //           </div>
+      //       </div>
+      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
+      //       </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 48%;">
+      //               <label>Booking Date:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${bookingDate}
+      //               </div>
+      //           </div>
 
-            </div>
+      //       </div>
 
-            <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-            </div>
+      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
+      //       </div>
 
-            <div style="display: flex; margin-top: 20px;" id="cacase">
-                <div style="width: 48%;">
-                    <label>CA Case: ${caCase}</label>
+      //       <div style="display: flex; margin-top: 20px;" id="cacase">
+      //           <div style="width: 48%;">
+      //               <label>CA Case: ${caCase}</label>
 
-                </div>
+      //           </div>
 
-            </div>
-            <div id="ca-case-option" style="display: ${display}; margin-top: 20px;" >
-                <div style="width: 30%;">
-                    <label>Enter CA's number:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${caNumber}
-                    </div>
-                </div>
-                <div style="width: 30%; margin-left: 10px;">
-                    <label>Enter CA's Email:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${caEmail}
-                    </div>
-                </div>
-                <div style="width: 38%; margin-left: 10px;">
-                    <label>Enter CA's Commission:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${caCommission}
-                    </div>
-                </div>
+      //       </div>
+      //       <div id="ca-case-option" style="display: ${display}; margin-top: 20px;" >
+      //           <div style="width: 30%;">
+      //               <label>Enter CA's number:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${caNumber}
+      //               </div>
+      //           </div>
+      //           <div style="width: 30%; margin-left: 10px;">
+      //               <label>Enter CA's Email:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${caEmail}
+      //               </div>
+      //           </div>
+      //           <div style="width: 38%; margin-left: 10px;">
+      //               <label>Enter CA's Commission:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${caCommission}
+      //               </div>
+      //           </div>
 
-            </div>
-            <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-            </div>
+      //       </div>
+      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
+      //       </div>
 
-            <div style="display: flex; margin-top: 20px;">
-                <div style="width: 30%;">
-                    <label>Enter Company's Name:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${companyName}
-                    </div>
-                </div>
-                <div style="width: 30%; margin-left: 10px;">
-                    <label>Enter Contact Number:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${contactNumber}
-                    </div>
-                </div>
-                <div style="width: 38%; margin-left: 10px;">
-                    <label>Enter Company's Email id:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${companyEmail}
-                    </div>
-                </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 30%;">
+      //               <label>Enter Company's Name:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${companyName}
+      //               </div>
+      //           </div>
+      //           <div style="width: 30%; margin-left: 10px;">
+      //               <label>Enter Contact Number:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${contactNumber}
+      //               </div>
+      //           </div>
+      //           <div style="width: 38%; margin-left: 10px;">
+      //               <label>Enter Company's Email id:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${companyEmail}
+      //               </div>
+      //           </div>
 
-            </div>
+      //       </div>
 
-            <div style="display: flex; margin-top: 20px;">
-                <div style="width: 48%;">
-                    <label>Services:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${services}
-                    </div>
-                </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 48%;">
+      //               <label>Services:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${services}
+      //               </div>
+      //           </div>
 
-            </div>
-            <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-            </div>
-            <div style="display: flex; margin-top: 20px;">
-                <div style="width: 48%; ">
-                    <label>Total Payment:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${originalTotalPayment}
-                    </div>
-                </div>
-                <div style="width: 48%;  margin-left: 10px;">
-                    <label>Total Payment Including GST</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${totalPayment}
-                    </div>
-                </div>
+      //       </div>
+      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
+      //       </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 48%; ">
+      //               <label>Total Payment:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${originalTotalPayment}
+      //               </div>
+      //           </div>
+      //           <div style="width: 48%;  margin-left: 10px;">
+      //               <label>Total Payment Including GST</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${totalPayment}
+      //               </div>
+      //           </div>
 
-            </div>
-            <div style="display: flex; margin-top: 20px;">
-                <div style="width: 48%; ">
-                    <label>Payment Terms: ${paymentTerms}</label>
+      //       </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 48%; ">
+      //               <label>Payment Terms: ${paymentTerms}</label>
 
-                </div>
+      //           </div>
 
-            </div>
-            <div style="display: ${displayPayment}; margin-top: 20px;">
-                <div style="width: 24%; ">
-                    <label>First Payment:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${firstPayment}
-                    </div>
-                    <small style="background: #e7e7e7;
-                    padding: 2px 8px;
-                    margin: 4px 0;
-                    color: rgb(63, 66, 21);
-                    display: inline-block;
-                    border-radius: 4px;">
-                    ${(firstPayment * 100) / totalPayment}% Amount
-                    </small>
-                </div>
-                <div style="width: 24%;  margin-left: 10px;">
-                    <label>Second Payment</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${secondPayment}
-                    </div>
-                    <small style="background: #e7e7e7;
-                    padding: 2px 8px;
-                    margin: 4px 0;
-                    color: rgb(63, 66, 21);
-                    display: inline-block;
-                    border-radius: 4px;">
-                    ${(secondPayment * 100) / totalPayment}% Amount
-                    </small>
-                </div>
-                <div style="width: 24%;  margin-left: 10px;">
-                    <label>Third Payment</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${thirdPayment}
-                    </div>
-                    <small style="background: #e7e7e7;
-                    padding: 2px 8px;
-                    margin: 4px 0;
-                    color: rgb(63, 66, 21);
-                    display: inline-block;
-                    border-radius: 4px;">
-                    ${(thirdPayment * 100) / totalPayment}% Amount
-                    </small>
-                </div>
-                <div style="width: 24%;  margin-left: 10px;">
-                    <label>Fourth Payment</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${fourthPayment}
-                    </div>
-                    <small style="background: #e7e7e7;
-                    padding: 2px 8px;
-                    margin: 4px 0;
-                    color: rgb(63, 66, 21);
-                    display: inline-block;
-                    border-radius: 4px;">
-                    ${(fourthPayment * 100) / totalPayment}% Amount
-                    </small>
-                </div>
+      //       </div>
+      //       <div style="display: ${displayPayment}; margin-top: 20px;">
+      //           <div style="width: 24%; ">
+      //               <label>First Payment:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${firstPayment}
+      //               </div>
+      //               <small style="background: #e7e7e7;
+      //               padding: 2px 8px;
+      //               margin: 4px 0;
+      //               color: rgb(63, 66, 21);
+      //               display: inline-block;
+      //               border-radius: 4px;">
+      //               ${(firstPayment * 100) / totalPayment}% Amount
+      //               </small>
+      //           </div>
+      //           <div style="width: 24%;  margin-left: 10px;">
+      //               <label>Second Payment</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${secondPayment}
+      //               </div>
+      //               <small style="background: #e7e7e7;
+      //               padding: 2px 8px;
+      //               margin: 4px 0;
+      //               color: rgb(63, 66, 21);
+      //               display: inline-block;
+      //               border-radius: 4px;">
+      //               ${(secondPayment * 100) / totalPayment}% Amount
+      //               </small>
+      //           </div>
+      //           <div style="width: 24%;  margin-left: 10px;">
+      //               <label>Third Payment</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${thirdPayment}
+      //               </div>
+      //               <small style="background: #e7e7e7;
+      //               padding: 2px 8px;
+      //               margin: 4px 0;
+      //               color: rgb(63, 66, 21);
+      //               display: inline-block;
+      //               border-radius: 4px;">
+      //               ${(thirdPayment * 100) / totalPayment}% Amount
+      //               </small>
+      //           </div>
+      //           <div style="width: 24%;  margin-left: 10px;">
+      //               <label>Fourth Payment</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${fourthPayment}
+      //               </div>
+      //               <small style="background: #e7e7e7;
+      //               padding: 2px 8px;
+      //               margin: 4px 0;
+      //               color: rgb(63, 66, 21);
+      //               display: inline-block;
+      //               border-radius: 4px;">
+      //               ${(fourthPayment * 100) / totalPayment}% Amount
+      //               </small>
+      //           </div>
 
-            </div>
-            <div style="display: flex; margin-top: 20px;">
-            <div style="width: 33%; ">
-                    <label>Payment Remarks:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${paymentRemarks}
-                    </div>
-                </div>
+      //       </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //       <div style="width: 33%; ">
+      //               <label>Payment Remarks:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${paymentRemarks}
+      //               </div>
+      //           </div>
 
-       </div>
-            <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
-            </div>
+      //  </div>
+      //       <div style="height: 1px; background-color: #bbbbbb; margin: 20px 0px;">
+      //       </div>
 
-            <div style="display: flex; margin-top: 20px;">
-                <div style="width: 33%; ">
-                    <label>Payment Method:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${paymentMethod[0]}
-                    </div>
-                </div>
-                <div style="width: 33%;  margin-left: 10px;">
-                    <label>Booking Source</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${bookingSource}
-                    </div>
-                </div>
-                <div style="width: 33%;  margin-left: 10px;">
-                    <label>Company Pan or GST number</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${cPANorGSTnum}
-                    </div>
-                </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 33%; ">
+      //               <label>Payment Method:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${paymentMethod[0]}
+      //               </div>
+      //           </div>
+      //           <div style="width: 33%;  margin-left: 10px;">
+      //               <label>Booking Source</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${bookingSource}
+      //               </div>
+      //           </div>
+      //           <div style="width: 33%;  margin-left: 10px;">
+      //               <label>Company Pan or GST number</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${cPANorGSTnum}
+      //               </div>
+      //           </div>
 
-            </div>
-            <div style="display: flex; margin-top: 20px;">
-                <div style="width: 48%; ">
-                    <label>Company Incorporation Date:</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${incoDate}
-                    </div>
-                </div>
-                <div style="width: 48%;  margin-left: 10px;">
-                    <label>Any Extra Notes</label>
-                    <div style=" padding: 8px 10px;
-                        background: #fff7e8;
-                        margin-top: 10px;
-                        border-radius: 6px;
-                        color: #724f0d;">
-                        ${extraNotes}
-                    </div>
-                </div>
+      //       </div>
+      //       <div style="display: flex; margin-top: 20px;">
+      //           <div style="width: 48%; ">
+      //               <label>Company Incorporation Date:</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${incoDate}
+      //               </div>
+      //           </div>
+      //           <div style="width: 48%;  margin-left: 10px;">
+      //               <label>Any Extra Notes</label>
+      //               <div style=" padding: 8px 10px;
+      //                   background: #fff7e8;
+      //                   margin-top: 10px;
+      //                   border-radius: 6px;
+      //                   color: #724f0d;">
+      //                   ${extraNotes}
+      //               </div>
+      //           </div>
 
-            </div>
+      //       </div>
 
-        </div>
+      //   </div>
 
-        `,
-        extraDocuments,
-        paymentDoc
-      );
+      //   `,
+      //   extraDocuments,
+      //   paymentDoc
+      // );
 
       console.log("Data sent Via Email");
       res
@@ -2472,6 +2473,32 @@ app.post('/api/uploadotherdocsAttachment/:companyName', upload.fields([
   }
 });
 
+app.post('/api/redesigned-leadform', async (req, res) => {
+  try {
+    const newData = req.body; // Assuming the request body contains the data to be saved
+
+    // Find the related company based on companyName
+    const companyData = await CompanyModel.findOne({ 'Company Name': newData["Company Name"], 'Status': 'Matured' });
+
+    if (!companyData) {
+      return res.status(404).json({ message: 'Company not found or status is not "Matured"' });
+    }
+
+    // Add company data to the lead form data
+    newData.company = companyData._id;
+
+    // Create a new instance of RedesignedLeadformModel with the combined data
+    const leadForm = new RedesignedLeadformModel(newData);
+
+    // Save the lead form data to the database
+    const savedLeadForm = await leadForm.save();
+
+    res.status(201).json(savedLeadForm); // Respond with the saved data
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 
 http.listen(3001, function () {
