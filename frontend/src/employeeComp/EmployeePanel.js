@@ -105,27 +105,26 @@ function EmployeePanel() {
     audio.play();
   };
   useEffect(() => {
-    const socket = io('/socket.io');
+    const socket = io('/api/socket.io'); // Connects to the same host and port as the client
     socket.on("connect", () => {
-      console.log("Socket connected with ID:", socket.id);
-      setSocketID(socket.id);
+        console.log("Socket connected with ID:", socket.id);
     });
 
     socket.on("request-seen", () => {
-      // Call fetchRequestDetails function to update request details
-      fetchRequestDetails();
+        // Call fetchRequestDetails function to update request details
+        fetchRequestDetails();
     });
+
     socket.on("data-sent", () => {
-      fetchRequestDetails();
-      playNotificationSound();
+        fetchRequestDetails();
+        playNotificationSound();
     });
 
     // Clean up the socket connection when the component unmounts
     return () => {
-      socket.disconnect();
-
+        socket.disconnect();
     };
-  }, []);
+}, []);
   const functionopenpopup = () => {
     openchange(true);
   };
