@@ -27,6 +27,13 @@ import { HiOutlineEye } from "react-icons/hi";
 import { RiEditCircleFill } from "react-icons/ri";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { MdOutlineEditOff } from "react-icons/md";
+import { HiChevronDoubleLeft } from "react-icons/hi";
+import { HiChevronDoubleRight } from "react-icons/hi";
+import { TbChevronLeftPipe } from "react-icons/tb";
+import { FaLongArrowAltLeft } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa6";
+
+
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -74,6 +81,7 @@ function EmployeeParticular() {
   const [month, setMonth] = useState(0);
   const [incoFilter, setIncoFilter] = useState("");
   const [openIncoDate, setOpenIncoDate] = useState(false);
+  const [backButton, setBackButton] = useState(false)
 
   // const [updateData, setUpdateData] = useState({});
   const [eData, seteData] = useState([]);
@@ -98,11 +106,23 @@ function EmployeeParticular() {
 
       // Set eData to the array of _id values
       seteData(salesExecutivesIds);
-
+      //console.log("kuch bhi" ,salesExecutivesIds)
       // Find the employee by id and set the name
       const selectedEmployee = response.data.find(
         (employee) => employee._id === id
-      );
+        );
+        console.log(selectedEmployee._id)
+
+      console.log("eData" , eData[0])
+      console.log(salesExecutivesIds)
+
+      if (salesExecutivesIds.length > 0 && salesExecutivesIds[0] === selectedEmployee._id) {
+        // If it's at 0th position, set the visibility of the back button to false
+        setBackButton(false); // assuming backButton is your back button element
+    } else {
+        // Otherwise, set the visibility to true
+        setBackButton(true) // or any other appropriate display style
+    }
 
       if (selectedEmployee) {
         setEmployeeName(selectedEmployee.ename);
@@ -587,7 +607,7 @@ function EmployeeParticular() {
 
   const handleChangeUrl = () => {
     const currId = id;
-    console.log(eData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
+    //console.log(eData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
 
     // Find the index of the currentId in the eData array
     const currentIndex = eData.findIndex((itemId) => itemId === currId);
@@ -599,10 +619,48 @@ function EmployeeParticular() {
       // Get the nextId from the eData array
       const nextId = eData[nextIndex];
       window.location.replace(`/admin/employees/${nextId}`);
+      //setBackButton(nextId !== 0);
     } else {
       console.log("Current ID not found in eData array.");
     }
   };
+
+
+
+  const handleChangeUrlPrev = () => {
+    const currId = id;
+    //console.log(eData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
+
+    // Find the index of the currentId in the eData array
+    const currentIndex = eData.findIndex((itemId) => itemId === currId);
+
+    if (currentIndex !== -1) {
+      // Calculate the previous index in a circular manner
+      const prevIndex = (currentIndex - 1 + eData.length) % eData.length;
+
+      if (currentIndex === 0) {
+       
+        // If it's the first page, navigate to the employees page
+        window.location.replace(`/admin/employees`);
+        //setBackButton(false)
+      } else {
+        // Get the previousId from the eData array
+        
+        const prevId = eData[prevIndex];
+        window.location.replace(`/admin/employees/${prevId}`);
+      }
+      //setBackButton(prevIndex !== 0);
+    } else {
+      console.log("Current ID not found in eData array.");
+    }
+  };
+
+
+
+
+
+
+
   return (
     <div>
       <Header />
@@ -612,30 +670,36 @@ function EmployeeParticular() {
           style={{
             margin: "3px 0px 1px 0px",
           }}
-          className="page-header d-print-none"
-        >
+          className="page-header d-print-none">
           <div className="container-xl">
             <div className="row g-2 align-items-center">
               <div className="col d-flex justify-content-between">
                 {/* <!-- Page pre-title --> */}
                 <div className="d-flex">
-                  <Link to={`/admin/employees`}>
+                  <IconButton>
+                    <IconChevronLeft onClick={handleChangeUrlPrev} />
+                  </IconButton>
+
+                  {/* <Link to={`/admin/employees`}>
                     <IconButton>
                       <IconChevronLeft />
                     </IconButton>
-                  </Link>
+                  </Link> */}
 
                   <h2 className="page-title">{employeeName}</h2>
                   <div className="nextBtn">
                     <IconButton onClick={handleChangeUrl}>
-                      <KeyboardTabIcon style={{backgroundColor: "#fbb900",
-    borderRadius: "5px",
-    padding: "2px",
-    color: "white"}} />
+                      < IconChevronRight style={{
+                        // backgroundColor: "#fbb900",
+                        // borderRadius: "5px",
+                        // padding: "2px",
+                        // color: "white"
+                      }} />
                     </IconButton>
                   </div>
                 </div>
-                <div className="d-flex">
+                <div className="d-flex align-items-center justify-content-center">
+                 
                   {selectedRows.length !== 0 && (
                     <div className="request">
                       <div className="btn-list">
@@ -780,7 +844,17 @@ function EmployeeParticular() {
                       Login Details
                     </button>
                   </Link>
-                 
+
+                  {backButton &&  <div><Link
+                    to={`/admin/employees`}
+                    style={{ marginLeft: "10px" }}>
+                    <button className="btn btn-primary d-none d-sm-inline-block">
+                      <span><FaArrowLeft style={{marginRight:"10px",marginBottom:"3px"}} /></span>
+                      Back
+                    </button>
+                  </Link></div> }
+
+
                 </div>
               </div>
 
@@ -1460,15 +1534,15 @@ function EmployeeParticular() {
                                     }} /> */}
                                   {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
                                     <>
-                                     <IconButton>
-                                      <MdOutlineEditOff 
-                                        // onClick={() => {
-                                        //   functionopenprojection(company["Company Name"]);
-                                        // }}
-                                        style={{ cursor: "pointer", width: "17px", height: "17px"}}
-                                        color="grey"
-                                      />
-                                    </IconButton>
+                                      <IconButton>
+                                        <MdOutlineEditOff
+                                          // onClick={() => {
+                                          //   functionopenprojection(company["Company Name"]);
+                                          // }}
+                                          style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                                          color="grey"
+                                        />
+                                      </IconButton>
                                     </>
                                   ) : (
                                     <IconButton>
@@ -1708,7 +1782,7 @@ function EmployeeParticular() {
                           Math.ceil(filteredData.length / itemsPerPage) - 1
                         }
                       >
-                        {/* <IconChevronRight /> */}
+                        <IconChevronRight />
                       </IconButton>
                     </div>
                   )}
@@ -2006,7 +2080,7 @@ function EmployeeParticular() {
                   className="form-control"
                   placeholder="0"
                   value={currentProjection.offeredPrize}
-                  //disabled
+                //disabled
                 />
               </div>
             </div>
@@ -2018,7 +2092,7 @@ function EmployeeParticular() {
                   className="form-control"
                   placeholder="Lasf followUp date is not mentioned"
                   value={currentProjection.lastFollowUpdate}
-                  //disabled
+                //disabled
                 />
               </div>
             </div>
@@ -2031,7 +2105,7 @@ function EmployeeParticular() {
                   placeholder="Total Payment is not mentioned"
                   value={currentProjection.totalPayment}
 
-                  //disabled
+                //disabled
                 />
               </div>
             </div>
@@ -2043,7 +2117,7 @@ function EmployeeParticular() {
                   className="form-control"
                   placeholder="Estimated Date not mentioned"
                   value={currentProjection.estPaymentDate}
-                  //disabled
+                //disabled
                 />
               </div>
             </div>

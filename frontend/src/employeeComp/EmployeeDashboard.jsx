@@ -14,28 +14,30 @@ import Select from "react-select";
 import EditIcon from "@mui/icons-material/Edit";
 import { CiSearch } from "react-icons/ci";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import ScaleLoader from "react-spinners/ScaleLoader";
-import io from "socket.io-client";
 import ClipLoader from "react-spinners/ClipLoader";
 import AddCircle from "@mui/icons-material/AddCircle.js";
+import io from "socket.io-client";
+import { ColorRing } from 'react-loader-spinner'
+import Nodata from "../components/Nodata";
 
 function EmployeeDashboard() {
   const { userId } = useParams();
   const [data, setData] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
-  const [showBookingDate, setShowBookingDate] = useState(false);
+  const [showBookingDate, setShowBookingDate] = useState(false)
   const [startDateAnother, setStartDateAnother] = useState(new Date());
   const [endDateAnother, setEndDateAnother] = useState(new Date());
   const [openProjection, setOpenProjection] = useState(false);
   const [socketID, setSocketID] = useState("");
   const [totalBooking, setTotalBooking] = useState([]);
-  // const [uniqueArray, setuniqueArray] = useState([]);
+  //const [uniqueArray, setuniqueArray] = useState([])
   const [filteredBooking, setFilteredBooking] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("")
   const [loading, setLoading] = useState(true);
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
@@ -65,9 +67,16 @@ function EmployeeDashboard() {
     matured: "ascending",
     interested: "ascending",
     lastLead: "ascending",
-    totalLeads: "ascending",
+    totalLeads: 'ascending'
   });
   const [incoFilter, setIncoFilter] = useState("");
+
+
+
+
+
+
+
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
@@ -87,7 +96,7 @@ function EmployeeDashboard() {
       console.error("Error fetching data:", error.message);
     }
   };
-  console.log(data);
+  console.log(data)
 
   const fetchEmployeeData = async () => {
     fetch(`${secretKey}/edata-particular/${data.ename}`)
@@ -99,7 +108,7 @@ function EmployeeDashboard() {
         console.error("Error fetching data:", error);
       });
   };
-  console.log("empData", empData);
+  console.log("empData", empData)
 
   // const fetchEmployeeData = async () => {
   //   try {
@@ -120,21 +129,17 @@ function EmployeeDashboard() {
   useEffect(() => {
     fetchEmployeeData();
   }, [data]);
-
   const formattedDates =
-  empData.length !== 0 &&
-  empData.map((data) => formatDate(data.AssignDate));
-console.log("Formatted Dates", formattedDates);
-const uniqueArray = formattedDates && [...new Set(formattedDates)];
-
+    empData.length !== 0 &&
+    empData.map((data) => formatDate(data.AssignDate));
+  console.log("Formatted Dates", formattedDates);
+  const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
   // ---------------------------Bookings Part --------------------------------------
   useEffect(() => {
     const fetchBookingDetails = async () => {
       try {
-        const response = await axios.get(
-          `${secretKey}/company-ename/${data.ename}`
-        );
+        const response = await axios.get(`${secretKey}/company-ename/${data.ename}`);
         setTotalBooking(response.data);
         setFilteredBooking(response.data);
       } catch (error) {
@@ -144,15 +149,15 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
     fetchBookingDetails();
   }, [data.ename]);
 
-  console.log("filteredBookings", filteredBooking);
+  console.log("filteredBookings", filteredBooking)
 
   const handleCloseIconClickAnother = () => {
     if (showBookingDate) {
-      setShowBookingDate(false);
+      setShowBookingDate(false)
     }
-  };
+  }
   useEffect(() => {
-    const socket = io("/socket.io");
+    const socket = io('/socket.io');
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
@@ -160,19 +165,19 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
     return () => {
       socket.disconnect();
+
     };
   }, []);
   const activeStatus = async () => {
     if (data._id && socketID) {
       try {
+
         const id = data._id;
-        const response = await axios.put(
-          `${secretKey}/online-status/${id}/${socketID}`
-        );
+        const response = await axios.put(`${secretKey}/online-status/${id}/${socketID}`);
         console.log(response.data); // Log response for debugging
         return response.data; // Return response data if needed
       } catch (error) {
-        console.error("Error:", error);
+        console.error('Error:', error);
         throw error; // Throw error for handling in the caller function
       }
     }
@@ -214,7 +219,7 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
       );
       const followdata = await response.json();
       setFollowData(followdata);
-      setFollowDataFilter(followData);
+      setFollowDataFilter(followData)
     } catch (error) {
       console.error("Error fetching data:", error);
       return { error: "Error fetching data" };
@@ -428,69 +433,54 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
   function filterSearch(searchTerm) {
     setSearchTerm(searchTerm);
-    setFilteredDataDateRange(
-      followData.filter(
-        (company) =>
-          company.companyName
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          company.offeredServices.some((service) =>
-            service.toLowerCase().includes(searchTerm.toLowerCase())
-          ) ||
-          company.totalPayment.toString() === searchTerm ||
-          company.offeredPrize.toString() === searchTerm
-      )
-    );
+    setFilteredDataDateRange(followData.filter(company =>
+      company.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.offeredServices.some(service =>
+        service.toLowerCase().includes(searchTerm.toLowerCase())
+      ) ||
+      company.totalPayment.toString() === searchTerm ||
+      company.offeredPrize.toString() === searchTerm ||
+      company.estPaymentDate.includes(searchTerm)
+
+    ));
   }
   //console.log(filteredDataDateRange)
-  const [newSearchTerm, setNewSearchTerm] = useState("");
+  const [newSearchTerm, setNewSearchTerm] = useState("")
 
   function filterSearchBooking(newSearchTerm) {
-    setNewSearchTerm(newSearchTerm);
-    setFilteredBooking(
-      totalBooking.filter(
-        (company) =>
-          company.companyName
-            .toLowerCase()
-            .includes(newSearchTerm.toLowerCase()) ||
-          company.contactNumber.toString() === newSearchTerm ||
-          company.companyEmail
-            .toLowerCase()
-            .includes(newSearchTerm.toLowerCase()) ||
-          company.services.some((service) =>
-            service.toLowerCase().includes(newSearchTerm.toLowerCase())
-          ) ||
-          company.totalPayment.toString() === newSearchTerm ||
-          //(company.firstPayment ? company.firstPayment.toString() : company.totalPayment.toString()) === newSearchTerm
-          company.bdmName.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
-          new Date(company.bookingDate)
-            .toLocaleDateString()
-            .includes(newSearchTerm)
-      )
-    );
+    setNewSearchTerm(newSearchTerm)
+    setFilteredBooking(totalBooking.filter(company =>
+      company.companyName.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+      company.contactNumber.toString() === newSearchTerm ||
+      company.companyEmail.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+      company.services.some(service =>
+        service.toLowerCase().includes(newSearchTerm.toLowerCase())) ||
+      company.totalPayment.toString() === newSearchTerm ||
+      //(company.firstPayment ? company.firstPayment.toString() : company.totalPayment.toString()) === newSearchTerm
+      company.bdmName.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+      new Date(company.bookingDate).toLocaleDateString().includes(newSearchTerm)
+    ))
   }
 
   //  -----------------------------------sorting- your -dashboard-----------------------------------
 
   const handleSortUntouched = (sortBy1) => {
-    setSortType((prevData) => ({
+    setSortType(prevData => ({
       ...prevData,
-      untouched:
-        prevData.untouched === "ascending"
-          ? "descending"
-          : prevData.untouched === "descending"
+      untouched: prevData.untouched === "ascending"
+        ? "descending"
+        : prevData.untouched === "descending"
           ? "none"
-          : "ascending",
+          : "ascending"
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {};
-        console.log("ascending is working");
+        const untouchedCountAscending = {}
+        console.log("ascending is working")
         empData.forEach((company) => {
           if (company.Status === "Untouched") {
-            untouchedCountAscending[company.AssignDate] =
-              (untouchedCountAscending[company.AssignDate] || 0) + 1;
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -505,11 +495,11 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
       case "descending":
         setIncoFilter("descending");
         const untouchedCount = {};
-        console.log("descending is working");
+        console.log("descending is working")
         empData.forEach((company) => {
-          if (company.Status === "Untouched") {
-            untouchedCount[company.AssignDate] =
-              (untouchedCount[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Untouched")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -528,27 +518,28 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
       default:
         break;
+
     }
   };
 
   const handleSortBusy = (sortBy1) => {
-    setSortType((prevData) => ({
+    setSortType(prevData => ({
       ...prevData,
-      busy:
-        prevData.busy === "ascending"
-          ? "descending"
-          : prevData.untouched === "descending"
+      busy: prevData.busy === "ascending"
+        ? "descending"
+        : prevData.untouched === "descending"
           ? "none"
-          : "ascending",
+          : "ascending"
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {};
+        const untouchedCountAscending = {}
         empData.forEach((company) => {
-          if (company.Status === "Busy") {
-            untouchedCountAscending[company.AssignDate] =
-              (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Busy")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -563,9 +554,9 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if (company.Status === "Busy") {
-            untouchedCount[company.AssignDate] =
-              (untouchedCount[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Busy")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -584,26 +575,27 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
       default:
         break;
+
     }
   };
   const handleSortJunk = (sortBy1) => {
-    setSortType((prevData) => ({
+    setSortType(prevData => ({
       ...prevData,
-      junk:
-        prevData.junk === "ascending"
-          ? "descending"
-          : prevData.junk === "descending"
+      junk: prevData.junk === "ascending"
+        ? "descending"
+        : prevData.junk === "descending"
           ? "none"
-          : "ascending",
+          : "ascending"
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {};
+        const untouchedCountAscending = {}
         empData.forEach((company) => {
-          if (company.Status === "Junk") {
-            untouchedCountAscending[company.AssignDate] =
-              (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Junk")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -618,9 +610,9 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if (company.Status === "Junk") {
-            untouchedCount[company.AssignDate] =
-              (untouchedCount[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Junk")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -639,26 +631,27 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
       default:
         break;
+
     }
   };
   const handleSortNotPickedUp = (sortBy1) => {
-    setSortType((prevData) => ({
+    setSortType(prevData => ({
       ...prevData,
-      notPickedUp:
-        prevData.notPickedUp === "ascending"
-          ? "descending"
-          : prevData.notPickedUp === "descending"
+      notPickedUp: prevData.notPickedUp === "ascending"
+        ? "descending"
+        : prevData.notPickedUp === "descending"
           ? "none"
-          : "ascending",
+          : "ascending"
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {};
+        const untouchedCountAscending = {}
         empData.forEach((company) => {
-          if (company.Status === "Not Picked Up") {
-            untouchedCountAscending[company.AssignDate] =
-              (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Not Picked Up")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -673,9 +666,9 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if (company.Status === "Not Picked Up") {
-            untouchedCount[company.AssignDate] =
-              (untouchedCount[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Not Picked Up")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -694,27 +687,28 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
       default:
         break;
+
     }
   };
 
   const handleSortFollowUp = (sortBy1) => {
-    setSortType((prevData) => ({
+    setSortType(prevData => ({
       ...prevData,
-      followUp:
-        prevData.followUp === "ascending"
-          ? "descending"
-          : prevData.followUp === "descending"
+      followUp: prevData.followUp === "ascending"
+        ? "descending"
+        : prevData.followUp === "descending"
           ? "none"
-          : "ascending",
+          : "ascending"
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {};
+        const untouchedCountAscending = {}
         empData.forEach((company) => {
-          if (company.Status === "FollowUp") {
-            untouchedCountAscending[company.AssignDate] =
-              (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if ((company.Status === "FollowUp")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -729,9 +723,9 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if (company.Status === "FollowUp") {
-            untouchedCount[company.AssignDate] =
-              (untouchedCount[company.AssignDate] || 0) + 1;
+          if ((company.Status === "FollowUp")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -750,27 +744,28 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
       default:
         break;
+
     }
   };
 
   const handleSortInterested = (sortBy1) => {
-    setSortType((prevData) => ({
+    setSortType(prevData => ({
       ...prevData,
-      interested:
-        prevData.interested === "ascending"
-          ? "descending"
-          : prevData.interested === "descending"
+      interested: prevData.interested === "ascending"
+        ? "descending"
+        : prevData.interested === "descending"
           ? "none"
-          : "ascending",
+          : "ascending"
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {};
+        const untouchedCountAscending = {}
         empData.forEach((company) => {
-          if (company.Status === "Interested") {
-            untouchedCountAscending[company.AssignDate] =
-              (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Interested")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -785,9 +780,9 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if (company.Status === "Interested") {
-            untouchedCount[company.AssignDate] =
-              (untouchedCount[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Interested")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -806,27 +801,28 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
       default:
         break;
+
     }
   };
 
   const handleSortNotInterested = (sortBy1) => {
-    setSortType((prevData) => ({
+    setSortType(prevData => ({
       ...prevData,
-      notInterested:
-        prevData.notInterested === "ascending"
-          ? "descending"
-          : prevData.notInterested === "descending"
+      notInterested: prevData.notInterested === "ascending"
+        ? "descending"
+        : prevData.notInterested === "descending"
           ? "none"
-          : "ascending",
+          : "ascending"
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {};
+        const untouchedCountAscending = {}
         empData.forEach((company) => {
-          if (company.Status === "Not Interested") {
-            untouchedCountAscending[company.AssignDate] =
-              (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Not Interested")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -841,9 +837,9 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if (company.Status === "Not Interested") {
-            untouchedCount[company.AssignDate] =
-              (untouchedCount[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Not Interested")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -862,27 +858,28 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
       default:
         break;
+
     }
   };
 
   const handleSortMatured = (sortBy1) => {
-    setSortType((prevData) => ({
+    setSortType(prevData => ({
       ...prevData,
-      matured:
-        prevData.matured === "ascending"
-          ? "descending"
-          : prevData.matured === "descending"
+      matured: prevData.matured === "ascending"
+        ? "descending"
+        : prevData.matured === "descending"
           ? "none"
-          : "ascending",
+          : "ascending"
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {};
+        const untouchedCountAscending = {}
         empData.forEach((company) => {
-          if (company.Status === "Matured") {
-            untouchedCountAscending[company.AssignDate] =
-              (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Matured")
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -897,9 +894,9 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if (company.Status === "Matured") {
-            untouchedCount[company.AssignDate] =
-              (untouchedCount[company.AssignDate] || 0) + 1;
+          if ((company.Status === "Matured")
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -918,26 +915,27 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
       default:
         break;
+
     }
   };
   const handleSortTotalLeads = (sortBy1) => {
-    setSortType((prevData) => ({
+    setSortType(prevData => ({
       ...prevData,
-      totalLeads:
-        prevData.totalLeads === "ascending"
-          ? "descending"
-          : prevData.totalLeads === "descending"
+      totalLeads: prevData.totalLeads === "ascending"
+        ? "descending"
+        : prevData.totalLeads === "descending"
           ? "none"
-          : "ascending",
+          : "ascending"
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {};
+        const untouchedCountAscending = {}
         empData.forEach((company) => {
-          if (company) {
-            untouchedCountAscending[company.AssignDate] =
-              (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if ((company)
+
+          ) {
+            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -952,9 +950,9 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if (company) {
-            untouchedCount[company.AssignDate] =
-              (untouchedCount[company.AssignDate] || 0) + 1;
+          if ((company)
+          ) {
+            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -973,6 +971,7 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
       default:
         break;
+
     }
   };
 
@@ -991,8 +990,8 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
         <div className="card">
           <div className="card-header employeedashboard">
             <div className="d-flex justify-content-between">
-              <div style={{ minWidth: "14vw" }} className="dashboard-title">
-                <h2 style={{ marginBottom: "5px" }}>Your Dashboard</h2>
+              <div style={{ minWidth: '14vw' }} className="dashboard-title">
+                <h2 style={{ marginBottom: '5px' }}>Your Dashboard</h2>
               </div>
               {/* <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
                 <input
@@ -1054,8 +1053,7 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                       Sr. No
                     </th>
                     <th>Lead Assign Date</th>
-                    <th>
-                      Untouched
+                    <th>Untouched
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1075,9 +1073,9 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                           handleSortUntouched(newSortType);
                         }}
                       />
+
                     </th>
-                    <th>
-                      Busy
+                    <th>Busy
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1098,8 +1096,7 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                         }}
                       />
                     </th>
-                    <th>
-                      Not Picked Up
+                    <th>Not Picked Up
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1120,8 +1117,7 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                         }}
                       />
                     </th>
-                    <th>
-                      Junk
+                    <th>Junk
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1142,8 +1138,7 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                         }}
                       />
                     </th>
-                    <th>
-                      Follow Up
+                    <th>Follow Up
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1164,8 +1159,7 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                         }}
                       />
                     </th>
-                    <th>
-                      Interested
+                    <th>Interested
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1186,8 +1180,7 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                         }}
                       />
                     </th>
-                    <th>
-                      Not Interested
+                    <th>Not Interested
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1208,8 +1201,7 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                         }}
                       />
                     </th>
-                    <th>
-                      Matured
+                    <th>Matured
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1230,8 +1222,7 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                         }}
                       />
                     </th>
-                    <th>
-                      Total Leads
+                    <th>Total Leads
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1256,120 +1247,117 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                 </thead>
                 <tbody>
                   {uniqueArray ? (
-                    uniqueArray.map((obj, index) => (
-                      <tr key={`row-${index}`}>
-                        <td
-                          style={{
-                            lineHeight: "32px",
-                          }}
-                        >
-                          {index + 1}
-                        </td>
-                        <td>{obj}</td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Untouched"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Busy"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Not Picked Up"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Junk"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "FollowUp"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Interested"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Not Interested"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Matured"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj
-                            ).length
-                          }
-                        </td>
+                    uniqueArray.length > 0 ? (
+                      uniqueArray.map((obj, index) => (
+                        <tr key={`row-${index}`}>
+                          <td
+                            style={{
+                              lineHeight: "32px",
+                            }}
+                          >
+                            {index + 1}
+                          </td>
+                          <td>{obj}</td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Untouched"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Busy"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Not Picked Up"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Junk"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "FollowUp"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Interested"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Not Interested"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Matured"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj
+                              ).length
+                            }
+                          </td>
+                        </tr>
+                      ))) : (
+                      <tr>
+                        <td colSpan="11" style={{ textAlign: 'center' }}><Nodata /></td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        style={{
-                          position: "absolute",
-                          left: "50%",
-                          textAlign: "center",
-                          verticalAlign: "middle",
-                        }}
-                      >
-                        <ScaleLoader
-                          color="lightgrey"
-                          loading
-                          cssOverride={override}
-                          size={10}
-                          //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
-                          aria-label="Loading Spinner"
-                          data-testid="loader"
-                        />
-                      </td>
-                    </tr>
-                  )}
+                    )
+                  ) : (<tr style={{ minHeight: "350px" }}><td colSpan={11}>
+                    <ScaleLoader
+                      color="lightgrey"
+                      loading
+                      cssOverride={override}
+                      size={10}
+                      height="25"
+                      width="2"
+                      style={{ width: "10px", height: "10px" }}
+                      //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
+                      aria-label="Loading Spinner"
+                      data-testid="loader"
+                    /></td></tr>)
+                  }
                 </tbody>
 
                 {uniqueArray && (
@@ -1448,12 +1436,9 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
         <div className="card">
           <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
             <div className="dashboard-title">
-              <h2 style={{ marginBottom: "5px" }}>Employee Dashboard</h2>
+              <h2 style={{ marginBottom: '5px' }}>Employee Dashboard</h2>
             </div>
-            <div
-              className="d-flex justify-content-between"
-              style={{ gap: "10px" }}
-            >
+            <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
               <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
                 <input
                   className=""
@@ -1462,7 +1447,7 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                   placeholder="Search here....."
                   style={{
                     border: "none",
-                    padding: "0px",
+                    padding: "0px"
                     // Add a bottom border for the input field itself
                   }}
                   type="text"
@@ -1478,7 +1463,8 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                   }}
                 /> */}
               </div>
-              <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
+              <div
+                className="form-control d-flex align-items-center justify-content-between date-range-picker">
                 <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
                 <button
                   onClick={handleIconClick}
@@ -1556,6 +1542,22 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                 </thead>
                 <tbody>
                   {filteredDataDateRange ? (
+                    // (
+                    //   followData.map((obj, index) => (
+                    //     <tr key={`row-${index}`}>
+                    //       <td style={{
+                    //         lineHeight: "32px",
+                    //       }}>{index + 1}</td>
+                    //       <td>{obj.companyName}</td>
+                    //       <td>{obj.offeredServices.join(', ')}</td>
+                    //       <td>{obj.totalPayment && obj.totalPayment.toLocaleString()}
+                    //       </td>
+                    //       <td>{obj.offeredPrize.toLocaleString()}
+                    //       </td>
+                    //       <td>{obj.estPaymentDate}
+                    //       </td>
+                    //     </tr>
+                    //   ))) :
                     filteredDataDateRange.map((obj, index) => (
                       <tr key={`row-${index}`}>
                         <td
@@ -1586,28 +1588,19 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                         </td>
                       </tr>
                     ))
-                  ) : (
-                    <tr>
-                      <td
-                        style={{
-                          position: "absolute",
-                          left: "50%",
-                          textAlign: "center",
-                          verticalAlign: "middle",
-                        }}
-                      >
-                        <ScaleLoader
-                          color="lightgrey"
-                          loading
-                          cssOverride={override}
-                          size={10}
-                          //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
-                          aria-label="Loading Spinner"
-                          data-testid="loader"
-                        />
-                      </td>
-                    </tr>
-                  )}
+                  ) : (<tr>
+                    <td style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
+                      <ScaleLoader
+                        color="lightgrey"
+                        loading
+                        cssOverride={override}
+                        size={10}
+                        //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                      />
+                    </td>
+                  </tr>)}
                 </tbody>
                 {filteredDataDateRange && (
                   <tfoot>
@@ -1629,16 +1622,14 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
       </div>
       {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
 
+
       <div className="container-xl mt-2">
         <div className="card">
           <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
             <div>
               <h2>Bookings Dashboard</h2>
             </div>
-            <div
-              className="d-flex justify-content-between"
-              style={{ gap: "10px" }}
-            >
+            <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
               <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
                 <input
                   className=""
@@ -1647,7 +1638,7 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                   placeholder="Search here....."
                   style={{
                     border: "none",
-                    padding: "0px",
+                    padding: "0px"
                     // Add a bottom border for the input field itself
                   }}
                   type="text"
@@ -1664,51 +1655,30 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                 /> */}
               </div>
               <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
-                <div
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setShowBookingDate(!showBookingDate)}
-                >
-                  {`${formatDate(startDateAnother)} - ${formatDate(
-                    endDateAnother
-                  )}`}
+                <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
+                  {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
                 </div>
-                <button
-                  onClick={() => setShowBookingDate(!showBookingDate)}
-                  style={{
-                    border: "none",
-                    padding: "0px",
-                    backgroundColor: "white",
-                  }}
-                >
-                  <FaRegCalendar
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                      color: "#bcbaba",
-                      color: "black",
-                    }}
-                  />
+                <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                  <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
                 </button>
               </div>
             </div>
           </div>
-          {showBookingDate && (
-            <div
-              style={{
-                position: "absolute",
-                top: "65px",
-                zIndex: 9,
-                right: "157px",
-              }}
-              className="booking-filter"
-            >
-              <DateRangePicker
-                ranges={[selectionRangeAnother]}
-                onChange={handleSelectAnother}
-                onClose={() => setShowBookingDate(false)}
-              />
-            </div>
-          )}
+          {showBookingDate && <div
+            style={{
+              position: "absolute",
+              top: "65px",
+              zIndex: 9,
+              right: "157px",
+            }}
+            className="booking-filter"
+          >
+            <DateRangePicker
+              ranges={[selectionRangeAnother]}
+              onChange={handleSelectAnother}
+              onClose={() => setShowBookingDate(false)}
+            />
+          </div>}
           <div className="card-body">
             <div
               id="table-default"
@@ -1750,14 +1720,12 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredBooking.length !== 0 ? (
+                  {filteredBooking && filteredBooking.length > 0 ? (
                     <>
                       {filteredBooking.map((mainObj, index) => (
                         <tr key={index}>
                           <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                          <td>{`${formatDate(mainObj.bookingDate)}(${
-                            mainObj.bookingTime
-                          })`}</td>
+                          <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime})`}</td>
                           <td>{mainObj.companyName}</td>
                           <td>{mainObj.contactNumber}</td>
                           <td>{mainObj.companyEmail}</td>
@@ -1776,25 +1744,20 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                                 ? mainObj.firstPayment // If bdeName and bdmName are the same
                                 : mainObj.firstPayment / 2 // If bdeName and bdmName are different
                               : mainObj.bdeName === mainObj.bdmName
-                              ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                              : mainObj.originalTotalPayment / 2
+                                ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                : mainObj.originalTotalPayment / 2
                             ).toLocaleString()}{" "}
                           </td>
                           <td>
                             ₹
                             {(mainObj.firstPayment !== 0
                               ? mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.originalTotalPayment -
-                                  mainObj.firstPayment
-                                : (mainObj.originalTotalPayment -
-                                    mainObj.firstPayment) /
-                                  2
+                                ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                : (mainObj.originalTotalPayment - mainObj.firstPayment) / 2
                               : 0
                             ).toLocaleString()}{" "}
                           </td>
-                          <td>
-                            {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
-                          </td>
+                          <td>{mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}</td>
                           <td>
                             {mainObj.bdeName !== mainObj.bdmName
                               ? mainObj.bdmType === "closeby"
@@ -1806,16 +1769,13 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                         </tr>
                       ))}
                     </>
+                  ) : filteredBooking && filteredBooking.length === 0 ? (
+                    <tr>
+                      <td colSpan={12} style={{ textAlign: 'center' }}><Nodata /></td>
+                    </tr>
                   ) : (
                     <tr>
-                      <td
-                        style={{
-                          position: "absolute",
-                          left: "50%",
-                          textAlign: "center",
-                          verticalAlign: "middle",
-                        }}
-                      >
+                      <td colSpan={12} style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
                         <ScaleLoader
                           color="lightgrey"
                           loading
@@ -1827,6 +1787,8 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                       </td>
                     </tr>
                   )}
+
+
                 </tbody>
                 {
                   <tfoot>
@@ -1859,8 +1821,8 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                                 ? total + obj.originalTotalPayment
                                 : total + obj.firstPayment
                               : obj.firstPayment === 0
-                              ? total + obj.originalTotalPayment / 2
-                              : total + obj.firstPayment / 2;
+                                ? total + obj.originalTotalPayment / 2
+                                : total + obj.firstPayment / 2;
                           }, 0)
                           .toLocaleString()}
                       </th>
@@ -1874,10 +1836,11 @@ const uniqueArray = formattedDates && [...new Set(formattedDates)];
                                 ? total + obj.originalTotalPayment
                                 : total + obj.firstPayment
                               : obj.firstPayment === 0
-                              ? total + obj.originalTotalPayment / 2
-                              : total + obj.firstPayment / 2;
+                                ? total + obj.originalTotalPayment / 2
+                                : total + obj.firstPayment / 2;
                           }, 0)
                           .toLocaleString()}
+
                       </th>
                       <th>-</th>
                       <th>-</th>
