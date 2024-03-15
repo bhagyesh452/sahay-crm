@@ -473,11 +473,11 @@ function CompanyList({ companies, onCompanyClick }) {
                         )}
                       </div>
                       <div className="col-lg-6 payments-cmpy-list">
-                        <p><span style={{ color: "#336667" }}>Total Payment:</span>{company.totalPayment && (
+                        <p><span style={{ color: "black" }}>Total Payment:</span>{company.totalPayment && (
                           <span > ₹{company.totalPayment.toLocaleString()}</span>)}</p>
-                        <p><span style={{ color: "#336667" }}>Recieved Payment:</span>{company.firstPayment && (
+                        <p><span style={{ color: "black" }}>Recieved Payment:</span>{company.firstPayment && (
                           <span > ₹{company.firstPayment === 0 ? company.totalPayment.toLocaleString() : company.firstPayment.toLocaleString()}</span>)}</p>
-                        <p><span style={{ color: "#336667" }}>Pending Payment:</span>{company.totalPayment && (
+                        <p><span style={{ color: "black" }}>Pending Payment:</span>{company.totalPayment && (
                           <span > ₹{company.firstPayment === 0 ? 0 : (company.totalPayment - company.firstPayment).toLocaleString()}</span>)}</p>
                       </div>
                     </div>

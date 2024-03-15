@@ -19,6 +19,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
 import AddCircle from "@mui/icons-material/AddCircle.js";
+import io from "socket.io-client";
+import { ColorRing } from 'react-loader-spinner'
+import Nodata from "../components/Nodata";
 
 function EmployeeDashboard() {
   const { userId } = useParams();
@@ -31,7 +34,7 @@ function EmployeeDashboard() {
   const [openProjection, setOpenProjection] = useState(false);
   const [socketID, setSocketID] = useState("");
   const [totalBooking, setTotalBooking] = useState([]);
-  const [uniqueArray, setuniqueArray] = useState([])
+  //const [uniqueArray, setuniqueArray] = useState([])
   const [filteredBooking, setFilteredBooking] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
   const [searchTerm, setSearchTerm] = useState("")
@@ -64,8 +67,8 @@ function EmployeeDashboard() {
     matured: "ascending",
     interested: "ascending",
     lastLead: "ascending",
-    totalLeads:'ascending'
-});
+    totalLeads: 'ascending'
+  });
   const [incoFilter, setIncoFilter] = useState("");
 
 
@@ -126,14 +129,11 @@ function EmployeeDashboard() {
   useEffect(() => {
     fetchEmployeeData();
   }, [data]);
-  useEffect(()=>{
-
-    const formattedDates =
-    empData.length !== 0 && empData.map((data) => formatDate(data.AssignDate));
-console.log("Formatted Dates",formattedDates)
-  const faltu = formattedDates && [...new Set(formattedDates)];
-  setuniqueArray(faltu)
-  },[sortType])
+  const formattedDates =
+    empData.length !== 0 &&
+    empData.map((data) => formatDate(data.AssignDate));
+  console.log("Formatted Dates", formattedDates);
+  const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
   // ---------------------------Bookings Part --------------------------------------
   useEffect(() => {
@@ -162,33 +162,35 @@ console.log("Formatted Dates",formattedDates)
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
     });
-  
+
     return () => {
       socket.disconnect();
-      
+
     };
   }, []);
   const activeStatus = async () => {
-    if(data._id && socketID){ try {
-     
-       const id = data._id;
-       const response = await axios.put(`${secretKey}/online-status/${id}/${socketID}`);
-       console.log(response.data); // Log response for debugging
-       return response.data; // Return response data if needed
-     } catch (error) {
-       console.error('Error:', error);
-       throw error; // Throw error for handling in the caller function
-     } }
-   };
+    if (data._id && socketID) {
+      try {
+
+        const id = data._id;
+        const response = await axios.put(`${secretKey}/online-status/${id}/${socketID}`);
+        console.log(response.data); // Log response for debugging
+        return response.data; // Return response data if needed
+      } catch (error) {
+        console.error('Error:', error);
+        throw error; // Throw error for handling in the caller function
+      }
+    }
+  };
   useEffect(() => {
     const timerId = setTimeout(() => {
       activeStatus();
     }, 2000);
- 
+
     return () => {
       clearTimeout(timerId);
     };
-  }, [socketID]); 
+  }, [socketID]);
 
   const selectionRangeAnother = {
     startDate: startDateAnother,
@@ -437,7 +439,8 @@ console.log("Formatted Dates",formattedDates)
         service.toLowerCase().includes(searchTerm.toLowerCase())
       ) ||
       company.totalPayment.toString() === searchTerm ||
-      company.offeredPrize.toString() === searchTerm
+      company.offeredPrize.toString() === searchTerm ||
+      company.estPaymentDate.includes(searchTerm)
 
     ));
   }
@@ -1244,111 +1247,116 @@ console.log("Formatted Dates",formattedDates)
                 </thead>
                 <tbody>
                   {uniqueArray ? (
-                    uniqueArray.map((obj, index) => (
-                      <tr key={`row-${index}`}>
-                        <td
-                          style={{
-                            lineHeight: "32px",
-                          }}
-                        >
-                          {index + 1}
-                        </td>
-                        <td>{obj}</td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Untouched"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Busy"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Not Picked Up"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Junk"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "FollowUp"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Interested"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Not Interested"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Matured"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj
-                            ).length
-                          }
-                        </td>
+                    uniqueArray.length > 0 ? (
+                      uniqueArray.map((obj, index) => (
+                        <tr key={`row-${index}`}>
+                          <td
+                            style={{
+                              lineHeight: "32px",
+                            }}
+                          >
+                            {index + 1}
+                          </td>
+                          <td>{obj}</td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Untouched"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Busy"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Not Picked Up"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Junk"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "FollowUp"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Interested"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Not Interested"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Matured"
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj
+                              ).length
+                            }
+                          </td>
+                        </tr>
+                      ))) : (
+                      <tr>
+                        <td colSpan="11" style={{ textAlign: 'center' }}><Nodata/></td>
                       </tr>
-                    ))
-                  ) : (<tr>
-                    <td style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
-                      <ScaleLoader
-                        color="lightgrey"
-                        loading
-                        cssOverride={override}
-                        size={10}
-                        //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
-                        aria-label="Loading Spinner"
-                        data-testid="loader"
-                      />
-                    </td>
-                  </tr>)
+                    )
+                  ) : (<tr style={{ minHeight: "350px" }}><td colSpan={11}>
+                    <ScaleLoader
+                      color="lightgrey"
+                      loading
+                      cssOverride={override}
+                      size={10}
+                      height="25"
+                      width="2"
+                      style={{ width: "10px", height: "10px" }}
+                      //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
+                      aria-label="Loading Spinner"
+                      data-testid="loader"
+                    /></td></tr>)
                   }
                 </tbody>
 
