@@ -105,7 +105,7 @@ function EmployeePanel() {
     audio.play();
   };
   useEffect(() => {
-    const socket = io('wss://startupsahay.in/socket.io'); // Connects to the same host and port as the client
+    const socket = io('/api/socket.io'); // Connects to the same host and port as the client
     socket.on("connect", () => {
         console.log("Socket connected with ID:", socket.id);
     });

@@ -20,7 +20,6 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
 import AddCircle from "@mui/icons-material/AddCircle.js";
 import io from "socket.io-client";
-import { ColorRing } from 'react-loader-spinner'
 import Nodata from "../components/Nodata";
 
 function EmployeeDashboard() {
@@ -159,13 +158,13 @@ function EmployeeDashboard() {
   useEffect(() => {
     const socket = io('/socket.io');
     socket.on("connect", () => {
+
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
     });
 
     return () => {
       socket.disconnect();
-
     };
   }, []);
   const activeStatus = async () => {

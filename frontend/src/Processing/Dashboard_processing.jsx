@@ -24,7 +24,7 @@ function Dashboard_processing() {
   }, []);
 
   useEffect(() => {
-    const socket = socketIO.connect(`https://startupsahay.in/api`);
+    const socket = socketIO.connect(`/socket.io`);
 
     // Listen for the 'welcome' event from the server
     socket.on('read', () => {
