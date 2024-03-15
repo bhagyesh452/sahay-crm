@@ -141,8 +141,11 @@ function EmployeeDashboard() {
         const response = await axios.get(`${secretKey}/company-ename/${data.ename}`);
         setTotalBooking(response.data);
         setFilteredBooking(response.data);
+        setLoading(false)
       } catch (error) {
         console.error("Error fetching company details:", error.message);
+        setLoading(false)
+
       }
     };
     fetchBookingDetails();
@@ -1343,7 +1346,7 @@ function EmployeeDashboard() {
                         <td colSpan="11" style={{ textAlign: 'center' }}><Nodata /></td>
                       </tr>
                     )
-                  ) : (<tr style={{ minHeight: "350px" }}><td colSpan={11}>
+                  ) : (loading  && <tr style={{ minHeight: "350px" }}><td colSpan={11}>
                     <ScaleLoader
                       color="lightgrey"
                       loading
@@ -1940,7 +1943,7 @@ function EmployeeDashboard() {
                       </tr>
                     </tfoot>
                   </>
-                ) : filteredBooking && filteredBooking.length === 0 ? (
+                ) : filteredBooking && filteredBooking.length === 0 && loading ? (
                   <tr>
                     <td colSpan={12} style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
                       <ScaleLoader
