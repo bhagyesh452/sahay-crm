@@ -33,6 +33,9 @@ import { TbChevronLeftPipe } from "react-icons/tb";
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
+import ScaleLoader from "react-spinners/ScaleLoader";
+import ClipLoader from "react-spinners/ClipLoader";
+
 
 
 
@@ -82,8 +85,9 @@ function EmployeeParticular() {
   const [month, setMonth] = useState(0);
   const [incoFilter, setIncoFilter] = useState("");
   const [openIncoDate, setOpenIncoDate] = useState(false);
-  const [backButton, setBackButton] = useState(false)
-
+  const [backButton, setBackButton] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [companiesLoading, setCompaniesLoading] = useState(false)
   // const [updateData, setUpdateData] = useState({});
   const [eData, seteData] = useState([]);
   const [year, setYear] = useState(0);
@@ -135,7 +139,7 @@ function EmployeeParticular() {
       console.error("Error fetching employee details:", error.message);
     }
   };
-console.log(currentProjection)
+  console.log(currentProjection)
   const functionopenAnchor = () => {
     setOpenAnchor(true);
   };
@@ -146,6 +150,7 @@ console.log(currentProjection)
     if (employeeName) {
       const fetchCompanies = async () => {
         try {
+          setCompaniesLoading(true)
           const response = await fetch(`${secretKey}/companies`);
           const data = await response.json();
 
@@ -172,6 +177,8 @@ console.log(currentProjection)
         } catch (error) {
           console.error("Error fetching companies:", error);
           setCompanies([]);
+        } finally {
+          setCompaniesLoading(false)
         }
       };
 
@@ -182,6 +189,8 @@ console.log(currentProjection)
   // Function to fetch new data based on employee name
   const fetchNewData = async () => {
     try {
+
+      setLoading(true)
       const response = await axios.get(
         `${secretKey}/employees/${employeeName}`
       );
@@ -203,9 +212,11 @@ console.log(currentProjection)
       );
     } catch (error) {
       console.error("Error fetching new data:", error);
+    } finally {
+      setLoading(false)
     }
   };
-
+  console.log("employeedata", employeeData)
   useEffect(() => {
     // Fetch employee details and related data when the component mounts or id changes
     fetchEmployeeDetails();
@@ -458,7 +469,7 @@ console.log(currentProjection)
         offeredServices: findOneprojection.offeredServices,
         lastFollowUpdate: findOneprojection.lastFollowUpdate,
         estPaymentDate: findOneprojection.estPaymentDate,
-        totalPayment:findOneprojection.totalPayment,
+        totalPayment: findOneprojection.totalPayment,
         date: "",
         time: "",
       });
@@ -723,7 +734,7 @@ console.log(currentProjection)
                       </div>
                     </div>
                   )}
-                  <div className="form-control mr-2 sort-by">
+                  <div className="form-control sort-by" >
                     <label htmlFor="sort-by">Sort By:</label>
                     <select
                       style={{
@@ -928,8 +939,8 @@ console.log(currentProjection)
                   {visibilityOther === "block" && (
                     <div
                       style={{
-                        width: "20vw",
-                        margin: "0px 10px",
+                        //width: "20vw",
+                        //margin: "0px 8px",
                         display: visibilityOther,
                       }}
                       className="input-icon"
@@ -969,8 +980,9 @@ console.log(currentProjection)
                   {visibilityOthernew === "block" && (
                     <div
                       style={{
-                        width: "20vw",
-                        margin: "0px 10px",
+                        //width: "20vw",
+                        width: "120px",
+                        // margin: "0px 8px",
                         display: visibilityOthernew,
                       }}
                       className="input-icon"
@@ -1014,9 +1026,9 @@ console.log(currentProjection)
                     </div>
                   )}
                 </div>
-                <div className="col-2">
+                <div className="col-2" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "7px" }}>
                   {selectedField === "State" && (
-                    <div style={{ width: "15vw" }} className="input-icon">
+                    <div style={{ marginLeft: "-16px" }} className="input-icon">
                       <span className="input-icon-addon">
                         {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
                         <svg
@@ -1079,8 +1091,8 @@ console.log(currentProjection)
                           <option value="1">January</option>
                         </select>
                       </div>
-                      <div className="input-icon">
-                        <input
+                      <div className="input-icon form-control">
+                        {/* <input
                           type="number"
                           value={year}
                           defaultValue="Select Year"
@@ -1090,7 +1102,25 @@ console.log(currentProjection)
                             setYear(e.target.value);
                           }}
                           aria-label="Search in website"
-                        />
+                        /> */}
+                        <select select
+                          style={{ border: "none", outline: "none" }}
+                          value={year}
+                          onChange={(e) => {
+                            setYear(e.target.value);
+                            setCurrentPage(0); // Reset page when year changes
+                          }}
+                        >
+                          <option value="">Select Year</option>
+                          {[...Array(15)].map((_, index) => {
+                            const yearValue = 2024 - index;
+                            return (
+                              <option key={yearValue} value={yearValue}>
+                                {yearValue}
+                              </option>
+                            );
+                          })}
+                        </select>
                       </div>
                     </>
                   )}
@@ -1402,224 +1432,207 @@ console.log(currentProjection)
                             (dataStatus === "Interested" && <th>View Projection</th>)}
                         </tr>
                       </thead>
-                      {currentData.length !== 0 && dataStatus !== "Matured" && (
+                      {loading ? (
                         <tbody>
-                          {currentData.map((company, index) => (
-                            <tr
-                              key={index}
-                              className={
-                                selectedRows.includes(company._id)
-                                  ? "selected"
-                                  : ""
-                              }
-                              style={{ border: "1px solid #ddd" }}
-                            >
-                              <td
-                                style={{
-                                  position: "sticky",
-                                  left: 0,
-                                  zIndex: 1,
-                                  background: "white",
-                                }}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={selectedRows.includes(company._id)}
-                                  onChange={(e) =>
-                                    handleCheckboxChange(company._id, e)
-                                  } // Pass the event object
-                                  onMouseDown={() =>
-                                    handleMouseDown(company._id)
+                          <tr>
+                          <td colSpan="11" style={{height:"100px !important", padding:"80px !important"}}>
+                           <ClipLoader
+                            color="lightgrey"
+                            loading
+                            size={35}
+                            height="25"
+                            width="25"
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                          />
+                        </td>
+                        </tr>  
+                        </tbody>
+                      ) : (
+                        <>
+                          {currentData.length !== 0 && dataStatus !== "Matured" && (
+                            <tbody>
+                              {currentData.map((company, index) => (
+                                <tr
+                                  key={index}
+                                  className={
+                                    selectedRows.includes(company._id)
+                                      ? "selected"
+                                      : ""
                                   }
-                                  onMouseEnter={() =>
-                                    handleMouseEnter(company._id)
-                                  }
-                                  onMouseUp={handleMouseUp}
-                                />
-                              </td>
-
-                              <td className="td-sticky">
-                                {startIndex + index + 1}
-                              </td>
-                              <td className="td-sticky1">
-                                {company["Company Name"]}
-                              </td>
-                              <td>{company["Company Number"]}</td>
-                              <td>
-                                <span>{company["Status"]}</span>
-                              </td>
-                              <td>
-                                <div
-                                  key={company._id}
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                  }}
+                                  style={{ border: "1px solid #ddd" }}
                                 >
-                                  <p
-                                    className="rematkText text-wrap m-0"
-                                    title={company.Remarks}
-                                  >
-                                    {company.Remarks}
-                                  </p>
-                                  <span>
-                                    {/* <IconEye
-                                      onClick={() => {
-                                        functionopenpopupremarks(
-                                          company._id,
-                                          company.Status
-                                        );
-                                      }}
-                                      style={{
-                                        width: "18px",
-                                        height: "18px",
-                                        color: "#d6a10c",
-                                        cursor: "pointer",
-                                      }}
-                                    /> */}
-                                    <HiOutlineEye style={{
-                                      fontSize: "15px",
-                                      color: "#fbb900"
-                                      //backgroundColor: "lightblue",
-                                      // Additional styles for the "View" button
-                                    }}
-                                      //className="btn btn-primary d-none d-sm-inline-block"
-                                      onClick={() => {
-                                        functionopenpopupremarks(
-                                          company._id,
-                                          company.Status
-                                        );
-                                      }} />
-
-
-                                  </span>
-                                </div>
-                              </td>
-
-                              <td>
-                                {formatDate(
-                                  company["Company Incorporation Date  "]
-                                )}
-                              </td>
-                              <td>{company["City"]}</td>
-                              <td>{company["State"]}</td>
-                              <td>{company["Company Email"]}</td>
-                              <td>{formatDate(company["AssignDate"])}</td>
-                              {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
-                                <td>
-                                  {/* <button
+                                  <td
                                     style={{
-                                      padding: "5px",
-                                      fontSize: "12px",
-                                      
-                                      // Additional styles for the "View" button
-                                    }}    onClick={() => {
-                                      functionopenprojection(
-                                        company["Company Name"]
-                                      );
+                                      position: "sticky",
+                                      left: 0,
+                                      zIndex: 1,
+                                      background: "white",
                                     }}
                                   >
-                                  <HiOutlineEye />
-                                  </button> */}
-                                  {/* <HiOutlineEye style={{
-                                    fontSize: "15px",
-                                    color: "#fbb900"
-                                    //backgroundColor: "lightblue",
-                                    // Additional styles for the "View" button
-                                  }}
-                                    //className="btn btn-primary d-none d-sm-inline-block"
-                                    onClick={() => {
-                                      functionopenprojection(
-                                        company["Company Name"]
-                                      );
-                                    }} /> */}
-                                  {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
-                                    <>
-                                      <IconButton>
-                                        <HiOutlineEye
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedRows.includes(company._id)}
+                                      onChange={(e) =>
+                                        handleCheckboxChange(company._id, e)
+                                      }
+                                      onMouseDown={() =>
+                                        handleMouseDown(company._id)
+                                      }
+                                      onMouseEnter={() =>
+                                        handleMouseEnter(company._id)
+                                      }
+                                      onMouseUp={handleMouseUp}
+                                    />
+                                  </td>
+
+                                  <td className="td-sticky">
+                                    {startIndex + index + 1}
+                                  </td>
+                                  <td className="td-sticky1">
+                                    {company["Company Name"]}
+                                  </td>
+                                  <td>{company["Company Number"]}</td>
+                                  <td>
+                                    <span>{company["Status"]}</span>
+                                  </td>
+                                  <td>
+                                    <div
+                                      key={company._id}
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                      }}
+                                    >
+                                      <p
+                                        className="rematkText text-wrap m-0"
+                                        title={company.Remarks}
+                                      >
+                                        {company.Remarks}
+                                      </p>
+                                      <span>
+                                        <HiOutlineEye style={{
+                                          fontSize: "15px",
+                                          color: "#fbb900"
+                                        }}
                                           onClick={() => {
-                                            functionopenprojection(company["Company Name"]);
-                                          }}
-                                          style={{ cursor: "pointer", width: "17px", height: "17px", color: "fbb900" }}
-                                        />
-                                      </IconButton>
+                                            functionopenpopupremarks(
+                                              company._id,
+                                              company.Status
+                                            );
+                                          }} />
+                                      </span>
+                                    </div>
+                                  </td>
 
-                                    </>
-                                  ) : (
-                                    <IconButton>
-
-                                      <HiOutlineEye
-                                        style={{ cursor: "pointer", width: "17px", height: "17px" }}
-                                        color="lightgrey"
-                                      />
-                                    </IconButton>
+                                  <td>
+                                    {formatDate(
+                                      company["Company Incorporation Date  "]
+                                    )}
+                                  </td>
+                                  <td>{company["City"]}</td>
+                                  <td>{company["State"]}</td>
+                                  <td>{company["Company Email"]}</td>
+                                  <td>{formatDate(company["AssignDate"])}</td>
+                                  {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                                    <td>
+                                      {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
+                                        <IconButton>
+                                          <HiOutlineEye
+                                            onClick={() => {
+                                              functionopenprojection(company["Company Name"]);
+                                            }}
+                                            style={{ cursor: "pointer", width: "17px", height: "17px", color: "fbb900" }}
+                                          />
+                                        </IconButton>
+                                      ) : (
+                                        <IconButton>
+                                          <HiOutlineEye
+                                            style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                                            color="lightgrey"
+                                          />
+                                        </IconButton>
+                                      )}
+                                    </td>
                                   )}
 
-                                </td>
-                              )}
-
-                              {dataStatus === "Matured" && (
-                                <td>
-                                  <HiOutlineEye style={{
-                                    fontSize: "15px",
-                                    color: "#fbb900"
-                                    //backgroundColor: "lightblue",
-                                    // Additional styles for the "View" button
-                                  }}
-                                    //className="btn btn-primary d-none d-sm-inline-block"
-                                    onClick={() => {
-                                      functionopenAnchor();
-                                      setMaturedCompanyName(
-                                        company["Company Name"]
-                                      );
-                                    }} />
-                                </td>
-                              )}
-                            </tr>
-                          ))}
-                        </tbody>
+                                  {dataStatus === "Matured" && (
+                                    <td>
+                                      <HiOutlineEye
+                                        style={{
+                                          fontSize: "15px",
+                                          color: "#fbb900"
+                                        }}
+                                        onClick={() => {
+                                          functionopenAnchor();
+                                          setMaturedCompanyName(
+                                            company["Company Name"]
+                                          );
+                                        }}
+                                      />
+                                    </td>
+                                  )}
+                                </tr>
+                              ))}
+                            </tbody>
+                          )}
+                        </>
                       )}
+                      {companiesLoading ? (
+                        <tbody className="d-flex align-items-center justify-content-center">
+                          <ClipLoader
+                            color="lightgrey"
+                            loading
+                            size={10}
+                            height="25"
+                            width="2"
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                          />
+                        </tbody>
+                      ) : (
+                        <>
 
-                      {dataStatus === "Matured" && companies.length !== 0 && (
-                        <tbody>
-                          {companies.map((company, index) => (
-                            <tr
-                              key={index}
-                              className={
-                                selectedRows.includes(company._id)
-                                  ? "selected"
-                                  : ""
-                              }
-                              style={{ border: "1px solid #ddd" }}
-                            >
-                              <td className="td-sticky">
-                                {startIndex + index + 1}
-                              </td>
-                              <td className="td-sticky1">
-                                {company["Company Name"]}
-                              </td>
-                              <td>{company["Company Number"]}</td>
-                              <td>
-                                <span>{company["Status"]}</span>
-                              </td>
-                              <td>
-                                <div
-                                  key={company._id}
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                  }}
+                          {dataStatus === "Matured" && companies.length !== 0 && (
+                            <tbody>
+                              {companies.map((company, index) => (
+                                <tr
+                                  key={index}
+                                  className={
+                                    selectedRows.includes(company._id)
+                                      ? "selected"
+                                      : ""
+                                  }
+                                  style={{ border: "1px solid #ddd" }}
                                 >
-                                  <p
-                                    className="rematkText text-wrap m-0"
-                                    title={company.Remarks}
-                                  >
-                                    {company.Remarks}
-                                  </p>
-                                  <span>
-                                    {/* <IconEye
+                                  <td className="td-sticky">
+                                    {startIndex + index + 1}
+                                  </td>
+                                  <td className="td-sticky1">
+                                    {company["Company Name"]}
+                                  </td>
+                                  <td>{company["Company Number"]}</td>
+                                  <td>
+                                    <span>{company["Status"]}</span>
+                                  </td>
+                                  <td>
+                                    <div
+                                      key={company._id}
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                      }}
+                                    >
+                                      <p
+                                        className="rematkText text-wrap m-0"
+                                        title={company.Remarks}
+                                      >
+                                        {company.Remarks}
+                                      </p>
+                                      <span>
+                                        {/* <IconEye
                                       onClick={() => {
                                         functionopenpopupremarks(
                                           company._id,
@@ -1633,34 +1646,34 @@ console.log(currentProjection)
                                         cursor: "pointer",
                                       }}
                                     /> */}
-                                    <HiOutlineEye style={{
-                                      fontSize: "15px",
-                                      color: "#fbb900"
-                                      //backgroundColor: "lightblue",
-                                      // Additional styles for the "View" button
-                                    }}
-                                      //className="btn btn-primary d-none d-sm-inline-block"
-                                      onClick={() => {
-                                        functionopenpopupremarks(
-                                          company._id,
-                                          company.Status
-                                        );
-                                      }} />
-                                  </span>
-                                </div>
-                              </td>
-                              <td>
-                                {formatDate(
-                                  company["Company Incorporation Date"]
-                                )}
-                              </td>
-                              <td>{company["City"]}</td>
-                              <td>{company["State"]}</td>
-                              <td>{company["Company Email"]}</td>
-                              <td>{formatDate(company["AssignDate"])}</td>
+                                        <HiOutlineEye style={{
+                                          fontSize: "15px",
+                                          color: "#fbb900"
+                                          //backgroundColor: "lightblue",
+                                          // Additional styles for the "View" button
+                                        }}
+                                          //className="btn btn-primary d-none d-sm-inline-block"
+                                          onClick={() => {
+                                            functionopenpopupremarks(
+                                              company._id,
+                                              company.Status
+                                            );
+                                          }} />
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td>
+                                    {formatDate(
+                                      company["Company Incorporation Date"]
+                                    )}
+                                  </td>
+                                  <td>{company["City"]}</td>
+                                  <td>{company["State"]}</td>
+                                  <td>{company["Company Email"]}</td>
+                                  <td>{formatDate(company["AssignDate"])}</td>
 
-                              <td>
-                                {/* <button
+                                  <td>
+                                    {/* <button
                                   style={{
                                     padding: "5px",
                                     fontSize: "12px",
@@ -1677,7 +1690,7 @@ console.log(currentProjection)
                                 >
                                   View
                                 </button> */}
-                                {/* <HiOutlineEye style={{
+                                    {/* <HiOutlineEye style={{
                                   fontSize: "15px",
                                   color: "#fbb900"
                                   //backgroundColor: "lightblue",
@@ -1690,25 +1703,27 @@ console.log(currentProjection)
                                       company["Company Name"]
                                     );
                                   }} /> */}
-                                <IconButton>
-                                  <RiEditCircleFill
-                                    onClick={() => {
-                                      functionopenAnchor();
-                                      setMaturedCompanyName(
-                                        company["Company Name"]
-                                      );
-                                    }}
-                                    style={{ cursor: "pointer", width: "17px", height: "17px" }}
-                                    color="#9696f8"
-                                  />
-                                </IconButton>
+                                    <IconButton>
+                                      <RiEditCircleFill
+                                        onClick={() => {
+                                          functionopenAnchor();
+                                          setMaturedCompanyName(
+                                            company["Company Name"]
+                                          );
+                                        }}
+                                        style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                                        color="#9696f8"
+                                      />
+                                    </IconButton>
 
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          )}
+                        </>
                       )}
-                      {currentData.length === 0 && dataStatus !== "Matured" && (
+                      {currentData.length === 0 && !loading && dataStatus !== "Matured" && (
                         <tbody>
                           <tr>
                             <td colSpan="11" className="p-2">
@@ -1717,7 +1732,7 @@ console.log(currentProjection)
                           </tr>
                         </tbody>
                       )}
-                      {companies.length === 0 && dataStatus === "Matured" && (
+                      {companies.length === 0 && !companiesLoading && dataStatus === "Matured" && (
                         <tbody>
                           <tr>
                             <td colSpan="11" className="p-2">
