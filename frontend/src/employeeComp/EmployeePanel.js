@@ -42,6 +42,7 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import ComposeEmail from "./ComposeEmail.jsx";
 
+import ScaleLoader from "react-spinners/ScaleLoader";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -65,7 +66,7 @@ function EmployeePanel() {
     remarks: "",
     date: "",
     time: "",
-    editCount:-1
+    editCount: -1
   });
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
@@ -189,11 +190,49 @@ function EmployeePanel() {
         totalPayment: findOneprojection.totalPayment,
         date: "",
         time: "",
-        editCount:findOneprojection.editCount,
+        editCount: findOneprojection.editCount,
       });
       setSelectedValues(findOneprojection.offeredServices);
     }
   };
+
+
+
+  // const functionopenprojection = (comName) => {
+  //   setProjectingCompany(comName);
+  //   setOpenProjection(true);
+  //   const findOneprojection =
+  //     projectionData.length !== 0 &&
+  //     projectionData.find((item) => item.companyName === comName);
+  //   if (findOneprojection) {
+  //     setCurrentProjection({
+  //       companyName: findOneprojection.companyName,
+  //       ename: findOneprojection.ename,
+  //       offeredPrize: findOneprojection.offeredPrize,
+  //       offeredServices: findOneprojection.offeredServices,
+  //       lastFollowUpdate: findOneprojection.lastFollowUpdate,
+  //       estPaymentDate: findOneprojection.estPaymentDate,
+  //       remarks: findOneprojection.remarks,
+  //       totalPayment: findOneprojection.totalPayment,
+  //       date: "",
+  //       time: "",
+  //       editCount: findOneprojection.editCount,
+  //     });
+  //     setSelectedValues(findOneprojection.offeredServices);
+
+  //     // Dynamically update the color of the edit icon based on editCount
+  //     let color;
+  //     if (findOneprojection.editCount === 0) {
+  //       color = "#fbb900"; // Yellow color
+  //     } else if (findOneprojection.editCount === 1) {
+  //       color = "green";
+  //     } else {
+  //       color = "red";
+  //     }
+  //     setEditIconColor(color); // assuming you have a state variable to manage icon color
+  //   }
+  // };
+
 
   const closeProjection = () => {
     setOpenProjection(false);
@@ -288,15 +327,18 @@ function EmployeePanel() {
 
   const fetchNewData = async (status) => {
     try {
+      setLoading(true);
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
+
+      //console.log("tempData" , tempData)
 
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
 
-      setmoreEmpData(sortedData);
+      setmoreEmpData(sortedData)
 
       setEmployeeData(
         tempData.filter(
@@ -355,6 +397,8 @@ function EmployeePanel() {
       // setEmployeeData(tempData.filter(obj => obj.Status === "Busy" || obj.Status === "Not Picked Up" || obj.Status === "Untouched"))
     } catch (error) {
       console.error("Error fetching new data:", error);
+    } finally {
+      setLoading(false); // Set loading to false regardless of success or error
     }
   };
 
@@ -572,6 +616,7 @@ function EmployeePanel() {
   const [companyNumber, setCompanyNumber] = useState(0);
   const [companyId, setCompanyId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   console.log(companyName, companyInco);
 
@@ -614,10 +659,7 @@ function EmployeePanel() {
 
         fetchNewData(oldStatus);
 
-        // if(newStatus==="Interested"){
-        //   setdataStatus("Interested");
-        //   setEmployeeData(moreEmpData.filter(obj => obj.Status === "Interested"))
-        // }
+
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);
@@ -1123,60 +1165,69 @@ function EmployeePanel() {
   //   }
   // };
 
+  const calculateColor = (editCount) => {
+    const maxEditCount = 10; // Maximum edit count for full darkness
+    const maxDarkness = 0.7; // Maximum darkness factor (0 to 1)
+    const darkness = editCount / maxEditCount * maxDarkness;
+    const brightness = 1 - darkness;
+    const hexDarkness = Math.floor(brightness * 255).toString(16).padStart(2, '0');
+    return `#${hexDarkness}${hexDarkness}00`; // Adjust the color component here, e.g., "#fbb900"
+  };
+
   const handleProjectionSubmit = async () => {
-    console.log("currentProjection" , currentProjection)
+    console.log("currentProjection", currentProjection)
     try {
       const newEditCount = currentProjection.editCount === -1 ? 0 : currentProjection.editCount + 1;
 
-        const finalData = {
-            ...currentProjection,
-            companyName: projectingCompany,
-            ename: data.ename,
-            offeredServices: selectedValues,
-            editCount: currentProjection.editCount + 1, // Increment editCount
-        };
-        if (finalData.offeredServices.length === 0) {
-            Swal.fire({ title: 'Services is required!', icon: 'warning' });
-        } else if (finalData.remarks === "") {
-            Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
-        } else if (finalData.totalPayment === 0) {
-            Swal.fire({ title: 'Payment is required!', icon: 'warning' });
-        }
-        else if (finalData.offeredPrize === 0) {
-            Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
-        }
-        else if (finalData.lastFollowUpdate === null) {
-            Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
-        }
-        else if (finalData.estPaymentDate === 0) {
-            Swal.fire({ title: 'Estimated Payment Date is required!', icon: 'warning' });
-        }
-        // Send data to backend API
-        const response = await axios.post(
-            `${secretKey}/update-followup`,
-            finalData
-        );
-        Swal.fire({ title: "Projection Submitted!", icon: "success" });
-        setOpenProjection(false);
-        setCurrentProjection({
-            companyName: "",
-            ename: "",
-            offeredPrize: 0,
-            offeredServices: [],
-            lastFollowUpdate: "",
-            remarks: "",
-            date: "",
-            time: "",
-            editCount: newEditCount, // Increment editCount
-        });
-        fetchProjections();
-        setSelectedValues([])
+      const finalData = {
+        ...currentProjection,
+        companyName: projectingCompany,
+        ename: data.ename,
+        offeredServices: selectedValues,
+        editCount: currentProjection.editCount + 1, // Increment editCount
+      };
+      if (finalData.offeredServices.length === 0) {
+        Swal.fire({ title: 'Services is required!', icon: 'warning' });
+      } else if (finalData.remarks === "") {
+        Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
+      } else if (finalData.totalPayment === 0) {
+        Swal.fire({ title: 'Payment is required!', icon: 'warning' });
+      }
+      else if (finalData.offeredPrize === 0) {
+        Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
+      }
+      else if (finalData.lastFollowUpdate === null) {
+        Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
+      }
+      else if (finalData.estPaymentDate === 0) {
+        Swal.fire({ title: 'Estimated Payment Date is required!', icon: 'warning' });
+      }
+      // Send data to backend API
+      const response = await axios.post(
+        `${secretKey}/update-followup`,
+        finalData
+      );
+      Swal.fire({ title: "Projection Submitted!", icon: "success" });
+      setOpenProjection(false);
+      setCurrentProjection({
+        companyName: "",
+        ename: "",
+        offeredPrize: 0,
+        offeredServices: [],
+        lastFollowUpdate: "",
+        remarks: "",
+        date: "",
+        time: "",
+        editCount: newEditCount, // Increment editCount
+      });
+      fetchProjections();
+      setSelectedValues([])
 
-        // Log success message
+      // Log success message
     } catch (error) {
-        console.error("Error updating or adding data:", error.message);
+      console.error("Error updating or adding data:", error.message);
     }
-};
+  };
 
 
 
@@ -1371,50 +1422,6 @@ function EmployeePanel() {
   // -----------------------------------------------------delete-projection-data-------------------------------
 
 
-  // const handleDelete = async (company) => {
-  //   const companyName = company;
-  //   console.log(companyName);
-
-  //   // Display a confirmation dialog using SweetAlert
-  //   Swal.fire({
-  //     title: 'Are you sure?',
-  //     text: 'You will not be able to recover this data!',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonColor: '#3085d6',
-  //     cancelButtonColor: '#d33',
-  //     confirmButtonText: 'Yes, delete it!'
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       try {
-  //         // Send a DELETE request to the backend API endpoint
-  //         const response = await axios.delete(`${secretKey}/delete-followup/${companyName}`);
-  //         console.log(response.data.message); // Log the response message
-  //         // Show a success message after successful deletion
-  //         Swal.fire('Deleted!', 'Your data has been deleted.', 'success');
-  //         setCurrentProjection({
-  //           companyName: "",
-  //           ename: "",
-  //           offeredPrize: 0,
-  //           offeredServices: [],
-  //           lastFollowUpdate: "",
-  //           totalPayment: 0,
-  //           estPaymentDate: "",
-  //           remarks: "",
-  //           date: "",
-  //           time: "",
-  //         });
-  //         setSelectedValues([])
-  //         fetchProjections();
-  //       } catch (error) {
-  //         console.error('Error deleting data:', error);
-  //         // Show an error message if deletion fails
-  //         Swal.fire('Error!', 'Follow Up Not Found.', 'error');
-  //       }
-  //     }
-  //   });
-  // };
-  // console.log("projections", currentProjection)
 
   const handleDelete = async (company) => {
     const companyName = company;
@@ -1498,7 +1505,7 @@ function EmployeePanel() {
                       </Dialog>
                   
                       <div
-                        className="form-control mr-1"
+                        className="form-control"
                         style={{ height: "fit-content", width: "auto" }}
                       >
                         <select
@@ -1526,7 +1533,7 @@ function EmployeePanel() {
                         <div>
                           <input
                             onChange={handleDateChange}
-                            style={{ display: visibility }}
+                            style={{ display: visibility, width: "83%", marginLeft: "10px" }}
                             type="date"
                             className="form-control"
                           />
@@ -1536,8 +1543,8 @@ function EmployeePanel() {
                       {visibilityOther === "block" ? (
                         <div
                           style={{
-                            width: "20vw",
-                            margin: "0px 10px",
+                            //width: "20vw",
+                            margin: "0px 0px 0px 9px",
                             display: visibilityOther,
                           }}
                           className="input-icon"
@@ -1575,6 +1582,7 @@ function EmployeePanel() {
                             className="form-control"
                             placeholder="Search…"
                             aria-label="Search in website"
+                            style={{ width: "60%" }}
                           />
                         </div>
                       ) : (
@@ -1583,8 +1591,8 @@ function EmployeePanel() {
                       {visibilityOthernew === "block" ? (
                         <div
                           style={{
-                            width: "20vw",
-                            margin: "0px 10px",
+                            //width: "20vw",
+                            margin: "0px 0px 0px 9px",
                             display: visibilityOthernew,
                           }}
                           className="input-icon"
@@ -1659,11 +1667,12 @@ function EmployeePanel() {
                           style={{
                             display: "flex",
                             justifyContent: "center",
-                            alignItems: "center",
-                            fontSize: "16px",
-                            fontFamily: "sans-serif",
+                            alignItems: "end",
+                            fontsize: "10px",
+                            fontfamily: "Poppins",
+                            //marginLeft: "-70px"
                           }}
-                          className="results ml-1"
+                          className="results"
                         >
                           {filteredData.length} results found
                         </div>
@@ -1671,9 +1680,8 @@ function EmployeePanel() {
                     </div>
                     <div
                       style={{ display: "flex", alignItems: "center" }}
-                      className="feature2"
-                    >
-                      <div className="form-control mr-2 sort-by">
+                      className="feature2">
+                      <div className="form-control mr-1 sort-by" style={{ width: "190px" }}>
                         <label htmlFor="sort-by">Sort By:</label>
                         <select
                           style={{
@@ -1819,7 +1827,7 @@ function EmployeePanel() {
                             className="form-control"
                           >
                             <select
-                              style={{ border: "none", outline: "none" }}
+                              style={{ border: "none", outline: "none", marginRight: "10px" , width:"115px",paddingLeft:"10px"}}
                               onChange={(e) => {
                                 setMonth(e.target.value);
                                 setCurrentPage(0);
@@ -1842,8 +1850,8 @@ function EmployeePanel() {
                               <option value="1">January</option>
                             </select>
                           </div>
-                          <div className="input-icon">
-                            <input
+                          <div className="input-icon  form-control" style={{ margin: "0px 10px", width: "110px" }}>
+                            {/* <input
                               type="number"
                               value={year}
                               defaultValue="Select Year"
@@ -1853,7 +1861,25 @@ function EmployeePanel() {
                                 setYear(e.target.value);
                               }}
                               aria-label="Search in website"
-                            />
+                            /> */}
+                            <select select
+                              style={{ border: "none", outline: "none"}}
+                              value={year}
+                              onChange={(e) => {
+                                setYear(e.target.value);
+                                setCurrentPage(0); // Reset page when year changes
+                              }}
+                            >
+                              <option value="">Select Year</option>
+                              {[...Array(15)].map((_, index) => {
+                                const yearValue = 2024 - index;
+                                return (
+                                  <option key={yearValue} value={yearValue}>
+                                    {yearValue}
+                                  </option>
+                                );
+                              })}
+                            </select>
                           </div>
                         </>
                       )}
@@ -2297,206 +2323,160 @@ function EmployeePanel() {
                               <th>{dataStatus==="FollowUp" || dataStatus==="Interested" ? "Add Projection" : "Action" }</th>
                           </tr>
                         </thead>
-                        {currentData.length !== 0 &&
-                          dataStatus !== "Matured" && (
-                            <tbody>
-                              {currentData.map((company, index) => (
-                                <tr
-                                  key={index}
-                                  style={{ border: "1px solid #ddd" }}
-                                >
-                                  <td className="td-sticky">
-                                    {startIndex + index + 1}
-                                  </td>
-                                  <td className="td-sticky1">
-                                    {company["Company Name"]}
-                                  </td>
-                                  <td>{company["Company Number"]}</td>
-                                  <td>
-                                    {company["Status"] === "Matured" ? (
-                                      <span>{company["Status"]}</span>
-                                    ) : (
-                                      <select
-                                        style={{
-                                          width: "100px",
-                                          background: "none",
-                                          padding: ".4375rem .75rem",
-                                          border:
-                                            "1px solid var(--tblr-border-color)",
-                                          borderRadius:
-                                            "var(--tblr-border-radius)",
-                                        }}
-                                        value={company["Status"]}
-                                        onChange={(e) =>
-                                          handleStatusChange(
-                                            company._id,
-                                            e.target.value,
-                                            company["Company Name"],
-                                            company["Company Email"],
-                                            company[
-                                            "Company Incorporation Date  "
-                                            ],
-                                            company["Company Number"],
-                                            company["Status"]
-                                          )
-                                        }
-                                      >
-                                        <option value="Not Picked Up">
-                                          Not Picked Up
-                                        </option>
-                                        <option value="Busy">Busy </option>
+                        {loading ? (
+                          <tbody className="d-flex align-items-center justify-content-center" >
+                            <ScaleLoader
+                              color="lightgrey"
+                              loading
+                              size={10}
+                              height="25"
+                              width="2"
+                              aria-label="Loading Spinner"
+                              data-testid="loader"
+                            />
 
-                                        <option value="Junk">Junk</option>
-                                        <option value="Not Interested">
-                                          Not Interested
-                                        </option>
-                                        {dataStatus === "All" && (
-                                          <>
-                                            <option value="Untouched">
-                                              Untouched{" "}
-                                            </option>
-                                            <option value="Interested">
-                                              Interested
-                                            </option>
-                                          </>
-                                        )}
-
-                                        {dataStatus === "Interested" && (
-                                          <>
-                                            <option value="Interested">
-                                              Interested
-                                            </option>
-                                            <option value="FollowUp">
-                                              Follow Up{" "}
-                                            </option>
-                                            <option value="Matured">
-                                              Matured
-                                            </option>
-                                          </>
-                                        )}
-
-                                        {dataStatus === "FollowUp" && (
-                                          <>
-                                            <option value="FollowUp">
-                                              Follow Up{" "}
-                                            </option>
-                                            <option value="Matured">
-                                              Matured
-                                            </option>
-                                          </>
-                                        )}
-                                      </select>
-                                    )}
-                                  </td>
-                                  <td>
-                                    <div
-                                      key={company._id}
+                          </tbody>
+                        ) : (
+                          <tbody>
+                            {currentData.map((company, index) => (
+                              <tr key={index} style={{ border: "1px solid #ddd" }}>
+                                <td className="td-sticky">
+                                  {startIndex + index + 1}
+                                </td>
+                                <td className="td-sticky1">
+                                  {company["Company Name"]}
+                                </td>
+                                <td>{company["Company Number"]}</td>
+                                <td>
+                                  {company["Status"] === "Matured" ? (
+                                    <span>{company["Status"]}</span>
+                                  ) : (
+                                    <select
                                       style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        width: "100px",
+                                        background: "none",
+                                        padding: ".4375rem .75rem",
+                                        border: "1px solid var(--tblr-border-color)",
+                                        borderRadius: "var(--tblr-border-radius)",
+                                      }}
+                                      value={company["Status"]}
+                                      onChange={(e) =>
+                                        handleStatusChange(
+                                          company._id,
+                                          e.target.value,
+                                          company["Company Name"],
+                                          company["Company Email"],
+                                          company["Company Incorporation Date  "],
+                                          company["Company Number"],
+                                          company["Status"]
+                                        )
+                                      }>
+                                      <option value="Not Picked Up">Not Picked Up</option>
+                                      <option value="Busy">Busy </option>
+                                      <option value="Junk">Junk</option>
+                                      <option value="Not Interested">Not Interested</option>
+                                      {dataStatus === "All" && (
+                                        <>
+                                          <option value="Untouched">Untouched </option>
+                                          <option value="Interested">Interested</option>
+                                        </>
+                                      )}
+
+                                      {dataStatus === "Interested" && (
+                                        <>
+                                          <option value="Interested">Interested</option>
+                                          <option value="FollowUp">Follow Up </option>
+                                          <option value="Matured">Matured</option>
+                                        </>
+                                      )}
+
+                                      {dataStatus === "FollowUp" && (
+                                        <>
+                                          <option value="FollowUp">Follow Up </option>
+                                          <option value="Matured">Matured</option>
+                                        </>
+                                      )}
+                                    </select>
+                                  )}
+                                </td>
+                                <td>
+                                  <div
+                                    key={company._id}
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                      width: "100px",
+                                    }}
+                                  >
+                                    <p
+                                      className="rematkText text-wrap m-0"
+                                      title={company.Remarks}
+                                    >
+                                      {!company["Remarks"] ? "No Remarks" : company.Remarks}
+                                    </p>
+
+                                    <IconButton
+                                      onClick={() => {
+                                        functionopenpopupremarks(
+                                          company._id,
+                                          company.Status
+                                        );
+                                        setCurrentRemarks(company.Remarks);
+                                        setCompanyId(company._id);
                                       }}
                                     >
-                                      <p
-                                        className="rematkText text-wrap m-0"
-                                        title={company.Remarks}
-                                      >
-                                        {!company["Remarks"]
-                                          ? "No Remarks"
-                                          : company.Remarks}
-                                      </p>
-
-                                      <IconButton
-                                        onClick={() => {
-                                          functionopenpopupremarks(
-                                            company._id,
-                                            company.Status
-                                          );
-                                          setCurrentRemarks(company.Remarks);
-                                          setCompanyId(company._id);
+                                      <EditIcon
+                                        style={{
+                                          width: "12px",
+                                          height: "12px",
                                         }}
-                                      >
-                                        <EditIcon
-                                          style={{
-                                            width: "12px",
-                                            height: "12px",
+                                      />
+                                    </IconButton>
+                                  </div>
+                                </td>
+
+                                <td>
+                                  {formatDate(company["Company Incorporation Date  "])}
+                                </td>
+                                <td>{company["City"]}</td>
+                                <td>{company["State"]}</td>
+                                <td>{company["Company Email"]}</td>
+                                <td>{formatDate(company["AssignDate"])}</td>
+
+                                {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                                  <td>
+                                    {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
+                                      <>
+                                        <IconButton>
+                                          <RiEditCircleFill
+                                            onClick={() => {
+                                              functionopenprojection(company["Company Name"]);
+                                            }}
+                                            style={{
+                                              cursor: "pointer",
+                                              width: "17px",
+                                              height: "17px",
+                                            }}
+                                            color="#fbb900"
+                                          />
+                                        </IconButton>
+                                      </>
+                                    ) : (
+                                      <IconButton>
+                                        <AddCircleIcon
+                                          onClick={() => {
+                                            functionopenprojection(company["Company Name"]);
                                           }}
+                                          style={{ cursor: "pointer", width: "17px", height: "17px" }}
                                         />
                                       </IconButton>
-                                    </div>
-                                  </td>
-
-                                  <td>
-                                    {formatDate(
-                                      company["Company Incorporation Date  "]
                                     )}
                                   </td>
-                                  <td>{company["City"]}</td>
-                                  <td>{company["State"]}</td>
-                                  <td>{company["Company Email"]}</td>
-                                  <td>{formatDate(company["AssignDate"])}</td>
-
-                                  {(dataStatus === "FollowUp" ||
-                                    dataStatus === "Interested") && (
-                                      <td>
-                                        {/* <button
-                                          style={{
-                                            padding: "5px",
-                                            fontSize: "12px",
-                                            backgroundColor: "lightblue",
-                                            // Additional styles for the "View" button
-                                          }}
-                                          className="btn btn-primary d-none d-sm-inline-block"
-                                          onClick={() => {
-                                            functionopenprojection(
-                                              company["Company Name"]
-                                            );
-                                          }}
-                                        >
-                                          
-                                        </button> */}
-                                        {/* <HiOutlineEye style={{
-                                          fontSize: "15px",
-                                          color: "#fbb900"
-                                          //backgroundColor: "lightblue",
-                                          // Additional styles for the "View" button
-                                        }}
-                                          //className="btn btn-primary d-none d-sm-inline-block"
-                                          onClick={() => {
-                                            functionopenprojection(
-                                              company["Company Name"]
-                                            );
-                                          }} /> */}
-                                        {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
-                                          <>
-                                            <IconButton>
-                                              <RiEditCircleFill
-                                                onClick={() => {
-                                                  functionopenprojection(company["Company Name"]);
-                                                }}
-                                                style={{ cursor: "pointer", width: "17px", height: "17px" }}
-                                                color={projectionData.find(item => item.editCount > 0) ? "green" : "#fbb900"}
-                                              />
-                                            </IconButton>
-                                          </>
-                                        ) : (
-                                          <IconButton>
-                                            <AddCircleIcon
-                                              onClick={() => {
-                                                functionopenprojection(company["Company Name"]);
-                                              }}
-                                              style={{ cursor: "pointer", width: "17px", height: "17px" }}
-                                            />
-                                          </IconButton>
-                                        )}
-                                      </td>
-                                    )}
-                                    <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          )}
+                                )}
+                              </tr>
+                            ))}
+                          </tbody>
+                        )}
                         {dataStatus === "Matured" && companies.length !== 0 && (
                           <tbody>
                             {companies.map((company, index) => (
@@ -2578,7 +2558,7 @@ function EmployeePanel() {
                             ))}
                           </tbody>
                         )}
-                        {currentData.length === 0 &&
+                        {currentData.length === 0 && !loading &&
                           dataStatus !== "Matured" && (
                             <tbody>
                               <tr>
@@ -2588,7 +2568,7 @@ function EmployeePanel() {
                               </tr>
                             </tbody>
                           )}
-                        {companies.length === 0 && dataStatus === "Matured" && (
+                        {companies.length === 0 && dataStatus === "Matured" && !loading (
                           <tbody>
                             <tr>
                               <td colSpan="11" className="p-2 particular">
@@ -3245,13 +3225,6 @@ function EmployeePanel() {
                 <strong>Offered Services {selectedValues.length === 0 && <span style={{ color: "red" }}>*</span>} :</strong>
                 <div className="services mb-3">
                   <Select
-                    // styles={{
-                    //   customStyles,
-                    //   container: (provided) => ({
-                    //     border: "1px solid #ffb900",
-                    //     borderRadius: "5px",
-                    //   }),
-                    // }}
                     isMulti
                     options={options}
                     onChange={(selectedOptions) => {
@@ -3264,7 +3237,7 @@ function EmployeePanel() {
                       label: value,
                     }))}
                     placeholder="Select Services..."
-                  //disabled={!isEditProjection}
+                    isDisabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -3282,7 +3255,7 @@ function EmployeePanel() {
                         offeredPrize: e.target.value,
                       }));
                     }}
-                  //disabled={!isEditProjection}
+                    disabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -3300,7 +3273,7 @@ function EmployeePanel() {
                         totalPayment: e.target.value,
                       }));
                     }}
-                  //disabled={!isEditProjection}
+                    disabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -3318,7 +3291,7 @@ function EmployeePanel() {
                         lastFollowUpdate: e.target.value,
                       }));
                     }}
-                  //disabled={!isEditProjection}
+                    disabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -3336,7 +3309,7 @@ function EmployeePanel() {
                         estPaymentDate: e.target.value,
                       }));
                     }}
-                  //disabled={!isEditProjection}
+                    disabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -3354,13 +3327,13 @@ function EmployeePanel() {
                         remarks: e.target.value,
                       }));
                     }}
-                  //disabled={!isEditProjection}
+                    disabled={!isEditProjection}
                   />
                 </div>
               </div>
               <div className="submitBtn">
                 <button
-                  //disabled={!isEditProjection}
+                  disabled={!isEditProjection}
                   onClick={handleProjectionSubmit}
                   style={{ width: "100%" }}
                   type="submit"

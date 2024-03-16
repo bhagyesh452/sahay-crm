@@ -39,6 +39,8 @@ function EmployeeDashboard() {
   const [selectedValues, setSelectedValues] = useState([]);
   const [searchTerm, setSearchTerm] = useState("")
   const [loading, setLoading] = useState(true);
+  const [uniqueArrayLoading, setuniqueArrayLoading] = useState(false)
+  const [filteredBookingLoading, setFilteredBookingLoading] = useState(false)
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
     ename: "",
@@ -123,10 +125,11 @@ function EmployeeDashboard() {
   }, []);
 
 
- useEffect(() => {
-  setLoading(true); // Set loading to true when useEffect is triggered
-  fetchEmployeeData().then(() => setLoading(false)); // Set loading to false after data is fetched
-}, [data]);
+  useEffect(() => {
+    setLoading(true);
+    setuniqueArrayLoading(true) // Set loading to true when useEffect is triggered
+    fetchEmployeeData().then(() => setuniqueArrayLoading(false)); // Set loading to false after data is fetched
+  }, [data]);
 
   const formattedDates =
     empData.length !== 0 &&
@@ -139,14 +142,16 @@ function EmployeeDashboard() {
   useEffect(() => {
     const fetchBookingDetails = async () => {
       try {
-        setLoading(true); // Set loading to true before fetching
+        setLoading(true);
+        setuniqueArrayLoading(true)// Set loading to true before fetching
         const response = await axios.get(`${secretKey}/company-ename/${data.ename}`);
         setTotalBooking(response.data);
         setFilteredBooking(response.data);
       } catch (error) {
         console.error("Error fetching company details:", error.message);
       } finally {
-        setLoading(false); // Set loading to false after fetching, regardless of success or failure
+        setLoading(false);
+        setuniqueArrayLoading(false)// Set loading to false after fetching, regardless of success or failure
       }
     };
 
@@ -1364,7 +1369,6 @@ function EmployeeDashboard() {
                     /></td></tr>)
                   }
                 </tbody>
-
                 {uniqueArray && (
                   <tfoot>
                     <tr style={{ fontWeight: 500 }}>
@@ -1429,73 +1433,114 @@ function EmployeeDashboard() {
                     </tr>
                   </tfoot>
                 )} */}
-                {uniqueArray && uniqueArray.length > 0 ? (
+                {uniqueArrayLoading ? (
+                  <tbody>
+                    <tr>
+                      <td colSpan="11" style={{ height: "100px !important", padding: "80px !important" }}>
+                        <ClipLoader
+                          color="lightgrey"
+                          loading
+                          size={35}
+                          height="25"
+                          width="25"
+                          aria-label="Loading Spinner"
+                          data-testid="loader"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                ) : (
                   <>
                     <tbody>
-                      {uniqueArray.map((obj, index) => (
+                      {uniqueArray && uniqueArray.map((obj, index) => (
                         <tr key={`row-${index}`}>
-                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                          <td
+                            style={{
+                              lineHeight: "32px",
+                            }}
+                          >
+                            {index + 1}
+                          </td>
                           <td>{obj}</td>
                           <td>
-                            {empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Untouched"
-                            ).length}
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Untouched"
+                              ).length
+                            }
                           </td>
                           <td>
-                            {empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Busy"
-                            ).length}
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Busy"
+                              ).length
+                            }
                           </td>
                           <td>
-                            {empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Not Picked Up"
-                            ).length}
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Not Picked Up"
+                              ).length
+                            }
                           </td>
                           <td>
-                            {empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Junk"
-                            ).length}
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Junk"
+                              ).length
+                            }
                           </td>
                           <td>
-                            {empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "FollowUp"
-                            ).length}
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "FollowUp"
+                              ).length
+                            }
                           </td>
                           <td>
-                            {empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Interested"
-                            ).length}
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Interested"
+                              ).length
+                            }
                           </td>
                           <td>
-                            {empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Not Interested"
-                            ).length}
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Not Interested"
+                              ).length
+                            }
                           </td>
                           <td>
-                            {empData.filter(
-                              (partObj) =>
-                                formatDate(partObj.AssignDate) === obj &&
-                                partObj.Status === "Matured"
-                            ).length}
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj &&
+                                  partObj.Status === "Matured"
+                              ).length
+                            }
                           </td>
                           <td>
-                            {empData.filter(
-                              (partObj) => formatDate(partObj.AssignDate) === obj
-                            ).length}
+                            {
+                              empData.filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj
+                              ).length
+                            }
                           </td>
                         </tr>
                       ))}
@@ -1506,61 +1551,81 @@ function EmployeeDashboard() {
                           Total
                         </td>
                         <td>
-                          {empData.filter((partObj) => partObj.Status === "Untouched").length}
-                        </td>
-                        <td>{empData.filter((partObj) => partObj.Status === "Busy").length}</td>
-                        <td>
-                          {empData.filter(
-                            (partObj) => partObj.Status === "Not Picked Up"
-                          ).length}
-                        </td>
-                        <td>{empData.filter((partObj) => partObj.Status === "Junk").length}</td>
-                        <td>
-                          {empData.filter((partObj) => partObj.Status === "FollowUp").length}
+                          {
+                            empData.filter(
+                              (partObj) => partObj.Status === "Untouched"
+                            ).length
+                          }
                         </td>
                         <td>
-                          {empData.filter(
-                            (partObj) => partObj.Status === "Interested"
-                          ).length}
+                          {
+                            empData.filter((partObj) => partObj.Status === "Busy")
+                              .length
+                          }
                         </td>
                         <td>
-                          {empData.filter(
-                            (partObj) => partObj.Status === "Not Interested"
-                          ).length}
+                          {
+                            empData.filter(
+                              (partObj) => partObj.Status === "Not Picked Up"
+                            ).length
+                          }
                         </td>
                         <td>
-                          {empData.filter((partObj) => partObj.Status === "Matured").length}
+                          {
+                            empData.filter((partObj) => partObj.Status === "Junk")
+                              .length
+                          }
+                        </td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) => partObj.Status === "FollowUp"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) => partObj.Status === "Interested"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) => partObj.Status === "Not Interested"
+                            ).length
+                          }
+                        </td>
+                        <td>
+                          {
+                            empData.filter(
+                              (partObj) => partObj.Status === "Matured"
+                            ).length
+                          }
                         </td>
                         <td>{empData.length}</td>
                       </tr>
                     </tfoot>
                   </>
-                ) : uniqueArray && uniqueArray.length > 0 && loading ? (
-                  <tr style={{ minHeight: "350px" }}>
-                    <td colSpan={11}>
-                      <ScaleLoader
-                        color="lightgrey"
-                        loading
-                        cssOverride={override}
-                        size={10}
-                        height="25"
-                        width="2"
-                        style={{ width: "10px", height: "10px" }}
-                        aria-label="Loading Spinner"
-                        data-testid="loader"
-                      />
-                    </td>
-                  </tr>
-                ) : (
-                  <tr>
-                    <td colSpan={11} style={{ textAlign: "center" }}>
-                      <Nodata />
-                    </td>
-                  </tr>
                 )}
 
 
 
+
+
+
+
+                {uniqueArray.length === 0 && !uniqueArrayLoading
+                  (
+                    <tbody>
+                      <tr>
+                        <td colSpan={9} className="p-2 particular">
+                          <Nodata />
+                        </td>
+                      </tr>
+                    </tbody>
+                  )}
 
               </table>
             </div>
@@ -2087,6 +2152,8 @@ function EmployeeDashboard() {
                         loading
                         cssOverride={override}
                         size={10}
+                        height="25"
+                        width="2"
                         aria-label="Loading Spinner"
                         data-testid="loader"
                       />
