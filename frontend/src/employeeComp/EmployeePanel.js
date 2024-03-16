@@ -9,10 +9,15 @@ import axios from "axios";
 import { IconChevronLeft, IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { Drawer, Icon, IconButton } from "@mui/material";
+import FontDownloadIcon from '@mui/icons-material/FontDownload';
+import AttachmentIcon from '@mui/icons-material/Attachment';
+import ImageIcon from '@mui/icons-material/Image';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import Select from "react-select";
 import Swal from "sweetalert2";
 import SaveIcon from "@mui/icons-material/Save";
@@ -35,15 +40,19 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { RiEditCircleFill } from "react-icons/ri";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
+import ComposeEmail from "./ComposeEmail.jsx";
 
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
+
   const [projectingCompany, setProjectingCompany] = useState("");
   const [sortStatus, setSortStatus] = useState("");
   const [projectionData, setProjectionData] = useState([]);
   const [requestData, setRequestData] = useState(null);
+  const [openLogin, setOpenLogin] = useState(false)
+  
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
@@ -60,6 +69,28 @@ function EmployeePanel() {
   });
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
+  const [isOpen, setIsOpen] = useState(false);
+  const [emailData, setEmailData] = useState({ to: '', subject: '', body: '' });
+
+  const handleTogglePopup = () => {
+    setIsOpen(false);
+  };
+  const loginwithgoogle = ()=>{
+    window.open("http://localhost:6050/auth/google/callback")
+  }
+
+  const handleChangeMail = (e) => {
+    const { name, value } = e.target;
+    setEmailData({ ...emailData, [name]: value });
+  };
+
+  const handleSubmitMail = (e) => {
+    e.preventDefault();
+    // Perform email sending logic here (e.g., using an API or backend)
+    console.log('Email Data:', emailData);
+    // Close the compose popup after sending
+    setIsOpen(false);
+  };
   const [changeRemarks, setChangeRemarks] = useState("");
   const [open, openchange] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -132,7 +163,14 @@ function EmployeePanel() {
     openchange(true);
   };
 
-  console.log("projectingcompnay", projectingCompany)
+  const handleGoogleLogin = async () => {
+    try {
+      const { data } = await axios.get(`http://localhost:3001/api/auth/google`); // Replace with your backend endpoint
+      console.log(data); // Handle the response as needed
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
     setOpenProjection(true);
@@ -1442,6 +1480,23 @@ function EmployeePanel() {
                     className="features"
                   >
                     <div style={{ display: "flex" }} className="feature1">
+                      <button className="btn btn-primary" onClick={loginwithgoogle} >
+                          Gmail SignIn
+                      </button>
+                      <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
+                        <DialogTitle>
+                        <h1>Login Page</h1>
+                        </DialogTitle>
+                        <DialogContent>
+                        <div className="sign-in-google">
+   
+      <p>Please sign in with your Google account.</p>
+      <button onClick={handleGoogleLogin} >Sign in with Google</button>
+    </div>
+                        </DialogContent>
+                      
+                      </Dialog>
+                  
                       <div
                         className="form-control mr-1"
                         style={{ height: "fit-content", width: "auto" }}
@@ -2080,7 +2135,6 @@ function EmployeePanel() {
                             <th>Company Number</th>
                             <th>Status</th>
                             <th>Remarks</th>
-
                             <th>
                               Incorporation Date
                               <FilterListIcon
@@ -2238,8 +2292,9 @@ function EmployeePanel() {
                               />
                             </th>
 
-                            {(dataStatus === "Matured" && <th>Add Projection</th>) ||
-                              (dataStatus === "FollowUp" && <th>Add Projection</th>) || (dataStatus === "Interested" && <th>Add Projection</th>)}
+                            {/* {(dataStatus === "Matured" && <th>Add Projection</th>) ||
+                              (dataStatus === "FollowUp" && <th>Add Projection</th>) || (dataStatus === "Interested" && <th>Add Projection</th>) } */}
+                              <th>{dataStatus==="FollowUp" || dataStatus==="Interested" ? "Add Projection" : "Action" }</th>
                           </tr>
                         </thead>
                         {currentData.length !== 0 &&
@@ -2437,6 +2492,7 @@ function EmployeePanel() {
                                         )}
                                       </td>
                                     )}
+                                    <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td>
                                 </tr>
                               ))}
                             </tbody>
@@ -3316,6 +3372,68 @@ function EmployeePanel() {
             </div>
           </div>
         </Drawer>
+        <div className="compose-email">
+      {isOpen && (
+        <div className="compose-popup">
+          <div className="compose-header">
+            <h2 className="compose-title">New Email</h2>
+            <button className="close-btn" onClick={handleTogglePopup}>
+              &times;
+            </button>
+          </div>
+          <form onSubmit={handleSubmitMail}>
+            <input
+              type="email"
+              name="to"
+              className="compose-input"
+              placeholder="To"
+              value={emailData.to}
+              onChange={handleChangeMail}
+              required
+            />
+            <input
+              type="text"
+              name="subject"
+              className="compose-input"
+              placeholder="Subject"
+              value={emailData.subject}
+              onChange={handleChangeMail}
+              required
+            />
+            <textarea
+              name="body"
+              className="compose-textarea"
+              placeholder="Write your message here"
+              value={emailData.body}
+              onChange={handleChangeMail}
+              required
+            ></textarea>
+            
+            <div className="compose-more-options d-flex align-items-center ">
+            <button type="submit" className="send-btn">
+              Send
+            </button>
+            <div className="other-options d-flex">
+            <div className="compose-formatting m-1">
+                    <FontDownloadIcon />
+                </div>
+                <div className="compose-attachments m-1">
+                    <AttachmentIcon/>
+                </div>
+                <div className="compose-insert-files m-1">
+                    <ImageIcon/>
+                </div>
+                <div className="compose-menuIcon m-1">
+                    <MoreVertIcon/>
+                </div>
+            </div>
+               
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+       
       </div>
     </div>
   );
