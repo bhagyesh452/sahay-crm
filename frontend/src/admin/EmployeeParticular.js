@@ -2036,17 +2036,12 @@ function EmployeeParticular() {
         onClose={closeProjection}
       >
         <div style={{ width: "31em" }} className="container-xl">
-          {/* <div className="header d-flex justify-content-between align-items-center">
-            <h1 style={{ marginBottom: "0px" }} className="title">
-              Projection Form
-            </h1>
-          </div> */}
           <div className="header d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
-            <h1 style={{ marginBottom: "0px", fontSize: "23px", }} className="title">
+            <h1 style={{ marginBottom: "0px", fontSize: "20px", }} className="title">
               Projection Form
             </h1>
             <IconButton>
-              <IoClose onClick={closeProjection} />
+              <IoClose onClick={closeProjection} style={{ width: "17px", height: "17px" }} />
             </IconButton>
           </div>
           <hr style={{ margin: "0px" }} />
@@ -2081,7 +2076,7 @@ function EmployeeParticular() {
               </div>
             </div>
             <div className="label">
-              <strong>Offered Price</strong>
+              <strong>Offered Prices (With GST)</strong>
               <div className="services mb-3">
                 <input
                   type="number"
