@@ -36,6 +36,7 @@ import { RiEditCircleFill } from "react-icons/ri";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import ScaleLoader from "react-spinners/ScaleLoader";
+import ClipLoader from "react-spinners/ClipLoader";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -288,7 +289,10 @@ function EmployeePanel() {
 
   const fetchNewData = async (status) => {
     try {
-      setLoading(true);
+      if(!status){
+        setLoading(true);
+      }
+     
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
 
@@ -1771,7 +1775,7 @@ function EmployeePanel() {
                             className="form-control"
                           >
                             <select
-                              style={{ border: "none", outline: "none", marginRight: "10px" , width:"115px",paddingLeft:"10px"}}
+                              style={{ border: "none", outline: "none", marginRight: "10px", width: "115px", paddingLeft: "10px" }}
                               onChange={(e) => {
                                 setMonth(e.target.value);
                                 setCurrentPage(0);
@@ -1807,7 +1811,7 @@ function EmployeePanel() {
                               aria-label="Search in website"
                             /> */}
                             <select select
-                              style={{ border: "none", outline: "none"}}
+                              style={{ border: "none", outline: "none" }}
                               value={year}
                               onChange={(e) => {
                                 setYear(e.target.value);
@@ -2268,17 +2272,20 @@ function EmployeePanel() {
                           </tr>
                         </thead>
                         {loading ? (
-                          <tbody className="d-flex align-items-center justify-content-center" >
-                            <ScaleLoader
-                              color="lightgrey"
-                              loading
-                              size={10}
-                              height="25"
-                              width="2"
-                              aria-label="Loading Spinner"
-                              data-testid="loader"
-                            />
-
+                          <tbody>
+                            <tr>
+                              <td colSpan="11" style={{ height: "100px !important", padding: "80px !important" }}>
+                                <ClipLoader
+                                  color="lightgrey"
+                                  loading
+                                  size={30}
+                                  height="25"
+                                  width="2"
+                                  aria-label="Loading Spinner"
+                                  data-testid="loader"
+                                />
+                              </td>
+                            </tr>
                           </tbody>
                         ) : (
                           <tbody>
@@ -2407,7 +2414,7 @@ function EmployeePanel() {
                                       </>
                                     ) : (
                                       <IconButton>
-                                        <AddCircleIcon
+                                        <RiEditCircleFill
                                           onClick={() => {
                                             functionopenprojection(company["Company Name"]);
                                           }}
@@ -2512,7 +2519,7 @@ function EmployeePanel() {
                               </tr>
                             </tbody>
                           )}
-                        {companies.length === 0 && dataStatus === "Matured" && !loading (
+                        {companies.length === 0 && dataStatus === "Matured" && !loading(
                           <tbody>
                             <tr>
                               <td colSpan="11" className="p-2 particular">
@@ -3119,7 +3126,7 @@ function EmployeePanel() {
                   onClick={() => {
                     setIsEditProjection(true);
                   }}>
-                  <EditIcon color="primary"></EditIcon>
+                  <EditIcon color="grey"></EditIcon>
                 </IconButton>
                 {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
                   <DeleteIcon
@@ -3159,7 +3166,7 @@ function EmployeePanel() {
                 <div>
                   <button
                     onClick={() => handleDelete(projectingCompany)}
-                    className="btn btn-primary"
+                    className="btn btn-link" style={{color:"grey"}}
                   >
                     Clear Form
                   </button>

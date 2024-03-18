@@ -94,7 +94,22 @@ function EmployeeDashboard() {
   };
   console.log(data)
 
+  // const fetchEmployeeData = async () => {
+  //   try {
+  //     //setuniqueArrayLoading(true);
+  //     const response = await fetch(`${secretKey}/edata-particular/${data.ename}`);
+  //     const data = await response.json();
+  //     setEmpData(data);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   } finally {
+  //     //setuniqueArrayLoading(false);
+  //   }
+  //   console.log("empData", empData);
+  // };
+
   const fetchEmployeeData = async () => {
+    setLoading(true)
     fetch(`${secretKey}/edata-particular/${data.ename}`)
       .then((response) => response.json())
       .then((data) => {
@@ -102,7 +117,7 @@ function EmployeeDashboard() {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
-      });
+      })
   };
   console.log("empData", empData)
 
@@ -126,8 +141,8 @@ function EmployeeDashboard() {
 
   useEffect(() => {
     setLoading(true);
-    setuniqueArrayLoading(true) // Set loading to true when useEffect is triggered
-    fetchEmployeeData().then(() => setuniqueArrayLoading(false)); // Set loading to false after data is fetched
+    //setuniqueArrayLoading(true) // Set loading to true when useEffect is triggered
+    fetchEmployeeData().then(() => setLoading(false)); // Set loading to false after data is fetched
   }, [data]);
 
   const formattedDates =
@@ -142,7 +157,7 @@ function EmployeeDashboard() {
     const fetchBookingDetails = async () => {
       try {
         setLoading(true);
-        setuniqueArrayLoading(true)// Set loading to true before fetching
+        //setuniqueArrayLoading(true)// Set loading to true before fetching
         const response = await axios.get(`${secretKey}/company-ename/${data.ename}`);
         setTotalBooking(response.data);
         setFilteredBooking(response.data);
@@ -150,7 +165,7 @@ function EmployeeDashboard() {
         console.error("Error fetching company details:", error.message);
       } finally {
         setLoading(false);
-        setuniqueArrayLoading(false)// Set loading to false after fetching, regardless of success or failure
+        //setuniqueArrayLoading(false)// Set loading to false after fetching, regardless of success or failure
       }
     };
 
@@ -1254,7 +1269,7 @@ function EmployeeDashboard() {
                     </th>
                   </tr>
                 </thead>
-                {/* <tbody>
+                <tbody>
                   {uniqueArray ? (
                     uniqueArray.length > 0 ? (
                       uniqueArray.map((obj, index) => (
@@ -1431,8 +1446,8 @@ function EmployeeDashboard() {
                       <td>{empData.length}</td>
                     </tr>
                   </tfoot>
-                )} */}
-                {uniqueArrayLoading ? (
+                )}
+                {/* {uniqueArrayLoading ? (
                   <tbody>
                     <tr>
                       <td colSpan="11" style={{ height: "100px !important", padding: "80px !important" }}>
@@ -1608,13 +1623,6 @@ function EmployeeDashboard() {
                     </tfoot>
                   </>
                 )}
-
-
-
-
-
-
-
                 {uniqueArray.length === 0 && !uniqueArrayLoading
                   (
                     <tbody>
@@ -1624,7 +1632,7 @@ function EmployeeDashboard() {
                         </td>
                       </tr>
                     </tbody>
-                  )}
+                  )} */}
 
               </table>
             </div>
