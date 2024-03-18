@@ -9,15 +9,15 @@ import axios from "axios";
 import { IconChevronLeft, IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { Drawer, Icon, IconButton } from "@mui/material";
-import FontDownloadIcon from '@mui/icons-material/FontDownload';
-import AttachmentIcon from '@mui/icons-material/Attachment';
-import ImageIcon from '@mui/icons-material/Image';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import FontDownloadIcon from "@mui/icons-material/FontDownload";
+import AttachmentIcon from "@mui/icons-material/Attachment";
+import ImageIcon from "@mui/icons-material/Image";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import SaveIcon from "@mui/icons-material/Save";
@@ -52,8 +52,8 @@ function EmployeePanel() {
   const [sortStatus, setSortStatus] = useState("");
   const [projectionData, setProjectionData] = useState([]);
   const [requestData, setRequestData] = useState(null);
-  const [openLogin, setOpenLogin] = useState(false)
-  
+  const [openLogin, setOpenLogin] = useState(false);
+
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
@@ -66,19 +66,19 @@ function EmployeePanel() {
     remarks: "",
     date: "",
     time: "",
-    editCount: -1
+    editCount: -1,
   });
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
   const [isOpen, setIsOpen] = useState(false);
-  const [emailData, setEmailData] = useState({ to: '', subject: '', body: '' });
+  const [emailData, setEmailData] = useState({ to: "", subject: "", body: "" });
 
   const handleTogglePopup = () => {
     setIsOpen(false);
   };
-  const loginwithgoogle = ()=>{
-    window.open("http://localhost:6050/auth/google/callback")
-  }
+  const loginwithgoogle = () => {
+    window.open("http://localhost:6050/auth/google/callback");
+  };
 
   const handleChangeMail = (e) => {
     const { name, value } = e.target;
@@ -88,7 +88,7 @@ function EmployeePanel() {
   const handleSubmitMail = (e) => {
     e.preventDefault();
     // Perform email sending logic here (e.g., using an API or backend)
-    console.log('Email Data:', emailData);
+    console.log("Email Data:", emailData);
     // Close the compose popup after sending
     setIsOpen(false);
   };
@@ -140,7 +140,7 @@ function EmployeePanel() {
     audio.play();
   };
   useEffect(() => {
-    const socket = io('/api/socket.io'); // Connects to the same host and port as the client
+    const socket = io("/api/socket.io"); // Connects to the same host and port as the client
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
     });
@@ -169,7 +169,7 @@ function EmployeePanel() {
       const { data } = await axios.get(`http://localhost:3001/api/auth/google`); // Replace with your backend endpoint
       console.log(data); // Handle the response as needed
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
   const functionopenprojection = (comName) => {
@@ -195,8 +195,6 @@ function EmployeePanel() {
       setSelectedValues(findOneprojection.offeredServices);
     }
   };
-
-
 
   // const functionopenprojection = (comName) => {
   //   setProjectingCompany(comName);
@@ -232,7 +230,6 @@ function EmployeePanel() {
   //     setEditIconColor(color); // assuming you have a state variable to manage icon color
   //   }
   // };
-
 
   const closeProjection = () => {
     setOpenProjection(false);
@@ -316,13 +313,15 @@ function EmployeePanel() {
   };
   const fetchProjections = async () => {
     try {
-      const response = await axios.get(`${secretKey}/projection-data/${data.ename}`);
+      const response = await axios.get(
+        `${secretKey}/projection-data/${data.ename}`
+      );
       setProjectionData(response.data);
     } catch (error) {
       console.error("Error fetching Projection Data:", error.message);
     }
   };
-  console.log(projectionData)
+  console.log(projectionData);
   const [moreEmpData, setmoreEmpData] = useState([]);
 
   const fetchNewData = async (status) => {
@@ -338,7 +337,7 @@ function EmployeePanel() {
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
 
-      setmoreEmpData(sortedData)
+      setmoreEmpData(sortedData);
 
       setEmployeeData(
         tempData.filter(
@@ -446,13 +445,14 @@ function EmployeePanel() {
   const activeStatus = async () => {
     if (data._id && socketID) {
       try {
-
         const id = data._id;
-        const response = await axios.put(`${secretKey}/online-status/${id}/${socketID}`);
+        const response = await axios.put(
+          `${secretKey}/online-status/${id}/${socketID}`
+        );
         console.log(response.data); // Log response for debugging
         return response.data; // Return response data if needed
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
         throw error; // Throw error for handling in the caller function
       }
     }
@@ -462,7 +462,6 @@ function EmployeePanel() {
     if (data.ename) {
       console.log("Employee found");
       fetchNewData();
-
     } else {
       console.log("No employees found");
     }
@@ -477,7 +476,6 @@ function EmployeePanel() {
       clearTimeout(timerId);
     };
   }, [socketID]);
-
 
   const fetchRequestDetails = async () => {
     try {
@@ -516,7 +514,7 @@ function EmployeePanel() {
   // const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
     fetchProjections();
-  }, [data])
+  }, [data]);
   useEffect(() => {
     fetchRemarksHistory();
 
@@ -616,7 +614,7 @@ function EmployeePanel() {
   const [companyNumber, setCompanyNumber] = useState(0);
   const [companyId, setCompanyId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   console.log(companyName, companyInco);
 
@@ -649,7 +647,10 @@ function EmployeePanel() {
       const response = await axios.post(
         `${secretKey}/update-status/${employeeId}`,
         {
-          newStatus, title, date, time
+          newStatus,
+          title,
+          date,
+          time,
         }
       );
 
@@ -658,8 +659,6 @@ function EmployeePanel() {
         // Assuming fetchData is a function to fetch updated employee data
 
         fetchNewData(oldStatus);
-
-
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);
@@ -935,7 +934,7 @@ function EmployeePanel() {
     if (
       file &&
       file.type ===
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ) {
       const reader = new FileReader();
 
@@ -1168,16 +1167,21 @@ function EmployeePanel() {
   const calculateColor = (editCount) => {
     const maxEditCount = 10; // Maximum edit count for full darkness
     const maxDarkness = 0.7; // Maximum darkness factor (0 to 1)
-    const darkness = editCount / maxEditCount * maxDarkness;
+    const darkness = (editCount / maxEditCount) * maxDarkness;
     const brightness = 1 - darkness;
-    const hexDarkness = Math.floor(brightness * 255).toString(16).padStart(2, '0');
+    const hexDarkness = Math.floor(brightness * 255)
+      .toString(16)
+      .padStart(2, "0");
     return `#${hexDarkness}${hexDarkness}00`; // Adjust the color component here, e.g., "#fbb900"
   };
 
   const handleProjectionSubmit = async () => {
-    console.log("currentProjection", currentProjection)
+    console.log("currentProjection", currentProjection);
     try {
-      const newEditCount = currentProjection.editCount === -1 ? 0 : currentProjection.editCount + 1;
+      const newEditCount =
+        currentProjection.editCount === -1
+          ? 0
+          : currentProjection.editCount + 1;
 
       const finalData = {
         ...currentProjection,
@@ -1187,20 +1191,23 @@ function EmployeePanel() {
         editCount: currentProjection.editCount + 1, // Increment editCount
       };
       if (finalData.offeredServices.length === 0) {
-        Swal.fire({ title: 'Services is required!', icon: 'warning' });
+        Swal.fire({ title: "Services is required!", icon: "warning" });
       } else if (finalData.remarks === "") {
-        Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
+        Swal.fire({ title: "Remarks is required!", icon: "warning" });
       } else if (finalData.totalPayment === 0) {
-        Swal.fire({ title: 'Payment is required!', icon: 'warning' });
-      }
-      else if (finalData.offeredPrize === 0) {
-        Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
-      }
-      else if (finalData.lastFollowUpdate === null) {
-        Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
-      }
-      else if (finalData.estPaymentDate === 0) {
-        Swal.fire({ title: 'Estimated Payment Date is required!', icon: 'warning' });
+        Swal.fire({ title: "Payment is required!", icon: "warning" });
+      } else if (finalData.offeredPrize === 0) {
+        Swal.fire({ title: "Offered Prize is required!", icon: "warning" });
+      } else if (finalData.lastFollowUpdate === null) {
+        Swal.fire({
+          title: "Last FollowUp Date is required!",
+          icon: "warning",
+        });
+      } else if (finalData.estPaymentDate === 0) {
+        Swal.fire({
+          title: "Estimated Payment Date is required!",
+          icon: "warning",
+        });
       }
       // Send data to backend API
       const response = await axios.post(
@@ -1221,15 +1228,13 @@ function EmployeePanel() {
         editCount: newEditCount, // Increment editCount
       });
       fetchProjections();
-      setSelectedValues([])
+      setSelectedValues([]);
 
       // Log success message
     } catch (error) {
       console.error("Error updating or adding data:", error.message);
     }
   };
-
-
 
   const [openIncoDate, setOpenIncoDate] = useState(false);
 
@@ -1337,17 +1342,32 @@ function EmployeePanel() {
     if (isChecked) {
       const newEmpData =
         dataStatus === "All"
-          ? moreEmpData.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up")
+          ? moreEmpData.filter(
+              (obj) =>
+                obj.Status === "Untouched" ||
+                obj.Status === "Busy" ||
+                obj.Status === "Not Picked Up"
+            )
           : dataStatus === "Interested"
-            ? moreEmpData.filter((obj) => obj.Status === "Interested")
-            : dataStatus === "Not Interested"
-              ? moreEmpData.filter((obj) => obj.Status === "Not Interested" || obj.Status === "Junk")
-              : dataStatus === "FollowUp"
-                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                : [];
+          ? moreEmpData.filter((obj) => obj.Status === "Interested")
+          : dataStatus === "Not Interested"
+          ? moreEmpData.filter(
+              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+            )
+          : dataStatus === "FollowUp"
+          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+          : [];
 
       setEmployeeData(newEmpData);
-      setSelectedYears([...new Set(newEmpData.map(data => new Date(data["Company Incorporation Date  "]).getFullYear().toString()))]);
+      setSelectedYears([
+        ...new Set(
+          newEmpData.map((data) =>
+            new Date(data["Company Incorporation Date  "])
+              .getFullYear()
+              .toString()
+          )
+        ),
+      ]);
       setSelectedMonths([]);
     } else {
       setEmployeeData([]);
@@ -1363,21 +1383,36 @@ function EmployeePanel() {
     if (isChecked) {
       const newEmpData =
         dataStatus === "All"
-          ? moreEmpData.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up")
+          ? moreEmpData.filter(
+              (obj) =>
+                obj.Status === "Untouched" ||
+                obj.Status === "Busy" ||
+                obj.Status === "Not Picked Up"
+            )
           : dataStatus === "Interested"
-            ? moreEmpData.filter((obj) => obj.Status === "Interested")
-            : dataStatus === "Not Interested"
-              ? moreEmpData.filter((obj) => obj.Status === "Not Interested" || obj.Status === "Junk")
-              : dataStatus === "FollowUp"
-                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                : [];
+          ? moreEmpData.filter((obj) => obj.Status === "Interested")
+          : dataStatus === "Not Interested"
+          ? moreEmpData.filter(
+              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+            )
+          : dataStatus === "FollowUp"
+          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+          : [];
       setSelectedYears([...selectedYears, selectedYear]); // Add selected year to the list
-      const filteredData = newEmpData.filter(data => new Date(data["Company Incorporation Date  "]).getFullYear() === selectedYear);
+      const filteredData = newEmpData.filter(
+        (data) =>
+          new Date(data["Company Incorporation Date  "]).getFullYear() ===
+          selectedYear
+      );
 
       setEmployeeData([...employeeData, ...filteredData]); // Add filtered data to the existing employeeData
     } else {
-      setSelectedYears(selectedYears.filter(year => year !== selectedYear)); // Remove selected year from the list
-      const filteredData = employeeData.filter(data => new Date(data["Company Incorporation Date  "]).getFullYear() !== selectedYear);
+      setSelectedYears(selectedYears.filter((year) => year !== selectedYear)); // Remove selected year from the list
+      const filteredData = employeeData.filter(
+        (data) =>
+          new Date(data["Company Incorporation Date  "]).getFullYear() !==
+          selectedYear
+      );
       setEmployeeData(filteredData); // Update employeeData with filtered data
     }
   };
@@ -1386,42 +1421,59 @@ function EmployeePanel() {
   const handleMonthFilterChange = (e, selectedYear, selectedMonth) => {
     const isChecked = e.target.checked;
     if (isChecked) {
-
       setSelectedMonths([...selectedMonths, selectedMonth]);
       const newEmpData =
         dataStatus === "All"
-          ? moreEmpData.filter((obj) => obj.Status === "Untouched" || obj.Status === "Busy" || obj.Status === "Not Picked Up")
+          ? moreEmpData.filter(
+              (obj) =>
+                obj.Status === "Untouched" ||
+                obj.Status === "Busy" ||
+                obj.Status === "Not Picked Up"
+            )
           : dataStatus === "Interested"
-            ? moreEmpData.filter((obj) => obj.Status === "Interested")
-            : dataStatus === "Not Interested"
-              ? moreEmpData.filter((obj) => obj.Status === "Not Interested" || obj.Status === "Junk")
-              : dataStatus === "FollowUp"
-                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                : [];
-      const filteredData = newEmpData.filter(data => {
-        const year = new Date(data["Company Incorporation Date  "]).getFullYear().toString();
-        const month = new Date(data["Company Incorporation Date  "]).toLocaleString("default", { month: "short" });
+          ? moreEmpData.filter((obj) => obj.Status === "Interested")
+          : dataStatus === "Not Interested"
+          ? moreEmpData.filter(
+              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+            )
+          : dataStatus === "FollowUp"
+          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+          : [];
+      const filteredData = newEmpData.filter((data) => {
+        const year = new Date(data["Company Incorporation Date  "])
+          .getFullYear()
+          .toString();
+        const month = new Date(
+          data["Company Incorporation Date  "]
+        ).toLocaleString("default", { month: "short" });
         console.log("Year :", year, selectedYear.toString());
         console.log("Month :", month, selectedMonth.toString());
-        return year === selectedYear.toString() && month === selectedMonth.toString();
+        return (
+          year === selectedYear.toString() && month === selectedMonth.toString()
+        );
       });
       setEmployeeData(filteredData);
     } else {
-      setSelectedMonths(selectedMonths.filter(month => month !== selectedMonth));
-      const filteredData = employeeData.filter(data => {
-        const year = new Date(data["Company Incorporation Date  "]).getFullYear().toString();
-        const month = new Date(data["Company Incorporation Date  "]).toLocaleString('default', { month: 'short' });
+      setSelectedMonths(
+        selectedMonths.filter((month) => month !== selectedMonth)
+      );
+      const filteredData = employeeData.filter((data) => {
+        const year = new Date(data["Company Incorporation Date  "])
+          .getFullYear()
+          .toString();
+        const month = new Date(
+          data["Company Incorporation Date  "]
+        ).toLocaleString("default", { month: "short" });
 
-        return year !== selectedYear.toString() || month !== selectedMonth.toString();
+        return (
+          year !== selectedYear.toString() || month !== selectedMonth.toString()
+        );
       });
       setEmployeeData(filteredData);
     }
   };
 
-
   // -----------------------------------------------------delete-projection-data-------------------------------
-
-
 
   const handleDelete = async (company) => {
     const companyName = company;
@@ -1429,10 +1481,12 @@ function EmployeePanel() {
 
     try {
       // Send a DELETE request to the backend API endpoint
-      const response = await axios.delete(`${secretKey}/delete-followup/${companyName}`);
+      const response = await axios.delete(
+        `${secretKey}/delete-followup/${companyName}`
+      );
       console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
-      console.log('Deleted!', 'Your data has been deleted.', 'success');
+      console.log("Deleted!", "Your data has been deleted.", "success");
       setCurrentProjection({
         companyName: "",
         ename: "",
@@ -1448,13 +1502,12 @@ function EmployeePanel() {
       setSelectedValues([]);
       fetchProjections();
     } catch (error) {
-      console.error('Error deleting data:', error);
+      console.error("Error deleting data:", error);
       // Show an error message if deletion fails
-      console.log('Error!', 'Follow Up Not Found.', 'error');
+      console.log("Error!", "Follow Up Not Found.", "error");
     }
   };
   //console.log("projections", currentProjection);
-
 
   return (
     <div>
@@ -1487,23 +1540,29 @@ function EmployeePanel() {
                     className="features"
                   >
                     <div style={{ display: "flex" }} className="feature1">
-                      <button className="btn btn-primary" onClick={loginwithgoogle} >
-                          Gmail SignIn
+                      {/* <button
+                        className="btn btn-primary"
+                        onClick={loginwithgoogle}
+                      >
+                        Gmail SignIn
                       </button>
-                      <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
+                      <Dialog
+                        open={openLogin}
+                        onClose={() => setOpenLogin(false)}
+                      >
                         <DialogTitle>
-                        <h1>Login Page</h1>
+                          <h1>Login Page</h1>
                         </DialogTitle>
                         <DialogContent>
-                        <div className="sign-in-google">
-   
-      <p>Please sign in with your Google account.</p>
-      <button onClick={handleGoogleLogin} >Sign in with Google</button>
-    </div>
+                          <div className="sign-in-google">
+                            <p>Please sign in with your Google account.</p>
+                            <button onClick={handleGoogleLogin}>
+                              Sign in with Google
+                            </button>
+                          </div>
                         </DialogContent>
-                      
-                      </Dialog>
-                  
+                      </Dialog> */}
+
                       <div
                         className="form-control"
                         style={{ height: "fit-content", width: "auto" }}
@@ -1533,7 +1592,11 @@ function EmployeePanel() {
                         <div>
                           <input
                             onChange={handleDateChange}
-                            style={{ display: visibility, width: "83%", marginLeft: "10px" }}
+                            style={{
+                              display: visibility,
+                              width: "83%",
+                              marginLeft: "10px",
+                            }}
                             type="date"
                             className="form-control"
                           />
@@ -1680,8 +1743,12 @@ function EmployeePanel() {
                     </div>
                     <div
                       style={{ display: "flex", alignItems: "center" }}
-                      className="feature2">
-                      <div className="form-control mr-1 sort-by" style={{ width: "190px" }}>
+                      className="feature2"
+                    >
+                      <div
+                        className="form-control mr-1 sort-by"
+                        style={{ width: "190px" }}
+                      >
                         <label htmlFor="sort-by">Sort By:</label>
                         <select
                           style={{
@@ -1827,7 +1894,13 @@ function EmployeePanel() {
                             className="form-control"
                           >
                             <select
-                              style={{ border: "none", outline: "none", marginRight: "10px" , width:"115px",paddingLeft:"10px"}}
+                              style={{
+                                border: "none",
+                                outline: "none",
+                                marginRight: "10px",
+                                width: "115px",
+                                paddingLeft: "10px",
+                              }}
                               onChange={(e) => {
                                 setMonth(e.target.value);
                                 setCurrentPage(0);
@@ -1850,7 +1923,10 @@ function EmployeePanel() {
                               <option value="1">January</option>
                             </select>
                           </div>
-                          <div className="input-icon  form-control" style={{ margin: "0px 10px", width: "110px" }}>
+                          <div
+                            className="input-icon  form-control"
+                            style={{ margin: "0px 10px", width: "110px" }}
+                          >
                             {/* <input
                               type="number"
                               value={year}
@@ -1862,8 +1938,9 @@ function EmployeePanel() {
                               }}
                               aria-label="Search in website"
                             /> */}
-                            <select select
-                              style={{ border: "none", outline: "none"}}
+                            <select
+                              select
+                              style={{ border: "none", outline: "none" }}
                               value={year}
                               onChange={(e) => {
                                 setYear(e.target.value);
@@ -2201,33 +2278,45 @@ function EmployeePanel() {
                                     Newest
                                   </div>
 
-
-                                  <div style={{ marginLeft: "5px" }} className="inco-subFilter d-flex">
+                                  <div
+                                    style={{ marginLeft: "5px" }}
+                                    className="inco-subFilter d-flex"
+                                  >
                                     <div style={{ marginRight: "5px" }}>
                                       <input
                                         type="checkbox"
                                         name="year-filter"
                                         id={`year-filter-all`}
                                         checked={selectAllChecked}
-                                        onChange={(e) => handleSelectAllChange(e)}
+                                        onChange={(e) =>
+                                          handleSelectAllChange(e)
+                                        }
                                       />
                                     </div>
-                                    <div className="year-val">
-                                      Select All
-                                    </div>
+                                    <div className="year-val">Select All</div>
                                   </div>
 
                                   {resultArray.length !== 0 &&
                                     resultArray.map((obj) => (
                                       <div key={obj.year}>
-                                        <div style={{ marginLeft: "5px" }} className="inco-subFilter d-flex">
+                                        <div
+                                          style={{ marginLeft: "5px" }}
+                                          className="inco-subFilter d-flex"
+                                        >
                                           <div style={{ marginRight: "5px" }}>
                                             <input
                                               type="checkbox"
                                               name="year-filter"
                                               id={`year-filter-${obj.year}`}
-                                              checked={selectedYears.includes(obj.year)}
-                                              onChange={(e) => handleYearFilterChange(e, obj.year)}
+                                              checked={selectedYears.includes(
+                                                obj.year
+                                              )}
+                                              onChange={(e) =>
+                                                handleYearFilterChange(
+                                                  e,
+                                                  obj.year
+                                                )
+                                              }
                                             />
                                           </div>
                                           <div className="year-val">
@@ -2240,7 +2329,9 @@ function EmployeePanel() {
                                                 setExpandYear(obj.year);
                                               }}
                                             >
-                                              <AddCircle style={{ height: "15px" }} />
+                                              <AddCircle
+                                                style={{ height: "15px" }}
+                                              />
                                             </div>
                                           )}
                                           {expandYear === obj.year && (
@@ -2250,28 +2341,44 @@ function EmployeePanel() {
                                                 setExpandYear(0);
                                               }}
                                             >
-                                              <RemoveCircleIcon style={{ height: "15px" }} />
+                                              <RemoveCircleIcon
+                                                style={{ height: "15px" }}
+                                              />
                                             </div>
                                           )}
                                         </div>
-                                        {obj.month.length !== 0 && expandYear === obj.year && (
+                                        {obj.month.length !== 0 &&
+                                          expandYear === obj.year &&
                                           obj.month.map((month) => (
-                                            <div key={`${obj.year}-${month}`} style={{ marginLeft: "25px" }} className="inco-subFilter d-flex">
-                                              <div style={{ marginRight: "5px" }}>
+                                            <div
+                                              key={`${obj.year}-${month}`}
+                                              style={{ marginLeft: "25px" }}
+                                              className="inco-subFilter d-flex"
+                                            >
+                                              <div
+                                                style={{ marginRight: "5px" }}
+                                              >
                                                 <input
                                                   type="checkbox"
                                                   name="month-filter"
                                                   id={`month-filter-${month}`}
-                                                  checked={selectedMonths.includes(month)}
-                                                  onChange={(e) => handleMonthFilterChange(e, obj.year, month)}
+                                                  checked={selectedMonths.includes(
+                                                    month
+                                                  )}
+                                                  onChange={(e) =>
+                                                    handleMonthFilterChange(
+                                                      e,
+                                                      obj.year,
+                                                      month
+                                                    )
+                                                  }
                                                 />
                                               </div>
                                               <div className="month-val">
                                                 {month}
                                               </div>
                                             </div>
-                                          ))
-                                        )}
+                                          ))}
                                       </div>
                                     ))}
 
@@ -2320,11 +2427,16 @@ function EmployeePanel() {
 
                             {/* {(dataStatus === "Matured" && <th>Add Projection</th>) ||
                               (dataStatus === "FollowUp" && <th>Add Projection</th>) || (dataStatus === "Interested" && <th>Add Projection</th>) } */}
-                              <th>{dataStatus==="FollowUp" || dataStatus==="Interested" ? "Add Projection" : "Action" }</th>
+                            <th>
+                              {dataStatus === "FollowUp" ||
+                              dataStatus === "Interested"
+                                ? "Add Projection"
+                                : "Action"}
+                            </th>
                           </tr>
                         </thead>
                         {loading ? (
-                          <tbody className="d-flex align-items-center justify-content-center" >
+                          <tbody className="d-flex align-items-center justify-content-center">
                             <ScaleLoader
                               color="lightgrey"
                               loading
@@ -2334,12 +2446,14 @@ function EmployeePanel() {
                               aria-label="Loading Spinner"
                               data-testid="loader"
                             />
-
                           </tbody>
                         ) : (
                           <tbody>
                             {currentData.map((company, index) => (
-                              <tr key={index} style={{ border: "1px solid #ddd" }}>
+                              <tr
+                                key={index}
+                                style={{ border: "1px solid #ddd" }}
+                              >
                                 <td className="td-sticky">
                                   {startIndex + index + 1}
                                 </td>
@@ -2355,8 +2469,10 @@ function EmployeePanel() {
                                       style={{
                                         background: "none",
                                         padding: ".4375rem .75rem",
-                                        border: "1px solid var(--tblr-border-color)",
-                                        borderRadius: "var(--tblr-border-radius)",
+                                        border:
+                                          "1px solid var(--tblr-border-color)",
+                                        borderRadius:
+                                          "var(--tblr-border-radius)",
                                       }}
                                       value={company["Status"]}
                                       onChange={(e) =>
@@ -2365,34 +2481,55 @@ function EmployeePanel() {
                                           e.target.value,
                                           company["Company Name"],
                                           company["Company Email"],
-                                          company["Company Incorporation Date  "],
+                                          company[
+                                            "Company Incorporation Date  "
+                                          ],
                                           company["Company Number"],
                                           company["Status"]
                                         )
-                                      }>
-                                      <option value="Not Picked Up">Not Picked Up</option>
+                                      }
+                                    >
+                                      <option value="Not Picked Up">
+                                        Not Picked Up
+                                      </option>
                                       <option value="Busy">Busy </option>
                                       <option value="Junk">Junk</option>
-                                      <option value="Not Interested">Not Interested</option>
+                                      <option value="Not Interested">
+                                        Not Interested
+                                      </option>
                                       {dataStatus === "All" && (
                                         <>
-                                          <option value="Untouched">Untouched </option>
-                                          <option value="Interested">Interested</option>
+                                          <option value="Untouched">
+                                            Untouched{" "}
+                                          </option>
+                                          <option value="Interested">
+                                            Interested
+                                          </option>
                                         </>
                                       )}
 
                                       {dataStatus === "Interested" && (
                                         <>
-                                          <option value="Interested">Interested</option>
-                                          <option value="FollowUp">Follow Up </option>
-                                          <option value="Matured">Matured</option>
+                                          <option value="Interested">
+                                            Interested
+                                          </option>
+                                          <option value="FollowUp">
+                                            Follow Up{" "}
+                                          </option>
+                                          <option value="Matured">
+                                            Matured
+                                          </option>
                                         </>
                                       )}
 
                                       {dataStatus === "FollowUp" && (
                                         <>
-                                          <option value="FollowUp">Follow Up </option>
-                                          <option value="Matured">Matured</option>
+                                          <option value="FollowUp">
+                                            Follow Up{" "}
+                                          </option>
+                                          <option value="Matured">
+                                            Matured
+                                          </option>
                                         </>
                                       )}
                                     </select>
@@ -2412,7 +2549,9 @@ function EmployeePanel() {
                                       className="rematkText text-wrap m-0"
                                       title={company.Remarks}
                                     >
-                                      {!company["Remarks"] ? "No Remarks" : company.Remarks}
+                                      {!company["Remarks"]
+                                        ? "No Remarks"
+                                        : company.Remarks}
                                     </p>
 
                                     <IconButton
@@ -2436,21 +2575,32 @@ function EmployeePanel() {
                                 </td>
 
                                 <td>
-                                  {formatDate(company["Company Incorporation Date  "])}
+                                  {formatDate(
+                                    company["Company Incorporation Date  "]
+                                  )}
                                 </td>
                                 <td>{company["City"]}</td>
                                 <td>{company["State"]}</td>
                                 <td>{company["Company Email"]}</td>
                                 <td>{formatDate(company["AssignDate"])}</td>
 
-                                {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                                {(dataStatus === "FollowUp" ||
+                                  dataStatus === "Interested") && (
                                   <td>
-                                    {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
+                                    {company &&
+                                    projectionData &&
+                                    projectionData.some(
+                                      (item) =>
+                                        item.companyName ===
+                                        company["Company Name"]
+                                    ) ? (
                                       <>
                                         <IconButton>
                                           <RiEditCircleFill
                                             onClick={() => {
-                                              functionopenprojection(company["Company Name"]);
+                                              functionopenprojection(
+                                                company["Company Name"]
+                                              );
                                             }}
                                             style={{
                                               cursor: "pointer",
@@ -2465,9 +2615,15 @@ function EmployeePanel() {
                                       <IconButton>
                                         <AddCircleIcon
                                           onClick={() => {
-                                            functionopenprojection(company["Company Name"]);
+                                            functionopenprojection(
+                                              company["Company Name"]
+                                            );
                                           }}
-                                          style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
                                         />
                                       </IconButton>
                                     )}
@@ -2540,25 +2696,28 @@ function EmployeePanel() {
                                   >
                                     View
                                   </button> */}
-                                  <HiOutlineEye style={{
-                                    fontSize: "15px",
-                                    color: "#fbb900"
-                                    //backgroundColor: "lightblue",
-                                    // Additional styles for the "View" button
-                                  }}
+                                  <HiOutlineEye
+                                    style={{
+                                      fontSize: "15px",
+                                      color: "#fbb900",
+                                      //backgroundColor: "lightblue",
+                                      // Additional styles for the "View" button
+                                    }}
                                     //className="btn btn-primary d-none d-sm-inline-block"
                                     onClick={() => {
                                       functionopenAnchor();
                                       setMaturedCompanyName(
                                         company["Company Name"]
                                       );
-                                    }} />
+                                    }}
+                                  />
                                 </td>
                               </tr>
                             ))}
                           </tbody>
                         )}
-                        {currentData.length === 0 && !loading &&
+                        {currentData.length === 0 &&
+                          !loading &&
                           dataStatus !== "Matured" && (
                             <tbody>
                               <tr>
@@ -2568,15 +2727,17 @@ function EmployeePanel() {
                               </tr>
                             </tbody>
                           )}
-                        {companies.length === 0 && dataStatus === "Matured" && !loading (
-                          <tbody>
-                            <tr>
-                              <td colSpan="11" className="p-2 particular">
-                                <Nodata />
-                              </td>
-                            </tr>
-                          </tbody>
-                        )}
+                        {companies.length === 0 &&
+                          dataStatus === "Matured" &&
+                          !loading(
+                            <tbody>
+                              <tr>
+                                <td colSpan="11" className="p-2 particular">
+                                  <Nodata />
+                                </td>
+                              </tr>
+                            </tbody>
+                          )}
                       </table>
                     </div>
                     {currentData.length !== 0 && (
@@ -2609,7 +2770,7 @@ function EmployeePanel() {
                               Math.min(
                                 prevPage + 1,
                                 Math.ceil(filteredData.length / itemsPerPage) -
-                                1
+                                  1
                               )
                             )
                           }
@@ -2703,16 +2864,16 @@ function EmployeePanel() {
                 style={
                   selectedOption === "general"
                     ? {
-                      backgroundColor: "#ffb900",
-                      margin: "10px 10px 0px 0px",
-                      cursor: "pointer",
-                      color: "white",
-                    }
+                        backgroundColor: "#ffb900",
+                        margin: "10px 10px 0px 0px",
+                        cursor: "pointer",
+                        color: "white",
+                      }
                     : {
-                      backgroundColor: "white",
-                      margin: "10px 10px 0px 0px",
-                      cursor: "pointer",
-                    }
+                        backgroundColor: "white",
+                        margin: "10px 10px 0px 0px",
+                        cursor: "pointer",
+                      }
                 }
                 onClick={() => {
                   setSelectedOption("general");
@@ -2735,16 +2896,16 @@ function EmployeePanel() {
                 style={
                   selectedOption === "notgeneral"
                     ? {
-                      backgroundColor: "#ffb900",
-                      margin: "10px 0px 0px 0px",
-                      cursor: "pointer",
-                      color: "white",
-                    }
+                        backgroundColor: "#ffb900",
+                        margin: "10px 0px 0px 0px",
+                        cursor: "pointer",
+                        color: "white",
+                      }
                     : {
-                      backgroundColor: "white",
-                      margin: "10px 0px 0px 0px",
-                      cursor: "pointer",
-                    }
+                        backgroundColor: "white",
+                        margin: "10px 0px 0px 0px",
+                        cursor: "pointer",
+                      }
                 }
                 className="notgeneral form-control col"
                 onClick={() => {
@@ -3166,15 +3327,22 @@ function EmployeePanel() {
           onClose={closeProjection}
         >
           <div style={{ width: "31em" }} className="container-xl">
-            <div className="header d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
-              <h1 style={{ marginBottom: "0px", fontSize: "23px", }} className="title">
+            <div
+              className="header d-flex justify-content-between align-items-center"
+              style={{ margin: "10px 0px" }}
+            >
+              <h1
+                style={{ marginBottom: "0px", fontSize: "23px" }}
+                className="title"
+              >
                 Projection Form
               </h1>
               <div>
                 <IconButton
                   onClick={() => {
                     setIsEditProjection(true);
-                  }}>
+                  }}
+                >
                   <EditIcon color="primary"></EditIcon>
                 </IconButton>
                 {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
@@ -3197,18 +3365,21 @@ function EmployeePanel() {
             <div className="body-projection">
               <div className="header d-flex align-items-center justify-content-between">
                 <div>
-                  <h1 title={projectingCompany} style={{
-                    fontSize: "14px",
-                    textShadow: "none",
-                    fontFamily: "sans-serif",
-                    fontWeight: "400",
-                    fontFamily: "Poppins, sans-serif",
-                    margin: "10px 0px",
-                    width: "200px",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}>
+                  <h1
+                    title={projectingCompany}
+                    style={{
+                      fontSize: "14px",
+                      textShadow: "none",
+                      fontFamily: "sans-serif",
+                      fontWeight: "400",
+                      fontFamily: "Poppins, sans-serif",
+                      margin: "10px 0px",
+                      width: "200px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
                     {projectingCompany}
                   </h1>
                 </div>
@@ -3222,7 +3393,13 @@ function EmployeePanel() {
                 </div>
               </div>
               <div className="label">
-                <strong>Offered Services {selectedValues.length === 0 && <span style={{ color: "red" }}>*</span>} :</strong>
+                <strong>
+                  Offered Services{" "}
+                  {selectedValues.length === 0 && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}{" "}
+                  :
+                </strong>
                 <div className="services mb-3">
                   <Select
                     isMulti
@@ -3242,7 +3419,13 @@ function EmployeePanel() {
                 </div>
               </div>
               <div className="label">
-                <strong>Offered Prices {!currentProjection.offeredPrize && <span style={{ color: "red" }}>*</span>} :</strong>
+                <strong>
+                  Offered Prices{" "}
+                  {!currentProjection.offeredPrize && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}{" "}
+                  :
+                </strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -3260,7 +3443,13 @@ function EmployeePanel() {
                 </div>
               </div>
               <div className="label">
-                <strong>Expected Price (With GST){currentProjection.totalPayment === 0 && <span style={{ color: "red" }}>*</span>} :</strong>
+                <strong>
+                  Expected Price (With GST)
+                  {currentProjection.totalPayment === 0 && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}{" "}
+                  :
+                </strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -3278,7 +3467,13 @@ function EmployeePanel() {
                 </div>
               </div>
               <div className="label">
-                <strong>Last Follow Up Date {!currentProjection.lastFollowUpdate && <span style={{ color: "red" }}>*</span>}: </strong>
+                <strong>
+                  Last Follow Up Date{" "}
+                  {!currentProjection.lastFollowUpdate && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}
+                  :{" "}
+                </strong>
                 <div className="services mb-3">
                   <input
                     type="date"
@@ -3296,7 +3491,13 @@ function EmployeePanel() {
                 </div>
               </div>
               <div className="label">
-                <strong>Payment Expected on {!currentProjection.estPaymentDate && <span style={{ color: "red" }}>*</span>}:</strong>
+                <strong>
+                  Payment Expected on{" "}
+                  {!currentProjection.estPaymentDate && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}
+                  :
+                </strong>
                 <div className="services mb-3">
                   <input
                     type="date"
@@ -3314,7 +3515,13 @@ function EmployeePanel() {
                 </div>
               </div>
               <div className="label">
-                <strong>Remarks {currentProjection.remarks === "" && <span style={{ color: "red" }}>*</span>}:</strong>
+                <strong>
+                  Remarks{" "}
+                  {currentProjection.remarks === "" && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}
+                  :
+                </strong>
                 <div className="remarks mb-3">
                   <textarea
                     type="text"
@@ -3346,67 +3553,65 @@ function EmployeePanel() {
           </div>
         </Drawer>
         <div className="compose-email">
-      {isOpen && (
-        <div className="compose-popup">
-          <div className="compose-header">
-            <h2 className="compose-title">New Email</h2>
-            <button className="close-btn" onClick={handleTogglePopup}>
-              &times;
-            </button>
-          </div>
-          <form onSubmit={handleSubmitMail}>
-            <input
-              type="email"
-              name="to"
-              className="compose-input"
-              placeholder="To"
-              value={emailData.to}
-              onChange={handleChangeMail}
-              required
-            />
-            <input
-              type="text"
-              name="subject"
-              className="compose-input"
-              placeholder="Subject"
-              value={emailData.subject}
-              onChange={handleChangeMail}
-              required
-            />
-            <textarea
-              name="body"
-              className="compose-textarea"
-              placeholder="Write your message here"
-              value={emailData.body}
-              onChange={handleChangeMail}
-              required
-            ></textarea>
-            
-            <div className="compose-more-options d-flex align-items-center ">
-            <button type="submit" className="send-btn">
-              Send
-            </button>
-            <div className="other-options d-flex">
-            <div className="compose-formatting m-1">
-                    <FontDownloadIcon />
+          {isOpen && (
+            <div className="compose-popup">
+              <div className="compose-header">
+                <h2 className="compose-title">New Email</h2>
+                <button className="close-btn" onClick={handleTogglePopup}>
+                  &times;
+                </button>
+              </div>
+              <form onSubmit={handleSubmitMail}>
+                <input
+                  type="email"
+                  name="to"
+                  className="compose-input"
+                  placeholder="To"
+                  value={emailData.to}
+                  onChange={handleChangeMail}
+                  required
+                />
+                <input
+                  type="text"
+                  name="subject"
+                  className="compose-input"
+                  placeholder="Subject"
+                  value={emailData.subject}
+                  onChange={handleChangeMail}
+                  required
+                />
+                <textarea
+                  name="body"
+                  className="compose-textarea"
+                  placeholder="Write your message here"
+                  value={emailData.body}
+                  onChange={handleChangeMail}
+                  required
+                ></textarea>
+
+                <div className="compose-more-options d-flex align-items-center ">
+                  <button type="submit" className="send-btn">
+                    Send
+                  </button>
+                  <div className="other-options d-flex">
+                    <div className="compose-formatting m-1">
+                      <FontDownloadIcon />
+                    </div>
+                    <div className="compose-attachments m-1">
+                      <AttachmentIcon />
+                    </div>
+                    <div className="compose-insert-files m-1">
+                      <ImageIcon />
+                    </div>
+                    <div className="compose-menuIcon m-1">
+                      <MoreVertIcon />
+                    </div>
+                  </div>
                 </div>
-                <div className="compose-attachments m-1">
-                    <AttachmentIcon/>
-                </div>
-                <div className="compose-insert-files m-1">
-                    <ImageIcon/>
-                </div>
-                <div className="compose-menuIcon m-1">
-                    <MoreVertIcon/>
-                </div>
+              </form>
             </div>
-               
-            </div>
-          </form>
+          )}
         </div>
-      )}
-    </div>
-       
       </div>
     </div>
   );
