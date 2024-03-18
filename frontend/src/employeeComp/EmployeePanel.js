@@ -169,6 +169,8 @@ function EmployeePanel() {
   };
 
   console.log("projectingcompnay", projectingCompany)
+
+
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
     setOpenProjection(true);
@@ -3174,7 +3176,7 @@ function EmployeePanel() {
         >
           <div style={{ width: "31em" }} className="container-xl">
             <div className="header d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
-              <h1 style={{ marginBottom: "0px", fontSize: "23px", }} className="title">
+              <h1 style={{ marginBottom: "0px", fontSize: "20px", }} className="title">
                 Projection Form
               </h1>
               <div>
@@ -3182,7 +3184,7 @@ function EmployeePanel() {
                   onClick={() => {
                     setIsEditProjection(true);
                   }}>
-                  <EditIcon color="grey"></EditIcon>
+                  <EditIcon color="grey" style={{ width: "17px", height: "17px" }}></EditIcon>
                 </IconButton>
                 {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
                   <DeleteIcon
@@ -3196,7 +3198,7 @@ function EmployeePanel() {
                   </DeleteIcon>
                 </IconButton> */}
                 <IconButton>
-                  <IoClose onClick={closeProjection} />
+                  <IoClose onClick={closeProjection} style={{ width: "17px", height: "17px" }} />
                 </IconButton>
               </div>
             </div>
@@ -3249,7 +3251,7 @@ function EmployeePanel() {
                 </div>
               </div>
               <div className="label">
-                <strong>Offered Prices {!currentProjection.offeredPrize && <span style={{ color: "red" }}>*</span>} :</strong>
+                <strong>Offered Prices (With GST) {!currentProjection.offeredPrize && <span style={{ color: "red" }}>*</span>} :</strong>
                 <div className="services mb-3">
                   <input
                     type="number"

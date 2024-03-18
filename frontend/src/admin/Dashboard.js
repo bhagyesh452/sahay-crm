@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Navbar from "./Navbar";
 import Header from "./Header";
 import axios from "axios";
@@ -88,6 +88,10 @@ function Dashboard() {
     const convertedDate = date.toLocaleDateString();
     return convertedDate;
   };
+
+  const dateRangePickerRef = useRef(null);
+  const dateRangePickerProhectionRef = useRef(null);
+  const dateRangePickerEmployeeRef = useRef(null);
 
   // https://startupsahay.in/api
   const fetchCompanyData = async () => {
@@ -310,7 +314,6 @@ function Dashboard() {
       setShowBookingDate(false)
     }
   }
-
   const selectionRangeAnother = {
     startDate: startDateAnother,
     endDate: endDateAnother,
@@ -506,11 +509,74 @@ function Dashboard() {
   };
 
 
+  const handleClickOutside = (event) => {
+    if (dateRangePickerRef.current && !dateRangePickerRef.current.contains(event.target)) {
+      setShowBookingDate(false);
+    }
+  };
+
+  // Add event listener when the component mounts
+  useEffect(() => {
+    const totalBookingElement = document.getElementById('totalbooking');
+
+    if (totalBookingElement) {
+      totalBookingElement.addEventListener('click', handleClickOutside);
+
+      return () => {
+        totalBookingElement.removeEventListener('click', handleClickOutside);
+      };
+    }
+  }, []);
+
+  const handleClickOutsideProjection = (event) => {
+    if (dateRangePickerProhectionRef.current && !dateRangePickerProhectionRef.current.contains(event.target)) {
+      setDateRangeDisplay(false);
+    }
+  };
+
+  // Add event listener when the component mounts
+  useEffect(() => {
+    const totalBookingElement = document.getElementById('projectionsummaryadmin');
+    if (totalBookingElement) {
+      totalBookingElement.addEventListener('click', handleClickOutsideProjection);
+      // Remove event listener when the component unmounts
+      return () => {
+        totalBookingElement.removeEventListener('click', handleClickOutsideProjection);
+      };
+
+    }
+
+  }, []);
+
+
+
+
   const handleCloseIconClick = () => {
     if (displayDateRange) {
       setDateRangeDisplay(false)
     }
   }
+
+  const handleClickOutsideEmployee = (event) => {
+    if (dateRangePickerEmployeeRef.current && !dateRangePickerEmployeeRef.current.contains(event.target)) {
+      setDateRangeDisplayEmployee(false)
+    }
+  };
+
+  // Add event listener when the component mounts
+  useEffect(() => {
+    const totalBookingElement = document.getElementById('employeedashboardadmin');
+
+    if (totalBookingElement) {
+      totalBookingElement.addEventListener('click', handleClickOutsideEmployee);
+      // Remove event listener when the component unmounts
+      return () => {
+        totalBookingElement.removeEventListener('click', handleClickOutsideEmployee);
+      };
+
+    }
+
+  }, []);
 
   const selectionRange = {
     startDate: startDate,
@@ -1512,21 +1578,22 @@ function Dashboard() {
                     </div>
                   </div>
                   {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
-                  <div className="col card todays-booking m-2" >
+                  <div className="col card todays-booking m-2 totalbooking" id='totalbooking' >
                     <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                       <div>
                         <h2>Total Booking</h2>
                       </div>
-                      <div className=" form-control date-range-picker d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
+                      <div className=" form-control date-range-picker d-flex align-items-center justify-content-between">
                         <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
                           {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
                         </div>
                         <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                          <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                          <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
                         </button>
                       </div>
                     </div>
                     {showBookingDate && <div
+                      ref={dateRangePickerRef}
                       style={{
                         position: "absolute",
                         top: "65px",
@@ -1810,7 +1877,7 @@ function Dashboard() {
                   </div>
 
                   {/* Employee side Dashboard Analysis */}
-                  <div className="employee-dashboard ">
+                  <div className="employee-dashboard" id="employeedashboardadmin">
                     <div className="card">
                       <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                         <div className="d-flex justify-content-between">
@@ -1830,17 +1897,16 @@ function Dashboard() {
                               color: "grey"
                             }} />
                           </div>
-                          <div className="form-control d-flex align-items-center justify-content-between date-range-picker" style={{ width: "15vw" }}>
+                          <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
                             <div>{`${formatDate(startDateEmployee)} - ${formatDate(endDateEmployee)}`}</div>
                             <button onClick={() => setDateRangeDisplayEmployee(!displayDateRangeEmployee)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                              <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                              <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
                             </button>
                           </div>
                         </div>
                       </div>
-
                       {displayDateRangeEmployee && (
-                        <div className="position-absolute " style={{ zIndex: "1000", top: "15%", left: "75%" }} >
+                        <div ref={dateRangePickerEmployeeRef} className="position-absolute " style={{ zIndex: "1000", top: "13%", left: "73%" }} >
                           <DateRangePicker
                             ranges={[selectionRangeEmployee]}
                             onClose={() => setDateRangeDisplayEmployee(false)}
@@ -2833,21 +2899,21 @@ function Dashboard() {
 
           {/* -------------------------------------projection-dashboard--------------------------------------------- */}
 
-          <div className="container-xl mt-2" onClick={handleCloseIconClick}>
+          <div className="container-xl mt-2 projectionsummaryadmin" id="projectionsummaryadmin">
             <div className="card">
               <div className="card-header employeedashboard d-flex align-items-center justify-content-between" >
                 <div>
-                  <h2>Projection Dashboard</h2>
+                  <h2>Projection Summary</h2>
                 </div>
-                <div className="form-control date-range-picker d-flex align-items-center justify-content-between" style={{ width: "15vw" }}>
+                <div className="form-control date-range-picker d-flex align-items-center justify-content-between">
                   <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
-                  <button onClick={() => setDateRangeDisplay(!displayDateRange)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                  <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
                     <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
                   </button>
                 </div>
               </div>
               {displayDateRange && (
-                <div className="position-absolute " style={{ zIndex: "1", top: "15%", left: "75%" }} >
+                <div ref={dateRangePickerProhectionRef} className="position-absolute " style={{ zIndex: "1", top: "15%", left: "75%" }} >
                   <DateRangePicker
                     ranges={[selectionRange]}
                     //onClose={() => setDateRangeDisplay(false)}
