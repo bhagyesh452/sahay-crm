@@ -2519,17 +2519,30 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: '/auth/google/callback',
-  scope: ["profile", "email"]
+  scope: ["profile", "email"],
+  accessType: 'offline', 
 },
 (accessToken, refreshToken, profile, done) => {
   console.log('accessToken:', accessToken);
-  console.log('refreshToken:', refreshToken);
+  getUserData(accessToken);
   const user = {
     id: profile.id,
     email: profile.emails[0].value,
   };
+  console.log("user:" , user)
   return done(null, user);
 }));
+
+
+async function getUserData(access_token) {
+  try {
+    const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`);
+    const data = await response.json();
+    console.log("All the data" ,data);
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+  }
+}
 
 passport.serializeUser((user, done) => {
   done(null, user);
@@ -2538,19 +2551,30 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
   done(null, user);
 });
-
 app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'], accessType: 'offline' }));
+  passport.authenticate('google', { 
+    scope: ['profile', 'email', 'offline_access'], // Include 'offline_access' scope
+    prompt: 'consent' // Prompt user for consent every time
+  }));
+
 
 
 // Google OAuth callback route
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
-    res.redirect('/dashboard');
+    // Check if the referer header is present in the request
+    const referer = req.headers.referer;
+
+    if (referer) {
+      // Redirect to the previous page
+      res.redirect(referer);
+    } else {
+      // If referer is not available, redirect to a default URL
+      res.redirect('/'); // You can change this to any default URL you prefer
+    }
   }
 );
-
 
 // Initialize Nodemailer transporter using user's credentials
 function createTransporter(user) {
@@ -2564,7 +2588,7 @@ function createTransporter(user) {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       refreshToken: user.refreshToken,
       accessToken: user.accessToken,
-      expires: 3600 // Access token expiration time in seconds
+      expires: 3600 
     }
   });
 }

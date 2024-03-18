@@ -324,9 +324,10 @@ function EmployeePanel() {
 
   const fetchNewData = async (status) => {
     try {
-       if(!status){
+      if (!status) {
         setLoading(true);
-       } 
+      }
+
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
 
@@ -1489,7 +1490,7 @@ function EmployeePanel() {
                     className="features"
                   >
                     <div style={{ display: "flex" }} className="feature1">
-                    {/* <button className="btn btn-primary" onClick={loginwithgoogle} >
+                    <button className="btn btn-primary" onClick={loginwithgoogle} >
                           Gmail SignIn
                       </button>
                       <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
@@ -1498,13 +1499,12 @@ function EmployeePanel() {
                         </DialogTitle>
                         <DialogContent>
                         <div className="sign-in-google">
-
       <p>Please sign in with your Google account.</p>
       <button onClick={handleGoogleLogin} >Sign in with Google</button>
     </div>
                         </DialogContent>
 
-                      </Dialog> */}
+                      </Dialog>
 
                       <div
                         className="form-control"
@@ -3182,7 +3182,7 @@ function EmployeePanel() {
                   onClick={() => {
                     setIsEditProjection(true);
                   }}>
-                  <EditIcon color="primary"></EditIcon>
+                  <EditIcon color="grey"></EditIcon>
                 </IconButton>
                 {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
                   <DeleteIcon
@@ -3222,7 +3222,7 @@ function EmployeePanel() {
                 <div>
                   <button
                     onClick={() => handleDelete(projectingCompany)}
-                    className="btn btn-link" style={{color:"grey"}}
+                    className="btn btn-link" style={{ color: "grey" }}
                   >
                     Clear Form
                   </button>
