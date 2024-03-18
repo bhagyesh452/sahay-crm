@@ -4,8 +4,9 @@ const compression = require('compression');
 // const { Server } = require("socket.io");
 // const http = require("http");
 // const server = http.createServer(app);
-// const passport = require('passport');
-// const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const nodemailer = require('nodemailer');
 const mongoose = require("mongoose");
 // const googleAuthRouter = require('./helpers/googleAuth');
@@ -47,7 +48,13 @@ const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(cors());
 app.use(compression());
-// app.use(passport.initialize())
+app.use(session({
+  secret: 'boombadaboom', // Replace with a secret key for session encryption
+  resave: false,
+  saveUninitialized: false,
+}));
+app.use(passport.initialize())
+app.use(passport.session());
 var http = require("http").createServer(app);
 var socketIO = require("socket.io")(http, {
   cors: {
@@ -2508,82 +2515,86 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 
 
 // Use the googleAuth router for Google OAuth routes
-// passport.use(new GoogleStrategy({
-//   clientID: process.env.GOOGLE_CLIENT_ID,
-//   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//   callbackURL: '/auth/google/callback',
-//   scope:["profile","email"]
-// },
-// (accessToken, refreshToken, profile, done) => {
-//   const user = {
-//     id: profile.id,
-//     email: profile.emails[0].value,
-//   };
-//   return done(null, user);
-// }));
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: '/auth/google/callback',
+  scope: ["profile", "email"]
+},
+(accessToken, refreshToken, profile, done) => {
+  console.log('accessToken:', accessToken);
+  console.log('refreshToken:', refreshToken);
+  const user = {
+    id: profile.id,
+    email: profile.emails[0].value,
+  };
+  return done(null, user);
+}));
 
-// passport.serializeUser((user,done)=>{
-//   done(null,user)
-// })
-// passport.deserializeUser((user,done)=>{
-//   done(null,user)
-// })
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
 
-// app.get('/auth/google',
-//   passport.authenticate('google', { scope: ['profile', 'email'] })); 
+passport.deserializeUser((user, done) => {
+  done(null, user);
+});
 
-// // Google OAuth callback route
-// app.get('/auth/google/callback',
-//   passport.authenticate('google', { failureRedirect: '/login' }),
-//   (req, res) => {
-//     // Redirect to dashboard or send a success response
-//     res.redirect('/dashboard');
-//   }
-// );
-
-// // Initialize Nodemailer transporter using user's credentials
-// function createTransporter(user) {
-//   console.log(user)
-//   return nodemailer.createTransport({
-//     service: 'Gmail',
-//     auth: {
-//       type: 'OAuth2',
-//       user: user.email,
-//       clientId: process.env.GOOGLE_CLIENT_ID,
-//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//       refreshToken: user.refreshToken,
-//       accessToken: user.accessToken,
-//       expires: 3600 // Access token expiration time in seconds
-//     }
-//   });
-// }
-
-// // Send email route
-// app.post('/api/send-email', (req, res) => {
-//   // Authenticate user based on session or request data
-//   const user = req.user; // Assuming user is authenticated
-//   // Create Nodemailer transporter using user's credentials
-//   const transporter = createTransporter(user);
-
-//   // Send email using transporter
-//   transporter.sendMail({
-//     from: user.email,
-//     to: 'aakashseth454@gmail.com',
-//     subject: 'Test Email',
-//     text: 'This is a test email sent from Nodemailer using Gmail OAuth 2.0.'
-//   }, (error, info) => {
-//     if (error) {
-//       console.error(error);
-//       res.status(500).send('Error sending email');
-//     } else {
-//       console.log('Email sent:', info.response);
-//       res.status(200).send('Email sent successfully');
-//     }
-//   });
-// });
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'], accessType: 'offline' }));
 
 
-http.listen(3001, function () {
+// Google OAuth callback route
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    res.redirect('/dashboard');
+  }
+);
+
+
+// Initialize Nodemailer transporter using user's credentials
+function createTransporter(user) {
+  console.log(user)
+  return nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      type: 'OAuth2',
+      user: user.email,
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      refreshToken: user.refreshToken,
+      accessToken: user.accessToken,
+      expires: 3600 // Access token expiration time in seconds
+    }
+  });
+}
+
+// Send email route
+app.post('/api/send-email', (req, res) => {
+  // Authenticate user based on session or request data
+  const user = req.user; // Assuming user is authenticated
+  // Create Nodemailer transporter using user's credentials
+  const transporter = createTransporter(user);
+
+  // Send email using transporter
+  transporter.sendMail({
+    from: user.email,
+    to: 'aakashseth454@gmail.com',
+    subject: 'Test Email',
+    text: 'This is a test email sent from Nodemailer using Gmail OAuth 2.0.'
+  }, (error, info) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error sending email');
+    } else {
+      console.log('Email sent:', info.response);
+      res.status(200).send('Email sent successfully');
+    }
+  });
+});
+
+
+http.listen(6050, function () {
   console.log("Server started...");
 
   socketIO.on("connection", function (socket) {

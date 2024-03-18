@@ -326,7 +326,7 @@ function EmployeePanel() {
 
   const fetchNewData = async (status) => {
     try {
-      setLoading(true);
+       setLoading(true);
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
 
@@ -1540,7 +1540,7 @@ function EmployeePanel() {
                     className="features"
                   >
                     <div style={{ display: "flex" }} className="feature1">
-                      {/* <button
+                      <button
                         className="btn btn-primary"
                         onClick={loginwithgoogle}
                       >
@@ -1561,7 +1561,7 @@ function EmployeePanel() {
                             </button>
                           </div>
                         </DialogContent>
-                      </Dialog> */}
+                      </Dialog>
 
                       <div
                         className="form-control"
