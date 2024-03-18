@@ -22,6 +22,8 @@ import AddCircle from "@mui/icons-material/AddCircle.js";
 import io from "socket.io-client";
 // import { ColorRing } from 'react-loader-spinner'
 import Nodata from "../components/Nodata";
+import { RiEditCircleFill } from "react-icons/ri";
+import { IoClose } from "react-icons/io5";
 
 function EmployeeDashboard() {
   const { userId } = useParams();
@@ -398,7 +400,7 @@ function EmployeeDashboard() {
 
   const handleSelect = (date) => {
     const filteredDataDateRange = followData.filter((product) => {
-      const productDate = new Date(product["lastFollowUpdate"]);
+      const productDate = new Date(product["estPaymentDate"]);
 
       if (
         formatDate(date.selection.startDate) ===
@@ -1007,6 +1009,42 @@ function EmployeeDashboard() {
     width: "20px",
   };
 
+
+  // ---------------------------------------------delete Projection----------------------------------------------------\
+
+  const handleDelete = async (company) => {
+    const companyName = company;
+    console.log(companyName);
+
+    try {
+      // Send a DELETE request to the backend API endpoint
+      const response = await axios.delete(`${secretKey}/delete-followup/${companyName}`);
+      console.log(response.data.message); // Log the response message
+      // Show a success message after successful deletion
+      console.log('Deleted!', 'Your data has been deleted.', 'success');
+      setCurrentProjection({
+        companyName: "",
+        ename: "",
+        offeredPrize: 0,
+        offeredServices: [],
+        lastFollowUpdate: "",
+        totalPayment: 0,
+        estPaymentDate: "",
+        remarks: "",
+        date: "",
+        time: "",
+      });
+      setSelectedValues([]);
+      fetchFollowUpData();
+    } catch (error) {
+      console.error('Error deleting data:', error);
+      // Show an error message if deletion fails
+      console.log('Error!', 'Follow Up Not Found.', 'error');
+    }
+  };
+  //console.log("projections", currentProjection);
+
+
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
@@ -1272,7 +1310,7 @@ function EmployeeDashboard() {
                 </thead>
                 <tbody>
                   {uniqueArray ? (
-                    uniqueArray.length > 0 ? (
+                    uniqueArray.length !== 0 ? (
                       uniqueArray.map((obj, index) => (
                         <tr key={`row-${index}`}>
                           <td
@@ -1747,6 +1785,7 @@ function EmployeeDashboard() {
                     <th>Total Offered Price</th>
                     <th>Expected Amount</th>
                     <th>Remarks</th>
+                    <th>Last FollowUp Date</th>
                     <th>Estimated Payment Date</th>
                     <th>Action</th>
                   </tr>
@@ -1787,6 +1826,7 @@ function EmployeeDashboard() {
                         </td>
                         <td>₹{obj.offeredPrize.toLocaleString()}</td>
                         <td>{obj.remarks}</td>
+                        <td>{obj.lastFollowUpdate}</td>
                         <td>{obj.estPaymentDate}</td>
                         <td>
                           <IconButton
@@ -1794,7 +1834,7 @@ function EmployeeDashboard() {
                               functionopenprojection(obj.companyName);
                             }}
                           >
-                            <EditIcon color="primary"></EditIcon>
+                            <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }}></RiEditCircleFill>
                           </IconButton>
                         </td>
                       </tr>
@@ -2189,20 +2229,47 @@ function EmployeeDashboard() {
           onClose={closeProjection}
         >
           <div style={{ width: "31em" }} className="container-xl">
-            <div className="header d-flex justify-content-between align-items-center">
-              <h1 style={{ marginBottom: "0px" }} className="title">
+            <div className="d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
+              <h1 style={{ marginBottom: "0px", fontSize: "23px", }} className="title">
                 Projection Form
               </h1>
-              <IconButton>
-                <EditIcon color="primary"></EditIcon>
-              </IconButton>
+              <div>
+                <IconButton>
+                  <EditIcon color="grey" style={{ width: "17px", height: "17px" }}></EditIcon>
+                </IconButton>
+                <IconButton>
+                  <IoClose onClick={closeProjection} style={{ width: "17px", height: "17px" }} />
+                </IconButton>
+              </div>
             </div>
-            <hr style={{ marginBottom: "10px" }} />
+            <hr style={{ margin: "0px" }} />
             <div className="body-projection">
-              <div className="header mb-2">
-                <strong style={{ fontSize: "20px" }}>
-                  {projectingCompany}
-                </strong>
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <h1
+                    title={projectingCompany} style={{
+                      fontSize: "14px",
+                      textShadow: "none",
+                      fontWeight: "400",
+                      fontFamily: "Poppins, sans-serif",
+                      margin: "10px 0px",
+                      width: "200px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}>
+                    {projectingCompany}
+                  </h1>
+                </div>
+                <div>
+                  <button
+                    onClick={() => handleDelete(projectingCompany)}
+                    className="btn btn-link" style={{ color: "grey" }}
+                  >
+                    Clear Form
+                  </button>
+                </div>
+
               </div>
               <div className="label">
                 <strong>Offered Services :</strong>

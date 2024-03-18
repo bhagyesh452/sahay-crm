@@ -289,10 +289,10 @@ function EmployeePanel() {
 
   const fetchNewData = async (status) => {
     try {
-      if(!status){
+      if (!status) {
         setLoading(true);
       }
-     
+
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
 
@@ -2289,7 +2289,7 @@ function EmployeePanel() {
                           </tbody>
                         ) : (
                           <tbody>
-                            {currentData.map((company, index) => (
+                            {dataStatus !== "Matured" && currentData.map((company, index) => (
                               <tr key={index} style={{ border: "1px solid #ddd" }}>
                                 <td className="td-sticky">
                                   {startIndex + index + 1}
@@ -2519,7 +2519,7 @@ function EmployeePanel() {
                               </tr>
                             </tbody>
                           )}
-                        {companies.length === 0 && dataStatus === "Matured" && !loading(
+                        {companies.length === 0 && dataStatus === "Matured" &&  !loading &&
                           <tbody>
                             <tr>
                               <td colSpan="11" className="p-2 particular">
@@ -2527,7 +2527,7 @@ function EmployeePanel() {
                               </td>
                             </tr>
                           </tbody>
-                        )}
+                        }
                       </table>
                     </div>
                     {currentData.length !== 0 && (
@@ -3126,7 +3126,7 @@ function EmployeePanel() {
                   onClick={() => {
                     setIsEditProjection(true);
                   }}>
-                  <EditIcon color="primary"></EditIcon>
+                  <EditIcon color="grey"></EditIcon>
                 </IconButton>
                 {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
                   <DeleteIcon
@@ -3166,7 +3166,7 @@ function EmployeePanel() {
                 <div>
                   <button
                     onClick={() => handleDelete(projectingCompany)}
-                    className="btn btn-link" style={{color:"grey"}}
+                    className="btn btn-link" style={{ color: "grey" }}
                   >
                     Clear Form
                   </button>
