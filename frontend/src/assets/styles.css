@@ -685,9 +685,7 @@ padding:6px !important;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
    }
    .show-time-card{
-
     margin-bottom: 4px;
-   
 color: #4e884e;
     font-size: 13px;
     font-weight: bold;
@@ -702,6 +700,91 @@ color: #4e884e;
     font-family: sans-serif;
     border:none;
   }
+  .compose-email {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
+  }
+  
+  .compose-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+ 
+    cursor: pointer;
+  }
+
+  
+  .compose-popup {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 469px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .compose-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .compose-title {
+    margin: 0;
+  }
+  
+  .close-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #333;
+  }
+  
+  .compose-input,
+  .compose-textarea,
+  .send-btn {
+    display: block;
+    width: calc(100% - 20px);
+    margin: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 14px;
+  }
+  .compose-textarea{
+    height: 40vh;
+  }
+  .send-btn {
+    background-color: #fbb900;
+    color: #fff;
+    border: none;
+    width: 84px;
+    font-weight: bold;
+    font-family: 'sans-serif';
+  }
+  
+  .send-btn:hover{
+    background-color: #936c00;
+  }
+  .compose-formatting, .compose-attachments, .compose-insert-files, .compose-menuIcon{
+    cursor: pointer;
+    padding: 5px;
+  }
+ .compose-formatting:hover ,.compose-attachments:hover, .compose-insert-files:hover, .compose-menuIcon:hover {
+  background-color: #ccc;
+
+ }
 
 /* ------------------------------employee dashboard------------------------------------- */
 

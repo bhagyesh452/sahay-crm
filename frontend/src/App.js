@@ -1,9 +1,6 @@
 import "./App.css";
-
 import { BrowserRouter, Routes, Navigate, Route } from "react-router-dom";
 import { useState } from "react";
-
-
 import EmployeeLogin from "./components/EmployeeLogin";
 import ConveertedLeads from "./components/ConveertedLeads";
 import EmployeePanel from "./employeeComp/EmployeePanel";
@@ -26,6 +23,7 @@ import Analysis_dashboard from "./Processing/Analysis_dashboard.jsx";
 import EmployeeDashboard from "./employeeComp/EmployeeDashboard.jsx";
 import Bellicon_processing from "./Processing/style_processing/Bellicon_processing.js";
 import NewLeads from "./admin/NewLeads.jsx";
+import RedesignedForm from "./admin/RedesignedForm.jsx";
 
 
 
@@ -83,7 +81,7 @@ function App() {
                 path="/admin/notification"
                 element={<ShowNotification />}
               />
-              <Route path="/admin/bookings/Addbookings" element = {<BookingsForm/>}/>
+              <Route path="/admin/bookings/Addbookings" element = {<RedesignedForm/>}/>
               
             </>
           ) : (
