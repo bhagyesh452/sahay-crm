@@ -169,8 +169,6 @@ function EmployeePanel() {
   };
 
   console.log("projectingcompnay", projectingCompany)
-
-
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
     setOpenProjection(true);
@@ -1492,7 +1490,7 @@ function EmployeePanel() {
                     className="features"
                   >
                     <div style={{ display: "flex" }} className="feature1">
-                    <button className="btn btn-primary" onClick={loginwithgoogle} >
+                    {/* <button className="btn btn-primary" onClick={loginwithgoogle} >
                           Gmail SignIn
                       </button>
                       <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
@@ -1501,12 +1499,13 @@ function EmployeePanel() {
                         </DialogTitle>
                         <DialogContent>
                         <div className="sign-in-google">
+
       <p>Please sign in with your Google account.</p>
       <button onClick={handleGoogleLogin} >Sign in with Google</button>
     </div>
                         </DialogContent>
 
-                      </Dialog>
+                      </Dialog> */}
 
                       <div
                         className="form-control"
@@ -3176,7 +3175,7 @@ function EmployeePanel() {
         >
           <div style={{ width: "31em" }} className="container-xl">
             <div className="header d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
-              <h1 style={{ marginBottom: "0px", fontSize: "20px", }} className="title">
+              <h1 style={{ marginBottom: "0px", fontSize: "23px", }} className="title">
                 Projection Form
               </h1>
               <div>
@@ -3184,7 +3183,7 @@ function EmployeePanel() {
                   onClick={() => {
                     setIsEditProjection(true);
                   }}>
-                  <EditIcon color="grey" style={{ width: "17px", height: "17px" }}></EditIcon>
+                  <EditIcon color="grey"></EditIcon>
                 </IconButton>
                 {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
                   <DeleteIcon
@@ -3198,7 +3197,7 @@ function EmployeePanel() {
                   </DeleteIcon>
                 </IconButton> */}
                 <IconButton>
-                  <IoClose onClick={closeProjection} style={{ width: "17px", height: "17px" }} />
+                  <IoClose onClick={closeProjection} />
                 </IconButton>
               </div>
             </div>
@@ -3251,7 +3250,7 @@ function EmployeePanel() {
                 </div>
               </div>
               <div className="label">
-                <strong>Offered Prices (With GST) {!currentProjection.offeredPrize && <span style={{ color: "red" }}>*</span>} :</strong>
+                <strong>Offered Prices {!currentProjection.offeredPrize && <span style={{ color: "red" }}>*</span>} :</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
