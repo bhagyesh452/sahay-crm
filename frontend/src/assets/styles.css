@@ -812,3 +812,8 @@ color: #4e884e;
   margin-top: 2px;
   width: 13vw;
 }
+.LoaderTDSatyle
+{
+  height: 300px !important;
+  background: #fff !important;
+}
