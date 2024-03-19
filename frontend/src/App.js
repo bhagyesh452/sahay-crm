@@ -24,6 +24,7 @@ import EmployeeDashboard from "./employeeComp/EmployeeDashboard.jsx";
 import Bellicon_processing from "./Processing/style_processing/Bellicon_processing.js";
 import NewLeads from "./admin/NewLeads.jsx";
 import RedesignedForm from "./admin/RedesignedForm.jsx";
+import DrawerComponent from "./components/Drawer.js";
 
 
 
@@ -101,7 +102,9 @@ function App() {
           <Route path="/Processing/Dashboard_processing/nodata" element={<Nodata/>} /> 
           <Route path="/Processing/analysis_dashboard" element={<Analysis_dashboard/>} /> 
           <Route path="/Processing/bellicon" element={<Bellicon_processing/>} /> 
+          <Route path="/Components/Drawer" element={<DrawerComponent/>} />
         </Routes>
+
       </BrowserRouter>
     </div>
   );

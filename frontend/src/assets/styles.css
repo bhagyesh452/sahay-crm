@@ -804,13 +804,14 @@ color: #4e884e;
     margin-right: 27px;
     padding: 5px 21px;
     font-size: 12px;
-    height: 37px;
+    height: 29px;
     margin-top: 3px;
 }
 .general-searchbar{
-  height: 37px;
+  height: 30px;
   margin-top: 2px;
-  width: 13vw;
+  width: 11vw;
+  padding-left: 15px;
 }
 .LoaderTDSatyle
 {

@@ -1882,7 +1882,7 @@ function Dashboard() {
                       <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                         <div className="d-flex justify-content-between">
                           <div style={{ minWidth: '14vw' }} className="dashboard-title">
-                            <h2 style={{ marginBottom: '5px' }}>Employee Dashboard</h2>
+                            <h2 style={{ marginBottom: '5px' }}>Employees Data Report</h2>
                           </div>
                         </div>
                         <div className="d-flex gap-2">
