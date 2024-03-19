@@ -812,8 +812,53 @@ color: #4e884e;
   margin-top: 2px;
   width: 13vw;
 }
-.LoaderTDSatyle
-{
-  height: 300px !important;
-  background: #fff !important;
+/**************** Steper Form CSS Start ************************/
+.css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-active , .MuiButton-textPrimary{
+  color: #ffba00 !important;
 }
+.steprForm-bg
+{
+  background: #f6f8fb;
+  height: calc(100vh - 230px);
+}
+.steprForm
+{
+  margin: 18px auto 0px;
+  border-radius: 10px;
+  padding: 15px 40px;
+  width: 90%;
+}
+.steprForm-inner
+{
+  margin: 20px auto 6px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+}
+.css-sghohy-MuiButtonBase-root-MuiButton-root,.css-bh137t-MuiButtonBase-root-MuiButton-root
+{ 
+  background-color: #ffba00 !important;
+}
+.css-mjpk2e-MuiButtonBase-root-MuiStepButton-root
+{
+  padding: 0px !important;
+  margin: 0px !important;
+}
+.form-tab-active {
+  background: #f6f8fb  !important;
+  padding: 8px 4px !important
+}
+.No-active 
+{
+  padding: 8px 4px !important
+}
+.css-1bw0nnu-MuiStep-root
+{
+    padding-left: 0px  !important; 
+    padding-right: 0px !important;
+}
+.css-j5w0w9-MuiStepConnector-root
+{
+  margin-left: 8px;
+}
+/****************Steper Form CSS End ************************/

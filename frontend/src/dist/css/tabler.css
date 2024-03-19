@@ -11,7 +11,7 @@
 /* prettier-ignore */
 :root,
 [data-bs-theme=light] {
-  --tblr-blue: #206bc4;
+  --tblr-blue: #ffba00;
   --tblr-indigo: #4263eb;
   --tblr-purple: #ae3ec9;
   --tblr-pink: #d6336c;
@@ -34,7 +34,7 @@
   --tblr-gray-700: #3a4859;
   --tblr-gray-800: #182433;
   --tblr-gray-900: #040a11;
-  --tblr-primary: #206bc4;
+  --tblr-primary: #ffba00;
   --tblr-secondary: #667382;
   --tblr-success: #2fb344;
   --tblr-info: #4299e1;
@@ -43,7 +43,7 @@
   --tblr-light: #fcfdfe;
   --tblr-dark: #182433;
   --tblr-muted: #667382;
-  --tblr-blue: #206bc4;
+  --tblr-blue: #ffba00;
   --tblr-azure: #4299e1;
   --tblr-indigo: #4263eb;
   --tblr-purple: #ae3ec9;
@@ -69,7 +69,7 @@
   --tblr-rss: #ffa500;
   --tblr-flickr: #0063dc;
   --tblr-bitbucket: #0052cc;
-  --tblr-tabler: #206bc4;
+  --tblr-tabler: #ffba00;
   --tblr-primary-rgb: 32, 107, 196;
   --tblr-secondary-rgb: 102, 115, 130;
   --tblr-success-rgb: 47, 179, 68;
@@ -153,7 +153,7 @@
   --tblr-tertiary-color-rgb: 24, 36, 51;
   --tblr-tertiary-bg: #f6f8fb;
   --tblr-tertiary-bg-rgb: 246, 248, 251;
-  --tblr-link-color: #206bc4;
+  --tblr-link-color: #ffba00;
   --tblr-link-color-rgb: 32, 107, 196;
   --tblr-link-decoration: none;
   --tblr-link-hover-color: #1a569d;
@@ -15519,7 +15519,7 @@ textarea.form-control-lg {
 :host {
   font-size: 16px;
   height: 100%;
-  --tblr-primary: #206bc4;
+  --tblr-primary: #ffba00;
   --tblr-primary-rgb: 32, 107, 196;
   --tblr-primary-fg: var(--tblr-light);
   --tblr-primary-darken: #1d60b0;
@@ -15573,7 +15573,7 @@ textarea.form-control-lg {
   --tblr-muted-darken: #5c6875;
   --tblr-muted-lt: #f0f1f3;
   --tblr-muted-lt-rgb: 240, 241, 243;
-  --tblr-blue: #206bc4;
+  --tblr-blue: #ffba00;
   --tblr-blue-rgb: 32, 107, 196;
   --tblr-blue-fg: var(--tblr-light);
   --tblr-blue-darken: #1d60b0;
@@ -15729,7 +15729,7 @@ textarea.form-control-lg {
   --tblr-bitbucket-darken: #004ab8;
   --tblr-bitbucket-lt: #e6eefa;
   --tblr-bitbucket-lt-rgb: 230, 238, 250;
-  --tblr-tabler: #206bc4;
+  --tblr-tabler: #ffba00;
   --tblr-tabler-rgb: 32, 107, 196;
   --tblr-tabler-fg: var(--tblr-light);
   --tblr-tabler-darken: #1d60b0;
@@ -17584,7 +17584,7 @@ body.theme-dark .hide-theme-dark, body[data-bs-theme=dark] .hide-theme-dark {
   --tblr-bg-surface-secondary: #1b293a;
   --tblr-bg-surface-tertiary: #151f2c;
   --tblr-link-color: #307fdd;
-  --tblr-link-hover-color: #206bc4;
+  --tblr-link-hover-color: #ffba00;
   --tblr-active-bg: #1b293a;
   --tblr-disabled-color: var(--tblr-gray-700);
   --tblr-border-color: var(--tblr-dark-mode-border-color);
@@ -18197,7 +18197,7 @@ a.badge {
 }
 
 .btn-link {
-  color: #206bc4;
+  color: #ffba00;
   background-color: transparent;
   border-color: transparent;
   box-shadow: none;
@@ -22112,7 +22112,7 @@ Legend
 
 .list-group-item.active {
   background-color: rgba(var(--tblr-muted-rgb), 0.04);
-  border-left-color: #206bc4;
+  border-left-color: #ffba00;
   border-left-width: 2px;
 }
 
@@ -22200,7 +22200,7 @@ Inline list
   display: block;
   width: 2.5rem;
   height: 2.5rem;
-  color: #206bc4;
+  color: #ffba00;
   vertical-align: middle;
 }
 .loader:after {
@@ -22488,7 +22488,7 @@ Dimmer
   color: var(--tblr-body-color);
 }
 .page-link:hover .page-item-title {
-  color: #206bc4;
+  color: #ffba00;
 }
 .page-item.disabled .page-item-title {
   color: var(--tblr-disabled-color);
@@ -23063,7 +23063,7 @@ a.step-item:hover {
 }
 
 .status-primary {
-  --tblr-status-color: #206bc4;
+  --tblr-status-color: #ffba00;
   --tblr-status-color-rgb: 32, 107, 196;
 }
 
@@ -23108,7 +23108,7 @@ a.step-item:hover {
 }
 
 .status-blue {
-  --tblr-status-color: #206bc4;
+  --tblr-status-color: #ffba00;
   --tblr-status-color-rgb: 32, 107, 196;
 }
 
@@ -23238,7 +23238,7 @@ a.step-item:hover {
 }
 
 .status-tabler {
-  --tblr-status-color: #206bc4;
+  --tblr-status-color: #ffba00;
   --tblr-status-color-rgb: 32, 107, 196;
 }
 
@@ -23836,7 +23836,7 @@ Table sort
 }
 
 .toast-primary {
-  --tblr-toast-color: #206bc4;
+  --tblr-toast-color: #ffba00;
 }
 
 .toast-secondary {
@@ -23872,7 +23872,7 @@ Table sort
 }
 
 .toast-blue {
-  --tblr-toast-color: #206bc4;
+  --tblr-toast-color: #ffba00;
 }
 
 .toast-azure {
@@ -23976,7 +23976,7 @@ Table sort
 }
 
 .toast-tabler {
-  --tblr-toast-color: #206bc4;
+  --tblr-toast-color: #ffba00;
 }
 
 .toolbar {
@@ -24407,7 +24407,7 @@ Chart sparkline
 }
 
 .border-primary {
-  border-color: #206bc4 !important;
+  border-color: #ffba00 !important;
 }
 
 .bg-secondary {
@@ -24551,7 +24551,7 @@ Chart sparkline
 }
 
 .border-blue {
-  border-color: #206bc4 !important;
+  border-color: #ffba00 !important;
 }
 
 .bg-azure {
@@ -24967,7 +24967,7 @@ Chart sparkline
 }
 
 .border-tabler {
-  border-color: #206bc4 !important;
+  border-color: #ffba00 !important;
 }
 
 .bg-white {
