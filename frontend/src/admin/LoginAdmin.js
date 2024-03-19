@@ -38,11 +38,12 @@ function LoginAdmin({ setToken }) {
         password,
       });
 
+      const {adminName} = response.data
       const { token } = response.data;
       console.log(token);
       setToken(token);
       localStorage.setItem("token", token);
-     
+      localStorage.setItem("adminName" , adminName)
       window.location.replace("/admin/dashboard");
     } catch (error) {
       console.error("Login failed:", error.message);

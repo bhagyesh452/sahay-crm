@@ -31,9 +31,9 @@ function EmployeeLogin({ setnewToken }) {
       console.log(error);
     }
   };
-  const sendOTP = () => {
-    const otp = Math.floor(1000 + Math.random() * 9000);
-  };
+  // const sendOTP = () => {
+  //   const otp = Math.floor(1000 + Math.random() * 9000);
+  // };
   const findUserId = () => {
     const user = data.find(
       (user) => user.email === email && user.password === password
@@ -157,7 +157,7 @@ function EmployeeLogin({ setnewToken }) {
       // const newPath = `${currentPath}/employee-data/${userId}`;
 
       // Update the browser's history to reflect the new path
-      window.location.replace(`/employee-data/${userId}`);
+      window.location.replace(`/employee-dashboard/${userId}`);
       // window.location.href = `${window.location.origin}${window.location.pathname}employee-data/${userId}`;
     } catch (error) {
       console.error("Login failed:", error.message);

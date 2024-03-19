@@ -4,9 +4,10 @@ const compression = require('compression');
 // const { Server } = require("socket.io");
 // const http = require("http");
 // const server = http.createServer(app);
+// const session = require('express-session');
 // const passport = require('passport');
 // const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const nodemailer = require('nodemailer');
+// const nodemailer = require('nodemailer');
 const mongoose = require("mongoose");
 // const googleAuthRouter = require('./helpers/googleAuth');
 const adminModel = require("./models/Admin");
@@ -47,7 +48,13 @@ const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(cors());
 app.use(compression());
+// app.use(session({
+//   secret: 'boombadaboom', // Replace with a secret key for session encryption
+//   resave: false,
+//   saveUninitialized: false,
+// }));
 // app.use(passport.initialize())
+// app.use(passport.session());
 var http = require("http").createServer(app);
 var socketIO = require("socket.io")(http, {
   cors: {
@@ -81,18 +88,20 @@ app.post("/api/admin/login-admin", async (req, res) => {
   // Simulate user authentication (replace with actual authentication logic)
   // (u) => u.email === username && u.password === password
   // const user = await adminModel.find();
+
   const user = await onlyAdminModel.findOne({
     admin_email: username,
     admin_password: password,
   });
-  // console.log(user);
+  //console.log(user);
   if (user) {
     // Generate a JWT token
     // console.log("user is appropriate");
+    const adminName = user.admin_name
     const token = jwt.sign({ userId: user._id }, secretKey, {
       expiresIn: "1h",
     });
-    res.json({ token });
+    res.json({ token , adminName });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
   }
@@ -159,6 +168,7 @@ app.post("/api/processingLogin", async (req, res) => {
 
   if (user) {
     const ename = user.ename;
+    console.log("ename" , ename)
     const processingToken = jwt.sign({ employeeId: user._id }, secretKey, {
       expiresIn: "10h",
     });
@@ -2512,32 +2522,61 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 //   clientID: process.env.GOOGLE_CLIENT_ID,
 //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 //   callbackURL: '/auth/google/callback',
-//   scope:["profile","email"]
+//   scope: ["profile", "email"],
+//   accessType: 'offline', 
 // },
 // (accessToken, refreshToken, profile, done) => {
+//   console.log('accessToken:', accessToken);
+//   getUserData(accessToken);
 //   const user = {
 //     id: profile.id,
 //     email: profile.emails[0].value,
 //   };
+//   console.log("user:" , user)
 //   return done(null, user);
 // }));
 
-// passport.serializeUser((user,done)=>{
-//   done(null,user)
-// })
-// passport.deserializeUser((user,done)=>{
-//   done(null,user)
-// })
 
+// async function getUserData(access_token) {
+//   try {
+//     const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`);
+//     const data = await response.json();
+//     console.log("All the data" ,data);
+//   } catch (error) {
+//     console.error('Error fetching user data:', error);
+//   }
+// }
+
+// passport.serializeUser((user, done) => {
+//   done(null, user);
+// });
+
+// passport.deserializeUser((user, done) => {
+//   done(null, user);
+// });
 // app.get('/auth/google',
-//   passport.authenticate('google', { scope: ['profile', 'email'] })); 
+//   passport.authenticate('google', { 
+//     scope: ['profile', 'email', 'offline_access'], // Include 'offline_access' scope
+//     prompt: 'consent' 
+//   }));
+
+
+
 
 // // Google OAuth callback route
 // app.get('/auth/google/callback',
 //   passport.authenticate('google', { failureRedirect: '/login' }),
 //   (req, res) => {
-//     // Redirect to dashboard or send a success response
-//     res.redirect('/dashboard');
+//     // Check if the referer header is present in the request
+//     const referer = req.headers.referer;
+
+//     if (referer) {
+//       // Redirect to the previous page
+//       res.redirect(referer);
+//     } else {
+//       // If referer is not available, redirect to a default URL
+//       res.redirect('/'); // You can change this to any default URL you prefer
+//     }
 //   }
 // );
 
@@ -2553,7 +2592,7 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 //       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 //       refreshToken: user.refreshToken,
 //       accessToken: user.accessToken,
-//       expires: 3600 // Access token expiration time in seconds
+//       expires: 3600 
 //     }
 //   });
 // }
@@ -2581,7 +2620,6 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 //     }
 //   });
 // });
-
 
 http.listen(3001, function () {
   console.log("Server started...");

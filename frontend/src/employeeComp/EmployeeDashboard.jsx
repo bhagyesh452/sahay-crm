@@ -1,4 +1,4 @@
-import React, { useEffect, useState, CSSProperties } from "react";
+import React, { useEffect, useState, CSSProperties,useRef } from "react";
 import Header from "../components/Header";
 import EmpNav from "./EmpNav";
 import axios from "axios";
@@ -22,6 +22,8 @@ import AddCircle from "@mui/icons-material/AddCircle.js";
 import io from "socket.io-client";
 // import { ColorRing } from 'react-loader-spinner'
 import Nodata from "../components/Nodata";
+import { RiEditCircleFill } from "react-icons/ri";
+import { IoClose } from "react-icons/io5";
 
 function EmployeeDashboard() {
   const { userId } = useParams();
@@ -72,6 +74,8 @@ function EmployeeDashboard() {
     totalLeads: 'ascending'
   });
   const [incoFilter, setIncoFilter] = useState("");
+  const dateRangePickerRef = useRef(null);
+  const dateRangePickerProhectionRef = useRef(null);
 
 
 
@@ -181,6 +185,51 @@ function EmployeeDashboard() {
       setShowBookingDate(false)
     }
   }
+
+  const handleClickOutside = (event) => {
+    if (dateRangePickerRef.current && !dateRangePickerRef.current.contains(event.target)) {
+      setShowBookingDate(false);
+    }
+  };
+
+  // Add event listener when the component mounts
+  useEffect(() => {
+    const totalBookingElement = document.getElementById('bookingdashboard');
+    if(totalBookingElement){
+      totalBookingElement.addEventListener('click', handleClickOutside);
+    // Remove event listener when the component unmounts
+    return () => {
+      totalBookingElement.removeEventListener('click', handleClickOutside);
+    };
+
+    }
+    
+  }, []);
+
+  const handleClickOutsideProjection = (event) => {
+    if (dateRangePickerProhectionRef.current && !dateRangePickerProhectionRef.current.contains(event.target)) {
+      setDateRangeDisplay(false);
+    }
+  };
+
+  // Add event listener when the component mounts
+  useEffect(() => {
+    const totalBookingElement = document.getElementById('projectiondashboardemployee');
+    if(totalBookingElement){
+      totalBookingElement.addEventListener('click', handleClickOutsideProjection);
+      // Remove event listener when the component unmounts
+      return () => {
+        totalBookingElement.removeEventListener('click', handleClickOutsideProjection);
+      };
+
+    }
+   
+  }, []);
+
+
+
+
+
   useEffect(() => {
     const socket = io('/socket.io');
     socket.on("connect", () => {
@@ -323,6 +372,7 @@ function EmployeeDashboard() {
       date: "",
       time: "",
     });
+    setIsEditProjection(false);
     setSelectedValues([]);
   };
 
@@ -398,7 +448,7 @@ function EmployeeDashboard() {
 
   const handleSelect = (date) => {
     const filteredDataDateRange = followData.filter((product) => {
-      const productDate = new Date(product["lastFollowUpdate"]);
+      const productDate = new Date(product["estPaymentDate"]);
 
       if (
         formatDate(date.selection.startDate) ===
@@ -1007,6 +1057,42 @@ function EmployeeDashboard() {
     width: "20px",
   };
 
+
+  // ---------------------------------------------delete Projection----------------------------------------------------\
+
+  const handleDelete = async (company) => {
+    const companyName = company;
+    console.log(companyName);
+
+    try {
+      // Send a DELETE request to the backend API endpoint
+      const response = await axios.delete(`${secretKey}/delete-followup/${companyName}`);
+      console.log(response.data.message); // Log the response message
+      // Show a success message after successful deletion
+      console.log('Deleted!', 'Your data has been deleted.', 'success');
+      setCurrentProjection({
+        companyName: "",
+        ename: "",
+        offeredPrize: 0,
+        offeredServices: [],
+        lastFollowUpdate: "",
+        totalPayment: 0,
+        estPaymentDate: "",
+        remarks: "",
+        date: "",
+        time: "",
+      });
+      setSelectedValues([]);
+      fetchFollowUpData();
+    } catch (error) {
+      console.error('Error deleting data:', error);
+      // Show an error message if deletion fails
+      console.log('Error!', 'Follow Up Not Found.', 'error');
+    }
+  };
+  //console.log("projections", currentProjection);
+
+
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
@@ -1016,7 +1102,7 @@ function EmployeeDashboard() {
           <div className="card-header employeedashboard">
             <div className="d-flex justify-content-between">
               <div style={{ minWidth: '14vw' }} className="dashboard-title">
-                <h2 style={{ marginBottom: '5px' }}>Your Dashboard</h2>
+                <h2 style={{ marginBottom: '5px' }}>Data Summary</h2>
               </div>
               {/* <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
                 <input
@@ -1272,7 +1358,7 @@ function EmployeeDashboard() {
                 </thead>
                 <tbody>
                   {uniqueArray ? (
-                    uniqueArray.length > 0 ? (
+                    uniqueArray.length !== 0 ? (
                       uniqueArray.map((obj, index) => (
                         <tr key={`row-${index}`}>
                           <td
@@ -1643,11 +1729,11 @@ function EmployeeDashboard() {
 
       {/* -----------------------------------------------projection dashboard-------------------------------------------------- */}
 
-      <div className="container-xl mt-2">
+      <div className="container-xl mt-2 projectiondashboard" id="projectiondashboardemployee">
         <div className="card">
           <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
             <div className="dashboard-title">
-              <h2 style={{ marginBottom: '5px' }}>Employee Dashboard</h2>
+              <h2 style={{ marginBottom: '5px' }}>Projection Summary</h2>
             </div>
             <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
               <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
@@ -1687,10 +1773,10 @@ function EmployeeDashboard() {
                 >
                   <FaRegCalendar
                     style={{
-                      width: "20px",
-                      height: "20px",
+                      width: "17px",
+                      height: "17px",
                       color: "#bcbaba",
-                      color: "black",
+                      color: "grey",
                     }}
                   />
                 </button>
@@ -1699,6 +1785,7 @@ function EmployeeDashboard() {
           </div>
           {displayDateRange && (
             <div
+            ref={dateRangePickerProhectionRef}
               className="position-absolute "
               style={{ zIndex: "1", top: "20%", left: "75%" }}
             >
@@ -1747,6 +1834,7 @@ function EmployeeDashboard() {
                     <th>Total Offered Price</th>
                     <th>Expected Amount</th>
                     <th>Remarks</th>
+                    <th>Last FollowUp Date</th>
                     <th>Estimated Payment Date</th>
                     <th>Action</th>
                   </tr>
@@ -1787,6 +1875,7 @@ function EmployeeDashboard() {
                         </td>
                         <td>₹{obj.offeredPrize.toLocaleString()}</td>
                         <td>{obj.remarks}</td>
+                        <td>{obj.lastFollowUpdate}</td>
                         <td>{obj.estPaymentDate}</td>
                         <td>
                           <IconButton
@@ -1794,7 +1883,7 @@ function EmployeeDashboard() {
                               functionopenprojection(obj.companyName);
                             }}
                           >
-                            <EditIcon color="primary"></EditIcon>
+                            <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }}></RiEditCircleFill>
                           </IconButton>
                         </td>
                       </tr>
@@ -1823,6 +1912,9 @@ function EmployeeDashboard() {
                       <td> ₹{totalPaymentSumFilter.toLocaleString()}</td>
                       <td>₹{offeredPaymentSumFilter.toLocaleString()}</td>
                       <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
+                      <td>-</td>
                     </tr>
                   </tfoot>
                 )}
@@ -1834,11 +1926,11 @@ function EmployeeDashboard() {
       {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
 
 
-      <div className="container-xl mt-2">
+      <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard">
         <div className="card">
           <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
             <div>
-              <h2>Bookings Dashboard</h2>
+              <h2>Matured Clients Summary</h2>
             </div>
             <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
               <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
@@ -1870,12 +1962,13 @@ function EmployeeDashboard() {
                   {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
                 </div>
                 <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                  <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                  <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
                 </button>
               </div>
             </div>
           </div>
           {showBookingDate && <div
+           ref={dateRangePickerRef}
             style={{
               position: "absolute",
               top: "65px",
@@ -2189,20 +2282,49 @@ function EmployeeDashboard() {
           onClose={closeProjection}
         >
           <div style={{ width: "31em" }} className="container-xl">
-            <div className="header d-flex justify-content-between align-items-center">
-              <h1 style={{ marginBottom: "0px" }} className="title">
+            <div className="d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
+              <h1 style={{ marginBottom: "0px", fontSize: "20px", }} className="title">
                 Projection Form
               </h1>
-              <IconButton>
-                <EditIcon color="primary"></EditIcon>
-              </IconButton>
+              <div>
+                <IconButton  onClick={() => {
+                    setIsEditProjection(true);
+                  }}>
+                  <EditIcon color="grey" style={{ width: "17px", height: "17px" }}></EditIcon>
+                </IconButton>
+                <IconButton>
+                  <IoClose onClick={closeProjection} style={{ width: "17px", height: "17px" }} />
+                </IconButton>
+              </div>
             </div>
-            <hr style={{ marginBottom: "10px" }} />
+            <hr style={{ margin: "0px" }} />
             <div className="body-projection">
-              <div className="header mb-2">
-                <strong style={{ fontSize: "20px" }}>
-                  {projectingCompany}
-                </strong>
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <h1
+                    title={projectingCompany} style={{
+                      fontSize: "14px",
+                      textShadow: "none",
+                      fontWeight: "400",
+                      fontFamily: "Poppins, sans-serif",
+                      margin: "10px 0px",
+                      width: "200px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}>
+                    {projectingCompany}
+                  </h1>
+                </div>
+                <div>
+                  <button
+                    onClick={() => handleDelete(projectingCompany)}
+                    className="btn btn-link" style={{ color: "grey" }}
+                  >
+                    Clear Form
+                  </button>
+                </div>
+
               </div>
               <div className="label">
                 <strong>Offered Services :</strong>
@@ -2218,6 +2340,7 @@ function EmployeeDashboard() {
                     isMulti
                     options={options}
                     placeholder="Select Services..."
+                    isDisabled={!isEditProjection}
                     onChange={(selectedOptions) => {
                       setSelectedValues(
                         selectedOptions.map((option) => option.value)
@@ -2231,7 +2354,7 @@ function EmployeeDashboard() {
                 </div>
               </div>
               <div className="label">
-                <strong>Offered prizes :</strong>
+                <strong>Offered Prices (With GST)</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -2244,11 +2367,12 @@ function EmployeeDashboard() {
                         offeredPrize: e.target.value,
                       }));
                     }}
+                    disabled={!isEditProjection}
                   />
                 </div>
               </div>
               <div className="label">
-                <strong>Total Payment :</strong>
+                <strong>xpected Price (With GST)</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -2261,6 +2385,7 @@ function EmployeeDashboard() {
                         totalPayment: e.target.value,
                       }));
                     }}
+                    disabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -2278,6 +2403,7 @@ function EmployeeDashboard() {
                         lastFollowUpdate: e.target.value,
                       }));
                     }}
+                    disabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -2295,6 +2421,7 @@ function EmployeeDashboard() {
                         estPaymentDate: e.target.value,
                       }));
                     }}
+                    disabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -2312,6 +2439,7 @@ function EmployeeDashboard() {
                         remarks: e.target.value,
                       }));
                     }}
+                    disabled={!isEditProjection}
                   />
                 </div>
               </div>
@@ -2321,6 +2449,7 @@ function EmployeeDashboard() {
                   type="submit"
                   class="btn btn-primary mb-3"
                   onClick={handleProjectionSubmit}
+                  disabled={!isEditProjection}
                 >
                   Submit
                 </button>

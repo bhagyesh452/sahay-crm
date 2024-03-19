@@ -10,6 +10,10 @@ import { IconChevronLeft, IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { Drawer, Icon, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import FontDownloadIcon from '@mui/icons-material/FontDownload';
+import AttachmentIcon from '@mui/icons-material/Attachment';
+import ImageIcon from '@mui/icons-material/Image';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
@@ -18,6 +22,7 @@ import Swal from "sweetalert2";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
 import Form from "../components/Form.jsx";
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import "../assets/table.css";
 import "../assets/styles.css";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
@@ -44,6 +49,7 @@ function EmployeePanel() {
   const [projectingCompany, setProjectingCompany] = useState("");
   const [sortStatus, setSortStatus] = useState("");
   const [projectionData, setProjectionData] = useState([]);
+  const [openLogin, setOpenLogin] = useState(false)
   const [requestData, setRequestData] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentProjection, setCurrentProjection] = useState({
@@ -70,6 +76,35 @@ function EmployeePanel() {
   const [openAnchor, setOpenAnchor] = useState(false);
   const [openProjection, setOpenProjection] = useState(false);
   const [data, setData] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [emailData, setEmailData] = useState({ to: '', subject: '', body: '' });
+
+  const handleTogglePopup = () => {
+    setIsOpen(false);
+  };
+  const loginwithgoogle = ()=>{
+    window.open("http://localhost:6050/auth/google/callback")
+  }
+  const handleGoogleLogin = async () => {
+    try {
+      const { data } = await axios.get(`http://localhost:/api/auth/google`); // Replace with your backend endpoint
+      console.log(data); // Handle the response as needed
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  const handleChangeMail = (e) => {
+    const { name, value } = e.target;
+    setEmailData({ ...emailData, [name]: value });
+  };
+
+  const handleSubmitMail = (e) => {
+    e.preventDefault();
+    // Perform email sending logic here (e.g., using an API or backend)
+    console.log('Email Data:', emailData);
+    // Close the compose popup after sending
+    setIsOpen(false);
+  };
   const [employeeData, setEmployeeData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [citySearch, setcitySearch] = useState("");
@@ -289,10 +324,10 @@ function EmployeePanel() {
 
   const fetchNewData = async (status) => {
     try {
-      if(!status){
+      if (!status) {
         setLoading(true);
       }
-     
+
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
 
@@ -363,7 +398,10 @@ function EmployeePanel() {
     } catch (error) {
       console.error("Error fetching new data:", error);
     } finally {
-      setLoading(false); // Set loading to false regardless of success or error
+      if(!status){
+        setLoading(false);
+      }
+       // Set loading to false regardless of success or error
     }
   };
 
@@ -1452,6 +1490,23 @@ function EmployeePanel() {
                     className="features"
                   >
                     <div style={{ display: "flex" }} className="feature1">
+                    {/* <button className="btn btn-primary" onClick={loginwithgoogle} >
+                          Gmail SignIn
+                      </button>
+                      <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
+                        <DialogTitle>
+                        <h1>Login Page</h1>
+                        </DialogTitle>
+                        <DialogContent>
+                        <div className="sign-in-google">
+
+      <p>Please sign in with your Google account.</p>
+      <button onClick={handleGoogleLogin} >Sign in with Google</button>
+    </div>
+                        </DialogContent>
+
+                      </Dialog> */}
+
                       <div
                         className="form-control"
                         style={{ height: "fit-content", width: "auto" }}
@@ -2267,20 +2322,19 @@ function EmployeePanel() {
                               />
                             </th>
 
-                            {(dataStatus === "Matured" && <th>Add Projection</th>) ||
+                            {(dataStatus === "Matured" && <th>Action</th>) ||
                               (dataStatus === "FollowUp" && <th>Add Projection</th>) || (dataStatus === "Interested" && <th>Add Projection</th>)}
                           </tr>
                         </thead>
                         {loading ? (
                           <tbody>
                             <tr>
-                              <td colSpan="11" style={{ height: "100px !important", padding: "80px !important" }}>
+                              <td colSpan="11" className="LoaderTDSatyle">
                                 <ClipLoader
                                   color="lightgrey"
                                   loading
                                   size={30}
-                                  height="25"
-                                  width="2"
+                                
                                   aria-label="Loading Spinner"
                                   data-testid="loader"
                                 />
@@ -2289,7 +2343,8 @@ function EmployeePanel() {
                           </tbody>
                         ) : (
                           <tbody>
-                            {currentData.map((company, index) => (
+                            {
+                          dataStatus !== "Matured" &&currentData.map((company, index) => (
                               <tr key={index} style={{ border: "1px solid #ddd" }}>
                                 <td className="td-sticky">
                                   {startIndex + index + 1}
@@ -2423,7 +2478,9 @@ function EmployeePanel() {
                                       </IconButton>
                                     )}
                                   </td>
+                                  
                                 )}
+                                   {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
                               </tr>
                             ))}
                           </tbody>
@@ -2519,7 +2576,7 @@ function EmployeePanel() {
                               </tr>
                             </tbody>
                           )}
-                        {companies.length === 0 && dataStatus === "Matured" && !loading(
+                        {companies.length === 0 && !loading && dataStatus === "Matured" && (
                           <tbody>
                             <tr>
                               <td colSpan="11" className="p-2 particular">
@@ -3126,7 +3183,7 @@ function EmployeePanel() {
                   onClick={() => {
                     setIsEditProjection(true);
                   }}>
-                  <EditIcon color="primary"></EditIcon>
+                  <EditIcon color="grey"></EditIcon>
                 </IconButton>
                 {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
                   <DeleteIcon
@@ -3166,7 +3223,7 @@ function EmployeePanel() {
                 <div>
                   <button
                     onClick={() => handleDelete(projectingCompany)}
-                    className="btn btn-link" style={{color:"grey"}}
+                    className="btn btn-link" style={{ color: "grey" }}
                   >
                     Clear Form
                   </button>
@@ -3296,6 +3353,67 @@ function EmployeePanel() {
             </div>
           </div>
         </Drawer>
+        <div className="compose-email">
+      {isOpen && (
+        <div className="compose-popup">
+          <div className="compose-header">
+            <h2 className="compose-title">New Email</h2>
+            <button className="close-btn" onClick={handleTogglePopup}>
+              &times;
+            </button>
+          </div>
+          <form onSubmit={handleSubmitMail}>
+            <input
+              type="email"
+              name="to"
+              className="compose-input"
+              placeholder="To"
+              value={emailData.to}
+              onChange={handleChangeMail}
+              required
+            />
+            <input
+              type="text"
+              name="subject"
+              className="compose-input"
+              placeholder="Subject"
+              value={emailData.subject}
+              onChange={handleChangeMail}
+              required
+            />
+            <textarea
+              name="body"
+              className="compose-textarea"
+              placeholder="Write your message here"
+              value={emailData.body}
+              onChange={handleChangeMail}
+              required
+            ></textarea>
+
+            <div className="compose-more-options d-flex align-items-center ">
+            <button type="submit" className="send-btn">
+              Send
+            </button>
+            <div className="other-options d-flex">
+            <div className="compose-formatting m-1">
+                    <FontDownloadIcon />
+                </div>
+                <div className="compose-attachments m-1">
+                    <AttachmentIcon/>
+                </div>
+                <div className="compose-insert-files m-1">
+                    <ImageIcon/>
+                </div>
+                <div className="compose-menuIcon m-1">
+                    <MoreVertIcon/>
+                </div>
+            </div>
+
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
       </div>
     </div>
   );

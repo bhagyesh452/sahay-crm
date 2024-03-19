@@ -30,6 +30,15 @@ function EmpNav({userId}) {
           <div className="navbar">
             <div className="container-xl">
               <ul className="navbar-nav">
+              <li  className={
+                  location.pathname === `/employee-dashboard/${userId}` ? "nav-item active" : "nav-item"
+                } onClick={handleDashboardClick}>
+                  
+                    <a  className="nav-link" href="#">
+                     <BarChartIcon/>
+                      <span className="nav-link-title">Dashboard</span>
+                    </a>
+                </li> 
                 <li onClick={handleConvertedLeadsClicksame}
                  className={
                   location.pathname === `/employee-data/${userId}` ? "nav-item active" : "nav-item"
@@ -97,20 +106,6 @@ function EmpNav({userId}) {
                     </a>
                  
                 </li> */}
-                
-                 <li  className={
-                  location.pathname === `/employee-dashboard/${userId}` ? "nav-item active" : "nav-item"
-                } onClick={handleDashboardClick}
-                  
-                >
-                  
-                    <a  className="nav-link" href="#">
-                     <BarChartIcon/>
-                      <span className="nav-link-title">Dashboard</span>
-                    </a>
-                 
-                </li> 
-                
               </ul>
               
             </div>

@@ -173,20 +173,7 @@ function Employees({ onEyeButtonClick }) {
     setEname(selectedData.ename);
     setNumber(selectedData.number);
     setPassword(selectedData.password);
-    if (
-      selectedData.designation !== "Sales Executive" ||
-      selectedData.designation !== "Sales Manager" ||
-      selectedData.designation !== "Graphics Designer" ||
-      selectedData.designation !== "Software Developer" ||
-      selectedData.designation !== "Finance Analyst" ||
-      selectedData.designation !== "Content Writer" ||
-      selectedData.designation !== "Admin Team"
-    ) {
-      setDesignation("Others");
-      setotherDesignation(selectedData.designation);
-    } else {
-      setDesignation(selectedData.designation);
-    }
+    setDesignation(selectedData.designation);
 
     const dateObject = new Date(selectedData.jdate);
     const day = dateObject.getDate().toString().padStart(2, "0"); // Ensure two-digit day
