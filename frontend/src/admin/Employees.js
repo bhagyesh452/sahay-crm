@@ -280,6 +280,14 @@ function Employees({ onEyeButtonClick }) {
         jdate: jdate,
         AddedOn: AddedOn,
       };
+      let dataToSendUpdated = {
+        email: email,
+        number: number,
+        ename: ename,
+        password: password,
+        jdate: jdate,
+        
+      };
 
       // Set designation based on otherDesignation
       if (otherdesignation !== "") {
@@ -289,7 +297,7 @@ function Employees({ onEyeButtonClick }) {
       }
 
       if (isUpdateMode) {
-        await axios.put(`${secretKey}/einfo/${selectedDataId}`, dataToSend);
+        await axios.put(`${secretKey}/einfo/${selectedDataId}`, dataToSendUpdated);
         Swal.fire({
           title: "Name Updated!",
           text: "You have successfully updated the name!",
@@ -742,7 +750,7 @@ function Employees({ onEyeButtonClick }) {
                           <td>{item.email}</td>
                           <td>{formatDate(item.jdate)}</td>
                           <td>{item.designation}</td>
-                          <td>{item.AddedOn}</td>
+                          <td>{formatDate(item.AddedOn)==="Invalid Date" ? "Feb 6, 2024" : formatDate(item.AddedOn)}</td>
                           {item.designation !== "Admin Team" ? <td>
                             {(item.Active && item.Active.includes("GMT")) ? (
                               <div>

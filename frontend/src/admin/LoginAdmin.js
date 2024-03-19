@@ -38,7 +38,7 @@ function LoginAdmin({ setToken }) {
         password,
       });
 
-      const {adminName} = response.data
+      const { adminName } = response.data
       const { token } = response.data;
       console.log(token);
       setToken(token);
