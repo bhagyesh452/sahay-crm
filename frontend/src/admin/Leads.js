@@ -17,6 +17,7 @@ import SwapVertIcon from "@mui/icons-material/SwapVert";
 import "react-datepicker/dist/react-datepicker.css";
 import "../assets/styles.css";
 import Swal from "sweetalert2";
+import ClipLoader from "react-spinners/ClipLoader";
 
 import {
   Button,
@@ -57,7 +58,8 @@ function Leads() {
   const [selectedField, setSelectedField] = useState("Company Name");
   const [employeeSelection, setEmployeeSelection] = useState("Not Alloted");
   const [incoFilter, setIncoFilter] = useState("");
- 
+  const [currentDataLoading, setCurrentDataLoading] = useState(false)
+
   const [newemployeeSelection, setnewEmployeeSelection] =
     useState("Not Alloted");
   const [newempData, setnewEmpData] = useState([]);
@@ -86,7 +88,7 @@ function Leads() {
   const [requestData, setRequestData] = useState([]);
   const [requestGData, setRequestGData] = useState([]);
   const [mainData, setmainData] = useState([]);
-  const [isLoading , setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
   //fetch data
@@ -94,6 +96,7 @@ function Leads() {
     try {
       // Set isLoading to true while fetching data
       setIsLoading(true);
+      setCurrentDataLoading(true)
 
       const response = await axios.get(`${secretKey}/leads`);
 
@@ -107,8 +110,10 @@ function Leads() {
       console.error("Error fetching data:", error.message);
       // Set isLoading back to false if an error occurs
       setIsLoading(false);
+    } finally {
+      setCurrentDataLoading(false)
     }
-};
+  };
 
   const fetchData = debounce(async () => {
     const data = await fetchDatadebounce();
@@ -117,7 +122,7 @@ function Leads() {
       setmainData(data.filter((item) => item.ename === 'Not Alloted'));
     }
   }, 300); // Adjust debounce delay as needed
-  
+
   // Fetch data automatically when the component mounts
 
   const handleSort = (sortType) => {
@@ -162,7 +167,7 @@ function Leads() {
   const handleSortAssign = (sortType) => {
     switch (sortType) {
       case "oldest":
-      
+
         setmainData(
           mainData.sort((a, b) => {
             const dateA = a["AssignDate"] || "";
@@ -173,7 +178,7 @@ function Leads() {
         setOpenIncoDate(!openIncoDate)
         break;
       case "newest":
-      
+
         setmainData(
           mainData.sort((a, b) => {
             const dateA = a["AssignDate"] || "";
@@ -187,7 +192,7 @@ function Leads() {
         break;
     }
   };
-  
+
   useEffect(() => {
     // Fetch data from the Node.js server
     // Call the fetchData function
@@ -218,7 +223,7 @@ function Leads() {
       setSubFilterValue("");
     }
 
-   
+
   };
   const functionopenpopupNew = () => {
     openchangeNew(true);
@@ -361,7 +366,7 @@ function Leads() {
     if (
       file &&
       file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ) {
       const reader = new FileReader();
 
@@ -468,7 +473,7 @@ function Leads() {
           );
           await axios.post(`${secretKey}/employee-history`, newArray);
           // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
-         
+
           const counter = response.data.counter;
           const successCounter = response.data.sucessCounter;
           if (counter === 0) {
@@ -510,7 +515,7 @@ function Leads() {
         Swal.fire("Please upload data");
       }
     } else {
-  
+
       if (csvdata.length !== 0) {
 
         setLoading(true); // Move setLoading outside of the loop
@@ -520,7 +525,7 @@ function Leads() {
 
 
           await axios.post(`${secretKey}/leads`, csvdata);
-          
+
           Swal.fire({
             title: "Data Send!",
             text: "Data successfully sent to the Employee",
@@ -591,7 +596,7 @@ function Leads() {
         AssignDate: new Date(),
       })
       .then((response) => {
-     
+
         Swal.fire({
           title: "Data Added!",
           text: "Successfully added new Data!",
@@ -636,12 +641,12 @@ function Leads() {
       const response = await axios.get(
         `${secretKey}/exportLeads/${dataStatus}`,
         {
-            responseType: "blob",
-            params: {
-                selectedRows: selectedRows
-            }
+          responseType: "blob",
+          params: {
+            selectedRows: selectedRows
+          }
         }
-    );
+      );
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -764,7 +769,7 @@ function Leads() {
       });
       Swal.fire("Data Assigned");
       fetchData();
-     
+
     } catch (err) {
       console.log("Internal server Error", err);
       Swal.fire("Error Assigning Data");
@@ -963,15 +968,15 @@ function Leads() {
 
   const debouncedFilterData = debounce((status) => {
     // Filtering logic to set the mainData based on the status
-    if(status === "Assigned"){
+    if (status === "Assigned") {
       setmainData(data.filter((item) => item.ename !== "Not Alloted"));
     }
-    else{
+    else {
       setmainData(data.filter((item) => item.ename === "Not Alloted"));
     }
-    
+
     setDataStatus(status)
-  }, 300); 
+  }, 300);
   return (
     <div>
       <Header />
@@ -1297,15 +1302,15 @@ function Leads() {
                     style={
                       selectedOption === "direct"
                         ? {
-                            backgroundColor: "#e9eae9",
-                            margin: "10px 10px 0px 0px",
-                            cursor: "pointer",
-                          }
+                          backgroundColor: "#e9eae9",
+                          margin: "10px 10px 0px 0px",
+                          cursor: "pointer",
+                        }
                         : {
-                            backgroundColor: "white",
-                            margin: "10px 10px 0px 0px",
-                            cursor: "pointer",
-                          }
+                          backgroundColor: "white",
+                          margin: "10px 10px 0px 0px",
+                          cursor: "pointer",
+                        }
                     }
                     onClick={() => {
                       setSelectedOption("direct");
@@ -1328,15 +1333,15 @@ function Leads() {
                     style={
                       selectedOption === "someoneElse"
                         ? {
-                            backgroundColor: "#e9eae9",
-                            margin: "10px 0px 0px 0px",
-                            cursor: "pointer",
-                          }
+                          backgroundColor: "#e9eae9",
+                          margin: "10px 0px 0px 0px",
+                          cursor: "pointer",
+                        }
                         : {
-                            backgroundColor: "white",
-                            margin: "10px 0px 0px 0px",
-                            cursor: "pointer",
-                          }
+                          backgroundColor: "white",
+                          margin: "10px 0px 0px 0px",
+                          cursor: "pointer",
+                        }
                     }
                     className="indirect form-control"
                     onClick={() => {
@@ -1548,8 +1553,8 @@ function Leads() {
                           data.length === "0"
                             ? Swal.fire("Please Import Some data first")
                             : () => {
-                                functionopenpopupNew();
-                              }
+                              functionopenpopupNew();
+                            }
                         }
                         className="btn btn-primary d-none d-sm-inline-block"
                       >
@@ -1884,7 +1889,7 @@ function Leads() {
                       : "nav-link"
                   }
                   data-bs-toggle="tab"
-                  onClick={()=>{
+                  onClick={() => {
                     debouncedFilterData("Unassigned")
                   }}
                 >
@@ -1903,7 +1908,7 @@ function Leads() {
                       : "nav-link"
                   }
                   data-bs-toggle="tab"
-                  onClick={()=>{
+                  onClick={() => {
                     debouncedFilterData("Assigned")
                   }}
                 >
@@ -1945,84 +1950,84 @@ function Leads() {
                       <th>Sr.No</th>
                       <th>Company Name</th>
                       <th>Company Number</th>
-                      
+
                       <th>
-                              Incorporation Date
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                onClick={handleFilterIncoDate}
-                              />
-                              {openIncoDate && <div className="inco-filter">
-                                <div
-                                
-                                  className="inco-subFilter"
-                                  onClick={(e) => handleSort("oldest")}
-                                >
-                                  <SwapVertIcon style={{ height: "16px" }} />
-                                  Oldest
-                                </div>
+                        Incorporation Date
+                        <FilterListIcon
+                          style={{
+                            height: "15px",
+                            width: "15px",
+                            cursor: "pointer",
+                            marginLeft: "4px",
+                          }}
+                          onClick={handleFilterIncoDate}
+                        />
+                        {openIncoDate && <div className="inco-filter">
+                          <div
 
-                                <div
-                                  className="inco-subFilter"
-                                  onClick={(e) => handleSort("newest")}
-                                >
-                                  <SwapVertIcon style={{ height: "16px" }} />
-                                  Newest
-                                </div>
+                            className="inco-subFilter"
+                            onClick={(e) => handleSort("oldest")}
+                          >
+                            <SwapVertIcon style={{ height: "16px" }} />
+                            Oldest
+                          </div>
 
-                                <div
-                                  className="inco-subFilter"
-                                  onClick={(e) => handleSort("none")}
-                                >
-                                  <SwapVertIcon style={{ height: "16px" }} />
-                                  None
-                                </div>
-                              </div>}
-                            </th>
+                          <div
+                            className="inco-subFilter"
+                            onClick={(e) => handleSort("newest")}
+                          >
+                            <SwapVertIcon style={{ height: "16px" }} />
+                            Newest
+                          </div>
+
+                          <div
+                            className="inco-subFilter"
+                            onClick={(e) => handleSort("none")}
+                          >
+                            <SwapVertIcon style={{ height: "16px" }} />
+                            None
+                          </div>
+                        </div>}
+                      </th>
                       <th>City</th>
                       <th>State</th>
                       <th>Company Email</th>
                       <th>Status</th>
                       <th>Remarks</th>
                       <th>Assigned to</th>
-         
+
                       <th>
-                              Assigned on
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                onClick={handleFilterAssignDate}
-                              />
-                              {openAssign && <div className="inco-filter">
-                                <div
-                                
-                                  className="inco-subFilter"
-                                  onClick={(e) => handleSortAssign("oldest")}
-                                >
-                                  <SwapVertIcon style={{ height: "16px" }} />
-                                  Oldest
-                                </div>
+                        Assigned on
+                        <FilterListIcon
+                          style={{
+                            height: "15px",
+                            width: "15px",
+                            cursor: "pointer",
+                            marginLeft: "4px",
+                          }}
+                          onClick={handleFilterAssignDate}
+                        />
+                        {openAssign && <div className="inco-filter">
+                          <div
 
-                                <div
-                                  className="inco-subFilter"
-                                  onClick={(e) => handleSortAssign("newest")}
-                                >
-                                  <SwapVertIcon style={{ height: "16px" }} />
-                                  Newest
-                                </div>
+                            className="inco-subFilter"
+                            onClick={(e) => handleSortAssign("oldest")}
+                          >
+                            <SwapVertIcon style={{ height: "16px" }} />
+                            Oldest
+                          </div>
 
-                                
-                              </div>}
-                            </th>
+                          <div
+                            className="inco-subFilter"
+                            onClick={(e) => handleSortAssign("newest")}
+                          >
+                            <SwapVertIcon style={{ height: "16px" }} />
+                            Newest
+                          </div>
+
+
+                        </div>}
+                      </th>
                       {/* <th>
                               Assigned Date
                               <SwapVertIcon
@@ -2055,7 +2060,7 @@ function Leads() {
                       <th>Action</th>
                     </tr>
                   </thead>
-                  {currentData.length == 0 ? (
+                  {/* {currentData.length == 0 ? (
                     <tbody>
                       <tr>
                         <td colSpan="13" className="p-2 particular">
@@ -2144,10 +2149,106 @@ function Leads() {
                         </tr>
                       </tbody>
                     ))
+                  )} */}
+                  {currentDataLoading ? (
+                    <tbody>
+                      <tr>
+                        <td colSpan="13" className="LoaderTDSatyle">
+                          <ClipLoader
+                            color="lightgrey"
+                            loading
+                            size={30}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  ) : (
+                    <tbody>
+                      {currentData.map((company, index) => (
+                        <tr
+                          key={index}
+                          className={selectedRows.includes(company._id) ? "selected" : ""}
+                          style={{ border: "1px solid #ddd" }}
+                        >
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedRows.includes(company._id)}
+                              onChange={() => handleCheckboxChange(company._id)}
+                              onMouseDown={() => handleMouseDown(company._id)}
+                              onMouseEnter={() => handleMouseEnter(company._id)}
+                              onMouseUp={handleMouseUp}
+                            />
+                          </td>
+                          <td>{startIndex + index + 1}</td>
+                          <td>{company["Company Name"]}</td>
+                          <td>{company["Company Number"]}</td>
+                          <td>{formatDate(company["Company Incorporation Date  "])}</td>
+                          <td>{company["City"]}</td>
+                          <td>{company["State"]}</td>
+                          <td>{company["Company Email"]}</td>
+                          <td>{company["Status"]}</td>
+                          <td>
+                            {company["Remarks"]}{" "}
+                            <IconEye
+                              onClick={() => {
+                                functionopenpopupremarks(company._id, company.Status);
+                              }}
+                              style={{
+                                width: "18px",
+                                height: "18px",
+                                color: "#d6a10c",
+                                cursor: "pointer",
+                              }}
+                            />
+                          </td>
+                          <td>{company["ename"]}</td>
+                          <td>{formatDate(company["AssignDate"])}</td>
+                          <td>
+                            <IconButton onClick={() => handleDeleteClick(company._id)}>
+                              <DeleteIcon
+                                style={{
+                                  width: "16px",
+                                  height: "16px",
+                                  color: "#bf0b0b",
+                                }}
+                              >
+                                Delete
+                              </DeleteIcon>
+                            </IconButton>
+                            <Link to={`/admin/leads/${company._id}`}>
+                              <IconButton>
+                                <IconEye
+                                  style={{
+                                    width: "18px",
+                                    height: "18px",
+                                    color: "#d6a10c",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </IconButton>
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
                   )}
+
                 </table>
               </div>
             </div>
+            {currentData.length === 0 && !currentDataLoading &&
+              (
+                <tbody className="d-flex align-items-center justify-content-center">
+                  <tr>
+                    <td colSpan="13" className="p-2 particular">
+                      <Nodata />
+                    </td>
+                  </tr>
+                </tbody>
+              )}
             {currentData.length !== 0 && (
               <div
                 style={{

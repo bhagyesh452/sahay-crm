@@ -82,7 +82,7 @@ function EmployeePanel() {
   const handleTogglePopup = () => {
     setIsOpen(false);
   };
-  const loginwithgoogle = ()=>{
+  const loginwithgoogle = () => {
     window.open("http://localhost:6050/auth/google/callback")
   }
   function navigate(url){
@@ -410,10 +410,10 @@ function EmployeePanel() {
     } catch (error) {
       console.error("Error fetching new data:", error);
     } finally {
-      if(!status){
+      if (!status) {
         setLoading(false);
       }
-       // Set loading to false regardless of success or error
+      // Set loading to false regardless of success or error
     }
   };
 
@@ -2373,7 +2373,7 @@ function EmployeePanel() {
                                   color="lightgrey"
                                   loading
                                   size={30}
-                                
+
                                   aria-label="Loading Spinner"
                                   data-testid="loader"
                                 />
@@ -2383,145 +2383,145 @@ function EmployeePanel() {
                         ) : (
                           <tbody>
                             {
-                          dataStatus !== "Matured" &&currentData.map((company, index) => (
-                              <tr key={index} style={{ border: "1px solid #ddd" }}>
-                                <td className="td-sticky">
-                                  {startIndex + index + 1}
-                                </td>
-                                <td className="td-sticky1">
-                                  {company["Company Name"]}
-                                </td>
-                                <td>{company["Company Number"]}</td>
-                                <td>
-                                  {company["Status"] === "Matured" ? (
-                                    <span>{company["Status"]}</span>
-                                  ) : (
-                                    <select
-                                      style={{
-                                        background: "none",
-                                        padding: ".4375rem .75rem",
-                                        border: "1px solid var(--tblr-border-color)",
-                                        borderRadius: "var(--tblr-border-radius)",
-                                      }}
-                                      value={company["Status"]}
-                                      onChange={(e) =>
-                                        handleStatusChange(
-                                          company._id,
-                                          e.target.value,
-                                          company["Company Name"],
-                                          company["Company Email"],
-                                          company["Company Incorporation Date  "],
-                                          company["Company Number"],
-                                          company["Status"]
-                                        )
-                                      }>
-                                      <option value="Not Picked Up">Not Picked Up</option>
-                                      <option value="Busy">Busy </option>
-                                      <option value="Junk">Junk</option>
-                                      <option value="Not Interested">Not Interested</option>
-                                      {dataStatus === "All" && (
-                                        <>
-                                          <option value="Untouched">Untouched </option>
-                                          <option value="Interested">Interested</option>
-                                        </>
-                                      )}
-
-                                      {dataStatus === "Interested" && (
-                                        <>
-                                          <option value="Interested">Interested</option>
-                                          <option value="FollowUp">Follow Up </option>
-                                          <option value="Matured">Matured</option>
-                                        </>
-                                      )}
-
-                                      {dataStatus === "FollowUp" && (
-                                        <>
-                                          <option value="FollowUp">Follow Up </option>
-                                          <option value="Matured">Matured</option>
-                                        </>
-                                      )}
-                                    </select>
-                                  )}
-                                </td>
-                                <td>
-                                  <div
-                                    key={company._id}
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "space-between",
-                                      width: "100px",
-                                    }}
-                                  >
-                                    <p
-                                      className="rematkText text-wrap m-0"
-                                      title={company.Remarks}
-                                    >
-                                      {!company["Remarks"] ? "No Remarks" : company.Remarks}
-                                    </p>
-
-                                    <IconButton
-                                      onClick={() => {
-                                        functionopenpopupremarks(
-                                          company._id,
-                                          company.Status
-                                        );
-                                        setCurrentRemarks(company.Remarks);
-                                        setCompanyId(company._id);
-                                      }}
-                                    >
-                                      <EditIcon
-                                        style={{
-                                          width: "12px",
-                                          height: "12px",
-                                        }}
-                                      />
-                                    </IconButton>
-                                  </div>
-                                </td>
-
-                                <td>
-                                  {formatDate(company["Company Incorporation Date  "])}
-                                </td>
-                                <td>{company["City"]}</td>
-                                <td>{company["State"]}</td>
-                                <td>{company["Company Email"]}</td>
-                                <td>{formatDate(company["AssignDate"])}</td>
-
-                                {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                              dataStatus !== "Matured" && currentData.map((company, index) => (
+                                <tr key={index} style={{ border: "1px solid #ddd" }}>
+                                  <td className="td-sticky">
+                                    {startIndex + index + 1}
+                                  </td>
+                                  <td className="td-sticky1">
+                                    {company["Company Name"]}
+                                  </td>
+                                  <td>{company["Company Number"]}</td>
                                   <td>
-                                    {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
-                                      <>
+                                    {company["Status"] === "Matured" ? (
+                                      <span>{company["Status"]}</span>
+                                    ) : (
+                                      <select
+                                        style={{
+                                          background: "none",
+                                          padding: ".4375rem .75rem",
+                                          border: "1px solid var(--tblr-border-color)",
+                                          borderRadius: "var(--tblr-border-radius)",
+                                        }}
+                                        value={company["Status"]}
+                                        onChange={(e) =>
+                                          handleStatusChange(
+                                            company._id,
+                                            e.target.value,
+                                            company["Company Name"],
+                                            company["Company Email"],
+                                            company["Company Incorporation Date  "],
+                                            company["Company Number"],
+                                            company["Status"]
+                                          )
+                                        }>
+                                        <option value="Not Picked Up">Not Picked Up</option>
+                                        <option value="Busy">Busy </option>
+                                        <option value="Junk">Junk</option>
+                                        <option value="Not Interested">Not Interested</option>
+                                        {dataStatus === "All" && (
+                                          <>
+                                            <option value="Untouched">Untouched </option>
+                                            <option value="Interested">Interested</option>
+                                          </>
+                                        )}
+
+                                        {dataStatus === "Interested" && (
+                                          <>
+                                            <option value="Interested">Interested</option>
+                                            <option value="FollowUp">Follow Up </option>
+                                            <option value="Matured">Matured</option>
+                                          </>
+                                        )}
+
+                                        {dataStatus === "FollowUp" && (
+                                          <>
+                                            <option value="FollowUp">Follow Up </option>
+                                            <option value="Matured">Matured</option>
+                                          </>
+                                        )}
+                                      </select>
+                                    )}
+                                  </td>
+                                  <td>
+                                    <div
+                                      key={company._id}
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        width: "100px",
+                                      }}
+                                    >
+                                      <p
+                                        className="rematkText text-wrap m-0"
+                                        title={company.Remarks}
+                                      >
+                                        {!company["Remarks"] ? "No Remarks" : company.Remarks}
+                                      </p>
+
+                                      <IconButton
+                                        onClick={() => {
+                                          functionopenpopupremarks(
+                                            company._id,
+                                            company.Status
+                                          );
+                                          setCurrentRemarks(company.Remarks);
+                                          setCompanyId(company._id);
+                                        }}
+                                      >
+                                        <EditIcon
+                                          style={{
+                                            width: "12px",
+                                            height: "12px",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    </div>
+                                  </td>
+
+                                  <td>
+                                    {formatDate(company["Company Incorporation Date  "])}
+                                  </td>
+                                  <td>{company["City"]}</td>
+                                  <td>{company["State"]}</td>
+                                  <td>{company["Company Email"]}</td>
+                                  <td>{formatDate(company["AssignDate"])}</td>
+
+                                  {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                                    <td>
+                                      {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
+                                        <>
+                                          <IconButton>
+                                            <RiEditCircleFill
+                                              onClick={() => {
+                                                functionopenprojection(company["Company Name"]);
+                                              }}
+                                              style={{
+                                                cursor: "pointer",
+                                                width: "17px",
+                                                height: "17px",
+                                              }}
+                                              color="#fbb900"
+                                            />
+                                          </IconButton>
+                                        </>
+                                      ) : (
                                         <IconButton>
                                           <RiEditCircleFill
                                             onClick={() => {
                                               functionopenprojection(company["Company Name"]);
                                             }}
-                                            style={{
-                                              cursor: "pointer",
-                                              width: "17px",
-                                              height: "17px",
-                                            }}
-                                            color="#fbb900"
+                                            style={{ cursor: "pointer", width: "17px", height: "17px" }}
                                           />
                                         </IconButton>
-                                      </>
-                                    ) : (
-                                      <IconButton>
-                                        <RiEditCircleFill
-                                          onClick={() => {
-                                            functionopenprojection(company["Company Name"]);
-                                          }}
-                                          style={{ cursor: "pointer", width: "17px", height: "17px" }}
-                                        />
-                                      </IconButton>
-                                    )}
-                                  </td>
-                                  
-                                )}
-                                   <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td>
-                              </tr>
-                            ))}
+                                      )}
+                                    </td>
+
+                                  )}
+                                  {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
+                                </tr>
+                              ))}
                           </tbody>
                         )}
                         {dataStatus === "Matured" && companies.length !== 0 && (
@@ -3289,7 +3289,7 @@ function EmployeePanel() {
                 </div>
               </div>
               <div className="label">
-                <strong>Offered Prices {!currentProjection.offeredPrize && <span style={{ color: "red" }}>*</span>} :</strong>
+                <strong>Offered Prices(With GST) {!currentProjection.offeredPrize && <span style={{ color: "red" }}>*</span>} :</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -3393,41 +3393,41 @@ function EmployeePanel() {
           </div>
         </Drawer>
         <div className="compose-email">
-      {isOpen && (
-        <div className="compose-popup">
-          <div className="compose-header">
-            <h2 className="compose-title">New Email</h2>
-            <button className="close-btn" onClick={handleTogglePopup}>
-              &times;
-            </button>
-          </div>
-          <form onSubmit={handleSubmitMail}>
-            <input
-              type="email"
-              name="to"
-              className="compose-input"
-              placeholder="To"
-              value={emailData.to}
-              onChange={handleChangeMail}
-              required
-            />
-            <input
-              type="text"
-              name="subject"
-              className="compose-input"
-              placeholder="Subject"
-              value={emailData.subject}
-              onChange={handleChangeMail}
-              required
-            />
-            <textarea
-              name="body"
-              className="compose-textarea"
-              placeholder="Write your message here"
-              value={emailData.body}
-              onChange={handleChangeMail}
-              required
-            ></textarea>
+          {isOpen && (
+            <div className="compose-popup">
+              <div className="compose-header">
+                <h2 className="compose-title">New Email</h2>
+                <button className="close-btn" onClick={handleTogglePopup}>
+                  &times;
+                </button>
+              </div>
+              <form onSubmit={handleSubmitMail}>
+                <input
+                  type="email"
+                  name="to"
+                  className="compose-input"
+                  placeholder="To"
+                  value={emailData.to}
+                  onChange={handleChangeMail}
+                  required
+                />
+                <input
+                  type="text"
+                  name="subject"
+                  className="compose-input"
+                  placeholder="Subject"
+                  value={emailData.subject}
+                  onChange={handleChangeMail}
+                  required
+                />
+                <textarea
+                  name="body"
+                  className="compose-textarea"
+                  placeholder="Write your message here"
+                  value={emailData.body}
+                  onChange={handleChangeMail}
+                  required
+                ></textarea>
 
             <div className="compose-more-options d-flex align-items-center ">
             <button onClick={handleSendEmail} type="submit" className="send-btn">
@@ -3448,11 +3448,11 @@ function EmployeePanel() {
                 </div>
             </div>
 
+                </div>
+              </form>
             </div>
-          </form>
+          )}
         </div>
-      )}
-    </div>
       </div>
     </div>
   );
