@@ -2480,7 +2480,7 @@ function EmployeePanel() {
                                   </td>
                                   
                                 )}
-                                   {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
+                                   <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td>
                               </tr>
                             ))}
                           </tbody>

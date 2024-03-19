@@ -7,6 +7,7 @@ const compression = require('compression');
 // const session = require('express-session');
 // const passport = require('passport');
 // const GoogleStrategy = require('passport-google-oauth20').Strategy;
+// const { OAuth2Client } = require('google-auth-library');
 // const nodemailer = require('nodemailer');
 const mongoose = require("mongoose");
 // const googleAuthRouter = require('./helpers/googleAuth');
@@ -2515,6 +2516,35 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 
 
 // Use the googleAuth router for Google OAuth routes
+
+// app.get('/dashboard', async function(req, res, next) {
+//   const code = req.query.code;
+
+//   console.log(code);
+//   // try {
+//   //   const oAuth2Client = new OAuth2Client(
+//   //     process.env.GOOGLE_CLIENT_ID,
+//   //     process.env.GOOGLE_CLIENT_SECRET,
+//   //     'http://localhost:3001/auth/google/callback'
+//   //   );
+
+//   //   const { tokens } = await oAuth2Client.getToken(code);
+//   //   // Set the access token on the OAuth2 client
+//   //   oAuth2Client.setCredentials(tokens);
+
+//   //   console.info('Tokens acquired.');
+//   //   console.log('Access Token:', tokens.access_token);
+//   //   console.log('Refresh Token:', tokens.refresh_token);
+    
+//   //   // Get user data using the access token
+//   //   await getUserData(tokens.access_token);
+//   // } catch (err) {
+//   //   console.log('Error logging in with OAuth2 user', err);
+//   // }
+
+//   // res.redirect(303, 'http://localhost:5173/');
+// });
+
 // passport.use(new GoogleStrategy({
 //   clientID: process.env.GOOGLE_CLIENT_ID,
 //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -2522,23 +2552,24 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 //   scope: ["profile", "email"],
 //   accessType: 'offline', 
 // },
-// (accessToken, refreshToken, profile, done) => {
+// async (accessToken, refreshToken, profile, done) => {
 //   console.log('accessToken:', accessToken);
-//   getUserData(accessToken);
+//   console.log('refreshToken:', refreshToken);
+//   await getUserData(accessToken);
+
 //   const user = {
 //     id: profile.id,
 //     email: profile.emails[0].value,
 //   };
-//   console.log("user:" , user)
+//   console.log("user:", user);
 //   return done(null, user);
 // }));
-
 
 // async function getUserData(access_token) {
 //   try {
 //     const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`);
 //     const data = await response.json();
-//     console.log("All the data" ,data);
+//     console.log("All the data", data);
 //   } catch (error) {
 //     console.error('Error fetching user data:', error);
 //   }
@@ -2551,14 +2582,12 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 // passport.deserializeUser((user, done) => {
 //   done(null, user);
 // });
+
 // app.get('/auth/google',
 //   passport.authenticate('google', { 
 //     scope: ['profile', 'email', 'offline_access'], // Include 'offline_access' scope
 //     prompt: 'consent' 
 //   }));
-
-
-
 
 // // Google OAuth callback route
 // app.get('/auth/google/callback',
@@ -2569,7 +2598,7 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 
 //     if (referer) {
 //       // Redirect to the previous page
-//       res.redirect(referer);
+//       res.redirect('/dashboard');
 //     } else {
 //       // If referer is not available, redirect to a default URL
 //       res.redirect('/'); // You can change this to any default URL you prefer
