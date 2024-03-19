@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const yourSchema = new mongoose.Schema({
   email: {
     type: String,
+    unique:true
   },
   number: {
     type: String,

@@ -496,8 +496,16 @@ function EmployeeParticular() {
     const currentTime = new Date().toLocaleTimeString();
 
     const csvdata = employeeData
-      .filter((employee) => selectedRows.includes(employee._id))
-      .map((employee) => ({ ...employee, Status: "Untouched", Remarks: "No Remarks Added" }));
+    .filter((employee) => selectedRows.includes(employee._id))
+    .map((employee) => {
+      if (employee.Status === "Interested" || employee.Status === "FollowUp") {
+        // If Status is "Interested" or "FollowUp", don't change Status and Remarks
+        return { ...employee };
+      } else {
+        // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
+        return { ...employee, Status: "Untouched", Remarks: "No Remarks Added" };
+      }
+    });
 
     // Create an array to store promises for updating CompanyModel
     const updatePromises = [];
@@ -1804,7 +1812,7 @@ function EmployeeParticular() {
         onClose={closepopupAssign}
         fullWidth
         maxWidth="sm"
-      >
+       >
         <DialogTitle>
           Change BDE{" "}
           <IconButton onClick={closepopupAssign} style={{ float: "right" }}>
