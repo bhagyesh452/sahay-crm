@@ -18,6 +18,9 @@ import io from 'socket.io-client';
 
 function Header({ name, designation}) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+  console.log(name)
+  console.log(designation)
   useEffect(() => {
     const socket = io('wss://startupsahay.in/socket.io');
 
@@ -42,6 +45,8 @@ function Header({ name, designation}) {
     };
   }, []);
  
+  const adminName = localStorage.getItem("adminName")
+
  
   const [requestData, setRequestData] = useState([]);
   const [requestGData, setRequestGData] = useState([]);
@@ -132,7 +137,7 @@ function Header({ name, designation}) {
               >
                 
                 <div className="d-xl-block ps-2">
-                  <div>{name ? name : "Username"}</div>
+                  <div style={{textTransform:"capitalize"}}>{adminName ? adminName : "Admin" }</div>
                   <div style={{textAlign:"left"}} className="mt-1 small text-muted">
                     {designation ? designation : "Admin"}
                   </div>

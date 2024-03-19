@@ -48,6 +48,8 @@ function Header_processing({ name, designation, data }) {
 
   //console.log("Data:" , data)
 
+  const processingName = localStorage.getItem("username")
+
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   useEffect(() => {
     const socket = socketIO.connect(`${secretKey}`);
@@ -148,7 +150,7 @@ function Header_processing({ name, designation, data }) {
               >
 
                 <div className="d-xl-block ps-2">
-                  <div>{name ? name : "Username"}</div>
+                  <div style={{textTransform:"capitalize"}}>{processingName ? processingName : "Username"}</div>
                   <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
                     {designation ? designation : "Processing-team"}
                   </div>

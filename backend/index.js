@@ -89,18 +89,20 @@ app.post("/api/admin/login-admin", async (req, res) => {
   // Simulate user authentication (replace with actual authentication logic)
   // (u) => u.email === username && u.password === password
   // const user = await adminModel.find();
+
   const user = await onlyAdminModel.findOne({
     admin_email: username,
     admin_password: password,
   });
-  // console.log(user);
+  //console.log(user);
   if (user) {
     // Generate a JWT token
     // console.log("user is appropriate");
+    const adminName = user.admin_name
     const token = jwt.sign({ userId: user._id }, secretKey, {
       expiresIn: "1h",
     });
-    res.json({ token });
+    res.json({ token , adminName });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
   }
@@ -167,6 +169,7 @@ app.post("/api/processingLogin", async (req, res) => {
 
   if (user) {
     const ename = user.ename;
+    console.log("ename" , ename)
     const processingToken = jwt.sign({ employeeId: user._id }, secretKey, {
       expiresIn: "10h",
     });
