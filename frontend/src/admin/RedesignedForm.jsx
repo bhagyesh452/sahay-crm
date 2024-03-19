@@ -19,6 +19,8 @@ const steps = [
 export default function HorizontalNonLinearStepper() {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
+  const [selectedValues, setSelectedValues] = useState("");
+  const [totalServices, setTotalServices] = useState(1);
 
   const totalSteps = () => {
     return steps.length;
@@ -62,6 +64,190 @@ export default function HorizontalNonLinearStepper() {
   const handleReset = () => {
     setActiveStep(0);
     setCompleted({});
+  };
+
+  const renderServices = () => {
+    const services = [];
+    for (let i = 0; i < totalServices; i++) {
+      services.push(
+        <div key={i} className="services-card">
+          <div className="d-flex align-items-center">
+            <div>
+              <label htmlFor={`service-name-${i}`}>Enter Service Name :</label>
+            </div>
+            <div className="ml-2">
+              <select className="form-select mt-1" id={`service-dropdown-${i}`}>
+                <option value="" disabled selected>
+                  Select Service
+                </option>
+                <option value={`Service ${i + 1}`}>Service {i + 1}</option>
+              </select>
+            </div>
+          </div>
+          <div className="payment-section">
+            <div className="original-payment col">
+              <label className="form-label">Total Payment&nbsp;</label>
+              <div className="row align-items-center">
+                <div className="col-sm-7">
+                  <div className="d-flex">
+                    <input
+                      style={{ borderRadius: "5px 0px 0px 5px" }}
+                      type="number"
+                      name="total-payment"
+                      id="total-payment"
+                      placeholder="Enter Total Payment"
+                      className="form-control"
+                    />
+                    <span className="rupees-sym">₹</span>
+                  </div>
+                </div>
+                <div className="col-sm-5">
+                  <div className="form-check col m-0">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id={`flexCheckChecked-${i}`}
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor={`flexCheckChecked-${i}`}
+                    >
+                      WITH GST (18%)
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="payment-withGST col">
+              <label class="form-label">
+                Total Payment&nbsp;
+                <span style={{ fontWeight: "bold" }}>WITH GST</span>
+              </label>
+              <div className="d-flex">
+                <div
+                  style={{
+                    borderRadius: "5px 0px 0px 5px",
+                  }}
+                  className="form-control"
+                ></div>
+                <span className="rupees-sym">₹</span>
+              </div>
+            </div>
+          </div>
+          <div className="payment-terms-section">
+            <label className="form-label">Payment Terms</label>
+            <div className="mb-3 row">
+              <div className="full-time col">
+                <label className="form-check form-check-inline col">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="radios-inline"
+                    value="Full Advanced"
+                  />
+                  <span className="form-check-label">Full Advanced</span>
+                </label>
+                <label className="form-check form-check-inline col">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="radios-inline"
+                    value="two-part"
+                  />
+                  <span className="form-check-label">Part Payment</span>
+                </label>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col first-payment">
+                <label class="form-label">First Payment</label>
+                <div className="d-flex">
+                  <input
+                    type="number"
+                    style={{
+                      borderRadius: "5px 0px 0px 5px",
+                    }}
+                    name="first-payment"
+                    id="first-payment"
+                    placeholder="First Payment"
+                    className="form-control"
+                  />
+
+                  <span className="rupees-sym">₹</span>
+                </div>
+              </div>
+
+              <div className="col second-payment">
+                <label class="form-label">Second Payment</label>
+                <div className="d-flex">
+                  <input
+                    type="number"
+                    style={{
+                      borderRadius: "5px 0px 0px 5px",
+                    }}
+                    name="second-payment"
+                    id="second-payment"
+                    placeholder="Second Payment"
+                    className="form-control"
+                  />
+
+                  <span className="rupees-sym">₹</span>
+                </div>
+              </div>
+
+              <div className="col Third-payment">
+                <label class="form-label">Third Payment</label>
+                <div className="d-flex">
+                  <input
+                    type="number"
+                    style={{
+                      borderRadius: "5px 0px 0px 5px",
+                    }}
+                    name="Third-payment"
+                    id="Third-payment"
+                    placeholder="Third Payment"
+                    className="form-control"
+                  />
+
+                  <span className="rupees-sym">₹</span>
+                </div>
+              </div>
+
+              <div className="col Fourth-payment">
+                <label class="form-label">Fourth Payment</label>
+                <div className="d-flex">
+                  <input
+                    type="number"
+                    style={{
+                      borderRadius: "5px 0px 0px 5px",
+                    }}
+                    name="Fourth-payment"
+                    id="Fourth-payment"
+                    placeholder="Fourth Payment"
+                    className="form-control"
+                  />
+
+                  <span className="rupees-sym">₹</span>
+                </div>
+              </div>
+            </div>
+            <div className="row">
+              <div className="payment-remarks col">
+                <label class="form-label">Payment Remarks</label>
+                <textarea
+                  type="text"
+                  name="payment-remarks"
+                  id="payment-remarks"
+                  placeholder="Please add remarks if any"
+                  className="form-control"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return services;
   };
 
   return (
@@ -261,29 +447,51 @@ export default function HorizontalNonLinearStepper() {
                                       <label for="lead-source">
                                         Lead Source:
                                       </label>
-                                      <select className="form-control mt-1" id="lead-source">
-                                        <option>Excel Data</option>
-                                        <option>Insta Lead</option>
-                                        <option>Referance</option>
-                                        <option>Existing Clint</option>
-                                        <option>Lead By Saurav Sir</option>
-                                        <option>Other</option>
+                                      <select
+                                        value={selectedValues}
+                                        onChange={(e) =>
+                                          setSelectedValues(e.target.value)
+                                        }
+                                        className="form-select mt-1"
+                                        id="lead-source"
+                                      >
+                                        <option value="" disabled selected>
+                                          Select Lead Source
+                                        </option>
+                                        <option value="Excel Data">
+                                          Excel Data
+                                        </option>
+                                        <option value="Insta Lead">
+                                          Insta Lead
+                                        </option>
+                                        <option value="Reference">
+                                          Reference
+                                        </option>
+                                        <option value="Existing Client">
+                                          Existing Client
+                                        </option>
+                                        <option value="Lead By Saurav Sir">
+                                          Lead By Saurav Sir
+                                        </option>
+                                        <option value="Other">Other</option>
                                       </select>
                                     </div>
                                   </div>
-                                  <div className="col-sm-4">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label for="OtherLeadSource">
-                                        Other Lead Source
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control mt-1"
-                                        placeholder="Enter Other Lead Source"
-                                        id="OtherLeadSource"
-                                      />
+                                  {selectedValues === "Other" && (
+                                    <div className="col-sm-4">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label for="OtherLeadSource">
+                                          Other Lead Source
+                                        </label>
+                                        <input
+                                          type="text"
+                                          className="form-control mt-1"
+                                          placeholder="Enter Other Lead Source"
+                                          id="OtherLeadSource"
+                                        />
+                                      </div>
                                     </div>
-                                  </div>
+                                  )}
                                 </div>
                               </form>
                             </div>
@@ -294,11 +502,37 @@ export default function HorizontalNonLinearStepper() {
                         <>
                           <div className="step-3">
                             <h2 className="text-center">
-                              Step:3 - Services And Payments
+                              Step:3 - Services & Payment
                             </h2>
-                            <div className="steprForm-inner">
+
+                            <div className="steprForm-inner m-2">
                               <form>
-                                
+                                <div className="d-flex align-items-center">
+                                  <div>
+                                    {" "}
+                                    <label for="lead-source">
+                                      Select No of Services:
+                                    </label>
+                                  </div>
+                                  <div className="ml-2">
+                                    <select
+                                      className="form-select mt-1"
+                                      id="lead-source"
+                                      value={totalServices}
+                                      onChange={(e) =>
+                                        setTotalServices(e.target.value)
+                                      }
+                                    >
+                                      {[...Array(6 - 1).keys()].map((year) => (
+                                        <option key={year} value={1 + year}>
+                                          {1 + year}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                </div>
+
+                                {renderServices()}
                               </form>
                             </div>
                           </div>
