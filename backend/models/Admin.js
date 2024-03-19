@@ -27,6 +27,12 @@ const yourSchema = new mongoose.Schema({
   },
   Active:{
     type : String
+  },
+  refresh_token:{
+    type:String
+  },
+  access_token:{
+    type:String
   }
 });
 

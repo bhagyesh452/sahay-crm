@@ -85,14 +85,26 @@ function EmployeePanel() {
   const loginwithgoogle = () => {
     window.open("http://localhost:6050/auth/google/callback")
   }
-  const handleGoogleLogin = async () => {
-    try {
-      const { data } = await axios.get(`http://localhost:/api/auth/google`); // Replace with your backend endpoint
-      console.log(data); // Handle the response as needed
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+  function navigate(url){
+    window.location.href = url;
+  }
+  
+  async function handleGoogleLogin(){
+    const response =await fetch('http://localhost:6050/request',{method:'post'});
+  
+    const data = await response.json();
+    console.log(data);
+    navigate(data.url);
+  
+  }
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     const { data } = await axios.get(`http://localhost:6050/request`); 
+  //     console.log(data); // Handle the response as needed
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // };
   const handleChangeMail = (e) => {
     const { name, value } = e.target;
     setEmailData({ ...emailData, [name]: value });
@@ -1459,6 +1471,33 @@ function EmployeePanel() {
   //console.log("projections", currentProjection);
 
 
+  const handleSendEmail = async()=>{
+    const dataToSend = {
+      email : data.email,
+      refreshToken : data.refresh_token,
+      accessToken : data.access_token
+    }
+
+    try {
+      const response = await fetch(`${secretKey}/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to send email');
+      }
+  
+      const responseData = await response.json();
+      console.log('Response:', responseData);
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+  }
+
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
@@ -1490,7 +1529,7 @@ function EmployeePanel() {
                     className="features"
                   >
                     <div style={{ display: "flex" }} className="feature1">
-                      {/* <button className="btn btn-primary" onClick={loginwithgoogle} >
+                    <button className="btn btn-primary" onClick={handleGoogleLogin} >
                           Gmail SignIn
                       </button>
                       <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
@@ -1505,7 +1544,7 @@ function EmployeePanel() {
     </div>
                         </DialogContent>
 
-                      </Dialog> */}
+                      </Dialog>
 
                       <div
                         className="form-control"
@@ -3390,24 +3429,24 @@ function EmployeePanel() {
                   required
                 ></textarea>
 
-                <div className="compose-more-options d-flex align-items-center ">
-                  <button type="submit" className="send-btn">
-                    Send
-                  </button>
-                  <div className="other-options d-flex">
-                    <div className="compose-formatting m-1">
-                      <FontDownloadIcon />
-                    </div>
-                    <div className="compose-attachments m-1">
-                      <AttachmentIcon />
-                    </div>
-                    <div className="compose-insert-files m-1">
-                      <ImageIcon />
-                    </div>
-                    <div className="compose-menuIcon m-1">
-                      <MoreVertIcon />
-                    </div>
-                  </div>
+            <div className="compose-more-options d-flex align-items-center ">
+            <button onClick={handleSendEmail} type="submit" className="send-btn">
+              Send
+            </button>
+            <div className="other-options d-flex">
+            <div className="compose-formatting m-1">
+                    <FontDownloadIcon />
+                </div>
+                <div className="compose-attachments m-1">
+                    <AttachmentIcon/>
+                </div>
+                <div className="compose-insert-files m-1">
+                    <ImageIcon/>
+                </div>
+                <div className="compose-menuIcon m-1">
+                    <MoreVertIcon/>
+                </div>
+            </div>
 
                 </div>
               </form>
