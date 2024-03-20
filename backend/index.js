@@ -26,8 +26,8 @@ const DeletedDatabase = require("./models/DeletedCollection");
 const { sendMail } = require("./helpers/sendMail");
 const { mailFormat } = require("./helpers/mailFormat");
 const multer = require("multer");
-const authRouter = require('./helpers/Oauth');
-const requestRouter = require('./helpers/request');
+// const authRouter = require('./helpers/Oauth');
+// const requestRouter = require('./helpers/request');
 const RemarksHistory = require("./models/RemarksHistory");
 const EmployeeHistory = require("./models/EmployeeHistory");
 const LoginDetails = require("./models/loginDetails");
@@ -482,7 +482,7 @@ app.get('/api/projection-data', async (req, res) => {
   try {
     // Fetch all data from the FollowUpModel
     const followUps = await FollowUpModel.find();
-    console.log(followUps)
+   
     //console.log(query)
     // Return the data as JSON response
     res.json(followUps);
@@ -558,7 +558,7 @@ app.post('/api/update-followup', async (req, res) => {
     const time = todayDate.toLocaleTimeString();
     const date = todayDate.toLocaleDateString();
     const finalData = { ...req.body, date, time };
-    console.log(finalData)
+   
     // Check if a document with companyName exists
     const existingData = await FollowUpModel.findOne({ companyName });
     
