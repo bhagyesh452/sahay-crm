@@ -1,4 +1,4 @@
-import React, { useEffect, useState, CSSProperties,useRef } from "react";
+import React, { useEffect, useState, CSSProperties, useRef } from "react";
 import Header from "../components/Header";
 import EmpNav from "./EmpNav";
 import axios from "axios";
@@ -25,6 +25,7 @@ import Nodata from "../components/Nodata";
 import { RiEditCircleFill } from "react-icons/ri";
 import { IoClose } from "react-icons/io5";
 
+
 function EmployeeDashboard() {
   const { userId } = useParams();
   const [data, setData] = useState([]);
@@ -33,6 +34,8 @@ function EmployeeDashboard() {
   const [showBookingDate, setShowBookingDate] = useState(false)
   const [startDateAnother, setStartDateAnother] = useState(new Date());
   const [endDateAnother, setEndDateAnother] = useState(new Date());
+  const [startDateTotalSummary, setStartDateTotalSummary] = useState(new Date());
+  const [endDateTotalSummary, setEndDateTotalSummary] = useState(new Date());
   const [openProjection, setOpenProjection] = useState(false);
   const [socketID, setSocketID] = useState("");
   const [totalBooking, setTotalBooking] = useState([]);
@@ -42,7 +45,7 @@ function EmployeeDashboard() {
   const [searchTerm, setSearchTerm] = useState("")
   const [loading, setLoading] = useState(true);
   const [uniqueArrayLoading, setuniqueArrayLoading] = useState(false)
-  const [filteredBookingLoading, setFilteredBookingLoading] = useState(false)
+  const [projectionLoading, setprojectionLoading] = useState(false)
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
     ename: "",
@@ -76,6 +79,7 @@ function EmployeeDashboard() {
   const [incoFilter, setIncoFilter] = useState("");
   const dateRangePickerRef = useRef(null);
   const dateRangePickerProhectionRef = useRef(null);
+  const dateRangePickerProhectionSummaryRef = useRef(null);
 
 
 
@@ -97,7 +101,7 @@ function EmployeeDashboard() {
       console.error("Error fetching data:", error.message);
     }
   };
-  console.log(data)
+  //console.log(data)
 
   // const fetchEmployeeData = async () => {
   //   try {
@@ -124,7 +128,7 @@ function EmployeeDashboard() {
         console.error("Error fetching data:", error);
       })
   };
-  console.log("empData", empData)
+  //console.log("empData", empData)
 
   // const fetchEmployeeData = async () => {
   //   try {
@@ -153,7 +157,7 @@ function EmployeeDashboard() {
   const formattedDates =
     empData.length !== 0 &&
     empData.map((data) => formatDate(data.AssignDate));
-  console.log("Formatted Dates", formattedDates);
+  //console.log("Formatted Dates", formattedDates);
   const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
   // ---------------------------Bookings Part --------------------------------------
@@ -178,7 +182,7 @@ function EmployeeDashboard() {
   }, [data.ename]);
 
 
-  console.log("filteredBookings", filteredBooking)
+  //console.log("filteredBookings", filteredBooking)
 
   const handleCloseIconClickAnother = () => {
     if (showBookingDate) {
@@ -195,15 +199,48 @@ function EmployeeDashboard() {
   // Add event listener when the component mounts
   useEffect(() => {
     const totalBookingElement = document.getElementById('bookingdashboard');
-    if(totalBookingElement){
+    if (totalBookingElement) {
       totalBookingElement.addEventListener('click', handleClickOutside);
-    // Remove event listener when the component unmounts
-    return () => {
-      totalBookingElement.removeEventListener('click', handleClickOutside);
-    };
+      // Remove event listener when the component unmounts
+      return () => {
+        totalBookingElement.removeEventListener('click', handleClickOutside);
+      };
 
     }
-    
+
+  }, []);
+
+  const handleClickOutsideProjectionSummary = (event) => {
+    if (dateRangePickerProhectionSummaryRef.current && !dateRangePickerProhectionSummaryRef.current.contains(event.target)) {
+      setdateRangeTotalSummary(false);
+    }
+  };
+
+  // Add event listener when the component mounts
+  useEffect(() => {
+    const totalBookingElement = document.getElementById('projectiontotalsummary');
+    if (totalBookingElement) {
+      totalBookingElement.addEventListener('click', handleClickOutsideProjectionSummary);
+      // Remove event listener when the component unmounts
+      return () => {
+        totalBookingElement.removeEventListener('click', handleClickOutsideProjectionSummary);
+      };
+
+    }
+
+  }, []);
+
+  useEffect(() => {
+    const totalBookingElement = document.getElementById('bookingdashboard');
+    if (totalBookingElement) {
+      totalBookingElement.addEventListener('click', handleClickOutside);
+      // Remove event listener when the component unmounts
+      return () => {
+        totalBookingElement.removeEventListener('click', handleClickOutside);
+      };
+
+    }
+
   }, []);
 
   const handleClickOutsideProjection = (event) => {
@@ -211,23 +248,6 @@ function EmployeeDashboard() {
       setDateRangeDisplay(false);
     }
   };
-
-  // Add event listener when the component mounts
-  useEffect(() => {
-    const totalBookingElement = document.getElementById('projectiondashboardemployee');
-    if(totalBookingElement){
-      totalBookingElement.addEventListener('click', handleClickOutsideProjection);
-      // Remove event listener when the component unmounts
-      return () => {
-        totalBookingElement.removeEventListener('click', handleClickOutsideProjection);
-      };
-
-    }
-   
-  }, []);
-
-
-
 
 
   useEffect(() => {
@@ -286,19 +306,42 @@ function EmployeeDashboard() {
 
   // ---------------------------projectiondata-------------------------------------
 
+  const [followDataToday, setfollowDataToday] = useState([])
+  const [followDataTodayFilter, setfollowDataTodayFilter] = useState([])
+
   const fetchFollowUpData = async () => {
     try {
+      setprojectionLoading(true);
       const response = await fetch(
         `${secretKey}/projection-data/${data.ename}`
       );
       const followdata = await response.json();
       setFollowData(followdata);
-      setFollowDataFilter(followData)
+      setFollowDataFilter(followdata);
+      setfollowDataToday(
+        followdata.filter((company) => {
+          // Assuming you want to filter companies with an estimated payment date for today
+          const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+          return company.estPaymentDate === today;
+        })
+      );
+      setfollowDataTodayFilter(
+        followdata.filter((company) => {
+          // Assuming you want to filter companies with an estimated payment date for today
+          const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+          return company.estPaymentDate === today;
+        })
+      );
     } catch (error) {
       console.error("Error fetching data:", error);
       return { error: "Error fetching data" };
+    } finally {
+      setprojectionLoading(false);
     }
   };
+
+  console.log("ajki", followDataToday)
+
 
   // console.log(followData);
 
@@ -332,7 +375,9 @@ function EmployeeDashboard() {
 
   // Calculate the sums
   const { totalPaymentSum, offeredPaymentSum, offeredServices } =
-    calculateSum(followData);
+    calculateSum(followDataFilter);
+
+  //console.log(totalPaymentSum , offeredPaymentSum , offeredServices)
 
   useEffect(() => {
     fetchFollowUpData();
@@ -431,6 +476,8 @@ function EmployeeDashboard() {
 
   // -------------------------------date-range-picker-------------------------------------------
 
+  const [dateRangeTotalSummary, setdateRangeTotalSummary] = useState(false)
+
   const handleIconClick = () => {
     if (!buttonToggle) {
       setDateRangeDisplay(true);
@@ -440,9 +487,24 @@ function EmployeeDashboard() {
     setButtonToggle(!buttonToggle);
   };
 
+  const handleIconClickTotalSummary = () => {
+    if (!buttonToggle) {
+      setdateRangeTotalSummary(true);
+    } else {
+      setdateRangeTotalSummary(false);
+    }
+    setButtonToggle(!buttonToggle);
+  };
+
   const selectionRange = {
     startDate: startDate,
     endDate: endDate,
+    key: "selection",
+  };
+
+  const selectionRangeTotalSummary = {
+    startDate: startDateTotalSummary,
+    endDate: endDateTotalSummary,
     key: "selection",
   };
 
@@ -467,6 +529,68 @@ function EmployeeDashboard() {
     setFilteredDataDateRange(filteredDataDateRange);
     //console.log(filteredDataDateRange);
   };
+
+  const handleSelectTotalSummary = (date) => {
+    const filteredDataDateRange = followData.filter((product) => {
+      const productDate = new Date(product["estPaymentDate"]);
+      console.log("productdate", productDate)
+
+      if (
+        formatDate(date.selection.startDate) ===
+        formatDate(date.selection.endDate)
+      ) {
+        return formatDate(productDate) == formatDate(date.selection.startDate);
+      } else {
+        return (
+          productDate >= date.selection.startDate &&
+          productDate <= date.selection.endDate
+        );
+      }
+    });
+    setStartDateTotalSummary(date.selection.startDate);
+    setEndDateTotalSummary(date.selection.endDate);
+    setFollowDataFilter(filteredDataDateRange);
+    //console.log(filteredDataDateRange);
+  };
+  console.log(startDateTotalSummary)
+  console.log(endDateTotalSummary)
+
+
+  // function calculateSumFilter(data) {
+  //   const initialValue = {
+  //     totalPaymentSumFilter: 0,
+  //     offeredPaymentSumFilter: 0,
+  //     offeredServicesFilter: [],
+  //   };
+
+  //   const sum = data.reduce((accumulator, currentValue) => {
+  //     // Concatenate offeredServices from each object into a single array
+  //     const offeredServices = accumulator.offeredServicesFilter.concat(
+  //       currentValue.offeredServices
+  //     );
+
+  //     return {
+  //       totalPaymentSumFilter:
+  //         accumulator.totalPaymentSumFilter + currentValue.totalPayment,
+  //       offeredPaymentSumFilter:
+  //         accumulator.offeredPaymentSumFilter + currentValue.offeredPrize,
+  //       offeredServicesFilter: offeredServices,
+  //     };
+  //   }, initialValue);
+
+  //   // // Remove duplicate services from the array
+  //   // sum.offeredServices = Array.from(new Set(sum.offeredServices));
+
+  //   return sum;
+  // }
+
+  // // Calculate the sums
+  // const {
+  //   totalPaymentSumFilter,
+  //   offeredPaymentSumFilter,
+  //   offeredServicesFilter,
+  // } = calculateSumFilter(filteredDataDateRange);
+
 
   function calculateSumFilter(data) {
     const initialValue = {
@@ -501,14 +625,30 @@ function EmployeeDashboard() {
     totalPaymentSumFilter,
     offeredPaymentSumFilter,
     offeredServicesFilter,
-  } = calculateSumFilter(filteredDataDateRange);
+  } = calculateSumFilter(followDataTodayFilter);
+
 
   //console.log("follow data:", currentProjection);
   // -----------------------------------------------------general-search--------------------------------------------
 
+  // function filterSearch(searchTerm) {
+  //   setSearchTerm(searchTerm);
+  //   setFilteredDataDateRange(followData.filter(company =>
+  //     company.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     company.offeredServices.some(service =>
+  //       service.toLowerCase().includes(searchTerm.toLowerCase())
+  //     ) ||
+  //     company.totalPayment.toString() === searchTerm ||
+  //     company.offeredPrize.toString() === searchTerm ||
+  //     company.estPaymentDate.includes(searchTerm)
+
+  //   ));
+  // }
+
+
   function filterSearch(searchTerm) {
     setSearchTerm(searchTerm);
-    setFilteredDataDateRange(followData.filter(company =>
+    setfollowDataTodayFilter(followDataToday.filter(company =>
       company.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       company.offeredServices.some(service =>
         service.toLowerCase().includes(searchTerm.toLowerCase())
@@ -519,6 +659,25 @@ function EmployeeDashboard() {
 
     ));
   }
+  const [searchTermTotalSummary, setsearchTermTotalSummary] = useState("")
+
+  console.log(followDataFilter)
+  console.log(followData)
+
+  function filterSearchTotalSummary(searchTermTotalSummary) {
+    setsearchTermTotalSummary(searchTermTotalSummary);
+    console.log(searchTermTotalSummary)
+    setFollowDataFilter(followData.filter(company =>
+      company.companyName.toLowerCase().includes(searchTermTotalSummary.toLowerCase()) ||
+      company.offeredServices.some(service =>
+        service.toLowerCase().includes(searchTermTotalSummary.toLowerCase())
+      ) ||
+      company.totalPayment.toString() === searchTermTotalSummary ||
+      company.offeredPrize.toString() === searchTermTotalSummary ||
+      company.estPaymentDate.includes(searchTermTotalSummary)
+    ));
+  }
+
   //console.log(filteredDataDateRange)
   const [newSearchTerm, setNewSearchTerm] = useState("")
 
@@ -552,7 +711,7 @@ function EmployeeDashboard() {
       case "ascending":
         setIncoFilter("ascending");
         const untouchedCountAscending = {}
-        console.log("ascending is working")
+        //console.log("ascending is working")
         empData.forEach((company) => {
           if (company.Status === "Untouched") {
             untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
@@ -570,7 +729,7 @@ function EmployeeDashboard() {
       case "descending":
         setIncoFilter("descending");
         const untouchedCount = {};
-        console.log("descending is working")
+        //console.log("descending is working")
         empData.forEach((company) => {
           if ((company.Status === "Untouched")
           ) {
@@ -1062,7 +1221,7 @@ function EmployeeDashboard() {
 
   const handleDelete = async (company) => {
     const companyName = company;
-    console.log(companyName);
+    //console.log(companyName);
 
     try {
       // Send a DELETE request to the backend API endpoint
@@ -1729,7 +1888,7 @@ function EmployeeDashboard() {
 
       {/* -----------------------------------------------projection dashboard-------------------------------------------------- */}
 
-      <div className="container-xl mt-2 projectiondashboard" id="projectiondashboardemployee">
+      {/* <div className="container-xl mt-2 projectiondashboard" id="projectiondashboardemployee">
         <div className="card">
           <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
             <div className="dashboard-title">
@@ -1751,14 +1910,7 @@ function EmployeeDashboard() {
                   name="bdeName-search"
                   id="bdeName-search"
                 />
-                {/* <CiSearch
-                  style={{
-                    width: "19px",
-                    height: "20px",
-                    marginRight: "5px",
-                    color: "grey"
-                  }}
-                /> */}
+               
               </div>
               <div
                 className="form-control d-flex align-items-center justify-content-between date-range-picker">
@@ -1841,22 +1993,6 @@ function EmployeeDashboard() {
                 </thead>
                 <tbody>
                   {filteredDataDateRange ? (
-                    // (
-                    //   followData.map((obj, index) => (
-                    //     <tr key={`row-${index}`}>
-                    //       <td style={{
-                    //         lineHeight: "32px",
-                    //       }}>{index + 1}</td>
-                    //       <td>{obj.companyName}</td>
-                    //       <td>{obj.offeredServices.join(', ')}</td>
-                    //       <td>{obj.totalPayment && obj.totalPayment.toLocaleString()}
-                    //       </td>
-                    //       <td>{obj.offeredPrize.toLocaleString()}
-                    //       </td>
-                    //       <td>{obj.estPaymentDate}
-                    //       </td>
-                    //     </tr>
-                    //   ))) :
                     filteredDataDateRange.map((obj, index) => (
                       <tr key={`row-${index}`}>
                         <td
@@ -1922,7 +2058,497 @@ function EmployeeDashboard() {
             </div>
           </div>
         </div>
+      </div> */}
+      {/* --------------------------------------------------projection dashboard new------------------------------------ */}
+
+
+      <div className="container-xl mt-2">
+        <div className="card">
+          <div className="card-header employeedashboard">
+            <h2 style={{ marginBottom: '5px' }}>Projection Summary</h2>
+          </div>
+          <div className="card-body">
+            <div className="row">
+              <div className="col-6" id="projectiontotalsummary">
+                <div className="card" style={{ minHeight: "20vw" }}>
+                  <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
+                    <div className="dashboard-title">
+                      <h2 style={{ marginBottom: '5px' }}>Total Summary</h2>
+                    </div>
+                    <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
+                      <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
+                        <input
+                          className=""
+                          value={searchTermTotalSummary}
+                          onChange={(e) => filterSearchTotalSummary(e.target.value)}
+                          placeholder="Search here....."
+                          style={{
+                            border: "none",
+                            padding: "0px"
+                            // Add a bottom border for the input field itself
+                          }}
+                          type="text"
+                          name="bdeName-search"
+                          id="bdeName-search"
+                        />
+                      </div>
+                      <div
+                        className="form-control d-flex align-items-center justify-content-between date-range-picker">
+                        <div>{`${formatDate(startDateTotalSummary)} - ${formatDate(endDateTotalSummary)}`}</div>
+                        <button
+                          onClick={handleIconClickTotalSummary}
+                          style={{
+                            border: "none",
+                            padding: "0px",
+                            backgroundColor: "white",
+                          }}
+                        >
+                          <FaRegCalendar
+                            style={{
+                              width: "17px",
+                              height: "17px",
+                              color: "#bcbaba",
+                              color: "grey",
+                            }}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  {dateRangeTotalSummary && (
+                    <div
+                      ref={dateRangePickerProhectionSummaryRef}
+                      className="position-absolute "
+                      style={{ zIndex: "1", top: "14%", left: "75%" }}
+                    >
+                      <DateRangePicker
+                        ranges={[selectionRangeTotalSummary]}
+                        onClose={() => setdateRangeTotalSummary(false)}
+                        onChange={handleSelectTotalSummary}
+                      />
+                    </div>
+                  )}
+                  <div className="card-body">
+                    <div
+                      id="table-default"
+                      style={{
+                        overflowX: "auto",
+                        overflowY: "auto",
+                        maxHeight: "60vh",
+                        height: "30vh"
+                      }}
+                    >
+                      <table
+                        style={{
+                          width: "100%",
+                          borderCollapse: "collapse",
+                          border: "1px solid #ddd",
+                          marginBottom: "10px",
+                        }}
+                        className="table-vcenter table-nowrap"
+                      >
+                        <thead stSyle={{ backgroundColor: "grey" }}>
+                          <tr
+                            style={{
+                              backgroundColor: "#ffb900",
+                              color: "white",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            <th
+                              style={{
+                                lineHeight: "32px",
+                              }}
+                            >
+                              Sr. No
+                            </th>
+                            <th>Company Name</th>
+                            <th>Offered Services</th>
+                            <th> Offered Price</th>
+                            <th>Expected Amount</th>
+                            <th>Remarks</th>
+                            <th>Last FollowUp Date</th>
+                            <th>Estimated Payment Date</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        {/*<tbody>
+                         {followDataFilter && followDataFilter.length > 0 ? (
+                            followDataFilter.map((obj, index) => (
+                              <tr key={`row-${index}`}>
+                                <td style={{
+                                  lineHeight: "32px",
+                                }}>{index + 1}</td>
+                                <td>{obj.companyName}</td>
+                                <td>{obj.offeredServices.join(', ')}</td>
+                                <td>₹{obj.offeredPrize && obj.offeredPrize.toLocaleString()}</td>
+                                <td>₹{obj.totalPayment && obj.totalPayment.toLocaleString()}</td>
+                                <td>{obj.remarks}</td>
+                                <td>{obj.lastFollowUpdate}</td>
+                                <td>{obj.estPaymentDate}</td>
+                                <td>
+                                  <IconButton
+                                    onClick={() => {
+                                      functionopenprojection(obj.companyName);
+                                    }}
+                                  >
+                                    <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }} />
+                                  </IconButton>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <Nodata />
+                            </tr>
+                          )
+                          }
+                        </tbody>
+                        {followDataFilter && (
+                          <tfoot>
+                            <tr style={{ fontWeight: 500 }}>
+                              <td style={{ lineHeight: "32px" }} colSpan="2">
+                                Total
+                              </td>
+                              <td>{offeredServices.length}</td>
+                              <td>₹{offeredPaymentSum.toLocaleString()}</td>
+                              <td> ₹{totalPaymentSum.toLocaleString()}</td>
+                              <td>-</td>
+                              <td>-</td>
+                              <td>-</td>
+                              <td>-</td>
+                            </tr>
+                          </tfoot>
+                        )} */}
+                        {projectionLoading ? (
+                          <tbody>
+                            <tr>
+                              <td colSpan="11" className="LoaderTDSatyle">
+                                <ClipLoader
+                                  color="lightgrey"
+                                  loading
+                                  size={30}
+                                  aria-label="Loading Spinner"
+                                  data-testid="loader"
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
+                        ) : (
+                          <>
+                            {followDataFilter && followDataFilter.length > 0 ? (
+                              <>
+                                <tbody>
+                                  {followDataFilter.map((obj, index) => (
+                                    <tr key={`row-${index}`}>
+                                      <td style={{
+                                        lineHeight: "32px",
+                                      }}>{index + 1}</td>
+                                      <td>{obj.companyName}</td>
+                                      <td>{obj.offeredServices.join(', ')}</td>
+                                      <td>₹{obj.offeredPrize && obj.offeredPrize.toLocaleString()}</td>
+                                      <td>₹{obj.totalPayment && obj.totalPayment.toLocaleString()}</td>
+                                      <td>{obj.remarks}</td>
+                                      <td>{obj.lastFollowUpdate}</td>
+                                      <td>{obj.estPaymentDate}</td>
+                                      <td>
+                                        <IconButton
+                                          onClick={() => {
+                                            functionopenprojection(obj.companyName);
+                                          }}
+                                        >
+                                          <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }} />
+                                        </IconButton>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                                {followDataFilter && (
+                                  <tfoot>
+                                    <tr style={{ fontWeight: 500 }}>
+                                      <td style={{ lineHeight: "32px" }} colSpan="2">
+                                        Total
+                                      </td>
+                                      <td>{offeredServices.length}</td>
+                                      <td>₹{offeredPaymentSum.toLocaleString()}</td>
+                                      <td> ₹{totalPaymentSum.toLocaleString()}</td>
+                                      <td>-</td>
+                                      <td>-</td>
+                                      <td>-</td>
+                                      <td>-</td>
+                                    </tr>
+                                  </tfoot>
+                                )}
+                              </>
+                            ) : (
+                              <tr>
+                                <td colSpan="11">
+                                  <Nodata />
+                                </td>
+
+                              </tr>
+                            )}
+                          </>
+                        )}
+
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-6" id="projectiondashboardemployee" >
+                <div className="card" style={{ minHeight: "20vw" }}>
+                  <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
+                    <div className="dashboard-title">
+                      <h2 style={{ marginBottom: '5px' }}>Current Date Summary</h2>
+                    </div>
+                    <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
+                      <div className=" form-control d-flex justify-content-center align-items-center general-searchbar" style={{ marginRight: "20px" }}>
+                        <input
+                          className=""
+                          value={searchTerm}
+                          onChange={(e) => filterSearch(e.target.value)}
+                          placeholder="Search here....."
+                          style={{
+                            border: "none",
+                            padding: "0px"
+                            // Add a bottom border for the input field itself
+                          }}
+                          type="text"
+                          name="bdeName-search"
+                          id="bdeName-search"
+                        />
+                      </div>
+                      {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
+                        <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
+                        <button
+                          onClick={handleIconClick}
+                          style={{
+                            border: "none",
+                            padding: "0px",
+                            backgroundColor: "white",
+                          }}
+                        >
+                          <FaRegCalendar
+                            style={{
+                              width: "17px",
+                              height: "17px",
+                              color: "#bcbaba",
+                              color: "grey",
+                            }}
+                          />
+                        </button>
+                      </div> */}
+                    </div>
+                  </div>
+                  {/* {displayDateRange && (
+                    <div
+                      ref={dateRangePickerProhectionRef}
+                      className="position-absolute "
+                      style={{ zIndex: "1", top: "20%", left: "75%" }}
+                    >
+                      <DateRangePicker
+                        ranges={[selectionRange]}
+                        onClose={() => setDateRangeDisplay(false)}
+                        onChange={handleSelect}
+                      />
+                    </div>
+                  )} */}
+                  <div className="card-body">
+                    <div
+                      id="table-default"
+                      style={{
+                        overflowX: "auto",
+                        overflowY: "auto",
+                        maxHeight: "60vh",
+                        height: "30vh",
+                      }}
+                    >
+                      <table
+                        style={{
+                          width: "100%",
+                          borderCollapse: "collapse",
+                          border: "1px solid #ddd",
+                          marginBottom: "10px",
+                        }}
+                        className="table-vcenter table-nowrap"
+                      >
+                        <thead stSyle={{ backgroundColor: "grey" }}>
+                          <tr
+                            style={{
+                              backgroundColor: "#ffb900",
+                              color: "white",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            <th
+                              style={{
+                                lineHeight: "32px",
+                              }}
+                            >
+                              Sr. No
+                            </th>
+                            <th>Company Name</th>
+                            <th>Offered Services</th>
+                            <th>Total Offered Price</th>
+                            <th>Expected Amount</th>
+                            <th>Remarks</th>
+                            <th>Last FollowUp Date</th>
+                            <th>Estimated Payment Date</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        {/* <tbody>
+                       {followDataTodayFilter ? (
+                            followDataTodayFilter.map((obj, index) => (
+                              <tr key={`row-${index}`}>
+                                <td
+                                  style={{
+                                    lineHeight: "32px",
+                                  }}
+                                >
+                                  {index + 1}
+                                </td>
+                                <td>{obj.companyName}</td>
+                                <td>{obj.offeredServices.join(", ")}</td>
+                                <td>
+                                  ₹
+                                  {obj.totalPayment &&
+                                    obj.totalPayment.toLocaleString()}
+                                </td>
+                                <td>₹{obj.offeredPrize.toLocaleString()}</td>
+                                <td>{obj.remarks}</td>
+                                <td>{obj.lastFollowUpdate}</td>
+                                <td>{obj.estPaymentDate}</td>
+                                <td>
+                                  <IconButton
+                                    onClick={() => {
+                                      functionopenprojection(obj.companyName);
+                                    }}
+                                  >
+                                    <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }}></RiEditCircleFill>
+                                  </IconButton>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (<tr>
+                            <td style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
+                              <ScaleLoader
+                                color="lightgrey"
+                                loading
+                                cssOverride={override}
+                                size={10}
+                                //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                              />
+                            </td>
+                          </tr>)}
+                        </tbody>
+                        {followDataTodayFilter && (
+                          <tfoot>
+                            <tr style={{ fontWeight: 500 }}>
+                              <td style={{ lineHeight: "32px" }} colSpan="2">
+                                Total
+                              </td>
+                              <td>{offeredServicesFilter.length}</td>
+                              <td> ₹{totalPaymentSumFilter.toLocaleString()}</td>
+                              <td>₹{offeredPaymentSumFilter.toLocaleString()}</td>
+                              <td>-</td>
+                              <td>-</td>
+                              <td>-</td>
+                              <td>-</td>
+                            </tr>
+                          </tfoot>
+                        )} */}
+                        {projectionLoading ? (
+                          <tbody>
+                            <tr>
+                              <td colSpan="11" className="LoaderTDSatyle">
+                                <ClipLoader
+                                  color="lightgrey"
+                                  loading
+                                  size={30}
+                                  aria-label="Loading Spinner"
+                                  data-testid="loader"
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
+                        ) : (
+                          <>
+                            {followDataTodayFilter && followDataTodayFilter.length > 0 ? (
+                              <>
+                                <tbody>
+                                  {followDataTodayFilter.map((obj, index) => (
+                                    <tr key={`row-${index}`}>
+                                      <td
+                                        style={{
+                                          lineHeight: "32px",
+                                        }}
+                                      >
+                                        {index + 1}
+                                      </td>
+                                      <td>{obj.companyName}</td>
+                                      <td>{obj.offeredServices.join(", ")}</td>
+                                      <td>
+                                        ₹
+                                        {obj.totalPayment &&
+                                          obj.totalPayment.toLocaleString()}
+                                      </td>
+                                      <td>₹{obj.offeredPrize.toLocaleString()}</td>
+                                      <td>{obj.remarks}</td>
+                                      <td>{obj.lastFollowUpdate}</td>
+                                      <td>{obj.estPaymentDate}</td>
+                                      <td>
+                                        <IconButton
+                                          onClick={() => {
+                                            functionopenprojection(obj.companyName);
+                                          }}
+                                        >
+                                          <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }}></RiEditCircleFill>
+                                        </IconButton>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                                <tfoot>
+                                  <tr style={{ fontWeight: 500 }}>
+                                    <td style={{ lineHeight: "32px" }} colSpan="2">
+                                      Total
+                                    </td>
+                                    <td>{offeredServicesFilter.length}</td>
+                                    <td> ₹{totalPaymentSumFilter.toLocaleString()}</td>
+                                    <td>₹{offeredPaymentSumFilter.toLocaleString()}</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                  </tr>
+                                </tfoot>
+                              </>
+                            ) : (
+                              <tbody>
+                                <tr>
+                                  <td colSpan="11">
+                                    <Nodata />
+                                  </td>
+                                </tr>
+                              </tbody>
+                            )}
+                          </>
+                        )}
+
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
       {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
 
 
@@ -1968,7 +2594,7 @@ function EmployeeDashboard() {
             </div>
           </div>
           {showBookingDate && <div
-           ref={dateRangePickerRef}
+            ref={dateRangePickerRef}
             style={{
               position: "absolute",
               top: "65px",
@@ -1990,6 +2616,7 @@ function EmployeeDashboard() {
                 overflowX: "auto",
                 overflowY: "auto",
                 maxHeight: "60vh",
+
               }}
             >
               <table
@@ -2279,17 +2906,16 @@ function EmployeeDashboard() {
           style={{ top: "50px" }}
           anchor="right"
           open={openProjection}
-          onClose={closeProjection}
-        >
+          onClose={closeProjection}>
           <div style={{ width: "31em" }} className="container-xl">
             <div className="d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
               <h1 style={{ marginBottom: "0px", fontSize: "20px", }} className="title">
                 Projection Form
               </h1>
               <div>
-                <IconButton  onClick={() => {
-                    setIsEditProjection(true);
-                  }}>
+                <IconButton onClick={() => {
+                  setIsEditProjection(true);
+                }}>
                   <EditIcon color="grey" style={{ width: "17px", height: "17px" }}></EditIcon>
                 </IconButton>
                 <IconButton>
@@ -2458,7 +3084,7 @@ function EmployeeDashboard() {
           </div>
         </Drawer>
       </div>
-    </div>
+    </div >
   );
 }
 
