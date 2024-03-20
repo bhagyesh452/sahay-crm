@@ -112,6 +112,11 @@ function Employees({ onEyeButtonClick }) {
     setIsModalOpen(false);
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sortedFormat, setSortedFormat] = useState({
+    ename:"ascending",
+    jdate:"ascending",
+    addedOn:'ascending'
+  })
   const [data, setData] = useState([]);
   const [cdata, setCData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -382,6 +387,85 @@ function Employees({ onEyeButtonClick }) {
     );
     return formattedDate;
   }
+console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
+  const sortDataByName = () => {
+    if(sortedFormat.ename==="ascending"){
+      setSortedFormat({
+        ...sortedFormat, // Spread the existing properties
+        ename: "descending", // Update the jdate property
+      });
+
+      const sortedData = [...filteredData].sort((a, b) =>
+      a.ename.localeCompare(b.ename)
+    );
+    setFilteredData(sortedData);
+
+    }else{
+      setSortedFormat({
+        ...sortedFormat, // Spread the existing properties
+        ename: "ascending", // Update the jdate property
+      });
+
+      const sortedData = [...filteredData].sort((a, b) =>
+      b.ename.localeCompare(a.ename)
+    );
+    setFilteredData(sortedData);
+      
+    }
+ 
+  };
+  const sortDateByAddedOn = () => {
+    if(sortedFormat.addedOn==="ascending"){
+      setSortedFormat({
+        ...sortedFormat, // Spread the existing properties
+        addedOn: "descending", // Update the jdate property
+      });
+
+      const sortedData = [...filteredData].sort((a, b) =>
+      a.AddedOn.localeCompare(b.AddedOn)
+    );
+    setFilteredData(sortedData);
+
+    }else{
+      setSortedFormat({
+        ...sortedFormat, // Spread the existing properties
+        addedOn: "ascending", // Update the jdate property
+      });
+
+      const sortedData = [...filteredData].sort((a, b) =>
+      b.AddedOn.localeCompare(a.AddedOn)
+    );
+    setFilteredData(sortedData);
+      
+    }
+ 
+  };
+  const sortDataByJoiningDate = () => {
+    if(sortedFormat.jdate==='ascending'){
+      setSortedFormat({
+        ...sortedFormat, // Spread the existing properties
+        jdate: "descending", // Update the jdate property
+      });
+
+      const sortedData = [...filteredData].sort((a, b) =>
+      new Date(a.jdate) - new Date(b.jdate)
+    );
+    setFilteredData(sortedData);
+    }
+    else{
+      setSortedFormat({
+        ...sortedFormat, // Spread the existing properties
+        jdate: "ascending", // Update the jdate property
+      });
+
+      const sortedData = [...filteredData].sort((a, b) =>
+      new Date(b.jdate) - new Date(a.jdate)
+    );
+    setFilteredData(sortedData);
+      
+    }
+    
+  };
 
   return (
     <div>
@@ -684,7 +768,7 @@ function Employees({ onEyeButtonClick }) {
                         </button>
                       </th>
                       <th>
-                        <button className="table-sort" data-sort="sort-city">
+                        <button onClick={sortDataByName} className="table-sort" data-sort="sort-city">
                           Name
                         </button>
                       </th>
@@ -699,7 +783,7 @@ function Employees({ onEyeButtonClick }) {
                         </button>
                       </th>
                       <th>
-                        <button className="table-sort" data-sort="sort-date">
+                        <button onClick={sortDataByJoiningDate} className="table-sort" data-sort="sort-date">
                           Joining date
                         </button>
                       </th>
@@ -709,7 +793,7 @@ function Employees({ onEyeButtonClick }) {
                         </button>
                       </th>
                       <th>
-                        <button className="table-sort" data-sort="sort-date">
+                        <button onClick={sortDateByAddedOn} className="table-sort" data-sort="sort-date">
                           Added on
                         </button>
                       </th>
