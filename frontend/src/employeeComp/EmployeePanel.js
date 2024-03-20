@@ -1529,7 +1529,7 @@ function EmployeePanel() {
                     className="features"
                   >
                     <div style={{ display: "flex" }} className="feature1">
-                    <button className="btn btn-primary" onClick={handleGoogleLogin} >
+                    {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
                           Gmail SignIn
                       </button>
                       <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
@@ -1544,7 +1544,7 @@ function EmployeePanel() {
     </div>
                         </DialogContent>
 
-                      </Dialog>
+                      </Dialog> */}
 
                       <div
                         className="form-control"

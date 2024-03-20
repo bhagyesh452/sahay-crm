@@ -1250,6 +1250,21 @@ function EmployeeDashboard() {
     }
   };
   //console.log("projections", currentProjection);
+  const containerRef = useRef(null);
+
+  const handleButtonClick = () => {
+    setShowBookingDate(!showBookingDate);
+    // Scroll the window to the position of the date range picker
+    if (showBookingDate && dateRangePickerRef.current) {
+      const { top } = dateRangePickerRef.current.getBoundingClientRect();
+      window.scrollTo({
+        top: window.scrollY + top,
+        behavior: "smooth" // You can change this to "auto" if you prefer instant scrolling
+      });
+    }
+  };
+  
+
 
 
   return (
@@ -2552,7 +2567,7 @@ function EmployeeDashboard() {
       {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
 
 
-      <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard">
+      <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard" ref={containerRef}>
         <div className="card">
           <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
             <div>
@@ -2587,7 +2602,8 @@ function EmployeeDashboard() {
                 <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
                   {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
                 </div>
-                <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                <button onClick={handleButtonClick}
+                  style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
                   <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
                 </button>
               </div>
