@@ -4,11 +4,11 @@ const compression = require('compression');
 // const { Server } = require("socket.io");
 // const http = require("http");
 // const server = http.createServer(app);
-const session = require('express-session');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const { OAuth2Client } = require('google-auth-library');
-const nodemailer = require('nodemailer');
+// const session = require('express-session');
+// const passport = require('passport');
+// const GoogleStrategy = require('passport-google-oauth20').Strategy;
+// const { OAuth2Client } = require('google-auth-library');
+// const nodemailer = require('nodemailer');
 const mongoose = require("mongoose");
 // const googleAuthRouter = require('./helpers/googleAuth');
 const adminModel = require("./models/Admin");
@@ -26,8 +26,8 @@ const DeletedDatabase = require("./models/DeletedCollection");
 const { sendMail } = require("./helpers/sendMail");
 const { mailFormat } = require("./helpers/mailFormat");
 const multer = require("multer");
-const authRouter = require('./helpers/Oauth');
-const requestRouter = require('./helpers/request');
+// const authRouter = require('./helpers/Oauth');
+// const requestRouter = require('./helpers/request');
 const RemarksHistory = require("./models/RemarksHistory");
 const EmployeeHistory = require("./models/EmployeeHistory");
 const LoginDetails = require("./models/loginDetails");
@@ -51,13 +51,13 @@ const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(cors());
 app.use(compression());
-app.use(session({
-  secret: 'boombadaboom', // Replace with a secret key for session encryption
-  resave: false,
-  saveUninitialized: false,
-}));
-app.use(passport.initialize())
-app.use(passport.session());
+// app.use(session({
+//   secret: 'boombadaboom', // Replace with a secret key for session encryption
+//   resave: false,
+//   saveUninitialized: false,
+// }));
+// app.use(passport.initialize())
+// app.use(passport.session());
 var http = require("http").createServer(app);
 var socketIO = require("socket.io")(http, {
   cors: {
@@ -2520,139 +2520,139 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 
 // Use the googleAuth router for Google OAuth routes
 
-app.get('/dashboard', async function(req, res, next) {
-  const code = req.query.code;
+// app.get('/dashboard', async function(req, res, next) {
+//   const code = req.query.code;
 
-  console.log(code);
-  // try {
-  //   const oAuth2Client = new OAuth2Client(
-  //     process.env.GOOGLE_CLIENT_ID,
-  //     process.env.GOOGLE_CLIENT_SECRET,
-  //     'http://localhost:3001/auth/google/callback'
-  //   );
+//   console.log(code);
+//   // try {
+//   //   const oAuth2Client = new OAuth2Client(
+//   //     process.env.GOOGLE_CLIENT_ID,
+//   //     process.env.GOOGLE_CLIENT_SECRET,
+//   //     'http://localhost:3001/auth/google/callback'
+//   //   );
 
-  //   const { tokens } = await oAuth2Client.getToken(code);
-  //   // Set the access token on the OAuth2 client
-  //   oAuth2Client.setCredentials(tokens);
+//   //   const { tokens } = await oAuth2Client.getToken(code);
+//   //   // Set the access token on the OAuth2 client
+//   //   oAuth2Client.setCredentials(tokens);
 
-  //   console.info('Tokens acquired.');
-  //   console.log('Access Token:', tokens.access_token);
-  //   console.log('Refresh Token:', tokens.refresh_token);
+//   //   console.info('Tokens acquired.');
+//   //   console.log('Access Token:', tokens.access_token);
+//   //   console.log('Refresh Token:', tokens.refresh_token);
     
-  //   // Get user data using the access token
-  //   await getUserData(tokens.access_token);
-  // } catch (err) {
-  //   console.log('Error logging in with OAuth2 user', err);
-  // }
+//   //   // Get user data using the access token
+//   //   await getUserData(tokens.access_token);
+//   // } catch (err) {
+//   //   console.log('Error logging in with OAuth2 user', err);
+//   // }
 
-  // res.redirect(303, 'http://localhost:5173/');
-});
+//   // res.redirect(303, 'http://localhost:5173/');
+// });
 
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: '/auth/google/callback',
-  scope: ["profile", "email"],
-  accessType: 'offline', 
-},
-async (accessToken, refreshToken, profile, done) => {
-  console.log('accessToken:', accessToken);
-  console.log('refreshToken:', refreshToken);
-  await getUserData(accessToken);
+// passport.use(new GoogleStrategy({
+//   clientID: process.env.GOOGLE_CLIENT_ID,
+//   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//   callbackURL: '/auth/google/callback',
+//   scope: ["profile", "email"],
+//   accessType: 'offline', 
+// },
+// async (accessToken, refreshToken, profile, done) => {
+//   console.log('accessToken:', accessToken);
+//   console.log('refreshToken:', refreshToken);
+//   await getUserData(accessToken);
 
-  const user = {
-    id: profile.id,
-    email: profile.emails[0].value,
-  };
-  console.log("user:", user);
-  return done(null, user);
-}));
+//   const user = {
+//     id: profile.id,
+//     email: profile.emails[0].value,
+//   };
+//   console.log("user:", user);
+//   return done(null, user);
+// }));
 
-async function getUserData(access_token) {
-  try {
-    const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`);
-    const data = await response.json();
-    console.log("All the data", data);
-  } catch (error) {
-    console.error('Error fetching user data:', error);
-  }
-}
+// async function getUserData(access_token) {
+//   try {
+//     const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`);
+//     const data = await response.json();
+//     console.log("All the data", data);
+//   } catch (error) {
+//     console.error('Error fetching user data:', error);
+//   }
+// }
 
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
+// passport.serializeUser((user, done) => {
+//   done(null, user);
+// });
 
-passport.deserializeUser((user, done) => {
-  done(null, user);
-});
+// passport.deserializeUser((user, done) => {
+//   done(null, user);
+// });
 
-app.get('/auth/google',
-  passport.authenticate('google', { 
-    scope: ['profile', 'email', 'offline_access'], // Include 'offline_access' scope
-    prompt: 'consent' 
-  }));
+// app.get('/auth/google',
+//   passport.authenticate('google', { 
+//     scope: ['profile', 'email', 'offline_access'], // Include 'offline_access' scope
+//     prompt: 'consent' 
+//   }));
 
-// Google OAuth callback route
-app.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
-    // Check if the referer header is present in the request
-    const referer = req.headers.referer;
+// // Google OAuth callback route
+// app.get('/auth/google/callback',
+//   passport.authenticate('google', { failureRedirect: '/login' }),
+//   (req, res) => {
+//     // Check if the referer header is present in the request
+//     const referer = req.headers.referer;
 
-    if (referer) {
-      // Redirect to the previous page
-      res.redirect('/dashboard');
-    } else {
-      // If referer is not available, redirect to a default URL
-      res.redirect('/'); // You can change this to any default URL you prefer
-    }
-  }
-);
+//     if (referer) {
+//       // Redirect to the previous page
+//       res.redirect('/dashboard');
+//     } else {
+//       // If referer is not available, redirect to a default URL
+//       res.redirect('/'); // You can change this to any default URL you prefer
+//     }
+//   }
+// );
 
-app.use('/oauth', authRouter);
-app.use('/request', requestRouter);
+// app.use('/oauth', authRouter);
+// app.use('/request', requestRouter);
 
-// Initialize Nodemailer transporter using user's credentials
-function createTransporter(user) {
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      type: 'OAuth2',
-      user: user.email,
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      refreshToken: user.refreshToken,
-      accessToken: user.accessToken
-    }
-  });
-}
+// // Initialize Nodemailer transporter using user's credentials
+// function createTransporter(user) {
+//   return nodemailer.createTransport({
+//     service: 'gmail',
+//     auth: {
+//       type: 'OAuth2',
+//       user: user.email,
+//       clientId: process.env.GOOGLE_CLIENT_ID,
+//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//       refreshToken: user.refreshToken,
+//       accessToken: user.accessToken
+//     }
+//   });
+// }
 
 
-// Send email route
-app.post('/api/send-email', (req, res) => {
-  // Authenticate user based on session or request data
-  const user = req.body; // Assuming user is authenticated
-  // Create Nodemailer transporter using user's credentials
-  const transporter = createTransporter(user);
-  console.log(transporter)
-  // Send email using transporter
-  transporter.sendMail({
-    from: user.email,
-    to: 'aakashseth454@gmail.com',
-    subject: 'Test Email',
-    text: 'This is a test email sent from Nodemailer using Gmail OAuth 2.0.'
-  }, (error, info) => {
-    if (error) {
-      console.error(error);
-      res.status(500).send('Error sending email');
-    } else {
-      console.log('Email sent:', info.response);
-      res.status(200).send('Email sent successfully');
-    }
-  });
-});
+// // Send email route
+// app.post('/api/send-email', (req, res) => {
+//   // Authenticate user based on session or request data
+//   const user = req.body; // Assuming user is authenticated
+//   // Create Nodemailer transporter using user's credentials
+//   const transporter = createTransporter(user);
+//   console.log(transporter)
+//   // Send email using transporter
+//   transporter.sendMail({
+//     from: user.email,
+//     to: 'aakashseth454@gmail.com',
+//     subject: 'Test Email',
+//     text: 'This is a test email sent from Nodemailer using Gmail OAuth 2.0.'
+//   }, (error, info) => {
+//     if (error) {
+//       console.error(error);
+//       res.status(500).send('Error sending email');
+//     } else {
+//       console.log('Email sent:', info.response);
+//       res.status(200).send('Email sent successfully');
+//     }
+//   });
+// });
 
-http.listen(6050, function () {
+http.listen(3001, function () {
   console.log("Server started...");
 
   socketIO.on("connection", function (socket) {

@@ -429,7 +429,7 @@ console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
     }else{
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
-        ename: "ascending", // Update the jdate property
+        addedOn: "ascending", // Update the jdate property
       });
 
       const sortedData = [...filteredData].sort((a, b) =>
