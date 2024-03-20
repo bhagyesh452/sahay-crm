@@ -8,7 +8,7 @@ import axios from 'axios';
 import { options } from "../components/Options.js";
 import { RiEditCircleFill } from "react-icons/ri";
 
-function DrawerComponent({ functionopenprojection }) {
+function DrawerComponent({ open , onClose , functionopenprojection}) {
     const [openProjection, setOpenProjection] = useState(false);
     const [projectingCompany, setProjectingCompany] = useState("");
     const [currentProjection, setCurrentProjection] = useState({
@@ -31,6 +31,8 @@ function DrawerComponent({ functionopenprojection }) {
 
       const secretKey = process.env.REACT_APP_SECRET_KEY;
 
+     
+
       const fetchFollowUpData = async () => {
         try {
           //setprojectionLoading(true);
@@ -38,6 +40,7 @@ function DrawerComponent({ functionopenprojection }) {
             `${secretKey}/projection-data/${data.ename}`
           );
           const followdata = await response.json();
+          console.log("followData" , followdata)
           setFollowData(followdata);
           //setFollowDataFilter(followdata);
         //   setfollowDataToday(
@@ -60,7 +63,7 @@ function DrawerComponent({ functionopenprojection }) {
         } 
       };
     
-      
+    console.log("followdata" , followData)
     const closeProjection = () => {
         setOpenProjection(false);
         setProjectingCompany("");
@@ -168,8 +171,8 @@ function DrawerComponent({ functionopenprojection }) {
         <Drawer
           style={{ top: "50px" }}
           anchor="right"
-          open={openProjection}
-          onClose={closeProjection}>
+          open={open}
+          onClose={onClose}>
           <div style={{ width: "31em" }} className="container-xl">
             <div className="d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
               <h1 style={{ marginBottom: "0px", fontSize: "20px", }} className="title">
@@ -261,7 +264,7 @@ function DrawerComponent({ functionopenprojection }) {
                 </div>
               </div>
               <div className="label">
-                <strong>xpected Price (With GST)</strong>
+                <strong>Expected Price (With GST)</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -340,24 +343,12 @@ function DrawerComponent({ functionopenprojection }) {
                   onClick={handleProjectionSubmit}
                   disabled={!isEditProjection}
                 >
-                  Submit
+                  Submit New Drawer
                 </button>
               </div>
             </div>
           </div>
         </Drawer>
-
-        <IconButton
-        onClick={() => {
-          // Call the functionopenprojection function passed as a prop
-          functionopenprojection();
-        }}
-      >
-        <RiEditCircleFill
-          color="grey"
-          style={{ width: "17px", height: "17px" }}
-        />
-      </IconButton>
       </div>
   )
 }

@@ -42,6 +42,7 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
+import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -85,17 +86,17 @@ function EmployeePanel() {
   const loginwithgoogle = () => {
     window.open("http://localhost:6050/auth/google/callback")
   }
-  function navigate(url){
+  function navigate(url) {
     window.location.href = url;
   }
-  
-  async function handleGoogleLogin(){
-    const response =await fetch('http://localhost:6050/request',{method:'post'});
-  
+
+  async function handleGoogleLogin() {
+    const response = await fetch('http://localhost:6050/request', { method: 'post' });
+
     const data = await response.json();
     console.log(data);
     navigate(data.url);
-  
+
   }
   // const handleGoogleLogin = async () => {
   //   try {
@@ -181,6 +182,7 @@ function EmployeePanel() {
   };
 
   console.log("projectingcompnay", projectingCompany)
+  
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
     setOpenProjection(true);
@@ -1180,13 +1182,10 @@ function EmployeePanel() {
   //   }
   // };
 
-  const calculateColor = (editCount) => {
-    const maxEditCount = 10; // Maximum edit count for full darkness
-    const maxDarkness = 0.7; // Maximum darkness factor (0 to 1)
-    const darkness = editCount / maxEditCount * maxDarkness;
-    const brightness = 1 - darkness;
-    const hexDarkness = Math.floor(brightness * 255).toString(16).padStart(2, '0');
-    return `#${hexDarkness}${hexDarkness}00`; // Adjust the color component here, e.g., "#fbb900"
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const handleIconButtonClick = () => {
+    setIsDrawerOpen(true);
   };
 
   const handleProjectionSubmit = async () => {
@@ -1471,11 +1470,11 @@ function EmployeePanel() {
   //console.log("projections", currentProjection);
 
 
-  const handleSendEmail = async()=>{
+  const handleSendEmail = async () => {
     const dataToSend = {
-      email : data.email,
-      refreshToken : data.refresh_token,
-      accessToken : data.access_token
+      email: data.email,
+      refreshToken: data.refresh_token,
+      accessToken: data.access_token
     }
 
     try {
@@ -1486,11 +1485,11 @@ function EmployeePanel() {
         },
         body: JSON.stringify(dataToSend)
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to send email');
       }
-  
+
       const responseData = await response.json();
       console.log('Response:', responseData);
     } catch (error) {
@@ -1529,7 +1528,7 @@ function EmployeePanel() {
                     className="features"
                   >
                     <div style={{ display: "flex" }} className="feature1">
-                    {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
+                      {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
                           Gmail SignIn
                       </button>
                       <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
@@ -1589,8 +1588,7 @@ function EmployeePanel() {
                             margin: "0px 0px 0px 9px",
                             display: visibilityOther,
                           }}
-                          className="input-icon"
-                        >
+                          className="input-icon">
                           <span className="input-icon-addon">
                             {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
                             <svg
@@ -2497,6 +2495,7 @@ function EmployeePanel() {
                                               onClick={() => {
                                                 functionopenprojection(company["Company Name"]);
                                               }}
+                                              //onClick={handleIconButtonClick}
                                               style={{
                                                 cursor: "pointer",
                                                 width: "17px",
@@ -2505,16 +2504,19 @@ function EmployeePanel() {
                                               color="#fbb900"
                                             />
                                           </IconButton>
+                                          {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} functionopenprojection={functionopenprojection} projectingCompany={projectingCompany} /> */}
                                         </>
                                       ) : (
                                         <IconButton>
                                           <RiEditCircleFill
                                             onClick={() => {
                                               functionopenprojection(company["Company Name"]);
+                                              setIsEditProjection(true);
                                             }}
                                             style={{ cursor: "pointer", width: "17px", height: "17px" }}
                                           />
                                         </IconButton>
+                                        
                                       )}
                                     </td>
 
@@ -3218,12 +3220,24 @@ function EmployeePanel() {
                 Projection Form
               </h1>
               <div>
-                <IconButton
+                {projectingCompany && projectionData && projectionData.some(item => item.companyName === projectingCompany) ? (
+                  <>
+                    <IconButton
                   onClick={() => {
                     setIsEditProjection(true);
                   }}>
                   <EditIcon color="grey"></EditIcon>
                 </IconButton>
+                  </>
+                ) : (
+                 null
+                )}
+                {/* <IconButton
+                  onClick={() => {
+                    setIsEditProjection(true);
+                  }}>
+                  <EditIcon color="grey"></EditIcon>
+                </IconButton> */}
                 {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
                   <DeleteIcon
                     style={{
@@ -3429,24 +3443,24 @@ function EmployeePanel() {
                   required
                 ></textarea>
 
-            <div className="compose-more-options d-flex align-items-center ">
-            <button onClick={handleSendEmail} type="submit" className="send-btn">
-              Send
-            </button>
-            <div className="other-options d-flex">
-            <div className="compose-formatting m-1">
-                    <FontDownloadIcon />
-                </div>
-                <div className="compose-attachments m-1">
-                    <AttachmentIcon/>
-                </div>
-                <div className="compose-insert-files m-1">
-                    <ImageIcon/>
-                </div>
-                <div className="compose-menuIcon m-1">
-                    <MoreVertIcon/>
-                </div>
-            </div>
+                <div className="compose-more-options d-flex align-items-center ">
+                  <button onClick={handleSendEmail} type="submit" className="send-btn">
+                    Send
+                  </button>
+                  <div className="other-options d-flex">
+                    <div className="compose-formatting m-1">
+                      <FontDownloadIcon />
+                    </div>
+                    <div className="compose-attachments m-1">
+                      <AttachmentIcon />
+                    </div>
+                    <div className="compose-insert-files m-1">
+                      <ImageIcon />
+                    </div>
+                    <div className="compose-menuIcon m-1">
+                      <MoreVertIcon />
+                    </div>
+                  </div>
 
                 </div>
               </form>
