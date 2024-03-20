@@ -7,6 +7,10 @@ import Navbar from "./Navbar";
 import StepButton from "@mui/material/StepButton";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import pdfimg from "../static/my-images/pdf.png"
+import img from "../static/my-images/image.png"
+import wordimg from "../static/my-images/word.png"
+import excelimg from "../static/my-images/excel.png"
 
 const steps = [
   "Basic Company Informations",
@@ -873,10 +877,7 @@ export default function HorizontalNonLinearStepper() {
                                   </div>
                                   <div className="col-sm-6 mt-2">
                                     <div className="form-group">
-                                      <label
-                                        className="form-label"
-                                        for="docs"
-                                      >
+                                      <label className="form-label" for="docs">
                                         Upload Additional Docs
                                       </label>
                                       <input
@@ -894,7 +895,533 @@ export default function HorizontalNonLinearStepper() {
                       )}
                       {activeStep === 4 && (
                         <>
-                          <div className="steprForm step-1">Step 5</div>
+                          <div className="step-3">
+                            <h2 className="text-center">
+                              Step:5 - Booking Preview
+                            </h2>
+                            <div className="steprForm-inner">
+                              <div className="stepOnePreview">
+                                <div className="d-flex align-items-center">
+                                  <div className="services_No">1</div>
+                                  <div className="ml-1">
+                                    <h3 className="m-0">
+                                      Company's Basic Informations
+                                    </h3>
+                                  </div>
+                                </div>
+                                <div className="servicesFormCard mt-3">
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>Compnay name</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        Startup Sahay Private Limited
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>Email Address:</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        info@startupsahay.com
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>Phone No:</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        9924283530
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>Incorporation date:</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        02/06/0995
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>Company's PAN:</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        DLGPP19567K
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>Company's GST:</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">-</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="stepTWOPreview">
+                                <div className="d-flex align-items-center mt-3">
+                                  <div className="services_No">2</div>
+                                  <div className="ml-1">
+                                    <h3 className="m-0">Booking Details</h3>
+                                  </div>
+                                </div>
+                                <div className="servicesFormCard mt-3">
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>BDE Name:</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        Ravi Prajapati
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>BDE Email</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        ravi@Startupsahay.com
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>BDM Name</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        Vaibhav Acharya
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>BDM Email</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        vaibhav@startupsahay.com
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>Booking Date</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        10/10/2024
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>Lead Source</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        Other
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>Other Lead Source</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        Lead By Nimesh Sir
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="stepThreePreview">
+                                <div className="d-flex align-items-center mt-3">
+                                  <div className="services_No">3</div>
+                                  <div className="ml-1">
+                                    <h3 className="m-0">
+                                      Services And Payment Details
+                                    </h3>
+                                  </div>
+                                </div>
+                                <div className="servicesFormCard mt-3">
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>Total Selected Services</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">2</div>
+                                    </div>
+                                  </div>
+                                  <div className="parServicesPreview mt-3">
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>1st Services Name</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          Startup India Certificate
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {/* <!-- Optional --> */}
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>With DSC</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          YES
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {/* total amount */}
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>Total Amount</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          12000
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>With GST</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          YES
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>Payment Terms</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          Part Payment
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>First Payment</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          6000
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>Second Payment</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          6000
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>Notes</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">-</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="parServicesPreview mt-3">
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>2nd Services Name</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          Seed Fund
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {/* total amount */}
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>Total Amount</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          26000
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>With GST</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          NO
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>Payment Terms</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          Part Payment
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>First Payment</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          13000
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>Second Payment</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          13000
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 p-0">
+                                        <div className="form-label-name">
+                                          <b>Notes</b>
+                                        </div>
+                                      </div>
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          Second Payment at the time of
+                                          application
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="stepThreePreview">
+                                <div className="d-flex align-items-center mt-3">
+                                  <div className="services_No">4</div>
+                                  <div className="ml-1">
+                                    <h3 className="m-0">Payment Summery</h3>
+                                  </div>
+                                </div>
+                                <div className="servicesFormCard mt-3">
+                                  <div className="row m-0">
+                                    <div className="col-sm-4">
+                                      <div className="row">
+                                        <div className="col-sm-4 p-0">
+                                          <div className="form-label-name">
+                                            <b>Total Paymnet</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-8 p-0">
+                                          <div className="form-label-data">
+                                          ₹ 38000
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-4">
+                                      <div className="row">
+                                        <div className="col-sm-4 p-0">
+                                          <div className="form-label-name">
+                                            <b>Received Paymnet</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-8 p-0">
+                                          <div className="form-label-data">
+                                          ₹ 19000
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-4">
+                                      <div className="row">
+                                        <div className="col-sm-4 p-0">
+                                          <div className="form-label-name">
+                                            <b>Pending Paymnet</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-8 p-0">
+                                          <div className="form-label-data">
+                                          ₹ 19000
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 align-self-stretc p-0">
+                                      <div className="form-label-name h-100">
+                                        <b>Upload Payment Recipt</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        <div className="UploadDocPreview">
+                                            <div className="docItemImg">
+                                                <img src={img}></img>
+                                            </div>
+                                            <div className="docItemName wrap-MyText" title="logo.png">
+                                                Screenshots.png
+                                            </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>Payment Method</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">ICICI Account</div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 p-0">
+                                      <div className="form-label-name">
+                                        <b>Extra Remarks</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">Complate work before 25 days</div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0">
+                                    <div className="col-sm-3 align-self-stretc p-0">
+                                      <div className="form-label-name h-100">
+                                        <b>Additional Docs</b>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data d-flex flex-wrap">
+                                        <div className="UploadDocPreview">
+                                            <div className="docItemImg">
+                                                <img src={pdfimg}></img>
+                                            </div>
+                                            <div className="docItemName wrap-MyText" title="ROC.pdf">
+                                                ROC.pdf
+                                            </div>
+                                        </div>
+                                        <div className="UploadDocPreview">
+                                            <div className="docItemImg">
+                                                <img src={img}></img>
+                                            </div>
+                                            <div className="docItemName wrap-MyText" title="logo.png">
+                                                logo.png
+                                            </div>
+                                        </div>
+                                        <div className="UploadDocPreview">
+                                            <div className="docItemImg">
+                                                <img src={wordimg}></img>
+                                            </div>
+                                            <div className="docItemName wrap-MyText" title=" information.word">
+                                                information.word
+                                            </div>
+                                        </div>
+                                        <div className="UploadDocPreview">
+                                            <div className="docItemImg">
+                                                <img src={excelimg}></img>
+                                            </div>
+                                            <div className="docItemName wrap-MyText" title="financials.csv">
+                                                financials.csv
+                                            </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </>
                       )}
                       <Box
