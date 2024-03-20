@@ -4,11 +4,17 @@ const ServiceSchema = new mongoose.Schema({
   serviceName: {
     type: String,
   },
+  withDSC:{
+    type:Boolean
+  },
   totalPaymentWOGST: {
     type: Number,
   },
   totalPaymentWGST: {
     type: Number,
+  },
+  withGST:{
+    type:Boolean
   },
   paymentTerms: {
     type: String,
@@ -53,7 +59,13 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   bdeName: {
     type: String,
   },
+  bdeEmail: {
+    type: String,
+  },
   bdmName: {
+    type: String,
+  },
+  bdmEmail: {
     type: String,
   },
   bookingDate: {
