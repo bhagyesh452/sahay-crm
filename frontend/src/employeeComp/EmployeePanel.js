@@ -42,6 +42,7 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
+import RedesignedForm from "../admin/RedesignedForm.jsx";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -2677,61 +2678,19 @@ function EmployeePanel() {
         </>
       ) : (
         <>
-          <div className="page-wrapper">
-            <div className="page-header d-print-none">
-              <div
-                style={{ justifyContent: "space-between" }}
-                className="container-xl d-flex"
-              >
-                <div className="row g-2 align-items-center">
-                  <div className="col">
-                    {/* <!-- Page pre-title --> */}
-                    <h2 className="page-title">Leadform</h2>
-                  </div>
-                </div>
-                <div className="request">
-                  <div className="btn-list">
-                    <button
-                      onClick={() => {
-                        setFormOpen(false);
-                      }}
-                      className="btn btn-primary d-none d-sm-inline-block"
-                    >
-                      Back
-                    </button>
-                    <a
-                      href="#"
-                      className="btn btn-primary d-sm-none btn-icon"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modal-report"
-                      aria-label="Create new report"
-                    >
-                      {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              onCopy={(e) => {
-                e.preventDefault();
-              }}
-              className="page-body"
-            >
-              <div className="container-xl">
-                <Form
-                  matured={true}
-                  companysId={companyId}
+          
+           
+                <RedesignedForm
+                  // matured={true}
+                  // companysId={companyId}
                   companysName={companyName}
-                  companysEmail={companyEmail}
-                  companyNumber={companyNumber}
-                  companysInco={companyInco}
-                  employeeName={data.ename}
-                  employeeEmail={data.email}
+                  // companysEmail={companyEmail}
+                  // companyNumber={companyNumber}
+                  // companysInco={companyInco}
+                  // employeeName={data.ename}
+                  // employeeEmail={data.email}
                 />
-              </div>
-            </div>
-          </div>
+           
         </>
       )}
 

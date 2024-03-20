@@ -41,6 +41,7 @@ const DraftModel = require("./models/DraftLeadform");
 const { type } = require("os");
 const LeadModel_2 = require("./models/Leadform_2");
 const RedesignedLeadformModel = require("./models/RedesignedLeadform");
+const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 
 
 // const http = require('http');
@@ -2651,6 +2652,47 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 //     }
 //   });
 // });
+
+
+// ---------------------------------------------------- New Booking Form  ---------------------------------------------------------------
+
+app.get('/api/redesigned-leadData/:CompanyName', async (req, res) => {
+  try {
+    const CompanyName = req.params.CompanyName;
+    const data = await RedesignedDraftModel.find({"Company Name": CompanyName});
+    res.json(data);
+  } catch (err) {
+    console.error('Error fetching data:', err);
+    res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+app.post('/api/redesigned-leadData/:CompanyName', async (req, res) => {
+  try {
+    const companyName = req.params.CompanyName;
+    const newData = req.body;
+
+    // Search for existing data by Company Name
+    const existingData = await RedesignedDraftModel.findOne({ "Company Name" : companyName });
+
+    if (existingData) {
+      // Update existing data if found
+      const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+        { "Company Name" : companyName },
+        { $set: newData },
+        { new: true }
+      );
+      res.status(200).json(updatedData); // Respond with updated data
+    } else {
+      // Create new data if not found
+      const createdData = await RedesignedDraftModel.create({ ...newData, companyName });
+      res.status(201).json(createdData); // Respond with created data
+    }
+  } catch (error) {
+    console.error('Error creating/updating data:', error);
+    res.status(500).send('Error creating/updating data'); // Send an error response
+  }
+});
 
 http.listen(3001, function () {
   console.log("Server started...");

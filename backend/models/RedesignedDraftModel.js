@@ -3,93 +3,67 @@ const mongoose = require("mongoose");
 const ServiceSchema = new mongoose.Schema({
   serviceName: {
     type: String,
-    required: true,
   },
   totalPaymentWOGST: {
     type: Number,
-    required: true,
   },
   totalPaymentWGST: {
     type: Number,
-    required: true,
   },
   paymentTerms: {
     type: String,
-    required: true,
   },
   firstPayment: {
     type: String,
-    required: true,
   },
   secondPayment: {
     type: String,
-    required: true,
   },
   thirdPayment: {
     type: String,
-    required: true,
   },
   fourthPayment: {
     type: String,
-    required: true,
   },
   paymentRemarks: {
     type: String,
     default: "No payment remarks",
   },
 });
-
-const RedesignedLeadformSchema = new mongoose.Schema({
-    company: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Company Model',
-        localField: 'Company Name',
-        foreignField: 'Company Name',
-        justOne: true,
-        match: { Status: 'Matured' }
-      },
+const RedesignedDraftModelSchema = new mongoose.Schema({
   "Company Name": {
     type: String,
-    required: true,
+    unique:true
   },
   "Company Number": {
     type: Number,
-    required: true,
   },
   "Company Email": {
     type: String,
-    required: true,
   },
   panNumber:{
     type:String,
-    required:true
   },
   gstNumber:{
     type:String
   },
   incoDate: {
     type: String,
-    required: true,
   },
   bdeName: {
     type: String,
-    required: true,
   },
   bdmName: {
     type: String,
-    required: true,
   },
   bookingDate: {
     type: String,
-    required: true,
   },
   bookingSource: {
     type: String,
-    required: true,
   },
   numberOfServices: {
     type: Number,
-    required: true,
   },
   services: [ServiceSchema],
   caCase: {
@@ -123,11 +97,27 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   pendingAmount: {
     type: Number,
   },
+  Step1Status: {
+    type: Boolean,
+    default:false
+  },
+  Step2Status: {
+    type: Boolean,
+    default:false
+  },
+  Step3Status: {
+    type: Boolean,
+    default:false
+  },
+  Step4Status: {
+    type: Boolean,
+    default:false
+  },
 });
 
-const RedesignedLeadformModel = mongoose.model(
-  "RedesignedLeadform",
-  RedesignedLeadformSchema
+const RedesignedDraftModel = mongoose.model(
+  "RedesignedDraftModel",
+  RedesignedDraftModelSchema
 );
 
-module.exports = RedesignedLeadformModel;
+module.exports = RedesignedDraftModel;

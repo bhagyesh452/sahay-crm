@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -8,6 +8,8 @@ import StepButton from "@mui/material/StepButton";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
+import axios from "axios";
+const secretKey = process.env.REACT_APP_SECRET_KEY;
 const steps = [
   "Basic Company Informations",
   "Booking Details",
@@ -16,11 +18,80 @@ const steps = [
   "Final",
 ];
 
-export default function HorizontalNonLinearStepper() {
+const defaultService = {
+  serviceName: '',
+  totalPaymentWOGST: '',
+  totalPaymentWGST: '',
+  paymentTerms: '',
+  firstPayment: '',
+  secondPayment: '',
+  thirdPayment: '',
+  fourthPayment: '',
+  paymentRemarks: 'No payment remarks',
+};
+
+
+
+
+
+export default function RedesignedForm({companysName}) {
+  const defaultLeadData = {
+    "Company Name": companysName,
+    "Company Number": '',
+    "Company Email": '',
+    panNumber: '',
+    gstNumber:'',
+    incoDate: '',
+    bdeName: '',
+    bdmName: '',
+    bookingDate: '',
+    bookingSource: '',
+    numberOfServices: 0,
+    services: [defaultService],
+    caCase: false,
+    caName: '',
+    caEmail: '',
+    caCommission: '',
+    paymentMethod: '',
+    paymentReceipt: '',
+    extraNotes: '',
+    totalAmount: 0,
+    receivedAmount: 0,
+    pendingAmount: 0,
+  };
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [selectedValues, setSelectedValues] = useState("");
   const [totalServices, setTotalServices] = useState(1);
+  const [leadData, setLeadData] = useState(defaultLeadData);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${secretKey}/redesigned-leadData/${companysName}`);
+        const data = response.data.find(item => item["Company Name"] === companysName);
+        if(data.Step1Status === true && data.Step2Status === false){
+          setLeadData({ ...leadData, "Company Name": data["Company Name"] , "Company Email" : data["Company Email"] , "Company Number" : data["Company Number"] , incoDate : data.incoDate , panNumber:data.panNumber , gstNumber:data.gstNumber});
+          setCompleted({0:true});
+          setActiveStep(1)
+        }else if(data.Step2Status === true && data.Step3Status === false){
+          setLeadData({ ...leadData, "Company Name": data["Company Name"] , "Company Email" : data["Company Email"] , "Company Number" : data["Company Number"] , incoDate : data.incoDate , panNumber:data.panNumber , gstNumber:data.gstNumber , bdeName : data.bdeName , bdeEmail : data.bdeEmail , bdmName : data.bdmName , bdmEmail : data.bdmEmail , bookingDate: data.bookingDate , bookingSource: data.bookingSource});
+          setCompleted({0:true , 1:true});
+          setActiveStep(2)
+        }
+        
+      console.log(data)
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+
+
+
+
+
 
   const totalSteps = () => {
     return steps.length;
@@ -54,11 +125,42 @@ export default function HorizontalNonLinearStepper() {
     setActiveStep(step);
   };
 
-  const handleComplete = () => {
-    const newCompleted = completed;
-    newCompleted[activeStep] = true;
-    setCompleted(newCompleted);
-    handleNext();
+  const handleComplete = async () => {
+    try {
+      const newCompleted = completed;
+      newCompleted[activeStep] = true;
+   
+      setCompleted(newCompleted);
+      
+      // Prepare the data to send to the backend
+      let dataToSend = {
+        ...leadData,
+        Step1Status: true,
+      };
+  
+      if (activeStep === 1) {
+        dataToSend = {
+          ...dataToSend,
+          Step2Status: true,
+        };
+      } else if (activeStep === 2) {
+        dataToSend = {
+          ...dataToSend,
+          Step2Status: true,
+          Step3Status: true,
+        };
+      }
+     
+      console.log(activeStep , dataToSend)
+      // Make a POST request to send data to the backend
+      const response = await axios.post(`${secretKey}/redesigned-leadData/${companysName}`, dataToSend);
+      console.log('Data sent to backend:', response.data); // Log the response from the backend
+  
+      handleNext(); // Proceed to the next step
+    } catch (error) {
+      console.error('Error sending data to backend:', error);
+      // Handle error if needed
+    }
   };
 
   const handleReset = () => {
@@ -250,10 +352,15 @@ export default function HorizontalNonLinearStepper() {
     return services;
   };
 
+  console.log("Default Lead Data :" , leadData);
+  const handleInputChange = (value , id) => {
+    
+    setLeadData({ ...leadData, [id]: value });
+  };
+
   return (
     <div>
-      <Header />
-      <Navbar />
+     
       <div className="container mt-2">
         <div className="card">
           <div className="card-body p-3">
@@ -306,6 +413,10 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter Company Name"
                                         id="Company"
+                                        value={leadData["Company Name"]}
+                                        onChange={(e)=>{
+                                          handleInputChange(e.target.value , "Company Name")
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -317,6 +428,10 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter email"
                                         id="email"
+                                        value={leadData["Company Email"]}
+                                        onChange={(e)=>{
+                                          handleInputChange(e.target.value , "Company Email")
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -328,6 +443,10 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter Number"
                                         id="number"
+                                        value={leadData["Company Number"]}
+                                        onChange={(e)=>{
+                                          handleInputChange(e.target.value , "Company Number")
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -339,8 +458,12 @@ export default function HorizontalNonLinearStepper() {
                                       <input
                                         type="date"
                                         className="form-control mt-1"
-                                        placeholder="Enter Number"
-                                        id="number"
+                                        placeholder="Incorporation Date"
+                                        id="inco-date"
+                                        value={leadData.incoDate}
+                                        onChange={(e)=>{
+                                          handleInputChange(e.target.value , "incoDate")
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -352,6 +475,10 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter Company's PAN"
                                         id="pan"
+                                        value={leadData.panNumber}
+                                        onChange={(e)=>{
+                                          handleInputChange(e.target.value , "panNumber")
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -363,6 +490,10 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter Company's GST"
                                         id="gst"
+                                        value={leadData.gstNumber}
+                                        onChange={(e)=>{
+                                          handleInputChange(e.target.value , "gstNumber")
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -389,6 +520,10 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter BDE Name"
                                         id="bdeName"
+                                        value={leadData.bdeName}
+                                        onChange={(e)=>{
+                                          handleInputChange(e.target.value , "bdeName")
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -402,6 +537,10 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter BDE email"
                                         id="BDEemail"
+                                        value={leadData.bdeEmail}
+                                        onChange={(e)=>{
+                                          handleInputChange(e.target.value , "bdeEmail")
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -413,6 +552,10 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter BDM Name"
                                         id="bdmName"
+                                        value={leadData.bdmName}
+                                        onChange={(e)=>{
+                                          handleInputChange(e.target.value , "bdmName")
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -426,6 +569,10 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter BDM email"
                                         id="BDMemail"
+                                        value={leadData.bdmEmail}
+                                        onChange={(e)=>{
+                                          handleInputChange(e.target.value , "bdmEmail")
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -439,6 +586,10 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter Booking date"
                                         id="booking-date"
+                                        value={leadData.bookingDate}
+                                        onChange={(e)=>{
+                                          handleInputChange(e.target.value , "bookinigDate")
+                                        }}
                                       />
                                     </div>
                                   </div>
