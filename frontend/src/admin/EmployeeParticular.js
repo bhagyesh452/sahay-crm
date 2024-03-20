@@ -1443,7 +1443,7 @@ function EmployeeParticular() {
                       {loading ? (
                         <tbody>
                           <tr>
-                          <td colSpan="11" style={{height:"100px !important", padding:"80px !important"}}>
+                          <td colSpan="11" style={{height:"100px !important", padding:"80px !important"}} className="LoaderTDSatyle">
                            <ClipLoader
                             color="lightgrey"
                             loading
@@ -1588,7 +1588,7 @@ function EmployeeParticular() {
                         </>
                       )}
                       {companiesLoading ? (
-                        <tbody className="d-flex align-items-center justify-content-center">
+                        <tbody className="d-flex align-items-center justify-content-center LoaderTDSatyle">
                           <ClipLoader
                             color="lightgrey"
                             loading
