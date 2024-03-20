@@ -821,6 +821,7 @@ color: #4e884e;
 {
   background: #f6f8fb;
   height: calc(100vh - 230px);
+  overflow-y: scroll;
 }
 .steprForm
 {
@@ -863,3 +864,39 @@ color: #4e884e;
   margin-left: 8px;
 }
 /****************Steper Form CSS End ************************/
+.servicesFormCard
+{
+  background: #f7f7f7;
+  padding: 15px;
+  border-radius: 10px;
+  position: relative;
+}
+.services_No
+{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 100px;
+  background: #fbb900;
+  text-align: center;
+  font-weight: bold;
+  color: #fff;
+}
+.input-group .btn
+{
+  border-color: #fbb900 !important
+}
+.total-payment-inputs
+{
+  width: 60%;
+}
+.notes
+{
+  width: fit-content;
+  padding: 4px 6px;
+  background: #fcffcd;
+  color: #000;
+}

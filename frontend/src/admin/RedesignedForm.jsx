@@ -12,7 +12,7 @@ const steps = [
   "Basic Company Informations",
   "Booking Details",
   "Services And Payments",
-  "Payment Details",
+  "Payment Summery",
   "Final",
 ];
 
@@ -504,8 +504,7 @@ export default function HorizontalNonLinearStepper() {
                             <h2 className="text-center">
                               Step:3 - Services & Payment
                             </h2>
-
-                            <div className="steprForm-inner m-2">
+                            <div className="steprForm-inner">
                               <form>
                                 <div className="d-flex align-items-center">
                                   <div>
@@ -531,8 +530,199 @@ export default function HorizontalNonLinearStepper() {
                                     </select>
                                   </div>
                                 </div>
-
-                                {renderServices()}
+                                <div className="servicesFormCard mt-3">
+                                  {/* <div className="services_No">
+                                        1
+                                  </div> */}
+                                  <div className="d-flex align-items-center">
+                                    <div className="selectservices-label mr-2">
+                                      <label for="selectservices">
+                                        Select Service:
+                                      </label>
+                                    </div>
+                                    <div className="selectservices-label-selct">
+                                      <select
+                                        className="form-select mt-1"
+                                        id="selectservices"
+                                      >
+                                        <option value="" disabled selected>
+                                          Seed Fund
+                                        </option>
+                                        <option value="Excel Data">
+                                          Startup certificate
+                                        </option>
+                                      </select>
+                                    </div>
+                                    <div className="ml-2">
+                                      <div class="form-check m-0">
+                                        <input
+                                          className="form-check-input"
+                                          type="checkbox"
+                                          id="dsc"
+                                          value="0"
+                                        />
+                                        <label
+                                          class="form-check-label"
+                                          for="dsc"
+                                        >
+                                          WITH DSC
+                                        </label>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <hr className="mt-3 mb-3"></hr>
+                                  <div className="row align-items-center mt-2">
+                                    <div className="col-sm-8">
+                                      <label class="form-label">
+                                        Total Amount
+                                      </label>
+                                      <div className="d-flex align-items-center">
+                                        <div class="input-group total-payment-inputs mb-2">
+                                          <input
+                                            type="text"
+                                            class="form-control "
+                                            placeholder="Search for…"
+                                          />
+                                          <button class="btn" type="button">
+                                            ₹
+                                          </button>
+                                        </div>
+                                        <div class="form-check ml-2">
+                                          <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            id="GST"
+                                            value="0"
+                                          />
+                                          <label
+                                            class="form-check-label"
+                                            for="GST"
+                                          >
+                                            WITH GST (18%)
+                                          </label>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-4">
+                                      <div className="form-group">
+                                        <label class="form-label">
+                                          Total Amount With GST
+                                        </label>
+                                        <div class="input-group mb-2">
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            placeholder="Search for…"
+                                          />
+                                          <button class="btn" type="button">
+                                            ₹
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row mt-2">
+                                    <div className="col-sm-12">
+                                      <label className="form-label">
+                                        Payment Terms
+                                      </label>
+                                    </div>
+                                    <div className="full-time col-sm-12">
+                                      <label className="form-check form-check-inline col">
+                                        <input
+                                          className="form-check-input"
+                                          type="radio"
+                                          name="radios-inline"
+                                          value="Full Advanced"
+                                        />
+                                        <span className="form-check-label">
+                                          Full Advanced
+                                        </span>
+                                      </label>
+                                      <label className="form-check form-check-inline col">
+                                        <input
+                                          className="form-check-input"
+                                          type="radio"
+                                          name="radios-inline"
+                                          value="two-part"
+                                        />
+                                        <span className="form-check-label">
+                                          Part Payment
+                                        </span>
+                                      </label>
+                                    </div>
+                                  </div>
+                                  <div className="row mt-2">
+                                    <div className="col-sm-3">
+                                      <div className="form-group">
+                                        <label class="form-label">
+                                          First Payment
+                                        </label>
+                                        <div class="input-group mb-2">
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            placeholder="Search for…"
+                                          />
+                                          <button class="btn" type="button">
+                                            ₹
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-3">
+                                      <div className="form-group">
+                                        <label class="form-label">
+                                          Second Payment
+                                        </label>
+                                        <div class="input-group mb-2">
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            placeholder="Search for…"
+                                          />
+                                          <button class="btn" type="button">
+                                            ₹
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-3">
+                                      <div className="form-group">
+                                        <label class="form-label">
+                                          Third Payment
+                                        </label>
+                                        <div class="input-group mb-2">
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            placeholder="Search for…"
+                                          />
+                                          <button class="btn" type="button">
+                                            ₹
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-sm-3">
+                                      <div className="form-group">
+                                        <label class="form-label">
+                                          Fourth Payment
+                                        </label>
+                                        <div class="input-group mb-2">
+                                          <input
+                                            type="text"
+                                            class="form-control"
+                                            placeholder="Search for…"
+                                          />
+                                          <button class="btn" type="button">
+                                            ₹
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                               </form>
                             </div>
                           </div>
@@ -540,7 +730,166 @@ export default function HorizontalNonLinearStepper() {
                       )}
                       {activeStep === 3 && (
                         <>
-                          <div className="steprForm step-1">Step 4</div>
+                          <div className="step-4">
+                            <h2 className="text-center">
+                              Step:4 - Payment Summery
+                            </h2>
+                            <div className="steprForm-inner">
+                              <form>
+                                <div className="row">
+                                  <div className="col-sm-12">
+                                    <span className="notes">
+                                      Note: Total Selected Services is <b>4</b>.
+                                    </span>
+                                  </div>
+                                  <div className="col-sm-4 mt-3">
+                                    <div className="form-group">
+                                      <label class="form-label">
+                                        Total Payment
+                                      </label>
+                                      <div class="input-group mb-2">
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          placeholder="Search for…"
+                                        />
+                                        <button class="btn" type="button">
+                                          ₹
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-4 mt-3">
+                                    <div className="form-group">
+                                      <label class="form-label">
+                                        Received Payment
+                                      </label>
+                                      <div class="input-group">
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          placeholder="Search for…"
+                                        />
+                                        <button class="btn" type="button">
+                                          ₹
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-4 mt-3">
+                                    <div className="form-group">
+                                      <label class="form-label">
+                                        Pending Payment
+                                      </label>
+                                      <div class="input-group mb-2">
+                                        <input
+                                          type="text"
+                                          class="form-control"
+                                          placeholder="Search for…"
+                                        />
+                                        <button class="btn" type="button">
+                                          ₹
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-4 mt-2">
+                                    <div className="form-group mt-2 mb-2">
+                                      <label
+                                        className="form-label"
+                                        for="Company"
+                                      >
+                                        Payment Remarks
+                                      </label>
+                                      <textarea
+                                        rows={1}
+                                        className="form-control mt-1"
+                                        placeholder="Enter Company Name"
+                                        id="Company"
+                                      ></textarea>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-4 mt-2">
+                                    <div className="form-group mt-2 mb-2">
+                                      <label
+                                        className="form-label"
+                                        for="Company"
+                                      >
+                                        Upload Payment Recipt
+                                      </label>
+                                      <input
+                                        type="file"
+                                        className="form-control mt-1"
+                                        id="Company"
+                                      ></input>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-4 mt-2">
+                                    <div class="form-group mt-2 mb-2">
+                                      <label class="form-label">
+                                        Payment Method
+                                      </label>
+                                      <select
+                                        class="form-select mb-3"
+                                        id="select-emails"
+                                        fdprocessedid="iey9wm"
+                                      >
+                                        <option value="" disabled="">
+                                          Select Payment Option
+                                        </option>
+                                        <option value="ICICI Bank">
+                                          ICICI Bank
+                                        </option>
+                                        <option value="SRK Seedfund(Non GST)/IDFC first Bank">
+                                          SRK Seedfund(Non GST)/IDFC first Bank
+                                        </option>
+                                        <option value="STARTUP SAHAY SERVICES/ADVISORY(Non GST)/ IDFC First Bank">
+                                          STARTUP SAHAY SERVICES/ADVISORY(Non
+                                          GST)/ IDFC First Bank
+                                        </option>
+                                        <option value="Razorpay">
+                                          Razorpay
+                                        </option>
+                                        <option value="PayU">PayU</option>
+                                        <option value="Other">Other</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-6 mt-2">
+                                    <div className="form-group">
+                                      <label
+                                        className="form-label"
+                                        for="remarks"
+                                      >
+                                        Any Extra Remarks
+                                      </label>
+                                      <textarea
+                                        rows={1}
+                                        className="form-control mt-1"
+                                        placeholder="Enter Company Name"
+                                        id="remarks"
+                                      ></textarea>
+                                    </div>
+                                  </div>
+                                  <div className="col-sm-6 mt-2">
+                                    <div className="form-group">
+                                      <label
+                                        className="form-label"
+                                        for="docs"
+                                      >
+                                        Upload Additional Docs
+                                      </label>
+                                      <input
+                                        type="file"
+                                        className="form-control mt-1"
+                                        id="docs"
+                                      ></input>
+                                    </div>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
                         </>
                       )}
                       {activeStep === 4 && (
