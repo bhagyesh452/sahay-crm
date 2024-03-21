@@ -288,6 +288,8 @@ function Leads() {
   const filteredData = mainData.filter((company) => {
     const fieldValue = company[selectedField];
 
+
+
     if (selectedField === "State" && citySearch) {
       // Handle filtering by both State and City
       const stateMatches = fieldValue
@@ -331,6 +333,51 @@ function Leads() {
       return false;
     }
   });
+
+  // const filteredData = mainData.filter((company) => {
+  //   // Extract the values you want to search from the company object
+  //   const valuesToSearch = Object.values(company).map(value => {
+  //     if (typeof value === "string") {
+  //       return value.toLowerCase();
+  //     } else if (typeof value === "number") {
+  //       return value.toString();
+  //     } else if (value instanceof Date) {
+  //       // Convert date to a string representation
+  //       return value.toString().toLowerCase();
+  //     }
+  //     // If the value is not string, number, or date, return an empty string
+  //     return "";
+  //   });
+
+  //   // Join all values into a single string for easier searching
+  //   const allValues = valuesToSearch.join(" ");
+
+  //   // Perform case-insensitive search
+  //   return allValues.toLowerCase().includes(searchText.toLowerCase());
+  // });
+
+  // console.log(filteredData)
+
+  // const [filteredData, setfilteredData] = useState([])
+
+
+  // function filterSearch(searchText) {
+  //   setSearchText(searchText);
+  //   setfilteredData(mainData.filter(company =>
+  //     company.companyName.toLowerCase().includes(searchText.toLowerCase())
+  //     company.offeredServices.some(service =>
+  //       service.toLowerCase().includes(searchTerm.toLowerCase())
+  //     ) ||
+  //     company.totalPayment.toString() === searchTerm ||
+  //     company.offeredPrize.toString() === searchTerm ||
+  //     company.estPaymentDate.includes(searchTerm)
+
+  //   ));
+  // }
+  //  This will log an array containing objects with
+
+  // console.log(filteredData)
+
 
   const currentData = filteredData.slice(startIndex, endIndex);
 
@@ -1637,6 +1684,54 @@ function Leads() {
                   </div>
                 </div>
               </div>
+
+              {/* <div style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+                className="features">
+                <div
+                  style={{
+                    width: "15vw",
+                    margin: "0px 10px",
+                    display: visibilityOther,
+                  }}
+                  className="input-icon">
+                  <span className="input-icon-addon">
+
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="20"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                      <path d="M21 21l-6 -6" />
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    value={searchText}
+                    onChange={(e) => {
+                      // filterSearch(e.target.value)
+                      setSearchText(e.target.value);
+                      setCurrentPage(0);
+                    }}
+                    className="form-control"
+                    placeholder="Search…"
+                    aria-label="Search in website"
+                  />
+                </div>
+              </div> */}
               <div
                 style={{
                   display: "flex",
@@ -1644,17 +1739,14 @@ function Leads() {
                   justifyContent: "space-between",
                   alignItems: "center",
                 }}
-                className="features"
-              >
+                className="features">
                 <div
                   style={{ display: "flex", justifyContent: "space-between" }}
-                  className="features"
-                >
+                  className="features">
                   <div style={{ display: "flex" }} className="feature1">
                     <div
                       className="form-control"
-                      style={{ height: "fit-content", width: "15vw" }}
-                    >
+                      style={{ height: "fit-content", width: "15vw" }}>
                       <select
                         style={{
                           border: "none",
@@ -1662,8 +1754,7 @@ function Leads() {
                           width: "fit-content",
                         }}
                         value={selectedField}
-                        onChange={handleFieldChange}
-                      >
+                        onChange={handleFieldChange}>
                         <option value="Company Name">Company Name</option>
                         <option value="Company Number">Company Number</option>
                         <option value="Company Email">Company Email</option>
@@ -1696,10 +1787,9 @@ function Leads() {
                           margin: "0px 10px",
                           display: visibilityOther,
                         }}
-                        className="input-icon"
-                      >
+                        className="input-icon">
                         <span className="input-icon-addon">
-                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                        
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="icon"
@@ -1783,7 +1873,6 @@ function Leads() {
                     {selectedField === "State" && (
                       <div style={{ width: "15vw" }} className="input-icon">
                         <span className="input-icon-addon">
-                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="icon"
@@ -2028,128 +2117,9 @@ function Leads() {
 
                         </div>}
                       </th>
-                      {/* <th>
-                              Assigned Date
-                              <SwapVertIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => {
-                                  const sortedData = [...mainData].sort(
-                                    (a, b) => {
-                                      if (sortOrder === "asc") {
-                                        return b.AssignDate.localeCompare(
-                                          a.AssignDate
-                                        );
-                                      } else {
-                                        return a.AssignDate.localeCompare(
-                                          b.AssignDate
-                                        );
-                                      }
-                                    }
-                                  );
-                                  setmainData(sortedData);
-                                  setSortOrder(
-                                    sortOrder === "asc" ? "desc" : "asc"
-                                  );
-                                }}
-                              />
-                            </th> */}
                       <th>Action</th>
                     </tr>
                   </thead>
-                  {/* {currentData.length == 0 ? (
-                    <tbody>
-                      <tr>
-                        <td colSpan="13" className="p-2 particular">
-                          <Nodata />
-                        </td>
-                      </tr>
-                    </tbody>
-                  ) : (
-                    currentData.map((company, index) => (
-                      <tbody className="table-tbody">
-                        <tr
-                          key={index}
-                          className={
-                            selectedRows.includes(company._id) ? "selected" : ""
-                          }
-                          style={{ border: "1px solid #ddd" }}
-                        >
-                          <td>
-                            <input
-                              type="checkbox"
-                              checked={selectedRows.includes(company._id)}
-                              onChange={() => handleCheckboxChange(company._id)}
-                              onMouseDown={() => handleMouseDown(company._id)}
-                              onMouseEnter={() => handleMouseEnter(company._id)}
-                              onMouseUp={handleMouseUp}
-                            />
-                          </td>
-                          <td>{startIndex + index + 1}</td>
-                          <td>{company["Company Name"]}</td>
-                          <td>{company["Company Number"]}</td>
-                          <td>
-                            {formatDate(
-                              company["Company Incorporation Date  "]
-                            )}
-                          </td>
-                          <td>{company["City"]}</td>
-                          <td>{company["State"]}</td>
-                          <td>{company["Company Email"]}</td>
-                          <td>{company["Status"]}</td>
-                          <td>
-                            {company["Remarks"]}{" "}
-                            <IconEye
-                              onClick={() => {
-                                functionopenpopupremarks(
-                                  company._id,
-                                  company.Status
-                                );
-                              }}
-                              style={{
-                                width: "18px",
-                                height: "18px",
-                                color: "#d6a10c",
-                                cursor: "pointer",
-                              }}
-                            />
-                          </td>
-                          <td>{company["ename"]}</td>
-                          <td>{formatDate(company["AssignDate"])}</td>
-                          <td>
-                            <IconButton
-                              onClick={() => handleDeleteClick(company._id)}
-                            >
-                              <DeleteIcon
-                                style={{
-                                  width: "16px",
-                                  height: "16px",
-                                  color: "#bf0b0b",
-                                }}
-                              >
-                                Delete
-                              </DeleteIcon>
-                            </IconButton>
-                            <Link to={`/admin/leads/${company._id}`}>
-                              <IconButton>
-                                <IconEye
-                                  style={{
-                                    width: "18px",
-                                    height: "18px",
-                                    color: "#d6a10c",
-                                    cursor: "pointer",
-                                  }}
-                                />
-                              </IconButton>
-                            </Link>
-                          </td>
-                        </tr>
-                      </tbody>
-                    ))
-                  )} */}
                   {currentDataLoading ? (
                     <tbody>
                       <tr>
@@ -2241,13 +2211,15 @@ function Leads() {
             </div>
             {currentData.length === 0 && !currentDataLoading &&
               (
-                <tbody className="d-flex align-items-center justify-content-center">
-                  <tr>
-                    <td colSpan="13" className="p-2 particular">
-                      <Nodata />
-                    </td>
-                  </tr>
-                </tbody>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td colSpan="13" className="p-2 particular">
+                        <Nodata />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               )}
             {currentData.length !== 0 && (
               <div

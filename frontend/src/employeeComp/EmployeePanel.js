@@ -42,7 +42,7 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
-import DrawerComponent from "../components/Drawer.js";
+//import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
@@ -183,6 +183,8 @@ function EmployeePanel() {
 
   console.log("projectingcompnay", projectingCompany)
   
+console.log("kuchlikho" , currentProjection)
+
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
     setOpenProjection(true);
@@ -1184,7 +1186,28 @@ function EmployeePanel() {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const handleIconButtonClick = () => {
+  const handleIconButtonClick = (comName) => {
+    setProjectingCompany(comName);
+    setIsDrawerOpen(true);
+    const findOneprojection =
+      projectionData.length !== 0 &&
+      projectionData.find((item) => item.companyName === comName);
+    if (findOneprojection) {
+      setCurrentProjection({
+        companyName: findOneprojection.companyName,
+        ename: findOneprojection.ename,
+        offeredPrize: findOneprojection.offeredPrize,
+        offeredServices: findOneprojection.offeredServices,
+        lastFollowUpdate: findOneprojection.lastFollowUpdate,
+        estPaymentDate: findOneprojection.estPaymentDate,
+        remarks: findOneprojection.remarks,
+        totalPayment: findOneprojection.totalPayment,
+        date: "",
+        time: "",
+        editCount: findOneprojection.editCount,
+      });
+      setSelectedValues(findOneprojection.offeredServices);
+    }
     setIsDrawerOpen(true);
   };
 
@@ -2495,7 +2518,7 @@ function EmployeePanel() {
                                               onClick={() => {
                                                 functionopenprojection(company["Company Name"]);
                                               }}
-                                              //onClick={handleIconButtonClick}
+                                              //onClick={()=>handleIconButtonClick(company["Company Name"])}
                                               style={{
                                                 cursor: "pointer",
                                                 width: "17px",
@@ -2504,7 +2527,7 @@ function EmployeePanel() {
                                               color="#fbb900"
                                             />
                                           </IconButton>
-                                          {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} functionopenprojection={functionopenprojection} projectingCompany={projectingCompany} /> */}
+                                         {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} currentProjection1={currentProjection} /> */}
                                         </>
                                       ) : (
                                         <IconButton>
