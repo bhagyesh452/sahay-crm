@@ -268,7 +268,7 @@ function EmployeeDashboard() {
 
         const id = data._id;
         const response = await axios.put(`${secretKey}/online-status/${id}/${socketID}`);
-        console.log(response.data); // Log response for debugging
+        //console.log(response.data); // Log response for debugging
         return response.data; // Return response data if needed
       } catch (error) {
         console.error('Error:', error);
@@ -340,7 +340,7 @@ function EmployeeDashboard() {
     }
   };
 
-  console.log("ajki", followDataToday)
+  //console.log("ajki", followDataToday)
 
 
   // console.log(followData);
@@ -533,7 +533,7 @@ function EmployeeDashboard() {
   const handleSelectTotalSummary = (date) => {
     const filteredDataDateRange = followData.filter((product) => {
       const productDate = new Date(product["estPaymentDate"]);
-      console.log("productdate", productDate)
+      //console.log("productdate", productDate)
 
       if (
         formatDate(date.selection.startDate) ===
@@ -552,8 +552,8 @@ function EmployeeDashboard() {
     setFollowDataFilter(filteredDataDateRange);
     //console.log(filteredDataDateRange);
   };
-  console.log(startDateTotalSummary)
-  console.log(endDateTotalSummary)
+  //console.log(startDateTotalSummary)
+  //console.log(endDateTotalSummary)
 
 
   // function calculateSumFilter(data) {
@@ -659,14 +659,16 @@ function EmployeeDashboard() {
 
     ));
   }
+  
+  
   const [searchTermTotalSummary, setsearchTermTotalSummary] = useState("")
 
-  console.log(followDataFilter)
-  console.log(followData)
+  //console.log(followDataFilter)
+  //console.log(followData)
 
   function filterSearchTotalSummary(searchTermTotalSummary) {
     setsearchTermTotalSummary(searchTermTotalSummary);
-    console.log(searchTermTotalSummary)
+    //console.log(searchTermTotalSummary)
     setFollowDataFilter(followData.filter(company =>
       company.companyName.toLowerCase().includes(searchTermTotalSummary.toLowerCase()) ||
       company.offeredServices.some(service =>
@@ -1226,9 +1228,9 @@ function EmployeeDashboard() {
     try {
       // Send a DELETE request to the backend API endpoint
       const response = await axios.delete(`${secretKey}/delete-followup/${companyName}`);
-      console.log(response.data.message); // Log the response message
+      //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
-      console.log('Deleted!', 'Your data has been deleted.', 'success');
+      //console.log('Deleted!', 'Your data has been deleted.', 'success');
       setCurrentProjection({
         companyName: "",
         ename: "",
@@ -1250,6 +1252,25 @@ function EmployeeDashboard() {
     }
   };
   //console.log("projections", currentProjection);
+  //const containerRef = useRef();
+
+  // const handleButtonClick = (dateRangePickerRef) => {
+  //   console.log("hello world")
+  //   setShowBookingDate(true);
+  //   // Scroll the window to the position of the date range picker
+  //   console.log(dateRangePickerRef.current)
+  //   if (showBookingDate && dateRangePickerRef.current) {
+  //     const { top } = dateRangePickerRef.current.getBoundingClientRect();
+
+  //     window.scrollTo({
+  //       top: window.scrollY + top,
+  //       //bottom:"0px",
+  //       behavior: "smooth" // You can change this to "auto" if you prefer instant scrolling
+  //     });
+  //   }
+  // };
+
+
 
 
   return (
@@ -2063,263 +2084,254 @@ function EmployeeDashboard() {
 
 
       <div className="container-xl mt-2">
-        <div className="card">
-          <div className="card-header employeedashboard">
-            <h2 style={{ marginBottom: '5px' }}>Projection Summary</h2>
-          </div>
-          <div className="card-body">
-            <div className="row">
-              <div className="col-6" id="projectiontotalsummary">
-                <div className="card" style={{ minHeight: "20vw" }}>
-                  <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-                    <div className="dashboard-title">
-                      <h2 style={{ marginBottom: '5px' }}>Total Summary</h2>
-                    </div>
-                    <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
-                      <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
-                        <input
-                          className=""
-                          value={searchTermTotalSummary}
-                          onChange={(e) => filterSearchTotalSummary(e.target.value)}
-                          placeholder="Search here....."
-                          style={{
-                            border: "none",
-                            padding: "0px"
-                            // Add a bottom border for the input field itself
-                          }}
-                          type="text"
-                          name="bdeName-search"
-                          id="bdeName-search"
+        <div className="row">
+          <div className="col-12" id="projectiontotalsummary">
+            <div className="card">
+              <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
+                <div className="dashboard-title">
+                  <h2 style={{ marginBottom: '5px' }}>Total Projection Summary</h2>
+                </div>
+                <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
+                  <div className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon" style={{width:"50%"}}>
+                    <span className="input-icon-addon">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="icon"
+                        width="20"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        
+                      >
+                        <path
+                          stroke="none"
+                          d="M0 0h24v24H0z"
+                          fill="none"
                         />
-                      </div>
-                      <div
-                        className="form-control d-flex align-items-center justify-content-between date-range-picker">
-                        <div>{`${formatDate(startDateTotalSummary)} - ${formatDate(endDateTotalSummary)}`}</div>
-                        <button
-                          onClick={handleIconClickTotalSummary}
-                          style={{
-                            border: "none",
-                            padding: "0px",
-                            backgroundColor: "white",
-                          }}
-                        >
-                          <FaRegCalendar
-                            style={{
-                              width: "17px",
-                              height: "17px",
-                              color: "#bcbaba",
-                              color: "grey",
-                            }}
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  {dateRangeTotalSummary && (
-                    <div
-                      ref={dateRangePickerProhectionSummaryRef}
-                      className="position-absolute "
-                      style={{ zIndex: "1", top: "14%", left: "75%" }}
-                    >
-                      <DateRangePicker
-                        ranges={[selectionRangeTotalSummary]}
-                        onClose={() => setdateRangeTotalSummary(false)}
-                        onChange={handleSelectTotalSummary}
-                      />
-                    </div>
-                  )}
-                  <div className="card-body">
-                    <div
-                      id="table-default"
+                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                        <path d="M21 21l-6 -6" />
+                      </svg>
+                    </span>
+                    <input
+                      className=""
+                      value={searchTermTotalSummary}
+                      onChange={(e) => filterSearchTotalSummary(e.target.value)}
+                      placeholder="Search here....."
                       style={{
-                        overflowX: "auto",
-                        overflowY: "auto",
-                        maxHeight: "60vh",
-                        height: "30vh"
+                        border: "none",
+                        padding: "0px 0px 0px 21px"
+                        // Add a bottom border for the input field itself
+                      }}
+                      type="text"
+                      name="bdeName-search"
+                      id="bdeName-search"
+                    />
+                  </div>
+                  <div
+                    className="form-control d-flex align-items-center justify-content-between date-range-picker">
+                    <div>{`${formatDate(startDateTotalSummary)} - ${formatDate(endDateTotalSummary)}`}</div>
+                    <button
+                      onClick={handleIconClickTotalSummary}
+                      style={{
+                        border: "none",
+                        padding: "0px",
+                        backgroundColor: "white",
                       }}
                     >
-                      <table
+                      <FaRegCalendar
                         style={{
-                          width: "100%",
-                          borderCollapse: "collapse",
-                          border: "1px solid #ddd",
-                          marginBottom: "10px",
+                          width: "17px",
+                          height: "17px",
+                          color: "#bcbaba",
+                          color: "grey",
                         }}
-                        className="table-vcenter table-nowrap"
-                      >
-                        <thead stSyle={{ backgroundColor: "grey" }}>
-                          <tr
-                            style={{
-                              backgroundColor: "#ffb900",
-                              color: "white",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            <th
-                              style={{
-                                lineHeight: "32px",
-                              }}
-                            >
-                              Sr. No
-                            </th>
-                            <th>Company Name</th>
-                            <th>Offered Services</th>
-                            <th> Offered Price</th>
-                            <th>Expected Amount</th>
-                            <th>Remarks</th>
-                            <th>Last FollowUp Date</th>
-                            <th>Estimated Payment Date</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        {/*<tbody>
-                         {followDataFilter && followDataFilter.length > 0 ? (
-                            followDataFilter.map((obj, index) => (
-                              <tr key={`row-${index}`}>
-                                <td style={{
-                                  lineHeight: "32px",
-                                }}>{index + 1}</td>
-                                <td>{obj.companyName}</td>
-                                <td>{obj.offeredServices.join(', ')}</td>
-                                <td>₹{obj.offeredPrize && obj.offeredPrize.toLocaleString()}</td>
-                                <td>₹{obj.totalPayment && obj.totalPayment.toLocaleString()}</td>
-                                <td>{obj.remarks}</td>
-                                <td>{obj.lastFollowUpdate}</td>
-                                <td>{obj.estPaymentDate}</td>
-                                <td>
-                                  <IconButton
-                                    onClick={() => {
-                                      functionopenprojection(obj.companyName);
-                                    }}
-                                  >
-                                    <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }} />
-                                  </IconButton>
-                                </td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <Nodata />
-                            </tr>
-                          )
-                          }
-                        </tbody>
-                        {followDataFilter && (
-                          <tfoot>
-                            <tr style={{ fontWeight: 500 }}>
-                              <td style={{ lineHeight: "32px" }} colSpan="2">
-                                Total
-                              </td>
-                              <td>{offeredServices.length}</td>
-                              <td>₹{offeredPaymentSum.toLocaleString()}</td>
-                              <td> ₹{totalPaymentSum.toLocaleString()}</td>
-                              <td>-</td>
-                              <td>-</td>
-                              <td>-</td>
-                              <td>-</td>
-                            </tr>
-                          </tfoot>
-                        )} */}
-                        {projectionLoading ? (
-                          <tbody>
-                            <tr>
-                              <td colSpan="11" className="LoaderTDSatyle">
-                                <ClipLoader
-                                  color="lightgrey"
-                                  loading
-                                  size={30}
-                                  aria-label="Loading Spinner"
-                                  data-testid="loader"
-                                />
-                              </td>
-                            </tr>
-                          </tbody>
-                        ) : (
-                          <>
-                            {followDataFilter && followDataFilter.length > 0 ? (
-                              <>
-                                <tbody>
-                                  {followDataFilter.map((obj, index) => (
-                                    <tr key={`row-${index}`}>
-                                      <td style={{
-                                        lineHeight: "32px",
-                                      }}>{index + 1}</td>
-                                      <td>{obj.companyName}</td>
-                                      <td>{obj.offeredServices.join(', ')}</td>
-                                      <td>₹{obj.offeredPrize && obj.offeredPrize.toLocaleString()}</td>
-                                      <td>₹{obj.totalPayment && obj.totalPayment.toLocaleString()}</td>
-                                      <td>{obj.remarks}</td>
-                                      <td>{obj.lastFollowUpdate}</td>
-                                      <td>{obj.estPaymentDate}</td>
-                                      <td>
-                                        <IconButton
-                                          onClick={() => {
-                                            functionopenprojection(obj.companyName);
-                                          }}
-                                        >
-                                          <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }} />
-                                        </IconButton>
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                                {followDataFilter && (
-                                  <tfoot>
-                                    <tr style={{ fontWeight: 500 }}>
-                                      <td style={{ lineHeight: "32px" }} colSpan="2">
-                                        Total
-                                      </td>
-                                      <td>{offeredServices.length}</td>
-                                      <td>₹{offeredPaymentSum.toLocaleString()}</td>
-                                      <td> ₹{totalPaymentSum.toLocaleString()}</td>
-                                      <td>-</td>
-                                      <td>-</td>
-                                      <td>-</td>
-                                      <td>-</td>
-                                    </tr>
-                                  </tfoot>
-                                )}
-                              </>
-                            ) : (
-                              <tr>
-                                <td colSpan="11">
-                                  <Nodata />
-                                </td>
-
-                              </tr>
-                            )}
-                          </>
-                        )}
-
-                      </table>
-                    </div>
+                      />
+                    </button>
                   </div>
                 </div>
               </div>
-              <div className="col-6" id="projectiondashboardemployee" >
-                <div className="card" style={{ minHeight: "20vw" }}>
-                  <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-                    <div className="dashboard-title">
-                      <h2 style={{ marginBottom: '5px' }}>Current Date Summary</h2>
-                    </div>
-                    <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
-                      <div className=" form-control d-flex justify-content-center align-items-center general-searchbar" style={{ marginRight: "20px" }}>
-                        <input
-                          className=""
-                          value={searchTerm}
-                          onChange={(e) => filterSearch(e.target.value)}
-                          placeholder="Search here....."
+              {dateRangeTotalSummary && (
+                <div
+                  ref={dateRangePickerProhectionSummaryRef}
+                  className="position-absolute "
+                  style={{ zIndex: "1000", top: "14%", left: "75%" }}
+                >
+                  <DateRangePicker
+                    ranges={[selectionRangeTotalSummary]}
+                    onClose={() => setdateRangeTotalSummary(false)}
+                    onChange={handleSelectTotalSummary}
+                  />
+                </div>
+              )}
+              <div className="card-body">
+                <div
+                  id="table-default"
+                  style={{
+                    overflowX: "auto",
+                    overflowY: "auto",
+                    maxHeight: "60vh",
+                    height: "30vh"
+                  }}
+                >
+                  <table
+                    style={{
+                      width: "100%",
+                      borderCollapse: "collapse",
+                      border: "1px solid #ddd",
+                      marginBottom: "10px",
+                    }}
+                    className="table-vcenter table-nowrap">
+                    <thead style={{ backgroundColor: "grey" }}>
+                      <tr className="tr-sticky"
+                        style={{
+                          backgroundColor: "#ffb900",
+                          color: "white",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        <th
                           style={{
-                            border: "none",
-                            padding: "0px"
-                            // Add a bottom border for the input field itself
+                            lineHeight: "32px",
                           }}
-                          type="text"
-                          name="bdeName-search"
-                          id="bdeName-search"
+                        >
+                          Sr. No
+                        </th>
+                        <th>Company Name</th>
+                        <th>Offered Services</th>
+                        <th> Offered Price</th>
+                        <th>Expected Amount</th>
+                        <th>Remarks</th>
+                        <th>Last FollowUp Date</th>
+                        <th>Estimated Payment Date</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    {projectionLoading ? (
+                      <tbody>
+                        <tr>
+                          <td colSpan="11" className="LoaderTDSatyle">
+                            <ClipLoader
+                              color="lightgrey"
+                              loading
+                              size={30}
+                              aria-label="Loading Spinner"
+                              data-testid="loader"
+                            />
+                          </td>
+                        </tr>
+                      </tbody>
+                    ) : (
+                      <>
+                        {followDataFilter && followDataFilter.length > 0 ? (
+                          <>
+                            <tbody>
+                              {followDataFilter.map((obj, index) => (
+                                <tr key={`row-${index}`}>
+                                  <td style={{
+                                    lineHeight: "32px",
+                                  }}>{index + 1}</td>
+                                  <td>{obj.companyName}</td>
+                                  <td>{obj.offeredServices.join(', ')}</td>
+                                  <td>₹{obj.offeredPrize && obj.offeredPrize.toLocaleString()}</td>
+                                  <td>₹{obj.totalPayment && obj.totalPayment.toLocaleString()}</td>
+                                  <td>{obj.remarks}</td>
+                                  <td>{obj.lastFollowUpdate}</td>
+                                  <td>{obj.estPaymentDate}</td>
+                                  <td>
+                                    <IconButton
+                                      onClick={() => {
+                                        functionopenprojection(obj.companyName);
+                                      }}
+                                    >
+                                      <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }} />
+                                    </IconButton>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                            {followDataFilter && (
+                              <tfoot>
+                                <tr style={{ fontWeight: 500 }} className="tf-sticky">
+                                  <td style={{ lineHeight: "32px" }} colSpan="2">
+                                    Total
+                                  </td>
+                                  <td>{offeredServices.length}</td>
+                                  <td>₹{offeredPaymentSum.toLocaleString()}</td>
+                                  <td> ₹{totalPaymentSum.toLocaleString()}</td>
+                                  <td>-</td>
+                                  <td>-</td>
+                                  <td>-</td>
+                                  <td>-</td>
+                                </tr>
+                              </tfoot>
+                            )}
+                          </>
+                        ) : (
+                          <tr>
+                            <td colSpan="11">
+                              <Nodata />
+                            </td>
+
+                          </tr>
+                        )}
+                      </>
+                    )}
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col-12 mt-2" id="projectiondashboardemployee" >
+            <div className="card">
+              <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
+                <div className="dashboard-title">
+                  <h2 style={{ marginBottom: '5px' }}>Todays's Projection Summary</h2>
+                </div>
+                <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
+                  <div className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon" style={{ marginRight: "26px", width: "100%" }}>
+                    <span className="input-icon-addon">
+                      {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="icon"
+                        width="20"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path
+                          stroke="none"
+                          d="M0 0h24v24H0z"
+                          fill="none"
                         />
-                      </div>
-                      {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
+                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                        <path d="M21 21l-6 -6" />
+                      </svg>
+                    </span>
+                    <input
+                      className=""
+                      value={searchTerm}
+                      onChange={(e) => filterSearch(e.target.value)}
+                      placeholder="Search here....."
+                      style={{
+                        border: "none",
+                        padding: "0px 0px 0px 21px"
+                        // Add a bottom border for the input field itself
+                      }}
+                      type="text"
+                      name="bdeName-search"
+                      id="bdeName-search"
+                    />
+                  </div>
+                  {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
                         <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
                         <button
                           onClick={handleIconClick}
@@ -2339,9 +2351,9 @@ function EmployeeDashboard() {
                           />
                         </button>
                       </div> */}
-                    </div>
-                  </div>
-                  {/* {displayDateRange && (
+                </div>
+              </div>
+              {/* {displayDateRange && (
                     <div
                       ref={dateRangePickerProhectionRef}
                       className="position-absolute "
@@ -2354,199 +2366,134 @@ function EmployeeDashboard() {
                       />
                     </div>
                   )} */}
-                  <div className="card-body">
-                    <div
-                      id="table-default"
-                      style={{
-                        overflowX: "auto",
-                        overflowY: "auto",
-                        maxHeight: "60vh",
-                        height: "30vh",
-                      }}
-                    >
-                      <table
+              <div className="card-body">
+                <div
+                  id="table-default"
+                  style={{
+                    overflowX: "auto",
+                    overflowY: "auto",
+
+                  }}
+                >
+                  <table
+                    style={{
+                      width: "100%",
+                      borderCollapse: "collapse",
+                      border: "1px solid #ddd",
+                      marginBottom: "10px",
+                    }}
+                    className="table-vcenter table-nowrap"
+                  >
+                    <thead stSyle={{ backgroundColor: "grey" }}>
+                      <tr className="tr-sticky"
                         style={{
-                          width: "100%",
-                          borderCollapse: "collapse",
-                          border: "1px solid #ddd",
-                          marginBottom: "10px",
+                          backgroundColor: "#ffb900",
+                          color: "white",
+                          fontWeight: "bold",
                         }}
-                        className="table-vcenter table-nowrap"
                       >
-                        <thead stSyle={{ backgroundColor: "grey" }}>
-                          <tr
-                            style={{
-                              backgroundColor: "#ffb900",
-                              color: "white",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            <th
-                              style={{
-                                lineHeight: "32px",
-                              }}
-                            >
-                              Sr. No
-                            </th>
-                            <th>Company Name</th>
-                            <th>Offered Services</th>
-                            <th>Total Offered Price</th>
-                            <th>Expected Amount</th>
-                            <th>Remarks</th>
-                            <th>Last FollowUp Date</th>
-                            <th>Estimated Payment Date</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        {/* <tbody>
-                       {followDataTodayFilter ? (
-                            followDataTodayFilter.map((obj, index) => (
-                              <tr key={`row-${index}`}>
-                                <td
-                                  style={{
-                                    lineHeight: "32px",
-                                  }}
-                                >
-                                  {index + 1}
-                                </td>
-                                <td>{obj.companyName}</td>
-                                <td>{obj.offeredServices.join(", ")}</td>
-                                <td>
-                                  ₹
-                                  {obj.totalPayment &&
-                                    obj.totalPayment.toLocaleString()}
-                                </td>
-                                <td>₹{obj.offeredPrize.toLocaleString()}</td>
-                                <td>{obj.remarks}</td>
-                                <td>{obj.lastFollowUpdate}</td>
-                                <td>{obj.estPaymentDate}</td>
-                                <td>
-                                  <IconButton
-                                    onClick={() => {
-                                      functionopenprojection(obj.companyName);
+                        <th
+                          style={{
+                            lineHeight: "32px",
+                          }}
+                        >
+                          Sr. No
+                        </th>
+                        <th>Company Name</th>
+                        <th>Offered Services</th>
+                        <th>Total Offered Price</th>
+                        <th>Expected Amount</th>
+                        <th>Remarks</th>
+                        <th>Last FollowUp Date</th>
+                        <th>Estimated Payment Date</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    {projectionLoading ? (
+                      <tbody>
+                        <tr>
+                          <td colSpan="11" className="LoaderTDSatyle">
+                            <ClipLoader
+                              color="lightgrey"
+                              loading
+                              size={30}
+                              aria-label="Loading Spinner"
+                              data-testid="loader"
+                            />
+                          </td>
+                        </tr>
+                      </tbody>
+                    ) : (
+                      <>
+                        {followDataTodayFilter && followDataTodayFilter.length > 0 ? (
+                          <>
+                            <tbody>
+                              {followDataTodayFilter.map((obj, index) => (
+                                <tr key={`row-${index}`}>
+                                  <td
+                                    style={{
+                                      lineHeight: "32px",
                                     }}
                                   >
-                                    <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }}></RiEditCircleFill>
-                                  </IconButton>
+                                    {index + 1}
+                                  </td>
+                                  <td>{obj.companyName}</td>
+                                  <td>{obj.offeredServices.join(", ")}</td>
+                                  <td>
+                                    ₹
+                                    {obj.totalPayment &&
+                                      obj.totalPayment.toLocaleString()}
+                                  </td>
+                                  <td>₹{obj.offeredPrize.toLocaleString()}</td>
+                                  <td>{obj.remarks}</td>
+                                  <td>{obj.lastFollowUpdate}</td>
+                                  <td>{obj.estPaymentDate}</td>
+                                  <td>
+                                    <IconButton
+                                      onClick={() => {
+                                        functionopenprojection(obj.companyName);
+                                      }}
+                                    >
+                                      <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }}></RiEditCircleFill>
+                                    </IconButton>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                            <tfoot>
+                              <tr style={{ fontWeight: 500 }} className="tf-sticky">
+                                <td style={{ lineHeight: "32px" }} colSpan="2">
+                                  Total
                                 </td>
+                                <td>{offeredServicesFilter.length}</td>
+                                <td> ₹{totalPaymentSumFilter.toLocaleString()}</td>
+                                <td>₹{offeredPaymentSumFilter.toLocaleString()}</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
                               </tr>
-                            ))
-                          ) : (<tr>
-                            <td style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
-                              <ScaleLoader
-                                color="lightgrey"
-                                loading
-                                cssOverride={override}
-                                size={10}
-                                //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
-                                aria-label="Loading Spinner"
-                                data-testid="loader"
-                              />
-                            </td>
-                          </tr>)}
-                        </tbody>
-                        {followDataTodayFilter && (
-                          <tfoot>
-                            <tr style={{ fontWeight: 500 }}>
-                              <td style={{ lineHeight: "32px" }} colSpan="2">
-                                Total
-                              </td>
-                              <td>{offeredServicesFilter.length}</td>
-                              <td> ₹{totalPaymentSumFilter.toLocaleString()}</td>
-                              <td>₹{offeredPaymentSumFilter.toLocaleString()}</td>
-                              <td>-</td>
-                              <td>-</td>
-                              <td>-</td>
-                              <td>-</td>
-                            </tr>
-                          </tfoot>
-                        )} */}
-                        {projectionLoading ? (
+                            </tfoot>
+                          </>
+                        ) : (
                           <tbody>
                             <tr>
-                              <td colSpan="11" className="LoaderTDSatyle">
-                                <ClipLoader
-                                  color="lightgrey"
-                                  loading
-                                  size={30}
-                                  aria-label="Loading Spinner"
-                                  data-testid="loader"
-                                />
+                              <td colSpan="11">
+                                <Nodata />
                               </td>
                             </tr>
                           </tbody>
-                        ) : (
-                          <>
-                            {followDataTodayFilter && followDataTodayFilter.length > 0 ? (
-                              <>
-                                <tbody>
-                                  {followDataTodayFilter.map((obj, index) => (
-                                    <tr key={`row-${index}`}>
-                                      <td
-                                        style={{
-                                          lineHeight: "32px",
-                                        }}
-                                      >
-                                        {index + 1}
-                                      </td>
-                                      <td>{obj.companyName}</td>
-                                      <td>{obj.offeredServices.join(", ")}</td>
-                                      <td>
-                                        ₹
-                                        {obj.totalPayment &&
-                                          obj.totalPayment.toLocaleString()}
-                                      </td>
-                                      <td>₹{obj.offeredPrize.toLocaleString()}</td>
-                                      <td>{obj.remarks}</td>
-                                      <td>{obj.lastFollowUpdate}</td>
-                                      <td>{obj.estPaymentDate}</td>
-                                      <td>
-                                        <IconButton
-                                          onClick={() => {
-                                            functionopenprojection(obj.companyName);
-                                          }}
-                                        >
-                                          <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }}></RiEditCircleFill>
-                                        </IconButton>
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                                <tfoot>
-                                  <tr style={{ fontWeight: 500 }}>
-                                    <td style={{ lineHeight: "32px" }} colSpan="2">
-                                      Total
-                                    </td>
-                                    <td>{offeredServicesFilter.length}</td>
-                                    <td> ₹{totalPaymentSumFilter.toLocaleString()}</td>
-                                    <td>₹{offeredPaymentSumFilter.toLocaleString()}</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                  </tr>
-                                </tfoot>
-                              </>
-                            ) : (
-                              <tbody>
-                                <tr>
-                                  <td colSpan="11">
-                                    <Nodata />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            )}
-                          </>
                         )}
-
-                      </table>
-                    </div>
-                  </div>
+                      </>
+                    )}
+                  </table>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+
       </div>
 
       {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
@@ -2559,7 +2506,30 @@ function EmployeeDashboard() {
               <h2>Matured Clients Summary</h2>
             </div>
             <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
-              <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
+              <div className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon" style={{ width: "50%" }}>
+                <span className="input-icon-addon">
+                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon"
+                    width="20"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      stroke="none"
+                      d="M0 0h24v24H0z"
+                      fill="none"
+                    />
+                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                    <path d="M21 21l-6 -6" />
+                  </svg>
+                </span>
                 <input
                   className=""
                   value={newSearchTerm}
@@ -2567,7 +2537,7 @@ function EmployeeDashboard() {
                   placeholder="Search here....."
                   style={{
                     border: "none",
-                    padding: "0px"
+                    padding: "0px 0px 0px 21px"
                     // Add a bottom border for the input field itself
                   }}
                   type="text"
@@ -2587,7 +2557,8 @@ function EmployeeDashboard() {
                 <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
                   {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
                 </div>
-                <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                <button
+                  style={{ border: "none", padding: "0px", backgroundColor: "white" }} onClick={() => setShowBookingDate(!showBookingDate)}>
                   <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
                 </button>
               </div>
@@ -2604,9 +2575,11 @@ function EmployeeDashboard() {
             className="booking-filter"
           >
             <DateRangePicker
+              direction="upward"
               ranges={[selectionRangeAnother]}
               onChange={handleSelectAnother}
               onClose={() => setShowBookingDate(false)}
+              position="auto"
             />
           </div>}
           <div className="card-body">
@@ -2650,132 +2623,6 @@ function EmployeeDashboard() {
                     <th>REMARKS</th>
                   </tr>
                 </thead>
-
-                {/* <tbody>
-                  {filteredBooking && filteredBooking.length > 0 ? (
-                    <>
-                      {filteredBooking.map((mainObj, index) => (
-                        <tr key={index}>
-                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                          <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime})`}</td>
-                          <td>{mainObj.companyName}</td>
-                          <td>{mainObj.contactNumber}</td>
-                          <td>{mainObj.companyEmail}</td>
-                          <td>{mainObj.services[0]}</td>
-                          <td>
-                            ₹
-                            {(mainObj.bdeName !== mainObj.bdmName
-                              ? mainObj.originalTotalPayment / 2
-                              : mainObj.originalTotalPayment
-                            ).toLocaleString()}
-                          </td>
-                          <td>
-                            ₹
-                            {(mainObj.firstPayment !== 0
-                              ? mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.firstPayment // If bdeName and bdmName are the same
-                                : mainObj.firstPayment / 2 // If bdeName and bdmName are different
-                              : mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                                : mainObj.originalTotalPayment / 2
-                            ).toLocaleString()}{" "}
-                          </td>
-                          <td>
-                            ₹
-                            {(mainObj.firstPayment !== 0
-                              ? mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.originalTotalPayment - mainObj.firstPayment
-                                : (mainObj.originalTotalPayment - mainObj.firstPayment) / 2
-                              : 0
-                            ).toLocaleString()}{" "}
-                          </td>
-                          <td>{mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}</td>
-                          <td>
-                            {mainObj.bdeName !== mainObj.bdmName
-                              ? mainObj.bdmType === "closeby"
-                                ? `Closed by ${mainObj.bdmName}`
-                                : `Supported by ${mainObj.bdmName}`
-                              : `Self Closed`}{" "}
-                          </td>
-                          <td>{mainObj.paymentRemarks}</td>
-                        </tr>
-                      ))}
-                    </>
-                  ) : filteredBooking && filteredBooking.length === 0 ? (
-                    <tr>
-                      <td colSpan={12} style={{ textAlign: 'center' }}><Nodata /></td>
-                    </tr>
-                  ) : (
-                    <tr>
-                      <td colSpan={12} style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
-                        <ScaleLoader
-                          color="lightgrey"
-                          loading
-                          cssOverride={override}
-                          size={10}
-                          aria-label="Loading Spinner"
-                          data-testid="loader"
-                        />
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-                {
-                  <tfoot>
-                    <tr>
-                      <th colSpan={3}>
-                        <strong>Total</strong>
-                      </th>
-
-                      <th>-</th>
-                      <th>-</th>
-                      <th>-</th>
-                      <th>
-                        ₹
-                        {filteredBooking
-
-                          .reduce((total, obj) => {
-                            return obj.bdeName === obj.bdmName
-                              ? total + obj.originalTotalPayment
-                              : total + obj.originalTotalPayment / 2;
-                          }, 0)
-                          .toLocaleString()}
-                      </th>
-                      <th>
-                        ₹
-                        {filteredBooking
-                          .reduce((total, obj) => {
-                            return obj.bdeName === obj.bdmName
-                              ? obj.firstPayment === 0
-                                ? total + obj.originalTotalPayment
-                                : total + obj.firstPayment
-                              : obj.firstPayment === 0
-                                ? total + obj.originalTotalPayment / 2
-                                : total + obj.firstPayment / 2;
-                          }, 0)
-                          .toLocaleString()}
-                      </th>
-                      <th>
-                        ₹
-                        {filteredBooking
-                          .reduce((total, obj) => {
-                            return obj.bdeName === obj.bdmName
-                              ? obj.firstPayment === 0
-                                ? total + obj.originalTotalPayment
-                                : total + obj.firstPayment
-                              : obj.firstPayment === 0
-                                ? total + obj.originalTotalPayment / 2
-                                : total + obj.firstPayment / 2;
-                          }, 0)
-                          .toLocaleString()}
-
-                      </th>
-                      <th>-</th>
-                      <th>-</th>
-                      <th>-</th>
-                    </tr>
-                  </tfoot>
-                } */}
                 {filteredBooking && filteredBooking.length > 0 ? (
                   <>
                     <tbody>
@@ -2998,7 +2845,7 @@ function EmployeeDashboard() {
                 </div>
               </div>
               <div className="label">
-                <strong>xpected Price (With GST)</strong>
+                <strong>Expected Price (With GST)</strong>
                 <div className="services mb-3">
                   <input
                     type="number"

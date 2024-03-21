@@ -25,6 +25,7 @@ import Bellicon_processing from "./Processing/style_processing/Bellicon_processi
 import NewLeads from "./admin/NewLeads.jsx";
 import RedesignedForm from "./admin/RedesignedForm.jsx";
 import DrawerComponent from "./components/Drawer.js";
+import NotFound from "./NotFound.js";
 
 
 
@@ -103,6 +104,8 @@ function App() {
           <Route path="/Processing/analysis_dashboard" element={<Analysis_dashboard/>} /> 
           <Route path="/Processing/bellicon" element={<Bellicon_processing/>} /> 
           <Route path="/Components/Drawer" element={<DrawerComponent/>} />
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
 
       </BrowserRouter>

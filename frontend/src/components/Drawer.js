@@ -7,8 +7,9 @@ import Select from "react-select";
 import axios from 'axios';
 import { options } from "../components/Options.js";
 import { RiEditCircleFill } from "react-icons/ri";
+import { set } from 'date-fns';
 
-function DrawerComponent({ functionopenprojection }) {
+function DrawerComponent({ open , onClose , currentProjection1}) {
     const [openProjection, setOpenProjection] = useState(false);
     const [projectingCompany, setProjectingCompany] = useState("");
     const [currentProjection, setCurrentProjection] = useState({
@@ -24,43 +25,32 @@ function DrawerComponent({ functionopenprojection }) {
       const [isEditProjection, setIsEditProjection] = useState(false);
       const [selectedValues, setSelectedValues] = useState([]);
       const [data, setData] = useState([]);
-      const [followData, setFollowData] = useState([]);
+      //const [followData, setFollowData] = useState([]);
 
 
+console.log("yahan bhi kuch likho" , currentProjection1)
 
+console.log(currentProjection1.offeredServices)
 
       const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-      const fetchFollowUpData = async () => {
-        try {
-          //setprojectionLoading(true);
-          const response = await fetch(
-            `${secretKey}/projection-data/${data.ename}`
-          );
-          const followdata = await response.json();
-          setFollowData(followdata);
-          //setFollowDataFilter(followdata);
-        //   setfollowDataToday(
-        //     followdata.filter((company) => {
-        //       // Assuming you want to filter companies with an estimated payment date for today
-        //       const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-        //       return company.estPaymentDate === today;
-        //     })
-        //   );
-        //   setfollowDataTodayFilter(
-        //     followdata.filter((company) => {
-        //       // Assuming you want to filter companies with an estimated payment date for today
-        //       const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-        //       return company.estPaymentDate === today;
-        //     })
-        //   );
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          return { error: "Error fetching data" };
-        } 
-      };
-    
-      
+      useEffect(()=>{
+        setCurrentProjection({
+          companyName: currentProjection1.companyName,
+          ename: currentProjection1.ename,
+          offeredPrize: currentProjection1.offeredPrize,
+          offeredServices: currentProjection1.offeredServices,          
+          lastFollowUpdate:currentProjection1.lastFollowUpdate,
+          estPaymentDate: currentProjection1.estPaymentDate,
+          totalPayment: currentProjection1.totalPayment,
+          remarks:currentProjection1.remarks,
+          date: "",
+          time: "",
+        })
+
+      }, [currentProjection1])
+
+  
     const closeProjection = () => {
         setOpenProjection(false);
         setProjectingCompany("");
@@ -122,7 +112,7 @@ function DrawerComponent({ functionopenprojection }) {
             date: "",
             time: "",
           });
-          fetchFollowUpData();
+        
     
           // Log success message
         } catch (error) {
@@ -153,7 +143,7 @@ function DrawerComponent({ functionopenprojection }) {
             time: "",
           });
           setSelectedValues([]);
-          fetchFollowUpData();
+        
         } catch (error) {
           console.error('Error deleting data:', error);
           // Show an error message if deletion fails
@@ -168,8 +158,8 @@ function DrawerComponent({ functionopenprojection }) {
         <Drawer
           style={{ top: "50px" }}
           anchor="right"
-          open={openProjection}
-          onClose={closeProjection}>
+          open={open}
+          onClose={onClose}>
           <div style={{ width: "31em" }} className="container-xl">
             <div className="d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
               <h1 style={{ marginBottom: "0px", fontSize: "20px", }} className="title">
@@ -191,7 +181,7 @@ function DrawerComponent({ functionopenprojection }) {
               <div className="d-flex align-items-center justify-content-between">
                 <div>
                   <h1
-                    title={projectingCompany} style={{
+                    title={currentProjection1.companyName} style={{
                       fontSize: "14px",
                       textShadow: "none",
                       fontWeight: "400",
@@ -202,7 +192,7 @@ function DrawerComponent({ functionopenprojection }) {
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                     }}>
-                    {projectingCompany}
+                    {currentProjection1.companyName}
                   </h1>
                 </div>
                 <div>
@@ -231,11 +221,11 @@ function DrawerComponent({ functionopenprojection }) {
                     placeholder="Select Services..."
                     isDisabled={!isEditProjection}
                     onChange={(selectedOptions) => {
-                      setSelectedValues(
-                        selectedOptions.map((option) => option.value)
+                      setCurrentProjection(
+                        currentProjection1.offeredServices.map((option) => option.value)
                       );
                     }}
-                    value={selectedValues.map((value) => ({
+                    value={currentProjection1.offeredServices.map((value) => ({
                       value,
                       label: value,
                     }))}
@@ -256,12 +246,11 @@ function DrawerComponent({ functionopenprojection }) {
                         offeredPrize: e.target.value,
                       }));
                     }}
-                    disabled={!isEditProjection}
                   />
                 </div>
               </div>
               <div className="label">
-                <strong>xpected Price (With GST)</strong>
+                <strong>Expected Price (With GST)</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -340,24 +329,12 @@ function DrawerComponent({ functionopenprojection }) {
                   onClick={handleProjectionSubmit}
                   disabled={!isEditProjection}
                 >
-                  Submit
+                  Submit New Drawer
                 </button>
               </div>
             </div>
           </div>
         </Drawer>
-
-        <IconButton
-        onClick={() => {
-          // Call the functionopenprojection function passed as a prop
-          functionopenprojection();
-        }}
-      >
-        <RiEditCircleFill
-          color="grey"
-          style={{ width: "17px", height: "17px" }}
-        />
-      </IconButton>
       </div>
   )
 }
