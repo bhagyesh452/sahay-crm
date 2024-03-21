@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -7,11 +7,13 @@ import Navbar from "./Navbar";
 import StepButton from "@mui/material/StepButton";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import pdfimg from "../static/my-images/pdf.png"
-import img from "../static/my-images/image.png"
-import wordimg from "../static/my-images/word.png"
-import excelimg from "../static/my-images/excel.png"
+import pdfimg from "../static/my-images/pdf.png";
+import img from "../static/my-images/image.png";
+import wordimg from "../static/my-images/word.png";
+import excelimg from "../static/my-images/excel.png";
 
+import axios from "axios";
+const secretKey = process.env.REACT_APP_SECRET_KEY;
 const steps = [
   "Basic Company Informations",
   "Booking Details",
@@ -20,11 +22,108 @@ const steps = [
   "Final",
 ];
 
-export default function HorizontalNonLinearStepper() {
+const defaultService = {
+  serviceName: "",
+  withDSC:false,
+  totalPaymentWOGST: "",
+  totalPaymentWGST: "",
+  withGST:false,
+  paymentTerms: "",
+  firstPayment: "",
+  secondPayment: "",
+  thirdPayment: "",
+  fourthPayment: "",
+  paymentRemarks: "No payment remarks",
+};
+
+export default function RedesignedForm({ companysName }) {
+  const [totalServices, setTotalServices] = useState(1);
+  const defaultLeadData = {
+    "Company Name": companysName,
+    "Company Number": "",
+    "Company Email": "",
+    panNumber: "",
+    gstNumber: "",
+    incoDate: "",
+    bdeName: "",
+    bdmName: "",
+    bookingDate: "",
+    bookingSource: "",
+    numberOfServices: 0,
+    services: [],
+    caCase: false,
+    caName: "",
+    caEmail: "",
+    caCommission: "",
+    paymentMethod: "",
+    paymentReceipt: "",
+    extraNotes: "",
+    totalAmount: 0,
+    receivedAmount: 0,
+    pendingAmount: 0,
+  };
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [selectedValues, setSelectedValues] = useState("");
-  const [totalServices, setTotalServices] = useState(1);
+
+  const [leadData, setLeadData] = useState(defaultLeadData);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${secretKey}/redesigned-leadData/${companysName}`
+        );
+        const data = response.data.find(
+          (item) => item["Company Name"] === companysName
+        );
+        if (data.Step1Status === true && data.Step2Status === false) {
+          setLeadData({
+            ...leadData,
+            "Company Name": data["Company Name"],
+            "Company Email": data["Company Email"],
+            "Company Number": data["Company Number"],
+            incoDate: data.incoDate,
+            panNumber: data.panNumber,
+            gstNumber: data.gstNumber,
+          });
+          setCompleted({ 0: true });
+          setActiveStep(1);
+        } else if (data.Step2Status === true && data.Step3Status === false) {
+          setSelectedValues(data.bookingSource);
+          setLeadData({
+            ...leadData,
+            "Company Name": data["Company Name"],
+            "Company Email": data["Company Email"],
+            "Company Number": data["Company Number"],
+            incoDate: data.incoDate,
+            panNumber: data.panNumber,
+            gstNumber: data.gstNumber,
+            bdeName: data.bdeName,
+            bdeEmail: data.bdeEmail,
+            bdmName: data.bdmName,
+            bdmEmail: data.bdmEmail,
+            bookingDate: data.bookingDate,
+            bookingSource: data.bookingSource,
+          });
+          setCompleted({ 0: true, 1: true });
+          setActiveStep(2);
+        }
+
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  useEffect(() => {
+    // Create new services array based on totalServices
+    const newServices = Array.from({ length: totalServices }, () => ({
+      ...defaultService,
+    }));
+    setLeadData((prevState) => ({ ...prevState, services: newServices }));
+  }, [totalServices, defaultService]);
 
   const totalSteps = () => {
     return steps.length;
@@ -58,11 +157,46 @@ export default function HorizontalNonLinearStepper() {
     setActiveStep(step);
   };
 
-  const handleComplete = () => {
-    const newCompleted = completed;
-    newCompleted[activeStep] = true;
-    setCompleted(newCompleted);
-    handleNext();
+  const handleComplete = async () => {
+    try {
+      const newCompleted = completed;
+      newCompleted[activeStep] = true;
+
+      setCompleted(newCompleted);
+
+      // Prepare the data to send to the backend
+      let dataToSend = {
+        ...leadData,
+        Step1Status: true,
+      };
+
+      if (activeStep === 1) {
+        dataToSend = {
+          ...dataToSend,
+          Step2Status: true,
+          bookingSource: selectedValues,
+        };
+      } else if (activeStep === 2) {
+        dataToSend = {
+          ...dataToSend,
+          Step2Status: true,
+          Step3Status: true,
+        };
+      }
+
+      console.log(activeStep, dataToSend);
+      // Make a POST request to send data to the backend
+      const response = await axios.post(
+        `${secretKey}/redesigned-leadData/${companysName}`,
+        dataToSend
+      );
+      console.log("Data sent to backend:", response.data); // Log the response from the backend
+
+      handleNext(); // Proceed to the next step
+    } catch (error) {
+      console.error("Error sending data to backend:", error);
+      // Handle error if needed
+    }
   };
 
   const handleReset = () => {
@@ -72,192 +206,245 @@ export default function HorizontalNonLinearStepper() {
 
   const renderServices = () => {
     const services = [];
+    console.log(leadData.services.length , Number(totalServices))
+   if(leadData.services.length === Number(totalServices)){
     for (let i = 0; i < totalServices; i++) {
       services.push(
-        <div key={i} className="services-card">
+        <div key={i} className="servicesFormCard mt-3">
+          {/* <div className="services_No">
+              1
+        </div> */}
           <div className="d-flex align-items-center">
-            <div>
-              <label htmlFor={`service-name-${i}`}>Enter Service Name :</label>
+            <div className="selectservices-label mr-2">
+              <label for="">Select Service:</label>
             </div>
-            <div className="ml-2">
-              <select className="form-select mt-1" id={`service-dropdown-${i}`}>
+            <div className="selectservices-label-selct">
+              <select
+                className="form-select mt-1"
+                id={`Service-${i}`}
+                value={leadData.services[i].serviceName}
+                onChange={(e) => {
+                  setLeadData((prevState) => ({
+                    ...prevState,
+                    services: prevState.services.map((service, index) =>
+                      index === i
+                        ? { ...service, serviceName: e.target.value }
+                        : service
+                    ),
+                  }));
+                }}
+              >
                 <option value="" disabled selected>
-                  Select Service
+                  Select Service Name
                 </option>
-                <option value={`Service ${i + 1}`}>Service {i + 1}</option>
+                <option value="Start Up Certificate">
+                  Startup certificate
+                </option>
+                <option value="Boom">Boom</option>
+                <option value="Baaam">Baaam</option>
+                <option value="vooooo">voooo</option>
               </select>
             </div>
-          </div>
-          <div className="payment-section">
-            <div className="original-payment col">
-              <label className="form-label">Total Payment&nbsp;</label>
-              <div className="row align-items-center">
-                <div className="col-sm-7">
-                  <div className="d-flex">
-                    <input
-                      style={{ borderRadius: "5px 0px 0px 5px" }}
-                      type="number"
-                      name="total-payment"
-                      id="total-payment"
-                      placeholder="Enter Total Payment"
-                      className="form-control"
-                    />
-                    <span className="rupees-sym">₹</span>
-                  </div>
-                </div>
-                <div className="col-sm-5">
-                  <div className="form-check col m-0">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id={`flexCheckChecked-${i}`}
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor={`flexCheckChecked-${i}`}
-                    >
-                      WITH GST (18%)
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="payment-withGST col">
-              <label class="form-label">
-                Total Payment&nbsp;
-                <span style={{ fontWeight: "bold" }}>WITH GST</span>
-              </label>
-              <div className="d-flex">
-                <div
-                  style={{
-                    borderRadius: "5px 0px 0px 5px",
+            {leadData.services[i].serviceName === "Start Up Certificate" && <div className="ml-2">
+              <div class="form-check m-0">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="dsc"
+                  value="0"
+                  checked={leadData.services[i].withDSC}
+                  onChange={(e) => {
+                    setLeadData((prevState) => ({
+                      ...prevState,
+                      services: prevState.services.map((service, index) =>
+                        index === i
+                          ? { ...service, withDSC: !service.withDSC }
+                          : service
+                      ),
+                    }));
                   }}
-                  className="form-control"
-                ></div>
-                <span className="rupees-sym">₹</span>
+                />
+                <label class="form-check-label" for="dsc">
+                  WITH DSC
+                </label>
+              </div>
+            </div>}
+          </div>
+          <hr className="mt-3 mb-3"></hr>
+          <div className="row align-items-center mt-2">
+            <div className="col-sm-8">
+              <label class="form-label">Total Amount</label>
+              <div className="d-flex align-items-center">
+                <div class="input-group total-payment-inputs mb-2">
+                  <input
+                    type="number"
+                    class="form-control "
+                    placeholder="Enter Amount"
+                    id={`Amount-${i}`}
+                    value={leadData.services[i].totalPaymentWOGST}
+                    onChange={(e) => {
+                      setLeadData((prevState) => ({
+                        ...prevState,
+                        services: prevState.services.map((service, index) =>
+                          index === i
+                            ? {
+                                ...service,
+                                totalPaymentWOGST: e.target.value,
+                               totalPaymentWGST: service.withGST === true ? e.target.value * 1.8 : e.target.value
+                              }
+                            : service
+                        ),
+                      }));
+                    }}
+                  />
+                  <button class="btn" type="button">
+                    ₹
+                  </button>
+                </div>
+                <div class="form-check ml-2">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="GST"
+                    value="0"
+                    checked={leadData.services[i].withGST}
+                    onChange={(e) => {
+                      setLeadData((prevState) => ({
+                        ...prevState,
+                        services: prevState.services.map((service, index) =>
+                          index === i
+                            ? { ...service, withGST: !service.withGST , totalPaymentWGST : service.withGST === false ? service.totalPaymentWOGST * 1.8 : service.totalPaymentWOGST }
+                            : service
+                        ),
+                      }));
+                    }}
+                  />
+                  <label class="form-check-label" for="GST">
+                    WITH GST (18%)
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div className="col-sm-4">
+              <div className="form-group">
+                <label class="form-label">Total Amount With GST</label>
+                <div class="input-group mb-2">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search for…"
+                    id={`Amount-${i}`}
+                    value={leadData.services[i].totalPaymentWGST}
+                    disabled
+                  />
+                  <button class="btn" type="button">
+                    ₹
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-          <div className="payment-terms-section">
-            <label className="form-label">Payment Terms</label>
-            <div className="mb-3 row">
-              <div className="full-time col">
-                <label className="form-check form-check-inline col">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="radios-inline"
-                    value="Full Advanced"
-                  />
-                  <span className="form-check-label">Full Advanced</span>
-                </label>
-                <label className="form-check form-check-inline col">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="radios-inline"
-                    value="two-part"
-                  />
-                  <span className="form-check-label">Part Payment</span>
-                </label>
-              </div>
+          <div className="row mt-2">
+            <div className="col-sm-12">
+              <label className="form-label">Payment Terms</label>
             </div>
-            <div className="row">
-              <div className="col first-payment">
-                <label class="form-label">First Payment</label>
-                <div className="d-flex">
-                  <input
-                    type="number"
-                    style={{
-                      borderRadius: "5px 0px 0px 5px",
-                    }}
-                    name="first-payment"
-                    id="first-payment"
-                    placeholder="First Payment"
-                    className="form-control"
-                  />
-
-                  <span className="rupees-sym">₹</span>
-                </div>
-              </div>
-
-              <div className="col second-payment">
-                <label class="form-label">Second Payment</label>
-                <div className="d-flex">
-                  <input
-                    type="number"
-                    style={{
-                      borderRadius: "5px 0px 0px 5px",
-                    }}
-                    name="second-payment"
-                    id="second-payment"
-                    placeholder="Second Payment"
-                    className="form-control"
-                  />
-
-                  <span className="rupees-sym">₹</span>
-                </div>
-              </div>
-
-              <div className="col Third-payment">
-                <label class="form-label">Third Payment</label>
-                <div className="d-flex">
-                  <input
-                    type="number"
-                    style={{
-                      borderRadius: "5px 0px 0px 5px",
-                    }}
-                    name="Third-payment"
-                    id="Third-payment"
-                    placeholder="Third Payment"
-                    className="form-control"
-                  />
-
-                  <span className="rupees-sym">₹</span>
-                </div>
-              </div>
-
-              <div className="col Fourth-payment">
-                <label class="form-label">Fourth Payment</label>
-                <div className="d-flex">
-                  <input
-                    type="number"
-                    style={{
-                      borderRadius: "5px 0px 0px 5px",
-                    }}
-                    name="Fourth-payment"
-                    id="Fourth-payment"
-                    placeholder="Fourth Payment"
-                    className="form-control"
-                  />
-
-                  <span className="rupees-sym">₹</span>
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="payment-remarks col">
-                <label class="form-label">Payment Remarks</label>
-                <textarea
-                  type="text"
-                  name="payment-remarks"
-                  id="payment-remarks"
-                  placeholder="Please add remarks if any"
-                  className="form-control"
+            <div className="full-time col-sm-12">
+              <label className="form-check form-check-inline col">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="radios-inline"
+                  value="Full Advanced"
                 />
+                <span className="form-check-label">Full Advanced</span>
+              </label>
+              <label className="form-check form-check-inline col">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="radios-inline"
+                  value="two-part"
+                />
+                <span className="form-check-label">Part Payment</span>
+              </label>
+            </div>
+          </div>
+          <div className="row mt-2">
+            <div className="col-sm-3">
+              <div className="form-group">
+                <label class="form-label">First Payment</label>
+                <div class="input-group mb-2">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search for…"
+                  />
+                  <button class="btn" type="button">
+                    ₹
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="col-sm-3">
+              <div className="form-group">
+                <label class="form-label">Second Payment</label>
+                <div class="input-group mb-2">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search for…"
+                  />
+                  <button class="btn" type="button">
+                    ₹
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="col-sm-3">
+              <div className="form-group">
+                <label class="form-label">Third Payment</label>
+                <div class="input-group mb-2">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search for…"
+                  />
+                  <button class="btn" type="button">
+                    ₹
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="col-sm-3">
+              <div className="form-group">
+                <label class="form-label">Fourth Payment</label>
+                <div class="input-group mb-2">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search for…"
+                  />
+                  <button class="btn" type="button">
+                    ₹
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       );
     }
+   }
     return services;
+  };
+
+  console.log("Default Lead Data :", leadData);
+  const handleInputChange = (value, id) => {
+    setLeadData({ ...leadData, [id]: value });
   };
 
   return (
     <div>
-      <Header />
-      <Navbar />
       <div className="container mt-2">
         <div className="card">
           <div className="card-body p-3">
@@ -310,6 +497,13 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter Company Name"
                                         id="Company"
+                                        value={leadData["Company Name"]}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "Company Name"
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -321,6 +515,13 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter email"
                                         id="email"
+                                        value={leadData["Company Email"]}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "Company Email"
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -332,6 +533,13 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter Number"
                                         id="number"
+                                        value={leadData["Company Number"]}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "Company Number"
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -343,8 +551,15 @@ export default function HorizontalNonLinearStepper() {
                                       <input
                                         type="date"
                                         className="form-control mt-1"
-                                        placeholder="Enter Number"
-                                        id="number"
+                                        placeholder="Incorporation Date"
+                                        id="inco-date"
+                                        value={leadData.incoDate}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "incoDate"
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -356,6 +571,13 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter Company's PAN"
                                         id="pan"
+                                        value={leadData.panNumber}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "panNumber"
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -367,6 +589,13 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter Company's GST"
                                         id="gst"
+                                        value={leadData.gstNumber}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "gstNumber"
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -393,6 +622,13 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter BDE Name"
                                         id="bdeName"
+                                        value={leadData.bdeName}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "bdeName"
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -406,6 +642,13 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter BDE email"
                                         id="BDEemail"
+                                        value={leadData.bdeEmail}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "bdeEmail"
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -417,6 +660,13 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter BDM Name"
                                         id="bdmName"
+                                        value={leadData.bdmName}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "bdmName"
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -430,6 +680,13 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter BDM email"
                                         id="BDMemail"
+                                        value={leadData.bdmEmail}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "bdmEmail"
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -443,6 +700,13 @@ export default function HorizontalNonLinearStepper() {
                                         className="form-control mt-1"
                                         placeholder="Enter Booking date"
                                         id="booking-date"
+                                        value={leadData.bookingDate}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "bookingDate"
+                                          );
+                                        }}
                                       />
                                     </div>
                                   </div>
@@ -534,199 +798,7 @@ export default function HorizontalNonLinearStepper() {
                                     </select>
                                   </div>
                                 </div>
-                                <div className="servicesFormCard mt-3">
-                                  {/* <div className="services_No">
-                                        1
-                                  </div> */}
-                                  <div className="d-flex align-items-center">
-                                    <div className="selectservices-label mr-2">
-                                      <label for="selectservices">
-                                        Select Service:
-                                      </label>
-                                    </div>
-                                    <div className="selectservices-label-selct">
-                                      <select
-                                        className="form-select mt-1"
-                                        id="selectservices"
-                                      >
-                                        <option value="" disabled selected>
-                                          Seed Fund
-                                        </option>
-                                        <option value="Excel Data">
-                                          Startup certificate
-                                        </option>
-                                      </select>
-                                    </div>
-                                    <div className="ml-2">
-                                      <div class="form-check m-0">
-                                        <input
-                                          className="form-check-input"
-                                          type="checkbox"
-                                          id="dsc"
-                                          value="0"
-                                        />
-                                        <label
-                                          class="form-check-label"
-                                          for="dsc"
-                                        >
-                                          WITH DSC
-                                        </label>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <hr className="mt-3 mb-3"></hr>
-                                  <div className="row align-items-center mt-2">
-                                    <div className="col-sm-8">
-                                      <label class="form-label">
-                                        Total Amount
-                                      </label>
-                                      <div className="d-flex align-items-center">
-                                        <div class="input-group total-payment-inputs mb-2">
-                                          <input
-                                            type="text"
-                                            class="form-control "
-                                            placeholder="Search for…"
-                                          />
-                                          <button class="btn" type="button">
-                                            ₹
-                                          </button>
-                                        </div>
-                                        <div class="form-check ml-2">
-                                          <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            id="GST"
-                                            value="0"
-                                          />
-                                          <label
-                                            class="form-check-label"
-                                            for="GST"
-                                          >
-                                            WITH GST (18%)
-                                          </label>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-sm-4">
-                                      <div className="form-group">
-                                        <label class="form-label">
-                                          Total Amount With GST
-                                        </label>
-                                        <div class="input-group mb-2">
-                                          <input
-                                            type="text"
-                                            class="form-control"
-                                            placeholder="Search for…"
-                                          />
-                                          <button class="btn" type="button">
-                                            ₹
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="row mt-2">
-                                    <div className="col-sm-12">
-                                      <label className="form-label">
-                                        Payment Terms
-                                      </label>
-                                    </div>
-                                    <div className="full-time col-sm-12">
-                                      <label className="form-check form-check-inline col">
-                                        <input
-                                          className="form-check-input"
-                                          type="radio"
-                                          name="radios-inline"
-                                          value="Full Advanced"
-                                        />
-                                        <span className="form-check-label">
-                                          Full Advanced
-                                        </span>
-                                      </label>
-                                      <label className="form-check form-check-inline col">
-                                        <input
-                                          className="form-check-input"
-                                          type="radio"
-                                          name="radios-inline"
-                                          value="two-part"
-                                        />
-                                        <span className="form-check-label">
-                                          Part Payment
-                                        </span>
-                                      </label>
-                                    </div>
-                                  </div>
-                                  <div className="row mt-2">
-                                    <div className="col-sm-3">
-                                      <div className="form-group">
-                                        <label class="form-label">
-                                          First Payment
-                                        </label>
-                                        <div class="input-group mb-2">
-                                          <input
-                                            type="text"
-                                            class="form-control"
-                                            placeholder="Search for…"
-                                          />
-                                          <button class="btn" type="button">
-                                            ₹
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-sm-3">
-                                      <div className="form-group">
-                                        <label class="form-label">
-                                          Second Payment
-                                        </label>
-                                        <div class="input-group mb-2">
-                                          <input
-                                            type="text"
-                                            class="form-control"
-                                            placeholder="Search for…"
-                                          />
-                                          <button class="btn" type="button">
-                                            ₹
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-sm-3">
-                                      <div className="form-group">
-                                        <label class="form-label">
-                                          Third Payment
-                                        </label>
-                                        <div class="input-group mb-2">
-                                          <input
-                                            type="text"
-                                            class="form-control"
-                                            placeholder="Search for…"
-                                          />
-                                          <button class="btn" type="button">
-                                            ₹
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-sm-3">
-                                      <div className="form-group">
-                                        <label class="form-label">
-                                          Fourth Payment
-                                        </label>
-                                        <div class="input-group mb-2">
-                                          <input
-                                            type="text"
-                                            class="form-control"
-                                            placeholder="Search for…"
-                                          />
-                                          <button class="btn" type="button">
-                                            ₹
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
+                                {renderServices()}
                               </form>
                             </div>
                           </div>
@@ -1302,7 +1374,7 @@ export default function HorizontalNonLinearStepper() {
                                         </div>
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
-                                          ₹ 38000
+                                            ₹ 38000
                                           </div>
                                         </div>
                                       </div>
@@ -1316,7 +1388,7 @@ export default function HorizontalNonLinearStepper() {
                                         </div>
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
-                                          ₹ 19000
+                                            ₹ 19000
                                           </div>
                                         </div>
                                       </div>
@@ -1330,7 +1402,7 @@ export default function HorizontalNonLinearStepper() {
                                         </div>
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
-                                          ₹ 19000
+                                            ₹ 19000
                                           </div>
                                         </div>
                                       </div>
@@ -1345,12 +1417,15 @@ export default function HorizontalNonLinearStepper() {
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
                                         <div className="UploadDocPreview">
-                                            <div className="docItemImg">
-                                                <img src={img}></img>
-                                            </div>
-                                            <div className="docItemName wrap-MyText" title="logo.png">
-                                                Screenshots.png
-                                            </div>
+                                          <div className="docItemImg">
+                                            <img src={img}></img>
+                                          </div>
+                                          <div
+                                            className="docItemName wrap-MyText"
+                                            title="logo.png"
+                                          >
+                                            Screenshots.png
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
@@ -1362,7 +1437,9 @@ export default function HorizontalNonLinearStepper() {
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">
-                                      <div className="form-label-data">ICICI Account</div>
+                                      <div className="form-label-data">
+                                        ICICI Account
+                                      </div>
                                     </div>
                                   </div>
                                   <div className="row m-0">
@@ -1372,7 +1449,9 @@ export default function HorizontalNonLinearStepper() {
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">
-                                      <div className="form-label-data">Complate work before 25 days</div>
+                                      <div className="form-label-data">
+                                        Complate work before 25 days
+                                      </div>
                                     </div>
                                   </div>
                                   <div className="row m-0">
@@ -1384,36 +1463,48 @@ export default function HorizontalNonLinearStepper() {
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data d-flex flex-wrap">
                                         <div className="UploadDocPreview">
-                                            <div className="docItemImg">
-                                                <img src={pdfimg}></img>
-                                            </div>
-                                            <div className="docItemName wrap-MyText" title="ROC.pdf">
-                                                ROC.pdf
-                                            </div>
+                                          <div className="docItemImg">
+                                            <img src={pdfimg}></img>
+                                          </div>
+                                          <div
+                                            className="docItemName wrap-MyText"
+                                            title="ROC.pdf"
+                                          >
+                                            ROC.pdf
+                                          </div>
                                         </div>
                                         <div className="UploadDocPreview">
-                                            <div className="docItemImg">
-                                                <img src={img}></img>
-                                            </div>
-                                            <div className="docItemName wrap-MyText" title="logo.png">
-                                                logo.png
-                                            </div>
+                                          <div className="docItemImg">
+                                            <img src={img}></img>
+                                          </div>
+                                          <div
+                                            className="docItemName wrap-MyText"
+                                            title="logo.png"
+                                          >
+                                            logo.png
+                                          </div>
                                         </div>
                                         <div className="UploadDocPreview">
-                                            <div className="docItemImg">
-                                                <img src={wordimg}></img>
-                                            </div>
-                                            <div className="docItemName wrap-MyText" title=" information.word">
-                                                information.word
-                                            </div>
+                                          <div className="docItemImg">
+                                            <img src={wordimg}></img>
+                                          </div>
+                                          <div
+                                            className="docItemName wrap-MyText"
+                                            title=" information.word"
+                                          >
+                                            information.word
+                                          </div>
                                         </div>
                                         <div className="UploadDocPreview">
-                                            <div className="docItemImg">
-                                                <img src={excelimg}></img>
-                                            </div>
-                                            <div className="docItemName wrap-MyText" title="financials.csv">
-                                                financials.csv
-                                            </div>
+                                          <div className="docItemImg">
+                                            <img src={excelimg}></img>
+                                          </div>
+                                          <div
+                                            className="docItemName wrap-MyText"
+                                            title="financials.csv"
+                                          >
+                                            financials.csv
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
