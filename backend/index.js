@@ -455,13 +455,13 @@ app.get("/api/specific-ename-status/:ename/:status", async (req, res) => {
        const data = await CompanyModel.find({"ename" : ename}).lean();
   
     res.send(data);
-    console.log("Data" ,data)
+    //console.log("Data" ,data)
 
     }else{
       const data = await CompanyModel.find({"ename" : ename ,"Status" : status}).lean();
   
     res.send(data);
-    console.log("Data" ,data)
+    //console.log("Data" ,data)
 
     }
     
