@@ -2127,7 +2127,7 @@ function Leads() {
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        fontSize: "16px",
+                        fontSize: "14px",
                         fontFamily: "sans-serif",
                       }}
                       className="results"
@@ -2316,8 +2316,8 @@ function Leads() {
                         Incorporation Date
                         <FilterListIcon
                           style={{
-                            height: "15px",
-                            width: "15px",
+                            height: "14px",
+                            width: "14px",
                             cursor: "pointer",
                             marginLeft: "4px",
                           }}
@@ -2329,7 +2329,7 @@ function Leads() {
                             className="inco-subFilter"
                             onClick={(e) => handleSort("oldest")}
                           >
-                            <SwapVertIcon style={{ height: "16px" }} />
+                            <SwapVertIcon style={{ height: "14px" }} />
                             Oldest
                           </div>
 
@@ -2337,7 +2337,7 @@ function Leads() {
                             className="inco-subFilter"
                             onClick={(e) => handleSort("newest")}
                           >
-                            <SwapVertIcon style={{ height: "16px" }} />
+                            <SwapVertIcon style={{ height: "14px" }} />
                             Newest
                           </div>
 
@@ -2345,7 +2345,7 @@ function Leads() {
                             className="inco-subFilter"
                             onClick={(e) => handleSort("none")}
                           >
-                            <SwapVertIcon style={{ height: "16px" }} />
+                            <SwapVertIcon style={{ height: "14px" }} />
                             None
                           </div>
                         </div>}
@@ -2361,8 +2361,8 @@ function Leads() {
                         Assigned on
                         <FilterListIcon
                           style={{
-                            height: "15px",
-                            width: "15px",
+                            height: "14px",
+                            width: "14px",
                             cursor: "pointer",
                             marginLeft: "4px",
                           }}
@@ -2374,7 +2374,7 @@ function Leads() {
                             className="inco-subFilter"
                             onClick={(e) => handleSortAssign("oldest")}
                           >
-                            <SwapVertIcon style={{ height: "16px" }} />
+                            <SwapVertIcon style={{ height: "14px" }} />
                             Oldest
                           </div>
 
@@ -2382,7 +2382,7 @@ function Leads() {
                             className="inco-subFilter"
                             onClick={(e) => handleSortAssign("newest")}
                           >
-                            <SwapVertIcon style={{ height: "16px" }} />
+                            <SwapVertIcon style={{ height: "14px" }} />
                             Newest
                           </div>
 
@@ -2439,10 +2439,11 @@ function Leads() {
                                 functionopenpopupremarks(company._id, company.Status);
                               }}
                               style={{
-                                width: "18px",
-                                height: "18px",
+                                width: "14px",
+                                height: "14px",
                                 color: "#d6a10c",
                                 cursor: "pointer",
+                                marginLeft:"4px",
                               }}
                             />
                           </td>
@@ -2452,8 +2453,8 @@ function Leads() {
                             <IconButton onClick={() => handleDeleteClick(company._id)}>
                               <DeleteIcon
                                 style={{
-                                  width: "16px",
-                                  height: "16px",
+                                  width: "14px",
+                                  height: "14px",
                                   color: "#bf0b0b",
                                 }}
                               >
@@ -2470,8 +2471,8 @@ function Leads() {
                             }>
                               < ModeEditIcon
                                 style={{
-                                  width: "16px",
-                                  height: "16px",
+                                  width: "14px",
+                                  height: "14px",
                                   color: "grey",
                                 }}
                               >
@@ -2482,8 +2483,8 @@ function Leads() {
                               <IconButton>
                                 <IconEye
                                   style={{
-                                    width: "18px",
-                                    height: "18px",
+                                    width: "14px",
+                                    height: "14px",
                                     color: "#d6a10c",
                                     cursor: "pointer",
                                   }}

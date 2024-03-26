@@ -1520,16 +1520,18 @@ function EmployeeParticular() {
                                         {company.Remarks}
                                       </p>
                                       <span>
-                                        <HiOutlineEye style={{
-                                          fontSize: "15px",
-                                          color: "#fbb900"
-                                        }}
-                                          onClick={() => {
-                                            functionopenpopupremarks(
-                                              company._id,
-                                              company.Status
-                                            );
-                                          }} />
+                                        <IconButton onClick={() => {
+                                              functionopenpopupremarks(
+                                                company._id,
+                                                company.Status
+                                              );
+                                            }} >
+                                          <HiOutlineEye style={{
+                                            fontSize: "14px",
+                                            color: "#fbb900"
+                                          }}
+                                             />
+                                        </IconButton>
                                       </span>
                                     </div>
                                   </td>
