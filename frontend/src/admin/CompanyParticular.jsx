@@ -34,9 +34,13 @@ function CompanyParticular({}) {
       console.error("Error fetching company:", error);
     }
   };
+
+
   useEffect(() => {
     fetchCompany();
   }, []);
+
+  
   useEffect(() => {
     const fetchEmployeeHistory = async () => {
       try {
@@ -53,6 +57,8 @@ function CompanyParticular({}) {
         console.error("Error fetching employee history:", error);
       }
     };
+
+
     const fetchBookingDetails = async () => {
       try {
         // Make a GET request to fetch data based on the companyName

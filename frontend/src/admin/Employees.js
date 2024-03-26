@@ -151,6 +151,8 @@ function Employees({ onEyeButtonClick }) {
       console.error("Error fetching data:", error.message);
     }
   };
+
+  
   const handleSearch = (e) => {
     const query = e.target.value;
     setSearchQuery(query);

@@ -442,6 +442,39 @@ app.get("/api/leads/:companyName", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+// ------------------------------api to get leads on the basis of ename------------------------
+
+app.get("/api/specific-ename-status/:ename/:status", async (req, res) => {
+  const ename = req.params.ename;
+  const status = req.params.status
+  
+  try {
+    // Fetch data using lean queries to retrieve plain JavaScript objects
+    if(status === "complete"){
+       const data = await CompanyModel.find({"ename" : ename}).lean();
+  
+    res.send(data);
+    console.log("Data" ,data)
+
+    }else{
+      const data = await CompanyModel.find({"ename" : ename ,"Status" : status}).lean();
+  
+    res.send(data);
+    console.log("Data" ,data)
+
+    }
+    
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
+
+
 app.get("/api/new-leads", async (req, res) => {
   try {
     const { startIndex, endIndex } = req.query;
@@ -691,6 +724,29 @@ app.put("/api/einfo/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.put("/api/leads/:id", async (req, res) => {
+  const id = req.params.id;
+  //req.body["Company Incorporation Date  "] = new Date(req.body["Company Incorporation Date  "]);
+
+  try {
+    req.body["Company Incorporation Date  "] = new Date(req.body["Company Incorporation Date "]);
+    const updatedData = await CompanyModel.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    console.log(updatedData)
+
+    if (!updatedData) {
+      return res.status(404).json({ error: "Data not found" });
+    }
+
+    res.json({ message: "Data updated successfully", updatedData });
+  } catch (error) {
+    console.error("Error updating data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // app.put('/ecompany/:ename', async (req, res) => {
 //   const name = req.params.id;
 

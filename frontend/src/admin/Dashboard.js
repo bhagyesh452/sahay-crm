@@ -31,9 +31,11 @@ import { FaArrowAltCircleLeft } from "react-icons/fa";
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { debounce } from 'lodash';
+import { Link } from 'react-router-dom'
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import { lastDayOfDecade } from "date-fns";
+import StatusInfo from './StausInfo.js'
 // import LoginAdmin from "./LoginAdmin";
 
 function Dashboard() {
@@ -332,6 +334,8 @@ function Dashboard() {
     setFilteredBooking(filteredDataDateRange);
   };
 
+  console.log("companyData", companyData)
+  console.log("employeeData", employeeData)
 
   // ----------------------------------projection-dashboard-----------------------------------------------
 
@@ -1513,17 +1517,19 @@ function Dashboard() {
     ));
   }
 
-  // ------------------------------------------sidebar---------------------------------------------------------------
+  //  ---------------------------------------------status info component-------------------------------------------------
 
-  const handleArrow = () => {
-    setDisplayArrow(false)
-    setsideBar(true)
-  }
+  // const [selectedStatusCompanies, setSelectedStatusCompanies] = useState([]);
 
-  const handleArrowClose = () => {
-    setDisplayArrow(true)
-    setsideBar(false)
-  }
+  // const handleStausClick = (ename, status) => {
+  //   const company = companyData.find(data => data.ename === ename && data.Status === status);
+  //   setSelectedStatusCompanies(company);
+
+  // };
+
+  // console.log(selectedStatusCompanies)
+
+
 
   return (
     <div>
@@ -1887,15 +1893,36 @@ function Dashboard() {
                         </div>
                         <div className="d-flex gap-2">
 
-                          <div className="general-searchbar form-control d-flex justify-content-center align-items-center">
+                          <div className="general-searchbar form-control d-flex justify-content-center align-items-center input-icon">
+                            <span className="input-icon-addon">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="icon"
+                                width="20"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                fill="none"
+                                stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                  stroke="none"
+                                  d="M0 0h24v24H0z"
+                                  fill="none"
+                                />
+                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                                <path d="M21 21l-6 -6" />
+                              </svg>
+                            </span>
                             <input value={searchTerm}
-                              onChange={(e) => debouncedFilterSearch(e.target.value)} placeholder="Enter BDE Name..." style={{ border: "none" }} type="text" name="bdeName-search" id="bdeName-search" />
-                            <CiSearch style={{
+                              onChange={(e) => debouncedFilterSearch(e.target.value)} placeholder="Enter BDE Name..." style={{ border: "none", padding: "0px 0px 0px 21px", width: "100%" }} type="text" name="bdeName-search" id="bdeName-search" />
+                            {/* <CiSearch style={{
                               width: "19px",
                               height: "20px",
                               marginRight: "5px",
                               color: "grey"
-                            }} />
+                            }} /> */}
                           </div>
                           <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
                             <div>{`${formatDate(startDateEmployee)} - ${formatDate(endDateEmployee)}`}</div>
@@ -2136,90 +2163,163 @@ function Dashboard() {
                                       <td
                                         style={{
                                           lineHeight: "32px",
+                                          color: "black",
+                                          textDecoration: "none"
                                         }}
                                         key={`row-${index}-1`}
                                       >
                                         {index + 1}
                                       </td>
                                       <td key={`row-${index}-2`}>{obj.ename}</td>
-                                      <td key={`row-${index}-3`}>
-                                        {
-                                          (companyData.filter(
-                                            (data) =>
-                                              data.ename === obj.ename &&
-                                              data.Status === "Untouched"
-                                          ).length).toLocaleString()
-                                        }
+
+                                      <td key={`row-${index}-3`} >
+                                        <Link to={`/admindashboard/${obj.ename}/Untouched`} style={{
+                                          color: "black",
+                                          textDecoration: "none"
+                                        }}
+                                        target="_blank"
+                                        rel="noopener noreferrer">
+                                          {
+                                            (companyData.filter(
+                                              (data) =>
+                                                data.ename === obj.ename &&
+                                                data.Status === "Untouched"
+                                            ).length).toLocaleString()
+                                          }
+                                        </Link>
                                       </td>
+
+
                                       <td key={`row-${index}-4`}>
-                                        {
-                                          (companyData.filter(
-                                            (data) =>
-                                              data.ename === obj.ename &&
-                                              data.Status === "Busy"
-                                          ).length).toLocaleString()
-                                        }
+                                        <Link to={`/admindashboard/${obj.ename}/Busy`} style={{
+                                          color: "black",
+                                          textDecoration: "none"}}
+                                          target="_blank"
+                                          rel="noopener noreferrer">
+                                          {
+                                            (companyData.filter(
+                                              (data) =>
+                                                data.ename === obj.ename &&
+                                                data.Status === "Busy"
+                                            ).length).toLocaleString()
+                                          }
+                                        </Link>
                                       </td>
+
+
                                       <td key={`row-${index}-5`}>
-                                        {
-                                          (companyData.filter(
-                                            (data) =>
-                                              data.ename === obj.ename &&
-                                              data.Status === "Not Picked Up"
-                                          ).length).toLocaleString()
-                                        }
+                                        <Link
+                                          to={`/admindashboard/${obj.ename}/Not Picked Up`}
+                                          style={{ color: "black", textDecoration: "none" }}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                        >
+                                          {
+                                            (companyData.filter(
+                                              (data) =>
+                                                data.ename === obj.ename &&
+                                                data.Status === "Not Picked Up"
+                                            ).length).toLocaleString()
+                                          }
+                                        </Link>
                                       </td>
+
+
                                       <td key={`row-${index}-6`}>
-                                        {
-                                          (companyData.filter(
-                                            (data) =>
-                                              data.ename === obj.ename &&
-                                              data.Status === "Junk"
-                                          ).length).toLocaleString()
-                                        }
+                                        <Link to={`/admindashboard/${obj.ename}/Junk`} style={{
+                                          color: "black",
+                                          textDecoration: "none"
+                                        }} 
+                                        target="_blank"
+                                        rel="noopener noreferrer">
+                                          {
+                                            (companyData.filter(
+                                              (data) =>
+                                                data.ename === obj.ename &&
+                                                data.Status === "Junk"
+                                            ).length).toLocaleString()
+                                          }
+                                        </Link>
                                       </td>
+
                                       <td key={`row-${index}-7`}>
-                                        {
-                                          (companyData.filter(
-                                            (data) =>
-                                              data.ename === obj.ename &&
-                                              data.Status === "FollowUp"
-                                          ).length).toLocaleString()
-                                        }
+                                        <Link to={`/admindashboard/${obj.ename}/FollowUp`} style={{
+                                          color: "black",
+                                          textDecoration: "none"
+                                        }}
+                                        target="_blank"
+                                        rel="noopener noreferrer">
+                                          {
+                                            (companyData.filter(
+                                              (data) =>
+                                                data.ename === obj.ename &&
+                                                data.Status === "FollowUp"
+                                            ).length).toLocaleString()
+                                          }
+                                        </Link>
                                       </td>
                                       <td key={`row-${index}-8`}>
-                                        {
-                                          (companyData.filter(
-                                            (data) =>
-                                              data.ename === obj.ename &&
-                                              data.Status === "Interested"
-                                          ).length).toLocaleString()
-                                        }
+                                        <Link to={`/admindashboard/${obj.ename}/Interested`} style={{
+                                          color: "black",
+                                          textDecoration: "none"
+                                        }}
+                                        target="_blank"
+                                        rel="noopener noreferrer">
+                                          {
+                                            (companyData.filter(
+                                              (data) =>
+                                                data.ename === obj.ename &&
+                                                data.Status === "Interested"
+                                            ).length).toLocaleString()
+                                          }
+                                        </Link>
                                       </td>
                                       <td key={`row-${index}-9`}>
-                                        {
-                                          (companyData.filter(
-                                            (data) =>
-                                              data.ename === obj.ename &&
-                                              data.Status === "Not Interested"
-                                          ).length).toLocaleString()
-                                        }
+                                        <Link to={`/admindashboard/${obj.ename}/Not Interested`} style={{
+                                          color: "black",
+                                          textDecoration: "none"
+                                        }}
+                                        target="_blank"
+                                        rel="noopener noreferrer">
+                                          {
+                                            (companyData.filter(
+                                              (data) =>
+                                                data.ename === obj.ename &&
+                                                data.Status === "Not Interested"
+                                            ).length).toLocaleString()
+                                          }
+                                        </Link>
                                       </td>
                                       <td key={`row-${index}-10`}>
-                                        {
-                                          (companyData.filter(
-                                            (data) =>
-                                              data.ename === obj.ename &&
-                                              data.Status === "Matured"
-                                          ).length).toLocaleString()
-                                        }
+                                        <Link to={`/admindashboard/${obj.ename}/Matured`} style={{
+                                          color: "black",
+                                          textDecoration: "none"
+                                        }}
+                                        target="_blank"
+                                        rel="noopener noreferrer">
+
+                                          {
+                                            (companyData.filter(
+                                              (data) =>
+                                                data.ename === obj.ename &&
+                                                data.Status === "Matured"
+                                            ).length).toLocaleString()
+                                          }
+                                        </Link>
                                       </td>
                                       <td key={`row-${index}-11`}>
+                                      <Link to={`/admindashboard/${obj.ename}/complete`} style={{
+                                          color: "black",
+                                          textDecoration: "none"
+                                        }}
+                                        target="_blank"
+                                        rel="noopener noreferrer">
                                         {
                                           (companyData.filter(
                                             (data) => data.ename === obj.ename
                                           ).length).toLocaleString()
                                         }
+                                        </Link>
                                       </td>
                                       <td key={`row-${index}-12`}>
                                         {formatDate(

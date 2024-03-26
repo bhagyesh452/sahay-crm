@@ -1720,7 +1720,7 @@ function EmployeeParticular() {
                                           );
                                         }}
                                         style={{ cursor: "pointer", width: "17px", height: "17px" }}
-                                        color="#9696f8"
+                                        color="lightgrey"
                                       />
                                     </IconButton>
 

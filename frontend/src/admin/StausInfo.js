@@ -1,0 +1,229 @@
+import React, { useEffect, useState } from 'react'
+import Navbar from "./Navbar";
+import Header from "./Header";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
+import Nodata from "../components/Nodata";
+import "../assets/styles.css";
+import '../Processing/style_processing/main_processing.css'
+
+
+function StausInfo(props) {
+
+    const [companies, setCompanies] = useState([])
+    const [currenDataLoading, setCurrenDataLoading] = useState(false)
+
+    const { ename } = useParams();
+    const { status } = useParams();
+
+    console.log(status)
+
+    console.log(ename)
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
+
+    const fetchCompany = async () => {
+        try {
+            setCurrenDataLoading(true)
+            // Make a GET request to fetch data of the specific company by its name
+            const response = await axios.get(
+                `${secretKey}/specific-ename-status/${ename}/${status}`
+            );
+            // Extract the data from the response
+            const data = response.data;
+            console.log("data", data);
+            setCompanies(data)
+        } catch (error) {
+            console.error("Error fetching company:", error);
+        } finally {
+            setCurrenDataLoading(false)
+        }
+    };
+
+    console.log(companies)
+
+    useEffect(() => {
+        fetchCompany()
+
+    }, [])
+
+    function formatDate(inputDate) {
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        const formattedDate = new Date(inputDate).toLocaleDateString(
+            "en-US",
+            options
+        );
+        return formattedDate;
+    }
+
+
+
+    return (
+
+        <div>
+            <Header />
+            <Navbar />
+            <div className='container-xl mt-2'>
+                <div className='card'>
+                    <div className='card-header employeedashboard'>
+                    <div className="d-flex justify-content-between">
+                          <div style={{ minWidth: '14vw' }} className="dashboard-title">
+                            <h2 style={{ marginBottom: '5px' }}>{ename} {status} Status Report</h2>
+                          </div>
+                        </div>
+                    </div>
+                    <div className="card-body p-0">
+                        <div
+                            id="table-default"
+                            style={{
+                                overflowX: "auto",
+                                overflowY: "auto",
+                                maxHeight: "60vh",
+                            }}
+                        >
+                            <table
+                                style={{
+                                    width: "100%",
+                                    borderCollapse: "collapse",
+                                    border: "1px solid #ddd",
+                                }}
+                                className="table-vcenter table-nowrap "
+                            >
+                                <thead>
+                                    <tr className="tr-sticky">
+                                        {/* <th>
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.length === data.length}
+                          onChange={() => handleCheckboxChange("all")}
+                        />
+                      </th> */}
+                                        <th>Sr.No</th>
+                                        <th>Company Name</th>
+                                        <th>Company Number</th>
+
+                                        <th>Incorporation Date</th>
+                                        <th>City</th>
+                                        <th>State</th>
+                                        <th>Company Email</th>
+                                        <th>Status</th>
+                                        <th>Remarks</th>
+                                        <th>
+                                            Assigned on
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                {currenDataLoading ? (
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="10" className="LoaderTDSatyle">
+                                                <ClipLoader
+                                                    color="lightgrey"
+                                                    loading
+                                                    size={30}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                ) : (
+                                    <tbody>
+                                        {companies.map((company, index) => (
+                                            <tr
+                                                key={index}
+                                                //className="selected"
+                                                style={{ border: "1px solid #ddd" }}
+                                            >
+                                                {/* <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedRows.includes(company._id)}
+                              onChange={() => handleCheckboxChange(company._id)}
+                              onMouseDown={() => handleMouseDown(company._id)}
+                              onMouseEnter={() => handleMouseEnter(company._id)}
+                              onMouseUp={handleMouseUp}
+                            />
+                          </td> */}
+                                                <td>{index + 1}</td>
+                                                <td>{company["Company Name"]}</td>
+                                                <td>{company["Company Number"]}</td>
+                                                <td>{formatDate(company["Company Incorporation Date  "])}</td>
+                                                <td>{company["City"]}</td>
+                                                <td>{company["State"]}</td>
+                                                <td>{company["Company Email"]}</td>
+                                                <td>{company["Status"]}</td>
+                                                <td>
+                                                    {company["Remarks"]}
+                                                </td>
+                                                <td>{formatDate(company["AssignDate"])}</td>
+                                                {/* <td>
+                            <IconButton onClick={() => handleDeleteClick(company._id)}>
+                              <DeleteIcon
+                                style={{
+                                  width: "16px",
+                                  height: "16px",
+                                  color: "#bf0b0b",
+                                }}
+                              >
+                                Delete
+                              </DeleteIcon>
+                            </IconButton>
+                            <IconButton onClick={
+                              data.length === "0"
+                                ? Swal.fire("Please Import Some data first")
+                                : () => {
+                                  functionopenModifyPopup();
+                                  handleUpdateClick(company._id);
+                                }
+                            }>
+                              < ModeEditIcon
+                                style={{
+                                  width: "16px",
+                                  height: "16px",
+                                  color: "grey",
+                                }}
+                              >
+                                Delete
+                              </ ModeEditIcon>
+                            </IconButton>
+                            <Link to={`/admin/leads/${company._id}`}>
+                              <IconButton>
+                                <IconEye
+                                  style={{
+                                    width: "18px",
+                                    height: "18px",
+                                    color: "#d6a10c",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </IconButton>
+                            </Link>
+                          </td> */}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                )}
+                            </table>
+                        </div>
+                    </div>
+                    {companies.length === 0 && !currenDataLoading &&
+                        (
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td colSpan="10" className="p-2 particular">
+                                            <Nodata />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        )}
+                </div>
+            </div>
+        </div >
+    )
+}
+
+export default StausInfo
