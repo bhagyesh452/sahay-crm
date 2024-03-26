@@ -2731,20 +2731,23 @@ app.post('/api/redesigned-leadData/:CompanyName', upload.fields([
     const companyName = req.params.CompanyName;
     const newData = req.body;
 
-    // Add uploaded files information to newData
-
-    newData.otherDocs = req.files['otherDocs'] === undefined ? "" : req.files['otherDocs'].map(file => file);
-    newData.paymentReceipt = req.files['paymentReceipt'] === undefined ? "" : req.files['paymentReceipt'].map(file => file);
-
+    const hasOtherDocs = newData.hasOwnProperty('otherDocs') && newData.otherDocs !== null && newData.otherDocs !== '';
+    const hasPaymentReceipt = newData.hasOwnProperty('paymentReceipt') && newData.paymentReceipt !== null && newData.paymentReceipt !== '';
 
     // Search for existing data by Company Name
-    const existingData = await RedesignedDraftModel.findOne({ "Company Name" : companyName });
+    const existingData = await RedesignedDraftModel.findOne({ "Company Name": companyName });
 
     if (existingData) {
-      // Update existing data if found
+      // Update existing data if found, but only update otherDocs and paymentReceipt if they are not already present
       const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-        { "Company Name" : companyName },
-        { $set: newData },
+        { "Company Name": companyName },
+        {
+          $set: {
+            ...newData,
+            otherDocs: hasOtherDocs ? newData.otherDocs : existingData.otherDocs,
+            paymentReceipt: hasPaymentReceipt ? newData.paymentReceipt : existingData.paymentReceipt
+          }
+        },
         { new: true }
       );
       res.status(200).json(updatedData); // Respond with updated data
@@ -2758,6 +2761,7 @@ app.post('/api/redesigned-leadData/:CompanyName', upload.fields([
     res.status(500).send('Error creating/updating data'); // Send an error response
   }
 });
+
 // app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
 //   try {
  
@@ -3361,7 +3365,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
           <div style="
                 border: 1px solid #ccc;
                 font-size: 12px;
-                padding: 5px 10px;
+                padding: 5px 10px;3
               ">
           Total Amount
           </div>

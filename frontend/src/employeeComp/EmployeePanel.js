@@ -2712,8 +2712,8 @@ console.log("kuchlikho" , currentProjection)
                   companysEmail={companyEmail}
                   companyNumber={companyNumber}
                   companysInco={companyInco}
-                  // employeeName={data.ename}
-                  // employeeEmail={data.email}
+                  employeeName={data.ename}
+                  employeeEmail={data.email}
                 />
            
         </>

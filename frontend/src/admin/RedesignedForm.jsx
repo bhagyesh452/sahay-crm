@@ -13,6 +13,7 @@ import img from "../static/my-images/image.png";
 import wordimg from "../static/my-images/word.png";
 import excelimg from "../static/my-images/excel.png";
 import PdfImageViewer from "../Processing/PdfViewer";
+import { options } from "../components/Options";
 import { IconX } from "@tabler/icons-react";
 
 import axios from "axios";
@@ -40,7 +41,7 @@ const defaultService = {
   paymentCount: 2,
 };
 
-export default function RedesignedForm({ companysName , companysEmail, companyNumber ,  companysInco }) {
+export default function RedesignedForm({ companysName , companysEmail, companyNumber ,  companysInco ,employeeName,employeeEmail }) {
   const [totalServices, setTotalServices] = useState(1);
   const defaultLeadData = {
     "Company Name": companysName ? companysName : "",
@@ -49,8 +50,10 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
     panNumber: "",
     gstNumber: "",
     incoDate: companysInco ? companysInco : "",
-    bdeName: "",
+    bdeName: employeeName ? employeeName : "",
+    bdeEmail: employeeEmail ? employeeEmail : "",
     bdmName: "",
+    bdmEmail:"",
     bookingDate: "",
     bookingSource: "",
     numberOfServices: 0,
@@ -70,6 +73,20 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [selectedValues, setSelectedValues] = useState("");
+  const [unames, setUnames] = useState([]);
+
+  const fetchDataEmp = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/einfo`);
+
+      // Set the retrieved data in the state
+      const tempData = response.data;
+      console.log(response.data);
+      setUnames(tempData);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
 
   const [leadData, setLeadData] = useState(defaultLeadData);
   const fetchData = async () => {
@@ -80,7 +97,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
       const data = response.data.find(
         (item) => item["Company Name"] === companysName
       );
-      console.log("Fetched Data:" , data);
+      
       if (data.Step1Status === true && data.Step2Status === false) {
         setLeadData({
           ...leadData,
@@ -116,7 +133,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
         setCompleted({ 0: true, 1: true });
         setActiveStep(2);
       } else if (data.Step3Status === true && data.Step4Status === false) {
-        
+        console.log(data.services)
         setSelectedValues(data.bookingSource);
         setLeadData({
           ...leadData,
@@ -132,7 +149,23 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
           bdmEmail: data.bdmEmail,
           bookingDate: data.bookingDate,
           bookingSource: data.bookingSource,
-          services: data.services,
+          // services: data.services.map(service => ({
+          //   serviceName: service.serviceName,
+          //   withDSC: service.serviceName,
+          //   totalPaymentWOGST: service.totalPaymentWOGST,
+          //   totalPaymentWGST: service.totalPaymentWGST,
+          //   withGST: service.withGST,
+          //   paymentTerms: service.paymentTerms,
+          //   firstPayment: service.firstPayment,
+          //   secondPayment: service.secondPayment,
+          //   thirdPayment: service.thirdPayment,
+          //   fourthPayment: service.fourthPayment,
+          //   paymentRemarks: service.paymentRemarks,
+          //   paymentCount: service.paymentCount,
+          // })),
+          services:data.services,
+          
+         
           totalAmount: data.services.reduce(
             (total, service) => total + service.totalPaymentWGST,
             0
@@ -272,7 +305,6 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
         setCompleted({ 0: true, 1: true, 2: true, 3: true , 4:true });
         setActiveStep(5);
       }
-
       console.log(data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -280,6 +312,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
   };
   useEffect(() => {
     fetchData();
+    fetchDataEmp();
     console.log("Fetch After Component Mount" , leadData)
   }, []);
   useEffect(() => {
@@ -330,15 +363,17 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-  
+
   function formatDate(inputDate) {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    const formattedDate = new Date(inputDate).toLocaleDateString(
-      "en-US",
-      options
-    );
-    return formattedDate;
+    const date = new Date(inputDate);
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Adding 1 to month because it's zero-based
+    const day = String(date.getUTCDate()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}`;
   }
+  
+  
   const getOrdinal = (number) => {
     const suffixes = ["th", "st", "nd", "rd"];
     const lastDigit = number % 10;
@@ -376,7 +411,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
 
       if (activeStep === 1) {
         dataToSend = {
-          ...dataToSend,
+          ...leadData,
           Step2Status: true,
           bookingSource: selectedValues,
         };
@@ -387,7 +422,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
         }, 0);
         const pendingAmount = totalAmount - receivedAmount;
         dataToSend = {
-          ...dataToSend,
+          ...leadData,
           Step2Status: true,
           Step3Status: true,
           totalAmount:totalAmount ,
@@ -398,13 +433,13 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
         };
       } else if (activeStep === 3) {
         dataToSend = {
-          ...dataToSend,
+          ...leadData,
           Step3Status: true,
           Step4Status: true,
         };
       } else if (activeStep === 4) {
         dataToSend = {
-          ...dataToSend,
+          ...leadData,
           Step3Status: true,
           Step4Status: true,
           Step5Status: true
@@ -419,16 +454,11 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
               formData.append(`services[${index}][${prop}]`, service[prop]);
             });
           });
-        } else if (key === "otherDocs" && leadData.otherDocs) {
+        }else if (key === "otherDocs" && activeStep === 3) {
           for (let i = 0; i < leadData.otherDocs.length; i++) {
             formData.append("otherDocs", leadData.otherDocs[i]);
           }
-        } else if (key === "paymentReceipt" && leadData.paymentReceipt) {
-          console.log(
-            "Payment Receipt to be appended:",
-            leadData.paymentReceipt[0]
-          );
-
+        } else if (key === "paymentReceipt"  && activeStep === 3) {
           formData.append("paymentReceipt", leadData.paymentReceipt[0]);
         } else {
           formData.append(key, dataToSend[key]);
@@ -482,7 +512,8 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
           // Handle error
         }
       }
-
+      
+      
       fetchData();
 
 
@@ -494,6 +525,139 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
       // Handle error if needed
     }
   };
+  const handleEdit = async () => {
+    try {
+      const formData = new FormData();
+   
+      let dataToSend = {
+        ...dataToSend,
+        Step1Status: true,
+      };
+   if(activeStep === 3){
+     dataToSend = {
+      ...leadData,
+    };
+      for (let i = 0; i < leadData.otherDocs.length; i++) {
+        formData.append("otherDocs", leadData.otherDocs[i]);
+      }
+      formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+    console.log(dataToSend , activeStep)
+   }
+
+     else if (activeStep === 1) {
+        dataToSend = {
+          ...dataToSend,
+          bookingSource: selectedValues,
+        
+        };
+        console.log("Step 1" , dataToSend)
+      } else if (activeStep === 2) {
+        const totalAmount = leadData.services.reduce((acc, curr) => acc + curr.totalPaymentWOGST, 0)
+        const receivedAmount = leadData.services.reduce((acc, curr) => {
+          return curr.paymentTerms === "Full Advanced" ? acc + curr.totalPaymentWOGST : acc + curr.firstPayment;
+        }, 0);
+        const pendingAmount = totalAmount - receivedAmount;
+        dataToSend = {
+          ...leadData,
+          totalAmount:totalAmount ,
+          receivedAmount:receivedAmount,
+          pendingAmount:pendingAmount
+        };
+      } else if (activeStep === 3) {
+        dataToSend = {
+          ...leadData,
+          Step3Status: true,
+          Step4Status: true,
+        };
+      } else if (activeStep === 4) {
+        dataToSend = {
+          ...leadData,
+          Step3Status: true,
+          Step4Status: true,
+          Step5Status: true
+        };
+      }
+      // console.log(activeStep, dataToSend);
+      Object.keys(dataToSend).forEach((key) => {
+        if (key === "services") {
+          // Handle services separately as it's an array
+          dataToSend.services.forEach((service, index) => {
+            Object.keys(service).forEach((prop) => {
+              formData.append(`services[${index}][${prop}]`, service[prop]);
+            });
+          });
+        } else if (key === "otherDocs" && activeStep === 3) {
+          for (let i = 0; i < leadData.otherDocs.length; i++) {
+            formData.append("otherDocs", leadData.otherDocs[i]);
+          }
+        } else if (key === "paymentReceipt"  && activeStep === 3) {
+          formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+        } else {
+          formData.append(key, dataToSend[key]);
+        }
+      });
+      if (activeStep === 4 ) {
+        dataToSend = {
+          ...leadData,
+          paymentReceipt: leadData.paymentReceipt
+            ? leadData.paymentReceipt
+            : null,
+        };
+        try {
+          const response = await axios.post(
+            `${secretKey}/redesigned-final-leadData/${companysName}`,
+            leadData
+          );
+
+          console.log(response.data);
+          Swal.fire({
+            icon: 'success',
+            title: 'Form Submitted',
+            text: 'Your form has been submitted successfully!',
+          });
+          // Handle response data as needed
+        } catch (error) {
+          console.error("Error uploading data:", error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'There was an error submitting the form. Please try again later.',
+          });
+          // Handle error
+        }
+      } else {
+        try {
+          const response = await axios.post(
+            `${secretKey}/redesigned-leadData/${companysName}`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+         
+          // Handle response data as needed
+        } catch (error) {
+          console.error("Error uploading data:", error);
+          // Handle error
+        }
+      }
+      
+      
+      fetchData();
+
+
+      // Log the response from the backend
+
+      handleNext();
+    } catch (error) {
+      console.error("Error sending data to backend:", error);
+      // Handle error if needed
+    }
+  };
+ 
 
   const handleReset = () => {
     setActiveStep(0);
@@ -535,15 +699,15 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                     completed[activeStep] === true
                   }
                 >
-                  <option value="" disabled selected>
-                    Select Service Name
-                  </option>
-                  <option value="Start Up Certificate">
-                    Startup certificate
-                  </option>
-                  <option value="Boom">Boom</option>
-                  <option value="Baaam">Baaam</option>
-                  <option value="vooooo">voooo</option>
+                 <option value="" disabled selected>
+  Select Service Name
+</option>
+{options.map((option, index) => (
+  <option key={index} value={option.value}>
+    {option.value}
+  </option>
+))}
+
                 </select>
               </div>
               {leadData.services[i].serviceName === "Start Up Certificate" && (
@@ -582,34 +746,33 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                 <label class="form-label">Total Amount</label>
                 <div className="d-flex align-items-center">
                   <div class="input-group total-payment-inputs mb-2">
-                    <input
-                      type="number"
-                      class="form-control "
-                      placeholder="Enter Amount"
-                      id={`Amount-${i}`}
-                      value={leadData.services[i].totalPaymentWOGST}
-                      onChange={(e) => {
-                        setLeadData((prevState) => ({
-                          ...prevState,
-                          services: prevState.services.map((service, index) =>
-                            index === i
-                              ? {
-                                  ...service,
-                                  totalPaymentWOGST: e.target.value,
-                                  totalPaymentWGST:
-                                    service.withGST === true
-                                      ? Number(e.target.value) +
-                                        Number(e.target.value * 0.18)
-                                      : e.target.value,
-                                }
-                              : service
-                          ),
-                        }));
-                      }}
-                      readOnly={
-                        completed[activeStep] === true
-                      }
-                    />
+                  <input
+  type="number"
+  className="form-control"
+  placeholder="Enter Amount"
+  id={`Amount-${i}`}
+  value={leadData.services[i].totalPaymentWOGST}
+  onInput={(e) => {
+    const newValue = e.target.value;
+    setLeadData((prevState) => ({
+      ...prevState,
+      services: prevState.services.map((service, index) =>
+        index === i
+          ? {
+              ...service,
+              totalPaymentWOGST: newValue,
+              totalPaymentWGST:
+                service.withGST === true
+                  ? Number(newValue) + Number(newValue * 0.18)
+                  : newValue,
+            }
+          : service
+      ),
+    }));
+  }}
+  readOnly={completed[activeStep] === true}
+/>
+
                     <button class="btn" type="button">
                       ₹
                     </button>
@@ -982,9 +1145,22 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
     return services;
   };
 
-  console.log("Default Lead Data :", leadData);
+  // console.log("Default Lead Data :", leadData);
+
   const handleInputChange = (value, id) => {
-    setLeadData({ ...leadData, [id]: value });
+
+    if (id === "bdmName") {
+      const foundUser = unames.find(item => item.ename === value);
+      setLeadData({
+        ...leadData,
+        bdmName: value,
+        bdmEmail: foundUser ? foundUser.email : "" // Check if foundUser exists before accessing email
+      });
+    } else {
+      setLeadData({ ...leadData, [id]: value });
+    }
+    
+   
   };
 
   const handleRemoveFile = () => {
@@ -1121,7 +1297,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                         className="form-control mt-1"
                                         placeholder="Incorporation Date"
                                         id="inco-date"
-                                        value={leadData.incoDate}
+                                        value={formatDate(leadData.incoDate)}
                                         onChange={(e) => {
                                           handleInputChange(
                                             e.target.value,
@@ -1238,22 +1414,32 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                   <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="bdmName">BDM Name:</label>
-                                      <input
-                                        type="text"
-                                        className="form-control mt-1"
-                                        placeholder="Enter BDM Name"
-                                        id="bdmName"
-                                        value={leadData.bdmName}
+                                     
+                                        <select
+                    type="text"
+                    className="form-select mt-1"
+                    id="select-users"
+                    value={leadData.bdmName}
                                         onChange={(e) => {
                                           handleInputChange(
                                             e.target.value,
                                             "bdmName"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
-                                      />
+                  >
+                    <option value="" disabled selected>
+                      Please select BDM Name
+                    </option>
+                    {unames &&
+                      unames.map((names) => (
+                        <option value={names.ename}>{names.ename}</option>
+                      ))}
+
+                    <option value="other">Other</option>
+                  </select>
                                     </div>
                                   </div>
                                   <div className="col-sm-3">
