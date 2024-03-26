@@ -51,6 +51,7 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   "Company Name": {
     type: String,
     required: true,
+    unique:true
   },
   "Company Number": {
     type: Number,
@@ -93,8 +94,7 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   },
   services: [ServiceSchema],
   caCase: {
-    type: Boolean,
-    default: false,
+    type: String,
   },
   caName: {
     type: String,
@@ -109,7 +109,9 @@ const RedesignedLeadformSchema = new mongoose.Schema({
     type: String,
   },
   paymentReceipt: {
-    type: String,
+    type : Array
+  },otherDocs : {
+    type : Array
   },
   extraNotes: {
     type: String,

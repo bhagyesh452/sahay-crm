@@ -8,9 +8,12 @@ import StepButton from "@mui/material/StepButton";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import pdfimg from "../static/my-images/pdf.png";
+import Swal from "sweetalert2";
 import img from "../static/my-images/image.png";
 import wordimg from "../static/my-images/word.png";
 import excelimg from "../static/my-images/excel.png";
+import PdfImageViewer from "../Processing/PdfViewer";
+import { IconX } from "@tabler/icons-react";
 
 import axios from "axios";
 const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -24,16 +27,17 @@ const steps = [
 
 const defaultService = {
   serviceName: "",
-  withDSC:false,
+  withDSC: false,
   totalPaymentWOGST: "",
   totalPaymentWGST: "",
-  withGST:false,
-  paymentTerms: "",
-  firstPayment: "",
-  secondPayment: "",
-  thirdPayment: "",
-  fourthPayment: "",
+  withGST: false,
+  paymentTerms: "Full Advanced",
+  firstPayment: 0,
+  secondPayment: 0,
+  thirdPayment: 0,
+  fourthPayment: 0,
   paymentRemarks: "No payment remarks",
+  paymentCount: 2,
 };
 
 export default function RedesignedForm({ companysName }) {
@@ -56,8 +60,9 @@ export default function RedesignedForm({ companysName }) {
     caEmail: "",
     caCommission: "",
     paymentMethod: "",
-    paymentReceipt: "",
+    paymentReceipt: [],
     extraNotes: "",
+    otherDocs: [],
     totalAmount: 0,
     receivedAmount: 0,
     pendingAmount: 0,
@@ -67,54 +72,210 @@ export default function RedesignedForm({ companysName }) {
   const [selectedValues, setSelectedValues] = useState("");
 
   const [leadData, setLeadData] = useState(defaultLeadData);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${secretKey}/redesigned-leadData/${companysName}`
-        );
-        const data = response.data.find(
-          (item) => item["Company Name"] === companysName
-        );
-        if (data.Step1Status === true && data.Step2Status === false) {
-          setLeadData({
-            ...leadData,
-            "Company Name": data["Company Name"],
-            "Company Email": data["Company Email"],
-            "Company Number": data["Company Number"],
-            incoDate: data.incoDate,
-            panNumber: data.panNumber,
-            gstNumber: data.gstNumber,
-          });
-          setCompleted({ 0: true });
-          setActiveStep(1);
-        } else if (data.Step2Status === true && data.Step3Status === false) {
-          setSelectedValues(data.bookingSource);
-          setLeadData({
-            ...leadData,
-            "Company Name": data["Company Name"],
-            "Company Email": data["Company Email"],
-            "Company Number": data["Company Number"],
-            incoDate: data.incoDate,
-            panNumber: data.panNumber,
-            gstNumber: data.gstNumber,
-            bdeName: data.bdeName,
-            bdeEmail: data.bdeEmail,
-            bdmName: data.bdmName,
-            bdmEmail: data.bdmEmail,
-            bookingDate: data.bookingDate,
-            bookingSource: data.bookingSource,
-          });
-          setCompleted({ 0: true, 1: true });
-          setActiveStep(2);
-        }
-
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        `${secretKey}/redesigned-leadData/${companysName}`
+      );
+      const data = response.data.find(
+        (item) => item["Company Name"] === companysName
+      );
+      if (data.Step1Status === true && data.Step2Status === false) {
+        setLeadData({
+          ...leadData,
+          "Company Name": data["Company Name"],
+          "Company Email": data["Company Email"],
+          "Company Number": data["Company Number"],
+          incoDate: data.incoDate,
+          panNumber: data.panNumber,
+          gstNumber: data.gstNumber,
+          Step1Status: data.Step1Status
+        });
+        setCompleted({ 0: true });
+        setActiveStep(1);
+      } else if (data.Step2Status === true && data.Step3Status === false) {
+        setSelectedValues(data.bookingSource);
+        setLeadData({
+          ...leadData,
+          "Company Name": data["Company Name"],
+          "Company Email": data["Company Email"],
+          "Company Number": data["Company Number"],
+          incoDate: data.incoDate,
+          panNumber: data.panNumber,
+          gstNumber: data.gstNumber,
+          bdeName: data.bdeName,
+          bdeEmail: data.bdeEmail,
+          bdmName: data.bdmName,
+          bdmEmail: data.bdmEmail,
+          bookingDate: data.bookingDate,
+          bookingSource: data.bookingSource,
+          Step1Status: data.Step1Status,
+          Step2Status: data.Step2Status
+        });
+        setCompleted({ 0: true, 1: true });
+        setActiveStep(2);
+      } else if (data.Step3Status === true && data.Step4Status === false) {
+        setSelectedValues(data.bookingSource);
+        setLeadData({
+          ...leadData,
+          "Company Name": data["Company Name"],
+          "Company Email": data["Company Email"],
+          "Company Number": data["Company Number"],
+          incoDate: data.incoDate,
+          panNumber: data.panNumber,
+          gstNumber: data.gstNumber,
+          bdeName: data.bdeName,
+          bdeEmail: data.bdeEmail,
+          bdmName: data.bdmName,
+          bdmEmail: data.bdmEmail,
+          bookingDate: data.bookingDate,
+          bookingSource: data.bookingSource,
+          services: data.services,
+          totalAmount: data.services.reduce(
+            (total, service) => total + service.totalPaymentWGST,
+            0
+          ),
+          receivedAmount: data.services.reduce(
+            (total, service) =>
+              service.paymentTerms === "Full Advanced"
+                ? total + service.totalPaymentWGST
+                : total + service.firstPayment,
+            0
+          ),
+          pendingAmount: data.services.reduce(
+            (total, service) =>
+              service.paymentTerms === "Full Advanced"
+                ? total + 0
+                : total + service.totalPaymentWGST - service.firstPayment,
+            0
+          ),
+          caCase: data.caCase,
+          caName: data.caName,
+          caEmail: data.caEmail,
+          caNumber: data.caNumber,
+          Step1Status: data.Step1Status,
+          Step2Status: data.Step2Status,
+          Step3Status:data.Step3Status
+        });
+        setTotalServices(data.services.length);
+        setCompleted({ 0: true, 1: true, 2: true });
+        setActiveStep(3);
+      } else if (data.Step4Status === true) {
+        setSelectedValues(data.bookingSource);
+        setLeadData({
+          ...leadData,
+          "Company Name": data["Company Name"],
+          "Company Email": data["Company Email"],
+          "Company Number": data["Company Number"],
+          incoDate: data.incoDate,
+          panNumber: data.panNumber,
+          gstNumber: data.gstNumber,
+          bdeName: data.bdeName,
+          bdeEmail: data.bdeEmail,
+          bdmName: data.bdmName,
+          bdmEmail: data.bdmEmail,
+          bookingDate: data.bookingDate,
+          bookingSource: data.bookingSource,
+          services: data.services,
+          totalAmount: data.services.reduce(
+            (total, service) => total + service.totalPaymentWGST,
+            0
+          ),
+          receivedAmount: data.services.reduce(
+            (total, service) =>
+              service.paymentTerms === "Full Advanced"
+                ? total + service.totalPaymentWGST
+                : total + service.firstPayment,
+            0
+          ),
+          pendingAmount: data.services.reduce(
+            (total, service) =>
+              service.paymentTerms === "Full Advanced"
+                ? total + 0
+                : total + service.totalPaymentWGST - service.firstPayment,
+            0
+          ),
+          caCase: data.caCase,
+          caName: data.caName,
+          caEmail: data.caEmail,
+          caNumber: data.caNumber,
+          paymentMethod: data.paymentMethod,
+          paymentReceipt: data.paymentReceipt,
+          extraNotes: data.extraNotes,
+          totalAmount: data.totalAmount,
+          receivedAmount: data.receivedAmount,
+          pendingAmount: data.pendingAmount,
+          otherDocs: data.otherDocs,
+          Step1Status: data.Step1Status,
+          Step2Status: data.Step2Status,
+          Step3Status:data.Step3Status,
+          Step4Status:data.Step4Status,
+        });
+        setTotalServices(data.services.length);
+        setCompleted({ 0: true, 1: true, 2: true, 3: true });
+        setActiveStep(4);
+      }else if (data.Step5Status === true){
+        setSelectedValues(data.bookingSource);
+        setLeadData({
+          ...leadData,
+          "Company Name": data["Company Name"],
+          "Company Email": data["Company Email"],
+          "Company Number": data["Company Number"],
+          incoDate: data.incoDate,
+          panNumber: data.panNumber,
+          gstNumber: data.gstNumber,
+          bdeName: data.bdeName,
+          bdeEmail: data.bdeEmail,
+          bdmName: data.bdmName,
+          bdmEmail: data.bdmEmail,
+          bookingDate: data.bookingDate,
+          bookingSource: data.bookingSource,
+          services: data.services,
+          totalAmount: data.services.reduce(
+            (total, service) => total + service.totalPaymentWGST,
+            0
+          ),
+          receivedAmount: data.services.reduce(
+            (total, service) =>
+              service.paymentTerms === "Full Advanced"
+                ? total + service.totalPaymentWGST
+                : total + service.firstPayment,
+            0
+          ),
+          pendingAmount: data.services.reduce(
+            (total, service) =>
+              service.paymentTerms === "Full Advanced"
+                ? total + 0
+                : total + service.totalPaymentWGST - service.firstPayment,
+            0
+          ),
+          caCase: data.caCase,
+          caName: data.caName,
+          caEmail: data.caEmail,
+          caNumber: data.caNumber,
+          paymentMethod: data.paymentMethod,
+          paymentReceipt: data.paymentReceipt,
+          extraNotes: data.extraNotes,
+          totalAmount: data.totalAmount,
+          receivedAmount: data.receivedAmount,
+          pendingAmount: data.pendingAmount,
+          otherDocs: data.otherDocs,
+          Step1Status: data.Step1Status,
+          Step2Status: data.Step2Status,
+          Step3Status:data.Step3Status,
+          Step4Status:data.Step4Status,
+        });
+        setTotalServices(data.services.length);
+        setCompleted({ 0: true, 1: true, 2: true, 3: true , 4:true });
+        setActiveStep(5);
       }
-    };
 
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
     fetchData();
   }, []);
   useEffect(() => {
@@ -124,6 +285,15 @@ export default function RedesignedForm({ companysName }) {
     }));
     setLeadData((prevState) => ({ ...prevState, services: newServices }));
   }, [totalServices, defaultService]);
+  useEffect(() => {
+    setTimeout(() => {
+      const newServices = Array.from({ length: totalServices }, () => ({
+        ...defaultService,
+      }));
+      setLeadData((prevState) => ({ ...prevState, services: newServices }));
+      fetchData();
+    }, 1000);
+  }, []);
 
   const totalSteps = () => {
     return steps.length;
@@ -132,7 +302,6 @@ export default function RedesignedForm({ companysName }) {
   const completedSteps = () => {
     return Object.keys(completed).length;
   };
-
   const isLastStep = () => {
     return activeStep === totalSteps() - 1;
   };
@@ -140,6 +309,8 @@ export default function RedesignedForm({ companysName }) {
   const allStepsCompleted = () => {
     return completedSteps() === totalSteps();
   };
+  
+
 
   const handleNext = () => {
     const newActiveStep =
@@ -147,18 +318,36 @@ export default function RedesignedForm({ companysName }) {
         ? steps.findIndex((step, i) => !(i in completed))
         : activeStep + 1;
     setActiveStep(newActiveStep);
+
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+  const getOrdinal = (number) => {
+    const suffixes = ["th", "st", "nd", "rd"];
+    const lastDigit = number % 10;
+    const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
+    return `${number}${suffix}`;
+  };
+  const handleViewPdfReciepts = (paymentreciept) => {
+    const pathname = paymentreciept;
+    //console.log(pathname);
+    window.open(`${secretKey}/recieptpdf/${pathname}`, "_blank");
+  };
 
+  const handleViewPdOtherDocs = (pdfurl) => {
+    const pathname = pdfurl;
+    console.log(pathname);
+    window.open(`${secretKey}/otherpdf/${pathname}`, "_blank");
+  };
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
-
+  
   const handleComplete = async () => {
     try {
+      const formData = new FormData();
       const newCompleted = completed;
       newCompleted[activeStep] = true;
 
@@ -177,22 +366,112 @@ export default function RedesignedForm({ companysName }) {
           bookingSource: selectedValues,
         };
       } else if (activeStep === 2) {
+        const totalAmount = leadData.services.reduce((acc, curr) => acc + curr.totalPaymentWOGST, 0)
+        const receivedAmount = leadData.services.reduce((acc, curr) => {
+          return curr.paymentTerms === "Full Advanced" ? acc + curr.totalPaymentWOGST : acc + curr.firstPayment;
+        }, 0);
+        const pendingAmount = totalAmount - receivedAmount;
         dataToSend = {
           ...dataToSend,
           Step2Status: true,
           Step3Status: true,
+          totalAmount:totalAmount ,
+          receivedAmount:receivedAmount,
+          pendingAmount:pendingAmount
+
+          
+        };
+      } else if (activeStep === 3) {
+        dataToSend = {
+          ...dataToSend,
+          Step3Status: true,
+          Step4Status: true,
+        };
+      } else if (activeStep === 4) {
+        dataToSend = {
+          ...dataToSend,
+          Step3Status: true,
+          Step4Status: true,
+          Step5Status: true
         };
       }
+      // console.log(activeStep, dataToSend);
+      Object.keys(dataToSend).forEach((key) => {
+        if (key === "services") {
+          // Handle services separately as it's an array
+          dataToSend.services.forEach((service, index) => {
+            Object.keys(service).forEach((prop) => {
+              formData.append(`services[${index}][${prop}]`, service[prop]);
+            });
+          });
+        } else if (key === "otherDocs" && leadData.otherDocs) {
+          for (let i = 0; i < leadData.otherDocs.length; i++) {
+            formData.append("otherDocs", leadData.otherDocs[i]);
+          }
+        } else if (key === "paymentReceipt" && leadData.paymentReceipt) {
+          console.log(
+            "Payment Receipt to be appended:",
+            leadData.paymentReceipt[0]
+          );
 
-      console.log(activeStep, dataToSend);
-      // Make a POST request to send data to the backend
-      const response = await axios.post(
-        `${secretKey}/redesigned-leadData/${companysName}`,
-        dataToSend
-      );
-      console.log("Data sent to backend:", response.data); // Log the response from the backend
+          formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+        } else {
+          formData.append(key, dataToSend[key]);
+        }
+      });
+      if (activeStep === 4) {
+        dataToSend = {
+          ...leadData,
+          paymentReceipt: leadData.paymentReceipt
+            ? leadData.paymentReceipt
+            : null,
+        };
+        try {
+          const response = await axios.post(
+            `${secretKey}/redesigned-final-leadData/${companysName}`,
+            leadData
+          );
 
-      handleNext(); // Proceed to the next step
+          console.log(response.data);
+          Swal.fire({
+            icon: 'success',
+            title: 'Form Submitted',
+            text: 'Your form has been submitted successfully!',
+          });
+          // Handle response data as needed
+        } catch (error) {
+          console.error("Error uploading data:", error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'There was an error submitting the form. Please try again later.',
+          });
+          // Handle error
+        }
+      } else {
+        try {
+          const response = await axios.post(
+            `${secretKey}/redesigned-leadData/${companysName}`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          console.log(response.data);
+          // Handle response data as needed
+        } catch (error) {
+          console.error("Error uploading data:", error);
+          // Handle error
+        }
+      }
+
+      fetchData();
+      // Log the response from the backend
+
+      handleNext();
     } catch (error) {
       console.error("Error sending data to backend:", error);
       // Handle error if needed
@@ -204,84 +483,186 @@ export default function RedesignedForm({ companysName }) {
     setCompleted({});
   };
 
+
+  console.log(leadData.Step1Status , "Boom");
   const renderServices = () => {
     const services = [];
-    console.log(leadData.services.length , Number(totalServices))
-   if(leadData.services.length === Number(totalServices)){
-    for (let i = 0; i < totalServices; i++) {
-      services.push(
-        <div key={i} className="servicesFormCard mt-3">
-          {/* <div className="services_No">
+    console.log(leadData.services.length, Number(totalServices));
+    if (leadData.services.length === Number(totalServices)) {
+      for (let i = 0; i < totalServices; i++) {
+        services.push(
+          <div key={i} className="servicesFormCard mt-3">
+            {/* <div className="services_No">
               1
         </div> */}
-          <div className="d-flex align-items-center">
-            <div className="selectservices-label mr-2">
-              <label for="">Select Service:</label>
-            </div>
-            <div className="selectservices-label-selct">
-              <select
-                className="form-select mt-1"
-                id={`Service-${i}`}
-                value={leadData.services[i].serviceName}
-                onChange={(e) => {
-                  setLeadData((prevState) => ({
-                    ...prevState,
-                    services: prevState.services.map((service, index) =>
-                      index === i
-                        ? { ...service, serviceName: e.target.value }
-                        : service
-                    ),
-                  }));
-                }}
-              >
-                <option value="" disabled selected>
-                  Select Service Name
-                </option>
-                <option value="Start Up Certificate">
-                  Startup certificate
-                </option>
-                <option value="Boom">Boom</option>
-                <option value="Baaam">Baaam</option>
-                <option value="vooooo">voooo</option>
-              </select>
-            </div>
-            {leadData.services[i].serviceName === "Start Up Certificate" && <div className="ml-2">
-              <div class="form-check m-0">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="dsc"
-                  value="0"
-                  checked={leadData.services[i].withDSC}
+            <div className="d-flex align-items-center">
+              <div className="selectservices-label mr-2">
+                <label for="">Select Service:</label>
+              </div>
+              <div className="selectservices-label-selct">
+                <select
+                  className="form-select mt-1"
+                  id={`Service-${i}`}
+                  value={leadData.services[i].serviceName}
                   onChange={(e) => {
                     setLeadData((prevState) => ({
                       ...prevState,
                       services: prevState.services.map((service, index) =>
                         index === i
-                          ? { ...service, withDSC: !service.withDSC }
+                          ? { ...service, serviceName: e.target.value }
                           : service
                       ),
                     }));
                   }}
-                />
-                <label class="form-check-label" for="dsc">
-                  WITH DSC
-                </label>
+                >
+                  <option value="" disabled selected>
+                    Select Service Name
+                  </option>
+                  <option value="Start Up Certificate">
+                    Startup certificate
+                  </option>
+                  <option value="Boom">Boom</option>
+                  <option value="Baaam">Baaam</option>
+                  <option value="vooooo">voooo</option>
+                </select>
               </div>
-            </div>}
-          </div>
-          <hr className="mt-3 mb-3"></hr>
-          <div className="row align-items-center mt-2">
-            <div className="col-sm-8">
-              <label class="form-label">Total Amount</label>
-              <div className="d-flex align-items-center">
-                <div class="input-group total-payment-inputs mb-2">
+              {leadData.services[i].serviceName === "Start Up Certificate" && (
+                <div className="ml-2">
+                  <div class="form-check m-0">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="dsc"
+                      value="0"
+                      checked={leadData.services[i].withDSC}
+                      onChange={(e) => {
+                        setLeadData((prevState) => ({
+                          ...prevState,
+                          services: prevState.services.map((service, index) =>
+                            index === i
+                              ? { ...service, withDSC: !service.withDSC }
+                              : service
+                          ),
+                        }));
+                      }}
+                    />
+                    <label class="form-check-label" for="dsc">
+                      WITH DSC
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+            <hr className="mt-3 mb-3"></hr>
+            <div className="row align-items-center mt-2">
+              <div className="col-sm-8">
+                <label class="form-label">Total Amount</label>
+                <div className="d-flex align-items-center">
+                  <div class="input-group total-payment-inputs mb-2">
+                    <input
+                      type="number"
+                      class="form-control "
+                      placeholder="Enter Amount"
+                      id={`Amount-${i}`}
+                      value={leadData.services[i].totalPaymentWOGST}
+                      onChange={(e) => {
+                        setLeadData((prevState) => ({
+                          ...prevState,
+                          services: prevState.services.map((service, index) =>
+                            index === i
+                              ? {
+                                  ...service,
+                                  totalPaymentWOGST: e.target.value,
+                                  totalPaymentWGST:
+                                    service.withGST === true
+                                      ? Number(e.target.value) +
+                                        Number(e.target.value * 0.18)
+                                      : e.target.value,
+                                }
+                              : service
+                          ),
+                        }));
+                      }}
+                    />
+                    <button class="btn" type="button">
+                      ₹
+                    </button>
+                  </div>
+                  <div class="form-check ml-2">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="GST"
+                      value="0"
+                      checked={leadData.services[i].withGST}
+                      onChange={(e) => {
+                        setLeadData((prevState) => ({
+                          ...prevState,
+                          services: prevState.services.map((service, index) =>
+                            index === i
+                              ? {
+                                  ...service,
+                                  withGST: !service.withGST,
+                                  totalPaymentWGST:
+                                    service.withGST === false
+                                      ? Number(
+                                          service.totalPaymentWOGST * 0.18
+                                        ) + Number(service.totalPaymentWOGST)
+                                      : service.totalPaymentWOGST,
+                                }
+                              : service
+                          ),
+                        }));
+                      }}
+                    />
+                    <label class="form-check-label" for="GST">
+                      WITH GST (18%)
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="col-sm-4">
+                <div className="form-group">
+                  <label class="form-label">Total Amount With GST</label>
+                  <div class="input-group mb-2">
+                    <input
+                      type="text"
+                      className={
+                        parseInt(leadData.services[i].firstPayment) +
+                          parseInt(leadData.services[i].secondPayment) +
+                          parseInt(leadData.services[i].thirdPayment) +
+                          parseInt(leadData.services[i].fourthPayment) !==
+                          parseInt(leadData.services[i].totalPaymentWGST) &&
+                        leadData.services[i].paymentTerms !== "Full Advanced"
+                          ? "form-control error-border"
+                          : "form-control"
+                      }
+                      placeholder="Search for…"
+                      id={`Amount-${i}`}
+                      value={leadData.services[i].totalPaymentWGST}
+                      disabled
+                    />
+                    <button class="btn" type="button">
+                      ₹
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="row mt-2">
+              <div className="col-sm-12">
+                <label className="form-label">Payment Terms</label>
+              </div>
+              <div className="full-time col-sm-12">
+                <label className="form-check form-check-inline col">
                   <input
-                    type="number"
-                    class="form-control "
-                    placeholder="Enter Amount"
-                    id={`Amount-${i}`}
-                    value={leadData.services[i].totalPaymentWOGST}
+                    className="form-check-input"
+                    type="radio"
+                    name={`radio-name-${i}`}
+                    value="Full Advanced"
+                    checked={
+                      leadData.services[i].paymentTerms === "Full Advanced"
+                    }
                     onChange={(e) => {
                       setLeadData((prevState) => ({
                         ...prevState,
@@ -289,158 +670,293 @@ export default function RedesignedForm({ companysName }) {
                           index === i
                             ? {
                                 ...service,
-                                totalPaymentWOGST: e.target.value,
-                               totalPaymentWGST: service.withGST === true ? e.target.value * 1.8 : e.target.value
+                                paymentTerms: e.target.value,
                               }
                             : service
                         ),
                       }));
                     }}
                   />
-                  <button class="btn" type="button">
-                    ₹
-                  </button>
-                </div>
-                <div class="form-check ml-2">
+                  <span className="form-check-label">Full Advanced</span>
+                </label>
+                <label className="form-check form-check-inline col">
                   <input
                     className="form-check-input"
-                    type="checkbox"
-                    id="GST"
-                    value="0"
-                    checked={leadData.services[i].withGST}
+                    type="radio"
+                    name={`radio-name-${i}`}
+                    value="two-part"
+                    checked={leadData.services[i].paymentTerms === "two-part"}
                     onChange={(e) => {
                       setLeadData((prevState) => ({
                         ...prevState,
                         services: prevState.services.map((service, index) =>
                           index === i
-                            ? { ...service, withGST: !service.withGST , totalPaymentWGST : service.withGST === false ? service.totalPaymentWOGST * 1.8 : service.totalPaymentWOGST }
+                            ? {
+                                ...service,
+                                paymentTerms: e.target.value,
+                                paymentCount: 2,
+                              }
                             : service
                         ),
                       }));
                     }}
                   />
-                  <label class="form-check-label" for="GST">
-                    WITH GST (18%)
-                  </label>
-                </div>
+
+                  <span className="form-check-label">Part Payment</span>
+                </label>
               </div>
             </div>
-            <div className="col-sm-4">
-              <div className="form-group">
-                <label class="form-label">Total Amount With GST</label>
-                <div class="input-group mb-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Search for…"
-                    id={`Amount-${i}`}
-                    value={leadData.services[i].totalPaymentWGST}
-                    disabled
-                  />
-                  <button class="btn" type="button">
-                    ₹
-                  </button>
+            {leadData.services[i].paymentTerms === "two-part" && (
+              <div className="row mt-2">
+                <div className="col-sm-3">
+                  <div className="form-group">
+                    <label class="form-label">First Payment</label>
+                    <div class="input-group mb-2">
+                      <input
+                        type="number"
+                        class="form-control"
+                        placeholder="Enter First Payment"
+                        value={leadData.services[i].firstPayment}
+                        onChange={(e) => {
+                          setLeadData((prevState) => ({
+                            ...prevState,
+                            services: prevState.services.map((service, index) =>
+                              index === i
+                                ? {
+                                    ...service,
+                                    firstPayment: e.target.value,
+                                    secondPayment:
+                                      service.paymentCount === 2
+                                        ? service.totalPaymentWGST -
+                                          e.target.value
+                                        : service.secondPayment,
+                                  }
+                                : service
+                            ),
+                          }));
+                        }}
+                      />
+                      <button class="btn" type="button">
+                        ₹
+                      </button>
+                    </div>
+                  </div>
                 </div>
+                {leadData.services[i].paymentCount > 1 && (
+                  <div className="col-sm-3">
+                    <div className="form-group">
+                      <label class="form-label">Second Payment</label>
+                      <div class="input-group mb-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search for…"
+                          value={leadData.services[i].secondPayment}
+                          onChange={(e) => {
+                            setLeadData((prevState) => ({
+                              ...prevState,
+                              services: prevState.services.map(
+                                (service, index) =>
+                                  index === i
+                                    ? {
+                                        ...service,
+                                        secondPayment: e.target.value,
+                                        thirdPayment:
+                                          service.paymentCount === 3
+                                            ? service.totalPaymentWGST -
+                                              service.firstPayment -
+                                              e.target.value
+                                            : service.thirdPayment,
+                                      }
+                                    : service
+                              ),
+                            }));
+                          }}
+                          readOnly={leadData.services[i].paymentCount === 2}
+                        />
+                        <button class="btn" type="button">
+                          ₹
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {leadData.services[i].paymentCount > 2 && (
+                  <div className="col-sm-3">
+                    <div className="form-group">
+                      <label class="form-label">Third Payment</label>
+                      <div class="input-group mb-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search for…"
+                          value={leadData.services[i].thirdPayment}
+                          onChange={(e) => {
+                            setLeadData((prevState) => ({
+                              ...prevState,
+                              services: prevState.services.map(
+                                (service, index) =>
+                                  index === i
+                                    ? {
+                                        ...service,
+                                        thirdPayment: e.target.value,
+                                        fourthPayment:
+                                          service.paymentCount === 4
+                                            ? service.totalPaymentWGST -
+                                              service.firstPayment -
+                                              service.secondPayment -
+                                              e.target.value
+                                            : service.fourthPayment,
+                                      }
+                                    : service
+                              ),
+                            }));
+                          }}
+                          readOnly={leadData.services[i].paymentCount === 3}
+                        />
+                        <button class="btn" type="button">
+                          ₹
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {leadData.services[i].paymentCount > 3 && (
+                  <div className="col-sm-3">
+                    <div className="form-group">
+                      <label class="form-label">Fourth Payment</label>
+                      <div class="input-group mb-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search for…"
+                          value={leadData.services[i].fourthPayment}
+                          onChange={(e) => {
+                            setLeadData((prevState) => ({
+                              ...prevState,
+                              services: prevState.services.map(
+                                (service, index) =>
+                                  index === i
+                                    ? {
+                                        ...service,
+                                        fourthPayment: e.target.value,
+                                      }
+                                    : service
+                              ),
+                            }));
+                          }}
+                          readOnly={leadData.services[i].paymentCount === 4}
+                        />
+                        <button class="btn" type="button">
+                          ₹
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  disabled={leadData.services[i].paymentCount === 4}
+                  onClick={(e) => {
+                    setLeadData((prevState) => ({
+                      ...prevState,
+                      services: prevState.services.map((service, index) =>
+                        index === i
+                          ? {
+                              ...service,
+                              paymentCount: service.paymentCount + 1,
+                              firstPayment: 0,
+                              secondPayment: 0,
+                              thirdPayment: 0,
+                              fourthPayment: 0,
+                            }
+                          : service
+                      ),
+                    }));
+                  }}
+                  style={{ marginLeft: "5px" }}
+                  className="btn btn-primary"
+                >
+                  <i className="fas fa-plus"></i> +{" "}
+                </button>
+                <button
+                  disabled={leadData.services[i].paymentCount === 2}
+                  onClick={(e) => {
+                    setLeadData((prevState) => ({
+                      ...prevState,
+                      services: prevState.services.map((service, index) =>
+                        index === i
+                          ? {
+                              ...service,
+                              paymentCount: service.paymentCount - 1,
+                              firstPayment: 0,
+                              secondPayment: 0,
+                              thirdPayment: 0,
+                              fourthPayment: 0,
+                            }
+                          : service
+                      ),
+                    }));
+                  }}
+                  style={{ marginLeft: "5px" }}
+                  className="btn btn-primary"
+                >
+                  <i className="fas fa-plus"></i> -{" "}
+                </button>
+              </div>
+            )}
+
+            <div className="col-sm-6 mt-1">
+              <div className="form-group ">
+                <label className="form-label" for="Company">
+                  Payment Remarks
+                </label>
+                <textarea
+                  rows={1}
+                  className="form-control "
+                  placeholder="Enter Payment Remarks"
+                  id={`payment-remarks-${i}`}
+                  value={leadData.services.paymentRemarks}
+                  onClick={(e) => {
+                    setLeadData((prevState) => ({
+                      ...prevState,
+                      services: prevState.services.map((service, index) =>
+                        index === i
+                          ? {
+                              ...service,
+                              paymentRemarks: e.target.value,
+                            }
+                          : service
+                      ),
+                    }));
+                  }}
+                ></textarea>
               </div>
             </div>
           </div>
-          <div className="row mt-2">
-            <div className="col-sm-12">
-              <label className="form-label">Payment Terms</label>
-            </div>
-            <div className="full-time col-sm-12">
-              <label className="form-check form-check-inline col">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  name="radios-inline"
-                  value="Full Advanced"
-                />
-                <span className="form-check-label">Full Advanced</span>
-              </label>
-              <label className="form-check form-check-inline col">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  name="radios-inline"
-                  value="two-part"
-                />
-                <span className="form-check-label">Part Payment</span>
-              </label>
-            </div>
-          </div>
-          <div className="row mt-2">
-            <div className="col-sm-3">
-              <div className="form-group">
-                <label class="form-label">First Payment</label>
-                <div class="input-group mb-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Search for…"
-                  />
-                  <button class="btn" type="button">
-                    ₹
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="col-sm-3">
-              <div className="form-group">
-                <label class="form-label">Second Payment</label>
-                <div class="input-group mb-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Search for…"
-                  />
-                  <button class="btn" type="button">
-                    ₹
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="col-sm-3">
-              <div className="form-group">
-                <label class="form-label">Third Payment</label>
-                <div class="input-group mb-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Search for…"
-                  />
-                  <button class="btn" type="button">
-                    ₹
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="col-sm-3">
-              <div className="form-group">
-                <label class="form-label">Fourth Payment</label>
-                <div class="input-group mb-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Search for…"
-                  />
-                  <button class="btn" type="button">
-                    ₹
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
+        );
+      }
     }
-   }
     return services;
   };
 
   console.log("Default Lead Data :", leadData);
   const handleInputChange = (value, id) => {
     setLeadData({ ...leadData, [id]: value });
+  };
+
+  const handleRemoveFile = () => {
+    setLeadData({ ...leadData, paymentReceipt: null });
+  };
+  const handleRemoveOtherFile = (index) => {
+    setLeadData((prevLeadData) => {
+      const updatedDocs = [...prevLeadData.otherDocs];
+      updatedDocs.splice(index, 1);
+      return {
+        ...prevLeadData,
+        otherDocs: updatedDocs,
+      };
+    });
   };
 
   return (
@@ -458,6 +974,7 @@ export default function RedesignedForm({ companysName }) {
                       className={
                         activeStep === index ? "form-tab-active" : "No-active"
                       }
+                      disabled={!completed[index]}
                     >
                       {label}
                     </StepButton>
@@ -504,6 +1021,9 @@ export default function RedesignedForm({ companysName }) {
                                             "Company Name"
                                           );
                                         }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -522,6 +1042,9 @@ export default function RedesignedForm({ companysName }) {
                                             "Company Email"
                                           );
                                         }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -540,6 +1063,9 @@ export default function RedesignedForm({ companysName }) {
                                             "Company Number"
                                           );
                                         }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -560,6 +1086,9 @@ export default function RedesignedForm({ companysName }) {
                                             "incoDate"
                                           );
                                         }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -578,6 +1107,9 @@ export default function RedesignedForm({ companysName }) {
                                             "panNumber"
                                           );
                                         }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -596,6 +1128,9 @@ export default function RedesignedForm({ companysName }) {
                                             "gstNumber"
                                           );
                                         }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -629,6 +1164,9 @@ export default function RedesignedForm({ companysName }) {
                                             "bdeName"
                                           );
                                         }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -649,6 +1187,9 @@ export default function RedesignedForm({ companysName }) {
                                             "bdeEmail"
                                           );
                                         }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -667,6 +1208,9 @@ export default function RedesignedForm({ companysName }) {
                                             "bdmName"
                                           );
                                         }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -687,6 +1231,9 @@ export default function RedesignedForm({ companysName }) {
                                             "bdmEmail"
                                           );
                                         }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -707,6 +1254,9 @@ export default function RedesignedForm({ companysName }) {
                                             "bookingDate"
                                           );
                                         }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -722,6 +1272,9 @@ export default function RedesignedForm({ companysName }) {
                                         }
                                         className="form-select mt-1"
                                         id="lead-source"
+                                        disabled={
+                                          completed[activeStep] === true
+                                        }
                                       >
                                         <option value="" disabled selected>
                                           Select Lead Source
@@ -789,6 +1342,7 @@ export default function RedesignedForm({ companysName }) {
                                       onChange={(e) =>
                                         setTotalServices(e.target.value)
                                       }
+                                      readOnly={completed[activeStep] === true}
                                     >
                                       {[...Array(6 - 1).keys()].map((year) => (
                                         <option key={year} value={1 + year}>
@@ -799,6 +1353,128 @@ export default function RedesignedForm({ companysName }) {
                                   </div>
                                 </div>
                                 {renderServices()}
+
+                                <div className="CA-case mb-1">
+                                  <label class="form-label">CA Case</label>
+                                  <div className="check-ca-case">
+                                    <div class="mb-3">
+                                      <div>
+                                        <label className="form-check form-check-inline">
+                                          <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="ca-case"
+                                            onChange={(e) => {
+                                              setLeadData((prevLeadData) => ({
+                                                ...prevLeadData,
+                                                caCase: e.target.value, // Set the value based on the selected radio button
+                                              }));
+                                            }}
+                                            readOnly={
+                                              completed[activeStep] === true
+                                            }
+                                            value="Yes" // Set the value attribute for "Yes"
+                                            checked={leadData.caCase === "Yes"} // Check condition based on state
+                                          />
+                                          <span className="form-check-label">
+                                            Yes
+                                          </span>
+                                        </label>
+                                        <label className="form-check form-check-inline">
+                                          <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="ca-case"
+                                            onChange={(e) => {
+                                              setLeadData((prevLeadData) => ({
+                                                ...prevLeadData,
+                                                caCase: e.target.value, // Set the value based on the selected radio button
+                                              }));
+                                            }}
+                                            readOnly={
+                                              completed[activeStep] === true
+                                            }
+                                            value="No" // Set the value attribute for "No"
+                                            checked={leadData.caCase === "No"} // Check condition based on state
+                                          />
+                                          <span className="form-check-label">
+                                            No
+                                          </span>
+                                        </label>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {leadData.caCase === "Yes" && (
+                                    <div className="ca-details row">
+                                      <div className="ca-number col">
+                                        <label className="form-label">
+                                          Enter CA's Number
+                                        </label>
+                                        <input
+                                          type="number"
+                                          name="ca-number"
+                                          id="ca-number"
+                                          placeholder="Enter CA's Number"
+                                          className="form-control"
+                                          onChange={(e) => {
+                                            setLeadData((prevLeadData) => ({
+                                              ...prevLeadData,
+                                              caNumber: e.target.value, // Set the value based on the selected radio button
+                                            }));
+                                          }}
+                                          readOnly={
+                                            completed[activeStep] === true
+                                          }
+                                        />
+                                      </div>
+                                      <div className="ca-email col">
+                                        <label className="form-label">
+                                          Enter CA's Email
+                                        </label>
+                                        <div className="ca-email2">
+                                          <input
+                                            type="text"
+                                            name="ca-email"
+                                            id="ca-email"
+                                            placeholder="Enter CA's Email Address"
+                                            className="form-control"
+                                            onChange={(e) => {
+                                              setLeadData((prevLeadData) => ({
+                                                ...prevLeadData,
+                                                caEmail: e.target.value, // Set the value based on the selected radio button
+                                              }));
+                                            }}
+                                            readOnly={
+                                              completed[activeStep] === true
+                                            }
+                                          />
+                                        </div>
+                                      </div>
+
+                                      <div className="ca-commision col">
+                                        <label className="form-label">
+                                          Enter CA's Commission
+                                        </label>
+                                        <input
+                                          type="text"
+                                          name="ca-commision"
+                                          id="ca-commision"
+                                          placeholder="Enter CA's Commision- If any"
+                                          className="form-control"
+                                          onChange={(e) => {
+                                            setLeadData((prevLeadData) => ({
+                                              ...prevLeadData,
+                                              caCommission: e.target.value, // Set the value based on the selected radio button
+                                            }));
+                                          }}
+                                          readOnly={
+                                            completed[activeStep] === true
+                                          }
+                                        />
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
                               </form>
                             </div>
                           </div>
@@ -815,7 +1491,8 @@ export default function RedesignedForm({ companysName }) {
                                 <div className="row">
                                   <div className="col-sm-12">
                                     <span className="notes">
-                                      Note: Total Selected Services is <b>4</b>.
+                                      Note: Total Selected Services is{" "}
+                                      <b>{leadData.services.length}</b>.
                                     </span>
                                   </div>
                                   <div className="col-sm-4 mt-3">
@@ -825,9 +1502,16 @@ export default function RedesignedForm({ companysName }) {
                                       </label>
                                       <div class="input-group mb-2">
                                         <input
-                                          type="text"
+                                          type="number"
                                           class="form-control"
-                                          placeholder="Search for…"
+                                          placeholder="Total Payment"
+                                          value={leadData.services.reduce(
+                                            (total, service) =>
+                                              total +
+                                              Number(service.totalPaymentWGST),
+                                            0
+                                          )}
+                                          readOnly
                                         />
                                         <button class="btn" type="button">
                                           ₹
@@ -842,9 +1526,22 @@ export default function RedesignedForm({ companysName }) {
                                       </label>
                                       <div class="input-group">
                                         <input
-                                          type="text"
+                                          type="number"
                                           class="form-control"
-                                          placeholder="Search for…"
+                                          placeholder="Received Payment"
+                                          value={leadData.services.reduce(
+                                            (total, service) =>
+                                              service.paymentTerms ===
+                                              "Full Advanced"
+                                                ? total +
+                                                  Number(
+                                                    service.totalPaymentWGST
+                                                  )
+                                                : total +
+                                                  Number(service.firstPayment),
+                                            0
+                                          )}
+                                          readOnly
                                         />
                                         <button class="btn" type="button">
                                           ₹
@@ -859,9 +1556,22 @@ export default function RedesignedForm({ companysName }) {
                                       </label>
                                       <div class="input-group mb-2">
                                         <input
-                                          type="text"
+                                          type="number"
                                           class="form-control"
-                                          placeholder="Search for…"
+                                          placeholder="Pending Payment"
+                                          value={leadData.services.reduce(
+                                            (total, service) =>
+                                              service.paymentTerms ===
+                                              "Full Advanced"
+                                                ? total + 0
+                                                : total +
+                                                  Number(
+                                                    service.totalPaymentWGST
+                                                  ) -
+                                                  Number(service.firstPayment),
+                                            0
+                                          )}
+                                          readOnly
                                         />
                                         <button class="btn" type="button">
                                           ₹
@@ -869,38 +1579,39 @@ export default function RedesignedForm({ companysName }) {
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="col-sm-4 mt-2">
+
+                                  <div className="col-sm-6 mt-2">
                                     <div className="form-group mt-2 mb-2">
                                       <label
                                         className="form-label"
-                                        for="Company"
+                                        for="Payment Receipt"
                                       >
-                                        Payment Remarks
-                                      </label>
-                                      <textarea
-                                        rows={1}
-                                        className="form-control mt-1"
-                                        placeholder="Enter Company Name"
-                                        id="Company"
-                                      ></textarea>
-                                    </div>
-                                  </div>
-                                  <div className="col-sm-4 mt-2">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label
-                                        className="form-label"
-                                        for="Company"
-                                      >
-                                        Upload Payment Recipt
+                                        Upload Payment Reciept
                                       </label>
                                       <input
                                         type="file"
                                         className="form-control mt-1"
                                         id="Company"
+                                        onChange={(e) => {
+                                          // Update the state with the selected files
+                                          setLeadData((prevLeadData) => ({
+                                            ...prevLeadData,
+                                            paymentReceipt: [
+                                              ...(prevLeadData.paymentReceipt ||
+                                                []),
+                                              ...e.target.files,
+                                            ],
+                                          }));
+                                        }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
+                                        multi
                                       ></input>
                                     </div>
                                   </div>
-                                  <div className="col-sm-4 mt-2">
+
+                                  <div className="col-sm-6 mt-2">
                                     <div class="form-group mt-2 mb-2">
                                       <label class="form-label">
                                         Payment Method
@@ -909,6 +1620,16 @@ export default function RedesignedForm({ companysName }) {
                                         class="form-select mb-3"
                                         id="select-emails"
                                         fdprocessedid="iey9wm"
+                                        value={leadData.paymentMethod}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "paymentMethod"
+                                          );
+                                        }}
+                                        disabled={
+                                          completed[activeStep] === true
+                                        }
                                       >
                                         <option value="" disabled="">
                                           Select Payment Option
@@ -942,8 +1663,18 @@ export default function RedesignedForm({ companysName }) {
                                       <textarea
                                         rows={1}
                                         className="form-control mt-1"
-                                        placeholder="Enter Company Name"
-                                        id="remarks"
+                                        placeholder="Enter Extra Remarks"
+                                        id="Extra Remarks"
+                                        value={leadData.extraNotes}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "extraNotes"
+                                          );
+                                        }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                       ></textarea>
                                     </div>
                                   </div>
@@ -954,9 +1685,56 @@ export default function RedesignedForm({ companysName }) {
                                       </label>
                                       <input
                                         type="file"
+                                        onChange={(e) => {
+                                          // Update the state with the selected files
+                                          setLeadData((prevLeadData) => ({
+                                            ...prevLeadData,
+                                            otherDocs: [
+                                              ...(prevLeadData.otherDocs || []),
+                                              ...e.target.files,
+                                            ],
+                                          }));
+                                        }}
+                                        readOnly={
+                                          completed[activeStep] === true
+                                        }
                                         className="form-control mt-1"
                                         id="docs"
-                                      ></input>
+                                        multiple
+                                      />
+                                      {leadData.otherDocs &&
+                                        leadData.otherDocs.length > 0 && (
+                                          <div className="uploaded-filename-main d-flex flex-wrap">
+                                            {leadData.otherDocs.map(
+                                              (file, index) => (
+                                                <div
+                                                  className="uploaded-fileItem d-flex align-items-center"
+                                                  key={index}
+                                                >
+                                                  <p className="m-0">
+                                                    {file.name !== undefined
+                                                      ? file.name
+                                                      : file.filename}
+                                                  </p>
+                                                  <button
+                                                    className="fileItem-dlt-btn"
+                                                    onClick={() =>
+                                                      handleRemoveOtherFile(
+                                                        index
+                                                      )
+                                                    }
+                                                    disabled={
+                                                      completed[activeStep] ===
+                                                      true
+                                                    }
+                                                  >
+                                                    <IconX className="close-icon" />
+                                                  </button>
+                                                </div>
+                                              )
+                                            )}
+                                          </div>
+                                        )}
                                     </div>
                                   </div>
                                 </div>
@@ -990,7 +1768,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        Startup Sahay Private Limited
+                                        {leadData["Company Name"]}
                                       </div>
                                     </div>
                                   </div>
@@ -1002,7 +1780,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        info@startupsahay.com
+                                        {leadData["Company Email"]}
                                       </div>
                                     </div>
                                   </div>
@@ -1014,7 +1792,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        9924283530
+                                        {leadData["Company Number"]}
                                       </div>
                                     </div>
                                   </div>
@@ -1026,7 +1804,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        02/06/0995
+                                        {leadData.incoDate}
                                       </div>
                                     </div>
                                   </div>
@@ -1038,7 +1816,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        DLGPP19567K
+                                        {leadData.panNumber}
                                       </div>
                                     </div>
                                   </div>
@@ -1049,7 +1827,9 @@ export default function RedesignedForm({ companysName }) {
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">
-                                      <div className="form-label-data">-</div>
+                                      <div className="form-label-data">
+                                        {leadData.gstNumber}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -1070,7 +1850,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        Ravi Prajapati
+                                        {leadData.bdeName}
                                       </div>
                                     </div>
                                   </div>
@@ -1082,7 +1862,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        ravi@Startupsahay.com
+                                        {leadData.bdeEmail}
                                       </div>
                                     </div>
                                   </div>
@@ -1094,7 +1874,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        Vaibhav Acharya
+                                        {leadData.bdmName}
                                       </div>
                                     </div>
                                   </div>
@@ -1106,7 +1886,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        vaibhav@startupsahay.com
+                                        {leadData.bdmEmail}
                                       </div>
                                     </div>
                                   </div>
@@ -1118,7 +1898,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        10/10/2024
+                                        {leadData.bookingDate}
                                       </div>
                                     </div>
                                   </div>
@@ -1130,7 +1910,9 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        Other
+                                        {leadData.bookingSource !== ""
+                                          ? leadData.bookingSource
+                                          : "-"}
                                       </div>
                                     </div>
                                   </div>
@@ -1142,7 +1924,9 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        Lead By Nimesh Sir
+                                        {leadData.bookingSource !== ""
+                                          ? leadData.bookingSource
+                                          : "-"}
                                       </div>
                                     </div>
                                   </div>
@@ -1165,202 +1949,160 @@ export default function RedesignedForm({ companysName }) {
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">
-                                      <div className="form-label-data">2</div>
-                                    </div>
-                                  </div>
-                                  <div className="parServicesPreview mt-3">
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>1st Services Name</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          Startup India Certificate
-                                        </div>
-                                      </div>
-                                    </div>
-                                    {/* <!-- Optional --> */}
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>With DSC</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          YES
-                                        </div>
-                                      </div>
-                                    </div>
-                                    {/* total amount */}
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>Total Amount</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          12000
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>With GST</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          YES
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>Payment Terms</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          Part Payment
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>First Payment</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          6000
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>Second Payment</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          6000
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>Notes</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">-</div>
+                                      <div className="form-label-data">
+                                        {totalServices}
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="parServicesPreview mt-3">
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>2nd Services Name</b>
+                                  {leadData.services.map((obj, index) => (
+                                    <div className="parServicesPreview mt-3">
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>
+                                              {getOrdinal(index + 1)} Services
+                                              Name
+                                            </b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.serviceName}
+                                          </div>
                                         </div>
                                       </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          Seed Fund
+                                      {/* <!-- Optional --> */}
+                                      {obj.serviceName ===
+                                        "Start Up Certificate" && (
+                                        <div className="row m-0">
+                                          <div className="col-sm-3 p-0">
+                                            <div className="form-label-name">
+                                              <b>With DSC</b>
+                                            </div>
+                                          </div>
+                                          <div className="col-sm-9 p-0">
+                                            <div className="form-label-data">
+                                              {obj.withDSC === true
+                                                ? "Yes"
+                                                : "No"}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                      {/* total amount */}
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>Total Amount</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.totalPaymentWGST !== undefined
+                                              ? obj.totalPaymentWGST
+                                              : "0"}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>With GST</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.withGST === true
+                                              ? "Yes"
+                                              : "No"}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>Payment Terms</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.paymentTerms}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>First Payment</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.firstPayment}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>Second Payment</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.secondPayment}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>Third Payment</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.thirdPayment}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>Fourth Payment</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.fourthPayment}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>Notes</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.paymentRemarks !== ""
+                                              ? obj.paymentRemarks
+                                              : "-"}
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                    {/* total amount */}
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>Total Amount</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          26000
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>With GST</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          NO
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>Payment Terms</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          Part Payment
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>First Payment</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          13000
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>Second Payment</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          13000
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 p-0">
-                                        <div className="form-label-name">
-                                          <b>Notes</b>
-                                        </div>
-                                      </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          Second Payment at the time of
-                                          application
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
+                                  ))}
+
+                                  {/* total amount */}
                                 </div>
                               </div>
                               <div className="stepThreePreview">
                                 <div className="d-flex align-items-center mt-3">
                                   <div className="services_No">4</div>
                                   <div className="ml-1">
-                                    <h3 className="m-0">Payment Summery</h3>
+                                    <h3 className="m-0">Payment Summary</h3>
                                   </div>
                                 </div>
                                 <div className="servicesFormCard mt-3">
@@ -1369,26 +2111,26 @@ export default function RedesignedForm({ companysName }) {
                                       <div className="row">
                                         <div className="col-sm-4 p-0">
                                           <div className="form-label-name">
-                                            <b>Total Paymnet</b>
+                                            <b>Total Payment</b>
                                           </div>
                                         </div>
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
-                                            ₹ 38000
+                                            ₹ {leadData.totalAmount}
                                           </div>
                                         </div>
                                       </div>
                                     </div>
                                     <div className="col-sm-4">
                                       <div className="row">
-                                        <div className="col-sm-4 p-0">
+                                        <div className="col-sm-5 p-0">
                                           <div className="form-label-name">
                                             <b>Received Paymnet</b>
                                           </div>
                                         </div>
-                                        <div className="col-sm-8 p-0">
+                                        <div className="col-sm-7 p-0">
                                           <div className="form-label-data">
-                                            ₹ 19000
+                                            ₹ {leadData.receivedAmount}
                                           </div>
                                         </div>
                                       </div>
@@ -1397,12 +2139,12 @@ export default function RedesignedForm({ companysName }) {
                                       <div className="row">
                                         <div className="col-sm-4 p-0">
                                           <div className="form-label-name">
-                                            <b>Pending Paymnet</b>
+                                            <b>Pending Payment</b>
                                           </div>
                                         </div>
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
-                                            ₹ 19000
+                                            ₹ {leadData.pendingAmount}
                                           </div>
                                         </div>
                                       </div>
@@ -1416,16 +2158,94 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        <div className="UploadDocPreview">
-                                          <div className="docItemImg">
-                                            <img src={img}></img>
-                                          </div>
-                                          <div
-                                            className="docItemName wrap-MyText"
-                                            title="logo.png"
-                                          >
-                                            Screenshots.png
-                                          </div>
+                                        <div
+                                          className="UploadDocPreview"
+                                          onClick={() => {
+                                            handleViewPdfReciepts(
+                                              leadData.paymentReceipt[0].filename ? leadData.paymentReceipt[0].filename : leadData.paymentReceipt[0].name
+                                            );
+                                          }}
+                                        >
+                                          {leadData.paymentReceipt[0].filename ? (
+
+                                            <>
+                                              <div className="docItemImg">
+                                                <img
+                                                  src={
+                                                    leadData.paymentReceipt[0].filename.endsWith(
+                                                      ".pdf"
+                                                    )
+                                                      ? pdfimg
+                                                        ? leadData.paymentReceipt[0].filename.endsWith(
+                                                            ".doc"
+                                                          )
+                                                        : wordimg
+                                                        ? leadData.paymentReceipt[0].filename.endsWith(
+                                                            ".csv"
+                                                          ) ||
+                                                          leadData.paymentReceipt[0].filename.endsWith(
+                                                            ".xlsx"
+                                                          )
+                                                        : excelimg
+                                                      : img
+                                                  }
+                                                ></img>
+                                              </div>
+                                              <div
+                                                className="docItemName wrap-MyText"
+                                                title={
+                                                  leadData.paymentReceipt[0].filename.split(
+                                                    "-"
+                                                  )[1]
+                                                }
+                                              >
+                                                {
+                                                  leadData.paymentReceipt[0].filename.split(
+                                                    "-"
+                                                  )[1]
+                                                }
+                                              </div>
+                                            </>
+                                          ) : (
+                                            <>
+                                            <div className="docItemImg">
+                                              <img
+                                                src={
+                                                  leadData.paymentReceipt[0].name.endsWith(
+                                                    ".pdf"
+                                                  )
+                                                    ? pdfimg
+                                                      ? leadData.paymentReceipt[0].name.endsWith(
+                                                          ".doc"
+                                                        )
+                                                      : wordimg
+                                                      ? leadData.paymentReceipt[0].name.endsWith(
+                                                          ".csv"
+                                                        ) ||
+                                                        leadData.paymentReceipt[0].name.endsWith(
+                                                          ".xlsx"
+                                                        )
+                                                      : excelimg
+                                                    : img
+                                                }
+                                              ></img>
+                                            </div>
+                                            <div
+                                              className="docItemName wrap-MyText"
+                                              title={
+                                                leadData.paymentReceipt[0].name.split(
+                                                  "-"
+                                                )[1]
+                                              }
+                                            >
+                                              {
+                                                leadData.paymentReceipt[0].name.split(
+                                                  "-"
+                                                )[1]
+                                              }
+                                            </div>
+                                          </>
+                                          ) }
                                         </div>
                                       </div>
                                     </div>
@@ -1438,7 +2258,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        ICICI Account
+                                        {leadData.paymentMethod}
                                       </div>
                                     </div>
                                   </div>
@@ -1450,7 +2270,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        Complate work before 25 days
+                                        {leadData.extraNotes}
                                       </div>
                                     </div>
                                   </div>
@@ -1462,18 +2282,44 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data d-flex flex-wrap">
-                                        <div className="UploadDocPreview">
-                                          <div className="docItemImg">
-                                            <img src={pdfimg}></img>
-                                          </div>
-                                          <div
-                                            className="docItemName wrap-MyText"
-                                            title="ROC.pdf"
+                                        { leadData.otherDocs.map((val) => (
+                                          val && (
+                                            <>
+                                            <div
+                                            className="UploadDocPreview"
+                                            onClick={() => {
+                                              handleViewPdOtherDocs(
+                                                val.filename
+                                              );
+                                            }}
                                           >
-                                            ROC.pdf
+                                            <div className="docItemImg">
+                                              <img
+                                                src={
+                                                   val.filename.endsWith(".pdf")
+                                                    ? pdfimg
+                                                      ? val.filename.endsWith(
+                                                          ".doc"
+                                                        )
+                                                      : wordimg
+                                                      ? val.filename.endsWith(
+                                                          ".csv"
+                                                        ) ||
+                                                        val.filename.endsWith(
+                                                          ".xlsx"
+                                                        )
+                                                      : excelimg
+                                                    : img
+                                                }
+                                              ></img>
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div className="UploadDocPreview">
+                                            </>
+                                          )
+                                          
+                                        ))}
+
+                                        {/* <div className="UploadDocPreview">
                                           <div className="docItemImg">
                                             <img src={img}></img>
                                           </div>
@@ -1505,7 +2351,7 @@ export default function RedesignedForm({ companysName }) {
                                           >
                                             financials.csv
                                           </div>
-                                        </div>
+                                        </div> */}
                                       </div>
                                     </div>
                                   </div>
@@ -1532,17 +2378,23 @@ export default function RedesignedForm({ companysName }) {
                           onClick={handleNext}
                           variant="contained"
                           sx={{ mr: 1 }}
+                          disabled={!leadData['Step' + (activeStep + 1) + 'Status']}                          
                         >
                           Next
                         </Button>
                         {activeStep !== steps.length &&
                           (completed[activeStep] ? (
-                            <Typography
-                              variant="caption"
-                              sx={{ display: "inline-block" }}
-                            >
-                              Step {activeStep + 1} already completed
-                            </Typography>
+                            <>
+                              <Button
+                                onClick={() => {
+                                  setCompleted({ activeStep: false });
+                                }}
+                                variant="contained"
+                                sx={{ mr: 1 }}
+                              >
+                                Edit
+                              </Button>
+                            </>
                           ) : (
                             <Button
                               onClick={handleComplete}
@@ -1550,7 +2402,7 @@ export default function RedesignedForm({ companysName }) {
                             >
                               {completedSteps() === totalSteps() - 1
                                 ? "Finish"
-                                : "Complete Step"}
+                                : "Save Draft"}
                             </Button>
                           ))}
                       </Box>
