@@ -659,6 +659,8 @@ function EmployeeDashboard() {
 
     ));
   }
+  
+  
   const [searchTermTotalSummary, setsearchTermTotalSummary] = useState("")
 
   //console.log(followDataFilter)
@@ -2156,7 +2158,7 @@ function EmployeeDashboard() {
                 <div
                   ref={dateRangePickerProhectionSummaryRef}
                   className="position-absolute "
-                  style={{ zIndex: "1", top: "14%", left: "75%" }}
+                  style={{ zIndex: "1000", top: "14%", left: "75%" }}
                 >
                   <DateRangePicker
                     ranges={[selectionRangeTotalSummary]}
@@ -2287,7 +2289,7 @@ function EmployeeDashboard() {
             <div className="card">
               <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                 <div className="dashboard-title">
-                  <h2 style={{ marginBottom: '5px' }}>Current Projection Summary</h2>
+                  <h2 style={{ marginBottom: '5px' }}>Todays's Projection Summary</h2>
                 </div>
                 <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
                   <div className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon" style={{ marginRight: "26px", width: "100%" }}>

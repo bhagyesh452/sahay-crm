@@ -391,6 +391,7 @@ th {
     font-size: 18px;
     color: #505050;
 }
+
 .particular:hover{
     background-color: white !important;
 }
@@ -845,10 +846,10 @@ color: #4e884e;
   padding: 20px;
   border-radius: 10px;
 }
-.css-sghohy-MuiButtonBase-root-MuiButton-root,.css-bh137t-MuiButtonBase-root-MuiButton-root
+/* .css-sghohy-MuiButtonBase-root-MuiButton-root,.css-bh137t-MuiButtonBase-root-MuiButton-root
 { 
   background-color: #ffba00 !important;
-}
+} */
 .css-mjpk2e-MuiButtonBase-root-MuiStepButton-root
 {
   padding: 0px !important;
@@ -949,4 +950,42 @@ color: #4e884e;
   max-width: 100px;
   overflow: hidden;
   text-align: left;
+}
+
+.pageNotFound_Logo
+{
+  margin: 0px auto;
+  padding: 30px 0px 0px 0px;
+  text-align: center;
+}
+.pageNotFound_Logo img
+{
+    width: 200px;
+}
+.pageNotFound_main
+{
+  background-color: #fff;
+}
+.PageError
+{
+  position: relative;
+  padding-left: 0;
+  padding-right: 0;
+  overflow: hidden;
+  display: block;
+  text-align: center;
+  width: 450px;
+  margin: 10px auto;
+}
+.PageErrorImage
+{
+  width: 100%;
+  /* -o-object-fit: contain;
+  object-fit: contain;
+  -o-object-position: center center;
+  object-position: center center;
+  transform-origin: 50% 50%;
+  transition: transform 0.5s ease-in-out;
+  -webkit-transition: transform 0.5s ease-in-out;
+  -moz-transition: transform 0.5s ease-in-out; */
 }

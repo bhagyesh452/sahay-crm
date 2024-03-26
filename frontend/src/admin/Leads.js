@@ -18,6 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../assets/styles.css";
 import Swal from "sweetalert2";
 import ClipLoader from "react-spinners/ClipLoader";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
 
 import {
   Button,
@@ -43,6 +44,7 @@ function Leads() {
   const [month, setMonth] = useState(0);
   const [year, setYear] = useState();
   const [openNew, openchangeNew] = useState(false);
+  const [openPopupModify, setopenPopupModify] = useState(false);
   const [openEmp, openchangeEmp] = useState(false);
   const [openConf, openChangeConf] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -114,6 +116,8 @@ function Leads() {
       setCurrentDataLoading(false)
     }
   };
+
+  //console.log("Main-Data" , mainData)
 
   const fetchData = debounce(async () => {
     const data = await fetchDatadebounce();
@@ -225,6 +229,16 @@ function Leads() {
 
 
   };
+
+  const functionopenModifyPopup = () => {
+    setopenPopupModify(true)
+  }
+
+  const functioncloseModifyPopup = () => {
+    setopenPopupModify(false);
+    setIsEditProjection(false);
+  }
+
   const functionopenpopupNew = () => {
     openchangeNew(true);
   };
@@ -288,6 +302,8 @@ function Leads() {
   const filteredData = mainData.filter((company) => {
     const fieldValue = company[selectedField];
 
+
+
     if (selectedField === "State" && citySearch) {
       // Handle filtering by both State and City
       const stateMatches = fieldValue
@@ -332,6 +348,34 @@ function Leads() {
     }
   });
 
+  // const filteredData = mainData.filter((company) => {
+  //   // Extract the values you want to search from the company object
+  //   const valuesToSearch = Object.values(company).map(value => {
+  //     if (typeof value === "string") {
+  //       return value.toLowerCase();
+  //     } else if (typeof value === "number") {
+  //       return value.toString();
+  //     } else if (typeof value === "email") {
+  //       // Convert date to a string representation
+  //       return value.toString().toLowerCase();
+  //     }
+  //     // If the value is not string, number, or date, return an empty string
+  //     return "";
+  //   });
+
+  //   // Join all values into a single string for easier searching
+  //   const allValues = valuesToSearch.join(" ");
+
+  //   // Perform case-insensitive search
+  //   return allValues.toLowerCase().includes(searchText.toLowerCase());
+  // });
+
+  //console.log(filteredData)
+
+  // const [filteredData, setfilteredData] = useState([])
+
+
+  //console.log(mainData)
   const currentData = filteredData.slice(startIndex, endIndex);
 
   //  Sub-filter value
@@ -977,6 +1021,151 @@ function Leads() {
 
     setDataStatus(status)
   }, 300);
+
+
+  // --------------------------------------------------------------function to modify leads----------------------------------------------------------------
+
+
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+
+  const handleSubmit = async (e) => {
+    try {
+      let dataToSend = {
+        "Company Name": companyName,
+        "Company Email": companyEmail,
+        "Company Number": companynumber,
+        "Company Incorporation Date ": companyIncoDate,
+        "City": companyCity,
+        "State": companyState,
+      };
+      const dateObject = new Date(companyIncoDate);
+
+      // Check if the parsed Date object is valid
+      if (!isNaN(dateObject.getTime())) {
+        // Date object is valid, proceed with further processing
+        console.log("Company Incorporation Date:", dateObject);
+
+        // Format the date as yyyy-mm-ddThh:mm:ss.000
+        const isoDateString = dateObject.toISOString();
+
+        // Update dataToSendUpdated with the formatted date
+        let dataToSendUpdated = {
+          "Company Name": companyName,
+          "Company Email": companyEmail,
+          "Company Number": companynumber,
+          "Company Incorporation Date ": isoDateString, // Updated format
+          "City": companyCity,
+          "State": companyState,
+        };
+
+        console.log("Data to send with updated date format:", dataToSendUpdated);
+        if (isUpdateMode) {
+          await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
+          Swal.fire({
+            title: "Data Updated!",
+            text: "You have successfully updated the name!",
+            icon: "success",
+          });
+        }
+
+        // Rest of your code...
+      } else {
+        // Date string couldn't be parsed into a valid Date object
+        console.error("Invalid Company Incorporation Date string:", companyIncoDate);
+      }
+
+
+
+      // setEmail("");
+      // setEname("");
+      // setNumber(0);
+      // setPassword("");
+      // setDesignation("");
+      // setotherDesignation("");
+      // setJdate(null);
+      setIsUpdateMode(false);
+      fetchDatadebounce();
+      functioncloseModifyPopup();
+      console.log("Data sent successfully");
+    } catch {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
+      console.error("Internal server error");
+    }
+  };
+
+  const [selectedDataId, setSelectedDataId] = useState()
+  const [companyEmail, setCompanyEmail] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [companyIncoDate, setCompanyIncoDate] = useState(null);
+  const [companyCity, setCompnayCity] = useState("");
+  const [companyState, setCompnayState] = useState("");
+  const [companynumber, setCompnayNumber] = useState("");
+  const [isEditProjection, setIsEditProjection] = useState(false);
+
+
+  console.log(companyCity, companyEmail, companyIncoDate, companyState, companyName, companynumber)
+
+  const handleUpdateClick = (id) => {
+    console.log(id)
+    //Set the selected data ID and set update mode to true
+    setSelectedDataId(id);
+    setIsUpdateMode(true);
+    // setCompanyData(cdata.filter((item) => item.ename === echangename));
+
+    // // Find the selected data object
+    const selectedData = mainData.find((item) => item._id === id);
+    console.log(selectedData["Company Incorporation Date  "])
+    console.log(selectedData)
+    // console.log(echangename);
+
+    // // Update the form data with the selected data values
+    setCompanyEmail(selectedData["Company Email"]);
+    setCompanyName(selectedData["Company Name"]);
+    //setCompanyIncoDate(new Date(selectedData["Company Incorporation Date  "]));
+    setCompnayCity(selectedData["City"]);
+    setCompnayState(selectedData["State"]);
+    setCompnayNumber(selectedData["Company Number"]);
+
+    const dateString = selectedData["Company Incorporation Date  "];
+
+    // Parse the date string into a Date object
+    const dateObject = new Date(dateString);
+
+    // Check if the parsed Date object is valid
+    if (!isNaN(dateObject.getTime())) {
+      // Date object is valid, proceed with further processing
+      console.log("Company Incorporation Date:", dateObject);
+
+      // Format the date as dd-mm-yyyy
+      const day = dateObject.getDate().toString().padStart(2, "0");
+      const month = (dateObject.getMonth() + 1).toString().padStart(2, "0");
+      const year = dateObject.getFullYear();
+      const formattedDate = `${year}-${month}-${day}`;
+      setCompanyIncoDate(formattedDate)
+
+      console.log("Formatted Company Incorporation Date:", formattedDate);
+
+      // Rest of your code...
+    } else {
+      // Date string couldn't be parsed into a valid Date object
+      console.error("Invalid Company Incorporation Date string:", dateString);
+    }
+
+
+
+  };
+
+
+
+
+
+
+
+
   return (
     <div>
       <Header />
@@ -1230,6 +1419,7 @@ function Leads() {
                         }}
                         type="text"
                         className="form-control"
+
                       />
                     </div>
                   </div>
@@ -1242,6 +1432,7 @@ function Leads() {
                         }}
                         type="text"
                         className="form-control"
+                        disabled={!isEditProjection}
                       />
                     </div>
                   </div>
@@ -1257,6 +1448,134 @@ function Leads() {
       {/* Loading Screen */}
 
       {/* ----------------------------ADD-Lead Ends here------------------------------------------------------------------------  */}
+
+
+      {/* ------------------------------------------------------------dialog for modify leads----------------------------------------------- */}
+
+
+      <Dialog open={openPopupModify} onClose={functioncloseModifyPopup} fullWidth maxWidth="sm">
+        <DialogTitle className="d-flex align-items-center justify-content-between">
+          <div>
+            Company Info{" "}
+          </div>
+          <div>
+            <IconButton onClick={() => { setIsEditProjection(true) }}>
+              < ModeEditIcon color="grey"
+                style={{
+                  width: "20px",
+                  height: "20px",
+                }}
+              >
+              </ ModeEditIcon>
+            </IconButton>
+            <IconButton onClick={functioncloseModifyPopup}>
+              <CloseIcon color="grey"></CloseIcon>
+            </IconButton>{" "}
+          </div>
+
+        </DialogTitle>
+        <DialogContent>
+          <div className="modal-dialog modal-lg" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Company Name</label>
+                  <input
+                    type="text"
+                    value={companyName}
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="Your Company Name"
+                    onChange={(e) => {
+                      setCompanyName(e.target.value);
+                    }}
+                    disabled={!isEditProjection}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Company Email</label>
+                  <input
+                    type="email"
+                    value={companyEmail}
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="example@gmail.com"
+                    onChange={(e) => {
+                      setCompanyEmail(e.target.value);
+                    }}
+                    disabled={!isEditProjection}
+                  />
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">Company Number</label>
+                      <input
+                        type="number"
+                        value={companynumber}
+                        onChange={(e) => {
+                          setCompnayNumber(e.target.value);
+                        }}
+                        className="form-control"
+                        disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Company Incorporation Date
+                      </label>
+                      <input
+                        value={companyIncoDate}
+                        onChange={(e) => {
+                          setCompanyIncoDate(e.target.value)
+                        }}
+                        type="date"
+                        className="form-control"
+                        disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">City</label>
+                      <input
+                        value={companyCity}
+                        onChange={(e) => {
+                          setCompnayCity(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                        disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">State</label>
+                      <input
+                        value={companyState}
+                        onChange={(e) => {
+                          setCompnayState(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                        disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <button className="btn btn-primary" onClick={handleSubmit}>
+          Submit
+        </button>
+      </Dialog>
 
       {open && (
         <div>
@@ -1637,6 +1956,54 @@ function Leads() {
                   </div>
                 </div>
               </div>
+
+              {/* <div style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+                className="features">
+                <div
+                  style={{
+                    width: "15vw",
+                    margin: "0px 10px",
+                    display: visibilityOther,
+                  }}
+                  className="input-icon">
+                  <span className="input-icon-addon">
+
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="20"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                      <path d="M21 21l-6 -6" />
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    value={searchText}
+                    onChange={(e) => {
+                      // filterSearch(e.target.value)
+                      setSearchText(e.target.value);
+                      setCurrentPage(0);
+                    }}
+                    className="form-control"
+                    placeholder="Search…"
+                    aria-label="Search in website"
+                  />
+                </div>
+              </div> */}
               <div
                 style={{
                   display: "flex",
@@ -1644,17 +2011,14 @@ function Leads() {
                   justifyContent: "space-between",
                   alignItems: "center",
                 }}
-                className="features"
-              >
+                className="features">
                 <div
                   style={{ display: "flex", justifyContent: "space-between" }}
-                  className="features"
-                >
+                  className="features">
                   <div style={{ display: "flex" }} className="feature1">
                     <div
                       className="form-control"
-                      style={{ height: "fit-content", width: "15vw" }}
-                    >
+                      style={{ height: "fit-content", width: "15vw" }}>
                       <select
                         style={{
                           border: "none",
@@ -1662,8 +2026,7 @@ function Leads() {
                           width: "fit-content",
                         }}
                         value={selectedField}
-                        onChange={handleFieldChange}
-                      >
+                        onChange={handleFieldChange}>
                         <option value="Company Name">Company Name</option>
                         <option value="Company Number">Company Number</option>
                         <option value="Company Email">Company Email</option>
@@ -1696,10 +2059,9 @@ function Leads() {
                           margin: "0px 10px",
                           display: visibilityOther,
                         }}
-                        className="input-icon"
-                      >
+                        className="input-icon">
                         <span className="input-icon-addon">
-                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="icon"
@@ -1783,7 +2145,6 @@ function Leads() {
                     {selectedField === "State" && (
                       <div style={{ width: "15vw" }} className="input-icon">
                         <span className="input-icon-addon">
-                          {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="icon"
@@ -2028,128 +2389,9 @@ function Leads() {
 
                         </div>}
                       </th>
-                      {/* <th>
-                              Assigned Date
-                              <SwapVertIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => {
-                                  const sortedData = [...mainData].sort(
-                                    (a, b) => {
-                                      if (sortOrder === "asc") {
-                                        return b.AssignDate.localeCompare(
-                                          a.AssignDate
-                                        );
-                                      } else {
-                                        return a.AssignDate.localeCompare(
-                                          b.AssignDate
-                                        );
-                                      }
-                                    }
-                                  );
-                                  setmainData(sortedData);
-                                  setSortOrder(
-                                    sortOrder === "asc" ? "desc" : "asc"
-                                  );
-                                }}
-                              />
-                            </th> */}
                       <th>Action</th>
                     </tr>
                   </thead>
-                  {/* {currentData.length == 0 ? (
-                    <tbody>
-                      <tr>
-                        <td colSpan="13" className="p-2 particular">
-                          <Nodata />
-                        </td>
-                      </tr>
-                    </tbody>
-                  ) : (
-                    currentData.map((company, index) => (
-                      <tbody className="table-tbody">
-                        <tr
-                          key={index}
-                          className={
-                            selectedRows.includes(company._id) ? "selected" : ""
-                          }
-                          style={{ border: "1px solid #ddd" }}
-                        >
-                          <td>
-                            <input
-                              type="checkbox"
-                              checked={selectedRows.includes(company._id)}
-                              onChange={() => handleCheckboxChange(company._id)}
-                              onMouseDown={() => handleMouseDown(company._id)}
-                              onMouseEnter={() => handleMouseEnter(company._id)}
-                              onMouseUp={handleMouseUp}
-                            />
-                          </td>
-                          <td>{startIndex + index + 1}</td>
-                          <td>{company["Company Name"]}</td>
-                          <td>{company["Company Number"]}</td>
-                          <td>
-                            {formatDate(
-                              company["Company Incorporation Date  "]
-                            )}
-                          </td>
-                          <td>{company["City"]}</td>
-                          <td>{company["State"]}</td>
-                          <td>{company["Company Email"]}</td>
-                          <td>{company["Status"]}</td>
-                          <td>
-                            {company["Remarks"]}{" "}
-                            <IconEye
-                              onClick={() => {
-                                functionopenpopupremarks(
-                                  company._id,
-                                  company.Status
-                                );
-                              }}
-                              style={{
-                                width: "18px",
-                                height: "18px",
-                                color: "#d6a10c",
-                                cursor: "pointer",
-                              }}
-                            />
-                          </td>
-                          <td>{company["ename"]}</td>
-                          <td>{formatDate(company["AssignDate"])}</td>
-                          <td>
-                            <IconButton
-                              onClick={() => handleDeleteClick(company._id)}
-                            >
-                              <DeleteIcon
-                                style={{
-                                  width: "16px",
-                                  height: "16px",
-                                  color: "#bf0b0b",
-                                }}
-                              >
-                                Delete
-                              </DeleteIcon>
-                            </IconButton>
-                            <Link to={`/admin/leads/${company._id}`}>
-                              <IconButton>
-                                <IconEye
-                                  style={{
-                                    width: "18px",
-                                    height: "18px",
-                                    color: "#d6a10c",
-                                    cursor: "pointer",
-                                  }}
-                                />
-                              </IconButton>
-                            </Link>
-                          </td>
-                        </tr>
-                      </tbody>
-                    ))
-                  )} */}
                   {currentDataLoading ? (
                     <tbody>
                       <tr>
@@ -2218,6 +2460,24 @@ function Leads() {
                                 Delete
                               </DeleteIcon>
                             </IconButton>
+                            <IconButton onClick={
+                              data.length === "0"
+                                ? Swal.fire("Please Import Some data first")
+                                : () => {
+                                  functionopenModifyPopup();
+                                  handleUpdateClick(company._id);
+                                }
+                            }>
+                              < ModeEditIcon
+                                style={{
+                                  width: "16px",
+                                  height: "16px",
+                                  color: "grey",
+                                }}
+                              >
+                                Delete
+                              </ ModeEditIcon>
+                            </IconButton>
                             <Link to={`/admin/leads/${company._id}`}>
                               <IconButton>
                                 <IconEye
@@ -2231,23 +2491,39 @@ function Leads() {
                               </IconButton>
                             </Link>
                           </td>
+
+
+                          {/* <Link to={`/admin/leads/${company._id}`}>
+                              <IconButton>
+                                <IconEye
+                                  style={{
+                                    width: "18px",
+                                    height: "18px",
+                                    color: "#d6a10c",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </IconButton>
+                            </Link> */}
+
                         </tr>
                       ))}
                     </tbody>
                   )}
-
                 </table>
               </div>
             </div>
             {currentData.length === 0 && !currentDataLoading &&
               (
-                <tbody className="d-flex align-items-center justify-content-center">
-                  <tr>
-                    <td colSpan="13" className="p-2 particular">
-                      <Nodata />
-                    </td>
-                  </tr>
-                </tbody>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td colSpan="13" className="p-2 particular">
+                        <Nodata />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               )}
             {currentData.length !== 0 && (
               <div
