@@ -7,22 +7,39 @@ import ClipLoader from "react-spinners/ClipLoader";
 import Nodata from "../components/Nodata";
 import "../assets/styles.css";
 import '../Processing/style_processing/main_processing.css'
+import debounce from 'lodash/debounce';
+import {
+    Button,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl,
+  } from "@mui/material";
+
+  import { IconChevronLeft } from "@tabler/icons-react";
+  import { IconChevronRight } from "@tabler/icons-react";
+
+
+
+
 
 
 function StausInfo(props) {
 
     const [companies, setCompanies] = useState([])
     const [currenDataLoading, setCurrenDataLoading] = useState(false)
-
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 500;
     const { ename } = useParams();
     const { status } = useParams();
 
-    console.log(status)
-
-    console.log(ename)
     const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-    const fetchCompany = async () => {
+    const fetchCompany = debounce(async () => {
         try {
             setCurrenDataLoading(true)
             // Make a GET request to fetch data of the specific company by its name
@@ -31,16 +48,16 @@ function StausInfo(props) {
             );
             // Extract the data from the response
             const data = response.data;
-            console.log("data", data);
+            //console.log("data", data);
             setCompanies(data)
         } catch (error) {
             console.error("Error fetching company:", error);
         } finally {
             setCurrenDataLoading(false)
         }
-    };
+    }, 300);
 
-    console.log(companies)
+    //console.log(companies)
 
     useEffect(() => {
         fetchCompany()
@@ -55,7 +72,14 @@ function StausInfo(props) {
         );
         return formattedDate;
     }
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
 
+    const currentData = companies.slice(startIndex, endIndex);
+
+
+
+  
 
 
     return (
@@ -66,10 +90,10 @@ function StausInfo(props) {
             <div className='container-xl mt-2'>
                 <div className='card'>
                     <div className='card-header employeedashboard'>
-                    <div className="d-flex justify-content-between">
-                          <div style={{ minWidth: '14vw' }} className="dashboard-title">
-                            <h2 style={{ marginBottom: '5px' }}>{ename} {status} Status Report</h2>
-                          </div>
+                        <div className="d-flex justify-content-between">
+                            <div style={{ minWidth: '14vw' }} className="dashboard-title">
+                                <h2 style={{ marginBottom: '5px' }}>{ename} {status} Status Report</h2>
+                            </div>
                         </div>
                     </div>
                     <div className="card-body p-0">
@@ -130,7 +154,7 @@ function StausInfo(props) {
                                     </tbody>
                                 ) : (
                                     <tbody>
-                                        {companies.map((company, index) => (
+                                        {currentData.map((company, index) => (
                                             <tr
                                                 key={index}
                                                 //className="selected"
@@ -146,7 +170,7 @@ function StausInfo(props) {
                               onMouseUp={handleMouseUp}
                             />
                           </td> */}
-                                                <td>{index + 1}</td>
+                                                <td>{startIndex + index + 1}</td>
                                                 <td>{company["Company Name"]}</td>
                                                 <td>{company["Company Number"]}</td>
                                                 <td>{formatDate(company["Company Incorporation Date  "])}</td>
@@ -220,6 +244,47 @@ function StausInfo(props) {
                                 </tbody>
                             </table>
                         )}
+
+                    {companies.length !== 0 && (
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                margin: "10px",
+                            }}
+                            className="pagination"
+                        >
+                            <IconButton
+                                onClick={() =>
+                                    setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))
+                                }
+                                disabled={currentPage === 0}
+                            >
+                                <IconChevronLeft />
+                            </IconButton>
+                            <span>
+                                Page {currentPage + 1} of{" "}
+                                {Math.ceil(companies.length / itemsPerPage)}
+                            </span>
+
+                            <IconButton
+                                onClick={() =>
+                                    setCurrentPage((prevPage) =>
+                                        Math.min(
+                                            prevPage + 1,
+                                            Math.ceil(companies.length / itemsPerPage) - 1
+                                        )
+                                    )
+                                }
+                                disabled={
+                                    currentPage ===
+                                    Math.ceil(companies.length / itemsPerPage) - 1
+                                }
+                            >
+                                <IconChevronRight />
+                            </IconButton>
+                        </div>
+                    )}
                 </div>
             </div>
         </div >

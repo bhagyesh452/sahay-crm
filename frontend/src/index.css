@@ -18,3 +18,26 @@ background: #888 !important;
 ::-webkit-scrollbar-thumb:hover {
 background: #ffb900 !important;
 }
+
+.css-78trlr-MuiButtonBase-root-MuiIconButton-root
+{
+  padding: 6px !important;
+}
+
+.css-1bw0nnu-MuiStep-root
+{
+    padding-left: 0px  !important; 
+    padding-right: 0px !important;
+}
+.css-j5w0w9-MuiStepConnector-root
+{
+  margin-left: 8px;
+}
+.css-mjpk2e-MuiButtonBase-root-MuiStepButton-root
+{
+  padding: 0px !important;
+  margin: 0px !important;
+}
+.css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-active , .MuiButton-textPrimary{
+    color: #ffba00 !important;
+  }
