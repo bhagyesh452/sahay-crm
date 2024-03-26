@@ -12,7 +12,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { IconEye } from "@tabler/icons-react";
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
-import { DateRangePicker } from 'react-date-range';
+//import { DateRangePicker } from 'react-date-range';
 import { FaChevronDown } from "react-icons/fa6";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import { options } from "../components/Options.js";
@@ -36,6 +36,14 @@ import { Link } from 'react-router-dom'
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import { lastDayOfDecade } from "date-fns";
 import StatusInfo from './StausInfo.js'
+import Calendar from '@mui/icons-material/Event';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+import { SingleInputDateRangeField } from '@mui/x-date-pickers-pro/SingleInputDateRangeField';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import moment from 'moment'
+
 // import LoginAdmin from "./LoginAdmin";
 
 function Dashboard() {
@@ -600,31 +608,56 @@ function Dashboard() {
 
   }, []);
 
+  const [selectedDateRange, setSelectedDateRange] = useState([]);
+  console.log(selectedDateRange)
+
   const selectionRange = {
     startDate: startDate,
     endDate: endDate,
     key: 'selection',
   };
 
-  const handleSelect = (date) => {
+  // const handleSelect = (date) => {
+  //   const filteredDataDateRange = followData.filter(product => {
+  //     const productDate = new Date(product["estPaymentDate"]);
+  //     if (formatDate(date.selection.startDate) === formatDate(date.selection.endDate)) {
+  //       console.log(formatDate(date.selection.startDate))
+  //       console.log(formatDate(date.selection.endDate))
+  //       console.log(formatDate(productDate))
+  //       return formatDate(productDate) === formatDate(date.selection.startDate);
+  //     } else {
+  //       return (
+  //         productDate >= date.selection.startDate &&
+  //         productDate <= date.selection.endDate
+  //       );
+  //     }
+  //   });
+  //   setStartDate(date.selection.startDate);
+  //   setEndDate(date.selection.endDate);
+  //   setFilteredDataDateRange(filteredDataDateRange);
+  //   //console.log(filteredDataDateRange)
+  // };
+
+  const handleSelect = (values) => {
+    // Extract startDate and endDate from the values array
+    const startDate = values[0];
+    const endDate = values[1];
+
+    // Filter followData based on the selected date range
     const filteredDataDateRange = followData.filter(product => {
       const productDate = new Date(product["estPaymentDate"]);
-      if (formatDate(date.selection.startDate) === formatDate(date.selection.endDate)) {
-        console.log(formatDate(date.selection.startDate))
-        console.log(formatDate(date.selection.endDate))
-        console.log(formatDate(productDate))
-        return formatDate(productDate) === formatDate(date.selection.startDate);
-      } else {
-        return (
-          productDate >= date.selection.startDate &&
-          productDate <= date.selection.endDate
-        );
-      }
+
+      // Check if the productDate is within the selected date range
+      return (
+        productDate >= startDate &&
+        productDate <= endDate
+      );
     });
-    setStartDate(date.selection.startDate);
-    setEndDate(date.selection.endDate);
+
+    // Set the startDate, endDate, and filteredDataDateRange states
+    setStartDate(startDate);
+    setEndDate(endDate);
     setFilteredDataDateRange(filteredDataDateRange);
-    //console.log(filteredDataDateRange)
   };
 
   //console.log("kuch" , filteredDataDateRange)
@@ -843,7 +876,7 @@ function Dashboard() {
 
   // Calculate the sums
   const { totalPaymentSumPopupToday, offeredPaymentSumPopupToday, offeredServicesPopupToday } = calculateSumPopupToday(projectedDataToday);
-  
+
 
 
   // -------------------------------------------------------------sorting ascending-descending------------------------------------------
@@ -1650,6 +1683,13 @@ function Dashboard() {
 
   // console.log(selectedStatusCompanies)
 
+  const numberFormatOptions = {
+    style: 'currency',
+    currency: 'INR', // Use the currency code for Indian Rupee (INR)
+    minimumFractionDigits: 0, // Minimum number of fraction digits (adjust as needed)
+    maximumFractionDigits: 2, // Maximum number of fraction digits (adjust as needed)
+  };
+
 
 
   return (
@@ -1719,7 +1759,7 @@ function Dashboard() {
                         </button>
                       </div>
                     </div>
-                    {showBookingDate && <div
+                    {/* {showBookingDate && <div
                       ref={dateRangePickerRef}
                       style={{
                         position: "absolute",
@@ -1734,7 +1774,7 @@ function Dashboard() {
                         onChange={handleSelectAnother}
                         onClose={() => setShowBookingDate(false)}
                       />
-                    </div>}
+                    </div>} */}
                     <div className="card-body">
                       <div
                         className="row"
@@ -2053,7 +2093,7 @@ function Dashboard() {
                           </div>
                         </div>
                       </div>
-                      {displayDateRangeEmployee && (
+                      {/* {displayDateRangeEmployee && (
                         <div ref={dateRangePickerEmployeeRef} className="position-absolute " style={{ zIndex: "1000", top: "13%", left: "73%" }} >
                           <DateRangePicker
                             ranges={[selectionRangeEmployee]}
@@ -2061,7 +2101,7 @@ function Dashboard() {
                             onChange={handleSelectEmployee}
                           />
                         </div>
-                      )}
+                      )} */}
                       <div className="card-body">
                         <div
                           className="row"
@@ -3127,14 +3167,31 @@ function Dashboard() {
                 <div>
                   <h2>Projection Summary</h2>
                 </div>
-                <div className="form-control date-range-picker d-flex align-items-center justify-content-between">
+                <div className="new-date-range-picker">
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={['SingleInputDateRangeField']}>
+                      <DateRangePicker
+                        onChange={(values) => {
+                          const startDate = moment(values[0]).format('DD/MM/YYYY');
+                          const endDate = moment(values[1]).format('DD/MM/YYYY');
+                          setSelectedDateRange([startDate, endDate]);
+                          handleSelect(values); // Call handleSelect with the selected values
+                        }}
+                        slots={{ field: SingleInputDateRangeField }}
+                        slotProps={{ textField: { InputProps: { endAdornment: <Calendar /> } } }}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
+
+                </div>
+                {/* <div className="form-control date-range-picker d-flex align-items-center justify-content-between">
                   <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
                   <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
                     <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
                   </button>
-                </div>
+                </div> */}
               </div>
-              {displayDateRange && (
+              {/* {displayDateRange && (
                 <div ref={dateRangePickerProhectionRef} className="position-absolute " style={{ zIndex: "1", top: "15%", left: "75%" }} >
                   <DateRangePicker
                     ranges={[selectionRange]}
@@ -3142,7 +3199,7 @@ function Dashboard() {
                     onChange={handleSelect}
                   />
                 </div>
-              )}
+              )} */}
               <div className="card-body">
                 <div
                   id="table-default"
@@ -3161,7 +3218,14 @@ function Dashboard() {
                     }}
                     className="table-vcenter table-nowrap"
                   >
-                    <thead stSyle={{ backgroundColor: "grey" }}>
+                    <thead style={{
+                      position: "sticky", // Make the header sticky
+                      top: '-1px', // Stick it at the top
+                      backgroundColor: "#ffb900",
+                      color: "black",
+                      fontWeight: "bold",
+                      zIndex: 1, // Ensure it's above other content
+                    }}>
                       <tr
                         style={{
                           backgroundColor: "#ffb900",
@@ -3278,8 +3342,8 @@ function Dashboard() {
                                   style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "58px" }}
                                 /></td>
                               <td>{serviceCount}</td>
-                              <td>  &#8377;{totalPaymentByEname}</td>
-                              <td>  &#8377;{offeredPrizeByEname}</td>
+                              <td>  {totalPaymentByEname.toLocaleString('en-IN', numberFormatOptions)}</td>
+                              <td>  {offeredPrizeByEname.toLocaleString('en-IN', numberFormatOptions)}</td>
                               <td>{filteredDataDateRange.length !== 0 ? formattedDate : new Date().toLocaleDateString()}</td>
 
                             </tr>
@@ -3288,7 +3352,14 @@ function Dashboard() {
 
                     </tbody>
                     {followData && (
-                      <tfoot>
+                      <tfoot style={{
+                        position: "sticky", // Make the footer sticky
+                        bottom: -1, // Stick it at the bottom
+                        backgroundColor: "#f6f2e9",
+                        color: "black",
+                        fontWeight: 500,
+                        zIndex: 2, // Ensure it's above the content
+                      }}>
                         <tr style={{ fontWeight: 500 }}>
                           <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
                           <td>{filteredDataDateRange && filteredDataDateRange.length > 0 ? (
@@ -3305,21 +3376,22 @@ function Dashboard() {
                           {/* <td>{totalTotalPaymentSum.toLocaleString()}
                       </td> */}
                           <td>
-                            &#8377;{filteredDataDateRange && filteredDataDateRange.length > 0 ? (
+                            {filteredDataDateRange && filteredDataDateRange.length > 0 ? (
                               // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
-                              totalTotalPaymentSumDateRange.toLocaleString()
-                            ) : (totalTotalPaymentSumToday.toLocaleString())}
+                              totalTotalPaymentSumDateRange.toLocaleString('en-IN', numberFormatOptions)
+                            ) : (totalTotalPaymentSumToday.toLocaleString('en-IN', numberFormatOptions))}
                           </td>
 
                           {/* <td>{totalOfferedPaymentSum.toLocaleString()}
                       </td> */}
 
                           <td>
-                            &#8377; {filteredDataDateRange.length && filteredDataDateRange.length > 0 ? (
+                            {filteredDataDateRange.length && filteredDataDateRange.length > 0 ? (
                               // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
-                              totalOfferedPaymentSumDateRange.toLocaleString()
-                            ) : (totalOfferedPaymentSumToday.toLocaleString())}
+                              totalOfferedPaymentSumDateRange.toLocaleString('en-IN', numberFormatOptions)
+                            ) : (totalOfferedPaymentSumToday.toLocaleString('en-IN', numberFormatOptions))}
                           </td>
+                          <td>-</td>
 
                         </tr>
                       </tfoot>
@@ -3353,7 +3425,14 @@ function Dashboard() {
                   }}
                   className="table-vcenter table-nowrap"
                 >
-                  <thead stSyle={{ backgroundColor: "grey" }}>
+                  <thead style={{
+                    position: "sticky", // Make the header sticky
+                    top: '-1px', // Stick it at the top
+                    backgroundColor: "#ffb900",
+                    color: "black",
+                    fontWeight: "bold",
+                    zIndex: 1, // Ensure it's above other content
+                  }}>
                     <tr
                       style={{
                         backgroundColor: "#ffb900",
@@ -3416,24 +3495,33 @@ function Dashboard() {
                     }
                   </tbody>
                   {projectedEmployee && (
-                    <tfoot>
+                    <tfoot style={{
+                      position: "sticky", // Make the footer sticky
+                      bottom: -1, // Stick it at the bottom
+                      backgroundColor: "#f6f2e9",
+                      color: "black",
+                      fontWeight: 500,
+                      zIndex: 2
+                    }}>
                       <tr style={{ fontWeight: 500 }}>
                         <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
                         {/* <td>{projectedEmployee.length}</td> */}
                         <td>
-                          { projectedDataDateRange && projectedDataDateRange.length > 0 ? ( projectedDataDateRange.length):(projectedDataToday.length)}
+                          {projectedDataDateRange && projectedDataDateRange.length > 0 ? (projectedDataDateRange.length) : (projectedDataToday.length)}
                         </td>
                         {/* <td>{offeredServicesPopup.length}
                     </td> */}
-                        <td>{projectedDataDateRange && projectedDataDateRange.length > 0 ? ( offeredServicesPopupDateRange.length):(offeredServicesPopupToday.length)}</td>
+                        <td>{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredServicesPopupDateRange.length) : (offeredServicesPopupToday.length)}</td>
                         {/* <td>{totalPaymentSumPopup.toLocaleString()}
                     </td> */}
                         <td>
-                          &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ?( totalPaymentSumPopupDateRange.toLocaleString()):(totalPaymentSumPopupToday.toLocaleString())}
+                          &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (totalPaymentSumPopupDateRange.toLocaleString()) : (totalPaymentSumPopupToday.toLocaleString())}
                         </td>
                         {/* <td>{offeredPaymentSumPopup.toLocaleString()}
                     </td> */}
-                        <td>   &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredPaymentSumPopupDateRange.toLocaleString()):(offeredPaymentSumPopupToday.toLocaleString())}</td>
+                        <td>   &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredPaymentSumPopupDateRange.toLocaleString()) : (offeredPaymentSumPopupToday.toLocaleString())}</td>
+                        <td>-</td>
+                        <td>-</td>
                         <td>-</td>
                       </tr>
                     </tfoot>

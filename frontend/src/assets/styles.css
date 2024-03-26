@@ -816,6 +816,15 @@ color: #4e884e;
     height: 29px;
     margin-top: 3px;
 }
+.new-date-range-picker{
+  width: 23vw;
+    margin-right: 5px;
+    padding: 0px 21px;
+    font-size: 12px;
+    height: 71px;
+    margin-top: 0px;
+}
+
 .general-searchbar{
   height: 30px;
   margin-top: 3px;
