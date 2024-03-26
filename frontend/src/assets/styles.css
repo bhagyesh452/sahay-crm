@@ -341,7 +341,7 @@ pre
     border-radius: 100px;
 }
 th{
-    padding: 4px 10px !important;
+    padding: 5px 10px !important;
 }
 .login-card
 {
@@ -965,6 +965,10 @@ color: #4e884e;
 .pageNotFound_main
 {
   background-color: #fff;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .PageError
 {
@@ -988,4 +992,8 @@ color: #4e884e;
   transition: transform 0.5s ease-in-out;
   -webkit-transition: transform 0.5s ease-in-out;
   -moz-transition: transform 0.5s ease-in-out; */
+}
+.css-78trlr-MuiButtonBase-root-MuiIconButton-root
+{
+  padding: 6px !important;
 }

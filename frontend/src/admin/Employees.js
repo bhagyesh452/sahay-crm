@@ -886,49 +886,55 @@ console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
                               </div>
                             </td>}
 
-                          <td className="d-flex justify-content-center align-items-center">
+                          <td >
+                            <div className="d-flex justify-content-center align-items-center"> 
                             <div className="icons-btn">
-                              <IconTrash
+                                <IconButton  onClick={() =>
+                                      handleDeleteClick(item._id, item.ename)
+                                    }>
+                                  <IconTrash
+                                    style={{
+                                      cursor: "pointer",
+                                      color: "red",
+                                      width: "14px",
+                                      height: "14px",
+                                    }}
+                                  
+                                  />
+                                </IconButton>
+                              </div>
+                              <div className="icons-btn">
+                                <IconButton   onClick={() => {
+                                      functionopenpopup();
+                                      handleUpdateClick(item._id, item.ename);
+                                    }}>
+                                  <ModeEditIcon
+                                    style={{
+                                      cursor: "pointer",
+                                      color: "#a29d9d",
+                                      width: "14px",
+                                      height: "14px",
+                                    }}
+                                  
+                                  />
+                                </IconButton>
+                              </div>
+                              <div className="icons-btn">
+                                <Link
+                                  style={{ color: "black" }}
+                                  to={`/admin/employees/${item._id}`}
+                                ><IconButton >  <IconEye
                                 style={{
-                                  cursor: "pointer",
-                                  color: "red",
-                                  width: "18px",
-                                  height: "18px",
+                                  width: "14px",
+                                  height: "14px",
+                                  color: "#d6a10c",
                                 }}
-                                onClick={() =>
-                                  handleDeleteClick(item._id, item.ename)
-                                }
-                              />
+                              /></IconButton>
+                                
+                                </Link>
+                              </div>
                             </div>
 
-                            <div className="icons-btn m-1">
-                              <ModeEditIcon
-                                style={{
-                                  cursor: "pointer",
-                                  color: "#a29d9d",
-                                  width: "18px",
-                                  height: "18px",
-                                }}
-                                onClick={() => {
-                                  functionopenpopup();
-                                  handleUpdateClick(item._id, item.ename);
-                                }}
-                              />
-                            </div>
-                            <div className="icons-btn">
-                              <Link
-                                style={{ color: "black" }}
-                                to={`/admin/employees/${item._id}`}
-                              >
-                                <IconEye
-                                  style={{
-                                    width: "18px",
-                                    height: "18px",
-                                    color: "#d6a10c",
-                                  }}
-                                />
-                              </Link>
-                            </div>
                           </td>
                         </tr>
                       ))}

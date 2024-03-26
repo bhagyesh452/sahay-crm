@@ -16,22 +16,29 @@ async function sendMail(recipients, subject, text, html, otherDocs, paymentRecei
   const attachments = [];
 
   const processAttachments = (files, prefix) => {
-    files.forEach((file, index) => {
-      const mimeType = mime.lookup(file.originalname);
-
-      if (mimeType) {
-        attachments.push({
-          filename: `${prefix}${index + 1}.${mime.extension(mimeType)}`,
-          content: file, // Assuming file is a buffer, adjust if needed
-        });
-      } else {
-        console.warn(`Unknown file type for ${file.originalname}`);
-        // Handle unknown file type, for example, skip or log a warning
-      }
-    });
+    if(files){
+      files.map((file, index) => {
+        const mimeType = mime.lookup(file.originalname);
+  
+        if (mimeType) {
+          attachments.push({
+            filename: `${prefix}${index + 1}.${mime.extension(mimeType)}`,
+            content: file, // Assuming file is a buffer, adjust if needed
+          });
+        } else {
+          console.warn(`Unknown file type for ${file.originalname}`);
+          // Handle unknown file type, for example, skip or log a warning
+        }
+      });
+    }else{
+      console.log("No documents")
+    }
+  
+  
   };
 
   // Append files from otherDocs
+  console.log("Before Sending: " , otherDocs)
   processAttachments(otherDocs, 'otherDocs');
 
   // Append files from paymentReceipt

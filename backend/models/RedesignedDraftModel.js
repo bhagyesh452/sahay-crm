@@ -35,6 +35,9 @@ const ServiceSchema = new mongoose.Schema({
     type: String,
     default: "No payment remarks",
   },
+  paymentCount:{
+    type:Number
+  }
 });
 const RedesignedDraftModelSchema = new mongoose.Schema({
   "Company Name": {
@@ -79,8 +82,7 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   },
   services: [ServiceSchema],
   caCase: {
-    type: Boolean,
-    default: false,
+    type: String,
   },
   caName: {
     type: String,
@@ -95,7 +97,7 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
     type: String,
   },
   paymentReceipt: {
-    type: String,
+    type: Array,
   },
   extraNotes: {
     type: String,
@@ -108,6 +110,9 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   },
   pendingAmount: {
     type: Number,
+  },
+  otherDocs : {
+    type : Array
   },
   Step1Status: {
     type: Boolean,
@@ -122,6 +127,10 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
     default:false
   },
   Step4Status: {
+    type: Boolean,
+    default:false
+  },
+  Step5Status: {
     type: Boolean,
     default:false
   },

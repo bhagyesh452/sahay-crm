@@ -217,7 +217,6 @@ function BookingsForm({
     } else {
       formData.append("bdmName", leadData.bdmName);
     }
-
     formData.append("bdmEmail", leadData.bdmEmail);
     formData.append("bdmType", leadData.bdmType);
     formData.append("bookingTime", formattedTime);
