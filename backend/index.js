@@ -2758,716 +2758,1303 @@ app.post('/api/redesigned-leadData/:CompanyName', upload.fields([
     res.status(500).send('Error creating/updating data'); // Send an error response
   }
 });
-app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
-  try {
+// app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
+//   try {
  
-    const newData = req.body;
-    const createdData = await RedesignedLeadformModel.create(newData);
-    res.status(201).send("Data sent"); 
+//     const newData = req.body;
+//     const createdData = await RedesignedLeadformModel.create(newData);
+
+//     const renderServices = ()=>{
+//       const services = [];
+     
+//         for(let i = 0; i < newData.numberOfServices; i++){
+//           services.push(
+            
+//           )
+
+//         }
+      
+//     }
+//     res.status(201).send("Data sent"); 
   
-     const recipients = [
-        `${newData.bdmEmail}`,
-        `${newData.bdeName}`,
-      ];
-    sendMail(
-        recipients,
-        "Mail received",
-        ``,
-        ` <div style="width: 100%; padding: 20px 20px; background: #f6f8fb;">
-        <h3 style="text-align: center">Booking Form Deatils</h3>
-        <div style="
-              width: 90%;
-              margin: 0 auto;
-              padding: 20px 20px;
-              background: #fff;
-              border-radius: 10px;
-            ">
-          <!--Step One Start-->
-          <div style="width: 90%; margin: 0 auto">
-            <!-- Step's heading -->
-            <div style="display: flex; align-items: center">
-              <div style="
-                    width: 30px;
-                    height: 30px;
-                    line-height: 30px;
-                    border-radius: 100px;
-                    background: #fbb900;
-                    text-align: center;
-                    font-weight: bold;
-                    color: #fff;
-                  ">
-                1
-              </div>
-              <div style="margin-left: 10px">Company's Basic Informations</div>
-            </div>
-            <!-- Step's Table -->
-            <div style="
-                  background: #f7f7f7;
-                  padding: 15px;
-                  border-radius: 10px;
-                  position: relative;
-                  margin-top: 15px;
-                ">
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Company Name
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    ${newData["Company Name"]}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Email Address:
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData["Company Email"]}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Phone No:
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData["Company Number"]}
-                  </div>
-                </div>
-              </div>
+//      const recipients = [
+//         `${newData.bdmEmail}`,
+//         `${newData.bdeName}`,
+//       ];
+//     sendMail(
+//         recipients,
+//         "Mail received",
+//         ``,
+//         ` <div style="width: 100%; padding: 20px 20px; background: #f6f8fb;">
+//         <h3 style="text-align: center">Booking Form Deatils</h3>
+//         <div style="
+//               width: 90%;
+//               margin: 0 auto;
+//               padding: 20px 20px;
+//               background: #fff;
+//               border-radius: 10px;
+//             ">
+//           <!--Step One Start-->
+//           <div style="width: 90%; margin: 0 auto">
+//             <!-- Step's heading -->
+//             <div style="display: flex; align-items: center">
+//               <div style="
+//                     width: 30px;
+//                     height: 30px;
+//                     line-height: 30px;
+//                     border-radius: 100px;
+//                     background: #fbb900;
+//                     text-align: center;
+//                     font-weight: bold;
+//                     color: #fff;
+//                   ">
+//                 1
+//               </div>
+//               <div style="margin-left: 10px">Company's Basic Informations</div>
+//             </div>
+//             <!-- Step's Table -->
+//             <div style="
+//                   background: #f7f7f7;
+//                   padding: 15px;
+//                   border-radius: 10px;
+//                   position: relative;
+//                   margin-top: 15px;
+//                 ">
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     Company Name
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     ${newData["Company Name"]}
+//                   </div>
+//                 </div>
+//               </div>
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     Email Address:
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData["Company Email"]}
+//                   </div>
+//                 </div>
+//               </div>
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     Phone No:
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData["Company Number"]}
+//                   </div>
+//                 </div>
+//               </div>
     
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Incorporation date:
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData["incoDate"]}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Company's PAN:
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData.panNumber}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Company's GST:
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData.gstNumber}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!--Step One End-->
-    
-    
-          <!--Step Two Start-->
-          <div style="width: 90%; margin: 10px auto">
-            <!-- Step's heading -->
-            <div style="display: flex; align-items: center">
-              <div style="
-                    width: 30px;
-                    height: 30px;
-                    line-height: 30px;
-                    border-radius: 100px;
-                    background: #fbb900;
-                    text-align: center;
-                    font-weight: bold;
-                    color: #fff;
-                  ">
-                2
-              </div>
-              <div style="margin-left: 10px">Booking Details</div>
-            </div>
-            <!-- Step's Table -->
-            <div style="
-                  background: #f7f7f7;
-                  padding: 15px;
-                  border-radius: 10px;
-                  position: relative;
-                  margin-top: 15px;
-                ">
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    BDE Name:
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData.bdeName}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    BDE Email
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData.bdmEmail ? newData.bdmEmail : "-"}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    BDM Name
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData.bdmName}
-                  </div>
-                </div>
-              </div>
-    
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    BDM Email
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData.bdmEmail ? newData.bdmEmail : "-"}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                   Booking Date
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData.bookingDate}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Lead Source
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData.bookingSource}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Other Lead Source
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData.bookingSource}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Step 2 Ends -->
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     Incorporation date:
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData["incoDate"]}
+//                   </div>
+//                 </div>
+//               </div>
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     Company's PAN:
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData.panNumber}
+//                   </div>
+//                 </div>
+//               </div>
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     Company's GST:
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData.gstNumber}
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//           <!--Step One End-->
     
     
-          <!--Step 3 Start-->
-          <div style="width: 90%; margin: 10px auto">
-            <!-- Step's heading -->
-            <div style="display: flex; align-items: center">
-              <div style="
-                    width: 30px;
-                    height: 30px;
-                    line-height: 30px;
-                    border-radius: 100px;
-                    background: #fbb900;
-                    text-align: center;
-                    font-weight: bold;
-                    color: #fff;
-                  ">
-                3
-              </div>
-              <div style="margin-left: 10px">Services And Payment Details</div>
-            </div>
-            <!-- Step's Table -->
-            <div style="
-                  background: #f7f7f7;
-                  padding: 15px;
-                  border-radius: 10px;
-                  position: relative;
-                  margin-top: 15px;
-                ">
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Total Selected Services
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData.numberOfServices}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                   1st Services Name
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    With DSC
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                  Total Amount
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    XYZ
-                  </div>
-                </div>
-              </div>
+//           <!--Step Two Start-->
+//           <div style="width: 90%; margin: 10px auto">
+//             <!-- Step's heading -->
+//             <div style="display: flex; align-items: center">
+//               <div style="
+//                     width: 30px;
+//                     height: 30px;
+//                     line-height: 30px;
+//                     border-radius: 100px;
+//                     background: #fbb900;
+//                     text-align: center;
+//                     font-weight: bold;
+//                     color: #fff;
+//                   ">
+//                 2
+//               </div>
+//               <div style="margin-left: 10px">Booking Details</div>
+//             </div>
+//             <!-- Step's Table -->
+//             <div style="
+//                   background: #f7f7f7;
+//                   padding: 15px;
+//                   border-radius: 10px;
+//                   position: relative;
+//                   margin-top: 15px;
+//                 ">
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     BDE Name:
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData.bdeName}
+//                   </div>
+//                 </div>
+//               </div>
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     BDE Email
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData.bdmEmail ? newData.bdmEmail : "-"}
+//                   </div>
+//                 </div>
+//               </div>
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     BDM Name
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData.bdmName}
+//                   </div>
+//                 </div>
+//               </div>
     
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                   With GST
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    XYZ
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                   Payment Terms
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    XYZ
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                   First Payment
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    XYZ
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                   Second Payment
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    XYZ
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                   Third Payment
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    XYZ
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                   Fourth Payment
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    XYZ
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Step 3 Ends -->
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     BDM Email
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData.bdmEmail ? newData.bdmEmail : "-"}
+//                   </div>
+//                 </div>
+//               </div>
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                    Booking Date
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData.bookingDate}
+//                   </div>
+//                 </div>
+//               </div>
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     Lead Source
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData.bookingSource}
+//                   </div>
+//                 </div>
+//               </div>
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     Other Lead Source
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData.bookingSource}
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//           <!-- Step 2 Ends -->
     
-          <!--Step 4 Start-->
-          <div style="width: 90%; margin: 10px auto">
-            <!-- Step's heading -->
-            <div style="display: flex; align-items: center">
-              <div style="
-                    width: 30px;
-                    height: 30px;
-                    line-height: 30px;
-                    border-radius: 100px;
-                    background: #fbb900;
-                    text-align: center;
-                    font-weight: bold;
-                    color: #fff;
-                  ">
-                4
-              </div>
-              <div style="margin-left: 10px">Payment Summery</div>
-            </div>
-            <!-- Step's Table -->
-            <div style="
-                  background: #f7f7f7;
-                  padding: 15px;
-                  border-radius: 10px;
-                  position: relative;
-                  margin-top: 15px;
-                ">
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 33%; display: flex;">
-                  <div style="width: 25%">
-                    <div style="
-                          border: 1px solid #ccc;
-                          font-size: 12px;
-                          padding: 5px 10px;
-                        ">
-                      Total Payment
-                    </div>
-                  </div>
-                  <div style="width: 75%">
-                    <div style="
-                          border: 1px solid #ccc;
-                          font-size: 12px;
-                          padding: 5px 10px;
-                        ">
-                      ₹ 38000
-                    </div>
-                  </div>
-                </div>
-                <div style="width: 34%; display: flex;">
-                  <div style="width: 28%">
-                    <div style="
-                          border: 1px solid #ccc;
-                          font-size: 12px;
-                          padding: 5px 10px;
-                        ">
-                     Received Payment
-                    </div>
-                  </div>
-                  <div style="width: 72%">
-                    <div style="
-                          border: 1px solid #ccc;
-                          font-size: 12px;
-                          padding: 5px 10px;
-                        ">
-                      ₹ 38000
-                    </div>
-                  </div>
     
-                </div>
-                <div style="width: 33%; display: flex;">
-                  <div style="width: 28%">
-                    <div style="
-                          border: 1px solid #ccc;
-                          font-size: 12px;
-                          padding: 5px 10px;
-                        ">
-                      Pending Payment
-                    </div>
-                  </div>
-                  <div style="width: 72%">
-                    <div style="
-                          border: 1px solid #ccc;
-                          font-size: 12px;
-                          padding: 5px 10px;
-                        ">
-                     ₹ 38000
-                    </div>
-                  </div>
+//           <!--Step 3 Start-->
+//           <div style="width: 90%; margin: 10px auto">
+//             <!-- Step's heading -->
+//             <div style="display: flex; align-items: center">
+//               <div style="
+//                     width: 30px;
+//                     height: 30px;
+//                     line-height: 30px;
+//                     border-radius: 100px;
+//                     background: #fbb900;
+//                     text-align: center;
+//                     font-weight: bold;
+//                     color: #fff;
+//                   ">
+//                 3
+//               </div>
+//               <div style="margin-left: 10px">Services And Payment Details</div>
+//             </div>
+//             <!-- Step's Table -->
+//             <div style="
+//                   background: #f7f7f7;
+//                   padding: 15px;
+//                   border-radius: 10px;
+//                   position: relative;
+//                   margin-top: 15px;
+//                 ">
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     Total Selected Services
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                       ${newData.numberOfServices}
+//                   </div>
+//                 </div>
+//               </div>
+//              ${renderServices()}
+             
+//             </div>
+//           </div>
+//           <!-- Step 3 Ends -->
     
-                </div>
+//           <!--Step 4 Start-->
+//           <div style="width: 90%; margin: 10px auto">
+//             <!-- Step's heading -->
+//             <div style="display: flex; align-items: center">
+//               <div style="
+//                     width: 30px;
+//                     height: 30px;
+//                     line-height: 30px;
+//                     border-radius: 100px;
+//                     background: #fbb900;
+//                     text-align: center;
+//                     font-weight: bold;
+//                     color: #fff;
+//                   ">
+//                 4
+//               </div>
+//               <div style="margin-left: 10px">Payment Summery</div>
+//             </div>
+//             <!-- Step's Table -->
+//             <div style="
+//                   background: #f7f7f7;
+//                   padding: 15px;
+//                   border-radius: 10px;
+//                   position: relative;
+//                   margin-top: 15px;
+//                 ">
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 33%; display: flex;">
+//                   <div style="width: 25%">
+//                     <div style="
+//                           border: 1px solid #ccc;
+//                           font-size: 12px;
+//                           padding: 5px 10px;
+//                         ">
+//                       Total Payment
+//                     </div>
+//                   </div>
+//                   <div style="width: 75%">
+//                     <div style="
+//                           border: 1px solid #ccc;
+//                           font-size: 12px;
+//                           padding: 5px 10px;
+//                         ">
+//                       ₹ 38000
+//                     </div>
+//                   </div>
+//                 </div>
+//                 <div style="width: 34%; display: flex;">
+//                   <div style="width: 28%">
+//                     <div style="
+//                           border: 1px solid #ccc;
+//                           font-size: 12px;
+//                           padding: 5px 10px;
+//                         ">
+//                      Received Payment
+//                     </div>
+//                   </div>
+//                   <div style="width: 72%">
+//                     <div style="
+//                           border: 1px solid #ccc;
+//                           font-size: 12px;
+//                           padding: 5px 10px;
+//                         ">
+//                       ₹ 38000
+//                     </div>
+//                   </div>
+    
+//                 </div>
+//                 <div style="width: 33%; display: flex;">
+//                   <div style="width: 28%">
+//                     <div style="
+//                           border: 1px solid #ccc;
+//                           font-size: 12px;
+//                           padding: 5px 10px;
+//                         ">
+//                       Pending Payment
+//                     </div>
+//                   </div>
+//                   <div style="width: 72%">
+//                     <div style="
+//                           border: 1px solid #ccc;
+//                           font-size: 12px;
+//                           padding: 5px 10px;
+//                         ">
+//                      ₹ 38000
+//                     </div>
+//                   </div>
+    
+//                 </div>
                 
-              </div>
-              <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                   Payment Method
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    With DSC
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                  Extra Remarks
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    XYZ
-                  </div>
-                </div>
-              </div>
+//               </div>
+//               <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                    Payment Method
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     With DSC
+//                   </div>
+//                 </div>
+//               </div>
+//               <div style="display: flex; flex-wrap: wrap">
+//                 <div style="width: 25%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                   Extra Remarks
+//                   </div>
+//                 </div>
+//                 <div style="width: 75%">
+//                   <div style="
+//                         border: 1px solid #ccc;
+//                         font-size: 12px;
+//                         padding: 5px 10px;
+//                       ">
+//                     XYZ
+//                   </div>
+//                 </div>
+//               </div>
     
           
              
-            </div>
-          </div>
-          <!-- Step 4 Ends -->
-        </div>
-      </div>
+//             </div>
+//           </div>
+//           <!-- Step 4 Ends -->
+//         </div>
+//       </div>
         
 
-        `,
-        newData.otherDocs,
-        newData.paymentReceipt
-      );
+//         `,
+//         newData.otherDocs,
+//         newData.paymentReceipt
+//       );
    
+//   } catch (error) {
+//     console.error('Error creating/updating data:', error);
+//     res.status(500).send('Error creating/updating data'); // Send an error response
+//   }
+// });
+app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
+  try {
+    const newData = req.body;
+
+    // Create a new entry in the database
+    const createdData = await RedesignedLeadformModel.create(newData);
+
+    // Render services HTML
+    const renderServices = () => {
+      let servicesHtml = '';
+      for (let i = 0; i < newData.services.length; i++) {
+        servicesHtml += `
+        <div>
+        <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
+        <div style="width: 25%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+            Services Name
+          </div>
+        </div>
+        <div style="width: 75%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+            ${newData.services[i].
+              serviceName === "Start Up Certificate" ? newData.services[i].withDSC ? "Start Up Certificate With DSC" : "Start Up Certificate" : newData.services[i].serviceName
+              }
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap">
+        <div style="width: 25%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+          Total Amount
+          </div>
+        </div>
+        <div style="width: 75%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+            ${newData.services[i].
+              totalPaymentWGST
+              }
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap">
+        <div style="width: 25%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+           With GST
+          </div>
+        </div>
+        <div style="width: 75%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+            ${newData.services[i].withGST}
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap">
+        <div style="width: 25%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+           Payment Terms
+          </div>
+        </div>
+        <div style="width: 75%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+           ${newData.services[i].paymentTerms}
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap">
+        <div style="width: 25%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+           First Payment
+          </div>
+        </div>
+        <div style="width: 75%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+            ${newData.services[i].firstPayment}
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap">
+        <div style="width: 25%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+           Second Payment
+          </div>
+        </div>
+        <div style="width: 75%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+            ${newData.services[i].secondPayment}
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap">
+        <div style="width: 25%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+           Third Payment
+          </div>
+        </div>
+        <div style="width: 75%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+            ${newData.services[i].thirdPayment}
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap">
+        <div style="width: 25%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+           Fourth Payment
+          </div>
+        </div>
+        <div style="width: 75%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+            ${newData.services[i].fourthPayment}
+          </div>
+        </div>
+      </div>
+      </div>
+        `;
+
+      }
+      return servicesHtml;
+    };
+
+    // Render services HTML content
+    const servicesHtmlContent = renderServices();
+
+    // Send email to recipients
+    const recipients = [newData.bdmEmail, newData.bdeName];
+    sendMail(
+      recipients,
+      "Mail received",
+      ``,
+      ` <div style="width: 100%; padding: 20px 20px; background: #f6f8fb;">
+      <h3 style="text-align: center">Booking Form Deatils</h3>
+      <div style="
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px 20px;
+            background: #fff;
+            border-radius: 10px;
+          ">
+        <!--Step One Start-->
+        <div style="width: 90%; margin: 0 auto">
+          <!-- Step's heading -->
+          <div style="display: flex; align-items: center">
+            <div style="
+                  width: 30px;
+                  height: 30px;
+                  line-height: 30px;
+                  border-radius: 100px;
+                  background: #fbb900;
+                  text-align: center;
+                  font-weight: bold;
+                  color: #fff;
+                ">
+              1
+            </div>
+            <div style="margin-left: 10px">Company's Basic Informations</div>
+          </div>
+          <!-- Step's Table -->
+          <div style="
+                background: #f7f7f7;
+                padding: 15px;
+                border-radius: 10px;
+                position: relative;
+                margin-top: 15px;
+              ">
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  Company Name
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  ${newData["Company Name"]}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  Email Address:
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData["Company Email"]}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  Phone No:
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData["Company Number"]}
+                </div>
+              </div>
+            </div>
+  
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  Incorporation date:
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData["incoDate"]}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  Company's PAN:
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.panNumber}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  Company's GST:
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.gstNumber}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--Step One End-->
+  
+  
+        <!--Step Two Start-->
+        <div style="width: 90%; margin: 10px auto">
+          <!-- Step's heading -->
+          <div style="display: flex; align-items: center">
+            <div style="
+                  width: 30px;
+                  height: 30px;
+                  line-height: 30px;
+                  border-radius: 100px;
+                  background: #fbb900;
+                  text-align: center;
+                  font-weight: bold;
+                  color: #fff;
+                ">
+              2
+            </div>
+            <div style="margin-left: 10px">Booking Details</div>
+          </div>
+          <!-- Step's Table -->
+          <div style="
+                background: #f7f7f7;
+                padding: 15px;
+                border-radius: 10px;
+                position: relative;
+                margin-top: 15px;
+              ">
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  BDE Name:
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.bdeName}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  BDE Email
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.bdmEmail ? newData.bdmEmail : "-"}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  BDM Name
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.bdmName}
+                </div>
+              </div>
+            </div>
+  
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  BDM Email
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.bdmEmail ? newData.bdmEmail : "-"}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                 Booking Date
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.bookingDate}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  Lead Source
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.bookingSource}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  Other Lead Source
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.bookingSource}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Step 2 Ends -->
+  
+  
+        <!--Step 3 Start-->
+        <div style="width: 90%; margin: 10px auto">
+          <!-- Step's heading -->
+          <div style="display: flex; align-items: center">
+            <div style="
+                  width: 30px;
+                  height: 30px;
+                  line-height: 30px;
+                  border-radius: 100px;
+                  background: #fbb900;
+                  text-align: center;
+                  font-weight: bold;
+                  color: #fff;
+                ">
+              3
+            </div>
+            <div style="margin-left: 10px">Services And Payment Details</div>
+          </div>
+          <!-- Step's Table -->
+          <div style="
+                background: #f7f7f7;
+                padding: 15px;
+                border-radius: 10px;
+                position: relative;
+                margin-top: 15px;
+              ">
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  Total Selected Services
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.services.length}
+                </div>
+              </div>
+            </div>
+           ${servicesHtmlContent}
+           
+          </div>
+        </div>
+        <!-- Step 3 Ends -->
+  
+        <!--Step 4 Start-->
+        <div style="width: 90%; margin: 10px auto">
+          <!-- Step's heading -->
+          <div style="display: flex; align-items: center">
+            <div style="
+                  width: 30px;
+                  height: 30px;
+                  line-height: 30px;
+                  border-radius: 100px;
+                  background: #fbb900;
+                  text-align: center;
+                  font-weight: bold;
+                  color: #fff;
+                ">
+              4
+            </div>
+            <div style="margin-left: 10px">Payment Summery</div>
+          </div>
+          <!-- Step's Table -->
+          <div style="
+                background: #f7f7f7;
+                padding: 15px;
+                border-radius: 10px;
+                position: relative;
+                margin-top: 15px;
+              ">
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 33%; display: flex;">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    Total Payment
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    ₹ 38000
+                  </div>
+                </div>
+              </div>
+              <div style="width: 34%; display: flex;">
+                <div style="width: 28%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                   Received Payment
+                  </div>
+                </div>
+                <div style="width: 72%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    ₹ 38000
+                  </div>
+                </div>
+  
+              </div>
+              <div style="width: 33%; display: flex;">
+                <div style="width: 28%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    Pending Payment
+                  </div>
+                </div>
+                <div style="width: 72%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                   ₹ 38000
+                  </div>
+                </div>
+  
+              </div>
+              
+            </div>
+            <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                 Payment Method
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  With DSC
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                Extra Remarks
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  XYZ
+                </div>
+              </div>
+            </div>
+  
+        
+           
+          </div>
+        </div>
+        <!-- Step 4 Ends -->
+      </div>
+    </div>
+      
+
+      `,
+      newData.otherDocs,
+      newData.paymentReceipt
+    );
+ 
+
+    // Send success response
+    res.status(201).send('Data sent');
   } catch (error) {
     console.error('Error creating/updating data:', error);
     res.status(500).send('Error creating/updating data'); // Send an error response
   }
 });
+
 http.listen(3001, function () {
   console.log("Server started...");
 

@@ -40,15 +40,15 @@ const defaultService = {
   paymentCount: 2,
 };
 
-export default function RedesignedForm({ companysName }) {
+export default function RedesignedForm({ companysName , companysEmail, companyNumber ,  companysInco }) {
   const [totalServices, setTotalServices] = useState(1);
   const defaultLeadData = {
-    "Company Name": companysName,
-    "Company Number": "",
-    "Company Email": "",
+    "Company Name": companysName ? companysName : "",
+    "Company Number": companyNumber ? companyNumber : 0 ,
+    "Company Email": companysEmail ? companysEmail : "",
     panNumber: "",
     gstNumber: "",
-    incoDate: "",
+    incoDate: companysInco ? companysInco : "",
     bdeName: "",
     bdmName: "",
     bookingDate: "",
@@ -80,6 +80,7 @@ export default function RedesignedForm({ companysName }) {
       const data = response.data.find(
         (item) => item["Company Name"] === companysName
       );
+      console.log("Fetched Data:" , data);
       if (data.Step1Status === true && data.Step2Status === false) {
         setLeadData({
           ...leadData,
@@ -115,6 +116,7 @@ export default function RedesignedForm({ companysName }) {
         setCompleted({ 0: true, 1: true });
         setActiveStep(2);
       } else if (data.Step3Status === true && data.Step4Status === false) {
+        
         setSelectedValues(data.bookingSource);
         setLeadData({
           ...leadData,
@@ -160,6 +162,7 @@ export default function RedesignedForm({ companysName }) {
         setTotalServices(data.services.length);
         setCompleted({ 0: true, 1: true, 2: true });
         setActiveStep(3);
+        
       } else if (data.Step4Status === true) {
         setSelectedValues(data.bookingSource);
         setLeadData({
@@ -277,6 +280,7 @@ export default function RedesignedForm({ companysName }) {
   };
   useEffect(() => {
     fetchData();
+    console.log("Fetch After Component Mount" , leadData)
   }, []);
   useEffect(() => {
     // Create new services array based on totalServices
@@ -284,6 +288,7 @@ export default function RedesignedForm({ companysName }) {
       ...defaultService,
     }));
     setLeadData((prevState) => ({ ...prevState, services: newServices }));
+    console.log("Fetch After changing Services" , leadData)
   }, [totalServices, defaultService]);
   useEffect(() => {
     setTimeout(() => {
@@ -292,6 +297,7 @@ export default function RedesignedForm({ companysName }) {
       }));
       setLeadData((prevState) => ({ ...prevState, services: newServices }));
       fetchData();
+      console.log("Fetch After 1 second" , leadData)
     }, 1000);
   }, []);
 
@@ -324,6 +330,15 @@ export default function RedesignedForm({ companysName }) {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+  
+  function formatDate(inputDate) {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    const formattedDate = new Date(inputDate).toLocaleDateString(
+      "en-US",
+      options
+    );
+    return formattedDate;
+  }
   const getOrdinal = (number) => {
     const suffixes = ["th", "st", "nd", "rd"];
     const lastDigit = number % 10;
@@ -460,7 +475,7 @@ export default function RedesignedForm({ companysName }) {
             }
           );
 
-          console.log(response.data);
+         
           // Handle response data as needed
         } catch (error) {
           console.error("Error uploading data:", error);
@@ -469,6 +484,8 @@ export default function RedesignedForm({ companysName }) {
       }
 
       fetchData();
+
+
       // Log the response from the backend
 
       handleNext();
@@ -487,10 +504,10 @@ export default function RedesignedForm({ companysName }) {
   console.log(leadData.Step1Status , "Boom");
   const renderServices = () => {
     const services = [];
-    console.log(leadData.services.length, Number(totalServices));
+ 
     if (leadData.services.length === Number(totalServices)) {
       for (let i = 0; i < totalServices; i++) {
-        services.push(
+        services.push(  
           <div key={i} className="servicesFormCard mt-3">
             {/* <div className="services_No">
               1
@@ -514,6 +531,9 @@ export default function RedesignedForm({ companysName }) {
                       ),
                     }));
                   }}
+                  disabled={
+                    completed[activeStep] === true
+                  }
                 >
                   <option value="" disabled selected>
                     Select Service Name
@@ -545,6 +565,9 @@ export default function RedesignedForm({ companysName }) {
                           ),
                         }));
                       }}
+                      readOnly={
+                        completed[activeStep] === true
+                      }
                     />
                     <label class="form-check-label" for="dsc">
                       WITH DSC
@@ -583,6 +606,9 @@ export default function RedesignedForm({ companysName }) {
                           ),
                         }));
                       }}
+                      readOnly={
+                        completed[activeStep] === true
+                      }
                     />
                     <button class="btn" type="button">
                       ₹
@@ -614,6 +640,9 @@ export default function RedesignedForm({ companysName }) {
                           ),
                         }));
                       }}
+                      readOnly={
+                        completed[activeStep] === true
+                      }
                     />
                     <label class="form-check-label" for="GST">
                       WITH GST (18%)
@@ -641,6 +670,7 @@ export default function RedesignedForm({ companysName }) {
                       id={`Amount-${i}`}
                       value={leadData.services[i].totalPaymentWGST}
                       disabled
+
                     />
                     <button class="btn" type="button">
                       ₹
@@ -676,6 +706,9 @@ export default function RedesignedForm({ companysName }) {
                         ),
                       }));
                     }}
+                    disabled={
+                      completed[activeStep] === true
+                    }
                   />
                   <span className="form-check-label">Full Advanced</span>
                 </label>
@@ -700,6 +733,9 @@ export default function RedesignedForm({ companysName }) {
                         ),
                       }));
                     }}
+                    disabled={
+                      completed[activeStep] === true
+                    }
                   />
 
                   <span className="form-check-label">Part Payment</span>
@@ -735,6 +771,9 @@ export default function RedesignedForm({ companysName }) {
                             ),
                           }));
                         }}
+                        readOnly={
+                          completed[activeStep] === true
+                        }
                       />
                       <button class="btn" type="button">
                         ₹
@@ -930,6 +969,9 @@ export default function RedesignedForm({ companysName }) {
                       ),
                     }));
                   }}
+                  readOnly={
+                    completed[activeStep] === true
+                  }
                 ></textarea>
               </div>
             </div>
@@ -1342,7 +1384,7 @@ export default function RedesignedForm({ companysName }) {
                                       onChange={(e) =>
                                         setTotalServices(e.target.value)
                                       }
-                                      readOnly={completed[activeStep] === true}
+                                      disabled={completed[activeStep] === true}
                                     >
                                       {[...Array(6 - 1).keys()].map((year) => (
                                         <option key={year} value={1 + year}>
@@ -1370,7 +1412,7 @@ export default function RedesignedForm({ companysName }) {
                                                 caCase: e.target.value, // Set the value based on the selected radio button
                                               }));
                                             }}
-                                            readOnly={
+                                            disabled={
                                               completed[activeStep] === true
                                             }
                                             value="Yes" // Set the value attribute for "Yes"
@@ -1391,7 +1433,7 @@ export default function RedesignedForm({ companysName }) {
                                                 caCase: e.target.value, // Set the value based on the selected radio button
                                               }));
                                             }}
-                                            readOnly={
+                                            disabled={
                                               completed[activeStep] === true
                                             }
                                             value="No" // Set the value attribute for "No"
@@ -1603,7 +1645,7 @@ export default function RedesignedForm({ companysName }) {
                                             ],
                                           }));
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                         multi
@@ -1695,7 +1737,7 @@ export default function RedesignedForm({ companysName }) {
                                             ],
                                           }));
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                         className="form-control mt-1"
@@ -1804,7 +1846,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData.incoDate}
+                                        {formatDate(leadData.incoDate)}
                                       </div>
                                     </div>
                                   </div>
@@ -1816,7 +1858,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData.panNumber}
+                                        {leadData.panNumber ? leadData.panNumber : "-"}
                                       </div>
                                     </div>
                                   </div>
@@ -1828,7 +1870,7 @@ export default function RedesignedForm({ companysName }) {
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData.gstNumber}
+                                        {leadData.gstNumber ? leadData.gstNumber : "-"}
                                       </div>
                                     </div>
                                   </div>
@@ -2153,7 +2195,7 @@ export default function RedesignedForm({ companysName }) {
                                   <div className="row m-0">
                                     <div className="col-sm-3 align-self-stretc p-0">
                                       <div className="form-label-name h-100">
-                                        <b>Upload Payment Recipt</b>
+                                        <b>Upload Payment Receipt</b>
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">
@@ -2172,22 +2214,7 @@ export default function RedesignedForm({ companysName }) {
                                               <div className="docItemImg">
                                                 <img
                                                   src={
-                                                    leadData.paymentReceipt[0].filename.endsWith(
-                                                      ".pdf"
-                                                    )
-                                                      ? pdfimg
-                                                        ? leadData.paymentReceipt[0].filename.endsWith(
-                                                            ".doc"
-                                                          )
-                                                        : wordimg
-                                                        ? leadData.paymentReceipt[0].filename.endsWith(
-                                                            ".csv"
-                                                          ) ||
-                                                          leadData.paymentReceipt[0].filename.endsWith(
-                                                            ".xlsx"
-                                                          )
-                                                        : excelimg
-                                                      : img
+                                                    leadData.paymentReceipt[0].filename.endsWith('.pdf') ? pdfimg : img
                                                   }
                                                 ></img>
                                               </div>
@@ -2210,23 +2237,8 @@ export default function RedesignedForm({ companysName }) {
                                             <>
                                             <div className="docItemImg">
                                               <img
-                                                src={
-                                                  leadData.paymentReceipt[0].name.endsWith(
-                                                    ".pdf"
-                                                  )
-                                                    ? pdfimg
-                                                      ? leadData.paymentReceipt[0].name.endsWith(
-                                                          ".doc"
-                                                        )
-                                                      : wordimg
-                                                      ? leadData.paymentReceipt[0].name.endsWith(
-                                                          ".csv"
-                                                        ) ||
-                                                        leadData.paymentReceipt[0].name.endsWith(
-                                                          ".xlsx"
-                                                        )
-                                                      : excelimg
-                                                    : img
+                                                 src={
+                                                  leadData.paymentReceipt[0].name.endsWith('.pdf') ? pdfimg : img
                                                 }
                                               ></img>
                                             </div>
@@ -2283,7 +2295,7 @@ export default function RedesignedForm({ companysName }) {
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data d-flex flex-wrap">
                                         { leadData.otherDocs.map((val) => (
-                                          val && (
+                                          val.filename ? (
                                             <>
                                             <div
                                             className="UploadDocPreview"
@@ -2295,21 +2307,27 @@ export default function RedesignedForm({ companysName }) {
                                           >
                                             <div className="docItemImg">
                                               <img
-                                                src={
-                                                   val.filename.endsWith(".pdf")
-                                                    ? pdfimg
-                                                      ? val.filename.endsWith(
-                                                          ".doc"
-                                                        )
-                                                      : wordimg
-                                                      ? val.filename.endsWith(
-                                                          ".csv"
-                                                        ) ||
-                                                        val.filename.endsWith(
-                                                          ".xlsx"
-                                                        )
-                                                      : excelimg
-                                                    : img
+                                                  src={
+                                                    val.filename.endsWith('.pdf') ? pdfimg : img
+                                                  }
+                                              ></img>
+                                            </div>
+                                          </div>
+                                            </>
+                                          ) : (
+                                            <>
+                                            <div
+                                            className="UploadDocPreview"
+                                            onClick={() => {
+                                              handleViewPdOtherDocs(
+                                                val.name
+                                              );
+                                            }}
+                                          >
+                                            <div className="docItemImg">
+                                              <img
+                                                 src={
+                                                  val.name.endsWith('.pdf') ? pdfimg : img
                                                 }
                                               ></img>
                                             </div>

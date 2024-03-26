@@ -2709,9 +2709,9 @@ console.log("kuchlikho" , currentProjection)
                   // matured={true}
                   // companysId={companyId}
                   companysName={companyName}
-                  // companysEmail={companyEmail}
-                  // companyNumber={companyNumber}
-                  // companysInco={companyInco}
+                  companysEmail={companyEmail}
+                  companyNumber={companyNumber}
+                  companysInco={companyInco}
                   // employeeName={data.ename}
                   // employeeEmail={data.email}
                 />
