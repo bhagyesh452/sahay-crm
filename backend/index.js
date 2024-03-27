@@ -2723,31 +2723,139 @@ app.get('/api/redesigned-leadData/:CompanyName', async (req, res) => {
   }
 });
 
-app.post('/api/redesigned-leadData/:CompanyName', upload.fields([
+app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
   { name: "otherDocs", maxCount: 50 },
   { name: "paymentReceipt", maxCount: 2 },
 ]), async (req, res) => {
   try {
     const companyName = req.params.CompanyName;
     const newData = req.body;
+    const Step = req.params.step
+    if (Step === "step1") {
+      const existingData = await RedesignedDraftModel.findOne({ "Company Name": companyName });
+    
+      if (existingData) {
+        // Update existing data if found
+        const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+          { "Company Name": companyName },
+          {
+            $set: {
+              "Company Email": newData["Company Email"] || existingData["Company Email"],
+              "Company Name": newData["Company Name"] || existingData["Company Name"],
+              "Company Number": newData["Company Number"] || existingData["Company Number"],
+              incoDate: newData.incoDate || existingData.incoDate,
+              panNumber: newData.panNumber || existingData.panNumber,
+              gstNumber: newData.gstNumber || existingData.gstNumber,
+            },
+          },
+          { new: true }
+        );
+        res.status(200).json(updatedData);
+        return true; // Respond with updated data
+      } else {
+        // Create new data if not found
+        const createdData = await RedesignedDraftModel.create({
+          "Company Email": newData["Company Email"] ,
+          "Company Name": newData["Company Name"],
+          "Company Number": newData["Company Number"],
+          incoDate: newData.incoDate ,
+          panNumber: newData.panNumber ,
+          gstNumber: newData.gstNumber,
+          Step1Status:true
+        },);
+        res.status(201).json(createdData); // Respond with created data
+        return true;
+      }
+    } else if (Step === "step2") {
+      const existingData = await RedesignedDraftModel.findOne({ "Company Name": companyName });
+    
+      if (existingData) {
+        // Update existing data if found
+        const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+          { "Company Name": companyName },
+          {
+            $set: {
+              bdeName: newData.bdeName || existingData.bdeName,
+              bdeEmail: newData.bdeEmail || existingData.bdeEmail,
+              bdmName: newData.bdmName || existingData.bdmName,
+              bdmEmail: newData.bdmEmail || existingData.bdmEmail,
+              bookingDate: newData.bookingDate || existingData.bookingDate,
+              bookingSource: newData.bookingSource || existingData.bookingSource,
+              Step2Status:true
+            }            
+          },
+          { new: true }
+        );
+        res.status(200).json(updatedData);
+        return true; // Respond with updated data
+      } 
+    }else if (Step === "step3") {
+      const existingData = await RedesignedDraftModel.findOne({ "Company Name": companyName });
+    
+      if (existingData) {
+        // Update existing data if found
+        const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+          { "Company Name": companyName },
+          {
+            $set: {
+              services:newData.services || existingData.services,
+              numberOfServices : newData.numberOfServices || existingData.numberOfServices,
+              caCase:newData.caCase,
+              caCommission:newData.caCommission,
+              caNumber:newData.caNumber,
+              caEmail:newData.caEmail,
+              totalAmount: newData.totalAmount || existingData.totalAmount,
+              pendingAmount: newData.pendingAmount || existingData.pendingAmount,
+              receivedAmount: newData.receivedAmount || existingData.receivedAmount,
+              Step3Status:true
+            }            
+          },
+          { new: true }
+        );
+        res.status(200).json(updatedData);
+        return true; // Respond with updated data
+      } 
+    }
+    else if (Step === "step4") {
+      const existingData = await RedesignedDraftModel.findOne({ "Company Name": companyName });
+      newData.otherDocs = req.files['otherDocs'] === undefined ? "" : req.files['otherDocs'].map(file => file);
+      newData.paymentReceipt = req.files['paymentReceipt'] === undefined ? "" : req.files['paymentReceipt'].map(file => file);
+      if (existingData) {
+        // Update existing data if found
+        const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+          { "Company Name": companyName },
+          {
+            $set: {
+              totalAmount: newData.totalAmount || existingData.totalAmount,
+              pendingAmount: newData.pendingAmount || existingData.pendingAmount,
+              receivedAmount: newData.receivedAmount || existingData.receivedAmount,
+              paymentReceipt: newData.paymentReceipt || existingData.paymentReceipt,
+              otherDocs: newData.otherDocs || existingData.otherDocs,
+              paymentMethod:newData.paymentMethod || newData.paymentMethod,
+              extraNotes:newData.extraNotes || newData.extraNotes,
+              Step4Status:true
+            }            
+          },
+          { new: true }
+        );
+        res.status(200).json(updatedData);
+        return true; // Respond with updated data
+      } 
+    }
+    // Add uploaded files information to newData
 
-    const hasOtherDocs = newData.hasOwnProperty('otherDocs') && newData.otherDocs !== null && newData.otherDocs !== '';
-    const hasPaymentReceipt = newData.hasOwnProperty('paymentReceipt') && newData.paymentReceipt !== null && newData.paymentReceipt !== '';
+    newData.otherDocs = req.files['otherDocs'] === undefined ? "" : req.files['otherDocs'].map(file => file);
+    newData.paymentReceipt = req.files['paymentReceipt'] === undefined ? "" : req.files['paymentReceipt'].map(file => file);
+
 
     // Search for existing data by Company Name
-    const existingData = await RedesignedDraftModel.findOne({ "Company Name": companyName });
+    const existingData = await RedesignedDraftModel.findOne({ "Company Name" : companyName });
 
     if (existingData) {
-      // Update existing data if found, but only update otherDocs and paymentReceipt if they are not already present
+      // Update existing data if found
       const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-        { "Company Name": companyName },
-        {
-          $set: {
-            ...newData,
-            otherDocs: hasOtherDocs ? newData.otherDocs : existingData.otherDocs,
-            paymentReceipt: hasPaymentReceipt ? newData.paymentReceipt : existingData.paymentReceipt
-          }
-        },
+        { "Company Name" : companyName },
+        { $set: newData },
         { new: true }
       );
       res.status(200).json(updatedData); // Respond with updated data
@@ -3512,9 +3620,9 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
 
     // Render services HTML content
     const servicesHtmlContent = renderServices();
-
+    const visibility = newData.bookingSource!=="Other" && 'none';
     // Send email to recipients
-    const recipients = [newData.bdmEmail, newData.bdeName];
+    const recipients = [newData.bdeEmail, newData.bdmEmail];
     sendMail(
       recipients,
       "Mail received",
@@ -3742,7 +3850,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData.bdmEmail ? newData.bdmEmail : "-"}
+                    ${newData.bdeEmail ? newData.bdeEmail : "-"}
                 </div>
               </div>
             </div>
@@ -3827,7 +3935,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                 </div>
               </div>
             </div>
-            <div style="display: flex; flex-wrap: wrap">
+            <div style="display: flex; flex-wrap: wrap; display: ${visibility}">
               <div style="width: 25%">
                 <div style="
                       border: 1px solid #ccc;
@@ -3947,12 +4055,12 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ₹ 38000
+                    ₹ ${newData.totalAmount}
                   </div>
                 </div>
               </div>
               <div style="width: 34%; display: flex;">
-                <div style="width: 28%">
+                <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
@@ -3961,19 +4069,19 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                    Received Payment
                   </div>
                 </div>
-                <div style="width: 72%">
+                <div style="width: 75%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ₹ 38000
+                    ₹ ${newData.receivedAmount}
                   </div>
                 </div>
   
               </div>
               <div style="width: 33%; display: flex;">
-                <div style="width: 28%">
+                <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
@@ -3982,13 +4090,13 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                     Pending Payment
                   </div>
                 </div>
-                <div style="width: 72%">
+                <div style="width: 75%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                   ₹ 38000
+                   ₹ ${newData.pendingAmount}
                   </div>
                 </div>
   
@@ -4011,7 +4119,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                  With DSC
+                  ${newData.paymentMethod}
                 </div>
               </div>
             </div>
@@ -4031,7 +4139,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                  XYZ
+                  ${newData.extraNotes}
                 </div>
               </div>
             </div>

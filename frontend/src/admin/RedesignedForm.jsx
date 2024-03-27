@@ -17,6 +17,7 @@ import { options } from "../components/Options";
 import { IconX } from "@tabler/icons-react";
 
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const steps = [
   "Basic Company Informations",
@@ -28,24 +29,33 @@ const steps = [
 
 const defaultService = {
   serviceName: "",
-  withDSC: false,
+  withDSC: true,
   totalPaymentWOGST: "",
   totalPaymentWGST: "",
-  withGST: false,
+  withGST: true,
   paymentTerms: "Full Advanced",
   firstPayment: 0,
   secondPayment: 0,
   thirdPayment: 0,
   fourthPayment: 0,
-  paymentRemarks: "No payment remarks",
+  paymentRemarks: "",
   paymentCount: 2,
 };
 
-export default function RedesignedForm({ companysName , companysEmail, companyNumber ,  companysInco ,employeeName,employeeEmail }) {
+export default function RedesignedForm({
+  setFormOpen,
+  companysName,
+  companysEmail,
+  companyNumber,
+  companysInco,
+  employeeName,
+  employeeEmail,
+}) {
   const [totalServices, setTotalServices] = useState(1);
+  const [fetchedService, setfetchedService] = useState(false);
   const defaultLeadData = {
     "Company Name": companysName ? companysName : "",
-    "Company Number": companyNumber ? companyNumber : 0 ,
+    "Company Number": companyNumber ? companyNumber : 0,
     "Company Email": companysEmail ? companysEmail : "",
     panNumber: "",
     gstNumber: "",
@@ -53,13 +63,13 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
     bdeName: employeeName ? employeeName : "",
     bdeEmail: employeeEmail ? employeeEmail : "",
     bdmName: "",
-    bdmEmail:"",
+    bdmEmail: "",
     bookingDate: "",
     bookingSource: "",
-    numberOfServices: 0,
+    numberOfServices: totalServices,
     services: [],
     caCase: false,
-    caName: "",
+    caNumber: 0,
     caEmail: "",
     caCommission: "",
     paymentMethod: "",
@@ -97,242 +107,307 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
       const data = response.data.find(
         (item) => item["Company Name"] === companysName
       );
-      
-      if (data.Step1Status === true && data.Step2Status === false) {
-        setLeadData({
-          ...leadData,
-          "Company Name": data["Company Name"],
-          "Company Email": data["Company Email"],
-          "Company Number": data["Company Number"],
-          incoDate: data.incoDate,
-          panNumber: data.panNumber,
-          gstNumber: data.gstNumber,
-          Step1Status: data.Step1Status
-        });
+      const {
+        Step1Status,
+        Step2Status,
+        Step3Status,
+        Step4Status,
+        Step5Status,
+        ...newLeadData
+      } = data;
+      setLeadData(newLeadData);
+      if (Step1Status === true && Step2Status === false) {
         setCompleted({ 0: true });
         setActiveStep(1);
-      } else if (data.Step2Status === true && data.Step3Status === false) {
-        setSelectedValues(data.bookingSource);
-        setLeadData({
-          ...leadData,
-          "Company Name": data["Company Name"],
-          "Company Email": data["Company Email"],
-          "Company Number": data["Company Number"],
-          incoDate: data.incoDate,
-          panNumber: data.panNumber,
-          gstNumber: data.gstNumber,
-          bdeName: data.bdeName,
-          bdeEmail: data.bdeEmail,
-          bdmName: data.bdmName,
-          bdmEmail: data.bdmEmail,
-          bookingDate: data.bookingDate,
-          bookingSource: data.bookingSource,
-          Step1Status: data.Step1Status,
-          Step2Status: data.Step2Status
-        });
+        setSelectedValues(newLeadData.bookingSource);
+        setLeadData((prevState) => ({
+          ...prevState,
+          bdeName: employeeName ? employeeName : "",
+          bdeEmail: employeeEmail ? employeeEmail : "",
+        }));
+      } else if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
         setActiveStep(2);
-      } else if (data.Step3Status === true && data.Step4Status === false) {
-        console.log(data.services)
-        setSelectedValues(data.bookingSource);
-        setLeadData({
-          ...leadData,
-          "Company Name": data["Company Name"],
-          "Company Email": data["Company Email"],
-          "Company Number": data["Company Number"],
-          incoDate: data.incoDate,
-          panNumber: data.panNumber,
-          gstNumber: data.gstNumber,
-          bdeName: data.bdeName,
-          bdeEmail: data.bdeEmail,
-          bdmName: data.bdmName,
-          bdmEmail: data.bdmEmail,
-          bookingDate: data.bookingDate,
-          bookingSource: data.bookingSource,
-          // services: data.services.map(service => ({
-          //   serviceName: service.serviceName,
-          //   withDSC: service.serviceName,
-          //   totalPaymentWOGST: service.totalPaymentWOGST,
-          //   totalPaymentWGST: service.totalPaymentWGST,
-          //   withGST: service.withGST,
-          //   paymentTerms: service.paymentTerms,
-          //   firstPayment: service.firstPayment,
-          //   secondPayment: service.secondPayment,
-          //   thirdPayment: service.thirdPayment,
-          //   fourthPayment: service.fourthPayment,
-          //   paymentRemarks: service.paymentRemarks,
-          //   paymentCount: service.paymentCount,
-          // })),
-          services:data.services,
-          
-         
-          totalAmount: data.services.reduce(
-            (total, service) => total + service.totalPaymentWGST,
-            0
-          ),
-          receivedAmount: data.services.reduce(
-            (total, service) =>
-              service.paymentTerms === "Full Advanced"
-                ? total + service.totalPaymentWGST
-                : total + service.firstPayment,
-            0
-          ),
-          pendingAmount: data.services.reduce(
-            (total, service) =>
-              service.paymentTerms === "Full Advanced"
-                ? total + 0
-                : total + service.totalPaymentWGST - service.firstPayment,
-            0
-          ),
-          caCase: data.caCase,
-          caName: data.caName,
-          caEmail: data.caEmail,
-          caNumber: data.caNumber,
-          Step1Status: data.Step1Status,
-          Step2Status: data.Step2Status,
-          Step3Status:data.Step3Status
-        });
-        setTotalServices(data.services.length);
+       
+        setLeadData((prevState) => ({
+          ...prevState,
+          services:
+            data.services.length !== 0 ? data.services : [defaultService],
+          numberOfServices:
+            data.services.length !== 0 ? data.services.length : 1,
+        }));
+        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+      } else if (Step3Status === true && Step4Status === false) {
+        console.log(data.services , "This is services");
+        setfetchedService(true);
         setCompleted({ 0: true, 1: true, 2: true });
         setActiveStep(3);
-        
-      } else if (data.Step4Status === true) {
-        setSelectedValues(data.bookingSource);
-        setLeadData({
-          ...leadData,
-          "Company Name": data["Company Name"],
-          "Company Email": data["Company Email"],
-          "Company Number": data["Company Number"],
-          incoDate: data.incoDate,
-          panNumber: data.panNumber,
-          gstNumber: data.gstNumber,
-          bdeName: data.bdeName,
-          bdeEmail: data.bdeEmail,
-          bdmName: data.bdmName,
-          bdmEmail: data.bdmEmail,
-          bookingDate: data.bookingDate,
-          bookingSource: data.bookingSource,
-          services: data.services,
-          totalAmount: data.services.reduce(
-            (total, service) => total + service.totalPaymentWGST,
-            0
-          ),
-          receivedAmount: data.services.reduce(
-            (total, service) =>
-              service.paymentTerms === "Full Advanced"
-                ? total + service.totalPaymentWGST
-                : total + service.firstPayment,
-            0
-          ),
-          pendingAmount: data.services.reduce(
-            (total, service) =>
-              service.paymentTerms === "Full Advanced"
-                ? total + 0
-                : total + service.totalPaymentWGST - service.firstPayment,
-            0
-          ),
-          caCase: data.caCase,
-          caName: data.caName,
-          caEmail: data.caEmail,
-          caNumber: data.caNumber,
-          paymentMethod: data.paymentMethod,
-          paymentReceipt: data.paymentReceipt,
-          extraNotes: data.extraNotes,
-          totalAmount: data.totalAmount,
-          receivedAmount: data.receivedAmount,
-          pendingAmount: data.pendingAmount,
-          otherDocs: data.otherDocs,
-          Step1Status: data.Step1Status,
-          Step2Status: data.Step2Status,
-          Step3Status:data.Step3Status,
-          Step4Status:data.Step4Status,
-        });
-        setTotalServices(data.services.length);
+        setLeadData((prevState) => ({
+          ...prevState,
+          services:
+            data.services.length !== 0 ? data.services : [defaultService],
+          caCase:data.caCase,
+          caCommission:data.caCommission,
+          caNumber:data.caNumber,
+          caEmail:data.caEmail
+        }));
+        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+      } else if (Step4Status === true && Step5Status === false) {
         setCompleted({ 0: true, 1: true, 2: true, 3: true });
         setActiveStep(4);
-      }else if (data.Step5Status === true){
-        setSelectedValues(data.bookingSource);
-        setLeadData({
-          ...leadData,
-          "Company Name": data["Company Name"],
-          "Company Email": data["Company Email"],
-          "Company Number": data["Company Number"],
-          incoDate: data.incoDate,
-          panNumber: data.panNumber,
-          gstNumber: data.gstNumber,
-          bdeName: data.bdeName,
-          bdeEmail: data.bdeEmail,
-          bdmName: data.bdmName,
-          bdmEmail: data.bdmEmail,
-          bookingDate: data.bookingDate,
-          bookingSource: data.bookingSource,
-          services: data.services,
-          totalAmount: data.services.reduce(
-            (total, service) => total + service.totalPaymentWGST,
-            0
-          ),
-          receivedAmount: data.services.reduce(
-            (total, service) =>
-              service.paymentTerms === "Full Advanced"
-                ? total + service.totalPaymentWGST
-                : total + service.firstPayment,
-            0
-          ),
-          pendingAmount: data.services.reduce(
-            (total, service) =>
-              service.paymentTerms === "Full Advanced"
-                ? total + 0
-                : total + service.totalPaymentWGST - service.firstPayment,
-            0
-          ),
-          caCase: data.caCase,
-          caName: data.caName,
-          caEmail: data.caEmail,
-          caNumber: data.caNumber,
-          paymentMethod: data.paymentMethod,
-          paymentReceipt: data.paymentReceipt,
-          extraNotes: data.extraNotes,
+        setLeadData((prevState) => ({
+          ...prevState,
           totalAmount: data.totalAmount,
-          receivedAmount: data.receivedAmount,
           pendingAmount: data.pendingAmount,
+          receivedAmount: data.receivedAmount,
           otherDocs: data.otherDocs,
-          Step1Status: data.Step1Status,
-          Step2Status: data.Step2Status,
-          Step3Status:data.Step3Status,
-          Step4Status:data.Step4Status,
-        });
-        setTotalServices(data.services.length);
-        setCompleted({ 0: true, 1: true, 2: true, 3: true , 4:true });
+          paymentReceipt: data.paymentReceipt,
+          paymentMethod:data.paymentMethod,
+          extraNotes:data.extraNotes
+        }));
+      } else if (Step5Status === true) {
+        setCompleted({ 0: true, 1: true, 2: true, 3: true, 4: true });
         setActiveStep(5);
       }
-      console.log(data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+  // if (data.Step1Status === true && data.Step2Status === false) {
+  //   setLeadData({
+  //     ...leadData,
+  //     "Company Name": data["Company Name"],
+  //     "Company Email": data["Company Email"],
+  //     "Company Number": data["Company Number"],
+  //     incoDate: data.incoDate,
+  //     panNumber: data.panNumber,
+  //     gstNumber: data.gstNumber,
+  //     Step1Status: data.Step1Status
+  //   });
+  //   setCompleted({ 0: true });
+  //   setActiveStep(1);
+  // } else if (data.Step2Status === true && data.Step3Status === false) {
+  //   setSelectedValues(data.bookingSource);
+  //   setLeadData({
+  //     ...leadData,
+  //     "Company Name": data["Company Name"],
+  //     "Company Email": data["Company Email"],
+  //     "Company Number": data["Company Number"],
+  //     incoDate: data.incoDate,
+  //     panNumber: data.panNumber,
+  //     gstNumber: data.gstNumber,
+  //     bdeName: data.bdeName,
+  //     bdeEmail: data.bdeEmail,
+  //     bdmName: data.bdmName,
+  //     bdmEmail: data.bdmEmail,
+  //     bookingDate: data.bookingDate,
+  //     bookingSource: data.bookingSource,
+  //     Step1Status: data.Step1Status,
+  //     Step2Status: data.Step2Status
+  //   });
+  //   setCompleted({ 0: true, 1: true });
+  //   setActiveStep(2);
+  // } else if (data.Step3Status === true && data.Step4Status === false) {
+  //   console.log(data.services)
+  //   setSelectedValues(data.bookingSource);
+  //   setLeadData({
+  //     ...leadData,
+  //     "Company Name": data["Company Name"],
+  //     "Company Email": data["Company Email"],
+  //     "Company Number": data["Company Number"],
+  //     incoDate: data.incoDate,
+  //     panNumber: data.panNumber,
+  //     gstNumber: data.gstNumber,
+  //     bdeName: data.bdeName,
+  //     bdeEmail: data.bdeEmail,
+  //     bdmName: data.bdmName,
+  //     bdmEmail: data.bdmEmail,
+  //     bookingDate: data.bookingDate,
+  //     bookingSource: data.bookingSource,
+  //     // services: data.services.map(service => ({
+  //     //   serviceName: service.serviceName,
+  //     //   withDSC: service.serviceName,
+  //     //   totalPaymentWOGST: service.totalPaymentWOGST,
+  //     //   totalPaymentWGST: service.totalPaymentWGST,
+  //     //   withGST: service.withGST,
+  //     //   paymentTerms: service.paymentTerms,
+  //     //   firstPayment: service.firstPayment,
+  //     //   secondPayment: service.secondPayment,
+  //     //   thirdPayment: service.thirdPayment,
+  //     //   fourthPayment: service.fourthPayment,
+  //     //   paymentRemarks: service.paymentRemarks,
+  //     //   paymentCount: service.paymentCount,
+  //     // })),
+  //     services:data.services,
+
+  //     totalAmount: data.services.reduce(
+  //       (total, service) => total + service.totalPaymentWGST,
+  //       0
+  //     ),
+  //     receivedAmount: data.services.reduce(
+  //       (total, service) =>
+  //         service.paymentTerms === "Full Advanced"
+  //           ? total + service.totalPaymentWGST
+  //           : total + service.firstPayment,
+  //       0
+  //     ),
+  //     pendingAmount: data.services.reduce(
+  //       (total, service) =>
+  //         service.paymentTerms === "Full Advanced"
+  //           ? total + 0
+  //           : total + service.totalPaymentWGST - service.firstPayment,
+  //       0
+  //     ),
+  //     caCase: data.caCase,
+  //     caName: data.caName,
+  //     caEmail: data.caEmail,
+  //     caNumber: data.caNumber,
+  //     Step1Status: data.Step1Status,
+  //     Step2Status: data.Step2Status,
+  //     Step3Status:data.Step3Status
+  //   });
+  //   setTotalServices(data.services.length);
+  //   setCompleted({ 0: true, 1: true, 2: true });
+  //   setActiveStep(3);
+
+  // } else if (data.Step4Status === true) {
+  //   setSelectedValues(data.bookingSource);
+  //   setLeadData({
+  //     ...leadData,
+  //     "Company Name": data["Company Name"],
+  //     "Company Email": data["Company Email"],
+  //     "Company Number": data["Company Number"],
+  //     incoDate: data.incoDate,
+  //     panNumber: data.panNumber,
+  //     gstNumber: data.gstNumber,
+  //     bdeName: data.bdeName,
+  //     bdeEmail: data.bdeEmail,
+  //     bdmName: data.bdmName,
+  //     bdmEmail: data.bdmEmail,
+  //     bookingDate: data.bookingDate,
+  //     bookingSource: data.bookingSource,
+  //     services: data.services,
+  //     totalAmount: data.services.reduce(
+  //       (total, service) => total + service.totalPaymentWGST,
+  //       0
+  //     ),
+  //     receivedAmount: data.services.reduce(
+  //       (total, service) =>
+  //         service.paymentTerms === "Full Advanced"
+  //           ? total + service.totalPaymentWGST
+  //           : total + service.firstPayment,
+  //       0
+  //     ),
+  //     pendingAmount: data.services.reduce(
+  //       (total, service) =>
+  //         service.paymentTerms === "Full Advanced"
+  //           ? total + 0
+  //           : total + service.totalPaymentWGST - service.firstPayment,
+  //       0
+  //     ),
+  //     caCase: data.caCase,
+  //     caName: data.caName,
+  //     caEmail: data.caEmail,
+  //     caNumber: data.caNumber,
+  //     paymentMethod: data.paymentMethod,
+  //     paymentReceipt: data.paymentReceipt,
+  //     extraNotes: data.extraNotes,
+  //     totalAmount: data.totalAmount,
+  //     receivedAmount: data.receivedAmount,
+  //     pendingAmount: data.pendingAmount,
+  //     otherDocs: data.otherDocs,
+  //     Step1Status: data.Step1Status,
+  //     Step2Status: data.Step2Status,
+  //     Step3Status:data.Step3Status,
+  //     Step4Status:data.Step4Status,
+  //   });
+  //   setTotalServices(data.services.length);
+  //   setCompleted({ 0: true, 1: true, 2: true, 3: true });
+  //   setActiveStep(4);
+  // }else if (data.Step5Status === true){
+  //   setSelectedValues(data.bookingSource);
+  //   setLeadData({
+  //     ...leadData,
+  //     "Company Name": data["Company Name"],
+  //     "Company Email": data["Company Email"],
+  //     "Company Number": data["Company Number"],
+  //     incoDate: data.incoDate,
+  //     panNumber: data.panNumber,
+  //     gstNumber: data.gstNumber,
+  //     bdeName: data.bdeName,
+  //     bdeEmail: data.bdeEmail,
+  //     bdmName: data.bdmName,
+  //     bdmEmail: data.bdmEmail,
+  //     bookingDate: data.bookingDate,
+  //     bookingSource: data.bookingSource,
+  //     services: data.services,
+  //     totalAmount: data.services.reduce(
+  //       (total, service) => total + service.totalPaymentWGST,
+  //       0
+  //     ),
+  //     receivedAmount: data.services.reduce(
+  //       (total, service) =>
+  //         service.paymentTerms === "Full Advanced"
+  //           ? total + service.totalPaymentWGST
+  //           : total + service.firstPayment,
+  //       0
+  //     ),
+  //     pendingAmount: data.services.reduce(
+  //       (total, service) =>
+  //         service.paymentTerms === "Full Advanced"
+  //           ? total + 0
+  //           : total + service.totalPaymentWGST - service.firstPayment,
+  //       0
+  //     ),
+  //     caCase: data.caCase,
+  //     caName: data.caName,
+  //     caEmail: data.caEmail,
+  //     caNumber: data.caNumber,
+  //     paymentMethod: data.paymentMethod,
+  //     paymentReceipt: data.paymentReceipt,
+  //     extraNotes: data.extraNotes,
+  //     totalAmount: data.totalAmount,
+  //     receivedAmount: data.receivedAmount,
+  //     pendingAmount: data.pendingAmount,
+  //     otherDocs: data.otherDocs,
+  //     Step1Status: data.Step1Status,
+  //     Step2Status: data.Step2Status,
+  //     Step3Status:data.Step3Status,
+  //     Step4Status:data.Step4Status,
+  //   });
+  //   setTotalServices(data.services.length);
+  //   setCompleted({ 0: true, 1: true, 2: true, 3: true , 4:true });
+  //   setActiveStep(5);
+  // }
+  console.log("Real time data: ", leadData);
   useEffect(() => {
     fetchData();
     fetchDataEmp();
-    console.log("Fetch After Component Mount" , leadData)
+    console.log("Fetch After Component Mount", leadData);
   }, []);
   useEffect(() => {
     // Create new services array based on totalServices
-    const newServices = Array.from({ length: totalServices }, () => ({
-      ...defaultService,
-    }));
-    setLeadData((prevState) => ({ ...prevState, services: newServices }));
-    console.log("Fetch After changing Services" , leadData)
-  }, [totalServices, defaultService]);
-  useEffect(() => {
-    setTimeout(() => {
+    {
       const newServices = Array.from({ length: totalServices }, () => ({
         ...defaultService,
       }));
-      setLeadData((prevState) => ({ ...prevState, services: newServices }));
-      fetchData();
-      console.log("Fetch After 1 second" , leadData)
-    }, 1000);
-  }, []);
+      setLeadData((prevState) => ({
+        ...prevState,
+        services: !fetchedService ? newServices : leadData.services,
+      }));
+      console.log("Fetch After changing Services", leadData);
+    }
+  }, [totalServices, defaultService]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const newServices = Array.from({ length: totalServices }, () => ({
+  //       ...defaultService,
+  //     }));
+  //     setLeadData((prevState) => ({ ...prevState, services: newServices }));
+  //     fetchData();
+  //     console.log("Fetch After 1 second" , leadData)
+  //   }, 1000);
+  // }, []);
 
   const totalSteps = () => {
     return steps.length;
@@ -348,8 +423,6 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
   const allStepsCompleted = () => {
     return completedSteps() === totalSteps();
   };
-  
-
 
   const handleNext = () => {
     const newActiveStep =
@@ -357,23 +430,26 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
         ? steps.findIndex((step, i) => !(i in completed))
         : activeStep + 1;
     setActiveStep(newActiveStep);
-
   };
+  const navigate = useNavigate();
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    if (activeStep !== 0) {
+      setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    } else {
+      setFormOpen(false);
+    }
   };
 
   function formatDate(inputDate) {
     const date = new Date(inputDate);
     const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Adding 1 to month because it's zero-based
-    const day = String(date.getUTCDate()).padStart(2, '0');
-  
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Adding 1 to month because it's zero-based
+    const day = String(date.getUTCDate()).padStart(2, "0");
+
     return `${year}-${month}-${day}`;
   }
-  
-  
+
   const getOrdinal = (number) => {
     const suffixes = ["th", "st", "nd", "rd"];
     const lastDigit = number % 10;
@@ -394,7 +470,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
-  
+
   const handleComplete = async () => {
     try {
       const formData = new FormData();
@@ -404,32 +480,184 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
       setCompleted(newCompleted);
 
       // Prepare the data to send to the backend
-      let dataToSend = {
-        ...leadData,
-        Step1Status: true,
-      };
+      let dataToSend = {};
+      if (activeStep === 0) {
+        dataToSend = {
+          "Company Email": leadData["Company Email"],
+          "Company Name": leadData["Company Name"],
+          "Company Number": leadData["Company Number"],
+          incoDate: leadData.incoDate,
+          panNumber: leadData.panNumber,
+          gstNumber: leadData.gstNumber,
+        };
+        console.log("This is sending", dataToSend);
+        try {
+          const response = await axios.post(
+            `${secretKey}/redesigned-leadData/${companysName}/step1`,
+            dataToSend
+          );
+          // Handle response data as needed
+        } catch (error) {
+          console.error("Error uploading data:", error);
+          // Handle error
+        }
+        fetchData();
+        handleNext();
+        return true;
+      }
+      if (activeStep === 1) {
+        dataToSend = {
+          bdeName: leadData.bdeName,
+          bdeEmail: leadData.bdeEmail,
+          bdmName: leadData.bdmName,
+          bdmEmail: leadData.bdmEmail,
+          bookingDate: leadData.bookingDate,
+          bookingSource: selectedValues,
+        };
+        console.log("This is sending", dataToSend);
+        try {
+          const response = await axios.post(
+            `${secretKey}/redesigned-leadData/${companysName}/step2`,
+            dataToSend
+          );
+          // Handle response data as needed
+        } catch (error) {
+          console.error("Error uploading data:", error);
+          // Handle error
+        }
+        fetchData();
+        handleNext();
+        return true;
+      }
+      if (activeStep === 2) {
+        const totalAmount = leadData.services.reduce(
+          (acc, curr) => acc + curr.totalPaymentWGST,
+          0
+        );
+        const receivedAmount = leadData.services.reduce((acc, curr) => {
+          return curr.paymentTerms === "Full Advanced"
+            ? acc + curr.totalPaymentWGST
+            : acc + curr.firstPayment;
+        }, 0);
+        const pendingAmount = totalAmount - receivedAmount;
+        dataToSend = {
+          services: leadData.services,
+          numberOfServices: totalServices,
+          caCase:leadData.caCase,
+          caCommission:leadData.caCommission,
+          caNumber:leadData.caNumber,
+          caEmail:leadData.caEmail,
+          totalAmount:totalAmount,
+          receivedAmount:receivedAmount,
+          pendingAmount:pendingAmount
+        };
+        console.log("This is sending", dataToSend);
+        try {
+          const response = await axios.post(
+            `${secretKey}/redesigned-leadData/${companysName}/step3`,
+            dataToSend
+          );
+          // Handle response data as needed
+        } catch (error) {
+          console.error("Error uploading data:", error);
+          // Handle error
+        }
+        fetchData();
+        handleNext();
+        return true;
+      }
+      if (activeStep === 3) {
+        const totalAmount = leadData.services.reduce(
+          (acc, curr) => acc + curr.totalPaymentWGST,
+          0
+        );
+        const receivedAmount = leadData.services.reduce((acc, curr) => {
+          return curr.paymentTerms === "Full Advanced"
+            ? acc + curr.totalPaymentWGST
+            : acc + curr.firstPayment;
+        }, 0);
+        const pendingAmount = totalAmount - receivedAmount;
+
+        for (let i = 0; i < leadData.otherDocs.length; i++) {
+          formData.append("otherDocs", leadData.otherDocs[i]);
+        }
+        formData.append("totalAmount", totalAmount);
+        formData.append("receivedAmount", receivedAmount);
+        formData.append("pendingAmount", pendingAmount);
+        formData.append("paymentMethod", leadData.paymentMethod);
+        formData.append("extraNotes", leadData.extraNotes);
+        formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+
+        try {
+          const response = await axios.post(
+            `${secretKey}/redesigned-leadData/${companysName}/step4`,
+            formData
+          );
+        } catch (error) {
+          console.error("Error uploading data:", error);
+          // Handle error
+        }
+        fetchData();
+        handleNext();
+        return true;
+      }
+      if (activeStep === 4) {
+        try {
+          const response = await axios.post(
+            `${secretKey}/redesigned-final-leadData/${companysName}`,
+            leadData
+          );
+
+          console.log(response.data);
+          Swal.fire({
+            icon: "success",
+            title: "Form Submitted",
+            text: "Your form has been submitted successfully!",
+          });
+          // Handle response data as needed
+        } catch (error) {
+          console.error("Error uploading data:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "There was an error submitting the form. Please try again later.",
+          });
+          // Handle error
+        }
+
+        fetchData();
+        handleNext();
+        return true;
+      }
+      // let dataToSend = {
+      //   ...leadData,
+      //   Step1Status: true,
+      // };
 
       if (activeStep === 1) {
         dataToSend = {
-          ...leadData,
+          ...dataToSend,
           Step2Status: true,
           bookingSource: selectedValues,
         };
       } else if (activeStep === 2) {
-        const totalAmount = leadData.services.reduce((acc, curr) => acc + curr.totalPaymentWOGST, 0)
+        const totalAmount = leadData.services.reduce(
+          (acc, curr) => acc + curr.totalPaymentWOGST,
+          0
+        );
         const receivedAmount = leadData.services.reduce((acc, curr) => {
-          return curr.paymentTerms === "Full Advanced" ? acc + curr.totalPaymentWOGST : acc + curr.firstPayment;
+          return curr.paymentTerms === "Full Advanced"
+            ? acc + curr.totalPaymentWOGST
+            : acc + curr.firstPayment;
         }, 0);
         const pendingAmount = totalAmount - receivedAmount;
         dataToSend = {
           ...leadData,
           Step2Status: true,
           Step3Status: true,
-          totalAmount:totalAmount ,
-          receivedAmount:receivedAmount,
-          pendingAmount:pendingAmount
-
-          
+          totalAmount: totalAmount,
+          receivedAmount: receivedAmount,
+          pendingAmount: pendingAmount,
         };
       } else if (activeStep === 3) {
         dataToSend = {
@@ -442,7 +670,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
           ...leadData,
           Step3Status: true,
           Step4Status: true,
-          Step5Status: true
+          Step5Status: true,
         };
       }
       // console.log(activeStep, dataToSend);
@@ -454,11 +682,11 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
               formData.append(`services[${index}][${prop}]`, service[prop]);
             });
           });
-        }else if (key === "otherDocs" && activeStep === 3) {
+        } else if (key === "otherDocs" && activeStep === 3) {
           for (let i = 0; i < leadData.otherDocs.length; i++) {
             formData.append("otherDocs", leadData.otherDocs[i]);
           }
-        } else if (key === "paymentReceipt"  && activeStep === 3) {
+        } else if (key === "paymentReceipt" && activeStep === 3) {
           formData.append("paymentReceipt", leadData.paymentReceipt[0]);
         } else {
           formData.append(key, dataToSend[key]);
@@ -479,17 +707,17 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
 
           console.log(response.data);
           Swal.fire({
-            icon: 'success',
-            title: 'Form Submitted',
-            text: 'Your form has been submitted successfully!',
+            icon: "success",
+            title: "Form Submitted",
+            text: "Your form has been submitted successfully!",
           });
           // Handle response data as needed
         } catch (error) {
           console.error("Error uploading data:", error);
           Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'There was an error submitting the form. Please try again later.',
+            icon: "error",
+            title: "Error",
+            text: "There was an error submitting the form. Please try again later.",
           });
           // Handle error
         }
@@ -505,17 +733,14 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
             }
           );
 
-         
           // Handle response data as needed
         } catch (error) {
           console.error("Error uploading data:", error);
           // Handle error
         }
       }
-      
-      
-      fetchData();
 
+      fetchData();
 
       // Log the response from the backend
 
@@ -528,40 +753,42 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
   const handleEdit = async () => {
     try {
       const formData = new FormData();
-   
+
       let dataToSend = {
         ...dataToSend,
         Step1Status: true,
       };
-   if(activeStep === 3){
-     dataToSend = {
-      ...leadData,
-    };
-      for (let i = 0; i < leadData.otherDocs.length; i++) {
-        formData.append("otherDocs", leadData.otherDocs[i]);
-      }
-      formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-    console.log(dataToSend , activeStep)
-   }
-
-     else if (activeStep === 1) {
+      if (activeStep === 3) {
+        dataToSend = {
+          ...leadData,
+        };
+        for (let i = 0; i < leadData.otherDocs.length; i++) {
+          formData.append("otherDocs", leadData.otherDocs[i]);
+        }
+        formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+        console.log(dataToSend, activeStep);
+      } else if (activeStep === 1) {
         dataToSend = {
           ...dataToSend,
           bookingSource: selectedValues,
-        
         };
-        console.log("Step 1" , dataToSend)
+        console.log("Step 1", dataToSend);
       } else if (activeStep === 2) {
-        const totalAmount = leadData.services.reduce((acc, curr) => acc + curr.totalPaymentWOGST, 0)
+        const totalAmount = leadData.services.reduce(
+          (acc, curr) => acc + curr.totalPaymentWOGST,
+          0
+        );
         const receivedAmount = leadData.services.reduce((acc, curr) => {
-          return curr.paymentTerms === "Full Advanced" ? acc + curr.totalPaymentWOGST : acc + curr.firstPayment;
+          return curr.paymentTerms === "Full Advanced"
+            ? acc + curr.totalPaymentWOGST
+            : acc + curr.firstPayment;
         }, 0);
         const pendingAmount = totalAmount - receivedAmount;
         dataToSend = {
           ...leadData,
-          totalAmount:totalAmount ,
-          receivedAmount:receivedAmount,
-          pendingAmount:pendingAmount
+          totalAmount: totalAmount,
+          receivedAmount: receivedAmount,
+          pendingAmount: pendingAmount,
         };
       } else if (activeStep === 3) {
         dataToSend = {
@@ -574,7 +801,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
           ...leadData,
           Step3Status: true,
           Step4Status: true,
-          Step5Status: true
+          Step5Status: true,
         };
       }
       // console.log(activeStep, dataToSend);
@@ -590,13 +817,13 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
           for (let i = 0; i < leadData.otherDocs.length; i++) {
             formData.append("otherDocs", leadData.otherDocs[i]);
           }
-        } else if (key === "paymentReceipt"  && activeStep === 3) {
+        } else if (key === "paymentReceipt" && activeStep === 3) {
           formData.append("paymentReceipt", leadData.paymentReceipt[0]);
         } else {
           formData.append(key, dataToSend[key]);
         }
       });
-      if (activeStep === 4 ) {
+      if (activeStep === 4) {
         dataToSend = {
           ...leadData,
           paymentReceipt: leadData.paymentReceipt
@@ -611,17 +838,17 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
 
           console.log(response.data);
           Swal.fire({
-            icon: 'success',
-            title: 'Form Submitted',
-            text: 'Your form has been submitted successfully!',
+            icon: "success",
+            title: "Form Submitted",
+            text: "Your form has been submitted successfully!",
           });
           // Handle response data as needed
         } catch (error) {
           console.error("Error uploading data:", error);
           Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'There was an error submitting the form. Please try again later.',
+            icon: "error",
+            title: "Error",
+            text: "There was an error submitting the form. Please try again later.",
           });
           // Handle error
         }
@@ -637,17 +864,14 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
             }
           );
 
-         
           // Handle response data as needed
         } catch (error) {
           console.error("Error uploading data:", error);
           // Handle error
         }
       }
-      
-      
-      fetchData();
 
+      fetchData();
 
       // Log the response from the backend
 
@@ -657,27 +881,25 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
       // Handle error if needed
     }
   };
- 
 
   const handleReset = () => {
     setActiveStep(0);
     setCompleted({});
   };
 
-
-  console.log(leadData.Step1Status , "Boom");
   const renderServices = () => {
     const services = [];
- 
+    console.log(leadData.services.length, Number(totalServices));
     if (leadData.services.length === Number(totalServices)) {
       for (let i = 0; i < totalServices; i++) {
-        services.push(  
+        services.push(
           <div key={i} className="servicesFormCard mt-3">
             {/* <div className="services_No">
               1
         </div> */}
             <div className="d-flex align-items-center">
-              <div className="selectservices-label mr-2">
+              <div className="selectservices-label mr-2 d-flex align-items-center">
+                <div className="services_No mr-1">{i + 1}</div>
                 <label for="">Select Service:</label>
               </div>
               <div className="selectservices-label-selct">
@@ -695,22 +917,20 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                       ),
                     }));
                   }}
-                  disabled={
-                    completed[activeStep] === true
-                  }
+                  disabled={completed[activeStep] === true}
                 >
-                 <option value="" disabled selected>
-  Select Service Name
-</option>
-{options.map((option, index) => (
-  <option key={index} value={option.value}>
-    {option.value}
-  </option>
-))}
-
+                  <option value="" disabled selected>
+                    Select Service Name
+                  </option>
+                  {options.map((option, index) => (
+                    <option key={index} value={option.value}>
+                      {option.value}
+                    </option>
+                  ))}
                 </select>
               </div>
-              {leadData.services[i].serviceName === "Start Up Certificate" && (
+              {leadData.services[i].serviceName ===
+                "Start-Up India Certificate" && (
                 <div className="ml-2">
                   <div class="form-check m-0">
                     <input
@@ -729,9 +949,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                           ),
                         }));
                       }}
-                      readOnly={
-                        completed[activeStep] === true
-                      }
+                      readOnly={completed[activeStep] === true}
                     />
                     <label class="form-check-label" for="dsc">
                       WITH DSC
@@ -746,32 +964,33 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                 <label class="form-label">Total Amount</label>
                 <div className="d-flex align-items-center">
                   <div class="input-group total-payment-inputs mb-2">
-                  <input
-  type="number"
-  className="form-control"
-  placeholder="Enter Amount"
-  id={`Amount-${i}`}
-  value={leadData.services[i].totalPaymentWOGST}
-  onInput={(e) => {
-    const newValue = e.target.value;
-    setLeadData((prevState) => ({
-      ...prevState,
-      services: prevState.services.map((service, index) =>
-        index === i
-          ? {
-              ...service,
-              totalPaymentWOGST: newValue,
-              totalPaymentWGST:
-                service.withGST === true
-                  ? Number(newValue) + Number(newValue * 0.18)
-                  : newValue,
-            }
-          : service
-      ),
-    }));
-  }}
-  readOnly={completed[activeStep] === true}
-/>
+                    <input
+                      type="number"
+                      className="form-control"
+                      placeholder="Enter Amount"
+                      id={`Amount-${i}`}
+                      value={leadData.services[i].totalPaymentWOGST}
+                      onInput={(e) => {
+                        const newValue = e.target.value;
+                        setLeadData((prevState) => ({
+                          ...prevState,
+                          services: prevState.services.map((service, index) =>
+                            index === i
+                              ? {
+                                  ...service,
+                                  totalPaymentWOGST: newValue,
+                                  totalPaymentWGST:
+                                    service.withGST === true
+                                      ? Number(newValue) +
+                                        Number(newValue * 0.18)
+                                      : newValue,
+                                }
+                              : service
+                          ),
+                        }));
+                      }}
+                      readOnly={completed[activeStep] === true}
+                    />
 
                     <button class="btn" type="button">
                       ₹
@@ -798,14 +1017,49 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                           service.totalPaymentWOGST * 0.18
                                         ) + Number(service.totalPaymentWOGST)
                                       : service.totalPaymentWOGST,
+                                  secondPayment:
+                                    service.paymentCount === 2 &&
+                                    service.secondPayment !== 0
+                                      ? service.withGST === true
+                                        ? Number(
+                                            service.secondPayment -
+                                              service.totalPaymentWOGST * 0.18
+                                          )
+                                        : Number(
+                                            service.secondPayment +
+                                              service.totalPaymentWOGST * 0.18
+                                          )
+                                      : service.secondPayment,
+                                  thirdPayment:
+                                    service.paymentCount === 3
+                                      ? service.withGST === true
+                                        ? Number(
+                                            service.thirdPayment -
+                                              service.totalPaymentWOGST * 0.18
+                                          )
+                                        : Number(
+                                            service.thirdPayment +
+                                              service.totalPaymentWOGST * 0.18
+                                          )
+                                      : service.thirdPayment,
+                                  fourthPayment:
+                                    service.paymentCount === 4
+                                      ? service.withGST === true
+                                        ? Number(
+                                            service.fourthPayment -
+                                              service.totalPaymentWOGST * 0.18
+                                          )
+                                        : Number(
+                                            service.fourthPayment +
+                                              service.totalPaymentWOGST * 0.18
+                                          )
+                                      : service.fourthPayment,
                                 }
                               : service
                           ),
                         }));
                       }}
-                      readOnly={
-                        completed[activeStep] === true
-                      }
+                      readOnly={completed[activeStep] === true}
                     />
                     <label class="form-check-label" for="GST">
                       WITH GST (18%)
@@ -833,7 +1087,6 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                       id={`Amount-${i}`}
                       value={leadData.services[i].totalPaymentWGST}
                       disabled
-
                     />
                     <button class="btn" type="button">
                       ₹
@@ -869,9 +1122,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                         ),
                       }));
                     }}
-                    disabled={
-                      completed[activeStep] === true
-                    }
+                    disabled={completed[activeStep] === true}
                   />
                   <span className="form-check-label">Full Advanced</span>
                 </label>
@@ -896,9 +1147,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                         ),
                       }));
                     }}
-                    disabled={
-                      completed[activeStep] === true
-                    }
+                    disabled={completed[activeStep] === true}
                   />
 
                   <span className="form-check-label">Part Payment</span>
@@ -934,9 +1183,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                             ),
                           }));
                         }}
-                        readOnly={
-                          completed[activeStep] === true
-                        }
+                        readOnly={completed[activeStep] === true}
                       />
                       <button class="btn" type="button">
                         ₹
@@ -1060,6 +1307,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                 <button
                   disabled={leadData.services[i].paymentCount === 4}
                   onClick={(e) => {
+                    e.preventDefault(); // Prevent the default form submission behavior
                     setLeadData((prevState) => ({
                       ...prevState,
                       services: prevState.services.map((service, index) =>
@@ -1079,8 +1327,9 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                   style={{ marginLeft: "5px" }}
                   className="btn btn-primary"
                 >
-                  <i className="fas fa-plus"></i> +{" "}
+                  +
                 </button>
+
                 <button
                   disabled={leadData.services[i].paymentCount === 2}
                   onClick={(e) => {
@@ -1118,8 +1367,8 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                   className="form-control "
                   placeholder="Enter Payment Remarks"
                   id={`payment-remarks-${i}`}
-                  value={leadData.services.paymentRemarks}
-                  onClick={(e) => {
+                  value={leadData.services[i].paymentRemarks}
+                  onChange={(e) => {
                     setLeadData((prevState) => ({
                       ...prevState,
                       services: prevState.services.map((service, index) =>
@@ -1132,9 +1381,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                       ),
                     }));
                   }}
-                  readOnly={
-                    completed[activeStep] === true
-                  }
+                  readOnly={completed[activeStep] === true}
                 ></textarea>
               </div>
             </div>
@@ -1148,19 +1395,16 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
   // console.log("Default Lead Data :", leadData);
 
   const handleInputChange = (value, id) => {
-
     if (id === "bdmName") {
-      const foundUser = unames.find(item => item.ename === value);
+      const foundUser = unames.find((item) => item.ename === value);
       setLeadData({
         ...leadData,
         bdmName: value,
-        bdmEmail: foundUser ? foundUser.email : "" // Check if foundUser exists before accessing email
+        bdmEmail: foundUser ? foundUser.email : "", // Check if foundUser exists before accessing email
       });
     } else {
       setLeadData({ ...leadData, [id]: value });
     }
-    
-   
   };
 
   const handleRemoveFile = () => {
@@ -1239,9 +1483,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                             "Company Name"
                                           );
                                         }}
-                                        readOnly={
-                                          completed[activeStep] === true
-                                        }
+                                        readOnly
                                       />
                                     </div>
                                   </div>
@@ -1382,9 +1624,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                             "bdeName"
                                           );
                                         }}
-                                        readOnly={
-                                          completed[activeStep] === true
-                                        }
+                                        readOnly
                                       />
                                     </div>
                                   </div>
@@ -1405,21 +1645,19 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                             "bdeEmail"
                                           );
                                         }}
-                                        readOnly={
-                                          completed[activeStep] === true
-                                        }
+                                        readOnly
                                       />
                                     </div>
                                   </div>
                                   <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="bdmName">BDM Name:</label>
-                                     
-                                        <select
-                    type="text"
-                    className="form-select mt-1"
-                    id="select-users"
-                    value={leadData.bdmName}
+
+                                      <select
+                                        type="text"
+                                        className="form-select mt-1"
+                                        id="select-users"
+                                        value={leadData.bdmName}
                                         onChange={(e) => {
                                           handleInputChange(
                                             e.target.value,
@@ -1429,17 +1667,19 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                         disabled={
                                           completed[activeStep] === true
                                         }
-                  >
-                    <option value="" disabled selected>
-                      Please select BDM Name
-                    </option>
-                    {unames &&
-                      unames.map((names) => (
-                        <option value={names.ename}>{names.ename}</option>
-                      ))}
+                                      >
+                                        <option value="" disabled selected>
+                                          Please select BDM Name
+                                        </option>
+                                        {unames &&
+                                          unames.map((names) => (
+                                            <option value={names.ename}>
+                                              {names.ename}
+                                            </option>
+                                          ))}
 
-                    <option value="other">Other</option>
-                  </select>
+                                        <option value="other">Other</option>
+                                      </select>
                                     </div>
                                   </div>
                                   <div className="col-sm-3">
@@ -1459,9 +1699,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                             "bdmEmail"
                                           );
                                         }}
-                                        readOnly={
-                                          completed[activeStep] === true
-                                        }
+                                        readOnly
                                       />
                                     </div>
                                   </div>
@@ -1653,6 +1891,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                           readOnly={
                                             completed[activeStep] === true
                                           }
+                                          value={leadData.caNumber}
                                         />
                                       </div>
                                       <div className="ca-email col">
@@ -1666,6 +1905,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                             id="ca-email"
                                             placeholder="Enter CA's Email Address"
                                             className="form-control"
+                                            value={leadData.caEmail}
                                             onChange={(e) => {
                                               setLeadData((prevLeadData) => ({
                                                 ...prevLeadData,
@@ -1695,6 +1935,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                               caCommission: e.target.value, // Set the value based on the selected radio button
                                             }));
                                           }}
+                                          value={leadData.caCommission}
                                           readOnly={
                                             completed[activeStep] === true
                                           }
@@ -2044,7 +2285,9 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData.panNumber ? leadData.panNumber : "-"}
+                                        {leadData.panNumber
+                                          ? leadData.panNumber
+                                          : "-"}
                                       </div>
                                     </div>
                                   </div>
@@ -2056,7 +2299,9 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData.gstNumber ? leadData.gstNumber : "-"}
+                                        {leadData.gstNumber
+                                          ? leadData.gstNumber
+                                          : "-"}
                                       </div>
                                     </div>
                                   </div>
@@ -2201,7 +2446,7 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                       </div>
                                       {/* <!-- Optional --> */}
                                       {obj.serviceName ===
-                                        "Start Up Certificate" && (
+                                        "Start-Up India Certificate" && (
                                         <div className="row m-0">
                                           <div className="col-sm-3 p-0">
                                             <div className="form-label-name">
@@ -2390,17 +2635,26 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                           className="UploadDocPreview"
                                           onClick={() => {
                                             handleViewPdfReciepts(
-                                              leadData.paymentReceipt[0].filename ? leadData.paymentReceipt[0].filename : leadData.paymentReceipt[0].name
+                                              leadData.paymentReceipt[0]
+                                                .filename
+                                                ? leadData.paymentReceipt[0]
+                                                    .filename
+                                                : leadData.paymentReceipt[0]
+                                                    .name
                                             );
                                           }}
                                         >
-                                          {leadData.paymentReceipt[0].filename ? (
-
+                                          {leadData.paymentReceipt[0]
+                                            .filename ? (
                                             <>
                                               <div className="docItemImg">
                                                 <img
                                                   src={
-                                                    leadData.paymentReceipt[0].filename.endsWith('.pdf') ? pdfimg : img
+                                                    leadData.paymentReceipt[0].filename.endsWith(
+                                                      ".pdf"
+                                                    )
+                                                      ? pdfimg
+                                                      : img
                                                   }
                                                 ></img>
                                               </div>
@@ -2421,29 +2675,33 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                             </>
                                           ) : (
                                             <>
-                                            <div className="docItemImg">
-                                              <img
-                                                 src={
-                                                  leadData.paymentReceipt[0].name.endsWith('.pdf') ? pdfimg : img
+                                              <div className="docItemImg">
+                                                <img
+                                                  src={
+                                                    leadData.paymentReceipt[0].name.endsWith(
+                                                      ".pdf"
+                                                    )
+                                                      ? pdfimg
+                                                      : img
+                                                  }
+                                                ></img>
+                                              </div>
+                                              <div
+                                                className="docItemName wrap-MyText"
+                                                title={
+                                                  leadData.paymentReceipt[0].name.split(
+                                                    "-"
+                                                  )[1]
                                                 }
-                                              ></img>
-                                            </div>
-                                            <div
-                                              className="docItemName wrap-MyText"
-                                              title={
-                                                leadData.paymentReceipt[0].name.split(
-                                                  "-"
-                                                )[1]
-                                              }
-                                            >
-                                              {
-                                                leadData.paymentReceipt[0].name.split(
-                                                  "-"
-                                                )[1]
-                                              }
-                                            </div>
-                                          </>
-                                          ) }
+                                              >
+                                                {
+                                                  leadData.paymentReceipt[0].name.split(
+                                                    "-"
+                                                  )[1]
+                                                }
+                                              </div>
+                                            </>
+                                          )}
                                         </div>
                                       </div>
                                     </div>
@@ -2480,48 +2738,75 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data d-flex flex-wrap">
-                                        { leadData.otherDocs.map((val) => (
+                                        {leadData.otherDocs.map((val) =>
                                           val.filename ? (
                                             <>
-                                            <div
-                                            className="UploadDocPreview"
-                                            onClick={() => {
-                                              handleViewPdOtherDocs(
-                                                val.filename
-                                              );
-                                            }}
+                                              <div
+                                                className="UploadDocPreview"
+                                                onClick={() => {
+                                                  handleViewPdOtherDocs(
+                                                    val.filename
+                                                  );
+                                                }}
+                                              >
+                                                <div className="docItemImg">
+                                                  <img
+                                                    src={
+                                                      val.filename.endsWith(
+                                                        ".pdf"
+                                                      )
+                                                        ? pdfimg
+                                                        : img
+                                                    }
+                                                  ></img>
+                                                </div>
+                                                
+                                                <div
+                                            className="docItemName wrap-MyText"
+                                            title="logo.png"
                                           >
-                                            <div className="docItemImg">
-                                              <img
-                                                  src={
-                                                    val.filename.endsWith('.pdf') ? pdfimg : img
-                                                  }
-                                              ></img>
-                                            </div>
+                                            {
+                                                  val.filename.split(
+                                                    "-"
+                                                  )[1]
+                                                }
                                           </div>
+                                                
+                                              </div>
                                             </>
                                           ) : (
                                             <>
-                                            <div
-                                            className="UploadDocPreview"
-                                            onClick={() => {
-                                              handleViewPdOtherDocs(
-                                                val.name
-                                              );
-                                            }}
+                                              <div
+                                                className="UploadDocPreview"
+                                                onClick={() => {
+                                                  handleViewPdOtherDocs(
+                                                    val.name
+                                                  );
+                                                }}
+                                              >
+                                                <div className="docItemImg">
+                                                  <img
+                                                    src={
+                                                      val.name.endsWith(".pdf")
+                                                        ? pdfimg
+                                                        : img
+                                                    }
+                                                  ></img>
+                                                </div>
+                                                <div
+                                            className="docItemName wrap-MyText"
+                                            title="logo.png"
                                           >
-                                            <div className="docItemImg">
-                                              <img
-                                                 src={
-                                                  val.name.endsWith('.pdf') ? pdfimg : img
+                                          {
+                                                  val.name.split(
+                                                    "-"
+                                                  )[1]
                                                 }
-                                              ></img>
-                                            </div>
                                           </div>
+                                              </div>
                                             </>
                                           )
-                                          
-                                        ))}
+                                        )}
 
                                         {/* <div className="UploadDocPreview">
                                           <div className="docItemImg">
@@ -2571,18 +2856,17 @@ export default function RedesignedForm({ companysName , companysEmail, companyNu
                         <Button
                           color="inherit"
                           variant="contained"
-                          disabled={activeStep === 0}
                           onClick={handleBack}
                           sx={{ mr: 1 }}
                         >
-                          Back
+                          {activeStep !== 0 ? "Back" : "Back to Main"}
                         </Button>
                         <Box sx={{ flex: "1 1 auto" }} />
                         <Button
                           onClick={handleNext}
                           variant="contained"
                           sx={{ mr: 1 }}
-                          disabled={!leadData['Step' + (activeStep + 1) + 'Status']}                          
+                          disabled={!completed[activeStep]}
                         >
                           Next
                         </Button>

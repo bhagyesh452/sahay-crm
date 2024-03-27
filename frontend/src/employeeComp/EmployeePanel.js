@@ -2708,6 +2708,7 @@ console.log("kuchlikho" , currentProjection)
                 <RedesignedForm
                   // matured={true}
                   // companysId={companyId}
+                  setFormOpen={setFormOpen}
                   companysName={companyName}
                   companysEmail={companyEmail}
                   companyNumber={companyNumber}
