@@ -27,6 +27,7 @@ import RedesignedForm from "./admin/RedesignedForm.jsx";
 import DrawerComponent from "./components/Drawer.js";
 import NotFound from "./NotFound.js";
 import StausInfo from "./admin/StausInfo.js";
+import MaterialUIPickers from "./components/MaterialUIPickers.js";
 
 
 
@@ -68,7 +69,7 @@ function App() {
             <>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/employees" element={<Employees />} />
-              <Route path="/admin/new-leads" element={<NewLeads/>}/>
+              <Route path="/admin/new-leads" element={<NewLeads />} />
               <Route
                 path="/admin/employees/:id"
                 element={<EmployeeParticular />}
@@ -78,14 +79,14 @@ function App() {
                 element={<LoginDetails />}
               />
               <Route path="/admin/leads" element={<Leads />} />
-              <Route path = "/admin/leads/:companyId" element={<CompanyParticular/>}/>
+              <Route path="/admin/leads/:companyId" element={<CompanyParticular />} />
               <Route path="/admin/bookings" element={<BookingsAdmin />} />
               <Route
                 path="/admin/notification"
                 element={<ShowNotification />}
               />
-              <Route path="/admin/bookings/Addbookings" element = {<RedesignedForm/>}/>
-              
+              <Route path="/admin/bookings/Addbookings" element={<RedesignedForm />} />
+
             </>
           ) : (
             <Route
@@ -99,14 +100,14 @@ function App() {
             path="/processing/processing-login"
             element={<ProcessingLogin setProcessingToken={setProcessingToken} />}
           />
-          <Route path="/Processing/Dashboard_processing"  element={processingTokenn ? <Dashboard_processing /> : <Navigate to="/processing/processing-login" />} />
-          <Route path="/Processing/Dashboard_processing/addbookings" element={<Form/>} /> 
-          <Route path="/Processing/Dashboard_processing/nodata" element={<Nodata/>} /> 
-          <Route path="/Processing/analysis_dashboard" element={<Analysis_dashboard/>} /> 
-          <Route path="/Processing/bellicon" element={<Bellicon_processing/>} /> 
-          <Route path="/Components/Drawer" element={<DrawerComponent/>} />
-          <Route path="/admindashboard/:ename/:status" element={<StausInfo/>}  />
-
+          <Route path="/Processing/Dashboard_processing" element={processingTokenn ? <Dashboard_processing /> : <Navigate to="/processing/processing-login" />} />
+          <Route path="/Processing/Dashboard_processing/addbookings" element={<Form />} />
+          <Route path="/Processing/Dashboard_processing/nodata" element={<Nodata />} />
+          <Route path="/Processing/analysis_dashboard" element={<Analysis_dashboard />} />
+          <Route path="/Processing/bellicon" element={<Bellicon_processing />} />
+          <Route path="/Components/Drawer" element={<DrawerComponent />} />
+          <Route path="/admindashboard/:ename/:status" element={<StausInfo />} />
+          <Route path='/daterange' element={<MaterialUIPickers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
 

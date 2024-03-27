@@ -32,6 +32,7 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { debounce } from 'lodash';
 import { Link } from 'react-router-dom'
+import ScaleLoader from "react-spinners/ScaleLoader";
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import { lastDayOfDecade } from "date-fns";
@@ -43,6 +44,16 @@ import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { SingleInputDateRangeField } from '@mui/x-date-pickers-pro/SingleInputDateRangeField';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import moment from 'moment'
+import { StaticDateRangePicker } from '@mui/x-date-pickers-pro/StaticDateRangePicker';
+import dayjs from 'dayjs';
+import { IoClose } from "react-icons/io5";
+// import { LicenseInfo } from '@mui/x-date-pickers-pro';
+
+
+// LicenseInfo.setLicenseKey(
+//   'x0jTPl0USVkVZV0SsMjM1kDNyADM5cjM2ETPZJVSQhVRsIDN0YTM6IVREJ1T0b9586ef25c9853decfa7709eee27a1e',
+// );
+
 
 // import LoginAdmin from "./LoginAdmin";
 
@@ -342,8 +353,8 @@ function Dashboard() {
     setFilteredBooking(filteredDataDateRange);
   };
 
-  console.log("companyData", companyData)
-  console.log("employeeData", employeeData)
+  //console.log("companyData", companyData)
+  //console.log("employeeData", employeeData)
 
   // ----------------------------------projection-dashboard-----------------------------------------------
 
@@ -479,10 +490,14 @@ function Dashboard() {
 
   console.log(followData)
 
+  const [projectionEname, setProjectionEname] = useState("")
+  console.log(projectionEname)
+
   const [projectedDataToday, setprojectedDataToday] = useState([])
   //console.log("Total totalPaymentSum:", totalTotalPaymentSum);
   //console.log("Total offeredPaymentSum:", totalOfferedPaymentSum);
   const functionOpenProjectionTable = (ename) => {
+    setProjectionEname(ename)
     //console.log("Ename:", ename)
     setopenProjectionTable(true);
     const projectedData = followData.filter(obj => obj.ename === ename);
@@ -1673,15 +1688,6 @@ function Dashboard() {
 
   //  ---------------------------------------------status info component-------------------------------------------------
 
-  // const [selectedStatusCompanies, setSelectedStatusCompanies] = useState([]);
-
-  // const handleStausClick = (ename, status) => {
-  //   const company = companyData.find(data => data.ename === ename && data.Status === status);
-  //   setSelectedStatusCompanies(company);
-
-  // };
-
-  // console.log(selectedStatusCompanies)
 
   const numberFormatOptions = {
     style: 'currency',
@@ -1689,6 +1695,132 @@ function Dashboard() {
     minimumFractionDigits: 0, // Minimum number of fraction digits (adjust as needed)
     maximumFractionDigits: 2, // Maximum number of fraction digits (adjust as needed)
   };
+  const shortcutsItems = [
+    {
+      label: 'This Week',
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf('week'), today.endOf('week')];
+      },
+    },
+    {
+      label: 'Last Week',
+      getValue: () => {
+        const today = dayjs();
+        const prevWeek = today.subtract(7, 'day');
+        return [prevWeek.startOf('week'), prevWeek.endOf('week')];
+      },
+    },
+    {
+      label: 'Last 7 Days',
+      getValue: () => {
+        const today = dayjs();
+        return [today.subtract(7, 'day'), today];
+      },
+    },
+    {
+      label: 'Current Month',
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf('month'), today.endOf('month')];
+      },
+    },
+    {
+      label: 'Next Month',
+      getValue: () => {
+        const today = dayjs();
+        const startOfNextMonth = today.endOf('month').add(1, 'day');
+        return [startOfNextMonth, startOfNextMonth.endOf('month')];
+      },
+    },
+    { label: 'Reset', getValue: () => [null, null] },
+  ];
+
+
+  // -------------------------------------sorting projection summary-------------------------------------------
+  const [incoFilterNew, setIncoFilterNew] = useState("");
+  const [sortTypeProjection, setSortTypeProjection] = useState({
+    totalCompanies: "ascending",
+  });
+
+
+  const handleSortTotalCompanies = (newSortType) => {
+    setSortTypeProjection(newSortType);
+  };
+
+  const sortedData = uniqueEnames.slice().sort((a, b) => {
+    const totalCompaniesA = followDataToday.filter(
+      (partObj) => partObj.ename === a
+    ).length;
+    const totalCompaniesB = followDataToday.filter(
+      (partObj) => partObj.ename === b
+    ).length;
+    if (sortTypeProjection === "ascending") {
+      return totalCompaniesA - totalCompaniesB;
+    } else if (sortTypeProjection === "descending") {
+      return totalCompaniesB - totalCompaniesA;
+    }
+    return 0;
+  });
+
+
+  // const handleSortTotalCompanies = (sortBy1) => {
+  //   setSortTypeProjection(prevData => ({
+  //     ...prevData,
+  //     totalCompanies: prevData.totalCompanies === "ascending"
+  //       ? "descending"
+  //       : prevData.totalCompanies === "descending"
+  //         ? "none"
+  //         : "ascending"
+  //   }));
+  //   switch (sortBy1) {
+  //     case "ascending":
+  //       setIncoFilterNew("ascending");
+  //       const untouchedCountAscending = {}
+  //       //console.log("ascending is working")
+  //       followDataToday.forEach((company) => {
+  //         if (company) {
+  //           untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+  //         }
+  //       });
+
+  //       // Step 2: Sort employeeData based on the count of "Untouched" statuses
+  //       followDataToday.sort((a, b) => {
+  //         const countA = untouchedCountAscending[a.ename] || 0;
+  //         const countB = untouchedCountAscending[b.ename] || 0;
+  //         return countA - countB; // Sort in ascending order of "Untouched" count
+  //       });
+  //       break;
+
+  //     case "descending":
+  //       setIncoFilterNew("descending");
+  //       const untouchedCount = {};
+  //       //console.log("descending is working")
+  //       followDataToday.forEach((company) => {
+  //         if ((company)
+  //         ) {
+  //           untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+  //         }
+  //       });
+
+  //       // Step 2: Sort employeeData based on the count of "Untouched" statuses
+  //       followDataToday.sort((a, b) => {
+  //         const countA = untouchedCount[a.ename] || 0;
+  //         const countB = untouchedCount[b.ename] || 0;
+  //         return countB - countA; // Sort in descending order of "Untouched" count
+  //       });
+  //       break;
+
+  //     case "none":
+  //       setIncoFilter("none");
+
+  //       break;
+
+  //     default:
+  //       break;
+
+  //   }
+  // };
 
 
 
@@ -2945,7 +3077,7 @@ function Dashboard() {
                   </strong>
                 </div>
                 <div style={{ cursor: 'pointer' }} className="closeIcon" onClick={closeEmployeeTable}>
-                  <CloseIcon />
+                  <IoClose />
                 </div>
               </div>
 
@@ -3167,8 +3299,8 @@ function Dashboard() {
                 <div>
                   <h2>Projection Summary</h2>
                 </div>
-                <div className="new-date-range-picker">
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <div style={{ m: 1, width: '40ch', padding: "0px", marginRight: "30px" }}>
+                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={['SingleInputDateRangeField']}>
                       <DateRangePicker
                         onChange={(values) => {
@@ -3179,6 +3311,21 @@ function Dashboard() {
                         }}
                         slots={{ field: SingleInputDateRangeField }}
                         slotProps={{ textField: { InputProps: { endAdornment: <Calendar /> } } }}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider> */}
+                  <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
+                    <DemoContainer components={['SingleInputDateRangeField']}>
+                      <DateRangePicker
+                        slots={{ field: SingleInputDateRangeField }}
+                        slotProps={{
+                          shortcuts: {
+                            items: shortcutsItems,
+                          },
+                          actionBar: { actions: [] },
+                          textField: { InputProps: { endAdornment: <Calendar /> } }
+                        }}
+                      //calendars={1}
                       />
                     </DemoContainer>
                   </LocalizationProvider>
@@ -3241,15 +3388,36 @@ function Dashboard() {
                           Sr. No
                         </th>
                         <th>Company Name</th>
-                        <th>Total Companies</th>
+                        <th>Total Companies
+                        <SwapVertIcon
+                        style={{
+                          height: "15px",
+                          width: "15px",
+                          cursor: "pointer",
+                          marginLeft: "4px",
+                        }}
+                        onClick={(e) => {
+                          let newSortType;
+                          if (sortTypeProjection.totalCompanies === "ascending") {
+                            newSortType = "descending";
+                          } else if (sortTypeProjection.totalCompanies === "descending") {
+                            newSortType = "none";
+                          } else {
+                            newSortType = "ascending";
+                          }
+                          handleSortTotalCompanies(newSortType);
+                        }}
+                      />
+
+                        </th>
                         <th>Offered Services</th>
                         <th>Total Offered Price</th>
                         <th>Expected Amount</th>
-                        <th>Est. Payment Date</th>
+                        {/* <th>Est. Payment Date</th> */}
 
                       </tr>
                     </thead>
-                    <tbody>
+                    {/* <tbody>
                       {uniqueEnames &&
                         uniqueEnames.map((ename, index) => {
                           // Calculate the count of services for the current ename
@@ -3373,8 +3541,7 @@ function Dashboard() {
                               totalservicesByEnameDateRange.length
                             ) : (totalservicesByEnameToday.length)}
                           </td>
-                          {/* <td>{totalTotalPaymentSum.toLocaleString()}
-                      </td> */}
+                          // <td>{totalTotalPaymentSum.toLocaleString()}</td> 
                           <td>
                             {filteredDataDateRange && filteredDataDateRange.length > 0 ? (
                               // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
@@ -3382,8 +3549,7 @@ function Dashboard() {
                             ) : (totalTotalPaymentSumToday.toLocaleString('en-IN', numberFormatOptions))}
                           </td>
 
-                          {/* <td>{totalOfferedPaymentSum.toLocaleString()}
-                      </td> */}
+                          // <td>{totalOfferedPaymentSum.toLocaleString()}</td>
 
                           <td>
                             {filteredDataDateRange.length && filteredDataDateRange.length > 0 ? (
@@ -3393,6 +3559,129 @@ function Dashboard() {
                           </td>
                           <td>-</td>
 
+                        </tr>
+                      </tfoot>
+                    )} */}
+                    <tbody>
+                      {sortedData ? (
+                        sortedData.length !== 0 ? (
+                          sortedData.map((obj, index) => (
+                            <tr key={`row-${index}`}>
+                              <td
+                                style={{
+                                  lineHeight: "32px",
+                                }}
+                              >
+                                {index + 1}
+                              </td>
+                              <td>{obj}</td>
+                              <td>
+                                {
+                                  followDataToday.filter(
+                                    (partObj) =>
+                                      partObj.ename === obj
+                                  ).length
+                                }
+                                <FcDatabase
+                                  onClick={() => {
+                                    functionOpenProjectionTable(obj);
+                                  }}
+                                  style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "58px" }}
+                                />
+                              </td>
+                              <td>
+                                {
+                                  followDataToday.reduce((totalServices, partObj) => {
+                                    if (partObj.ename === obj) {
+                                      totalServices += partObj.offeredServices.length;
+                                    }
+                                    return totalServices;
+                                  }, 0)
+                                }
+                              </td>
+                              <td>
+                                {
+                                  followDataToday.reduce((totalOfferedPrize, partObj) => {
+                                    if (partObj.ename === obj) {
+                                      totalOfferedPrize += partObj.offeredPrize;
+                                    }
+                                    return totalOfferedPrize;
+                                  }, 0)
+                                }
+                              </td>
+                              <td>
+                                {
+                                  followDataToday.reduce((totalPaymentSum, partObj) => {
+                                    if (partObj.ename === obj) {
+                                      totalPaymentSum += partObj.totalPayment;
+                                    }
+                                    return totalPaymentSum;
+                                  }, 0)
+                                }
+                              </td>
+                            </tr>
+                          ))) : (
+                          <tr>
+                            <td colSpan="11" style={{ textAlign: 'center' }}><Nodata /></td>
+                          </tr>
+                        )
+                      ) : (<tr style={{ minHeight: "350px" }}><td colSpan={11}>
+                        <ScaleLoader
+                          color="lightgrey"
+                          loading
+                          size={10}
+                          height="25"
+                          width="2"
+                          style={{ width: "10px", height: "10px" }}
+                          //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
+                          aria-label="Loading Spinner"
+                          data-testid="loader"
+                        />
+                      </td></tr>)
+                      }
+                    </tbody>
+                    {uniqueEnames && (
+                      <tfoot>
+                        <tr style={{ fontWeight: 500 }}>
+                          <td style={{ lineHeight: "32px" }} colSpan="2">
+                            Total
+                          </td>
+                          <td>
+                            {
+                              followDataToday.filter(
+                                (partObj) => partObj.ename
+                              ).length
+                            }
+                          </td>
+                          <td>
+                            {
+                              followDataToday.reduce((totalServices, partObj) => {
+
+                                totalServices += partObj.offeredServices.length;
+
+                                return totalServices;
+                              }, 0)
+                            }
+                          </td>
+                          <td>
+                            {
+                              followDataToday.reduce((totalOfferedPrize, partObj) => {
+
+                                totalOfferedPrize += partObj.offeredPrize;
+                                return totalOfferedPrize;
+                              }, 0)
+                            }
+                          </td>
+                          <td>
+                            {
+                              followDataToday.reduce((totalPaymentSum, partObj) => {
+
+                                totalPaymentSum += partObj.totalPayment;
+
+                                return totalPaymentSum;
+                              }, 0)
+                            }
+                          </td>
                         </tr>
                       </tfoot>
                     )}
@@ -3416,6 +3705,19 @@ function Dashboard() {
                   maxHeight: "60vh",
                 }}
               >
+                <div className="title-header d-flex justify-content-between">
+                  <div className="title-name">
+                    <strong>
+                      {projectionEname} Today's Report
+                    </strong>
+                  </div>
+                  <div style={{ cursor: 'pointer' }} className="closeIcon" onClick={closeProjectionTable}>
+                    <IoClose style={{ width: "17px", height: "17px", marginBottom: "20px" }} />
+                  </div>
+                </div>
+
+
+
                 <table
                   style={{
                     width: "100%",
