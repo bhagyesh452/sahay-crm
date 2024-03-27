@@ -183,8 +183,8 @@ function EmployeePanel() {
   };
 
   console.log("projectingcompnay", projectingCompany)
-  
-console.log("kuchlikho" , currentProjection)
+
+  console.log("kuchlikho", currentProjection)
 
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
@@ -1213,10 +1213,9 @@ console.log("kuchlikho" , currentProjection)
   };
 
   const handleProjectionSubmit = async () => {
-    console.log("currentProjection", currentProjection)
     try {
       const newEditCount = currentProjection.editCount === -1 ? 0 : currentProjection.editCount + 1;
-
+  
       const finalData = {
         ...currentProjection,
         companyName: projectingCompany,
@@ -1224,49 +1223,48 @@ console.log("kuchlikho" , currentProjection)
         offeredServices: selectedValues,
         editCount: currentProjection.editCount + 1, // Increment editCount
       };
+  
       if (finalData.offeredServices.length === 0) {
         Swal.fire({ title: 'Services is required!', icon: 'warning' });
       } else if (finalData.remarks === "") {
         Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
       } else if (finalData.totalPayment === 0) {
         Swal.fire({ title: 'Payment is required!', icon: 'warning' });
-      }
-      else if (finalData.offeredPrize === 0) {
+      } else if (finalData.offeredPrize === 0) {
         Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
-      }
-      else if (finalData.lastFollowUpdate === null) {
+      } else if (finalData.totalPayment >= finalData.offeredPrize) {
+        Swal.fire({ title: 'Total Payment cannot be greater than Offered Prize!', icon: 'warning' });
+      } else if (finalData.lastFollowUpdate === null) {
         Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
-      }
-      else if (finalData.estPaymentDate === 0) {
+      } else if (finalData.estPaymentDate === 0) {
         Swal.fire({ title: 'Estimated Payment Date is required!', icon: 'warning' });
+      } else {
+        // Send data to backend API
+        const response = await axios.post(
+          `${secretKey}/update-followup`,
+          finalData
+        );
+        Swal.fire({ title: "Projection Submitted!", icon: "success" });
+        setOpenProjection(false);
+        setCurrentProjection({
+          companyName: "",
+          ename: "",
+          offeredPrize: 0,
+          offeredServices: [],
+          lastFollowUpdate: "",
+          remarks: "",
+          date: "",
+          time: "",
+          editCount: newEditCount, // Increment editCount
+        });
+        fetchProjections();
+        setSelectedValues([]);
       }
-      // Send data to backend API
-      const response = await axios.post(
-        `${secretKey}/update-followup`,
-        finalData
-      );
-      Swal.fire({ title: "Projection Submitted!", icon: "success" });
-      setOpenProjection(false);
-      setCurrentProjection({
-        companyName: "",
-        ename: "",
-        offeredPrize: 0,
-        offeredServices: [],
-        lastFollowUpdate: "",
-        remarks: "",
-        date: "",
-        time: "",
-        editCount: newEditCount, // Increment editCount
-      });
-      fetchProjections();
-      setSelectedValues([])
-
-      // Log success message
     } catch (error) {
       console.error("Error updating or adding data:", error.message);
     }
   };
-
+  
 
 
   const [openIncoDate, setOpenIncoDate] = useState(false);
@@ -2528,7 +2526,7 @@ console.log("kuchlikho" , currentProjection)
                                               color="#fbb900"
                                             />
                                           </IconButton>
-                                         {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} currentProjection1={currentProjection} /> */}
+                                          {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} currentProjection1={currentProjection} /> */}
                                         </>
                                       ) : (
                                         <IconButton>
@@ -2540,7 +2538,7 @@ console.log("kuchlikho" , currentProjection)
                                             style={{ cursor: "pointer", width: "17px", height: "17px" }}
                                           />
                                         </IconButton>
-                                        
+
                                       )}
                                     </td>
 
@@ -3206,14 +3204,14 @@ console.log("kuchlikho" , currentProjection)
                 {projectingCompany && projectionData && projectionData.some(item => item.companyName === projectingCompany) ? (
                   <>
                     <IconButton
-                  onClick={() => {
-                    setIsEditProjection(true);
-                  }}>
-                  <EditIcon color="grey"></EditIcon>
-                </IconButton>
+                      onClick={() => {
+                        setIsEditProjection(true);
+                      }}>
+                      <EditIcon color="grey"></EditIcon>
+                    </IconButton>
                   </>
                 ) : (
-                 null
+                  null
                 )}
                 {/* <IconButton
                   onClick={() => {
@@ -3312,15 +3310,29 @@ console.log("kuchlikho" , currentProjection)
                     placeholder="Please enter total Payment"
                     value={currentProjection.totalPayment}
                     onChange={(e) => {
-                      setCurrentProjection((prevLeadData) => ({
-                        ...prevLeadData,
-                        totalPayment: e.target.value,
-                      }));
+                      const newTotalPayment = e.target.value;
+                      if (newTotalPayment <= currentProjection.offeredPrize) {
+                        setCurrentProjection((prevLeadData) => ({
+                          ...prevLeadData,
+                          totalPayment: newTotalPayment,
+                          totalPaymentError: "",
+                        }));
+                      } else {
+                        setCurrentProjection((prevLeadData) => ({
+                          ...prevLeadData,
+                          totalPayment: newTotalPayment,
+                          totalPaymentError: "Expected Price should be less than or equal to Offered Price.",
+                        }));
+                      }
                     }}
                     disabled={!isEditProjection}
                   />
+                  {currentProjection.totalPaymentError && (
+                    <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
+                  )}
                 </div>
               </div>
+
               <div className="label">
                 <strong>Last Follow Up Date {!currentProjection.lastFollowUpdate && <span style={{ color: "red" }}>*</span>}: </strong>
                 <div className="services mb-3">

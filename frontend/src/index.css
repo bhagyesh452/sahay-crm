@@ -23,7 +23,6 @@ background: #ffb900 !important;
 {
   padding: 6px !important;
 }
-
 .css-1bw0nnu-MuiStep-root
 {
     padding-left: 0px  !important; 
@@ -40,4 +39,13 @@ background: #ffb900 !important;
 }
 .css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-active , .MuiButton-textPrimary{
     color: #ffba00 !important;
-  }
+}
+.mydatepickerinput input
+{
+    padding: 10px 10px !important;
+    font-size: 12px !important;
+}
+.MuiDateRangeCalendar-root > div:first-child
+{
+    display: none;
+}
