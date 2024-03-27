@@ -3302,7 +3302,7 @@ function Dashboard() {
                 <div style={{ m: 1, width: '40ch', padding: "0px", marginRight: "30px" }}>
                   {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={['SingleInputDateRangeField']}>
-                      <DateRangePicker
+                      <DateRangePicker className="mydatepickerinput"
                         onChange={(values) => {
                           const startDate = moment(values[0]).format('DD/MM/YYYY');
                           const endDate = moment(values[1]).format('DD/MM/YYYY');
