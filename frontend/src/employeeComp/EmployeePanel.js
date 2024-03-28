@@ -1233,7 +1233,7 @@ function EmployeePanel() {
         Swal.fire({ title: 'Payment is required!', icon: 'warning' });
       } else if (finalData.offeredPrize === 0) {
         Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
-      } else if (finalData.totalPayment >= finalData.offeredPrize) {
+      } else if (Number(finalData.totalPayment) >= Number(finalData.offeredPrize)) {
         Swal.fire({ title: 'Total Payment cannot be greater than Offered Prize!', icon: 'warning' });
       } else if (finalData.lastFollowUpdate === null) {
         Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
