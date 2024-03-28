@@ -3311,10 +3311,7 @@ function EmployeePanel() {
                     value={currentProjection.totalPayment}
                     onChange={(e) => {
                       const newTotalPayment = e.target.value;
-<<<<<<< HEAD
-=======
                       console.log(newTotalPayment)
->>>>>>> 4846583a580ed6daf31e9699fc70f81c435f3403
                       if (Number(newTotalPayment) <= Number(currentProjection.offeredPrize)) {
                         setCurrentProjection((prevLeadData) => ({
                           ...prevLeadData,
