@@ -892,7 +892,7 @@ app.get("/api/employees/:ename", async (req, res) => {
 
     // Fetch data from companyModel where ename matches employeeName
     const data = await CompanyModel.find({ ename: employeeName });
-
+    //console.log(data)
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -2912,14 +2912,14 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
 //         ` <div style="width: 100%; padding: 20px 20px; background: #f6f8fb;">
 //         <h3 style="text-align: center">Booking Form Deatils</h3>
 //         <div style="
-//               width: 90%;
+//               width: 95%;
 //               margin: 0 auto;
 //               padding: 20px 20px;
 //               background: #fff;
 //               border-radius: 10px;
 //             ">
 //           <!--Step One Start-->
-//           <div style="width: 90%; margin: 0 auto">
+//           <div style="width: 98%; margin: 0 auto">
 //             <!-- Step's heading -->
 //             <div style="display: flex; align-items: center">
 //               <div style="
@@ -3071,7 +3071,7 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
     
     
 //           <!--Step Two Start-->
-//           <div style="width: 90%; margin: 10px auto">
+//           <div style="width: 98%; margin: 10px auto">
 //             <!-- Step's heading -->
 //             <div style="display: flex; align-items: center">
 //               <div style="
@@ -3243,7 +3243,7 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
     
     
 //           <!--Step 3 Start-->
-//           <div style="width: 90%; margin: 10px auto">
+//           <div style="width: 98%; margin: 10px auto">
 //             <!-- Step's heading -->
 //             <div style="display: flex; align-items: center">
 //               <div style="
@@ -3295,7 +3295,7 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
 //           <!-- Step 3 Ends -->
     
 //           <!--Step 4 Start-->
-//           <div style="width: 90%; margin: 10px auto">
+//           <div style="width: 98%; margin: 10px auto">
 //             <!-- Step's heading -->
 //             <div style="display: flex; align-items: center">
 //               <div style="
@@ -3445,13 +3445,49 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
 //     res.status(500).send('Error creating/updating data'); // Send an error response
 //   }
 // });
+app.get('/api/redesigned-final-leadData', async (req, res) => {
+  try {
+    
+    const allData = await RedesignedLeadformModel.find();
+    res.status(200).json(allData);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).send('Error fetching data');
+  }
+});
+// Backend: API endpoint for deleting a draft
+app.delete('/api/redesigned-delete-model/:companyName', async (req, res) => {
+  try {
+    const companyName = req.params.companyName;
+    // Assuming RedesignedDraftModel is your Mongoose model for drafts
+    const deletedDraft = await RedesignedDraftModel.findOneAndDelete({ "Company Name": companyName });
+    if (deletedDraft) {
+      console.log('Draft deleted successfully:', deletedDraft);
+      res.status(200).json({ message: 'Draft deleted successfully' });
+    } else {
+      console.error('Draft not found or already deleted');
+      res.status(404).json({ error: 'Draft not found or already deleted' });
+    }
+  } catch (error) {
+    console.error('Error deleting draft:', error);
+    res.status(500).json({ error: 'Error deleting draft' });
+  }
+});
+
 app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
   try {
     const newData = req.body;
-
+    const companyData = await CompanyModel.findOne({ 'Company Name': newData['Company Name'] });
+    if (companyData) {
+      newData.company = companyData._id; // Assuming 'company' field in RedesignedLeadformModel stores the _id of the CompanyModel
+    }
     // Create a new entry in the database
     const createdData = await RedesignedLeadformModel.create(newData);
-
+    const date = new Date().toLocaleDateString();
+    if (companyData) {
+      await CompanyModel.findByIdAndUpdate(companyData._id, { Status: 'Matured' , lastActionDate : date });
+    }
+    const displayPaymentTerms = newData.paymentTerms === "Full Advanced" ? "none" : "flex";
     // Render services HTML
     const renderServices = () => {
       let servicesHtml = '';
@@ -3485,7 +3521,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
           <div style="
                 border: 1px solid #ccc;
                 font-size: 12px;
-                padding: 5px 10px;3
+                padding: 5px 10px;
               ">
           Total Amount
           </div>
@@ -3543,7 +3579,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
           </div>
         </div>
       </div>
-      <div style="display: flex; flex-wrap: wrap">
+      <div style="display: ${displayPaymentTerms}; flex-wrap: wrap">
         <div style="width: 25%">
           <div style="
                 border: 1px solid #ccc;
@@ -3563,7 +3599,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
           </div>
         </div>
       </div>
-      <div style="display: flex; flex-wrap: wrap">
+      <div style="display: ${displayPaymentTerms}; flex-wrap: wrap">
         <div style="width: 25%">
           <div style="
                 border: 1px solid #ccc;
@@ -3583,7 +3619,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
           </div>
         </div>
       </div>
-      <div style="display: flex; flex-wrap: wrap">
+      <div style="display: ${displayPaymentTerms}; flex-wrap: wrap">
         <div style="width: 25%">
           <div style="
                 border: 1px solid #ccc;
@@ -3603,7 +3639,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
           </div>
         </div>
       </div>
-      <div style="display: flex; flex-wrap: wrap">
+      <div style="display: ${displayPaymentTerms}; flex-wrap: wrap">
         <div style="width: 25%">
           <div style="
                 border: 1px solid #ccc;
@@ -3623,6 +3659,26 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
           </div>
         </div>
       </div>
+      <div style="display: flex; flex-wrap: wrap">
+        <div style="width: 25%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+           Payment Remarks
+          </div>
+        </div>
+        <div style="width: 75%">
+          <div style="
+                border: 1px solid #ccc;
+                font-size: 12px;
+                padding: 5px 10px;
+              ">
+            ${newData.services[i].paymentRemarks}
+          </div>
+        </div>
+      </div>
       </div>
         `;
 
@@ -3634,22 +3690,26 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
     const servicesHtmlContent = renderServices();
     const visibility = newData.bookingSource!=="Other" && 'none';
     // Send email to recipients
-    const recipients = [newData.bdeEmail, newData.bdmEmail];
+    const recipients = [newData.bdeEmail, newData.bdmEmail,'bookings@startupsahay.com'];
+    const serviceNames = newData.services.map((service, index) => `${service.serviceName}`).join(' , ');
+
+console.log(serviceNames);
+
     sendMail(
       recipients,
-      "Mail received",
+      `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
       ``,
-      ` <div style="width: 100%; padding: 20px 20px; background: #f6f8fb;">
+      ` <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
       <h3 style="text-align: center">Booking Form Deatils</h3>
       <div style="
-            width: 90%;
+            width: 95%;
             margin: 0 auto;
-            padding: 20px 20px;
+            padding: 20px 10px;
             background: #fff;
             border-radius: 10px;
           ">
         <!--Step One Start-->
-        <div style="width: 90%; margin: 0 auto">
+        <div style="width: 98%; margin: 0 auto">
           <!-- Step's heading -->
           <div style="display: flex; align-items: center">
             <div style="
@@ -3801,7 +3861,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
   
   
         <!--Step Two Start-->
-        <div style="width: 90%; margin: 10px auto">
+        <div style="width: 98%; margin: 10px auto">
           <!-- Step's heading -->
           <div style="display: flex; align-items: center">
             <div style="
@@ -3973,7 +4033,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
   
   
         <!--Step 3 Start-->
-        <div style="width: 90%; margin: 10px auto">
+        <div style="width: 98%; margin: 10px auto">
           <!-- Step's heading -->
           <div style="display: flex; align-items: center">
             <div style="
@@ -4025,7 +4085,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
         <!-- Step 3 Ends -->
   
         <!--Step 4 Start-->
-        <div style="width: 90%; margin: 10px auto">
+        <div style="width: 98%; margin: 10px auto">
           <!-- Step's heading -->
           <div style="display: flex; align-items: center">
             <div style="
@@ -4051,8 +4111,8 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                 margin-top: 15px;
               ">
             <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 33%; display: flex;">
-                <div style="width: 25%">
+              <div style="width: 33.33%; display: flex;">
+                <div style="width: 50%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
@@ -4061,18 +4121,18 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                     Total Payment
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 50%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ₹ ${newData.totalAmount}
+                    ₹ ${Number(newData.totalAmount).toFixed(2)}
                   </div>
                 </div>
               </div>
-              <div style="width: 34%; display: flex;">
-                <div style="width: 25%">
+              <div style="width: 33.33%; display: flex;">
+                <div style="width: 50%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
@@ -4081,19 +4141,19 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                    Received Payment
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 50%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ₹ ${newData.receivedAmount}
+                    ₹ ${Number(newData.receivedAmount).toFixed(2)}
                   </div>
                 </div>
   
               </div>
-              <div style="width: 33%; display: flex;">
-                <div style="width: 25%">
+              <div style="width: 33.33%; display: flex;">
+                <div style="width: 50%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
@@ -4102,13 +4162,13 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                     Pending Payment
                   </div>
                 </div>
-                <div style="width: 75%">
+                <div style="width: 50%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                   ₹ ${newData.pendingAmount}
+                   ₹ ${Number(newData.pendingAmount).toFixed(2)}
                   </div>
                 </div>
   

@@ -43,6 +43,22 @@ function BookingsAdmin() {
       fetchCompanyDetails();
     }
   }, [selectedCompanyId]);
+  const [redata, setReData] = useState([]);
+
+  const fetchReData = async () => {
+    try {
+      const response = await fetch(`${secretKey}/redesigned-final-leadData`);
+      setReData(response.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReData();
+  }, []);
+
+  console.log("Redata",redata);
 
   const fetchCompanies = async () => {
     try {
