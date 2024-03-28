@@ -1782,12 +1782,12 @@ function Dashboard() {
   };
 
   const handleSortOffredPrize = (newSortType) => {
-    console.log(newSortType)
+    
     setSortTypePrice(newSortType);
   };
 
   const handleSortExpectedPayment = (newSortType) => {
-    
+    console.log(newSortType)
     setSortTypeExpectedPayment(newSortType);
   };
   // const getTotalOfferedPrice = (ename) => {
@@ -3614,7 +3614,7 @@ function Dashboard() {
                             let newSortType;
                             if (sortTypeExpectedPayment === "ascending") {
                               newSortType = "descending";
-                            } else if (setSortTypeExpectedPayment === "descending") {
+                            } else if (sortTypeExpectedPayment === "descending") {
                               newSortType = "none";
                             } else {
                               newSortType = "ascending";
