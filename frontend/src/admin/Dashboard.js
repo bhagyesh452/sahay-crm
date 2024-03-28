@@ -683,15 +683,32 @@ function Dashboard() {
     const filteredDataDateRange = followData.filter(product => {
       const productDate = new Date(product["estPaymentDate"]);
 
-      // Check if the productDate is within the selected date range
-      return (
-        productDate >= startDate &&
-        productDate <= endDate
-      );
+      // Convert productDate to the same format as startDate and endDate
+      const formattedProductDate = dayjs(productDate).startOf('day');
+      const formattedStartDate = startDate ? dayjs(startDate).startOf('day') : null;
+      const formattedEndDate = endDate ? dayjs(endDate).endOf('day') : null;
+
+      // Check if the formatted productDate is within the selected date range
+      if (formattedStartDate && formattedEndDate && formattedStartDate.isSame(formattedEndDate)) {
+        // If both startDate and endDate are the same, filter for transactions on that day
+        return formattedProductDate.isSame(formattedStartDate);
+      } else if (formattedStartDate && formattedEndDate) {
+        // If different startDate and endDate, filter within the range
+        return formattedProductDate >= formattedStartDate && formattedProductDate <= formattedEndDate;
+      } else {
+        // If either startDate or endDate is null, return false
+        return false;
+      }
     });
 
     setfollowDataToday(filteredDataDateRange);
   }, [startDate, endDate]);
+
+
+
+
+
+
 
 
   //console.log("kuch" , filteredDataDateRange)
@@ -1782,7 +1799,7 @@ function Dashboard() {
   };
 
   const handleSortOffredPrize = (newSortType) => {
-    
+
     setSortTypePrice(newSortType);
   };
 
@@ -2235,7 +2252,6 @@ function Dashboard() {
                                   </>
                                 ))}
                               </tbody>
-
                               <tfoot>
                                 <tr style={{ fontWeight: "500" }}>
                                   <td colSpan={2} style={{ lineHeight: "32px" }}>
@@ -2260,7 +2276,6 @@ function Dashboard() {
                                       return totalLength + serviceLength;
                                     }, 0)}
                                   </td>
-
                                   <td>
                                     ₹{filteredBooking
                                       .reduce((totalPayment, obj) => {
@@ -2273,7 +2288,6 @@ function Dashboard() {
                                       }, 0)
                                       .toLocaleString()}
                                   </td>
-
                                   <td>
                                     ₹{filteredBooking
                                       .reduce((totalFirstPayment, obj) => {
@@ -3452,7 +3466,7 @@ function Dashboard() {
                   <h2>Projection Summary</h2>
                 </div>
                 <div style={{ m: 1, width: '40ch', padding: "0px", marginRight: "30px" }}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={['SingleInputDateRangeField']}>
                       <DateRangePicker className="mydatepickerinput"
                         onChange={(values) => {
@@ -3465,10 +3479,16 @@ function Dashboard() {
                         slotProps={{ textField: { InputProps: { endAdornment: <Calendar /> } } }}
                       />
                     </DemoContainer>
-                  </LocalizationProvider>
-                  {/* <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
+                  </LocalizationProvider> */}
+                  <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
                     <DemoContainer components={['SingleInputDateRangeField']}>
                       <DateRangePicker
+                        onChange={(values) => {
+                          const startDate = moment(values[0]).format('DD/MM/YYYY');
+                          const endDate = moment(values[1]).format('DD/MM/YYYY');
+                          setSelectedDateRange([startDate, endDate]);
+                          handleSelect(values); // Call handleSelect with the selected values
+                        }}
                         slots={{ field: SingleInputDateRangeField }}
                         slotProps={{
                           shortcuts: {
@@ -3480,7 +3500,7 @@ function Dashboard() {
                       //calendars={1}
                       />
                     </DemoContainer>
-                  </LocalizationProvider> */}
+                  </LocalizationProvider>
 
                 </div>
                 {/* <div className="form-control date-range-picker d-flex align-items-center justify-content-between">
@@ -3515,8 +3535,7 @@ function Dashboard() {
                       border: "1px solid #ddd",
                       marginBottom: "10px",
                     }}
-                    className="table-vcenter table-nowrap"
-                  >
+                    className="table-vcenter table-nowrap">
                     <thead style={{
                       position: "sticky", // Make the header sticky
                       top: '-1px', // Stick it at the top
@@ -3626,154 +3645,9 @@ function Dashboard() {
 
                       </tr>
                     </thead>
-                    {/* <tbody>
-                      {uniqueEnames &&
-                        uniqueEnames.map((ename, index) => {
-                          // Calculate the count of services for the current ename
-                          // const serviceCount = filteredDataDateRange && (
-                          //   // If filteredDataDateRange is not empty, use servicesByEnameDateRange
-                          //   servicesByEnameDateRange[ename] ? servicesByEnameDateRange[ename].length : 0
-                          // );
-                          // const companyCount = companiesByEname[ename] ? companiesByEname[ename].length : 0;
-                          let serviceCount;
-                          if (filteredDataDateRange && filteredDataDateRange.length > 0) {
-                            // If filteredDataDateRange is not empty, use companiesByEname
-                            serviceCount = servicesByEnameDateRange[ename] ? servicesByEnameDateRange[ename].length : 0
-                          } else {
-                            // If filteredDataDateRange is empty, use followDataToday
-                            serviceCount = servicesByEnameToday[ename] ? servicesByEnameToday[ename].length : 0
-                          }
-
-                          // const companyCount = filteredDataDateRange && (
-                          //   // If filteredDataDateRange is not empty, use companiesByEnameDateRange
-                          //   companiesByEnameDateRange[ename] ? companiesByEnameDateRange[ename].length : 0
-                          // );
-                          let companyCount;
-                          if (filteredDataDateRange && filteredDataDateRange.length > 0) {
-                            // If filteredDataDateRange is not empty, use companiesByEname
-                            companyCount = companiesByEnameDateRange[ename] ? companiesByEnameDateRange[ename].length : 0
-                          } else {
-                            // If filteredDataDateRange is empty, use followDataToday
-                            companyCount = companiesByEnameToday[ename] ? companiesByEnameToday[ename].length : 0
-                          }
-                          let totalPaymentByEname;
-                          if (filteredDataDateRange && filteredDataDateRange.length > 0) {
-                            // If filteredDataDateRange is not empty, use companiesByEname
-                            totalPaymentByEname = (sumsDateRange[ename] ? sumsDateRange[ename].totalPaymentSum : 0)
-                          } else {
-                            // If filteredDataDateRange is empty, use followDataToday
-                            totalPaymentByEname = (sumsToday[ename] ? sumsToday[ename].totalPaymentSum : 0)
-                          }
-                          let offeredPrizeByEname;
-                          if (filteredDataDateRange && filteredDataDateRange.length > 0) {
-                            // If filteredDataDateRange is not empty, use companiesByEname
-                            offeredPrizeByEname = (sumsDateRange[ename] ? sumsDateRange[ename].offeredPaymentSum : 0)
-                          } else {
-                            // If filteredDataDateRange is empty, use followDataToday
-                            offeredPrizeByEname = (sumsToday[ename] ? sumsToday[ename].offeredPaymentSum : 0)
-                          }
-
-
-
-
-
-
-                          //const totalPaymentByEname = sums[ename] ? sums[ename].totalPaymentSum : 0;
-                          // const totalPaymentByEname = filteredDataDateRange &&
-                          //   (sumsDateRange[ename] ? sumsDateRange[ename].totalPaymentSum : 0);
-
-
-                          //const offeredPrizeByEname = sums[ename] ? sums[ename].offeredPaymentSum : 0;
-                          // const offeredPrizeByEname = filteredDataDateRange.length &&
-                          //   (sumsDateRange[ename] ? sumsDateRange[ename].offeredPaymentSum : 0)
-
-
-                          const lastFollowDates = lastFollowDate[ename] || []; // Assuming lastFollowDate[ename] is an array of dates or undefined
-
-                          // Get the latest date from the array
-                          let latestDate;
-
-                          if (Array.isArray(lastFollowDates) && lastFollowDates.length > 0) {
-                            latestDate = new Date(Math.max(...lastFollowDates.map(date => new Date(date))));
-                          } else if (lastFollowDates instanceof Date) {
-                            // If lastFollowDates is a single date, directly assign it to latestDate
-                            latestDate = lastFollowDates;
-                          } else {
-                            // Handle the case when lastFollowDates is not an array or a date
-                            latestDate = new Date(); // Assigning current date as default value
-                          }
-
-                          // Format the latest date into a string
-                          const formattedDate = latestDate.toLocaleDateString(); //
-
-
-                          return (
-                            <tr key={`row-${index}`}>
-                              <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                              <td>{ename}</td>
-                              <td>{companyCount}
-                                <FcDatabase
-                                  onClick={() => {
-                                    functionOpenProjectionTable(ename);
-                                  }}
-                                  style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "58px" }}
-                                /></td>
-                              <td>{serviceCount}</td>
-                              <td>  {totalPaymentByEname.toLocaleString('en-IN', numberFormatOptions)}</td>
-                              <td>  {offeredPrizeByEname.toLocaleString('en-IN', numberFormatOptions)}</td>
-                              <td>{filteredDataDateRange.length !== 0 ? formattedDate : new Date().toLocaleDateString()}</td>
-
-                            </tr>
-                          );
-                        })}
-
-                    </tbody>
-                    {followData && (
-                      <tfoot style={{
-                        position: "sticky", // Make the footer sticky
-                        bottom: -1, // Stick it at the bottom
-                        backgroundColor: "#f6f2e9",
-                        color: "black",
-                        fontWeight: 500,
-                        zIndex: 2, // Ensure it's above the content
-                      }}>
-                        <tr style={{ fontWeight: 500 }}>
-                          <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                          <td>{filteredDataDateRange && filteredDataDateRange.length > 0 ? (
-                            totalcompaniesByEnameDateRange.length
-                          ) : (totalcompaniesByEnameToday.length)
-                          }
-                          </td>
-                          <td>
-                            {filteredDataDateRange && filteredDataDateRange.length > 0 ? (
-                              // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
-                              totalservicesByEnameDateRange.length
-                            ) : (totalservicesByEnameToday.length)}
-                          </td>
-                          // <td>{totalTotalPaymentSum.toLocaleString()}</td> 
-                          <td>
-                            {filteredDataDateRange && filteredDataDateRange.length > 0 ? (
-                              // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
-                              totalTotalPaymentSumDateRange.toLocaleString('en-IN', numberFormatOptions)
-                            ) : (totalTotalPaymentSumToday.toLocaleString('en-IN', numberFormatOptions))}
-                          </td>
-
-                          // <td>{totalOfferedPaymentSum.toLocaleString()}</td>
-
-                          <td>
-                            {filteredDataDateRange.length && filteredDataDateRange.length > 0 ? (
-                              // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
-                              totalOfferedPaymentSumDateRange.toLocaleString('en-IN', numberFormatOptions)
-                            ) : (totalOfferedPaymentSumToday.toLocaleString('en-IN', numberFormatOptions))}
-                          </td>
-                          <td>-</td>
-
-                        </tr>
-                      </tfoot>
-                    )} */}
-                    <tbody>
-                      {sortedData && sortedData.length !== 0 ? (
-                        sortedData.map((obj, index) => (
+                    {sortedData && sortedData.length !== 0 ? (
+                      <tbody>
+                        {sortedData.map((obj, index) => (
                           <tr key={`row-${index}`}>
                             <td style={{ lineHeight: "32px" }}>{index + 1}</td>
                             <td>{obj}</td>
@@ -3817,27 +3691,11 @@ function Dashboard() {
                               }
                             </td>
                           </tr>
-                        ))
-                      ) : (
-                        <tr style={{ minHeight: "350px" }}>
-                          <td colSpan={11}>
-                            <ScaleLoader
-                              color="lightgrey"
-                              loading
-                              size={10}
-                              height="25"
-                              width="2"
-                              style={{ width: "10px", height: "10px" }}
-                              aria-label="Loading Spinner"
-                              data-testid="loader"
-                            />
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
+                        ))}
+                      </tbody>
+                    ) : null}
 
-
-                    {uniqueEnames && (
+                    {sortedData && sortedData.length !== 0 && (
                       <tfoot style={{
                         position: "sticky", // Make the footer sticky
                         bottom: -1, // Stick it at the bottom
@@ -3845,24 +3703,20 @@ function Dashboard() {
                         color: "black",
                         fontWeight: 500,
                         zIndex: 2, // Ensure it's above the content
-                      }} >
+                      }}>
                         <tr style={{ fontWeight: 500 }}>
                           <td style={{ lineHeight: "32px" }} colSpan="2">
                             Total
                           </td>
                           <td>
                             {
-                              followDataToday.filter(
-                                (partObj) => partObj.ename
-                              ).length
+                              followDataToday.filter((partObj) => partObj.ename).length
                             }
                           </td>
                           <td>
                             {
                               followDataToday.reduce((totalServices, partObj) => {
-
                                 totalServices += partObj.offeredServices.length;
-
                                 return totalServices;
                               }, 0)
                             }
@@ -3870,7 +3724,6 @@ function Dashboard() {
                           <td>
                             {
                               followDataToday.reduce((totalOfferedPrize, partObj) => {
-
                                 totalOfferedPrize += partObj.offeredPrize;
                                 return totalOfferedPrize;
                               }, 0).toLocaleString('en-IN', numberFormatOptions)
@@ -3879,9 +3732,7 @@ function Dashboard() {
                           <td>
                             {
                               followDataToday.reduce((totalPaymentSum, partObj) => {
-
                                 totalPaymentSum += partObj.totalPayment;
-
                                 return totalPaymentSum
                               }, 0).toLocaleString('en-IN', numberFormatOptions)
                             }
@@ -3889,6 +3740,17 @@ function Dashboard() {
                         </tr>
                       </tfoot>
                     )}
+
+                    {sortedData && sortedData.length === 0 && (
+                      <tbody>
+                        <tr>
+                          <td className="particular" colSpan={9}>
+                            <Nodata />
+                          </td>
+                        </tr>
+                      </tbody>
+                    )}
+
                   </table>
                 </div>
               </div>
@@ -3900,28 +3762,20 @@ function Dashboard() {
             fullWidth
             maxWidth="lg"
           >
+            <DialogTitle>
+              {projectionEname} Today's Report {" "}
+              <IconButton onClick={closeProjectionTable} style={{ float: "right" }}>
+                <CloseIcon color="primary"></CloseIcon>
+              </IconButton>{" "}
+            </DialogTitle>
             <DialogContent>
               <div
                 id="table-default"
                 style={{
                   overflowX: "auto",
                   overflowY: "auto",
-                  maxHeight: "60vh",
                 }}
               >
-                <div className="title-header d-flex justify-content-between">
-                  <div className="title-name">
-                    <strong>
-                      {projectionEname} Today's Report
-                    </strong>
-                  </div>
-                  <div style={{ cursor: 'pointer' }} className="closeIcon" onClick={closeProjectionTable}>
-                    <IoClose style={{ width: "17px", height: "17px", marginBottom: "20px" }} />
-                  </div>
-                </div>
-
-
-
                 <table
                   style={{
                     width: "100%",
@@ -3975,8 +3829,8 @@ function Dashboard() {
                             <td>{obj.ename}</td>
                             <td>{obj.companyName}</td>
                             <td>{obj.offeredServices.join(",")}</td>
-                            <td>&#8377;{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                            <td>&#8377;{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
                             <td>{obj.estPaymentDate}</td>
                             <td>{obj.lastFollowUpdate}</td>
                             <td>{obj.remarks}</td>
@@ -3990,8 +3844,8 @@ function Dashboard() {
                             <td>{obj.ename}</td>
                             <td>{obj.companyName}</td>
                             <td>{obj.offeredServices.join(",")}</td>
-                            <td>&#8377;{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                            <td>&#8377;{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
                             <td>{obj.estPaymentDate}</td>
                             <td>{obj.lastFollowUpdate}</td>
                             <td>{obj.remarks}</td>

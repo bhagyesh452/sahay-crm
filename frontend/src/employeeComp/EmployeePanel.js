@@ -66,7 +66,7 @@ function EmployeePanel() {
     date: "",
     time: "",
     editCount: -1,
-    totalPaymentError:""
+    totalPaymentError: ""
   });
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
@@ -183,9 +183,9 @@ function EmployeePanel() {
     openchange(true);
   };
 
-  console.log("projectingcompnay", projectingCompany)
+  //console.log("projectingcompnay", projectingCompany)
 
-  console.log("kuchlikho", currentProjection)
+  //console.log("kuchlikho", currentProjection)
 
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
@@ -322,13 +322,15 @@ function EmployeePanel() {
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
-
+      console.log(tempData)
       setData(userData);
       setmoreFilteredData(userData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
+
+
   const fetchProjections = async () => {
     try {
       const response = await axios.get(`${secretKey}/projection-data/${data.ename}`);
@@ -337,9 +339,9 @@ function EmployeePanel() {
       console.error("Error fetching Projection Data:", error.message);
     }
   };
-  console.log(projectionData)
+  //console.log(projectionData)
   const [moreEmpData, setmoreEmpData] = useState([]);
-
+  const [tempData, setTempData] = useState([])
   const fetchNewData = async (status) => {
     try {
       if (!status) {
@@ -348,8 +350,7 @@ function EmployeePanel() {
 
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
-
-      //console.log("tempData" , tempData)
+      //console.log("tempData", tempData)
 
       const sortedData = response.data.sort((a, b) => {
         // Assuming AssignDate is a string representation of a date
@@ -357,7 +358,7 @@ function EmployeePanel() {
       });
 
       setmoreEmpData(sortedData)
-
+      setTempData(tempData)
       setEmployeeData(
         tempData.filter(
           (obj) =>
@@ -447,8 +448,10 @@ function EmployeePanel() {
       setVisibilityOthernew("none");
     }
 
-    console.log(selectedField);
+    //console.log(selectedField);
   };
+
+  console.log(tempData)
 
   const handleDateChange = (e) => {
     const dateValue = e.target.value;
@@ -736,6 +739,8 @@ function EmployeePanel() {
       },
     }));
   };
+
+  console.log(employeeData)
 
   const handleDeleteRemarks = async (remarks_id, remarks_value) => {
     const mainRemarks = remarks_value === currentRemarks ? true : false;
@@ -1216,7 +1221,7 @@ function EmployeePanel() {
   const handleProjectionSubmit = async () => {
     try {
       const newEditCount = currentProjection.editCount === -1 ? 0 : currentProjection.editCount + 1;
-  
+
       const finalData = {
         ...currentProjection,
         companyName: projectingCompany,
@@ -1224,16 +1229,18 @@ function EmployeePanel() {
         offeredServices: selectedValues,
         editCount: currentProjection.editCount + 1, // Increment editCount
       };
-  
+
       if (finalData.offeredServices.length === 0) {
         Swal.fire({ title: 'Services is required!', icon: 'warning' });
       } else if (finalData.remarks === "") {
         Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
-      } else if (finalData.totalPayment === 0) {
-        Swal.fire({ title: 'Payment is required!', icon: 'warning' });
-      } else if (finalData.offeredPrize === 0) {
+      } else if (Number(finalData.totalPayment) === 0) {
+        Swal.fire({ title: "Total Payment Can't be 0!", icon: 'warning' });
+      } else if (finalData.totalPayment === "") {
+        Swal.fire({ title: "Total Payment Can't be 0", icon: 'warning' });
+      } else if (Number(finalData.offeredPrize) === 0) {
         Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
-      } else if (finalData.totalPayment >= finalData.offeredPrize) {
+      } else if (Number(finalData.totalPayment) > Number(finalData.offeredPrize)) {
         Swal.fire({ title: 'Total Payment cannot be greater than Offered Prize!', icon: 'warning' });
       } else if (finalData.lastFollowUpdate === null) {
         Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
@@ -1256,7 +1263,8 @@ function EmployeePanel() {
           remarks: "",
           date: "",
           time: "",
-          editCount: newEditCount, // Increment editCount
+          editCount: newEditCount,
+          totalPaymentError: ""  // Increment editCount
         });
         fetchProjections();
         setSelectedValues([]);
@@ -1265,8 +1273,8 @@ function EmployeePanel() {
       console.error("Error updating or adding data:", error.message);
     }
   };
-  
 
+  console.log(currentProjection)
 
   const [openIncoDate, setOpenIncoDate] = useState(false);
 
@@ -2702,19 +2710,19 @@ function EmployeePanel() {
         </>
       ) : (
         <>
-          
-           
-                <RedesignedForm
-                  // matured={true}
-                  // companysId={companyId}
-                  setFormOpen={setFormOpen}
-                  companysName={companyName}
-                  companysEmail={companyEmail}
-                  companyNumber={companyNumber}
-                  companysInco={companyInco}
-                  employeeName={data.ename}
-                  employeeEmail={data.email}
-                />
+
+
+          <RedesignedForm
+            // matured={true}
+            // companysId={companyId}
+            setFormOpen={setFormOpen}
+            companysName={companyName}
+            companysEmail={companyEmail}
+            companyNumber={companyNumber}
+            companysInco={companyInco}
+            employeeName={data.ename}
+            employeeEmail={data.email}
+          />
         </>
       )}
 
@@ -3327,9 +3335,9 @@ function EmployeePanel() {
                     }}
                     disabled={!isEditProjection}
                   />
-                 
-                    <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
-                
+
+                  <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
+
                 </div>
               </div>
 
