@@ -2714,7 +2714,6 @@ function EmployeePanel() {
                   employeeName={data.ename}
                   employeeEmail={data.email}
                 />
-           
         </>
       )}
 
@@ -3311,7 +3310,7 @@ function EmployeePanel() {
                     value={currentProjection.totalPayment}
                     onChange={(e) => {
                       const newTotalPayment = e.target.value;
-                      if (newTotalPayment <= currentProjection.offeredPrize) {
+                      if (Number(newTotalPayment) <= Number(currentProjection.offeredPrize)) {
                         setCurrentProjection((prevLeadData) => ({
                           ...prevLeadData,
                           totalPayment: newTotalPayment,

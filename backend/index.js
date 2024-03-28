@@ -2841,6 +2841,18 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
         res.status(200).json(updatedData);
         return true; // Respond with updated data
       } 
+    }else if (Step === "step5"){
+      const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+        { "Company Name": companyName },
+        {
+          $set: {
+            Step5Status:true
+          }            
+        },
+        { new: true }
+      );
+      res.status(200).json(updatedData);
+      return true; // R
     }
     // Add uploaded files information to newData
 

@@ -80,6 +80,7 @@ export default function RedesignedForm({
     receivedAmount: 0,
     pendingAmount: 0,
   };
+
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [selectedValues, setSelectedValues] = useState("");
@@ -116,6 +117,7 @@ export default function RedesignedForm({
         ...newLeadData
       } = data;
       setLeadData(newLeadData);
+      console.log(Step4Status , Step5Status , "This is status");
       if (Step1Status === true && Step2Status === false) {
         setCompleted({ 0: true });
         setActiveStep(1);
@@ -441,6 +443,8 @@ export default function RedesignedForm({
     }
   };
 
+  
+
   function formatDate(inputDate) {
     const date = new Date(inputDate);
     const year = date.getUTCFullYear();
@@ -607,6 +611,10 @@ export default function RedesignedForm({
             `${secretKey}/redesigned-final-leadData/${companysName}`,
             leadData
           );
+          const response2 = await axios.post(
+            `${secretKey}/redesigned-leadData/${companysName}/step5`,
+          );
+
 
           console.log(response.data);
           Swal.fire({
