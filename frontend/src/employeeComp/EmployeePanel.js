@@ -65,7 +65,8 @@ function EmployeePanel() {
     remarks: "",
     date: "",
     time: "",
-    editCount: -1
+    editCount: -1,
+    totalPaymentError:""
   });
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
@@ -1232,7 +1233,7 @@ function EmployeePanel() {
         Swal.fire({ title: 'Payment is required!', icon: 'warning' });
       } else if (finalData.offeredPrize === 0) {
         Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
-      } else if (finalData.totalPayment >= finalData.offeredPrize) {
+      } else if (Number(finalData.totalPayment) >= Number(finalData.offeredPrize)) {
         Swal.fire({ title: 'Total Payment cannot be greater than Offered Prize!', icon: 'warning' });
       } else if (finalData.lastFollowUpdate === null) {
         Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
@@ -3310,7 +3311,8 @@ function EmployeePanel() {
                     value={currentProjection.totalPayment}
                     onChange={(e) => {
                       const newTotalPayment = e.target.value;
-                      if (newTotalPayment <= currentProjection.offeredPrize) {
+                      console.log(newTotalPayment)
+                      if (Number(newTotalPayment) <= Number(currentProjection.offeredPrize)) {
                         setCurrentProjection((prevLeadData) => ({
                           ...prevLeadData,
                           totalPayment: newTotalPayment,
@@ -3327,7 +3329,7 @@ function EmployeePanel() {
                     disabled={!isEditProjection}
                   />
                   {currentProjection.totalPaymentError && (
-                    <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
+                    <div style={{ color: "red" }}>{currentProjection.totalPaymentError}</div>
                   )}
                 </div>
               </div>

@@ -1743,10 +1743,10 @@ function Dashboard() {
     totalCompanies: "ascending",
   });
 
-
   const handleSortTotalCompanies = (newSortType) => {
     setSortTypeProjection(newSortType);
   };
+
 
   const sortedData = uniqueEnames.slice().sort((a, b) => {
     const totalCompaniesA = followDataToday.filter(
@@ -1755,13 +1755,17 @@ function Dashboard() {
     const totalCompaniesB = followDataToday.filter(
       (partObj) => partObj.ename === b
     ).length;
+  
     if (sortTypeProjection === "ascending") {
       return totalCompaniesA - totalCompaniesB;
     } else if (sortTypeProjection === "descending") {
       return totalCompaniesB - totalCompaniesA;
     }
+    // If sortTypeProjection is "none", return original order
     return 0;
   });
+  
+  
 
 
   // const handleSortTotalCompanies = (sortBy1) => {
@@ -3396,11 +3400,11 @@ function Dashboard() {
                           cursor: "pointer",
                           marginLeft: "4px",
                         }}
-                        onClick={(e) => {
+                        onClick={() => {
                           let newSortType;
-                          if (sortTypeProjection.totalCompanies === "ascending") {
+                          if (sortTypeProjection === "ascending") {
                             newSortType = "descending";
-                          } else if (sortTypeProjection.totalCompanies === "descending") {
+                          } else if (sortTypeProjection === "descending") {
                             newSortType = "none";
                           } else {
                             newSortType = "ascending";
@@ -3641,7 +3645,7 @@ function Dashboard() {
                       }
                     </tbody>
                     {uniqueEnames && (
-                      <tfoot>
+                      <tfoot >
                         <tr style={{ fontWeight: 500 }}>
                           <td style={{ lineHeight: "32px" }} colSpan="2">
                             Total

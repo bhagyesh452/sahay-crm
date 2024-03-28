@@ -2439,12 +2439,12 @@ function EmployeeDashboard() {
                                   </td>
                                   <td>{obj.companyName}</td>
                                   <td>{obj.offeredServices.join(", ")}</td>
+                                  <td>₹{obj.offeredPrize.toLocaleString()}</td>
                                   <td>
                                     ₹
                                     {obj.totalPayment &&
                                       obj.totalPayment.toLocaleString()}
                                   </td>
-                                  <td>₹{obj.offeredPrize.toLocaleString()}</td>
                                   <td>{obj.remarks}</td>
                                   <td>{obj.lastFollowUpdate}</td>
                                   <td>{obj.estPaymentDate}</td>
