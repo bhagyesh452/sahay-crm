@@ -171,7 +171,7 @@ function Dashboard() {
 
       const response = await axios.get(url);
       const data = response.data.leads;
-      console.log(` startDate : ${startDateAnother} , endDate : ${endDateAnother}`, data);
+      //console.log(` startDate : ${startDateAnother} , endDate : ${endDateAnother}`, data);
 
       // Update state with the fetched data
       setBookingObject(data);
@@ -382,13 +382,13 @@ function Dashboard() {
     }
   }
 
-  console.log(followDataToday)
+  //console.log(followDataToday)
 
   useEffect(() => {
     fetchFollowUpData();
   }, []);
 
-  const uniqueEnames = [...new Set(followData.map(item => item.ename))];
+  const uniqueEnames = [...new Set(followDataToday.map(item => item.ename))];
 
   const servicesByEname = followData.reduce((acc, curr) => {
     // Check if ename already exists in the accumulator
@@ -486,12 +486,12 @@ function Dashboard() {
     return accumulate;
   }, []);
 
-  console.log(lastFollowDate)
+  //console.log(lastFollowDate)
 
-  console.log(followData)
+  //console.log(followData)
 
   const [projectionEname, setProjectionEname] = useState("")
-  console.log(projectionEname)
+  //console.log(projectionEname)
 
   const [projectedDataToday, setprojectedDataToday] = useState([])
   //console.log("Total totalPaymentSum:", totalTotalPaymentSum);
@@ -503,7 +503,7 @@ function Dashboard() {
     const projectedData = followData.filter(obj => obj.ename === ename);
     const projectedDataDateRange = filteredDataDateRange.filter(obj => obj.ename === ename)
     const projectedDataToday = followDataToday.filter(obj => obj.ename === ename)
-    console.log(projectedDataDateRange)
+    //console.log(projectedDataDateRange)
     setProjectedEmployee(projectedData);
     setProjectedDataDateRange(projectedDataDateRange)
     setprojectedDataToday(projectedDataToday)
@@ -511,7 +511,7 @@ function Dashboard() {
   //console.log(projectedEmployee)
   //console.log(projectedDataDateRange)
 
-  console.log(projectedDataToday)
+  //console.log(projectedDataToday)
   const closeProjectionTable = () => {
     setopenProjectionTable(false);
   };
@@ -624,7 +624,7 @@ function Dashboard() {
   }, []);
 
   const [selectedDateRange, setSelectedDateRange] = useState([]);
-  console.log(selectedDateRange)
+  //console.log(selectedDateRange)
 
   const selectionRange = {
     startDate: startDate,
@@ -674,6 +674,25 @@ function Dashboard() {
     setEndDate(endDate);
     setFilteredDataDateRange(filteredDataDateRange);
   };
+
+  useEffect(() => {
+    console.log(startDate);
+    console.log(endDate);
+
+    // Filter followData based on the selected date range
+    const filteredDataDateRange = followData.filter(product => {
+      const productDate = new Date(product["estPaymentDate"]);
+
+      // Check if the productDate is within the selected date range
+      return (
+        productDate >= startDate &&
+        productDate <= endDate
+      );
+    });
+
+    setfollowDataToday(filteredDataDateRange);
+  }, [startDate, endDate]);
+
 
   //console.log("kuch" , filteredDataDateRange)
 
@@ -1648,9 +1667,9 @@ function Dashboard() {
     const filteredDataDateRange = companyDataFilter.filter(product => {
       const productDate = new Date(product["AssignDate"]);
       if (formatDate(date.selection.startDate) === formatDate(date.selection.endDate)) {
-        console.log(formatDate(date.selection.startDate))
-        console.log(formatDate(date.selection.endDate))
-        console.log(formatDate(productDate))
+        //console.log(formatDate(date.selection.startDate))
+        //console.log(formatDate(date.selection.endDate))
+        //console.log(formatDate(productDate))
         return formatDate(productDate) === formatDate(date.selection.startDate);
       } else {
         return (
@@ -1742,89 +1761,218 @@ function Dashboard() {
   const [sortTypeProjection, setSortTypeProjection] = useState({
     totalCompanies: "ascending",
   });
+  const [sortTypeServices, setSortTypeServices] = useState({
+    offeredServices: "ascending"
+  })
+
+  const [sortTypePrice, setSortTypePrice] = useState({
+    offeredPrice: "ascending"
+  })
+
+  const [sortTypeExpectedPayment, setSortTypeExpectedPayment] = useState({
+    expectedPayment: "ascending"
+  })
 
   const handleSortTotalCompanies = (newSortType) => {
     setSortTypeProjection(newSortType);
   };
 
+  const handleSortOfferedServices = (newSortType) => {
+    setSortTypeServices(newSortType);
+  };
+
+  const handleSortOffredPrize = (newSortType) => {
+    console.log(newSortType)
+    setSortTypePrice(newSortType);
+  };
+
+  const handleSortExpectedPayment = (newSortType) => {
+    
+    setSortTypeExpectedPayment(newSortType);
+  };
+  // const getTotalOfferedPrice = (ename) => {
+  //   return followDataToday.reduce((totalOfferedPrice, partObj) => {
+  //     if (partObj.ename === ename) {
+  //       totalOfferedPrice += partObj.offeredPrize;
+  //     }
+  //     return totalOfferedPrice;
+  //   }, 0);
+  // };
+
+  // // Function to get expected amount for a given ename
+  // const getExpectedAmount = (ename) => {
+  //   return followDataToday.reduce((totalPaymentSum, partObj) => {
+  //     if (partObj.ename === ename) {
+  //       totalPaymentSum += partObj.totalPayment;
+  //     }
+  //     return totalPaymentSum;
+  //   }, 0);
+  // };
 
   const sortedData = uniqueEnames.slice().sort((a, b) => {
-    const totalCompaniesA = followDataToday.filter(
-      (partObj) => partObj.ename === a
-    ).length;
-    const totalCompaniesB = followDataToday.filter(
-      (partObj) => partObj.ename === b
-    ).length;
-  
+    // Sorting logic for total companies
     if (sortTypeProjection === "ascending") {
-      return totalCompaniesA - totalCompaniesB;
+      return followDataToday.filter((partObj) => partObj.ename === a).length -
+        followDataToday.filter((partObj) => partObj.ename === b).length;
     } else if (sortTypeProjection === "descending") {
-      return totalCompaniesB - totalCompaniesA;
+      return followDataToday.filter((partObj) => partObj.ename === b).length -
+        followDataToday.filter((partObj) => partObj.ename === a).length;
     }
-    // If sortTypeProjection is "none", return original order
+
+    // Sorting logic for offered services
+    if (sortTypeServices === "ascending") {
+      return followDataToday.reduce((totalServicesA, partObj) => {
+        if (partObj.ename === a) {
+          totalServicesA += partObj.offeredServices.length;
+        }
+        return totalServicesA;
+      }, 0) - followDataToday.reduce((totalServicesB, partObj) => {
+        if (partObj.ename === b) {
+          totalServicesB += partObj.offeredServices.length;
+        }
+        return totalServicesB;
+      }, 0);
+    } else if (sortTypeServices === "descending") {
+      return followDataToday.reduce((totalServicesB, partObj) => {
+        if (partObj.ename === b) {
+          totalServicesB += partObj.offeredServices.length;
+        }
+        return totalServicesB;
+      }, 0) - followDataToday.reduce((totalServicesA, partObj) => {
+        if (partObj.ename === a) {
+          totalServicesA += partObj.offeredServices.length;
+        }
+        return totalServicesA;
+      }, 0);
+    }
+
+    // Sorting logic for total offered price
+    // if (sortTypePrice === "ascending") {
+    //   return getTotalOfferedPrice(a) - getTotalOfferedPrice(b);
+    // } else if (sortTypePrice === "descending") {
+    //   return getTotalOfferedPrice(b) - getTotalOfferedPrice(a);
+    // }
+    if (sortTypePrice === "ascending") {
+      return followDataToday.reduce((totalOfferedPriceA, partObj) => {
+        if (partObj.ename === a) {
+          totalOfferedPriceA += partObj.offeredPrize;
+        }
+        return totalOfferedPriceA;
+      }, 0) - followDataToday.reduce((totalOfferedPriceB, partObj) => {
+        if (partObj.ename === b) {
+          totalOfferedPriceB += partObj.offeredPrize;
+        }
+        return totalOfferedPriceB;
+      }, 0);
+    } else if (sortTypePrice === "descending") {
+      return followDataToday.reduce((totalOfferedPriceB, partObj) => {
+        if (partObj.ename === b) {
+          totalOfferedPriceB += partObj.offeredPrize;
+        }
+        return totalOfferedPriceB;
+      }, 0) - followDataToday.reduce((totalOfferedPriceA, partObj) => {
+        if (partObj.ename === a) {
+          totalOfferedPriceA += partObj.offeredPrize;
+        }
+        return totalOfferedPriceA;
+      }, 0);
+    }
+
+
+
+    // Sorting logic for expected amount
+    if (sortTypeExpectedPayment === "ascending") {
+      return followDataToday.reduce((totalExpectedPaymentA, partObj) => {
+        if (partObj.ename === a) {
+          totalExpectedPaymentA += partObj.totalPayment;
+        }
+        return totalExpectedPaymentA;
+      }, 0) - followDataToday.reduce((totalExpectedPaymentB, partObj) => {
+        if (partObj.ename === b) {
+          totalExpectedPaymentB += partObj.totalPayment;
+        }
+        return totalExpectedPaymentB;
+      }, 0);
+    } else if (sortTypeExpectedPayment === "descending") {
+      return followDataToday.reduce((totalExpectedPaymentB, partObj) => {
+        if (partObj.ename === b) {
+          totalExpectedPaymentB += partObj.totalPayment;
+        }
+        return totalExpectedPaymentB;
+      }, 0) - followDataToday.reduce((totalExpectedPaymentA, partObj) => {
+        if (partObj.ename === a) {
+          totalExpectedPaymentA += partObj.totalPayment;
+        }
+        return totalExpectedPaymentA;
+      }, 0);
+    }
+
+    // If sortType is "none", return original order
     return 0;
   });
-  
-  
+
+  // Function to get total offered price for a given ename
 
 
-  // const handleSortTotalCompanies = (sortBy1) => {
-  //   setSortTypeProjection(prevData => ({
-  //     ...prevData,
-  //     totalCompanies: prevData.totalCompanies === "ascending"
-  //       ? "descending"
-  //       : prevData.totalCompanies === "descending"
-  //         ? "none"
-  //         : "ascending"
-  //   }));
-  //   switch (sortBy1) {
-  //     case "ascending":
-  //       setIncoFilterNew("ascending");
-  //       const untouchedCountAscending = {}
-  //       //console.log("ascending is working")
-  //       followDataToday.forEach((company) => {
-  //         if (company) {
-  //           untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
-  //         }
-  //       });
-
-  //       // Step 2: Sort employeeData based on the count of "Untouched" statuses
-  //       followDataToday.sort((a, b) => {
-  //         const countA = untouchedCountAscending[a.ename] || 0;
-  //         const countB = untouchedCountAscending[b.ename] || 0;
-  //         return countA - countB; // Sort in ascending order of "Untouched" count
-  //       });
-  //       break;
-
-  //     case "descending":
-  //       setIncoFilterNew("descending");
-  //       const untouchedCount = {};
-  //       //console.log("descending is working")
-  //       followDataToday.forEach((company) => {
-  //         if ((company)
-  //         ) {
-  //           untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
-  //         }
-  //       });
-
-  //       // Step 2: Sort employeeData based on the count of "Untouched" statuses
-  //       followDataToday.sort((a, b) => {
-  //         const countA = untouchedCount[a.ename] || 0;
-  //         const countB = untouchedCount[b.ename] || 0;
-  //         return countB - countA; // Sort in descending order of "Untouched" count
-  //       });
-  //       break;
-
-  //     case "none":
-  //       setIncoFilter("none");
-
-  //       break;
-
-  //     default:
-  //       break;
-
-  //   }
+  // const handleSortTotalCompanies = (newSortType) => {
+  //   console.log(newSortType)
+  //   setSortTypeProjection(newSortType);
   // };
+
+
+  // const sortedData = uniqueEnames.slice().sort((a, b) => {
+  //   const totalCompaniesA = followDataToday.filter(
+  //     (partObj) => partObj.ename === a
+  //   ).length;
+  //   const totalCompaniesB = followDataToday.filter(
+  //     (partObj) => partObj.ename === b
+  //   ).length;
+
+  //   if (sortTypeProjection === "ascending") {
+  //     return totalCompaniesA - totalCompaniesB;
+  //   } else if (sortTypeProjection === "descending") {
+  //     return totalCompaniesB - totalCompaniesA;
+  //   }
+  //   // If sortTypeProjection is "none", return original order
+  //   return 0;
+  // });
+
+  // console.log(sortedData)
+  // console.log(uniqueEnames)
+
+  // const handleSortOfferedServices = (newSortType) => {
+  //   console.log(newSortType)
+  //   setSortTypeServices(newSortType);
+  // };
+  // const sortedServicesData = uniqueEnames.slice().sort((a, b) => {
+  //   // Count the number of offered services for ename a
+  //   const totalServicesA = followDataToday.reduce((total, partObj) => {
+  //     if (partObj.ename === a) {
+  //       total += partObj.offeredServices.length;
+  //     }
+  //     return total;
+  //   }, 0);
+
+  //   // Count the number of offered services for ename b
+  //   const totalServicesB = followDataToday.reduce((total, partObj) => {
+  //     if (partObj.ename === b) {
+  //       total += partObj.offeredServices.length;
+  //     }
+  //     return total;
+  //   }, 0);
+
+  //   if (sortTypeServices === "ascending") {
+  //     return totalServicesA - totalServicesB;
+  //   } else if (sortTypeServices === "descending") {
+  //     return totalServicesB - totalServicesA;
+  //   }
+  //   // If sortTypeServices is "none", return original order
+  //   return 0;
+  // });
+  // console.log(sortedServicesData)
+
+
+
 
 
 
@@ -3304,7 +3452,7 @@ function Dashboard() {
                   <h2>Projection Summary</h2>
                 </div>
                 <div style={{ m: 1, width: '40ch', padding: "0px", marginRight: "30px" }}>
-                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={['SingleInputDateRangeField']}>
                       <DateRangePicker className="mydatepickerinput"
                         onChange={(values) => {
@@ -3317,8 +3465,8 @@ function Dashboard() {
                         slotProps={{ textField: { InputProps: { endAdornment: <Calendar /> } } }}
                       />
                     </DemoContainer>
-                  </LocalizationProvider> */}
-                  <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
+                  </LocalizationProvider>
+                  {/* <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
                     <DemoContainer components={['SingleInputDateRangeField']}>
                       <DateRangePicker
                         slots={{ field: SingleInputDateRangeField }}
@@ -3332,7 +3480,7 @@ function Dashboard() {
                       //calendars={1}
                       />
                     </DemoContainer>
-                  </LocalizationProvider>
+                  </LocalizationProvider> */}
 
                 </div>
                 {/* <div className="form-control date-range-picker d-flex align-items-center justify-content-between">
@@ -3393,30 +3541,87 @@ function Dashboard() {
                         </th>
                         <th>Company Name</th>
                         <th>Total Companies
-                        <SwapVertIcon
-                        style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
-                        }}
-                        onClick={() => {
-                          let newSortType;
-                          if (sortTypeProjection === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortTypeProjection === "descending") {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortTotalCompanies(newSortType);
-                        }}
-                      />
+                          <SwapVertIcon
+                            style={{
+                              height: "15px",
+                              width: "15px",
+                              cursor: "pointer",
+                              marginLeft: "4px",
+                            }}
+                            onClick={() => {
+                              let newSortType;
+                              if (sortTypeProjection === "ascending") {
+                                newSortType = "descending";
+                              } else if (sortTypeProjection === "descending") {
+                                newSortType = "none";
+                              } else {
+                                newSortType = "ascending";
+                              }
+                              handleSortTotalCompanies(newSortType);
+                            }}
+                          />
 
                         </th>
-                        <th>Offered Services</th>
-                        <th>Total Offered Price</th>
-                        <th>Expected Amount</th>
+                        <th>Offered Services
+                          <SwapVertIcon
+                            style={{
+                              height: "15px",
+                              width: "15px",
+                              cursor: "pointer",
+                              marginLeft: "4px",
+                            }}
+                            onClick={() => {
+                              let newSortType;
+                              if (sortTypeServices === "ascending") {
+                                newSortType = "descending";
+                              } else if (sortTypeServices === "descending") {
+                                newSortType = "none";
+                              } else {
+                                newSortType = "ascending";
+                              }
+                              handleSortOfferedServices(newSortType);
+                            }}
+                          />
+                        </th>
+                        <th>Total Offered Price
+                          <SwapVertIcon
+                            style={{
+                              height: "15px",
+                              width: "15px",
+                              cursor: "pointer",
+                              marginLeft: "4px",
+                            }}
+                            onClick={() => {
+                              let newSortType;
+                              if (sortTypePrice === "ascending") {
+                                newSortType = "descending";
+                              } else if (sortTypePrice === "descending") {
+                                newSortType = "none";
+                              } else {
+                                newSortType = "ascending";
+                              }
+                              handleSortOffredPrize(newSortType);
+                            }}
+                          /></th>
+                        <th>Expected Amount<SwapVertIcon
+                          style={{
+                            height: "15px",
+                            width: "15px",
+                            cursor: "pointer",
+                            marginLeft: "4px",
+                          }}
+                          onClick={() => {
+                            let newSortType;
+                            if (sortTypeExpectedPayment === "ascending") {
+                              newSortType = "descending";
+                            } else if (setSortTypeExpectedPayment === "descending") {
+                              newSortType = "none";
+                            } else {
+                              newSortType = "ascending";
+                            }
+                            handleSortExpectedPayment(newSortType);
+                          }}
+                        /></th>
                         {/* <th>Est. Payment Date</th> */}
 
                       </tr>
@@ -3567,85 +3772,80 @@ function Dashboard() {
                       </tfoot>
                     )} */}
                     <tbody>
-                      {sortedData ? (
-                        sortedData.length !== 0 ? (
-                          sortedData.map((obj, index) => (
-                            <tr key={`row-${index}`}>
-                              <td
-                                style={{
-                                  lineHeight: "32px",
+                      {sortedData && sortedData.length !== 0 ? (
+                        sortedData.map((obj, index) => (
+                          <tr key={`row-${index}`}>
+                            <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                            <td>{obj}</td>
+                            <td>
+                              {followDataToday.filter((partObj) => partObj.ename === obj).length}
+                              <FcDatabase
+                                onClick={() => {
+                                  functionOpenProjectionTable(obj);
                                 }}
-                              >
-                                {index + 1}
-                              </td>
-                              <td>{obj}</td>
-                              <td>
-                                {
-                                  followDataToday.filter(
-                                    (partObj) =>
-                                      partObj.ename === obj
-                                  ).length
-                                }
-                                <FcDatabase
-                                  onClick={() => {
-                                    functionOpenProjectionTable(obj);
-                                  }}
-                                  style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "58px" }}
-                                />
-                              </td>
-                              <td>
-                                {
-                                  followDataToday.reduce((totalServices, partObj) => {
-                                    if (partObj.ename === obj) {
-                                      totalServices += partObj.offeredServices.length;
-                                    }
-                                    return totalServices;
-                                  }, 0)
-                                }
-                              </td>
-                              <td>
-                                {
-                                  followDataToday.reduce((totalOfferedPrize, partObj) => {
-                                    if (partObj.ename === obj) {
-                                      totalOfferedPrize += partObj.offeredPrize;
-                                    }
-                                    return totalOfferedPrize;
-                                  }, 0)
-                                }
-                              </td>
-                              <td>
-                                {
-                                  followDataToday.reduce((totalPaymentSum, partObj) => {
-                                    if (partObj.ename === obj) {
-                                      totalPaymentSum += partObj.totalPayment;
-                                    }
-                                    return totalPaymentSum;
-                                  }, 0)
-                                }
-                              </td>
-                            </tr>
-                          ))) : (
-                          <tr>
-                            <td colSpan="11" style={{ textAlign: 'center' }}><Nodata /></td>
+                                style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "58px" }}
+                              />
+                            </td>
+                            <td>
+                              {
+                                followDataToday.reduce((totalServices, partObj) => {
+                                  if (partObj.ename === obj) {
+                                    totalServices += partObj.offeredServices.length;
+                                  }
+                                  return totalServices;
+                                }, 0)
+                              }
+                            </td>
+                            <td>
+                              {
+                                followDataToday.reduce((totalOfferedPrize, partObj) => {
+                                  if (partObj.ename === obj) {
+                                    totalOfferedPrize += partObj.offeredPrize;
+                                  }
+                                  return totalOfferedPrize;
+                                }, 0).toLocaleString('en-IN', numberFormatOptions)
+                              }
+                            </td>
+                            <td>
+                              {
+                                followDataToday.reduce((totalPaymentSum, partObj) => {
+                                  if (partObj.ename === obj) {
+                                    totalPaymentSum += partObj.totalPayment;
+                                  }
+                                  return totalPaymentSum;
+                                }, 0).toLocaleString('en-IN', numberFormatOptions)
+                              }
+                            </td>
                           </tr>
-                        )
-                      ) : (<tr style={{ minHeight: "350px" }}><td colSpan={11}>
-                        <ScaleLoader
-                          color="lightgrey"
-                          loading
-                          size={10}
-                          height="25"
-                          width="2"
-                          style={{ width: "10px", height: "10px" }}
-                          //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
-                          aria-label="Loading Spinner"
-                          data-testid="loader"
-                        />
-                      </td></tr>)
-                      }
+                        ))
+                      ) : (
+                        <tr style={{ minHeight: "350px" }}>
+                          <td colSpan={11}>
+                            <ScaleLoader
+                              color="lightgrey"
+                              loading
+                              size={10}
+                              height="25"
+                              width="2"
+                              style={{ width: "10px", height: "10px" }}
+                              aria-label="Loading Spinner"
+                              data-testid="loader"
+                            />
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
+
+
                     {uniqueEnames && (
-                      <tfoot >
+                      <tfoot style={{
+                        position: "sticky", // Make the footer sticky
+                        bottom: -1, // Stick it at the bottom
+                        backgroundColor: "#f6f2e9",
+                        color: "black",
+                        fontWeight: 500,
+                        zIndex: 2, // Ensure it's above the content
+                      }} >
                         <tr style={{ fontWeight: 500 }}>
                           <td style={{ lineHeight: "32px" }} colSpan="2">
                             Total
@@ -3673,7 +3873,7 @@ function Dashboard() {
 
                                 totalOfferedPrize += partObj.offeredPrize;
                                 return totalOfferedPrize;
-                              }, 0)
+                              }, 0).toLocaleString('en-IN', numberFormatOptions)
                             }
                           </td>
                           <td>
@@ -3682,8 +3882,8 @@ function Dashboard() {
 
                                 totalPaymentSum += partObj.totalPayment;
 
-                                return totalPaymentSum;
-                              }, 0)
+                                return totalPaymentSum
+                              }, 0).toLocaleString('en-IN', numberFormatOptions)
                             }
                           </td>
                         </tr>
@@ -3775,8 +3975,8 @@ function Dashboard() {
                             <td>{obj.ename}</td>
                             <td>{obj.companyName}</td>
                             <td>{obj.offeredServices.join(",")}</td>
-                            <td>&#8377;{obj.totalPayment.toLocaleString()}</td>
-                            <td>&#8377;{obj.offeredPrize.toLocaleString()}</td>
+                            <td>&#8377;{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>&#8377;{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
                             <td>{obj.estPaymentDate}</td>
                             <td>{obj.lastFollowUpdate}</td>
                             <td>{obj.remarks}</td>
@@ -3790,8 +3990,8 @@ function Dashboard() {
                             <td>{obj.ename}</td>
                             <td>{obj.companyName}</td>
                             <td>{obj.offeredServices.join(",")}</td>
-                            <td>&#8377;{obj.totalPayment.toLocaleString()}</td>
-                            <td>&#8377;{obj.offeredPrize.toLocaleString()}</td>
+                            <td>&#8377;{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>&#8377;{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
                             <td>{obj.estPaymentDate}</td>
                             <td>{obj.lastFollowUpdate}</td>
                             <td>{obj.remarks}</td>
