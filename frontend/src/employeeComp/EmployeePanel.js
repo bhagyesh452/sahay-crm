@@ -1233,7 +1233,7 @@ function EmployeePanel() {
         Swal.fire({ title: 'Payment is required!', icon: 'warning' });
       } else if (finalData.offeredPrize === 0) {
         Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
-      } else if (Number(finalData.totalPayment) >= Number(finalData.offeredPrize)) {
+      } else if (finalData.totalPayment >= finalData.offeredPrize) {
         Swal.fire({ title: 'Total Payment cannot be greater than Offered Prize!', icon: 'warning' });
       } else if (finalData.lastFollowUpdate === null) {
         Swal.fire({ title: 'Last FollowUp Date is required!', icon: 'warning' });
@@ -2715,7 +2715,6 @@ function EmployeePanel() {
                   employeeName={data.ename}
                   employeeEmail={data.email}
                 />
-           
         </>
       )}
 
@@ -3312,7 +3311,6 @@ function EmployeePanel() {
                     value={currentProjection.totalPayment}
                     onChange={(e) => {
                       const newTotalPayment = e.target.value;
-                      console.log(newTotalPayment)
                       if (Number(newTotalPayment) <= Number(currentProjection.offeredPrize)) {
                         setCurrentProjection((prevLeadData) => ({
                           ...prevLeadData,
@@ -3329,9 +3327,9 @@ function EmployeePanel() {
                     }}
                     disabled={!isEditProjection}
                   />
-                  {currentProjection.totalPaymentError && (
-                    <div style={{ color: "red" }}>{currentProjection.totalPaymentError}</div>
-                  )}
+                 
+                    <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
+                
                 </div>
               </div>
 
