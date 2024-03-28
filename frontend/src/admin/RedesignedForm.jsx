@@ -43,6 +43,7 @@ const defaultService = {
 };
 
 export default function RedesignedForm({
+  setDataStatus,
   setFormOpen,
   companysName,
   companysEmail,
@@ -108,6 +109,14 @@ export default function RedesignedForm({
       const data = response.data.find(
         (item) => item["Company Name"] === companysName
       );
+      console.log("Fetched Data")
+      if (!data) {
+        setCompleted({});
+        setActiveStep(0);
+        setSelectedValues("");
+        setLeadData(defaultLeadData);
+        return true;
+      }
       const {
         Step1Status,
         Step2Status,
@@ -117,7 +126,7 @@ export default function RedesignedForm({
         ...newLeadData
       } = data;
       setLeadData(newLeadData);
-      console.log(Step4Status , Step5Status , "This is status");
+
       if (Step1Status === true && Step2Status === false) {
         setCompleted({ 0: true });
         setActiveStep(1);
@@ -130,7 +139,7 @@ export default function RedesignedForm({
       } else if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
         setActiveStep(2);
-       
+
         setLeadData((prevState) => ({
           ...prevState,
           services:
@@ -140,7 +149,7 @@ export default function RedesignedForm({
         }));
         setTotalServices(data.services.length !== 0 ? data.services.length : 1);
       } else if (Step3Status === true && Step4Status === false) {
-        console.log(data.services , "This is services");
+        console.log(data.services, "This is services");
         setfetchedService(true);
         setCompleted({ 0: true, 1: true, 2: true });
         setActiveStep(3);
@@ -148,10 +157,10 @@ export default function RedesignedForm({
           ...prevState,
           services:
             data.services.length !== 0 ? data.services : [defaultService],
-          caCase:data.caCase,
-          caCommission:data.caCommission,
-          caNumber:data.caNumber,
-          caEmail:data.caEmail
+          caCase: data.caCase,
+          caCommission: data.caCommission,
+          caNumber: data.caNumber,
+          caEmail: data.caEmail,
         }));
         setTotalServices(data.services.length !== 0 ? data.services.length : 1);
       } else if (Step4Status === true && Step5Status === false) {
@@ -164,8 +173,8 @@ export default function RedesignedForm({
           receivedAmount: data.receivedAmount,
           otherDocs: data.otherDocs,
           paymentReceipt: data.paymentReceipt,
-          paymentMethod:data.paymentMethod,
-          extraNotes:data.extraNotes
+          paymentMethod: data.paymentMethod,
+          extraNotes: data.extraNotes,
         }));
       } else if (Step5Status === true) {
         setCompleted({ 0: true, 1: true, 2: true, 3: true, 4: true });
@@ -439,11 +448,10 @@ export default function RedesignedForm({
     if (activeStep !== 0) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
+      setDataStatus("Matured");
       setFormOpen(false);
     }
   };
-
-  
 
   function formatDate(inputDate) {
     const date = new Date(inputDate);
@@ -474,147 +482,203 @@ export default function RedesignedForm({
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
-
+console.log(completed , "this is completed")
   const handleComplete = async () => {
     try {
       const formData = new FormData();
-      const newCompleted = completed;
-      newCompleted[activeStep] = true;
-
-      setCompleted(newCompleted);
+    
+      const isEmptyOrNull = (value) => {
+        return value === '' || value === null || value === 0 
+      };
 
       // Prepare the data to send to the backend
       let dataToSend = {};
       if (activeStep === 0) {
-        dataToSend = {
-          "Company Email": leadData["Company Email"],
-          "Company Name": leadData["Company Name"],
-          "Company Number": leadData["Company Number"],
-          incoDate: leadData.incoDate,
-          panNumber: leadData.panNumber,
-          gstNumber: leadData.gstNumber,
-        };
-        console.log("This is sending", dataToSend);
-        try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}/step1`,
-            dataToSend
-          );
-          // Handle response data as needed
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          // Handle error
+        if (
+          isEmptyOrNull(leadData["Company Email"]) ||
+          isEmptyOrNull(leadData["Company Name"]) ||
+          isEmptyOrNull(leadData["Company Number"]) ||
+          isEmptyOrNull(leadData.incoDate) ||
+          isEmptyOrNull(leadData.panNumber) 
+        ) {
+          Swal.fire({
+            title: "Please fill all the details",
+            icon: 'warning',
+          });
+        }else{
+          dataToSend = {
+            "Company Email": leadData["Company Email"],
+            "Company Name": leadData["Company Name"],
+            "Company Number": leadData["Company Number"],
+            incoDate: leadData.incoDate,
+            panNumber: leadData.panNumber,
+            gstNumber: leadData.gstNumber,
+          };
+        
+          console.log("This is sending", dataToSend);
+          try {
+            const response = await axios.post(
+              `${secretKey}/redesigned-leadData/${companysName}/step1`,
+              dataToSend
+            );
+            // Handle response data as needed
+          } catch (error) {
+            console.error("Error uploading data:", error);
+            // Handle error
+          }
+          fetchData();
+          handleNext();
+          return true;
         }
-        fetchData();
-        handleNext();
-        return true;
+       
       }
       if (activeStep === 1) {
-        dataToSend = {
-          bdeName: leadData.bdeName,
-          bdeEmail: leadData.bdeEmail,
-          bdmName: leadData.bdmName,
-          bdmEmail: leadData.bdmEmail,
-          bookingDate: leadData.bookingDate,
-          bookingSource: selectedValues,
-        };
-        console.log("This is sending", dataToSend);
-        try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}/step2`,
-            dataToSend
-          );
-          // Handle response data as needed
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          // Handle error
+        console.log(leadData.bookingDate)
+        if (!leadData.bdeName ||!leadData.bdmName || !leadData.bdmEmail || !leadData.bdmEmail || !leadData.bookingDate || !selectedValues) {
+          Swal.fire({
+            title: "Please fill all the details",
+            icon: 'warning',
+          });
+          return true;
+        }else{
+          dataToSend = {
+            bdeName: leadData.bdeName,
+            bdeEmail: leadData.bdeEmail,
+            bdmName: leadData.bdmName,
+            bdmEmail: leadData.bdmEmail,
+            bookingDate: leadData.bookingDate,
+            bookingSource: selectedValues,
+          };
+          console.log("This is sending", dataToSend);
+          try {
+            const response = await axios.post(
+              `${secretKey}/redesigned-leadData/${companysName}/step2`,
+              dataToSend
+            );
+            // Handle response data as needed
+          } catch (error) {
+            console.error("Error uploading data:", error);
+            // Handle error
+          }
+          fetchData();
+          handleNext();
+          return true;
         }
-        fetchData();
-        handleNext();
-        return true;
+       
       }
       if (activeStep === 2) {
-        const totalAmount = leadData.services.reduce(
-          (acc, curr) => acc + curr.totalPaymentWGST,
-          0
-        );
-        const receivedAmount = leadData.services.reduce((acc, curr) => {
-          return curr.paymentTerms === "Full Advanced"
-            ? acc + curr.totalPaymentWGST
-            : acc + curr.firstPayment;
-        }, 0);
-        const pendingAmount = totalAmount - receivedAmount;
-        dataToSend = {
-          services: leadData.services,
-          numberOfServices: totalServices,
-          caCase:leadData.caCase,
-          caCommission:leadData.caCommission,
-          caNumber:leadData.caNumber,
-          caEmail:leadData.caEmail,
-          totalAmount:totalAmount,
-          receivedAmount:receivedAmount,
-          pendingAmount:pendingAmount
-        };
-        console.log("This is sending", dataToSend);
-        try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}/step3`,
-            dataToSend
+          console.log("I am in step 2")
+          if (leadData.services[0].serviceName || leadData.services[0].totalPaymentWOGST) {
+            Swal.fire({
+              title: "Please fill all the details",
+              icon: 'warning',
+            });
+            return true;
+          }else{
+          const totalAmount = leadData.services.reduce(
+            (acc, curr) => acc + curr.totalPaymentWGST,
+            0
           );
-          // Handle response data as needed
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          // Handle error
+          const receivedAmount = leadData.services.reduce((acc, curr) => {
+            return curr.paymentTerms === "Full Advanced"
+              ? acc + curr.totalPaymentWGST
+              : acc + curr.firstPayment;
+          }, 0);
+          const pendingAmount = totalAmount - receivedAmount;
+          dataToSend = {
+            services: leadData.services,
+            numberOfServices: totalServices,
+            caCase: leadData.caCase,
+            caCommission: leadData.caCommission,
+            caNumber: leadData.caNumber,
+            caEmail: leadData.caEmail,
+            totalAmount: totalAmount,
+            receivedAmount: receivedAmount,
+            pendingAmount: pendingAmount,
+          };
+          console.log("This is sending", dataToSend);
+          try {
+            const response = await axios.post(
+              `${secretKey}/redesigned-leadData/${companysName}/step3`,
+              dataToSend
+            );
+            // Handle response data as needed
+          } catch (error) {
+            console.error("Error uploading data:", error);
+            // Handle error
+          }
+          fetchData();
+          handleNext();
+          return true;
         }
-        fetchData();
-        handleNext();
-        return true;
+        
+      
+       
       }
       if (activeStep === 3) {
-        const totalAmount = leadData.services.reduce(
-          (acc, curr) => acc + curr.totalPaymentWGST,
-          0
-        );
-        const receivedAmount = leadData.services.reduce((acc, curr) => {
-          return curr.paymentTerms === "Full Advanced"
-            ? acc + curr.totalPaymentWGST
-            : acc + curr.firstPayment;
-        }, 0);
-        const pendingAmount = totalAmount - receivedAmount;
-
-        for (let i = 0; i < leadData.otherDocs.length; i++) {
-          formData.append("otherDocs", leadData.otherDocs[i]);
-        }
-        formData.append("totalAmount", totalAmount);
-        formData.append("receivedAmount", receivedAmount);
-        formData.append("pendingAmount", pendingAmount);
-        formData.append("paymentMethod", leadData.paymentMethod);
-        formData.append("extraNotes", leadData.extraNotes);
-        formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-
-        try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}/step4`,
-            formData
+        console.log("I am in step 4", leadData.paymentReceipt, leadData.otherDocs);
+        if (leadData.paymentReceipt.length === 0 || leadData.otherDocs.length === 0) {
+          Swal.fire({
+            title: "Please fill all the details",
+            icon: 'warning',
+          });
+          return true;
+        } else {
+          console.log("Re work")
+          const totalAmount = leadData.services.reduce(
+            (acc, curr) => acc + curr.totalPaymentWGST,
+            0
           );
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          // Handle error
+          const receivedAmount = leadData.services.reduce((acc, curr) => {
+            return curr.paymentTerms === "Full Advanced"
+              ? acc + curr.totalPaymentWGST
+              : acc + curr.firstPayment;
+          }, 0);
+          const pendingAmount = totalAmount - receivedAmount;
+      
+          const formData = new FormData();
+          formData.append("totalAmount", totalAmount);
+          formData.append("receivedAmount", receivedAmount);
+          formData.append("pendingAmount", pendingAmount);
+          formData.append("paymentMethod", leadData.paymentMethod);
+          formData.append("extraNotes", leadData.extraNotes);
+          
+          // Append payment receipt files to formData
+          for (let i = 0; i < leadData.paymentReceipt.length; i++) {
+            formData.append("paymentReceipt", leadData.paymentReceipt[i]);
+          }
+      
+          // Append other documents files to formData
+          for (let i = 0; i < leadData.otherDocs.length; i++) {
+            formData.append("otherDocs", leadData.otherDocs[i]);
+          }
+      
+          try {
+            const response = await axios.post(
+              `${secretKey}/redesigned-leadData/${companysName}/step4`,
+              formData
+            );
+            // Handle successful upload
+            fetchData();
+            handleNext();
+            return true;
+          } catch (error) {
+            console.error("Error uploading data:", error);
+            // Handle error
+          }
         }
-        fetchData();
-        handleNext();
-        return true;
       }
+      
       if (activeStep === 4) {
+
         try {
           const response = await axios.post(
             `${secretKey}/redesigned-final-leadData/${companysName}`,
             leadData
           );
           const response2 = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}/step5`,
+            `${secretKey}/redesigned-leadData/${companysName}/step5`
           );
-
 
           console.log(response.data);
           Swal.fire({
@@ -635,6 +699,7 @@ export default function RedesignedForm({
 
         fetchData();
         handleNext();
+        setFormOpen(false);
         return true;
       }
       // let dataToSend = {
@@ -642,117 +707,6 @@ export default function RedesignedForm({
       //   Step1Status: true,
       // };
 
-      if (activeStep === 1) {
-        dataToSend = {
-          ...dataToSend,
-          Step2Status: true,
-          bookingSource: selectedValues,
-        };
-      } else if (activeStep === 2) {
-        const totalAmount = leadData.services.reduce(
-          (acc, curr) => acc + curr.totalPaymentWOGST,
-          0
-        );
-        const receivedAmount = leadData.services.reduce((acc, curr) => {
-          return curr.paymentTerms === "Full Advanced"
-            ? acc + curr.totalPaymentWOGST
-            : acc + curr.firstPayment;
-        }, 0);
-        const pendingAmount = totalAmount - receivedAmount;
-        dataToSend = {
-          ...leadData,
-          Step2Status: true,
-          Step3Status: true,
-          totalAmount: totalAmount,
-          receivedAmount: receivedAmount,
-          pendingAmount: pendingAmount,
-        };
-      } else if (activeStep === 3) {
-        dataToSend = {
-          ...leadData,
-          Step3Status: true,
-          Step4Status: true,
-        };
-      } else if (activeStep === 4) {
-        dataToSend = {
-          ...leadData,
-          Step3Status: true,
-          Step4Status: true,
-          Step5Status: true,
-        };
-      }
-      // console.log(activeStep, dataToSend);
-      Object.keys(dataToSend).forEach((key) => {
-        if (key === "services") {
-          // Handle services separately as it's an array
-          dataToSend.services.forEach((service, index) => {
-            Object.keys(service).forEach((prop) => {
-              formData.append(`services[${index}][${prop}]`, service[prop]);
-            });
-          });
-        } else if (key === "otherDocs" && activeStep === 3) {
-          for (let i = 0; i < leadData.otherDocs.length; i++) {
-            formData.append("otherDocs", leadData.otherDocs[i]);
-          }
-        } else if (key === "paymentReceipt" && activeStep === 3) {
-          formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-        } else {
-          formData.append(key, dataToSend[key]);
-        }
-      });
-      if (activeStep === 4) {
-        dataToSend = {
-          ...leadData,
-          paymentReceipt: leadData.paymentReceipt
-            ? leadData.paymentReceipt
-            : null,
-        };
-        try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-final-leadData/${companysName}`,
-            leadData
-          );
-
-          console.log(response.data);
-          Swal.fire({
-            icon: "success",
-            title: "Form Submitted",
-            text: "Your form has been submitted successfully!",
-          });
-          // Handle response data as needed
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "There was an error submitting the form. Please try again later.",
-          });
-          // Handle error
-        }
-      } else {
-        try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
-
-          // Handle response data as needed
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          // Handle error
-        }
-      }
-
-      fetchData();
-
-      // Log the response from the backend
-
-      handleNext();
     } catch (error) {
       console.error("Error sending data to backend:", error);
       // Handle error if needed
@@ -894,6 +848,28 @@ export default function RedesignedForm({
     setActiveStep(0);
     setCompleted({});
   };
+  const handleResetDraft = async () => {
+    try {
+      const response = await fetch(
+        `${secretKey}/redesigned-delete-model/${companysName}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        console.log("Draft reset successfully");
+        // Optionally, you can perform further actions upon successful deletion
+        fetchData();
+      } else {
+        console.error("Error resetting draft:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error resetting draft:", error.message);
+    }
+  };
 
   const renderServices = () => {
     const services = [];
@@ -908,7 +884,9 @@ export default function RedesignedForm({
             <div className="d-flex align-items-center">
               <div className="selectservices-label mr-2 d-flex align-items-center">
                 <div className="services_No mr-1">{i + 1}</div>
-                <label for="">Select Service:</label>
+                <label for="">
+                  Select Service: {<span style={{ color: "red" }}>*</span>}
+                </label>
               </div>
               <div className="selectservices-label-selct">
                 <select
@@ -969,7 +947,9 @@ export default function RedesignedForm({
             <hr className="mt-3 mb-3"></hr>
             <div className="row align-items-center mt-2">
               <div className="col-sm-8">
-                <label class="form-label">Total Amount</label>
+                <label class="form-label">
+                  Total Amount {<span style={{ color: "red" }}>*</span>}
+                </label>
                 <div className="d-flex align-items-center">
                   <div class="input-group total-payment-inputs mb-2">
                     <input
@@ -1105,7 +1085,9 @@ export default function RedesignedForm({
             </div>
             <div className="row mt-2">
               <div className="col-sm-12">
-                <label className="form-label">Payment Terms</label>
+                <label className="form-label">
+                  Payment Terms {<span style={{ color: "red" }}>*</span>}
+                </label>
               </div>
               <div className="full-time col-sm-12">
                 <label className="form-check form-check-inline col">
@@ -1163,205 +1145,212 @@ export default function RedesignedForm({
               </div>
             </div>
             {leadData.services[i].paymentTerms === "two-part" && (
-              <div className="row mt-2">
-                <div className="col-sm-3">
-                  <div className="form-group">
-                    <label class="form-label">First Payment</label>
-                    <div class="input-group mb-2">
-                      <input
-                        type="number"
-                        class="form-control"
-                        placeholder="Enter First Payment"
-                        value={leadData.services[i].firstPayment}
-                        onChange={(e) => {
-                          setLeadData((prevState) => ({
-                            ...prevState,
-                            services: prevState.services.map((service, index) =>
-                              index === i
-                                ? {
-                                    ...service,
-                                    firstPayment: e.target.value,
-                                    secondPayment:
-                                      service.paymentCount === 2
-                                        ? service.totalPaymentWGST -
-                                          e.target.value
-                                        : service.secondPayment,
-                                  }
-                                : service
-                            ),
-                          }));
-                        }}
-                        readOnly={completed[activeStep] === true}
-                      />
-                      <button class="btn" type="button">
-                        ₹
-                      </button>
+              <div className="d-flex align-items-center mt-2">
+                <div className="part-payment-col">
+                  <div className="row">
+                    <div className="col-sm-3">
+                      <div className="form-group">
+                        <label class="form-label">First Payment</label>
+                        <div class="input-group mb-2">
+                          <input
+                            type="number"
+                            class="form-control"
+                            placeholder="Enter First Payment"
+                            value={leadData.services[i].firstPayment}
+                            onChange={(e) => {
+                              setLeadData((prevState) => ({
+                                ...prevState,
+                                services: prevState.services.map(
+                                  (service, index) =>
+                                    index === i
+                                      ? {
+                                          ...service,
+                                          firstPayment: e.target.value,
+                                          secondPayment:
+                                            service.paymentCount === 2
+                                              ? service.totalPaymentWGST -
+                                                e.target.value
+                                              : service.secondPayment,
+                                        }
+                                      : service
+                                ),
+                              }));
+                            }}
+                            readOnly={completed[activeStep] === true}
+                          />
+                          <button class="btn" type="button">
+                            ₹
+                          </button>
+                        </div>
+                      </div>
                     </div>
+                    {leadData.services[i].paymentCount > 1 && (
+                      <div className="col-sm-3">
+                        <div className="form-group">
+                          <label class="form-label">Second Payment</label>
+                          <div class="input-group mb-2">
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="Search for…"
+                              value={leadData.services[i].secondPayment}
+                              onChange={(e) => {
+                                setLeadData((prevState) => ({
+                                  ...prevState,
+                                  services: prevState.services.map(
+                                    (service, index) =>
+                                      index === i
+                                        ? {
+                                            ...service,
+                                            secondPayment: e.target.value,
+                                            thirdPayment:
+                                              service.paymentCount === 3
+                                                ? service.totalPaymentWGST -
+                                                  service.firstPayment -
+                                                  e.target.value
+                                                : service.thirdPayment,
+                                          }
+                                        : service
+                                  ),
+                                }));
+                              }}
+                              readOnly={leadData.services[i].paymentCount === 2}
+                            />
+                            <button class="btn" type="button">
+                              ₹
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {leadData.services[i].paymentCount > 2 && (
+                      <div className="col-sm-3">
+                        <div className="form-group">
+                          <label class="form-label">Third Payment</label>
+                          <div class="input-group mb-2">
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="Search for…"
+                              value={leadData.services[i].thirdPayment}
+                              onChange={(e) => {
+                                setLeadData((prevState) => ({
+                                  ...prevState,
+                                  services: prevState.services.map(
+                                    (service, index) =>
+                                      index === i
+                                        ? {
+                                            ...service,
+                                            thirdPayment: e.target.value,
+                                            fourthPayment:
+                                              service.paymentCount === 4
+                                                ? service.totalPaymentWGST -
+                                                  service.firstPayment -
+                                                  service.secondPayment -
+                                                  e.target.value
+                                                : service.fourthPayment,
+                                          }
+                                        : service
+                                  ),
+                                }));
+                              }}
+                              readOnly={leadData.services[i].paymentCount === 3}
+                            />
+                            <button class="btn" type="button">
+                              ₹
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {leadData.services[i].paymentCount > 3 && (
+                      <div className="col-sm-3">
+                        <div className="form-group">
+                          <label class="form-label">Fourth Payment</label>
+                          <div class="input-group mb-2">
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="Search for…"
+                              value={leadData.services[i].fourthPayment}
+                              onChange={(e) => {
+                                setLeadData((prevState) => ({
+                                  ...prevState,
+                                  services: prevState.services.map(
+                                    (service, index) =>
+                                      index === i
+                                        ? {
+                                            ...service,
+                                            fourthPayment: e.target.value,
+                                          }
+                                        : service
+                                  ),
+                                }));
+                              }}
+                              readOnly={leadData.services[i].paymentCount === 4}
+                            />
+                            <button class="btn" type="button">
+                              ₹
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-                {leadData.services[i].paymentCount > 1 && (
-                  <div className="col-sm-3">
-                    <div className="form-group">
-                      <label class="form-label">Second Payment</label>
-                      <div class="input-group mb-2">
-                        <input
-                          type="text"
-                          class="form-control"
-                          placeholder="Search for…"
-                          value={leadData.services[i].secondPayment}
-                          onChange={(e) => {
-                            setLeadData((prevState) => ({
-                              ...prevState,
-                              services: prevState.services.map(
-                                (service, index) =>
-                                  index === i
-                                    ? {
-                                        ...service,
-                                        secondPayment: e.target.value,
-                                        thirdPayment:
-                                          service.paymentCount === 3
-                                            ? service.totalPaymentWGST -
-                                              service.firstPayment -
-                                              e.target.value
-                                            : service.thirdPayment,
-                                      }
-                                    : service
-                              ),
-                            }));
-                          }}
-                          readOnly={leadData.services[i].paymentCount === 2}
-                        />
-                        <button class="btn" type="button">
-                          ₹
-                        </button>
-                      </div>
-                    </div>
+                <div className="part-payment-plus-minus">
+                  <div className="d-flex align-items-end justify-content-between">
+                  <button
+                      disabled={leadData.services[i].paymentCount === 4}
+                      onClick={(e) => {
+                        e.preventDefault(); // Prevent the default form submission behavior
+                        setLeadData((prevState) => ({
+                          ...prevState,
+                          services: prevState.services.map((service, index) =>
+                            index === i
+                              ? {
+                                  ...service,
+                                  paymentCount: service.paymentCount + 1,
+                                  firstPayment: 0,
+                                  secondPayment: 0,
+                                  thirdPayment: 0,
+                                  fourthPayment: 0,
+                                }
+                              : service
+                          ),
+                        }));
+                      }}
+                      style={{ marginLeft: "5px" }}
+                      className="btn btn-primary"
+                    >
+                      +
+                    </button>
+                    <button
+                      disabled={leadData.services[i].paymentCount === 2}
+                      onClick={(e) => {
+                        setLeadData((prevState) => ({
+                          ...prevState,
+                          services: prevState.services.map((service, index) =>
+                            index === i
+                              ? {
+                                  ...service,
+                                  paymentCount: service.paymentCount - 1,
+                                  firstPayment: 0,
+                                  secondPayment: 0,
+                                  thirdPayment: 0,
+                                  fourthPayment: 0,
+                                }
+                              : service
+                          ),
+                        }));
+                      }}
+                      style={{ marginLeft: "5px" }}
+                      className="btn btn-primary"
+                    >
+                      <i className="fas fa-plus"></i> -{" "}
+                    </button>
                   </div>
-                )}
-                {leadData.services[i].paymentCount > 2 && (
-                  <div className="col-sm-3">
-                    <div className="form-group">
-                      <label class="form-label">Third Payment</label>
-                      <div class="input-group mb-2">
-                        <input
-                          type="text"
-                          class="form-control"
-                          placeholder="Search for…"
-                          value={leadData.services[i].thirdPayment}
-                          onChange={(e) => {
-                            setLeadData((prevState) => ({
-                              ...prevState,
-                              services: prevState.services.map(
-                                (service, index) =>
-                                  index === i
-                                    ? {
-                                        ...service,
-                                        thirdPayment: e.target.value,
-                                        fourthPayment:
-                                          service.paymentCount === 4
-                                            ? service.totalPaymentWGST -
-                                              service.firstPayment -
-                                              service.secondPayment -
-                                              e.target.value
-                                            : service.fourthPayment,
-                                      }
-                                    : service
-                              ),
-                            }));
-                          }}
-                          readOnly={leadData.services[i].paymentCount === 3}
-                        />
-                        <button class="btn" type="button">
-                          ₹
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {leadData.services[i].paymentCount > 3 && (
-                  <div className="col-sm-3">
-                    <div className="form-group">
-                      <label class="form-label">Fourth Payment</label>
-                      <div class="input-group mb-2">
-                        <input
-                          type="text"
-                          class="form-control"
-                          placeholder="Search for…"
-                          value={leadData.services[i].fourthPayment}
-                          onChange={(e) => {
-                            setLeadData((prevState) => ({
-                              ...prevState,
-                              services: prevState.services.map(
-                                (service, index) =>
-                                  index === i
-                                    ? {
-                                        ...service,
-                                        fourthPayment: e.target.value,
-                                      }
-                                    : service
-                              ),
-                            }));
-                          }}
-                          readOnly={leadData.services[i].paymentCount === 4}
-                        />
-                        <button class="btn" type="button">
-                          ₹
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <button
-                  disabled={leadData.services[i].paymentCount === 4}
-                  onClick={(e) => {
-                    e.preventDefault(); // Prevent the default form submission behavior
-                    setLeadData((prevState) => ({
-                      ...prevState,
-                      services: prevState.services.map((service, index) =>
-                        index === i
-                          ? {
-                              ...service,
-                              paymentCount: service.paymentCount + 1,
-                              firstPayment: 0,
-                              secondPayment: 0,
-                              thirdPayment: 0,
-                              fourthPayment: 0,
-                            }
-                          : service
-                      ),
-                    }));
-                  }}
-                  style={{ marginLeft: "5px" }}
-                  className="btn btn-primary"
-                >
-                  +
-                </button>
-
-                <button
-                  disabled={leadData.services[i].paymentCount === 2}
-                  onClick={(e) => {
-                    setLeadData((prevState) => ({
-                      ...prevState,
-                      services: prevState.services.map((service, index) =>
-                        index === i
-                          ? {
-                              ...service,
-                              paymentCount: service.paymentCount - 1,
-                              firstPayment: 0,
-                              secondPayment: 0,
-                              thirdPayment: 0,
-                              fourthPayment: 0,
-                            }
-                          : service
-                      ),
-                    }));
-                  }}
-                  style={{ marginLeft: "5px" }}
-                  className="btn btn-primary"
-                >
-                  <i className="fas fa-plus"></i> -{" "}
-                </button>
+                </div>
               </div>
             )}
 
@@ -1478,7 +1467,14 @@ export default function RedesignedForm({
                                 <div className="row">
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="Company">Company Name:</label>
+                                      <label for="Company">
+                                        Company Name:{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
+                                      </label>
                                       <input
                                         type="text"
                                         className="form-control mt-1"
@@ -1497,7 +1493,14 @@ export default function RedesignedForm({
                                   </div>
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="email">Email Address:</label>
+                                      <label for="email">
+                                        Email Address:{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
+                                      </label>
                                       <input
                                         type="email"
                                         className="form-control mt-1"
@@ -1518,7 +1521,14 @@ export default function RedesignedForm({
                                   </div>
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="number">Phone No:</label>
+                                      <label for="number">
+                                        Phone No:{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
+                                      </label>
                                       <input
                                         type="tel"
                                         className="form-control mt-1"
@@ -1540,7 +1550,12 @@ export default function RedesignedForm({
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="number">
-                                        Incorporation date:
+                                        Incorporation date:{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
                                       </label>
                                       <input
                                         type="date"
@@ -1562,7 +1577,14 @@ export default function RedesignedForm({
                                   </div>
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="pan">Company's PAN:</label>
+                                      <label for="pan">
+                                        Company's PAN:{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
+                                      </label>
                                       <input
                                         type="text"
                                         className="form-control mt-1"
@@ -1578,6 +1600,7 @@ export default function RedesignedForm({
                                         readOnly={
                                           completed[activeStep] === true
                                         }
+                                        required
                                       />
                                     </div>
                                   </div>
@@ -1619,7 +1642,14 @@ export default function RedesignedForm({
                                 <div className="row">
                                   <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="bdeName">BDE Name:</label>
+                                      <label for="bdeName">
+                                        BDE Name:
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
+                                      </label>
                                       <input
                                         type="text"
                                         className="form-control mt-1"
@@ -1640,6 +1670,11 @@ export default function RedesignedForm({
                                     <div className="form-group mt-2 mb-2">
                                       <label for="BDEemail">
                                         BDE Email Address:
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
                                       </label>
                                       <input
                                         type="email"
@@ -1659,7 +1694,14 @@ export default function RedesignedForm({
                                   </div>
                                   <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="bdmName">BDM Name:</label>
+                                      <label for="bdmName">
+                                        BDM Name:{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
+                                      </label>
 
                                       <select
                                         type="text"
@@ -1693,7 +1735,12 @@ export default function RedesignedForm({
                                   <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="BDMemail">
-                                        BDM Email Address:
+                                        BDM Email Address:{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
                                       </label>
                                       <input
                                         type="email"
@@ -1714,7 +1761,12 @@ export default function RedesignedForm({
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="booking-date">
-                                        Booking Date
+                                        Booking Date{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
                                       </label>
                                       <input
                                         type="date"
@@ -1737,7 +1789,12 @@ export default function RedesignedForm({
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="lead-source">
-                                        Lead Source:
+                                        Lead Source:{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
                                       </label>
                                       <select
                                         value={selectedValues}
@@ -1806,6 +1863,7 @@ export default function RedesignedForm({
                                     {" "}
                                     <label for="lead-source">
                                       Select No of Services:
+                                      {<span style={{ color: "red" }}>*</span>}
                                     </label>
                                   </div>
                                   <div className="ml-2">
@@ -1829,7 +1887,11 @@ export default function RedesignedForm({
                                 {renderServices()}
 
                                 <div className="CA-case mb-1">
-                                  <label class="form-label">CA Case</label>
+                                  <label class="form-label mt-2">
+                                    CA Case{" "}
+                                    {<span style={{ color: "red" }}>*</span>}
+                                  </label>
+
                                   <div className="check-ca-case">
                                     <div class="mb-3">
                                       <div>
@@ -1882,7 +1944,12 @@ export default function RedesignedForm({
                                     <div className="ca-details row">
                                       <div className="ca-number col">
                                         <label className="form-label">
-                                          Enter CA's Number
+                                          Enter CA's Number{" "}
+                                          {
+                                            <span style={{ color: "red" }}>
+                                              *
+                                            </span>
+                                          }
                                         </label>
                                         <input
                                           type="number"
@@ -1904,7 +1971,12 @@ export default function RedesignedForm({
                                       </div>
                                       <div className="ca-email col">
                                         <label className="form-label">
-                                          Enter CA's Email
+                                          Enter CA's Email{" "}
+                                          {
+                                            <span style={{ color: "red" }}>
+                                              *
+                                            </span>
+                                          }
                                         </label>
                                         <div className="ca-email2">
                                           <input
@@ -1929,7 +2001,12 @@ export default function RedesignedForm({
 
                                       <div className="ca-commision col">
                                         <label className="form-label">
-                                          Enter CA's Commission
+                                          Enter CA's Commission{" "}
+                                          {
+                                            <span style={{ color: "red" }}>
+                                              *
+                                            </span>
+                                          }
                                         </label>
                                         <input
                                           type="text"
@@ -2063,7 +2140,12 @@ export default function RedesignedForm({
                                         className="form-label"
                                         for="Payment Receipt"
                                       >
-                                        Upload Payment Reciept
+                                        Upload Payment Reciept{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
                                       </label>
                                       <input
                                         type="file"
@@ -2091,7 +2173,12 @@ export default function RedesignedForm({
                                   <div className="col-sm-6 mt-2">
                                     <div class="form-group mt-2 mb-2">
                                       <label class="form-label">
-                                        Payment Method
+                                        Payment Method{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
                                       </label>
                                       <select
                                         class="form-select mb-3"
@@ -2135,7 +2222,12 @@ export default function RedesignedForm({
                                         className="form-label"
                                         for="remarks"
                                       >
-                                        Any Extra Remarks
+                                        Any Extra Remarks{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
                                       </label>
                                       <textarea
                                         rows={1}
@@ -2158,7 +2250,12 @@ export default function RedesignedForm({
                                   <div className="col-sm-6 mt-2">
                                     <div className="form-group">
                                       <label className="form-label" for="docs">
-                                        Upload Additional Docs
+                                        Upload Additional Docs{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
                                       </label>
                                       <input
                                         type="file"
@@ -2768,18 +2865,13 @@ export default function RedesignedForm({
                                                     }
                                                   ></img>
                                                 </div>
-                                                
+
                                                 <div
-                                            className="docItemName wrap-MyText"
-                                            title="logo.png"
-                                          >
-                                            {
-                                                  val.filename.split(
-                                                    "-"
-                                                  )[1]
-                                                }
-                                          </div>
-                                                
+                                                  className="docItemName wrap-MyText"
+                                                  title="logo.png"
+                                                >
+                                                  {val.filename.split("-")[1]}
+                                                </div>
                                               </div>
                                             </>
                                           ) : (
@@ -2802,15 +2894,11 @@ export default function RedesignedForm({
                                                   ></img>
                                                 </div>
                                                 <div
-                                            className="docItemName wrap-MyText"
-                                            title="logo.png"
-                                          >
-                                          {
-                                                  val.name.split(
-                                                    "-"
-                                                  )[1]
-                                                }
-                                          </div>
+                                                  className="docItemName wrap-MyText"
+                                                  title="logo.png"
+                                                >
+                                                  {val.name.split("-")[1]}
+                                                </div>
                                               </div>
                                             </>
                                           )
@@ -2869,6 +2957,15 @@ export default function RedesignedForm({
                         >
                           {activeStep !== 0 ? "Back" : "Back to Main"}
                         </Button>
+                        <Button
+                          color="primary"
+                          variant="contained"
+                          disabled={activeStep === 0}
+                          sx={{ mr: 1 }}
+                          onClick={handleResetDraft}
+                        >
+                          Reset
+                        </Button>
                         <Box sx={{ flex: "1 1 auto" }} />
                         <Button
                           onClick={handleNext}
@@ -2897,7 +2994,7 @@ export default function RedesignedForm({
                               variant="contained"
                             >
                               {completedSteps() === totalSteps() - 1
-                                ? "Finish"
+                                ? "Submit"
                                 : "Save Draft"}
                             </Button>
                           ))}

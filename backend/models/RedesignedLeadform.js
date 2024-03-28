@@ -42,7 +42,7 @@ const ServiceSchema = new mongoose.Schema({
 const RedesignedLeadformSchema = new mongoose.Schema({
     company: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Company Model',
+        ref: 'newcdatas',
         localField: 'Company Name',
         foreignField: 'Company Name',
         justOne: true,
