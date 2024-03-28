@@ -2509,7 +2509,7 @@ function EmployeeDashboard() {
                         ) : (
                           <tbody>
                             <tr>
-                              <td colSpan="11">
+                              <td className="particular" colSpan="11">
                                 <Nodata />
                               </td>
                             </tr>

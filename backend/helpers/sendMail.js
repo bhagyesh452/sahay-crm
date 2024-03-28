@@ -54,7 +54,7 @@ const processAttachments = (files, prefix) => {
       if (mimeType) {
         attachments.push({
           filename: `${prefix}${index + 1}.${mime.extension(mimeType)}`,
-          content: file.buffer, // Assuming file is a buffer
+          content: file, // Assuming file is a buffer
         });
       } else {
         console.warn(`Unknown file type for ${file.originalname}`);
@@ -72,7 +72,7 @@ async function sendMail(recipients, subject, text, html, otherDocs, paymentRecei
   const paymentReceiptAttachments = processAttachments(paymentReceipt, 'paymentReceipt');
 
   const info = await transporter.sendMail({
-    from: 'alerts@startupsahay.com', // Replace with your Gmail email ID
+    from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>', // Replace with your Gmail email ID
     to: recipients.join(', '),
     replyTo: 'bookings@startupsahay.com',
     subject,

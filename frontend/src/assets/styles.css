@@ -1006,3 +1006,14 @@ color: #4e884e;
 {
   padding: 6px !important;
 }
+
+.part-payment-col
+{
+  width: calc(100% - 95px);
+}
+.part-payment-plus-minus
+{
+  width: 90px;
+  margin-right: 5px;
+  margin-top: 22px;
+}
