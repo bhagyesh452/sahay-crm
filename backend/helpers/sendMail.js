@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const mime = require('mime-types');
-require('dotenv').config(); // Load environment variables from .env file
 
 // Create OAuth2 client
 const oAuth2Client = new google.auth.OAuth2({
@@ -10,21 +9,27 @@ const oAuth2Client = new google.auth.OAuth2({
   redirectUri: 'https://developers.google.com/oauthplayground' // Replace with your authorized redirect URI
 });
 
+
+// Set your OAuth2 refresh token
+oAuth2Client.setCredentials({
+  refresh_token: process.env.GOOGLE_REFRESH_TOKEN // Replace with your OAuth2 refresh token
+});
+
+
 // Get OAuth2 access token
-async function getAccessToken() {
-  try {
-    const { tokens } = await oAuth2Client.getRequestHeaders();
-    return tokens.access_token;
-  } catch (error) {
-    console.error('Error refreshing access token:', error.message);
-    throw error;
-  }
-}
+// async function getAccessToken() {
+//   try {
+//     const tokenResponse = await oAuth2Client.getRequestHeaders();
+//     return tokenResponse.Authorization;
+//   } catch (error) {
+//     console.error('Error fetching access token:', error.message);
+//     throw error;
+//   }
+// }
 
 // Create Nodemailer transporter with OAuth2
 async function createTransporter() {
-  const accessToken = await getAccessToken();
-
+  // const accessToken = await getAccessToken();
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -35,7 +40,7 @@ async function createTransporter() {
       clientId: process.env.GOOGLE_CLIENT_ID, // Replace with your OAuth2 client ID
       clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Replace with your OAuth2 client secret
       refreshToken: process.env.GOOGLE_REFRESH_TOKEN, // Replace with your OAuth2 refresh token
-      accessToken,
+      accessToken: process.env.GOOGLE_ACCESS_TOKEN // Use dynamically fetched OAuth2 access token
     }
   });
 }
@@ -62,6 +67,7 @@ const processAttachments = (files, prefix) => {
 // Function to send email
 async function sendMail(recipients, subject, text, html, otherDocs, paymentReceipt) {
   const transporter = await createTransporter();
+
   const otherDocsAttachments = processAttachments(otherDocs, 'otherDocs');
   const paymentReceiptAttachments = processAttachments(paymentReceipt, 'paymentReceipt');
 
@@ -74,6 +80,7 @@ async function sendMail(recipients, subject, text, html, otherDocs, paymentRecei
     html,
     attachments: [...otherDocsAttachments, ...paymentReceiptAttachments],
   });
+
   return info;
 }
 
