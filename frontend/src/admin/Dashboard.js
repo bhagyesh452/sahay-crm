@@ -171,7 +171,7 @@ function Dashboard() {
 
       const response = await axios.get(url);
       const data = response.data.leads;
-      console.log(` startDate : ${startDateAnother} , endDate : ${endDateAnother}`, data);
+      //console.log(` startDate : ${startDateAnother} , endDate : ${endDateAnother}`, data);
 
       // Update state with the fetched data
       setBookingObject(data);
@@ -382,13 +382,13 @@ function Dashboard() {
     }
   }
 
-  console.log(followDataToday)
+  //console.log(followDataToday)
 
   useEffect(() => {
     fetchFollowUpData();
   }, []);
 
-  const uniqueEnames = [...new Set(followData.map(item => item.ename))];
+  const uniqueEnames = [...new Set(followDataToday.map(item => item.ename))];
 
   const servicesByEname = followData.reduce((acc, curr) => {
     // Check if ename already exists in the accumulator
@@ -486,12 +486,12 @@ function Dashboard() {
     return accumulate;
   }, []);
 
-  console.log(lastFollowDate)
+  //console.log(lastFollowDate)
 
-  console.log(followData)
+  //console.log(followData)
 
   const [projectionEname, setProjectionEname] = useState("")
-  console.log(projectionEname)
+  //console.log(projectionEname)
 
   const [projectedDataToday, setprojectedDataToday] = useState([])
   //console.log("Total totalPaymentSum:", totalTotalPaymentSum);
@@ -503,7 +503,7 @@ function Dashboard() {
     const projectedData = followData.filter(obj => obj.ename === ename);
     const projectedDataDateRange = filteredDataDateRange.filter(obj => obj.ename === ename)
     const projectedDataToday = followDataToday.filter(obj => obj.ename === ename)
-    console.log(projectedDataDateRange)
+    //console.log(projectedDataDateRange)
     setProjectedEmployee(projectedData);
     setProjectedDataDateRange(projectedDataDateRange)
     setprojectedDataToday(projectedDataToday)
@@ -511,7 +511,7 @@ function Dashboard() {
   //console.log(projectedEmployee)
   //console.log(projectedDataDateRange)
 
-  console.log(projectedDataToday)
+  //console.log(projectedDataToday)
   const closeProjectionTable = () => {
     setopenProjectionTable(false);
   };
@@ -624,7 +624,7 @@ function Dashboard() {
   }, []);
 
   const [selectedDateRange, setSelectedDateRange] = useState([]);
-  console.log(selectedDateRange)
+  //console.log(selectedDateRange)
 
   const selectionRange = {
     startDate: startDate,
@@ -674,6 +674,42 @@ function Dashboard() {
     setEndDate(endDate);
     setFilteredDataDateRange(filteredDataDateRange);
   };
+
+  useEffect(() => {
+    console.log(startDate);
+    console.log(endDate);
+
+    // Filter followData based on the selected date range
+    const filteredDataDateRange = followData.filter(product => {
+      const productDate = new Date(product["estPaymentDate"]);
+
+      // Convert productDate to the same format as startDate and endDate
+      const formattedProductDate = dayjs(productDate).startOf('day');
+      const formattedStartDate = startDate ? dayjs(startDate).startOf('day') : null;
+      const formattedEndDate = endDate ? dayjs(endDate).endOf('day') : null;
+
+      // Check if the formatted productDate is within the selected date range
+      if (formattedStartDate && formattedEndDate && formattedStartDate.isSame(formattedEndDate)) {
+        // If both startDate and endDate are the same, filter for transactions on that day
+        return formattedProductDate.isSame(formattedStartDate);
+      } else if (formattedStartDate && formattedEndDate) {
+        // If different startDate and endDate, filter within the range
+        return formattedProductDate >= formattedStartDate && formattedProductDate <= formattedEndDate;
+      } else {
+        // If either startDate or endDate is null, return false
+        return false;
+      }
+    });
+
+    setfollowDataToday(filteredDataDateRange);
+  }, [startDate, endDate]);
+
+
+
+
+
+
+
 
   //console.log("kuch" , filteredDataDateRange)
 
@@ -1648,9 +1684,9 @@ function Dashboard() {
     const filteredDataDateRange = companyDataFilter.filter(product => {
       const productDate = new Date(product["AssignDate"]);
       if (formatDate(date.selection.startDate) === formatDate(date.selection.endDate)) {
-        console.log(formatDate(date.selection.startDate))
-        console.log(formatDate(date.selection.endDate))
-        console.log(formatDate(productDate))
+        //console.log(formatDate(date.selection.startDate))
+        //console.log(formatDate(date.selection.endDate))
+        //console.log(formatDate(productDate))
         return formatDate(productDate) === formatDate(date.selection.startDate);
       } else {
         return (
@@ -1742,89 +1778,218 @@ function Dashboard() {
   const [sortTypeProjection, setSortTypeProjection] = useState({
     totalCompanies: "ascending",
   });
+  const [sortTypeServices, setSortTypeServices] = useState({
+    offeredServices: "ascending"
+  })
+
+  const [sortTypePrice, setSortTypePrice] = useState({
+    offeredPrice: "ascending"
+  })
+
+  const [sortTypeExpectedPayment, setSortTypeExpectedPayment] = useState({
+    expectedPayment: "ascending"
+  })
 
   const handleSortTotalCompanies = (newSortType) => {
     setSortTypeProjection(newSortType);
   };
 
+  const handleSortOfferedServices = (newSortType) => {
+    setSortTypeServices(newSortType);
+  };
+
+  const handleSortOffredPrize = (newSortType) => {
+
+    setSortTypePrice(newSortType);
+  };
+
+  const handleSortExpectedPayment = (newSortType) => {
+    console.log(newSortType)
+    setSortTypeExpectedPayment(newSortType);
+  };
+  // const getTotalOfferedPrice = (ename) => {
+  //   return followDataToday.reduce((totalOfferedPrice, partObj) => {
+  //     if (partObj.ename === ename) {
+  //       totalOfferedPrice += partObj.offeredPrize;
+  //     }
+  //     return totalOfferedPrice;
+  //   }, 0);
+  // };
+
+  // // Function to get expected amount for a given ename
+  // const getExpectedAmount = (ename) => {
+  //   return followDataToday.reduce((totalPaymentSum, partObj) => {
+  //     if (partObj.ename === ename) {
+  //       totalPaymentSum += partObj.totalPayment;
+  //     }
+  //     return totalPaymentSum;
+  //   }, 0);
+  // };
 
   const sortedData = uniqueEnames.slice().sort((a, b) => {
-    const totalCompaniesA = followDataToday.filter(
-      (partObj) => partObj.ename === a
-    ).length;
-    const totalCompaniesB = followDataToday.filter(
-      (partObj) => partObj.ename === b
-    ).length;
-  
+    // Sorting logic for total companies
     if (sortTypeProjection === "ascending") {
-      return totalCompaniesA - totalCompaniesB;
+      return followDataToday.filter((partObj) => partObj.ename === a).length -
+        followDataToday.filter((partObj) => partObj.ename === b).length;
     } else if (sortTypeProjection === "descending") {
-      return totalCompaniesB - totalCompaniesA;
+      return followDataToday.filter((partObj) => partObj.ename === b).length -
+        followDataToday.filter((partObj) => partObj.ename === a).length;
     }
-    // If sortTypeProjection is "none", return original order
+
+    // Sorting logic for offered services
+    if (sortTypeServices === "ascending") {
+      return followDataToday.reduce((totalServicesA, partObj) => {
+        if (partObj.ename === a) {
+          totalServicesA += partObj.offeredServices.length;
+        }
+        return totalServicesA;
+      }, 0) - followDataToday.reduce((totalServicesB, partObj) => {
+        if (partObj.ename === b) {
+          totalServicesB += partObj.offeredServices.length;
+        }
+        return totalServicesB;
+      }, 0);
+    } else if (sortTypeServices === "descending") {
+      return followDataToday.reduce((totalServicesB, partObj) => {
+        if (partObj.ename === b) {
+          totalServicesB += partObj.offeredServices.length;
+        }
+        return totalServicesB;
+      }, 0) - followDataToday.reduce((totalServicesA, partObj) => {
+        if (partObj.ename === a) {
+          totalServicesA += partObj.offeredServices.length;
+        }
+        return totalServicesA;
+      }, 0);
+    }
+
+    // Sorting logic for total offered price
+    // if (sortTypePrice === "ascending") {
+    //   return getTotalOfferedPrice(a) - getTotalOfferedPrice(b);
+    // } else if (sortTypePrice === "descending") {
+    //   return getTotalOfferedPrice(b) - getTotalOfferedPrice(a);
+    // }
+    if (sortTypePrice === "ascending") {
+      return followDataToday.reduce((totalOfferedPriceA, partObj) => {
+        if (partObj.ename === a) {
+          totalOfferedPriceA += partObj.offeredPrize;
+        }
+        return totalOfferedPriceA;
+      }, 0) - followDataToday.reduce((totalOfferedPriceB, partObj) => {
+        if (partObj.ename === b) {
+          totalOfferedPriceB += partObj.offeredPrize;
+        }
+        return totalOfferedPriceB;
+      }, 0);
+    } else if (sortTypePrice === "descending") {
+      return followDataToday.reduce((totalOfferedPriceB, partObj) => {
+        if (partObj.ename === b) {
+          totalOfferedPriceB += partObj.offeredPrize;
+        }
+        return totalOfferedPriceB;
+      }, 0) - followDataToday.reduce((totalOfferedPriceA, partObj) => {
+        if (partObj.ename === a) {
+          totalOfferedPriceA += partObj.offeredPrize;
+        }
+        return totalOfferedPriceA;
+      }, 0);
+    }
+
+
+
+    // Sorting logic for expected amount
+    if (sortTypeExpectedPayment === "ascending") {
+      return followDataToday.reduce((totalExpectedPaymentA, partObj) => {
+        if (partObj.ename === a) {
+          totalExpectedPaymentA += partObj.totalPayment;
+        }
+        return totalExpectedPaymentA;
+      }, 0) - followDataToday.reduce((totalExpectedPaymentB, partObj) => {
+        if (partObj.ename === b) {
+          totalExpectedPaymentB += partObj.totalPayment;
+        }
+        return totalExpectedPaymentB;
+      }, 0);
+    } else if (sortTypeExpectedPayment === "descending") {
+      return followDataToday.reduce((totalExpectedPaymentB, partObj) => {
+        if (partObj.ename === b) {
+          totalExpectedPaymentB += partObj.totalPayment;
+        }
+        return totalExpectedPaymentB;
+      }, 0) - followDataToday.reduce((totalExpectedPaymentA, partObj) => {
+        if (partObj.ename === a) {
+          totalExpectedPaymentA += partObj.totalPayment;
+        }
+        return totalExpectedPaymentA;
+      }, 0);
+    }
+
+    // If sortType is "none", return original order
     return 0;
   });
-  
-  
+
+  // Function to get total offered price for a given ename
 
 
-  // const handleSortTotalCompanies = (sortBy1) => {
-  //   setSortTypeProjection(prevData => ({
-  //     ...prevData,
-  //     totalCompanies: prevData.totalCompanies === "ascending"
-  //       ? "descending"
-  //       : prevData.totalCompanies === "descending"
-  //         ? "none"
-  //         : "ascending"
-  //   }));
-  //   switch (sortBy1) {
-  //     case "ascending":
-  //       setIncoFilterNew("ascending");
-  //       const untouchedCountAscending = {}
-  //       //console.log("ascending is working")
-  //       followDataToday.forEach((company) => {
-  //         if (company) {
-  //           untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
-  //         }
-  //       });
-
-  //       // Step 2: Sort employeeData based on the count of "Untouched" statuses
-  //       followDataToday.sort((a, b) => {
-  //         const countA = untouchedCountAscending[a.ename] || 0;
-  //         const countB = untouchedCountAscending[b.ename] || 0;
-  //         return countA - countB; // Sort in ascending order of "Untouched" count
-  //       });
-  //       break;
-
-  //     case "descending":
-  //       setIncoFilterNew("descending");
-  //       const untouchedCount = {};
-  //       //console.log("descending is working")
-  //       followDataToday.forEach((company) => {
-  //         if ((company)
-  //         ) {
-  //           untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
-  //         }
-  //       });
-
-  //       // Step 2: Sort employeeData based on the count of "Untouched" statuses
-  //       followDataToday.sort((a, b) => {
-  //         const countA = untouchedCount[a.ename] || 0;
-  //         const countB = untouchedCount[b.ename] || 0;
-  //         return countB - countA; // Sort in descending order of "Untouched" count
-  //       });
-  //       break;
-
-  //     case "none":
-  //       setIncoFilter("none");
-
-  //       break;
-
-  //     default:
-  //       break;
-
-  //   }
+  // const handleSortTotalCompanies = (newSortType) => {
+  //   console.log(newSortType)
+  //   setSortTypeProjection(newSortType);
   // };
+
+
+  // const sortedData = uniqueEnames.slice().sort((a, b) => {
+  //   const totalCompaniesA = followDataToday.filter(
+  //     (partObj) => partObj.ename === a
+  //   ).length;
+  //   const totalCompaniesB = followDataToday.filter(
+  //     (partObj) => partObj.ename === b
+  //   ).length;
+
+  //   if (sortTypeProjection === "ascending") {
+  //     return totalCompaniesA - totalCompaniesB;
+  //   } else if (sortTypeProjection === "descending") {
+  //     return totalCompaniesB - totalCompaniesA;
+  //   }
+  //   // If sortTypeProjection is "none", return original order
+  //   return 0;
+  // });
+
+  // console.log(sortedData)
+  // console.log(uniqueEnames)
+
+  // const handleSortOfferedServices = (newSortType) => {
+  //   console.log(newSortType)
+  //   setSortTypeServices(newSortType);
+  // };
+  // const sortedServicesData = uniqueEnames.slice().sort((a, b) => {
+  //   // Count the number of offered services for ename a
+  //   const totalServicesA = followDataToday.reduce((total, partObj) => {
+  //     if (partObj.ename === a) {
+  //       total += partObj.offeredServices.length;
+  //     }
+  //     return total;
+  //   }, 0);
+
+  //   // Count the number of offered services for ename b
+  //   const totalServicesB = followDataToday.reduce((total, partObj) => {
+  //     if (partObj.ename === b) {
+  //       total += partObj.offeredServices.length;
+  //     }
+  //     return total;
+  //   }, 0);
+
+  //   if (sortTypeServices === "ascending") {
+  //     return totalServicesA - totalServicesB;
+  //   } else if (sortTypeServices === "descending") {
+  //     return totalServicesB - totalServicesA;
+  //   }
+  //   // If sortTypeServices is "none", return original order
+  //   return 0;
+  // });
+  // console.log(sortedServicesData)
+
+
+
 
 
 
@@ -2087,7 +2252,6 @@ function Dashboard() {
                                   </>
                                 ))}
                               </tbody>
-
                               <tfoot>
                                 <tr style={{ fontWeight: "500" }}>
                                   <td colSpan={2} style={{ lineHeight: "32px" }}>
@@ -2112,7 +2276,6 @@ function Dashboard() {
                                       return totalLength + serviceLength;
                                     }, 0)}
                                   </td>
-
                                   <td>
                                     ₹{filteredBooking
                                       .reduce((totalPayment, obj) => {
@@ -2125,7 +2288,6 @@ function Dashboard() {
                                       }, 0)
                                       .toLocaleString()}
                                   </td>
-
                                   <td>
                                     ₹{filteredBooking
                                       .reduce((totalFirstPayment, obj) => {
@@ -3321,6 +3483,12 @@ function Dashboard() {
                   <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
                     <DemoContainer components={['SingleInputDateRangeField']}>
                       <DateRangePicker
+                        onChange={(values) => {
+                          const startDate = moment(values[0]).format('DD/MM/YYYY');
+                          const endDate = moment(values[1]).format('DD/MM/YYYY');
+                          setSelectedDateRange([startDate, endDate]);
+                          handleSelect(values); // Call handleSelect with the selected values
+                        }}
                         slots={{ field: SingleInputDateRangeField }}
                         slotProps={{
                           shortcuts: {
@@ -3367,8 +3535,7 @@ function Dashboard() {
                       border: "1px solid #ddd",
                       marginBottom: "10px",
                     }}
-                    className="table-vcenter table-nowrap"
-                  >
+                    className="table-vcenter table-nowrap">
                     <thead style={{
                       position: "sticky", // Make the header sticky
                       top: '-1px', // Stick it at the top
@@ -3393,137 +3560,142 @@ function Dashboard() {
                         </th>
                         <th>Company Name</th>
                         <th>Total Companies
-                        <SwapVertIcon
-                        style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
-                        }}
-                        onClick={() => {
-                          let newSortType;
-                          if (sortTypeProjection === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortTypeProjection === "descending") {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortTotalCompanies(newSortType);
-                        }}
-                      />
+                          <SwapVertIcon
+                            style={{
+                              height: "15px",
+                              width: "15px",
+                              cursor: "pointer",
+                              marginLeft: "4px",
+                            }}
+                            onClick={() => {
+                              let newSortType;
+                              if (sortTypeProjection === "ascending") {
+                                newSortType = "descending";
+                              } else if (sortTypeProjection === "descending") {
+                                newSortType = "none";
+                              } else {
+                                newSortType = "ascending";
+                              }
+                              handleSortTotalCompanies(newSortType);
+                            }}
+                          />
 
                         </th>
-                        <th>Offered Services</th>
-                        <th>Total Offered Price</th>
-                        <th>Expected Amount</th>
+                        <th>Offered Services
+                          <SwapVertIcon
+                            style={{
+                              height: "15px",
+                              width: "15px",
+                              cursor: "pointer",
+                              marginLeft: "4px",
+                            }}
+                            onClick={() => {
+                              let newSortType;
+                              if (sortTypeServices === "ascending") {
+                                newSortType = "descending";
+                              } else if (sortTypeServices === "descending") {
+                                newSortType = "none";
+                              } else {
+                                newSortType = "ascending";
+                              }
+                              handleSortOfferedServices(newSortType);
+                            }}
+                          />
+                        </th>
+                        <th>Total Offered Price
+                          <SwapVertIcon
+                            style={{
+                              height: "15px",
+                              width: "15px",
+                              cursor: "pointer",
+                              marginLeft: "4px",
+                            }}
+                            onClick={() => {
+                              let newSortType;
+                              if (sortTypePrice === "ascending") {
+                                newSortType = "descending";
+                              } else if (sortTypePrice === "descending") {
+                                newSortType = "none";
+                              } else {
+                                newSortType = "ascending";
+                              }
+                              handleSortOffredPrize(newSortType);
+                            }}
+                          /></th>
+                        <th>Expected Amount<SwapVertIcon
+                          style={{
+                            height: "15px",
+                            width: "15px",
+                            cursor: "pointer",
+                            marginLeft: "4px",
+                          }}
+                          onClick={() => {
+                            let newSortType;
+                            if (sortTypeExpectedPayment === "ascending") {
+                              newSortType = "descending";
+                            } else if (sortTypeExpectedPayment === "descending") {
+                              newSortType = "none";
+                            } else {
+                              newSortType = "ascending";
+                            }
+                            handleSortExpectedPayment(newSortType);
+                          }}
+                        /></th>
                         {/* <th>Est. Payment Date</th> */}
 
                       </tr>
                     </thead>
-                    {/* <tbody>
-                      {uniqueEnames &&
-                        uniqueEnames.map((ename, index) => {
-                          // Calculate the count of services for the current ename
-                          // const serviceCount = filteredDataDateRange && (
-                          //   // If filteredDataDateRange is not empty, use servicesByEnameDateRange
-                          //   servicesByEnameDateRange[ename] ? servicesByEnameDateRange[ename].length : 0
-                          // );
-                          // const companyCount = companiesByEname[ename] ? companiesByEname[ename].length : 0;
-                          let serviceCount;
-                          if (filteredDataDateRange && filteredDataDateRange.length > 0) {
-                            // If filteredDataDateRange is not empty, use companiesByEname
-                            serviceCount = servicesByEnameDateRange[ename] ? servicesByEnameDateRange[ename].length : 0
-                          } else {
-                            // If filteredDataDateRange is empty, use followDataToday
-                            serviceCount = servicesByEnameToday[ename] ? servicesByEnameToday[ename].length : 0
-                          }
+                    {sortedData && sortedData.length !== 0 ? (
+                      <tbody>
+                        {sortedData.map((obj, index) => (
+                          <tr key={`row-${index}`}>
+                            <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                            <td>{obj}</td>
+                            <td>
+                              {followDataToday.filter((partObj) => partObj.ename === obj).length}
+                              <FcDatabase
+                                onClick={() => {
+                                  functionOpenProjectionTable(obj);
+                                }}
+                                style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "58px" }}
+                              />
+                            </td>
+                            <td>
+                              {
+                                followDataToday.reduce((totalServices, partObj) => {
+                                  if (partObj.ename === obj) {
+                                    totalServices += partObj.offeredServices.length;
+                                  }
+                                  return totalServices;
+                                }, 0)
+                              }
+                            </td>
+                            <td>
+                              {
+                                followDataToday.reduce((totalOfferedPrize, partObj) => {
+                                  if (partObj.ename === obj) {
+                                    totalOfferedPrize += partObj.offeredPrize;
+                                  }
+                                  return totalOfferedPrize;
+                                }, 0).toLocaleString('en-IN', numberFormatOptions)
+                              }
+                            </td>
+                            <td>
+                              {
+                                followDataToday.reduce((totalPaymentSum, partObj) => {
+                                  if (partObj.ename === obj) {
+                                    totalPaymentSum += partObj.totalPayment;
+                                  }
+                                  return totalPaymentSum;
+                                }, 0).toLocaleString('en-IN', numberFormatOptions)
+                              }
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    ) : null}
 
-                          // const companyCount = filteredDataDateRange && (
-                          //   // If filteredDataDateRange is not empty, use companiesByEnameDateRange
-                          //   companiesByEnameDateRange[ename] ? companiesByEnameDateRange[ename].length : 0
-                          // );
-                          let companyCount;
-                          if (filteredDataDateRange && filteredDataDateRange.length > 0) {
-                            // If filteredDataDateRange is not empty, use companiesByEname
-                            companyCount = companiesByEnameDateRange[ename] ? companiesByEnameDateRange[ename].length : 0
-                          } else {
-                            // If filteredDataDateRange is empty, use followDataToday
-                            companyCount = companiesByEnameToday[ename] ? companiesByEnameToday[ename].length : 0
-                          }
-                          let totalPaymentByEname;
-                          if (filteredDataDateRange && filteredDataDateRange.length > 0) {
-                            // If filteredDataDateRange is not empty, use companiesByEname
-                            totalPaymentByEname = (sumsDateRange[ename] ? sumsDateRange[ename].totalPaymentSum : 0)
-                          } else {
-                            // If filteredDataDateRange is empty, use followDataToday
-                            totalPaymentByEname = (sumsToday[ename] ? sumsToday[ename].totalPaymentSum : 0)
-                          }
-                          let offeredPrizeByEname;
-                          if (filteredDataDateRange && filteredDataDateRange.length > 0) {
-                            // If filteredDataDateRange is not empty, use companiesByEname
-                            offeredPrizeByEname = (sumsDateRange[ename] ? sumsDateRange[ename].offeredPaymentSum : 0)
-                          } else {
-                            // If filteredDataDateRange is empty, use followDataToday
-                            offeredPrizeByEname = (sumsToday[ename] ? sumsToday[ename].offeredPaymentSum : 0)
-                          }
-
-
-
-
-
-
-                          //const totalPaymentByEname = sums[ename] ? sums[ename].totalPaymentSum : 0;
-                          // const totalPaymentByEname = filteredDataDateRange &&
-                          //   (sumsDateRange[ename] ? sumsDateRange[ename].totalPaymentSum : 0);
-
-
-                          //const offeredPrizeByEname = sums[ename] ? sums[ename].offeredPaymentSum : 0;
-                          // const offeredPrizeByEname = filteredDataDateRange.length &&
-                          //   (sumsDateRange[ename] ? sumsDateRange[ename].offeredPaymentSum : 0)
-
-
-                          const lastFollowDates = lastFollowDate[ename] || []; // Assuming lastFollowDate[ename] is an array of dates or undefined
-
-                          // Get the latest date from the array
-                          let latestDate;
-
-                          if (Array.isArray(lastFollowDates) && lastFollowDates.length > 0) {
-                            latestDate = new Date(Math.max(...lastFollowDates.map(date => new Date(date))));
-                          } else if (lastFollowDates instanceof Date) {
-                            // If lastFollowDates is a single date, directly assign it to latestDate
-                            latestDate = lastFollowDates;
-                          } else {
-                            // Handle the case when lastFollowDates is not an array or a date
-                            latestDate = new Date(); // Assigning current date as default value
-                          }
-
-                          // Format the latest date into a string
-                          const formattedDate = latestDate.toLocaleDateString(); //
-
-
-                          return (
-                            <tr key={`row-${index}`}>
-                              <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                              <td>{ename}</td>
-                              <td>{companyCount}
-                                <FcDatabase
-                                  onClick={() => {
-                                    functionOpenProjectionTable(ename);
-                                  }}
-                                  style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "58px" }}
-                                /></td>
-                              <td>{serviceCount}</td>
-                              <td>  {totalPaymentByEname.toLocaleString('en-IN', numberFormatOptions)}</td>
-                              <td>  {offeredPrizeByEname.toLocaleString('en-IN', numberFormatOptions)}</td>
-                              <td>{filteredDataDateRange.length !== 0 ? formattedDate : new Date().toLocaleDateString()}</td>
-
-                            </tr>
-                          );
-                        })}
-
-                    </tbody>
-                    {followData && (
+                    {sortedData && sortedData.length !== 0 && (
                       <tfoot style={{
                         position: "sticky", // Make the footer sticky
                         bottom: -1, // Stick it at the bottom
@@ -3533,136 +3705,18 @@ function Dashboard() {
                         zIndex: 2, // Ensure it's above the content
                       }}>
                         <tr style={{ fontWeight: 500 }}>
-                          <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                          <td>{filteredDataDateRange && filteredDataDateRange.length > 0 ? (
-                            totalcompaniesByEnameDateRange.length
-                          ) : (totalcompaniesByEnameToday.length)
-                          }
-                          </td>
-                          <td>
-                            {filteredDataDateRange && filteredDataDateRange.length > 0 ? (
-                              // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
-                              totalservicesByEnameDateRange.length
-                            ) : (totalservicesByEnameToday.length)}
-                          </td>
-                          // <td>{totalTotalPaymentSum.toLocaleString()}</td> 
-                          <td>
-                            {filteredDataDateRange && filteredDataDateRange.length > 0 ? (
-                              // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
-                              totalTotalPaymentSumDateRange.toLocaleString('en-IN', numberFormatOptions)
-                            ) : (totalTotalPaymentSumToday.toLocaleString('en-IN', numberFormatOptions))}
-                          </td>
-
-                          // <td>{totalOfferedPaymentSum.toLocaleString()}</td>
-
-                          <td>
-                            {filteredDataDateRange.length && filteredDataDateRange.length > 0 ? (
-                              // If filteredDataDateRange is not empty, use totalServicesByEnameDateRange
-                              totalOfferedPaymentSumDateRange.toLocaleString('en-IN', numberFormatOptions)
-                            ) : (totalOfferedPaymentSumToday.toLocaleString('en-IN', numberFormatOptions))}
-                          </td>
-                          <td>-</td>
-
-                        </tr>
-                      </tfoot>
-                    )} */}
-                    <tbody>
-                      {sortedData ? (
-                        sortedData.length !== 0 ? (
-                          sortedData.map((obj, index) => (
-                            <tr key={`row-${index}`}>
-                              <td
-                                style={{
-                                  lineHeight: "32px",
-                                }}
-                              >
-                                {index + 1}
-                              </td>
-                              <td>{obj}</td>
-                              <td>
-                                {
-                                  followDataToday.filter(
-                                    (partObj) =>
-                                      partObj.ename === obj
-                                  ).length
-                                }
-                                <FcDatabase
-                                  onClick={() => {
-                                    functionOpenProjectionTable(obj);
-                                  }}
-                                  style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "58px" }}
-                                />
-                              </td>
-                              <td>
-                                {
-                                  followDataToday.reduce((totalServices, partObj) => {
-                                    if (partObj.ename === obj) {
-                                      totalServices += partObj.offeredServices.length;
-                                    }
-                                    return totalServices;
-                                  }, 0)
-                                }
-                              </td>
-                              <td>
-                                {
-                                  followDataToday.reduce((totalOfferedPrize, partObj) => {
-                                    if (partObj.ename === obj) {
-                                      totalOfferedPrize += partObj.offeredPrize;
-                                    }
-                                    return totalOfferedPrize;
-                                  }, 0)
-                                }
-                              </td>
-                              <td>
-                                {
-                                  followDataToday.reduce((totalPaymentSum, partObj) => {
-                                    if (partObj.ename === obj) {
-                                      totalPaymentSum += partObj.totalPayment;
-                                    }
-                                    return totalPaymentSum;
-                                  }, 0)
-                                }
-                              </td>
-                            </tr>
-                          ))) : (
-                          <tr>
-                            <td colSpan="11" style={{ textAlign: 'center' }}><Nodata /></td>
-                          </tr>
-                        )
-                      ) : (<tr style={{ minHeight: "350px" }}><td colSpan={11}>
-                        <ScaleLoader
-                          color="lightgrey"
-                          loading
-                          size={10}
-                          height="25"
-                          width="2"
-                          style={{ width: "10px", height: "10px" }}
-                          //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
-                          aria-label="Loading Spinner"
-                          data-testid="loader"
-                        />
-                      </td></tr>)
-                      }
-                    </tbody>
-                    {uniqueEnames && (
-                      <tfoot >
-                        <tr style={{ fontWeight: 500 }}>
                           <td style={{ lineHeight: "32px" }} colSpan="2">
                             Total
                           </td>
                           <td>
                             {
-                              followDataToday.filter(
-                                (partObj) => partObj.ename
-                              ).length
+                              followDataToday.filter((partObj) => partObj.ename).length
                             }
                           </td>
                           <td>
                             {
                               followDataToday.reduce((totalServices, partObj) => {
-
                                 totalServices += partObj.offeredServices.length;
-
                                 return totalServices;
                               }, 0)
                             }
@@ -3670,25 +3724,33 @@ function Dashboard() {
                           <td>
                             {
                               followDataToday.reduce((totalOfferedPrize, partObj) => {
-
                                 totalOfferedPrize += partObj.offeredPrize;
                                 return totalOfferedPrize;
-                              }, 0)
+                              }, 0).toLocaleString('en-IN', numberFormatOptions)
                             }
                           </td>
                           <td>
                             {
                               followDataToday.reduce((totalPaymentSum, partObj) => {
-
                                 totalPaymentSum += partObj.totalPayment;
-
-                                return totalPaymentSum;
-                              }, 0)
+                                return totalPaymentSum
+                              }, 0).toLocaleString('en-IN', numberFormatOptions)
                             }
                           </td>
                         </tr>
                       </tfoot>
                     )}
+
+                    {sortedData && sortedData.length === 0 && (
+                      <tbody>
+                        <tr>
+                          <td className="particular" colSpan={9}>
+                            <Nodata />
+                          </td>
+                        </tr>
+                      </tbody>
+                    )}
+
                   </table>
                 </div>
               </div>
@@ -3700,28 +3762,20 @@ function Dashboard() {
             fullWidth
             maxWidth="lg"
           >
+            <DialogTitle>
+              {projectionEname} Today's Report {" "}
+              <IconButton onClick={closeProjectionTable} style={{ float: "right" }}>
+                <CloseIcon color="primary"></CloseIcon>
+              </IconButton>{" "}
+            </DialogTitle>
             <DialogContent>
               <div
                 id="table-default"
                 style={{
                   overflowX: "auto",
                   overflowY: "auto",
-                  maxHeight: "60vh",
                 }}
               >
-                <div className="title-header d-flex justify-content-between">
-                  <div className="title-name">
-                    <strong>
-                      {projectionEname} Today's Report
-                    </strong>
-                  </div>
-                  <div style={{ cursor: 'pointer' }} className="closeIcon" onClick={closeProjectionTable}>
-                    <IoClose style={{ width: "17px", height: "17px", marginBottom: "20px" }} />
-                  </div>
-                </div>
-
-
-
                 <table
                   style={{
                     width: "100%",
@@ -3775,8 +3829,8 @@ function Dashboard() {
                             <td>{obj.ename}</td>
                             <td>{obj.companyName}</td>
                             <td>{obj.offeredServices.join(",")}</td>
-                            <td>&#8377;{obj.totalPayment.toLocaleString()}</td>
-                            <td>&#8377;{obj.offeredPrize.toLocaleString()}</td>
+                            <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
                             <td>{obj.estPaymentDate}</td>
                             <td>{obj.lastFollowUpdate}</td>
                             <td>{obj.remarks}</td>
@@ -3790,8 +3844,8 @@ function Dashboard() {
                             <td>{obj.ename}</td>
                             <td>{obj.companyName}</td>
                             <td>{obj.offeredServices.join(",")}</td>
-                            <td>&#8377;{obj.totalPayment.toLocaleString()}</td>
-                            <td>&#8377;{obj.offeredPrize.toLocaleString()}</td>
+                            <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
                             <td>{obj.estPaymentDate}</td>
                             <td>{obj.lastFollowUpdate}</td>
                             <td>{obj.remarks}</td>

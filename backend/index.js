@@ -892,7 +892,7 @@ app.get("/api/employees/:ename", async (req, res) => {
 
     // Fetch data from companyModel where ename matches employeeName
     const data = await CompanyModel.find({ ename: employeeName });
-
+    //console.log(data)
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error);

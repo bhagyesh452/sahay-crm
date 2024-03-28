@@ -101,7 +101,32 @@ function EmployeeDashboard() {
       console.error("Error fetching data:", error.message);
     }
   };
+
+  const [tempData, setTempData] = useState([])
+  const [loadingNew, setLoadingNew] = useState([])
+
+  const fetchNewData = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/employees/${data.ename}`);
+      const tempData = response.data;
+      setTempData(tempData.filter(obj => obj.Status === "FollowUp"));
+    } catch (error) {
+      console.error("Error fetching new data:", error);
+    }
+  };
+
+  useEffect(() => {
+
+    fetchNewData()
+
+  }, [data])
+
+  console.log(tempData)
+
+
   //console.log(data)
+
+
 
   // const fetchEmployeeData = async () => {
   //   try {
@@ -340,7 +365,7 @@ function EmployeeDashboard() {
     }
   };
 
-  //console.log("ajki", followDataToday)
+  console.log("ajki", followDataToday)
 
 
   // console.log(followData);
@@ -659,8 +684,8 @@ function EmployeeDashboard() {
 
     ));
   }
-  
-  
+
+
   const [searchTermTotalSummary, setsearchTermTotalSummary] = useState("")
 
   //console.log(followDataFilter)
@@ -2092,7 +2117,7 @@ function EmployeeDashboard() {
                   <h2 style={{ marginBottom: '5px' }}>Total Projection Summary</h2>
                 </div>
                 <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
-                  <div className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon" style={{width:"50%"}}>
+                  <div className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon" style={{ width: "50%" }}>
                     <span className="input-icon-addon">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -2105,7 +2130,7 @@ function EmployeeDashboard() {
                         fill="none"
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        
+
                       >
                         <path
                           stroke="none"
@@ -2400,6 +2425,7 @@ function EmployeeDashboard() {
                           Sr. No
                         </th>
                         <th>Company Name</th>
+                        <th>Contact Number</th>
                         <th>Offered Services</th>
                         <th>Total Offered Price</th>
                         <th>Expected Amount</th>
@@ -2438,6 +2464,11 @@ function EmployeeDashboard() {
                                     {index + 1}
                                   </td>
                                   <td>{obj.companyName}</td>
+                                  <td>{
+                                    tempData
+                                      .filter(company => company["Company Name"] === obj.companyName)
+                                      .map(filteredCompany => filteredCompany["Company Number"])
+                                  }</td>
                                   <td>{obj.offeredServices.join(", ")}</td>
                                   <td>₹{obj.offeredPrize.toLocaleString()}</td>
                                   <td>
@@ -2478,7 +2509,7 @@ function EmployeeDashboard() {
                         ) : (
                           <tbody>
                             <tr>
-                              <td colSpan="11">
+                              <td className="particular" colSpan="11">
                                 <Nodata />
                               </td>
                             </tr>
