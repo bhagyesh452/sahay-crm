@@ -84,7 +84,7 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   caCase: {
     type: String,
   },
-  caName: {
+  caNumber: {
     type: String,
   },
   caEmail: {

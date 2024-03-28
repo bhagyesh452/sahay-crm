@@ -2702,19 +2702,20 @@ function EmployeePanel() {
         </>
       ) : (
         <>
-
-
-          <RedesignedForm
-            // matured={true}
-            // companysId={companyId}
-            companysName={companyName}
-            companysEmail={companyEmail}
-            companyNumber={companyNumber}
-            companysInco={companyInco}
-            employeeName={data.ename}
-            employeeEmail={data.email}
-          />
-
+          
+           
+                <RedesignedForm
+                  // matured={true}
+                  // companysId={companyId}
+                  setFormOpen={setFormOpen}
+                  companysName={companyName}
+                  companysEmail={companyEmail}
+                  companyNumber={companyNumber}
+                  companysInco={companyInco}
+                  employeeName={data.ename}
+                  employeeEmail={data.email}
+                />
+           
         </>
       )}
 

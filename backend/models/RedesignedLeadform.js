@@ -96,8 +96,8 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   caCase: {
     type: String,
   },
-  caName: {
-    type: String,
+  caNumber: {
+    type: Number,
   },
   caEmail: {
     type: String,
