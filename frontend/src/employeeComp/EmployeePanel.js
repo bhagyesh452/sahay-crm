@@ -1281,7 +1281,7 @@ function EmployeePanel() {
     }
   };
 
-  console.log(currentProjection)
+  //console.log(currentProjection)
 
   const [openIncoDate, setOpenIncoDate] = useState(false);
 
@@ -3532,9 +3532,7 @@ function EmployeePanel() {
                     }}
                     disabled={!isEditProjection}
                   />
-
                   <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
-
                 </div>
               </div>
 

@@ -105,23 +105,23 @@ function EmployeeDashboard() {
   const [tempData, setTempData] = useState([])
   const [loadingNew, setLoadingNew] = useState([])
 
+// -------------------------api for contact number-------------------------------------------------------
+
   const fetchNewData = async () => {
     try {
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
-      setTempData(tempData.filter(obj => obj.Status === "FollowUp"));
+      setTempData(tempData);
     } catch (error) {
       console.error("Error fetching new data:", error);
     }
   };
 
   useEffect(() => {
-
     fetchNewData()
-
   }, [data])
 
-  console.log(tempData)
+  console.log("tempData" , tempData)
 
 
   //console.log(data)
@@ -446,6 +446,8 @@ function EmployeeDashboard() {
     setSelectedValues([]);
   };
 
+  console.log("currentprojection" , currentProjection)
+
   const handleProjectionSubmit = async () => {
     try {
       const finalData = {
@@ -454,15 +456,22 @@ function EmployeeDashboard() {
         ename: data.ename,
         offeredServices: selectedValues,
       };
+      //console.log(Number(finalData.totalPayment) , Number(finalData.offeredPrize))
       if (finalData.offeredServices.length === 0) {
         Swal.fire({ title: "Services is required!", icon: "warning" });
       } else if (finalData.remarks === "") {
-        Swal.fire({ title: "Remarks is required!", icon: "warning" });
-      } else if (finalData.totalPayment === 0) {
-        Swal.fire({ title: "Payment is required!", icon: "warning" });
-      } else if (finalData.offeredPrize === 0) {
-        Swal.fire({ title: "Offered Prize is required!", icon: "warning" });
-      } else if (finalData.lastFollowUpdate === null) {
+        Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
+      } else if (Number(finalData.totalPayment) === 0) {
+        Swal.fire({ title: "Total Payment Can't be 0!", icon: 'warning' });
+      } else if (finalData.totalPayment === "") {
+        Swal.fire({ title: "Total Payment Can't be 0", icon: 'warning' });
+      } else if (finalData.offeredPrize === "") {
+        Swal.fire({ title: "Offred Price Can't be 0", icon: 'warning' });
+      }else if (Number(finalData.offeredPrize) === 0) {
+        Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
+      } else if (Number(finalData.totalPayment) > Number(finalData.offeredPrize)) {
+        Swal.fire({ title: 'Total Payment cannot be greater than Offered Prize!', icon: 'warning' });
+      } else if (finalData.lastFollowpdate === null) {
         Swal.fire({
           title: "Last FollowUp Date is required!",
           icon: "warning",
@@ -472,27 +481,30 @@ function EmployeeDashboard() {
           title: "Estimated Payment Date is required!",
           icon: "warning",
         });
+      }else{
+        const response = await axios.post(
+          `${secretKey}/update-followup`,
+          finalData
+        );
+        Swal.fire({ title: "Projection Submitted!", icon: "success" });
+        setOpenProjection(false);
+        setCurrentProjection({
+          companyName: "",
+          ename: "",
+          offeredPrize: 0,
+          offeredServices: [],
+          lastFollowUpdate: "",
+          remarks: "",
+          date: "",
+          time: "",
+          totalPaymentError:"",
+          totalPayment:0
+        });
+        fetchFollowUpData();
       }
 
       // Send data to backend API
-      const response = await axios.post(
-        `${secretKey}/update-followup`,
-        finalData
-      );
-      Swal.fire({ title: "Projection Submitted!", icon: "success" });
-      setOpenProjection(false);
-      setCurrentProjection({
-        companyName: "",
-        ename: "",
-        offeredPrize: 0,
-        offeredServices: [],
-        lastFollowUpdate: "",
-        remarks: "",
-        date: "",
-        time: "",
-      });
-      fetchFollowUpData();
-
+      
       // Log success message
     } catch (error) {
       console.error("Error updating or adding data:", error.message);
@@ -2496,9 +2508,10 @@ function EmployeeDashboard() {
                                 <td style={{ lineHeight: "32px" }} colSpan="2">
                                   Total
                                 </td>
+                                <td>-</td>
                                 <td>{offeredServicesFilter.length}</td>
-                                <td> ₹{totalPaymentSumFilter.toLocaleString()}</td>
                                 <td>₹{offeredPaymentSumFilter.toLocaleString()}</td>
+                                <td>₹{totalPaymentSumFilter.toLocaleString()}</td>
                                 <td>-</td>
                                 <td>-</td>
                                 <td>-</td>
@@ -2858,7 +2871,8 @@ function EmployeeDashboard() {
                 </div>
               </div>
               <div className="label">
-                <strong>Offered Prices (With GST)</strong>
+                <strong>Offered Prices (With GST){!currentProjection.offeredPrize && (<span style={{color:"red"}}>*</span>)}{" "}
+                  :</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -2876,7 +2890,10 @@ function EmployeeDashboard() {
                 </div>
               </div>
               <div className="label">
-                <strong>Expected Price (With GST)</strong>
+                <strong>Expected Price (With GST) {currentProjection.totalPayment === 0 && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}{" "}
+                  :</strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -2884,13 +2901,26 @@ function EmployeeDashboard() {
                     placeholder="Please enter total Payment"
                     value={currentProjection.totalPayment}
                     onChange={(e) => {
-                      setCurrentProjection((prevLeadData) => ({
-                        ...prevLeadData,
-                        totalPayment: e.target.value,
-                      }));
+                      const newTotalPayment = e.target.value
+                      if(Number(newTotalPayment) <= Number(currentProjection.offeredPrize)){
+                        setCurrentProjection((prevLeadData) => ({
+                          ...prevLeadData,
+                          totalPayment: newTotalPayment,
+                          totalPaymentError:""
+                        }));
+                      }else{
+                        setCurrentProjection((prevLeadData) => ({
+                          ...prevLeadData,
+                          totalPayment: newTotalPayment,
+                          totalPaymentError:
+                            "Expected Price should be less than or equal to Offered Price.",
+                        }));
+                      }
+                     
                     }}
                     disabled={!isEditProjection}
                   />
+                   <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
                 </div>
               </div>
               <div className="label">
