@@ -1282,6 +1282,7 @@ function EmployeeDashboard() {
       });
       setSelectedValues([]);
       fetchFollowUpData();
+      setIsEditProjection(true)
     } catch (error) {
       console.error('Error deleting data:', error);
       // Show an error message if deletion fails
