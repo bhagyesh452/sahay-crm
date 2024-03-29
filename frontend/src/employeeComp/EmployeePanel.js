@@ -1308,7 +1308,7 @@ useEffect(() => {
     }
   };
 
-  console.log(currentProjection)
+  //console.log(currentProjection)
 
   const [openIncoDate, setOpenIncoDate] = useState(false);
 
@@ -1575,6 +1575,7 @@ useEffect(() => {
       });
       setSelectedValues([]);
       fetchProjections();
+      setIsEditProjection(true)
     } catch (error) {
       console.error("Error deleting data:", error);
       // Show an error message if deletion fails
@@ -3573,9 +3574,7 @@ useEffect(() => {
                     }}
                     disabled={!isEditProjection}
                   />
-
                   <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
-
                 </div>
               </div>
 

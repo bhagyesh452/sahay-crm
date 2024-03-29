@@ -2046,11 +2046,14 @@ function Dashboard() {
                     </div>
                   </div>
                   {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
-                  <div className="col card todays-booking m-2 totalbooking" id='totalbooking' >
+                  <div className="employee-dashboard">
+                  <div className="card todays-booking m-2 totalbooking" id='totalbooking' >
                     <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-                      <div>
-                        <h2>Total Booking</h2>
-                      </div>
+                    <div className="d-flex justify-content-between">
+                          <div style={{ minWidth: '14vw' }} className="dashboard-title">
+                            <h2 style={{ marginBottom: '5px' }}>Total Bookings</h2>
+                          </div>
+                        </div>
                       <div className=" form-control date-range-picker d-flex align-items-center justify-content-between">
                         <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
                           {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
@@ -2339,6 +2342,7 @@ function Dashboard() {
                         </table>
                       </div>
                     </div>
+                  </div>
                   </div>
 
                   {/* Employee side Dashboard Analysis */}
