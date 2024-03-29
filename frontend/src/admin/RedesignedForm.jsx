@@ -577,8 +577,11 @@ console.log(completed , "this is completed")
             });
             return true;
           }else{
+     
           const totalAmount = leadData.services.reduce(
-            (acc, curr) => acc + curr.totalPaymentWGST,
+            (acc, curr) => 
+            
+              acc + curr.totalPaymentWGST,
             0
           );
           const receivedAmount = leadData.services.reduce((acc, curr) => {
@@ -799,7 +802,6 @@ console.log(completed , "this is completed")
             `${secretKey}/redesigned-final-leadData/${companysName}`,
             leadData
           );
-
           console.log(response.data);
           Swal.fire({
             icon: "success",
@@ -2610,7 +2612,7 @@ console.log(completed , "this is completed")
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="row m-0">
+                                     { obj.paymentTerms!=="Full Advanced" && <><div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
                                             <b>First Payment</b>
@@ -2618,7 +2620,7 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.firstPayment}
+                                            {Number(obj.firstPayment).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2630,7 +2632,7 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.secondPayment}
+                                            {Number(obj.secondPayment).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2642,7 +2644,7 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.thirdPayment}
+                                            {Number(obj.thirdPayment).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2654,10 +2656,10 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.fourthPayment}
+                                            {Number(obj.fourthPayment).toFixed(2)}
                                           </div>
                                         </div>
-                                      </div>
+                                      </div></>}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
@@ -2696,7 +2698,7 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
-                                            ₹ {leadData.totalAmount}
+                                            ₹ {Number(leadData.totalAmount).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2710,7 +2712,7 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-7 p-0">
                                           <div className="form-label-data">
-                                            ₹ {leadData.receivedAmount}
+                                            ₹ {Number(leadData.receivedAmount).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2724,7 +2726,7 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
-                                            ₹ {leadData.pendingAmount}
+                                            ₹ {Number(leadData.pendingAmount).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
