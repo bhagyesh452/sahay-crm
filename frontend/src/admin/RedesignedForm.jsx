@@ -567,8 +567,10 @@ console.log(completed , "this is completed")
        
       }
       if (activeStep === 2) {
-          console.log("I am in step 2")
-          if (leadData.services[0].serviceName || leadData.services[0].totalPaymentWOGST) {
+        
+          
+          if (!leadData.services[0].serviceName || !leadData.services[0].totalPaymentWOGST) {
+
             Swal.fire({
               title: "Please fill all the details",
               icon: 'warning',

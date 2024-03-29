@@ -1017,3 +1017,17 @@ color: #4e884e;
   margin-right: 5px;
   margin-top: 22px;
 }
+.LeadFormPreviewDrawar
+{
+  position: relative;
+}
+.LeadFormPreviewDrawar-header
+{
+  width: 100%;
+  display: block;
+  padding: 6px 14px;
+  background: #fbb900;
+  position: sticky;
+  top: 0;
+  z-index: 9;
+}
