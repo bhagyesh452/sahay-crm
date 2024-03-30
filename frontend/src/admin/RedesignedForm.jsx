@@ -567,16 +567,21 @@ console.log(completed , "this is completed")
        
       }
       if (activeStep === 2) {
-          console.log("I am in step 2")
-          if (leadData.services[0].serviceName || leadData.services[0].totalPaymentWOGST) {
+        
+          
+          if (!leadData.services[0].serviceName || !leadData.services[0].totalPaymentWOGST) {
+
             Swal.fire({
               title: "Please fill all the details",
               icon: 'warning',
             });
             return true;
           }else{
+     
           const totalAmount = leadData.services.reduce(
-            (acc, curr) => acc + curr.totalPaymentWGST,
+            (acc, curr) => 
+            
+              acc + curr.totalPaymentWGST,
             0
           );
           const receivedAmount = leadData.services.reduce((acc, curr) => {
@@ -797,7 +802,6 @@ console.log(completed , "this is completed")
             `${secretKey}/redesigned-final-leadData/${companysName}`,
             leadData
           );
-
           console.log(response.data);
           Swal.fire({
             icon: "success",
@@ -2608,7 +2612,7 @@ console.log(completed , "this is completed")
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="row m-0">
+                                     { obj.paymentTerms!=="Full Advanced" && <><div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
                                             <b>First Payment</b>
@@ -2616,7 +2620,7 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.firstPayment}
+                                            {Number(obj.firstPayment).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2628,7 +2632,7 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.secondPayment}
+                                            {Number(obj.secondPayment).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2640,7 +2644,7 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.thirdPayment}
+                                            {Number(obj.thirdPayment).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2652,10 +2656,10 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.fourthPayment}
+                                            {Number(obj.fourthPayment).toFixed(2)}
                                           </div>
                                         </div>
-                                      </div>
+                                      </div></>}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
@@ -2694,7 +2698,7 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
-                                            ₹ {leadData.totalAmount}
+                                            ₹ {Number(leadData.totalAmount).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2708,7 +2712,7 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-7 p-0">
                                           <div className="form-label-data">
-                                            ₹ {leadData.receivedAmount}
+                                            ₹ {Number(leadData.receivedAmount).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2722,7 +2726,7 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
-                                            ₹ {leadData.pendingAmount}
+                                            ₹ {Number(leadData.pendingAmount).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2950,10 +2954,9 @@ console.log(completed , "this is completed")
                         sx={{ display: "flex", flexDirection: "row", pt: 2 }}
                       >
                         <Button
-                          color="inherit"
                           variant="contained"
                           onClick={handleBack}
-                          sx={{ mr: 1 }}
+                          sx={{ mr: 1,background:'#ffba00 ', }}
                         >
                           {activeStep !== 0 ? "Back" : "Back to Main"}
                         </Button>
@@ -2961,7 +2964,7 @@ console.log(completed , "this is completed")
                           color="primary"
                           variant="contained"
                           disabled={activeStep === 0}
-                          sx={{ mr: 1 }}
+                          sx={{ mr: 1,background:'#ffba00 ' }}
                           onClick={handleResetDraft}
                         >
                           Reset
@@ -2983,7 +2986,7 @@ console.log(completed , "this is completed")
                                   setCompleted({ activeStep: false });
                                 }}
                                 variant="contained"
-                                sx={{ mr: 1 }}
+                                sx={{ mr: 1,background:'#ffba00 ' }}
                               >
                                 Edit
                               </Button>
@@ -2992,6 +2995,7 @@ console.log(completed , "this is completed")
                             <Button
                               onClick={handleComplete}
                               variant="contained"
+                              sx={{ mr: 1,background:'#ffba00 ' }}
                             >
                               {completedSteps() === totalSteps() - 1
                                 ? "Submit"

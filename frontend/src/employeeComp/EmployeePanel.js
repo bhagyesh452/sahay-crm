@@ -43,6 +43,7 @@ import { IoClose } from "react-icons/io5";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
 import RedesignedForm from "../admin/RedesignedForm.jsx";
+import LeadFormPreview from "../admin/LeadFormPreview.jsx";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -50,6 +51,8 @@ function EmployeePanel() {
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
   const [sortStatus, setSortStatus] = useState("");
+  const [maturedID, setMaturedID] = useState("");
+  const [currentForm, setCurrentForm] = useState(null);
   const [projectionData, setProjectionData] = useState([]);
   const [openLogin, setOpenLogin] = useState(false);
   const [requestData, setRequestData] = useState(null);
@@ -265,7 +268,10 @@ function EmployeePanel() {
     setSelectedValues([]);
   };
   const functionopenAnchor = () => {
-    setOpenAnchor(true);
+    setTimeout(() => {
+      setOpenAnchor(true);
+    }, 500);
+  
   };
 
   const [cid, setcid] = useState("");
@@ -1092,6 +1098,27 @@ function EmployeePanel() {
       console.error("Error fetching data:", error.message);
     }
   };
+  const fetchRedesignedFormData = async () => {
+    try {
+      console.log(maturedID);
+      const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
+      const data = response.data.find(obj=>obj.company === maturedID);
+      setCurrentForm(data);
+      
+      
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+useEffect(() => {
+  console.log("Matured ID Changed" , maturedID);
+  if(maturedID){
+    fetchRedesignedFormData();
+  }
+
+}, [maturedID])
+
+  console.log("Current Form:",currentForm)
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -2715,6 +2742,17 @@ function EmployeePanel() {
                                     )}
                                   </td>
                                 )}
+                                {dataStatus==="Matured" && <>
+                                <td>
+                                  <div onClick={()=>{
+                                    setMaturedID(company._id)
+                                    functionopenAnchor()
+                                  }} style={{cursor:'pointer'}}>
+                                  <IconEye/>
+                                  </div>
+                                 
+                                </td>
+                                </>}
                                 {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
                               </tr>
                             ))}
@@ -3343,19 +3381,22 @@ function EmployeePanel() {
 
       {/* Side Drawer for Edit Booking Requests */}
       <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
-        <div className="container-xl">
-          <div className="header d-flex justify-content-between">
-            <h1 className="title">LeadForm</h1>
-            <IconButton>
-              <EditIcon
-                onClick={() => {
-                  setIsEdit(true);
-                }}
-                color="primary"
-              ></EditIcon>
-            </IconButton>{" "}
+        <div className="LeadFormPreviewDrawar">
+          <div className="LeadFormPreviewDrawar-header">
+            <div className="Container">
+              <div className="d-flex justify-content-between align-items-center">
+                  <div ><h2 className="title m-0 ml-1">Current LeadForm</h2></div>
+                  <div>
+                    <IconButton onClick={closeAnchor}>
+                      <CloseIcon/>
+                    </IconButton>
+                  </div>
+              </div>
+            </div>
           </div>
-          <EditForm matured={isEdit} companysName={maturedCompanyName} />
+          <div>
+            <LeadFormPreview setOpenAnchor={setOpenAnchor} currentLeadForm={currentForm} />
+          </div>
         </div>
       </Drawer>
       {/* Drawer for Follow Up Projection  */}

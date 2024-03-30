@@ -3528,11 +3528,24 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
     if (companyData) {
       await CompanyModel.findByIdAndUpdate(companyData._id, { Status: 'Matured' , lastActionDate : date });
     }
-    const displayPaymentTerms = newData.paymentTerms === "Full Advanced" ? "none" : "flex";
+    
+    const totalAmount = newData.services.reduce(
+      (acc, curr) => 
+      
+        acc + parseInt(curr.totalPaymentWGST),
+      0
+    );
+    const receivedAmount = newData.services.reduce((acc, curr) => {
+      return curr.paymentTerms === "Full Advanced"
+        ? acc + parseInt(curr.totalPaymentWGST)
+        : acc + parseInt(curr.firstPayment);
+    }, 0);
+    const pendingAmount = totalAmount - receivedAmount;
     // Render services HTML
     const renderServices = () => {
       let servicesHtml = '';
       for (let i = 0; i < newData.services.length; i++) {
+        const displayPaymentTerms = newData.services[i].paymentTerms==="Full Advanced" ? "none" : "flex"
         servicesHtml += `
         <div>
         <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
@@ -4168,7 +4181,7 @@ console.log(serviceNames);
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ₹ ${Number(newData.totalAmount).toFixed(2)}
+                    ₹ ${totalAmount.toFixed(2)}
                   </div>
                 </div>
               </div>
@@ -4188,7 +4201,7 @@ console.log(serviceNames);
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ₹ ${Number(newData.receivedAmount).toFixed(2)}
+                    ₹ ${receivedAmount.toFixed(2)}
                   </div>
                 </div>
   
@@ -4209,7 +4222,7 @@ console.log(serviceNames);
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                   ₹ ${Number(newData.pendingAmount).toFixed(2)}
+                   ₹ ${pendingAmount.toFixed(2)}
                   </div>
                 </div>
   

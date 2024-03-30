@@ -32,10 +32,12 @@ background: #ffb900 !important;
 {
   margin-left: 8px;
 }
-.css-mjpk2e-MuiButtonBase-root-MuiStepButton-root
+.MuiStep-root
 {
   padding: 0px !important;
   margin: 0px !important;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
 }
 .css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-active , .MuiButton-textPrimary{
     color: #ffba00 !important;

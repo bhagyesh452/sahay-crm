@@ -864,14 +864,15 @@ color: #4e884e;
   padding: 0px !important;
   margin: 0px !important;
 }
-.form-tab-active {
-  background: #f6f8fb  !important;
-  padding: 8px 4px !important
-}
 .No-active 
 {
   padding: 8px 4px !important
 }
+.form-tab-active {
+  background: #f6f8fb  !important;
+  padding: 8px 4px !important
+}
+
 .css-1bw0nnu-MuiStep-root
 {
     padding-left: 0px  !important; 
@@ -882,6 +883,24 @@ color: #4e884e;
   margin-left: 8px;
 }
 /****************Steper Form CSS End ************************/
+.css-mro3c9
+{
+  padding: 0px !important;
+}
+.css-a5nipc
+{
+  padding-right: 5px;
+}
+.css-tjvuvn
+{
+  width:auto;
+  margin: 0px !important;
+}
+.css-4ff9q7.Mui-active {
+  color: #ffba00;
+}
+/******************************STEPER CSS FOR LIVE*****************************/
+
 .servicesFormCard
 {
   background: #f7f7f7;
@@ -1016,4 +1035,18 @@ color: #4e884e;
   width: 90px;
   margin-right: 5px;
   margin-top: 22px;
+}
+.LeadFormPreviewDrawar
+{
+  position: relative;
+}
+.LeadFormPreviewDrawar-header
+{
+  width: 100%;
+  display: block;
+  padding: 6px 14px;
+  background: #fbb900;
+  position: sticky;
+  top: 0;
+  z-index: 9;
 }
