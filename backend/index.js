@@ -112,6 +112,30 @@ app.post("/api/admin/login-admin", async (req, res) => {
 
 // Login for employee
 
+// app.post("/api/employeelogin", async (req, res) => {
+//   const { email, password } = req.body;
+
+//   // Replace this with your actual Employee authentication logic
+//   const user = await adminModel.findOne({
+//     email: email,
+//     password: password,
+//     designation: "Sales Executive",
+//   });
+//   // console.log(user);
+
+//   if (user) {
+//     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
+//       expiresIn: "10h",
+//     });
+//     res.json({ newtoken });
+//     socketIO.emit('Employee-login');
+   
+    
+//   } else {
+//     res.status(401).json({ message: "Invalid credentials" });
+//   }
+// });
+
 app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
 
@@ -119,22 +143,30 @@ app.post("/api/employeelogin", async (req, res) => {
   const user = await adminModel.findOne({
     email: email,
     password: password,
-    designation: "Sales Executive",
+    //designation: "Sales Executive",
   });
-  // console.log(user);
 
-  if (user) {
+  if (!user) {
+    // If user is not found
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "Sales Executive") {
+    // If designation is incorrect
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    // If credentials are correct
     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
       expiresIn: "10h",
     });
     res.json({ newtoken });
     socketIO.emit('Employee-login');
-   
-    
-  } else {
-    res.status(401).json({ message: "Invalid credentials" });
   }
 });
+
+
+
+
+
+
 
 app.put('/api/online-status/:id/:socketID', async (req, res) => {
   const { id } = req.params;
@@ -403,6 +435,7 @@ app.post("/api/einfo", async (req, res) => {
   try {
     adminModel.create(req.body).then((respond) => {
       res.json(respond);
+      //console.log("respond" , respond)
     });
   } catch (error) {
     console.error("Error:", error);
