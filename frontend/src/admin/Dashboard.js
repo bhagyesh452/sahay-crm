@@ -520,7 +520,8 @@ function Dashboard() {
     //console.log("Ename:", ename)
     setopenProjectionTable(true);
     const projectedData = followData.filter(obj => obj.ename === ename);
-    const projectedDataDateRange = filteredDataDateRange.filter(obj => obj.ename === ename)
+    console.log("projected", projectedData)
+    const projectedDataDateRange = followDataToday.filter(obj => obj.ename === ename)
     const projectedDataToday = followDataToday.filter(obj => obj.ename === ename)
     //console.log(projectedDataDateRange)
     setProjectedEmployee(projectedData);
@@ -528,7 +529,7 @@ function Dashboard() {
     setprojectedDataToday(projectedDataToday)
   };
   //console.log(projectedEmployee)
-  console.log("Date Range", projectedDataDateRange)
+  // console.log("Date Range", projectedDataDateRange)
 
   //console.log(projectedDataToday)
   const closeProjectionTable = () => {
@@ -600,38 +601,37 @@ function Dashboard() {
   };
 
 
-  const handleViewHistoryNew = (companyName) => {
+  // const handleViewHistoryNew = (companyName) => {
 
-    const companyHistoryName = companyName
-    setviewHistoryCompanyName(companyHistoryName)
-    setopenProjectionTable(false)
-    const companyDataProjectionNew = projectedDataDateRange.find(obj => obj.companyName === companyHistoryName);
-    console.log("companydataprojectionnew", companyDataProjectionNew)
-    // Check if the company data is found
-    if (companyDataProjectionNew) {
-      // Check if the company data has a history field
-      if (companyDataProjectionNew.history) {
-        // Access the history data
-        const historyData = companyDataProjectionNew.history;
-        console.log("History Data for", companyHistoryName, ":", historyData);
-        sethistoryDataCompany(historyData)
-        // Now you can use the historyData array as needed
-      } else {
-        console.log("No history found for", viewHistoryCompanyName);
-      }
-    } else {
-      console.log("Company", viewHistoryCompanyName, "not found in projectedDataToday");
-    }
-    setopenProjectionHistoryTable(true)
-    // Extract history from each object in followData
-  };
+  //   const companyHistoryName = companyName
+  //   setviewHistoryCompanyName(companyHistoryName)
+  //   setopenProjectionTable(false)
+  //   const companyDataProjectionNew = projectedDataDateRange.find(obj => obj.companyName === companyHistoryName);
+  //   console.log("companydataprojectionnew", companyDataProjectionNew)
+  //   // Check if the company data is found
+  //   if (companyDataProjectionNew) {
+  //     // Check if the company data has a history field
+  //     if (companyDataProjectionNew.history) {
+  //       // Access the history data
+  //       const historyData = companyDataProjectionNew.history;
+  //       console.log("History Data for", companyHistoryName, ":", historyData);
+  //       sethistoryDataCompany(historyData)
+  //       // Now you can use the historyData array as needed
+  //     } else {
+  //       console.log("No history found for", viewHistoryCompanyName);
+  //     }
+  //   } else {
+  //     console.log("Company", viewHistoryCompanyName, "not found in projectedDataToday");
+  //   }
+  //   setopenProjectionHistoryTable(true)
+  //   // Extract history from each object in followData
+  // };
+
+
   const latestDataForCompany = projectedDataToday.filter(obj => obj.companyName === viewHistoryCompanyName);
-  const latestDataForCompanyDateRange = projectedDataDateRange.filter(obj => obj.companyName === viewHistoryCompanyName);
 
 
-
-
-
+  //const latestDataForCompanyDateRange = projectedDataDateRange.filter(obj => obj.companyName === viewHistoryCompanyName);
 
 
   console.log("HistoryCompanyName", viewHistoryCompanyName)
@@ -726,6 +726,7 @@ function Dashboard() {
   }, []);
 
   const [selectedDateRange, setSelectedDateRange] = useState([]);
+  const [selectedDateRangeEmployee, setSelectedDateRangeEmployee] = useState([]);
   //console.log(selectedDateRange)
 
   const selectionRange = {
@@ -777,15 +778,53 @@ function Dashboard() {
     setFilteredDataDateRange(filteredDataDateRange);
   };
 
+  const handleSelectEmployee = (values) => {
+    const startDate = values[0];
+    const endDate = values[1];
+
+    const filteredDataDateRange = companyDataFilter.filter(product => {
+      const productDate = new Date(product["AssignDate"]);
+
+      // Convert dates to UTC format to ensure consistent comparison
+      const formattedProductDate = dayjs(productDate).startOf('day');
+      const formattedStartDate = startDate ? dayjs(startDate).startOf('day') : null;
+      const formattedEndDate = endDate ? dayjs(endDate).endOf('day') : null;
+
+      //console.log(formattedProductDate);
+      //console.log(formattedStartDate);
+      //console.log(formattedEndDate);
+
+
+      if (formattedStartDate && formattedEndDate && formattedStartDate.isSame(formattedEndDate)) {
+        // If both startDate and endDate are the same, filter for transactions on that day
+        return formattedProductDate.isSame(formattedStartDate);
+      } else if (formattedStartDate && formattedEndDate) {
+        // If different startDate and endDate, filter within the range
+        return formattedProductDate >= formattedStartDate && formattedProductDate <= formattedEndDate;
+      } else {
+        // If either startDate or endDate is null, return false
+        return false;
+      }
+    });
+
+    console.log("filteredData", filteredDataDateRange);
+    setStartDateEmployee(startDate);
+    setEndDateEmployee(endDate);
+    setCompanyData(filteredDataDateRange);
+    setcompanyDataFilter(filteredDataDateRange);
+  };
+
+  console.log(startDateEmployee,endDateEmployee)
+
+  console.log("companyData", companyData)
+
   useEffect(() => {
-    console.log(startDate);
-    console.log(endDate);
 
     // Filter followData based on the selected date range
     const filteredDataDateRange = followData.filter(product => {
       const productDate = new Date(product["estPaymentDate"]);
 
-      // Convert productDate to the same format as startDate and endDate
+      // Convert productDate to the sameformat as startDate and endDate
       const formattedProductDate = dayjs(productDate).startOf('day');
       const formattedStartDate = startDate ? dayjs(startDate).startOf('day') : null;
       const formattedEndDate = endDate ? dayjs(endDate).endOf('day') : null;
@@ -1782,27 +1821,29 @@ function Dashboard() {
 
   const [companyDataFilter, setcompanyDataFilter] = useState([])
 
-  const handleSelectEmployee = (date) => {
-    const filteredDataDateRange = companyDataFilter.filter(product => {
-      const productDate = new Date(product["AssignDate"]);
-      if (formatDate(date.selection.startDate) === formatDate(date.selection.endDate)) {
-        //console.log(formatDate(date.selection.startDate))
-        //console.log(formatDate(date.selection.endDate))
-        //console.log(formatDate(productDate))
-        return formatDate(productDate) === formatDate(date.selection.startDate);
-      } else {
-        return (
-          productDate >= date.selection.startDate &&
-          productDate <= date.selection.endDate
-        );
-      }
-    });
-    setStartDateEmployee(date.selection.startDate);
-    setEndDateEmployee(date.selection.endDate);
-    setCompanyData(filteredDataDateRange);
-    setcompanyDataFilter(filteredDataDateRange)
-    //console.log(filteredDataDateRange)
-  };
+  // const handleSelectEmployee = (date) => {
+
+
+  //   const filteredDataDateRange = companyDataFilter.filter(product => {
+  //     const productDate = new Date(product["AssignDate"]);
+  //     if (formatDate(date.selection.startDate) === formatDate(date.selection.endDate)) {
+  //       //console.log(formatDate(date.selection.startDate))
+  //       //console.log(formatDate(date.selection.endDate))
+  //       //console.log(formatDate(productDate))
+  //       return formatDate(productDate) === formatDate(date.selection.startDate);
+  //     } else {
+  //       return (
+  //         productDate >= date.selection.startDate &&
+  //         productDate <= date.selection.endDate
+  //       );
+  //     }
+  //   });
+  //   setStartDateEmployee(date.selection.startDate);
+  //   setEndDateEmployee(date.selection.endDate);
+  //   setCompanyData(filteredDataDateRange);
+  //   setcompanyDataFilter(filteredDataDateRange)
+  //   //console.log(filteredDataDateRange)
+  // };
 
 
 
@@ -2495,8 +2536,30 @@ function Dashboard() {
                               <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
                             </button>
                           </div>
+                          {/* <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
+                            <DemoContainer components={['SingleInputDateRangeField']}>
+                              <DateRangePicker
+                                onChange={(values) => {
+                                  const startDateEmployee = moment(values[0]).format('DD/MM/YYYY');
+                                  const endDateEmployee = moment(values[1]).format('DD/MM/YYYY');
+                                  setSelectedDateRangeEmployee([startDateEmployee, endDateEmployee]);
+                                  handleSelectEmployee(values); // Call handleSelect with the selected values
+                                }}
+                                slots={{ field: SingleInputDateRangeField }}
+                                slotProps={{
+                                  shortcuts: {
+                                    items: shortcutsItems,
+                                  },
+                                  actionBar: { actions: [] },
+                                  textField: { InputProps: { endAdornment: <Calendar /> } }
+                                }}
+                              //calendars={1}
+                              />
+                            </DemoContainer>
+                          </LocalizationProvider> */}
                         </div>
                       </div>
+
                       {/* {displayDateRangeEmployee && (
                         <div ref={dateRangePickerEmployeeRef} className="position-absolute " style={{ zIndex: "1000", top: "13%", left: "73%" }} >
                           <DateRangePicker
@@ -2506,6 +2569,7 @@ function Dashboard() {
                           />
                         </div>
                       )} */}
+
                       <div className="card-body">
                         <div
                           className="row"
@@ -3927,23 +3991,24 @@ function Dashboard() {
                     {/* Map through uniqueEnames array to render rows */}
 
                     {
-                      projectedDataDateRange && projectedDataDateRange.length > 0 ? (
-                        projectedDataDateRange.map((obj, Index) => (
-                          <tr key={`sub-row-${Index}`}>
-                            <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                            {/* Render other employee data */}
-                            <td>{obj.ename}</td>
-                            <td>{obj.companyName}</td>
-                            <td>{obj.offeredServices.join(",")}</td>
-                            <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                            <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                            <td>{obj.estPaymentDate}</td>
-                            <td>{obj.lastFollowUpdate}</td>
-                            <td>{obj.remarks}</td>
-                            <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryNew(obj.companyName)} /></td>
-                          </tr>
-                        ))
-                      ) : (
+                      projectedDataToday && projectedDataToday.length > 0 ? (
+                        //   projectedDataDateRange.map((obj, Index) => (
+                        //     <tr key={`sub-row-${Index}`}>
+                        //       <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                        //       {/* Render other employee data */}
+                        //       <td>{obj.ename}</td>
+                        //       <td>{obj.companyName}</td>
+                        //       <td>{obj.offeredServices.join(",")}</td>
+                        //       <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                        //       <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                        //       <td>{obj.estPaymentDate}</td>
+                        //       <td>{obj.lastFollowUpdate}</td>
+                        //       <td>{obj.remarks}</td>
+                        //       <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryNew(obj.companyName)} /></td>
+                        //     </tr>
+                        //   ))
+                        // ) : 
+
                         projectedDataToday.map((obj, Index) => (
                           <tr key={`sub-row-${Index}`}>
                             <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
@@ -3959,7 +4024,7 @@ function Dashboard() {
                             <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection(obj.companyName)} /></td>
                           </tr>
                         ))
-                      )
+                      ) : (null)
                     }
                   </tbody>
                   {projectedEmployee && (
@@ -3973,22 +4038,46 @@ function Dashboard() {
                     }}>
                       <tr style={{ fontWeight: 500 }}>
                         <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                        {/* <td>{projectedEmployee.length}</td> */}
+                        {/* <td>{projectedEmployee.length}</td> 
                         <td>
                           {projectedDataDateRange && projectedDataDateRange.length > 0 ? (projectedDataDateRange.length) : (projectedDataToday.length)}
+                        </td>*/}
+                        <td>
+                          {(projectedDataToday.length)}
                         </td>
                         {/* <td>{offeredServicesPopup.length}
-                    </td> */}
+                    </td> 
                         <td>{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredServicesPopupDateRange.length) : (offeredServicesPopupToday.length)}</td>
+                        <td>{(offeredServicesPopupToday.length)}</td>*/}
+                        <td>
+                          {
+                            projectedDataToday.reduce((totalServices, partObj) => {
+                              totalServices += partObj.offeredServices.length;
+                              return totalServices;
+                            }, 0)
+                          }
+                        </td>
                         {/* <td>{totalPaymentSumPopup.toLocaleString()}
-                    </td> */}
+                    </td> 
                         <td>   &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredPaymentSumPopupDateRange.toLocaleString()) : (offeredPaymentSumPopupToday.toLocaleString())}</td>
                         <td>
                           &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (totalPaymentSumPopupDateRange.toLocaleString()) : (totalPaymentSumPopupToday.toLocaleString())}
                         </td>
                         {/* <td>{offeredPaymentSumPopup.toLocaleString()}
-                    </td> */}
+                    </td> 
+                        <td>   &#8377;{(offeredPaymentSumPopupToday.toLocaleString())}</td>
+                         <td>
+                          &#8377;{(totalPaymentSumPopupToday.toLocaleString())}
+                        </td>*/}
 
+                        <td>&#8377;{
+                          projectedDataToday.reduce((totalOfferedPrice, partObj) => {
+                            return totalOfferedPrice + partObj.offeredPrize;
+                          }, 0)}</td>
+                        <td>&#8377;{
+                          projectedDataToday.reduce((totalTotalPayment, partObj) => {
+                            return totalTotalPayment + partObj.totalPayment;
+                          }, 0)}</td>
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
@@ -4099,62 +4188,62 @@ function Dashboard() {
                 )
                     }
               </tbody> */}
-              <tbody>
-                {
-                  projectedDataDateRange && projectedDataDateRange.length > 0 ? (
-                    historyDataCompany.map((obj, Index) => (
-                      <tr key={`sub-row-${Index}`}>
-                        <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                        {/* Render other employee data */}
-                        <td>{obj.modifiedAt}</td>
-                        <td>{obj.data.companyName}</td>
-                        <td>{obj.data.offeredServices.join(",")}</td>
-                        <td>{obj.data.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                        <td>{obj.data.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                        <td>{obj.data.estPaymentDate}</td>
-                        <td>{obj.data.lastFollowUpdate}</td>
-                        <td>{obj.data.remarks}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    historyDataCompany.map((obj, index) => (
-                      <tr key={`sub-row-${index}`}>
-                        <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                        {/* Render other employee data */}
-                        <td>{obj.modifiedAt}</td>
-                        <td>{obj.data.companyName}</td>
-                        <td>{obj.data.offeredServices.join(",")}</td>
-                        <td>{obj.data.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                        <td>{obj.data.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                        <td>{obj.data.estPaymentDate}</td>
-                        <td>{obj.data.lastFollowUpdate}</td>
-                        <td>{obj.data.remarks}</td>
-                        {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
-                      </tr>
-                    ))
-                  )
-                }
-                {/* Additional rendering for latest data */}
-                {
-                  latestDataForCompany.map((obj, index) => (
-                    <tr key={`sub-row-latest-${index}`}>
-                      <td style={{ lineHeight: "32px" }}>{historyDataCompany.length + index + 1}</td>
-                      {/* Render other employee data */}
-                      <td>{obj.date}</td>
-                      <td>{obj.companyName}</td>
-                      <td>{obj.offeredServices.join(",")}</td>
-                      <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                      <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                      <td>{obj.estPaymentDate}</td>
-                      <td>{obj.lastFollowUpdate}</td>
-                      <td>{obj.remarks}</td>
-                      {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
-                    </tr>
-                  ))
-                }
-              </tbody>
+                  <tbody>
+                    {
+                      projectedDataToday && projectedDataToday.length > 0 ? (
+                        //   historyDataCompany.map((obj, Index) => (
+                        //     <tr key={`sub-row-${Index}`}>
+                        //       <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                        //       {/* Render other employee data */}
+                        //       <td>{obj.modifiedAt}</td>
+                        //       <td>{obj.data.companyName}</td>
+                        //       <td>{obj.data.offeredServices.join(",")}</td>
+                        //       <td>{obj.data.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                        //       <td>{obj.data.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                        //       <td>{obj.data.estPaymentDate}</td>
+                        //       <td>{obj.data.lastFollowUpdate}</td>
+                        //       <td>{obj.data.remarks}</td>
+                        //     </tr>
+                        //   ))
+                        // ) : (
+                        historyDataCompany.map((obj, index) => (
+                          <tr key={`sub-row-${index}`}>
+                            <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                            {/* Render other employee data */}
+                            <td>{obj.modifiedAt}</td>
+                            <td>{obj.data.companyName}</td>
+                            <td>{obj.data.offeredServices.join(",")}</td>
+                            <td>{obj.data.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>{obj.data.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>{obj.data.estPaymentDate}</td>
+                            <td>{obj.data.lastFollowUpdate}</td>
+                            <td>{obj.data.remarks}</td>
+                            {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
+                          </tr>
+                        ))
+                      ) : (null)
+                    }
+                    {/* Additional rendering for latest data */}
+                    {
+                      latestDataForCompany.map((obj, index) => (
+                        <tr key={`sub-row-latest-${index}`}>
+                          <td style={{ lineHeight: "32px" }}>{historyDataCompany.length + index + 1}</td>
+                          {/* Render other employee data */}
+                          <td>{obj.date}</td>
+                          <td>{obj.companyName}</td>
+                          <td>{obj.offeredServices.join(",")}</td>
+                          <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                          <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                          <td>{obj.estPaymentDate}</td>
+                          <td>{obj.lastFollowUpdate}</td>
+                          <td>{obj.remarks}</td>
+                          {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
+                        </tr>
+                      ))
+                    }
+                  </tbody>
 
-              {/* {projectedEmployee && (
+                  {/* {projectedEmployee && (
                     <tfoot style={{
                       position: "sticky", // Make the footer sticky
                       bottom: -1, // Stick it at the bottom
@@ -4184,10 +4273,10 @@ function Dashboard() {
                       </tr>
                     </tfoot>
                   )} */}
-            </table>
-        </div>
-      </DialogContent>
-    </Dialog>
+                </table>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div >
       </div >
     </div >
