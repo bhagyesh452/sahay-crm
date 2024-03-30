@@ -897,22 +897,26 @@ color: #4e884e;
   margin: 0px !important;
 }
 .css-4ff9q7.Mui-active {
-  color: #ffba00;
+  color: #ffba00 !important;
+}
+.css-11qjisw
+{
+  margin-left: 4px !important;
 }
 /******************************STEPER CSS FOR LIVE*****************************/
 .css-1uvydh2
 {
-  padding: 6px 4px 6px 11px;
-  font-size: 14px;
+  padding: 6px 4px 6px 11px  !important;
+  font-size: 14px !important;
 }
 .css-1tewkwq
 {
-  padding-top: 0px;
+  padding-top: 0px !important;
 }
 .svg.MuiSvgIcon-root.MuiSvgIcon-fontSizeMedium.css-vubbuv
 {
-  width: 16px;
-  height: 16px;
+  width: 16px  !important;
+  height: 16px !important;
 }
 /********datepicker live**********/
 .servicesFormCard
