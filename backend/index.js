@@ -585,6 +585,40 @@ app.delete('/api/delete-followup/:companyName', async (req, res) => {
 
 
 // Backend API to update or add data to FollowUpModel
+// app.post('/api/update-followup', async (req, res) => {
+//   try {
+//     const { companyName } = req.body;
+//     const todayDate = new Date();
+//     const time = todayDate.toLocaleTimeString();
+//     const date = todayDate.toLocaleDateString();
+//     const finalData = { ...req.body, date, time };
+   
+//     // Check if a document with companyName exists
+//     const existingData = await FollowUpModel.findOne({ companyName });
+    
+//     if (existingData) {
+//       // Update existing document
+//       await FollowUpModel.findOneAndUpdate({ companyName }, finalData);
+//       res.status(200).json({ message: 'Data updated successfully' });
+//     } else {
+//       // Create new document
+//       await FollowUpModel.create(finalData);
+//       res.status(201).json({ message: 'New data added successfully' });
+//     }
+//   } catch (error) {
+//     console.error('Error updating or adding data:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
+function formatDate(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // January is 0
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 app.post('/api/update-followup', async (req, res) => {
   try {
     const { companyName } = req.body;
@@ -598,11 +632,17 @@ app.post('/api/update-followup', async (req, res) => {
     
     if (existingData) {
       // Update existing document
-      await FollowUpModel.findOneAndUpdate({ companyName }, finalData);
+      const previousData = { ...existingData.toObject() };
+      //console.log(previousData)
+      existingData.history.push({ modifiedAt: formatDate(Date.now()), data: previousData });
+      console.log(existingData)
+      existingData.set(finalData);
+      await existingData.save();
       res.status(200).json({ message: 'Data updated successfully' });
     } else {
       // Create new document
-      await FollowUpModel.create(finalData);
+      const newData = new FollowUpModel(finalData);
+      await newData.save();
       res.status(201).json({ message: 'New data added successfully' });
     }
   } catch (error) {
@@ -610,6 +650,7 @@ app.post('/api/update-followup', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 app.get("/api/requestCompanyData", async (req, res) => {
   try {

@@ -33,6 +33,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { debounce } from 'lodash';
 import { Link } from 'react-router-dom'
 import ScaleLoader from "react-spinners/ScaleLoader";
+import { MdHistory } from "react-icons/md";
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import { lastDayOfDecade } from "date-fns";
@@ -76,6 +77,7 @@ function Dashboard() {
   const [showUpdates, setShowUpdates] = useState(false);
   const [followData, setfollowData] = useState([])
   const [openProjectionTable, setopenProjectionTable] = useState(false)
+  const [openProjectionHistoryTable, setopenProjectionHistoryTable] = useState(false)
   const [projectedEmployee, setProjectedEmployee] = useState([]);
   const [displayDateRange, setDateRangeDisplay] = useState(false)
   const [displayDateRangeEmployee, setDateRangeDisplayEmployee] = useState(false)
@@ -86,6 +88,7 @@ function Dashboard() {
   const [showBookingDate, setShowBookingDate] = useState(false)
   const [startDateAnother, setStartDateAnother] = useState(new Date());
   const [endDateAnother, setEndDateAnother] = useState(new Date());
+  const [projectionEname, setProjectionEname] = useState("")
   const [sortType, setSortType] = useState({
     untouched: "none",
     notPickedUp: "none",
@@ -359,7 +362,23 @@ function Dashboard() {
   // ----------------------------------projection-dashboard-----------------------------------------------
 
   const [followDataToday, setfollowDataToday] = useState([])
+  //   const[historyFollowUpData , setHistoryFollowUpData] = useState([])
 
+  //   useEffect(() => {
+  //     const fetchDataProjectionHistory = async () => {
+  //       const ename = projectionEname
+  //       try {
+  //         const response = await axios.get(`${secretKey}/followUp-historydata/${ename}`); // Fetch main document data
+  //         setHistoryFollowUpData(response.data);
+  //       } catch (error) {
+  //         console.error('Error fetching data:', error);
+  //       }
+  //     };
+  //     fetchDataProjectionHistory();
+  //   }, []);
+
+
+  // console.log(projectionEname)
 
   const fetchFollowUpData = async () => {
 
@@ -490,7 +509,7 @@ function Dashboard() {
 
   //console.log(followData)
 
-  const [projectionEname, setProjectionEname] = useState("")
+
   //console.log(projectionEname)
 
   const [projectedDataToday, setprojectedDataToday] = useState([])
@@ -509,7 +528,7 @@ function Dashboard() {
     setprojectedDataToday(projectedDataToday)
   };
   //console.log(projectedEmployee)
-  //console.log(projectedDataDateRange)
+  console.log("Date Range", projectedDataDateRange)
 
   //console.log(projectedDataToday)
   const closeProjectionTable = () => {
@@ -536,11 +555,94 @@ function Dashboard() {
     return sum;
   }
 
+
+  //console.log("projecteddata" , projectedDataToday)
+
   // Calculate the sums
   const { totalPaymentSumPopup, offeredPaymentSumPopup, offeredServicesPopup } = calculateSumPopup(projectedEmployee);
   //console.log(totalPaymentSumPopup)
   //console.log(offeredPaymentSumPopup)
   // console.log(offeredServicesPopup)
+
+  // ---------------------------------------------history of projection data--------------------------------------------
+
+  console.log(followData)
+
+  const [viewHistoryCompanyName, setviewHistoryCompanyName] = useState("")
+  const [historyDataCompany, sethistoryDataCompany] = useState([])
+
+
+
+
+  const handleViewHistoryProjection = (companyName) => {
+
+    const companyHistoryName = companyName
+    setviewHistoryCompanyName(companyHistoryName)
+    setopenProjectionTable(false)
+    const companyDataProjection = projectedDataToday.find(obj => obj.companyName === companyHistoryName);
+    // Check if the company data is found
+    if (companyDataProjection) {
+      // Check if the company data has a history field
+      if (companyDataProjection.history) {
+        // Access the history data
+        const historyData = companyDataProjection.history;
+        console.log("History Data for", companyHistoryName, ":", historyData);
+        sethistoryDataCompany(historyData)
+        // Now you can use the historyData array as needed
+      } else {
+        console.log("No history found for", viewHistoryCompanyName);
+      }
+    } else {
+      console.log("Company", viewHistoryCompanyName, "not found in projectedDataToday");
+    }
+    setopenProjectionHistoryTable(true)
+    // Extract history from each object in followData
+  };
+
+
+  const handleViewHistoryNew = (companyName) => {
+
+    const companyHistoryName = companyName
+    setviewHistoryCompanyName(companyHistoryName)
+    setopenProjectionTable(false)
+    const companyDataProjectionNew = projectedDataDateRange.find(obj => obj.companyName === companyHistoryName);
+    console.log("companydataprojectionnew", companyDataProjectionNew)
+    // Check if the company data is found
+    if (companyDataProjectionNew) {
+      // Check if the company data has a history field
+      if (companyDataProjectionNew.history) {
+        // Access the history data
+        const historyData = companyDataProjectionNew.history;
+        console.log("History Data for", companyHistoryName, ":", historyData);
+        sethistoryDataCompany(historyData)
+        // Now you can use the historyData array as needed
+      } else {
+        console.log("No history found for", viewHistoryCompanyName);
+      }
+    } else {
+      console.log("Company", viewHistoryCompanyName, "not found in projectedDataToday");
+    }
+    setopenProjectionHistoryTable(true)
+    // Extract history from each object in followData
+  };
+  const latestDataForCompany = projectedDataToday.filter(obj => obj.companyName === viewHistoryCompanyName);
+  const latestDataForCompanyDateRange = projectedDataDateRange.filter(obj => obj.companyName === viewHistoryCompanyName);
+
+
+
+
+
+
+
+  console.log("HistoryCompanyName", viewHistoryCompanyName)
+
+  const closeProjectionHistoryTable = () => {
+    setopenProjectionHistoryTable(false);
+    setopenProjectionTable(true)
+  };
+
+
+  console.log(historyDataCompany)
 
   // --------------------------------- date-range-picker-------------------------------------
 
@@ -2047,23 +2149,23 @@ function Dashboard() {
                   </div>
                   {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
                   <div className="employee-dashboard">
-                  <div className="card todays-booking m-2 totalbooking" id='totalbooking' >
-                    <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-                    <div className="d-flex justify-content-between">
+                    <div className="card todays-booking m-2 totalbooking" id='totalbooking' >
+                      <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
+                        <div className="d-flex justify-content-between">
                           <div style={{ minWidth: '14vw' }} className="dashboard-title">
                             <h2 style={{ marginBottom: '5px' }}>Total Bookings</h2>
                           </div>
                         </div>
-                      <div className=" form-control date-range-picker d-flex align-items-center justify-content-between">
-                        <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
-                          {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
+                        <div className=" form-control date-range-picker d-flex align-items-center justify-content-between">
+                          <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
+                            {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
+                          </div>
+                          <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                            <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
+                          </button>
                         </div>
-                        <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                          <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
-                        </button>
                       </div>
-                    </div>
-                    {/* {showBookingDate && <div
+                      {/* {showBookingDate && <div
                       ref={dateRangePickerRef}
                       style={{
                         position: "absolute",
@@ -2079,270 +2181,270 @@ function Dashboard() {
                         onClose={() => setShowBookingDate(false)}
                       />
                     </div>} */}
-                    <div className="card-body">
-                      <div
-                        className="row"
-                        style={{
-                          overflowX: "auto",
-                          overflowY: "auto",
-                          maxHeight: "60vh",
-                          lineHeight: "32px",
-                        }}
-                      >
-                        <table
+                      <div className="card-body">
+                        <div
+                          className="row"
                           style={{
-                            position: "sticky",
-                            width: "100%",
-                            borderCollapse: "collapse",
-                            border: "1px solid #ddd",
-                            marginBottom: "5px",
+                            overflowX: "auto",
+                            overflowY: "auto",
+                            maxHeight: "60vh",
                             lineHeight: "32px",
                           }}
-                          className="table-vcenter table-nowrap"
                         >
-                          <thead style={{ lineHeight: "32px" }}>
-                            <tr
-                              style={{
-                                backgroundColor: "#ffb900",
-                                color: "black",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              <th style={{ lineHeight: "32px" }}>SR.NO</th>
-                              <th>BDE NAME</th>
-                              <th>MATURED CASES</th>
-                              <th>NUM OF UNIQUE SERVICES OFFERED</th>
-                              <th>TOTAL PAYMENT</th>
-                              <th>RECEIVED PAYMENT</th>
-                              <th>PENDING PAYMENT</th>
-                            </tr>
-                          </thead>
-                          {finalFilteredData.length !== 0 ? (
-                            <>
-                              <tbody>
-                                {finalFilteredData.map((obj, index) => (
-                                  <>
-                                    <tr style={{ position: "relative" }}>
-                                      <td style={{ lineHeight: "32px" }}>
-                                        {index + 1}
-                                      </td>
-                                      <td>{obj.bdeName}</td>
-                                      <td>
-                                        <div className="row">
-                                          <div
-                                            style={{ textAlign: "right" }}
-                                            className="col"
-                                          >
-                                            {filteredBooking.filter((data) => {
-                                              return (
-                                                data.bdeName === obj.bdeName &&
-                                                data.bdeName === data.bdmName
-                                              );
-                                            }).length +
-                                              filteredBooking.filter((data) => {
+                          <table
+                            style={{
+                              position: "sticky",
+                              width: "100%",
+                              borderCollapse: "collapse",
+                              border: "1px solid #ddd",
+                              marginBottom: "5px",
+                              lineHeight: "32px",
+                            }}
+                            className="table-vcenter table-nowrap"
+                          >
+                            <thead style={{ lineHeight: "32px" }}>
+                              <tr
+                                style={{
+                                  backgroundColor: "#ffb900",
+                                  color: "black",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                <th style={{ lineHeight: "32px" }}>SR.NO</th>
+                                <th>BDE NAME</th>
+                                <th>MATURED CASES</th>
+                                <th>NUM OF UNIQUE SERVICES OFFERED</th>
+                                <th>TOTAL PAYMENT</th>
+                                <th>RECEIVED PAYMENT</th>
+                                <th>PENDING PAYMENT</th>
+                              </tr>
+                            </thead>
+                            {finalFilteredData.length !== 0 ? (
+                              <>
+                                <tbody>
+                                  {finalFilteredData.map((obj, index) => (
+                                    <>
+                                      <tr style={{ position: "relative" }}>
+                                        <td style={{ lineHeight: "32px" }}>
+                                          {index + 1}
+                                        </td>
+                                        <td>{obj.bdeName}</td>
+                                        <td>
+                                          <div className="row">
+                                            <div
+                                              style={{ textAlign: "right" }}
+                                              className="col"
+                                            >
+                                              {filteredBooking.filter((data) => {
                                                 return (
                                                   data.bdeName === obj.bdeName &&
-                                                  data.bdeName !== data.bdmName
+                                                  data.bdeName === data.bdmName
                                                 );
-                                              }).length /
-                                              2}{" "}
+                                              }).length +
+                                                filteredBooking.filter((data) => {
+                                                  return (
+                                                    data.bdeName === obj.bdeName &&
+                                                    data.bdeName !== data.bdmName
+                                                  );
+                                                }).length /
+                                                2}{" "}
+                                            </div>
+                                            <div className="col-sm-5">
+                                              <IconEye
+                                                style={{
+                                                  cursor: "pointer",
+                                                  marginLeft: "5px",
+                                                  height: "17px",
+                                                }}
+                                                onClick={() =>
+                                                  handleRowClick(index, obj.bdeName)
+                                                }
+                                              />
+                                            </div>
                                           </div>
-                                          <div className="col-sm-5">
-                                            <IconEye
-                                              style={{
-                                                cursor: "pointer",
-                                                marginLeft: "5px",
-                                                height: "17px",
-                                              }}
-                                              onClick={() =>
-                                                handleRowClick(index, obj.bdeName)
-                                              }
-                                            />
-                                          </div>
-                                        </div>
-                                      </td>
+                                        </td>
 
-                                      <td>
-                                        {
-                                          filteredBooking
-                                            .filter(
-                                              (data) => data.bdeName === obj.bdeName
-                                            ) // Filter objects with bdeName same as myName
-                                            .reduce((totalServices, obj) => {
-                                              // Use reduce to calculate the total number of services
-                                              return (
-                                                totalServices +
-                                                (obj.services && obj.services[0]
-                                                  ? obj.services[0]
-                                                    .split(",")
-                                                    .map((service) =>
-                                                      service.trim()
-                                                    ).length
-                                                  : 0)
-                                              );
-                                            }, 0) // Initialize totalServices as 0
-                                        }
-                                      </td>
-                                      <td>
-                                        {" "}
-                                        ₹{
-                                          filteredBooking
-                                            .filter(
-                                              (data) => data.bdeName === obj.bdeName
-                                            ) // Filter objects with bdeName same as myName
-                                            .reduce((totalPayments, obj1) => {
-                                              // Use reduce to calculate the total of totalPayments
-                                              return (
-                                                totalPayments +
-                                                (obj1.bdeName === obj1.bdmName && obj.bdmType !== "closeby"
-                                                  ? obj1.originalTotalPayment !== 0
-                                                    ? obj1.originalTotalPayment
-                                                    : 0
-                                                  : obj1.originalTotalPayment !== 0
-                                                    ? obj1.originalTotalPayment / 2
+                                        <td>
+                                          {
+                                            filteredBooking
+                                              .filter(
+                                                (data) => data.bdeName === obj.bdeName
+                                              ) // Filter objects with bdeName same as myName
+                                              .reduce((totalServices, obj) => {
+                                                // Use reduce to calculate the total number of services
+                                                return (
+                                                  totalServices +
+                                                  (obj.services && obj.services[0]
+                                                    ? obj.services[0]
+                                                      .split(",")
+                                                      .map((service) =>
+                                                        service.trim()
+                                                      ).length
                                                     : 0)
-                                              );
-                                            }, 0)
-                                            .toLocaleString() // Initialize totalPayments as 0
-                                        }
-                                      </td>
-                                      <td>
-                                        ₹{
-                                          filteredBooking
-                                            .filter(
-                                              (data) => data.bdeName === obj.bdeName
-                                            ) // Filter objects with bdeName same as obj.bdeName
-                                            .reduce((totalPayments, obj1) => {
-                                              // Use reduce to calculate the total of totalPayments
-                                              return (
-                                                totalPayments +
-                                                (obj1.firstPayment === 0
-                                                  ? obj1.bdeName === obj1.bdmName
-                                                    ? obj1.originalTotalPayment / 2 // If bdeName and bdmName are the same
-                                                    : obj1.originalTotalPayment // If bdeName and bdmName are different
-                                                  : obj1.bdeName === obj1.bdmName
-                                                    ? obj1.originalTotalPayment// If bdeName and bdmName are the same
-                                                    : obj1.originalTotalPayment / 2) // If bdeName and bdmName are different
-                                              );
-                                            }, 0)
-                                            .toLocaleString() // Initialize totalPayments as 0
-                                        }
-                                      </td>
-                                      <td>
-                                        ₹{
-                                          filteredBooking
-                                            .filter(
-                                              (data) => data.bdeName === obj.bdeName
-                                            ) // Filter objects with bdeName same as obj.bdeName
-                                            .reduce((totalPayments, obj1) => {
-                                              // Use reduce to calculate the total of totalPayments
-                                              return (
-                                                totalPayments +
-                                                (obj1.firstPayment !== 0
-                                                  ? obj1.bdeName !== obj1.bdmName
-                                                    ? (obj1.originalTotalPayment -
-                                                      obj1.firstPayment) /
-                                                    2 // If bdeName and bdmName are the same
-                                                    : obj1.originalTotalPayment -
-                                                    obj1.firstPayment // If bdeName and bdmName are different
-                                                  : 0) // If bdeName and bdmName are different
-                                              );
-                                            }, 0)
-                                            .toLocaleString() // Initialize totalPayments as 0
-                                        }
-                                      </td>
-                                    </tr>
-                                  </>
-                                ))}
-                              </tbody>
-                              <tfoot>
-                                <tr style={{ fontWeight: "500" }}>
-                                  <td colSpan={2} style={{ lineHeight: "32px" }}>
-                                    Total:{finalFilteredData.length}
-                                  </td>
+                                                );
+                                              }, 0) // Initialize totalServices as 0
+                                          }
+                                        </td>
+                                        <td>
+                                          {" "}
+                                          ₹{
+                                            filteredBooking
+                                              .filter(
+                                                (data) => data.bdeName === obj.bdeName
+                                              ) // Filter objects with bdeName same as myName
+                                              .reduce((totalPayments, obj1) => {
+                                                // Use reduce to calculate the total of totalPayments
+                                                return (
+                                                  totalPayments +
+                                                  (obj1.bdeName === obj1.bdmName && obj.bdmType !== "closeby"
+                                                    ? obj1.originalTotalPayment !== 0
+                                                      ? obj1.originalTotalPayment
+                                                      : 0
+                                                    : obj1.originalTotalPayment !== 0
+                                                      ? obj1.originalTotalPayment / 2
+                                                      : 0)
+                                                );
+                                              }, 0)
+                                              .toLocaleString() // Initialize totalPayments as 0
+                                          }
+                                        </td>
+                                        <td>
+                                          ₹{
+                                            filteredBooking
+                                              .filter(
+                                                (data) => data.bdeName === obj.bdeName
+                                              ) // Filter objects with bdeName same as obj.bdeName
+                                              .reduce((totalPayments, obj1) => {
+                                                // Use reduce to calculate the total of totalPayments
+                                                return (
+                                                  totalPayments +
+                                                  (obj1.firstPayment === 0
+                                                    ? obj1.bdeName === obj1.bdmName
+                                                      ? obj1.originalTotalPayment / 2 // If bdeName and bdmName are the same
+                                                      : obj1.originalTotalPayment // If bdeName and bdmName are different
+                                                    : obj1.bdeName === obj1.bdmName
+                                                      ? obj1.originalTotalPayment// If bdeName and bdmName are the same
+                                                      : obj1.originalTotalPayment / 2) // If bdeName and bdmName are different
+                                                );
+                                              }, 0)
+                                              .toLocaleString() // Initialize totalPayments as 0
+                                          }
+                                        </td>
+                                        <td>
+                                          ₹{
+                                            filteredBooking
+                                              .filter(
+                                                (data) => data.bdeName === obj.bdeName
+                                              ) // Filter objects with bdeName same as obj.bdeName
+                                              .reduce((totalPayments, obj1) => {
+                                                // Use reduce to calculate the total of totalPayments
+                                                return (
+                                                  totalPayments +
+                                                  (obj1.firstPayment !== 0
+                                                    ? obj1.bdeName !== obj1.bdmName
+                                                      ? (obj1.originalTotalPayment -
+                                                        obj1.firstPayment) /
+                                                      2 // If bdeName and bdmName are the same
+                                                      : obj1.originalTotalPayment -
+                                                      obj1.firstPayment // If bdeName and bdmName are different
+                                                    : 0) // If bdeName and bdmName are different
+                                                );
+                                              }, 0)
+                                              .toLocaleString() // Initialize totalPayments as 0
+                                          }
+                                        </td>
+                                      </tr>
+                                    </>
+                                  ))}
+                                </tbody>
+                                <tfoot>
+                                  <tr style={{ fontWeight: "500" }}>
+                                    <td colSpan={2} style={{ lineHeight: "32px" }}>
+                                      Total:{finalFilteredData.length}
+                                    </td>
 
-                                  <td>
-                                    {filteredBooking.filter((data) => {
-                                      return data.bdeName === data.bdmName;
-                                    }).length +
-                                      filteredBooking.filter((data) => {
-                                        return data.bdeName !== data.bdmName;
-                                      }).length /
-                                      2}
-                                  </td>
-                                  <td>
-                                    {filteredBooking.reduce((totalLength, obj) => {
-                                      // Split the services string by commas and calculate the length of the resulting array
-                                      const serviceLength =
-                                        obj.services[0].split(",").length;
-                                      // Add the length of services for the current object to the total length
-                                      return totalLength + serviceLength;
-                                    }, 0)}
-                                  </td>
-                                  <td>
-                                    ₹{filteredBooking
-                                      .reduce((totalPayment, obj) => {
-                                        // Add the totalPayment of the current object to the totalPayment accumulator
-                                        const finalPayment =
-                                          obj.bdeName === obj.bdmName
-                                            ? obj.originalTotalPayment
-                                            : obj.originalTotalPayment / 2;
-                                        return totalPayment + finalPayment;
-                                      }, 0)
-                                      .toLocaleString()}
-                                  </td>
-                                  <td>
-                                    ₹{filteredBooking
-                                      .reduce((totalFirstPayment, obj) => {
-                                        // If firstPayment is 0, count totalPayment instead
-                                        const paymentToAdd =
-                                          obj.firstPayment === 0
-                                            ? obj.bdeName === obj.bdmName
+                                    <td>
+                                      {filteredBooking.filter((data) => {
+                                        return data.bdeName === data.bdmName;
+                                      }).length +
+                                        filteredBooking.filter((data) => {
+                                          return data.bdeName !== data.bdmName;
+                                        }).length /
+                                        2}
+                                    </td>
+                                    <td>
+                                      {filteredBooking.reduce((totalLength, obj) => {
+                                        // Split the services string by commas and calculate the length of the resulting array
+                                        const serviceLength =
+                                          obj.services[0].split(",").length;
+                                        // Add the length of services for the current object to the total length
+                                        return totalLength + serviceLength;
+                                      }, 0)}
+                                    </td>
+                                    <td>
+                                      ₹{filteredBooking
+                                        .reduce((totalPayment, obj) => {
+                                          // Add the totalPayment of the current object to the totalPayment accumulator
+                                          const finalPayment =
+                                            obj.bdeName === obj.bdmName
                                               ? obj.originalTotalPayment
-                                              : obj.originalTotalPayment / 2
-                                            : obj.bdeName === obj.bdmName
-                                              ? obj.firstPayment
-                                              : obj.firstPayment / 2;
-                                        // Add the paymentToAdd to the totalFirstPayment accumulator
-                                        return totalFirstPayment + paymentToAdd;
-                                      }, 0)
-                                      .toLocaleString()}
-                                  </td>
-                                  <td>
-                                    ₹{filteredBooking
-                                      .reduce((totalFirstPayment, obj) => {
-                                        // If firstPayment is 0, count totalPayment instead
+                                              : obj.originalTotalPayment / 2;
+                                          return totalPayment + finalPayment;
+                                        }, 0)
+                                        .toLocaleString()}
+                                    </td>
+                                    <td>
+                                      ₹{filteredBooking
+                                        .reduce((totalFirstPayment, obj) => {
+                                          // If firstPayment is 0, count totalPayment instead
+                                          const paymentToAdd =
+                                            obj.firstPayment === 0
+                                              ? obj.bdeName === obj.bdmName
+                                                ? obj.originalTotalPayment
+                                                : obj.originalTotalPayment / 2
+                                              : obj.bdeName === obj.bdmName
+                                                ? obj.firstPayment
+                                                : obj.firstPayment / 2;
+                                          // Add the paymentToAdd to the totalFirstPayment accumulator
+                                          return totalFirstPayment + paymentToAdd;
+                                        }, 0)
+                                        .toLocaleString()}
+                                    </td>
+                                    <td>
+                                      ₹{filteredBooking
+                                        .reduce((totalFirstPayment, obj) => {
+                                          // If firstPayment is 0, count totalPayment instead
 
-                                        const paymentToAdd =
-                                          obj.bdeName === obj.bdmName
-                                            ? obj.firstPayment === 0
-                                              ? 0
-                                              : obj.originalTotalPayment - obj.firstPayment
-                                            : obj.firstPayment === 0
-                                              ? 0
-                                              : obj.originalTotalPayment - obj.firstPayment;
+                                          const paymentToAdd =
+                                            obj.bdeName === obj.bdmName
+                                              ? obj.firstPayment === 0
+                                                ? 0
+                                                : obj.originalTotalPayment - obj.firstPayment
+                                              : obj.firstPayment === 0
+                                                ? 0
+                                                : obj.originalTotalPayment - obj.firstPayment;
 
-                                        // Add the paymentToAdd to the totalFirstPayment accumulator
-                                        return totalFirstPayment + paymentToAdd;
-                                      }, 0)
-                                      .toLocaleString()}
+                                          // Add the paymentToAdd to the totalFirstPayment accumulator
+                                          return totalFirstPayment + paymentToAdd;
+                                        }, 0)
+                                        .toLocaleString()}
+                                    </td>
+                                  </tr>
+                                </tfoot>
+                              </>
+                            ) : (
+                              <tbody>
+                                <tr>
+                                  <td className="particular" colSpan={9}>
+                                    <Nodata />
                                   </td>
                                 </tr>
-                              </tfoot>
-                            </>
-                          ) : (
-                            <tbody>
-                              <tr>
-                                <td className="particular" colSpan={9}>
-                                  <Nodata />
-                                </td>
-                              </tr>
-                            </tbody>
-                          )}
-                        </table>
+                              </tbody>
+                            )}
+                          </table>
+                        </div>
                       </div>
                     </div>
-                  </div>
                   </div>
 
                   {/* Employee side Dashboard Analysis */}
@@ -3764,8 +3866,7 @@ function Dashboard() {
             open={openProjectionTable}
             onClose={closeProjectionTable}
             fullWidth
-            maxWidth="lg"
-          >
+            maxWidth="lg">
             <DialogTitle>
               {projectionEname} Today's Report {" "}
               <IconButton onClick={closeProjectionTable} style={{ float: "right" }}>
@@ -3819,6 +3920,7 @@ function Dashboard() {
                       <th>Estimated Payment Date</th>
                       <th>Last Follow Up Date</th>
                       <th>Remarks</th>
+                      <th>View History</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -3833,11 +3935,12 @@ function Dashboard() {
                             <td>{obj.ename}</td>
                             <td>{obj.companyName}</td>
                             <td>{obj.offeredServices.join(",")}</td>
-                            <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
                             <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
                             <td>{obj.estPaymentDate}</td>
                             <td>{obj.lastFollowUpdate}</td>
                             <td>{obj.remarks}</td>
+                            <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryNew(obj.companyName)} /></td>
                           </tr>
                         ))
                       ) : (
@@ -3848,11 +3951,12 @@ function Dashboard() {
                             <td>{obj.ename}</td>
                             <td>{obj.companyName}</td>
                             <td>{obj.offeredServices.join(",")}</td>
-                            <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
                             <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
                             <td>{obj.estPaymentDate}</td>
                             <td>{obj.lastFollowUpdate}</td>
                             <td>{obj.remarks}</td>
+                            <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection(obj.companyName)} /></td>
                           </tr>
                         ))
                       )
@@ -3878,12 +3982,14 @@ function Dashboard() {
                         <td>{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredServicesPopupDateRange.length) : (offeredServicesPopupToday.length)}</td>
                         {/* <td>{totalPaymentSumPopup.toLocaleString()}
                     </td> */}
+                        <td>   &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredPaymentSumPopupDateRange.toLocaleString()) : (offeredPaymentSumPopupToday.toLocaleString())}</td>
                         <td>
                           &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (totalPaymentSumPopupDateRange.toLocaleString()) : (totalPaymentSumPopupToday.toLocaleString())}
                         </td>
                         {/* <td>{offeredPaymentSumPopup.toLocaleString()}
                     </td> */}
-                        <td>   &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredPaymentSumPopupDateRange.toLocaleString()) : (offeredPaymentSumPopupToday.toLocaleString())}</td>
+
+                        <td>-</td>
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
@@ -3894,8 +4000,196 @@ function Dashboard() {
               </div>
             </DialogContent>
           </Dialog>
+          {/* ------------------------------------------------------projection history dialog------------------------------------------------------- */}
+
+          <Dialog
+            open={openProjectionHistoryTable}
+            onClose={closeProjectionHistoryTable}
+            fullWidth
+            maxWidth="lg">
+            <DialogTitle>
+              {viewHistoryCompanyName}
+              <IconButton onClick={closeProjectionHistoryTable} style={{ float: "right" }}>
+                <CloseIcon color="primary"></CloseIcon>
+              </IconButton>{" "}
+            </DialogTitle>
+            <DialogContent>
+              <div
+                id="table-default"
+                style={{
+                  overflowX: "auto",
+                  overflowY: "auto",
+                }}
+              >
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                    marginBottom: "10px",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
+                  <thead style={{
+                    position: "sticky", // Make the header sticky
+                    top: '-1px', // Stick it at the top
+                    backgroundColor: "#ffb900",
+                    color: "black",
+                    fontWeight: "bold",
+                    zIndex: 1, // Ensure it's above other content
+                  }}>
+                    <tr
+                      style={{
+                        backgroundColor: "#ffb900",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <th
+                        style={{
+                          lineHeight: "32px",
+                        }}
+                      >
+                        Sr. No
+                      </th>
+                      <th>Modified At</th>
+                      <th>Company Name</th>
+                      <th>Offered Services</th>
+                      <th>Total Offered Price</th>
+                      <th>Expected Amount</th>
+                      <th>Estimated Payment Date</th>
+                      <th>Last Follow Up Date</th>
+                      <th>Remarks</th>
+                    </tr>
+                  </thead>
+                  {/* <tbody>
+                    {
+                      projectedDataDateRange && projectedDataDateRange.length > 0 ? (
+                        historyDataCompany.map((obj, Index) => (
+                          <tr key={`sub-row-${Index}`}>
+                            <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                           
+                  <td>{obj.modifiedAt}</td>
+                  <td>{obj.data.companyName}</td>
+                  <td>{obj.data.offeredServices.join(",")}</td>
+                  <td>{obj.data.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                  <td>{obj.data.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                  <td>{obj.data.estPaymentDate}</td>
+                  <td>{obj.data.lastFollowUpdate}</td>
+                  <td>{obj.data.remarks}</td>
+                  {
+                </tr>
+                ))
+                ) : (
+                        historyDataCompany.map((obj, Index) => (
+                <tr key={`sub-row-${Index}`}>
+                  <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+
+                  <td>{obj.modifiedAt}</td>
+                  <td>{obj.data.companyName}</td>
+                  <td>{obj.data.offeredServices.join(",")}</td>
+                  <td>{obj.data.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                  <td>{obj.data.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                  <td>{obj.data.estPaymentDate}</td>
+                  <td>{obj.data.lastFollowUpdate}</td>
+                  <td>{obj.data.remarks}</td>
+
+                </tr>
+                ))
+                )
+                    }
+              </tbody> */}
+              <tbody>
+                {
+                  projectedDataDateRange && projectedDataDateRange.length > 0 ? (
+                    historyDataCompany.map((obj, Index) => (
+                      <tr key={`sub-row-${Index}`}>
+                        <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                        {/* Render other employee data */}
+                        <td>{obj.modifiedAt}</td>
+                        <td>{obj.data.companyName}</td>
+                        <td>{obj.data.offeredServices.join(",")}</td>
+                        <td>{obj.data.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                        <td>{obj.data.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                        <td>{obj.data.estPaymentDate}</td>
+                        <td>{obj.data.lastFollowUpdate}</td>
+                        <td>{obj.data.remarks}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    historyDataCompany.map((obj, index) => (
+                      <tr key={`sub-row-${index}`}>
+                        <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                        {/* Render other employee data */}
+                        <td>{obj.modifiedAt}</td>
+                        <td>{obj.data.companyName}</td>
+                        <td>{obj.data.offeredServices.join(",")}</td>
+                        <td>{obj.data.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                        <td>{obj.data.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                        <td>{obj.data.estPaymentDate}</td>
+                        <td>{obj.data.lastFollowUpdate}</td>
+                        <td>{obj.data.remarks}</td>
+                        {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
+                      </tr>
+                    ))
+                  )
+                }
+                {/* Additional rendering for latest data */}
+                {
+                  latestDataForCompany.map((obj, index) => (
+                    <tr key={`sub-row-latest-${index}`}>
+                      <td style={{ lineHeight: "32px" }}>{historyDataCompany.length + index + 1}</td>
+                      {/* Render other employee data */}
+                      <td>{obj.date}</td>
+                      <td>{obj.companyName}</td>
+                      <td>{obj.offeredServices.join(",")}</td>
+                      <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                      <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                      <td>{obj.estPaymentDate}</td>
+                      <td>{obj.lastFollowUpdate}</td>
+                      <td>{obj.remarks}</td>
+                      {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
+                    </tr>
+                  ))
+                }
+              </tbody>
+
+              {/* {projectedEmployee && (
+                    <tfoot style={{
+                      position: "sticky", // Make the footer sticky
+                      bottom: -1, // Stick it at the bottom
+                      backgroundColor: "#f6f2e9",
+                      color: "black",
+                      fontWeight: 500,
+                      zIndex: 2
+                    }}>
+                      <tr style={{ fontWeight: 500 }}>
+                        <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                        
+                        <td>
+                          {projectedDataDateRange && projectedDataDateRange.length > 0 ? (projectedDataDateRange.length) : (projectedDataToday.length)}
+                        </td>
+                        
+                        <td>{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredServicesPopupDateRange.length) : (offeredServicesPopupToday.length)}</td>
+                        
+                        <td>
+                          &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (totalPaymentSumPopupDateRange.toLocaleString()) : (totalPaymentSumPopupToday.toLocaleString())}
+                        </td>
+                       
+                        <td>   &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredPaymentSumPopupDateRange.toLocaleString()) : (offeredPaymentSumPopupToday.toLocaleString())}</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                      </tr>
+                    </tfoot>
+                  )} */}
+            </table>
         </div>
-      </div>
+      </DialogContent>
+    </Dialog>
+        </div >
+      </div >
     </div >
   );
 }
