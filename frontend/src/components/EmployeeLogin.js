@@ -17,11 +17,12 @@ function EmployeeLogin({ setnewToken }) {
   const [address1, setAddress] = useState("");
   const [isSendOpt, setIsSendOpt] = useState(false);
   const [otp, setOtp] = useState(0);
+  const [designation, setDesignation] = useState("")
 
   const [showPassword, setShowPassword] = useState(false);
 
 
-  
+
 
   const fetchData = async () => {
     try {
@@ -31,20 +32,21 @@ function EmployeeLogin({ setnewToken }) {
       console.log(error);
     }
   };
-  // const sendOTP = () => {
-  //   const otp = Math.floor(1000 + Math.random() * 9000);
-  // };
+
   const findUserId = () => {
     const user = data.find(
       (user) => user.email === email && user.password === password
     );
+    console.log("user", user)
 
     if (user) {
+      setDesignation(user.designation)
       setUserId(user._id);
     } else {
       setUserId(null);
     }
   };
+  //console.log(userId)
 
   useEffect(() => {
     fetchData();
@@ -127,49 +129,91 @@ function EmployeeLogin({ setnewToken }) {
     return `${year}-${month}-${day}`;
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const date = getCurrentDate();
+  //   const time = getCurrentTime();
+  //   const address = address1 !== "" ? address1 : "No Location Found";
+  //   const ename = email;
+
+  //   try {
+  //     const response = await axios.post(`${secretKey}/employeelogin`, {
+  //       email,
+  //       password,
+  //       designation,
+
+  //     });
+  //     const response2 = await axios.post(`${secretKey}/loginDetails`, {
+  //                    ename,
+  //                     date,
+  //                     time,
+  //                    address,
+  //                   });
+
+      
+
+  //     const { newtoken } = response.data;
+  //     console.log("token", newtoken)
+  //     setnewToken(newtoken);
+  //     localStorage.setItem("newtoken", newtoken);
+  //     localStorage.setItem("userId", userId);
+
+  //     window.location.replace(`/employee-dashboard/${userId}`);
+
+  //   } catch (error) {
+  //     console.error("Login failed:", error.message);
+  //     setErrorMessage(error.message);
+
+  //   }
+
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const date = getCurrentDate();
     const time = getCurrentTime();
     const address = address1 !== "" ? address1 : "No Location Found";
     const ename = email;
-
+  
     try {
       const response = await axios.post(`${secretKey}/employeelogin`, {
         email,
         password,
+        designation,
       });
-
       const response2 = await axios.post(`${secretKey}/loginDetails`, {
-        ename,
-        date,
-        time,
-        address,
-      });
-
+              ename,
+               date,
+               time,
+              address,
+             });
+  
       const { newtoken } = response.data;
+      console.log("token", newtoken);
       setnewToken(newtoken);
       localStorage.setItem("newtoken", newtoken);
       localStorage.setItem("userId", userId);
-      // const currentPath = window.location.pathname;
-
-      // // Construct the new path by appending "/employee-data/user-id"
-      // const newPath = `${currentPath}/employee-data/${userId}`;
-
-      // Update the browser's history to reflect the new path
+  
       window.location.replace(`/employee-dashboard/${userId}`);
-      // window.location.href = `${window.location.origin}${window.location.pathname}employee-data/${userId}`;
     } catch (error) {
-      console.error("Login failed:", error.message);
-      setErrorMessage("Incorrect Credentials");
-      // setErrorMessage("Incorrect Credentials!");
+      console.error("Login failed:", error.response.data.message);
+      if (error.response.status === 401) {
+        if (error.response.data.message === "Invalid email or password") {
+          setErrorMessage("Invalid credentials");
+        } else if (error.response.data.message === "Designation is incorrect") {
+          setErrorMessage("Only Authorized for Sales Executive!");
+        } else {
+          setErrorMessage("Unknown error occurred");
+        }
+      } else {
+        setErrorMessage("Unknown error occurred");
+      }
     }
-    // }else{
-    //   Swal.fire("Improper location, Access Denied!");
-    //   localStorage.removeItem("newtoken");
-    //   localStorage.removeItem("userId");
-    // }
   };
+  
+  console.log(email)
+  console.log(password)
+
 
   return (
     <div>

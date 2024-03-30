@@ -113,9 +113,9 @@ function Employees({ onEyeButtonClick }) {
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedFormat, setSortedFormat] = useState({
-    ename:"ascending",
-    jdate:"ascending",
-    addedOn:'ascending'
+    ename: "ascending",
+    jdate: "ascending",
+    addedOn: 'ascending'
   })
   const [data, setData] = useState([]);
   const [cdata, setCData] = useState([]);
@@ -128,6 +128,7 @@ function Employees({ onEyeButtonClick }) {
   const [ename, setEname] = useState("");
   const [jdate, setJdate] = useState(null);
   const [designation, setDesignation] = useState("");
+  const [branchOffice, setBranchOffice] = useState("");
   const [otherdesignation, setotherDesignation] = useState("");
   const [companyData, setCompanyData] = useState([]);
 
@@ -147,12 +148,13 @@ function Employees({ onEyeButtonClick }) {
       setPassword("");
       setJdate(null);
       setDesignation("");
+      setBranchOffice("")
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
 
-  
+
   const handleSearch = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -181,6 +183,7 @@ function Employees({ onEyeButtonClick }) {
     setNumber(selectedData.number);
     setPassword(selectedData.password);
     setDesignation(selectedData.designation);
+    setBranchOffice(selectedData.branchOffice)
 
     const dateObject = new Date(selectedData.jdate);
     const day = dateObject.getDate().toString().padStart(2, "0"); // Ensure two-digit day
@@ -286,6 +289,7 @@ function Employees({ onEyeButtonClick }) {
         password: password,
         jdate: jdate,
         AddedOn: AddedOn,
+        branchOffice: branchOffice,
       };
       let dataToSendUpdated = {
         email: email,
@@ -293,7 +297,9 @@ function Employees({ onEyeButtonClick }) {
         ename: ename,
         password: password,
         jdate: jdate,
-        
+        designation: designation,
+        branchOffice:branchOffice
+
       };
 
       // Set designation based on otherDesignation
@@ -306,7 +312,7 @@ function Employees({ onEyeButtonClick }) {
       if (isUpdateMode) {
         await axios.put(`${secretKey}/einfo/${selectedDataId}`, dataToSendUpdated);
         Swal.fire({
-          title: "Name Updated!",
+          title: "Data Updated Succesfully!",
           text: "You have successfully updated the name!",
           icon: "success",
         });
@@ -339,12 +345,14 @@ function Employees({ onEyeButtonClick }) {
           icon: "success",
         });
       }
+      console.log("datatosend" , dataToSend)
 
       setEmail("");
       setEname("");
       setNumber(0);
       setPassword("");
       setDesignation("");
+      setBranchOffice("")
       setotherDesignation("");
       setJdate(null);
       setIsUpdateMode(false);
@@ -389,84 +397,84 @@ function Employees({ onEyeButtonClick }) {
     );
     return formattedDate;
   }
-console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
+  console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
   const sortDataByName = () => {
-    if(sortedFormat.ename==="ascending"){
+    if (sortedFormat.ename === "ascending") {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
         ename: "descending", // Update the jdate property
       });
 
       const sortedData = [...filteredData].sort((a, b) =>
-      a.ename.localeCompare(b.ename)
-    );
-    setFilteredData(sortedData);
+        a.ename.localeCompare(b.ename)
+      );
+      setFilteredData(sortedData);
 
-    }else{
+    } else {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
         ename: "ascending", // Update the jdate property
       });
 
       const sortedData = [...filteredData].sort((a, b) =>
-      b.ename.localeCompare(a.ename)
-    );
-    setFilteredData(sortedData);
-      
+        b.ename.localeCompare(a.ename)
+      );
+      setFilteredData(sortedData);
+
     }
- 
+
   };
   const sortDateByAddedOn = () => {
-    if(sortedFormat.addedOn==="ascending"){
+    if (sortedFormat.addedOn === "ascending") {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
         addedOn: "descending", // Update the jdate property
       });
 
       const sortedData = [...filteredData].sort((a, b) =>
-      a.AddedOn.localeCompare(b.AddedOn)
-    );
-    setFilteredData(sortedData);
+        a.AddedOn.localeCompare(b.AddedOn)
+      );
+      setFilteredData(sortedData);
 
-    }else{
+    } else {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
         addedOn: "ascending", // Update the jdate property
       });
 
       const sortedData = [...filteredData].sort((a, b) =>
-      b.AddedOn.localeCompare(a.AddedOn)
-    );
-    setFilteredData(sortedData);
-      
+        b.AddedOn.localeCompare(a.AddedOn)
+      );
+      setFilteredData(sortedData);
+
     }
- 
+
   };
   const sortDataByJoiningDate = () => {
-    if(sortedFormat.jdate==='ascending'){
+    if (sortedFormat.jdate === 'ascending') {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
         jdate: "descending", // Update the jdate property
       });
 
       const sortedData = [...filteredData].sort((a, b) =>
-      new Date(a.jdate) - new Date(b.jdate)
-    );
-    setFilteredData(sortedData);
+        new Date(a.jdate) - new Date(b.jdate)
+      );
+      setFilteredData(sortedData);
     }
-    else{
+    else {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
         jdate: "ascending", // Update the jdate property
       });
 
       const sortedData = [...filteredData].sort((a, b) =>
-      new Date(b.jdate) - new Date(a.jdate)
-    );
-    setFilteredData(sortedData);
-      
+        new Date(b.jdate) - new Date(a.jdate)
+      );
+      setFilteredData(sortedData);
+
     }
-    
+
   };
 
   return (
@@ -542,6 +550,29 @@ console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
                     }}
                   />
                 </div>
+                <div className="mb-3">
+                  <label className="form-label">Password</label>
+                  <div className="input-group">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      className="form-control"
+                      name="example-text-input"
+                      placeholder="Your report name"
+                      required
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                      }}
+                    />
+                    <button
+                      className="btn btn-outline-secondary"
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                </div>
 
                 <div className="row">
                   <div className="col-lg-6 mb-3">
@@ -579,26 +610,26 @@ console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
                   </div>
 
                   <div className="col-lg-6 mb-3">
-                    <label className="form-label">Password</label>
-                    <div className="input-group">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="Your report name"
+                    <label className="form-label">Branch Office</label>
+                    <div className="form-control">
+                      <select
+                        style={{
+                          border: "none",
+                          outline: "none",
+                          width: "fit-content",
+                        }}
+                        value={branchOffice}
                         required
                         onChange={(e) => {
-                          setPassword(e.target.value);
+                          setBranchOffice(e.target.value);
                         }}
-                      />
-                      <button
-                        className="btn btn-outline-secondary"
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
                       >
-                        {showPassword ? "Hide" : "Show"}
-                      </button>
+                        <option value="" disabled selected>
+                          Select Branch Office
+                        </option>
+                        <option value="Gota">Gota</option>
+                        <option value="Sindhu Bhawan">Sindhu Bhawan</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -795,6 +826,11 @@ console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
                         </button>
                       </th>
                       <th>
+                        <button className="table-sort" data-sort="sort-date">
+                          Branch Office
+                        </button>
+                      </th>
+                      <th>
                         <button onClick={sortDateByAddedOn} className="table-sort" data-sort="sort-date">
                           Added on
                         </button>
@@ -836,7 +872,8 @@ console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
                           <td>{item.email}</td>
                           <td>{formatDate(item.jdate)}</td>
                           <td>{item.designation}</td>
-                          <td>{formatDate(item.AddedOn)==="Invalid Date" ? "Feb 6, 2024" : formatDate(item.AddedOn)}</td>
+                          <td>{item.branchOffice}</td>
+                          <td>{formatDate(item.AddedOn) === "Invalid Date" ? "Feb 6, 2024" : formatDate(item.AddedOn)}</td>
                           {item.designation !== "Admin Team" ? <td>
                             {(item.Active && item.Active.includes("GMT")) ? (
                               <div>
@@ -869,29 +906,29 @@ console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
                               </div>
                             )}
                           </td> : <td>
-                          <div>
-                                <span
-                                  style={{ color: "red", marginRight: "5px" }}
-                                >
-                                  ●
-                                </span>
-                                <span
-                                  style={{
-                                    fontWeight: "bold",
-                                    color: "rgb(170 144 144)",
-                                  }}
-                                >
-                                  {formatDateWP("Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)")}
-                                </span>
-                              </div>
-                            </td>}
+                            <div>
+                              <span
+                                style={{ color: "red", marginRight: "5px" }}
+                              >
+                                ●
+                              </span>
+                              <span
+                                style={{
+                                  fontWeight: "bold",
+                                  color: "rgb(170 144 144)",
+                                }}
+                              >
+                                {formatDateWP("Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)")}
+                              </span>
+                            </div>
+                          </td>}
 
                           <td >
-                            <div className="d-flex justify-content-center align-items-center"> 
-                            <div className="icons-btn">
-                                <IconButton  onClick={() =>
-                                      handleDeleteClick(item._id, item.ename)
-                                    }>
+                            <div className="d-flex justify-content-center align-items-center">
+                              <div className="icons-btn">
+                                <IconButton onClick={() =>
+                                  handleDeleteClick(item._id, item.ename)
+                                }>
                                   <IconTrash
                                     style={{
                                       cursor: "pointer",
@@ -899,15 +936,15 @@ console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
                                       width: "14px",
                                       height: "14px",
                                     }}
-                                  
+
                                   />
                                 </IconButton>
                               </div>
                               <div className="icons-btn">
-                                <IconButton   onClick={() => {
-                                      functionopenpopup();
-                                      handleUpdateClick(item._id, item.ename);
-                                    }}>
+                                <IconButton onClick={() => {
+                                  functionopenpopup();
+                                  handleUpdateClick(item._id, item.ename);
+                                }}>
                                   <ModeEditIcon
                                     style={{
                                       cursor: "pointer",
@@ -915,7 +952,7 @@ console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
                                       width: "14px",
                                       height: "14px",
                                     }}
-                                  
+
                                   />
                                 </IconButton>
                               </div>
@@ -924,13 +961,12 @@ console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
                                   style={{ color: "black" }}
                                   to={`/admin/employees/${item._id}`}
                                 ><IconButton >  <IconEye
-                                style={{
-                                  width: "14px",
-                                  height: "14px",
-                                  color: "#d6a10c",
-                                }}
-                              /></IconButton>
-                                
+                                  style={{
+                                    width: "14px",
+                                    height: "14px",
+                                    color: "#d6a10c",
+                                  }}
+                                /></IconButton>
                                 </Link>
                               </div>
                             </div>

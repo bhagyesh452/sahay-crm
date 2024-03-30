@@ -3050,10 +3050,9 @@ console.log(completed , "this is completed")
                         sx={{ display: "flex", flexDirection: "row", pt: 2 }}
                       >
                         <Button
-                          color="inherit"
                           variant="contained"
                           onClick={handleBack}
-                          sx={{ mr: 1 }}
+                          sx={{ mr: 1,background:'#ffba00 ', }}
                         >
                           {activeStep !== 0 ? "Back" : "Back to Main"}
                         </Button>
@@ -3061,7 +3060,7 @@ console.log(completed , "this is completed")
                           color="primary"
                           variant="contained"
                           disabled={activeStep === 0}
-                          sx={{ mr: 1 }}
+                          sx={{ mr: 1,background:'#ffba00 ' }}
                           onClick={handleResetDraft}
                         >
                           Reset
@@ -3083,7 +3082,7 @@ console.log(completed , "this is completed")
                                   setCompleted({ activeStep: false });
                                 }}
                                 variant="contained"
-                                sx={{ mr: 1 }}
+                                sx={{ mr: 1,background:'#ffba00 ' }}
                               >
                                 Edit
                               </Button>
@@ -3092,6 +3091,7 @@ console.log(completed , "this is completed")
                             <Button
                               onClick={handleComplete}
                               variant="contained"
+                              sx={{ mr: 1,background:'#ffba00 ' }}
                             >
                               {completedSteps() === totalSteps() - 1
                                 ? "Submit"
