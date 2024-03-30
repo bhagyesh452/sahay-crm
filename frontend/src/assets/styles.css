@@ -345,11 +345,26 @@ th{
 }
 .login-card
 {
-    width: 400px;
+    width: 800px;
     margin: 0 auto;
 }
+.login-card .card
+{
+   border: none;
+   border-radius: 0px !important;
+}
+span.input-group-text {
+  padding: 0px 9px !important;
+  border: 1px solid #ffb900;
+  background: #ffb900 !important;
+  color: #000 !important;
+}
+.login-box
+{
+  border-left:1px solid #eee
+}
 .my-tab .nav-fill .nav-item .nav-link {
-    justify-content: space-between;;
+    justify-content: space-between;
     padding: 4px 10px;
     color: #494949;
     font-weight: 600;
@@ -1067,4 +1082,9 @@ color: #4e884e;
   position: sticky;
   top: 0;
   z-index: 9;
+}
+/********************/
+.page
+{
+  height: 100vh;
 }
