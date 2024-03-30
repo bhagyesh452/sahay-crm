@@ -19,6 +19,7 @@
     "fast-csv": "^5.0.1",
     "google-auth-library": "^9.7.0",
     "googleapis": "^134.0.0",
+    "html-pdf": "^3.0.1",
     "http": "^0.0.1-security",
     "install": "^0.13.0",
     "json2csv": "^6.0.0-alpha.2",

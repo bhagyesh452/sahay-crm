@@ -19,19 +19,24 @@ const ServiceSchema = new mongoose.Schema({
   },
   firstPayment: {
     type: String,
-    required: true,
   },
   secondPayment: {
     type: String,
-    required: true,
   },
   thirdPayment: {
     type: String,
-    required: true,
   },
   fourthPayment: {
     type: String,
-    required: true,
+  },
+  secondPaymentRemarks:{
+    type: String,
+  },
+  thirdPaymentRemarks:{
+    type: String,
+  },
+  fourthPaymentRemarks:{
+    type: String,
   },
   paymentRemarks: {
     type: String,

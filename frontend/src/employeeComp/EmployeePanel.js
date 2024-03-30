@@ -1308,7 +1308,7 @@ useEffect(() => {
     }
   };
 
-  //console.log(currentProjection)
+  // console.log(currentProjection)
 
   const [openIncoDate, setOpenIncoDate] = useState(false);
 
@@ -1575,7 +1575,6 @@ useEffect(() => {
       });
       setSelectedValues([]);
       fetchProjections();
-      setIsEditProjection(true)
     } catch (error) {
       console.error("Error deleting data:", error);
       // Show an error message if deletion fails
@@ -1585,27 +1584,18 @@ useEffect(() => {
   //console.log("projections", currentProjection);
 
   const handleSendEmail = async () => {
-    const dataToSend = {
-      email: data.email,
-      refreshToken: data.refresh_token,
-      accessToken: data.access_token,
-    };
-
     try {
-      const response = await fetch(`${secretKey}/send-email`, {
+      const response = await fetch(`${secretKey}/generate-pdf`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend),
+          "Content-Type": "application/pdf",
+        }
       });
 
       if (!response.ok) {
         throw new Error("Failed to send email");
       }
-
-      const responseData = await response.json();
-      console.log("Response:", responseData);
+      console.log("Mail Sent")
     } catch (error) {
       console.error("Error sending email:", error);
     }
@@ -2753,7 +2743,7 @@ useEffect(() => {
                                  
                                 </td>
                                 </>}
-                                {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
+                                <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td>
                               </tr>
                             ))}
                           </tbody>
@@ -3574,7 +3564,9 @@ useEffect(() => {
                     }}
                     disabled={!isEditProjection}
                   />
+
                   <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
+
                 </div>
               </div>
 
