@@ -4342,14 +4342,45 @@ console.log(serviceNames);
     };
     const renderPaymentDetails = () => {
       let servicesHtml = '';
+      let paymentServices = '';
       for (let i = 0; i < newData.services.length; i++) {
         const Amount = newData.services[i].paymentTerms === "Full Advanced" ? newData.services[i].totalPaymentWGST : newData.services[i].firstPayment
-        servicesHtml += `
+        let rowSpan;
+
+        if (newData.services[i].paymentTerms === "two-part") {
+         if (newData.services[i].thirdPayment !== "0" && newData.services[i].fourthPayment === "0") {
+            rowSpan = 2;
+          } else  if (newData.services[i].fourthPayment !== "0"){
+            rowSpan = 3;
+          }
+        } else {
+          rowSpan = 1;
+        }
         
+       if(rowSpan===3){paymentServices = `
         <tr>
-                    <th>${Amount}</th>
-                    <td>${newData.services[i].paymentTerms}</td>
-                  </tr>  
+          <td>₹${newData.services[i].secondPayment}/-</td>
+          <td>${newData.services[i].secondPaymentRemarks}</td>
+        </tr>
+         <tr>
+         <td>₹${newData.services[i].thirdPayment}/-</td>
+         <td>${newData.services[i].thirdPaymentRemarks}</td>
+         </tr>
+        `
+        }else if(rowSpan===2){paymentServices = `
+        <tr>
+          <td>₹${newData.services[i].secondPayment}/-</td>
+          <td>${newData.services[i].secondPaymentRemarks}</td>
+        </tr>
+        `
+        }
+        servicesHtml += `
+        <tr>
+        <th style="vertical-align: top;" rowspan=${rowSpan}>₹ ${(newData.services[i].totalPaymentWGST)} /-</th>
+        <th style="vertical-align: top;" rowspan=${rowSpan}>₹ ${(newData.services[i].paymentTerms === "Full Advanced" ? (newData.services[i].totalPaymentWGST) : (newData.services[i].firstPayment) )}/-</th>
+       
+      </tr>
+     ${paymentServices}
         `;
       }
       return servicesHtml;
@@ -4358,7 +4389,7 @@ console.log(serviceNames);
 
     // Render services HTML content
     const serviceList = renderServiceList();
-    const serviceDetails = renderServiceDetails();
+  
     const paymentDetails = renderPaymentDetails();
     
 
@@ -4369,9 +4400,10 @@ console.log(serviceNames);
     .replace('{{Company Name}}', newData["Company Name"])
     .replace('{{Company Name}}', newData["Company Name"])
     .replace('{{Services}}', serviceList)
-    .replace('{{Service-Details}}', serviceDetails)
-    .replace('{{Payment-Details}}', paymentDetails)
+    .replace('{{Service-Details}}', paymentDetails)
     .replace('{{Company Number}}', newData["Company Number"]);
+
+
 
     pdf.create(filledHtml, { format: 'Letter' }).toFile(path.join(__dirname, './Document', `${newData["Company Name"]}.pdf`), async (err, response) => {
       if (err) {
