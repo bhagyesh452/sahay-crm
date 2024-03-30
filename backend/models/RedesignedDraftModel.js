@@ -25,6 +25,15 @@ const ServiceSchema = new mongoose.Schema({
   secondPayment: {
     type: String,
   },
+  secondPaymentRemarks:{
+    type: String,
+  },
+  thirdPaymentRemarks:{
+    type: String,
+  },
+  fourthPaymentRemarks:{
+    type: String,
+  },
   thirdPayment: {
     type: String,
   },

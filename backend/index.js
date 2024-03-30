@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const compression = require('compression');
+const pdf = require('html-pdf');
 // const { Server } = require("socket.io");
 // const http = require("http");
 // const server = http.createServer(app);
@@ -42,6 +43,7 @@ const { type } = require("os");
 const LeadModel_2 = require("./models/Leadform_2");
 const RedesignedLeadformModel = require("./models/RedesignedLeadform");
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
+const { sendMail2 } = require("./helpers/sendMail2");
 
 
 // const http = require('http');
@@ -112,6 +114,30 @@ app.post("/api/admin/login-admin", async (req, res) => {
 
 // Login for employee
 
+// app.post("/api/employeelogin", async (req, res) => {
+//   const { email, password } = req.body;
+
+//   // Replace this with your actual Employee authentication logic
+//   const user = await adminModel.findOne({
+//     email: email,
+//     password: password,
+//     designation: "Sales Executive",
+//   });
+//   // console.log(user);
+
+//   if (user) {
+//     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
+//       expiresIn: "10h",
+//     });
+//     res.json({ newtoken });
+//     socketIO.emit('Employee-login');
+   
+    
+//   } else {
+//     res.status(401).json({ message: "Invalid credentials" });
+//   }
+// });
+
 app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
 
@@ -119,22 +145,30 @@ app.post("/api/employeelogin", async (req, res) => {
   const user = await adminModel.findOne({
     email: email,
     password: password,
-    designation: "Sales Executive",
+    //designation: "Sales Executive",
   });
-  // console.log(user);
 
-  if (user) {
+  if (!user) {
+    // If user is not found
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "Sales Executive") {
+    // If designation is incorrect
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    // If credentials are correct
     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
       expiresIn: "10h",
     });
     res.json({ newtoken });
     socketIO.emit('Employee-login');
-   
-    
-  } else {
-    res.status(401).json({ message: "Invalid credentials" });
   }
 });
+
+
+
+
+
+
 
 app.put('/api/online-status/:id/:socketID', async (req, res) => {
   const { id } = req.params;
@@ -403,6 +437,7 @@ app.post("/api/einfo", async (req, res) => {
   try {
     adminModel.create(req.body).then((respond) => {
       res.json(respond);
+      //console.log("respond" , respond)
     });
   } catch (error) {
     console.error("Error:", error);
@@ -3748,7 +3783,6 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
     const serviceNames = newData.services.map((service, index) => `${service.serviceName}`).join(' , ');
 
 console.log(serviceNames);
-
     sendMail(
       recipients,
       `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
@@ -3976,7 +4010,7 @@ console.log(serviceNames);
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData.bdeEmail ? newData.bdeEmail : "-"}
+                    ${newData.bdeEmail }
                 </div>
               </div>
             </div>
@@ -4017,7 +4051,7 @@ console.log(serviceNames);
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData.bdmEmail ? newData.bdmEmail : "-"}
+                    ${newData.bdmEmail}
                 </div>
               </div>
             </div>
@@ -4283,8 +4317,114 @@ console.log(serviceNames);
       newData.otherDocs,
       newData.paymentReceipt
     );
- 
 
+
+    const renderServiceList = () => {
+      let servicesHtml = '';
+      for (let i = 0; i < newData.services.length; i++) {
+        servicesHtml += `
+        <span>Service ${i+1}: ${newData.services[i].serviceName}</span>,  
+        `;
+      }
+      return servicesHtml;
+    };
+    const renderServiceDetails = () => {
+      let servicesHtml = '';
+      for (let i = 0; i < newData.services.length; i++) {
+        servicesHtml += `
+        <tr>
+                    <th>${newData.services[i].serviceName}</th>
+                    <td>${newData.services[i].totalPaymentWGST}</td>
+                  </tr>  
+        `;
+      }
+      return servicesHtml;
+    };
+    const renderPaymentDetails = () => {
+      let servicesHtml = '';
+      let paymentServices = '';
+      for (let i = 0; i < newData.services.length; i++) {
+        const Amount = newData.services[i].paymentTerms === "Full Advanced" ? newData.services[i].totalPaymentWGST : newData.services[i].firstPayment
+        let rowSpan;
+
+        if (newData.services[i].paymentTerms === "two-part") {
+         if (newData.services[i].thirdPayment !== "0" && newData.services[i].fourthPayment === "0") {
+            rowSpan = 2;
+          } else  if (newData.services[i].fourthPayment !== "0"){
+            rowSpan = 3;
+          }
+        } else {
+          rowSpan = 1;
+        }
+        
+       if(rowSpan===3){paymentServices = `
+        <tr>
+          <td>₹${newData.services[i].secondPayment}/-</td>
+          <td>${newData.services[i].secondPaymentRemarks}</td>
+        </tr>
+         <tr>
+         <td>₹${newData.services[i].thirdPayment}/-</td>
+         <td>${newData.services[i].thirdPaymentRemarks}</td>
+         </tr>
+        `
+        }else if(rowSpan===2){paymentServices = `
+        <tr>
+          <td>₹${newData.services[i].secondPayment}/-</td>
+          <td>${newData.services[i].secondPaymentRemarks}</td>
+        </tr>
+        `
+        }
+        servicesHtml += `
+        <tr>
+        <th style="vertical-align: top;" rowspan=${rowSpan}>₹ ${(newData.services[i].totalPaymentWGST)} /-</th>
+        <th style="vertical-align: top;" rowspan=${rowSpan}>₹ ${(newData.services[i].paymentTerms === "Full Advanced" ? (newData.services[i].totalPaymentWGST) : (newData.services[i].firstPayment) )}/-</th>
+       
+      </tr>
+     ${paymentServices}
+        `;
+      }
+      return servicesHtml;
+    };
+
+
+    // Render services HTML content
+    const serviceList = renderServiceList();
+  
+    const paymentDetails = renderPaymentDetails();
+    
+
+    const htmlTemplate = fs.readFileSync('./helpers/template.html', 'utf-8');
+    const filledHtml = htmlTemplate
+    .replace('{{Company Name}}', newData["Company Name"])
+    .replace('{{Company Name}}', newData["Company Name"])
+    .replace('{{Company Name}}', newData["Company Name"])
+    .replace('{{Company Name}}', newData["Company Name"])
+    .replace('{{Services}}', serviceList)
+    .replace('{{Service-Details}}', paymentDetails)
+    .replace('{{Company Number}}', newData["Company Number"]);
+
+
+
+    pdf.create(filledHtml, { format: 'Letter' }).toFile(path.join(__dirname, './Document', `${newData["Company Name"]}.pdf`), async (err, response) => {
+      if (err) {
+        console.error('Error generating PDF:', err);
+        res.status(500).send('Error generating PDF');
+      } else {
+        try {
+          setTimeout(() => {
+            const mainBuffer = fs.readFileSync(`./Document/${newData["Company Name"]}.pdf`);
+            sendMail2(["aakashseth452@gmail.com"], `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`, ``, `
+              <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
+                <h1> :-)</h1>       
+              </div>
+            `, mainBuffer);
+          }, 5000);
+        } catch (emailError) {
+          console.error('Error sending email:', emailError);
+          res.status(500).send('Error sending email with PDF attachment');
+        }
+      }
+    });
     // Send success response
     res.status(201).send('Data sent');
   } catch (error) {
@@ -4292,6 +4432,71 @@ console.log(serviceNames);
     res.status(500).send('Error creating/updating data'); // Send an error response
   }
 });
+// function generatePdf(htmlContent) {
+//   return 
+
+//     pdf.create(htmlContent).toStream(function(err, stream){
+//       stream.pipe(fs.createWriteStream('./foo.pdf'));
+//     });
+  
+// }
+
+function generatePdf (htmlContent) {
+  if (!htmlContent) {
+    console.error('Error: HTML content is required');
+    return; // Exit the function if htmlContent is not provided
+  }else{
+    pdf.create(htmlContent, { format: 'Letter' }).toFile('./foo5.pdf', function(err, res) {
+      if (err) return console.log(err);
+      console.log(res); 
+    })
+  }
+}
+app.post('/api/generate-pdf', async (req, res) => {
+  const clientName = "Miya bhai";
+  const clientAddress = "Ohio";
+  const senderName = "Chaganlal";
+
+  try {
+    // Read the HTML template
+    const htmlTemplate = fs.readFileSync('./helpers/template.html', 'utf-8');
+    const filledHtml = htmlTemplate
+      .replace('{{Company Name}}', clientName)
+      .replace('{{Services}}', clientAddress)
+    pdf.create(filledHtml, { format: 'Letter' }).toFile('./foo5.pdf', async (err, response) => {
+      if (err) {
+        console.error('Error generating PDF:', err);
+        res.status(500).send('Error generating PDF');
+      } else {
+        try {
+          setTimeout(() => {
+            const mainBuffer = fs.readFileSync('./foo5.pdf');
+            sendMail2(["aakashseth452@gmail.com"], `Mail Testing`, ``, `
+              <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
+                <h1> Smile:-) </h1>       
+              </div>
+            `, mainBuffer);
+          }, 5000);
+
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', 'attachment; filename=generated_document.pdf');
+          res.send(response); // Send the PDF file
+        } catch (emailError) {
+          console.error('Error sending email:', emailError);
+          res.status(500).send('Error sending email with PDF attachment');
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Error generating PDF');
+  }
+});
+
+
+// Function to generate PDF
+
+
 
 http.listen(3001, function () {
   console.log("Server started...");

@@ -23,6 +23,9 @@ const yourSchema = new mongoose.Schema({
   designation:{
     type: String
   },
+  branchOffice:{
+    type:String,
+  },
   AddedOn:{
     type:String
   },

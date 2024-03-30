@@ -1815,7 +1815,7 @@ function Leads() {
                   className="feature2"
                 >
                   <div
-                    style={{ margin: "0px 10px", display: "none" }}
+                    style={{ margin: "0px 10px" }}
                     className="undoDelete"
                   >
                     <div className="btn-list">

@@ -36,8 +36,11 @@ const defaultService = {
   paymentTerms: "Full Advanced",
   firstPayment: 0,
   secondPayment: 0,
+  secondPaymentRemarks:'',
   thirdPayment: 0,
+  thirdPaymentRemarks:'',
   fourthPayment: 0,
+  fourthPaymentRemarks:'',
   paymentRemarks: "",
   paymentCount: 2,
 };
@@ -53,6 +56,7 @@ export default function RedesignedForm({
   employeeEmail,
 }) {
   const [totalServices, setTotalServices] = useState(1);
+  
   const [fetchedService, setfetchedService] = useState(false);
   const defaultLeadData = {
     "Company Name": companysName ? companysName : "",
@@ -84,6 +88,9 @@ export default function RedesignedForm({
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
+  const [secondTempRemarks, setSecondTempRemarks] = useState("");
+  const [thirdTempRemarks, setThirdTempRemarks] = useState("");
+  const [fourthTempRemarks, setFourthTempRemarks] = useState("");
   const [selectedValues, setSelectedValues] = useState("");
   const [unames, setUnames] = useState([]);
 
@@ -153,10 +160,15 @@ export default function RedesignedForm({
         setfetchedService(true);
         setCompleted({ 0: true, 1: true, 2: true });
         setActiveStep(3);
+        const servicestoSend = data.services.map(service => ({
+          ...service,
+          secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks)) ? service.secondPaymentRemarks : "On Particular Date",
+          thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks)) ? service.thirdPaymentRemarks : "On Particular Date",
+          fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks)) ? service.fourthPaymentRemarks : "On Particular Date",
+        }));
         setLeadData((prevState) => ({
           ...prevState,
-          services:
-            data.services.length !== 0 ? data.services : [defaultService],
+          services:data.services.length !== 0 ? servicestoSend : [defaultService],
           caCase: data.caCase,
           caCommission: data.caCommission,
           caNumber: data.caNumber,
@@ -530,7 +542,6 @@ console.log(completed , "this is completed")
           handleNext();
           return true;
         }
-       
       }
       if (activeStep === 1) {
         console.log(leadData.bookingDate)
@@ -590,8 +601,15 @@ console.log(completed , "this is completed")
               : acc + curr.firstPayment;
           }, 0);
           const pendingAmount = totalAmount - receivedAmount;
+          const servicestoSend = leadData.services.map(service => ({
+            ...service,
+            secondPaymentRemarks: service.secondPaymentRemarks === "On Particular Date" ? secondTempRemarks : service.secondPaymentRemarks,
+            thirdPaymentRemarks: service.thirdPaymentRemarks === "On Particular Date" ? thirdTempRemarks : service.thirdPaymentRemarks,
+            fourthPaymentRemarks: service.fourthPaymentRemarks === "On Particular Date" ? fourthTempRemarks : service.fourthPaymentRemarks
+          }));
+          
           dataToSend = {
-            services: leadData.services,
+            services: servicestoSend,
             numberOfServices: totalServices,
             caCase: leadData.caCase,
             caCommission: leadData.caCommission,
@@ -616,9 +634,6 @@ console.log(completed , "this is completed")
           handleNext();
           return true;
         }
-        
-      
-       
       }
       if (activeStep === 3) {
         console.log("I am in step 4", leadData.paymentReceipt, leadData.otherDocs);
@@ -952,7 +967,7 @@ console.log(completed , "this is completed")
             <div className="row align-items-center mt-2">
               <div className="col-sm-8">
                 <label class="form-label">
-                  Total Amount {<span style={{ color: "red" }}>*</span>}
+                  Total Amount {<span style={{ color: "red" }}>*</span>} 
                 </label>
                 <div className="d-flex align-items-center">
                   <div class="input-group total-payment-inputs mb-2">
@@ -1149,7 +1164,7 @@ console.log(completed , "this is completed")
               </div>
             </div>
             {leadData.services[i].paymentTerms === "two-part" && (
-              <div className="d-flex align-items-center mt-2">
+              <div className="d-flex align-items-top mt-2">
                 <div className="part-payment-col">
                   <div className="row">
                     <div className="col-sm-3">
@@ -1186,6 +1201,7 @@ console.log(completed , "this is completed")
                             ₹
                           </button>
                         </div>
+
                       </div>
                     </div>
                     {leadData.services[i].paymentCount > 1 && (
@@ -1224,6 +1240,32 @@ console.log(completed , "this is completed")
                               ₹
                             </button>
                           </div>
+                          <div >
+                            <select value={leadData.services[i].secondPaymentRemarks}  onChange={(e) => {
+                                setLeadData((prevState) => ({
+                                  ...prevState,
+                                  services: prevState.services.map(
+                                    (service, index) =>
+                                      index === i
+                                        ? {
+                                            ...service,
+                                           secondPaymentRemarks:e.target.value
+                                          }
+                                        : service
+                                  ),
+                                }));
+                              }}  className="form-select" name="optional-remarks" id="optional-remarks-2">
+                              <option value="" selected disabled>Select Payment Date</option>
+                              <option value="After Application" >After Application</option>
+                              <option value="At the time of Application" >At the time of Application</option>
+                              <option value="After Document" >After Document</option>
+                              <option value="Before Application" >Before Application</option>
+                              <option value="On Particular Date" >On Particular Date</option>
+                            </select>
+                          </div>
+                          {leadData.services[i].secondPaymentRemarks === "On Particular Date" && <div className="mt-2">
+                          <input value={secondTempRemarks} onChange={(e)=>setSecondTempRemarks(e.target.value)} className="form-control" type="date" placeholder="dd/mm/yyyy"/>
+                          </div>}
                         </div>
                       </div>
                     )}
@@ -1264,6 +1306,33 @@ console.log(completed , "this is completed")
                               ₹
                             </button>
                           </div>
+                          <div >
+                            <select value={leadData.services[i].thirdPaymentRemarks}  onChange={(e) => {
+                                setLeadData((prevState) => ({
+                                  ...prevState,
+                                  services: prevState.services.map(
+                                    (service, index) =>
+                                      index === i
+                                        ? {
+                                            ...service,
+                                           thirdPaymentRemarks:e.target.value
+                                          }
+                                        : service
+                                  ),
+                                }));
+                              }}  className="form-select" name="optional-remarks" id="optional-remarks-3">
+                              <option value="" selected disabled>Select Payment Date</option>
+                              <option value="After Application" >After Application</option>
+                              <option value="At the time of Application" >At the time of Application</option>
+                              <option value="After Document" >After Document</option>
+                              <option value="Before Application" >Before Application</option>
+                              <option value="On Particular Date" >On Particular Date</option>
+                            </select>
+                          </div>
+                          {leadData.services[i].thirdPaymentRemarks === "On Particular Date" && <div className="mt-2">
+                          <input value={thirdTempRemarks} onChange={(e)=>setThirdTempRemarks(e.target.value)} className="form-control" type="date" placeholder="dd/mm/yyyy"/>
+                          </div>}
+                          
                         </div>
                       </div>
                     )}
@@ -1297,6 +1366,32 @@ console.log(completed , "this is completed")
                               ₹
                             </button>
                           </div>
+                          <div >
+                            <select value={leadData.services[i].fourthPaymentRemarks}  onChange={(e) => {
+                                setLeadData((prevState) => ({
+                                  ...prevState,
+                                  services: prevState.services.map(
+                                    (service, index) =>
+                                      index === i
+                                        ? {
+                                            ...service,
+                                           fourthPaymentRemarks:e.target.value
+                                          }
+                                        : service
+                                  ),
+                                }));
+                              }}  className="form-select" name="optional-remarks-4" id="optional-remarks-4">
+                              <option value="" selected disabled>Select Payment Date</option>
+                              <option value="After Application">After Application</option>
+                              <option value="At the time of Application" >At the time of Application</option>
+                              <option value="After Document" >After Document</option>
+                              <option value="Before Application" >Before Application</option>
+                              <option value="On Particular Date" >On Particular Date</option>
+                            </select>
+                          </div>
+                          {leadData.services[i].fourthPaymentRemarks === "On Particular Date" && <div className="mt-2">
+                          <input value={fourthTempRemarks} onChange={(e)=>setFourthTempRemarks(e.target.value)} className="form-control" type="date" placeholder="dd/mm/yyyy"/>
+                          </div>}
                         </div>
                       </div>
                     )}
@@ -1332,6 +1427,7 @@ console.log(completed , "this is completed")
                     <button
                       disabled={leadData.services[i].paymentCount === 2}
                       onClick={(e) => {
+                        e.preventDefault();
                         setLeadData((prevState) => ({
                           ...prevState,
                           services: prevState.services.map((service, index) =>
