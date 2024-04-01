@@ -682,14 +682,9 @@ function Leads() {
   console.log(selectedRows);
   const exportData = async () => {
     try {
-      const response = await axios.get(
-        `${secretKey}/exportLeads/${dataStatus}`,
-        {
-          responseType: "blob",
-          params: {
-            selectedRows: selectedRows
-          }
-        }
+      const response = await axios.post(
+        `${secretKey}/exportLeads/`,
+     selectedRows
       );
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");

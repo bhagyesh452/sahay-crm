@@ -1164,7 +1164,7 @@ console.log(completed , "this is completed")
               </div>
             </div>
             {leadData.services[i].paymentTerms === "two-part" && (
-              <div className="d-flex align-items-center mt-2">
+              <div className="d-flex align-items-top mt-2">
                 <div className="part-payment-col">
                   <div className="row">
                     <div className="col-sm-3">
