@@ -44,6 +44,7 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
 import RedesignedForm from "../admin/RedesignedForm.jsx";
 import LeadFormPreview from "../admin/LeadFormPreview.jsx";
+//import  cashfree  from './util.js'
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -271,7 +272,7 @@ function EmployeePanel() {
     setTimeout(() => {
       setOpenAnchor(true);
     }, 500);
-  
+
   };
 
   const [cid, setcid] = useState("");
@@ -968,7 +969,7 @@ function EmployeePanel() {
     if (
       file &&
       file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ) {
       const reader = new FileReader();
 
@@ -1102,23 +1103,23 @@ function EmployeePanel() {
     try {
       console.log(maturedID);
       const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
-      const data = response.data.find(obj=>obj.company === maturedID);
+      const data = response.data.find(obj => obj.company === maturedID);
       setCurrentForm(data);
-      
-      
+
+
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
-useEffect(() => {
-  console.log("Matured ID Changed" , maturedID);
-  if(maturedID){
-    fetchRedesignedFormData();
-  }
+  useEffect(() => {
+    console.log("Matured ID Changed", maturedID);
+    if (maturedID) {
+      fetchRedesignedFormData();
+    }
 
-}, [maturedID])
+  }, [maturedID])
 
-  console.log("Current Form:",currentForm)
+  console.log("Current Form:", currentForm)
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -1417,20 +1418,20 @@ useEffect(() => {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-              (obj) =>
-                obj.Status === "Untouched" ||
-                obj.Status === "Busy" ||
-                obj.Status === "Not Picked Up"
-            )
+            (obj) =>
+              obj.Status === "Untouched" ||
+              obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up"
+          )
           : dataStatus === "Interested"
-          ? moreEmpData.filter((obj) => obj.Status === "Interested")
-          : dataStatus === "Not Interested"
-          ? moreEmpData.filter(
-              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-            )
-          : dataStatus === "FollowUp"
-          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-          : [];
+            ? moreEmpData.filter((obj) => obj.Status === "Interested")
+            : dataStatus === "Not Interested"
+              ? moreEmpData.filter(
+                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+              )
+              : dataStatus === "FollowUp"
+                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                : [];
 
       setEmployeeData(newEmpData);
       setSelectedYears([
@@ -1458,20 +1459,20 @@ useEffect(() => {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-              (obj) =>
-                obj.Status === "Untouched" ||
-                obj.Status === "Busy" ||
-                obj.Status === "Not Picked Up"
-            )
+            (obj) =>
+              obj.Status === "Untouched" ||
+              obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up"
+          )
           : dataStatus === "Interested"
-          ? moreEmpData.filter((obj) => obj.Status === "Interested")
-          : dataStatus === "Not Interested"
-          ? moreEmpData.filter(
-              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-            )
-          : dataStatus === "FollowUp"
-          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-          : [];
+            ? moreEmpData.filter((obj) => obj.Status === "Interested")
+            : dataStatus === "Not Interested"
+              ? moreEmpData.filter(
+                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+              )
+              : dataStatus === "FollowUp"
+                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                : [];
       setSelectedYears([...selectedYears, selectedYear]); // Add selected year to the list
       const filteredData = newEmpData.filter(
         (data) =>
@@ -1499,20 +1500,20 @@ useEffect(() => {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-              (obj) =>
-                obj.Status === "Untouched" ||
-                obj.Status === "Busy" ||
-                obj.Status === "Not Picked Up"
-            )
+            (obj) =>
+              obj.Status === "Untouched" ||
+              obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up"
+          )
           : dataStatus === "Interested"
-          ? moreEmpData.filter((obj) => obj.Status === "Interested")
-          : dataStatus === "Not Interested"
-          ? moreEmpData.filter(
-              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-            )
-          : dataStatus === "FollowUp"
-          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-          : [];
+            ? moreEmpData.filter((obj) => obj.Status === "Interested")
+            : dataStatus === "Not Interested"
+              ? moreEmpData.filter(
+                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+              )
+              : dataStatus === "FollowUp"
+                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                : [];
       const filteredData = newEmpData.filter((data) => {
         const year = new Date(data["Company Incorporation Date  "])
           .getFullYear()
@@ -1605,6 +1606,64 @@ useEffect(() => {
     const [day, month, year] = dateString.split('/');
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   };
+
+
+  // ------------------------payment link-------------------------------
+
+  // const [paymentLink, setPaymentLink] = useState('');
+  // const [isLoadingPayment, setIsLoadingPayment] = useState(false);
+  // const [sessionId , setSessionId] = useState('')
+  // let version = cashfree.version();
+  
+  // const getSessionId = (e)=>{
+  //   e.preventDefault()
+  //   setIsLoadingPayment(true);
+  //   axios.post(`${secretKey}/payment` , {version})
+  //   .then((res)=>{
+  //     setIsLoadingPayment(false)
+  //     setSessionId(res.data)
+  //   })
+  //   .catch((err)=>{
+  //     setIsLoadingPayment(false);
+  //     console.log(err)
+  //   })
+  // }
+
+
+
+
+  // const generatePaymentLink = async () => {
+  //   try {
+  //     setIsLoadingPayment(true);
+  //     const response = await axios.get(`${secretKey}/generatePaymentLink`);
+  //     setPaymentLink(response.data.paymentLink);
+  //   } catch (error) {
+  //     console.error('Error generating payment link:', error);
+  //   } finally {
+  //     setIsLoadingPayment(false);
+  //   }
+  // };
+
+
+  // const handlePayment =()=>{
+  //   let checkoutOptions = {
+  //     paymentSessionId: "payment-session-id",
+  //     returnUrl: "https://test.cashfree.com/pgappsdemos/v3success.php?myorder={order_id}",
+      
+  //   }
+  //   cashfree.checkout(checkoutOptions).then(function(result){
+  //     if(result.error){
+  //       alert(result.error.message)
+  //     }
+  //     if(result.redirect){
+  //       console.log("Redirection")
+  //     }
+  //   });
+  // }
+
+
+
+
 
   return (
     <div>
@@ -2582,7 +2641,7 @@ useEffect(() => {
                                           company["Company Name"],
                                           company["Company Email"],
                                           company[
-                                            "Company Incorporation Date  "
+                                          "Company Incorporation Date  "
                                           ],
                                           company["Company Number"],
                                           company["Status"]
@@ -2686,64 +2745,64 @@ useEffect(() => {
 
                                 {(dataStatus === "FollowUp" ||
                                   dataStatus === "Interested") && (
-                                  <td>
-                                    {company &&
-                                    projectionData &&
-                                    projectionData.some(
-                                      (item) =>
-                                        item.companyName ===
-                                        company["Company Name"]
-                                    ) ? (
-                                      <>
+                                    <td>
+                                      {company &&
+                                        projectionData &&
+                                        projectionData.some(
+                                          (item) =>
+                                            item.companyName ===
+                                            company["Company Name"]
+                                        ) ? (
+                                        <>
+                                          <IconButton>
+                                            <RiEditCircleFill
+                                              onClick={() => {
+                                                functionopenprojection(
+                                                  company["Company Name"]
+                                                );
+                                              }}
+                                              //onClick={()=>handleIconButtonClick(company["Company Name"])}
+                                              style={{
+                                                cursor: "pointer",
+                                                width: "17px",
+                                                height: "17px",
+                                              }}
+                                              color="#fbb900"
+                                            />
+                                          </IconButton>
+                                          {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} currentProjection1={currentProjection} /> */}
+                                        </>
+                                      ) : (
                                         <IconButton>
                                           <RiEditCircleFill
                                             onClick={() => {
                                               functionopenprojection(
                                                 company["Company Name"]
                                               );
+                                              setIsEditProjection(true);
                                             }}
-                                            //onClick={()=>handleIconButtonClick(company["Company Name"])}
                                             style={{
                                               cursor: "pointer",
                                               width: "17px",
                                               height: "17px",
                                             }}
-                                            color="#fbb900"
                                           />
                                         </IconButton>
-                                        {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} currentProjection1={currentProjection} /> */}
-                                      </>
-                                    ) : (
-                                      <IconButton>
-                                        <RiEditCircleFill
-                                          onClick={() => {
-                                            functionopenprojection(
-                                              company["Company Name"]
-                                            );
-                                            setIsEditProjection(true);
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                        />
-                                      </IconButton>
-                                    )}
+                                      )}
+                                    </td>
+                                  )}
+                                {dataStatus === "Matured" && <>
+                                  <td>
+                                    <div onClick={() => {
+                                      setMaturedID(company._id)
+                                      functionopenAnchor()
+                                    }} style={{ cursor: 'pointer' }}>
+                                      <IconEye />
+                                    </div>
+
                                   </td>
-                                )}
-                                {dataStatus==="Matured" && <>
-                                <td>
-                                  <div onClick={()=>{
-                                    setMaturedID(company._id)
-                                    functionopenAnchor()
-                                  }} style={{cursor:'pointer'}}>
-                                  <IconEye/>
-                                  </div>
-                                 
-                                </td>
                                 </>}
-                                <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td>
+                                <td onClick={() => setIsOpen(true)}><MailOutlineIcon style={{ cursor: 'pointer' }} /></td>
                               </tr>
                             ))}
                           </tbody>
@@ -2881,7 +2940,7 @@ useEffect(() => {
                               Math.min(
                                 prevPage + 1,
                                 Math.ceil(filteredData.length / itemsPerPage) -
-                                  1
+                                1
                               )
                             )
                           }
@@ -2932,16 +2991,16 @@ useEffect(() => {
                 style={
                   selectedOption === "general"
                     ? {
-                        backgroundColor: "#ffb900",
-                        margin: "10px 10px 0px 0px",
-                        cursor: "pointer",
-                        color: "white",
-                      }
+                      backgroundColor: "#ffb900",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                      color: "white",
+                    }
                     : {
-                        backgroundColor: "white",
-                        margin: "10px 10px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "white",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                    }
                 }
                 onClick={() => {
                   setSelectedOption("general");
@@ -2964,16 +3023,16 @@ useEffect(() => {
                 style={
                   selectedOption === "notgeneral"
                     ? {
-                        backgroundColor: "#ffb900",
-                        margin: "10px 0px 0px 0px",
-                        cursor: "pointer",
-                        color: "white",
-                      }
+                      backgroundColor: "#ffb900",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                      color: "white",
+                    }
                     : {
-                        backgroundColor: "white",
-                        margin: "10px 0px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "white",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                    }
                 }
                 className="notgeneral form-control col"
                 onClick={() => {
@@ -3375,12 +3434,12 @@ useEffect(() => {
           <div className="LeadFormPreviewDrawar-header">
             <div className="Container">
               <div className="d-flex justify-content-between align-items-center">
-                  <div ><h2 className="title m-0 ml-1">Current LeadForm</h2></div>
-                  <div>
-                    <IconButton onClick={closeAnchor}>
-                      <CloseIcon/>
-                    </IconButton>
-                  </div>
+                <div ><h2 className="title m-0 ml-1">Current LeadForm</h2></div>
+                <div>
+                  <IconButton onClick={closeAnchor}>
+                    <CloseIcon />
+                  </IconButton>
+                </div>
               </div>
             </div>
           </div>
@@ -3410,10 +3469,10 @@ useEffect(() => {
               </h1>
               <div>
                 {projectingCompany &&
-                projectionData &&
-                projectionData.some(
-                  (item) => item.companyName === projectingCompany
-                ) ? (
+                  projectionData &&
+                  projectionData.some(
+                    (item) => item.companyName === projectingCompany
+                  ) ? (
                   <>
                     <IconButton
                       onClick={() => {
@@ -3653,6 +3712,19 @@ useEffect(() => {
                   Submit
                 </button>
               </div>
+              {/* <div>
+                {paymentLink ? (
+                  <div>
+                    <p>Payment Link:</p>
+                    <input type="text" value={paymentLink} readOnly />
+                    <button onClick={() => navigator.clipboard.writeText(paymentLink)}>Copy Link</button>
+                  </div>
+                ) : (
+                  <button onClick={generatePaymentLink} disabled={isLoadingPayment}>
+                    {isLoadingPayment ? 'Generating Payment Link...' : 'Generate Payment Link'}
+                  </button>
+                )}
+              </div> */}
             </div>
           </div>
         </Drawer>

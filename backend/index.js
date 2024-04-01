@@ -46,6 +46,7 @@ const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
 
 
+
 // const http = require('http');
 // const socketIo = require('socket.io');
 require("dotenv").config();
@@ -138,6 +139,38 @@ app.post("/api/admin/login-admin", async (req, res) => {
 //   }
 // });
 
+// -------------------------------api for payment link---------------------------------
+
+
+// Define route to generate payment link
+// app.get('/api/generatePaymentLink', async (req, res) => {
+//     try {
+//         const paymentLinkData = {
+//             appId: '218584e2c3a22f9395f52faa1b485812',
+//             secretKey: 'd501ddfae2bdb6fabb52844038e67b592fb09398',
+//             orderId: 'ORDER123',
+//             orderAmount: '100', // Amount in INR
+//             customerName: 'John Doe',
+//             customerPhone: '1234567890',
+//             customerEmail: 'john@example.com',
+//             //returnUrl: 'http://yourwebsite.com/payment/success', // Redirect URL after successful payment
+//            // notifyUrl: 'http://yourwebsite.com/payment/notify', // Webhook URL to receive payment notifications
+//         };
+
+//         const response = await axios.post('https://test.cashfree.com/api/v1/order/create', paymentLinkData);
+//         const paymentLink = response.data.paymentLink;
+//         res.json({ paymentLink });
+//     } catch (error) {
+//         console.error('Error generating payment link:', error);
+//         res.status(500).json({ error: 'Internal Server Error' });
+//     }
+// });
+
+// app.post('/api/payment' , newOrderId)
+// app.get('/status/:orderid' , checkstatus)
+
+
+
 app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
 
@@ -163,11 +196,6 @@ app.post("/api/employeelogin", async (req, res) => {
     socketIO.emit('Employee-login');
   }
 });
-
-
-
-
-
 
 
 app.put('/api/online-status/:id/:socketID', async (req, res) => {
@@ -1103,6 +1131,7 @@ app.post('/api/setMarktrue/:id', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while updating the object.' });
   }
 });
+
 app.post("/api/requestgData", async (req, res) => {
   const { numberOfData, name, cTime, cDate } = req.body;
 
