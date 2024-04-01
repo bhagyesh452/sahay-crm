@@ -567,7 +567,6 @@ function Dashboard() {
 
   // ---------------------------------------------history of projection data--------------------------------------------
 
-  console.log(followData)
 
   const [viewHistoryCompanyName, setviewHistoryCompanyName] = useState("")
   const [historyDataCompany, sethistoryDataCompany] = useState([])
@@ -726,7 +725,7 @@ function Dashboard() {
   }, []);
 
   const [selectedDateRange, setSelectedDateRange] = useState([]);
-  const [selectedDateRangeEmployee, setSelectedDateRangeEmployee] = useState([]);
+
   //console.log(selectedDateRange)
 
   const selectionRange = {
@@ -778,23 +777,18 @@ function Dashboard() {
     setFilteredDataDateRange(filteredDataDateRange);
   };
 
-  const handleSelectEmployee = (values) => {
-    const startDate = values[0];
-    const endDate = values[1];
+  useEffect(() => {
 
-    const filteredDataDateRange = companyDataFilter.filter(product => {
-      const productDate = new Date(product["AssignDate"]);
+    // Filter followData based on the selected date range
+    const filteredDataDateRange = followData.filter(product => {
+      const productDate = new Date(product["estPaymentDate"]);
 
-      // Convert dates to UTC format to ensure consistent comparison
+      // Convert productDate to the sameformat as startDate and endDate
       const formattedProductDate = dayjs(productDate).startOf('day');
       const formattedStartDate = startDate ? dayjs(startDate).startOf('day') : null;
       const formattedEndDate = endDate ? dayjs(endDate).endOf('day') : null;
 
-      //console.log(formattedProductDate);
-      //console.log(formattedStartDate);
-      //console.log(formattedEndDate);
-
-
+      // Check if the formatted productDate is within the selected date range
       if (formattedStartDate && formattedEndDate && formattedStartDate.isSame(formattedEndDate)) {
         // If both startDate and endDate are the same, filter for transactions on that day
         return formattedProductDate.isSame(formattedStartDate);
@@ -807,16 +801,8 @@ function Dashboard() {
       }
     });
 
-    console.log("filteredData", filteredDataDateRange);
-    setStartDateEmployee(startDate);
-    setEndDateEmployee(endDate);
-    setCompanyData(filteredDataDateRange);
-    setcompanyDataFilter(filteredDataDateRange);
-  };
-
-  console.log(startDateEmployee,endDateEmployee)
-
-  console.log("companyData", companyData)
+    setfollowDataToday(filteredDataDateRange);
+  }, [startDate, endDate]);
 
   useEffect(() => {
 
@@ -846,11 +832,109 @@ function Dashboard() {
   }, [startDate, endDate]);
 
 
+  // --------------------------------------daterangepickerfor employeedatareport----------------------------------
+
+
+  const [selectedDateRangeEmployee, setSelectedDateRangeEmployee] = useState([]);
+  
+  
+
+  const handleSelectEmployee = (values) => {
+    console.log("values" , values)
+
+    const startDate = values[0].format('DD/MM/YYYY');
+    const endDate = values[1].format('DD/MM/YYYY');
+
+    //console.log("selecteddates", selectedDateRangeEmployee)
+    //console.log("Start Date:", startDate);
+    //console.log("End Date:", endDate);
+
+    const filteredDataDateRange = companyDataFilter.filter(product => {
+      const productDate = new Date(product["AssignDate"]);
+      const newproductDate = formatDateNew(productDate)
+      //console.log(newproductDate ,)
+      // Convert productDate to the sameformat as startDate and endDate
+      const formattedProductDate = dayjs(productDate).startOf('day');
+      const formattedStartDate = startDate ? dayjs(startDate).startOf('day') : null;
+      const formattedEndDate = endDateEmployee ? dayjs(endDateEmployee).endOf('day') : null;
+
+      // console.log(formattedProductDate)
+      // console.log(formattedStartDate)
+      // console.log(formattedEndDate)
+
+      
+
+
+      // Check if the formatted productDate is within the selected date range
+      if (startDate === endDate) {
+        // If both startDate and endDate are the same, filter for transactions on that day
+        return  new Date(newproductDate) === new Date(startDate);
+      } else if (new Date(startDate) !== new Date(endDate)) {
+        // If different startDate and endDate, filter within the range
+        return new Date(newproductDate) >= new Date(startDate) && new Date(newproductDate) <= new Date(endDate);
+      } else {
+        // If either startDate or endDate is null, return false
+        return false;
+      }
+    });
+
+    //console.log("Filtered Data:", filteredDataDateRange);
+    setStartDateEmployee(startDate);
+    setEndDateEmployee(endDate);
+    setCompanyData(filteredDataDateRange);
+   // setcompanyDataFilter(filteredDataDateRange);
+  };
+
+  console.log(selectedDateRangeEmployee)
+  console.log(startDateEmployee, endDateEmployee)
+
+ 
+
+
+
+  // useEffect(() => {
+
+  //   const filteredDataDateRange = companyDataFilter.filter(product => {
+  //     const productDate = new Date(product["AssignDate"]);
+  //     const newproductDate = formatDateNew(productDate)
+  //     // Convert productDate to the sameformat as startDate and endDate
+  //     const formattedProductDate = dayjs(newproductDate).startOf('day');
+  //     const formattedStartDate = startDateEmployee ? dayjs(startDateEmployee).startOf('day') : null;
+  //     const formattedEndDate = endDateEmployee ? dayjs(endDateEmployee).endOf('day') : null;
+
+  //     console.log(formattedProductDate)
+  //     console.log(formattedStartDate)
+  //     console.log(formattedEndDate)
 
 
 
 
+  //     // Check if the formatted productDate is within the selected date range
+  //     if (formattedStartDate && formattedEndDate && formattedStartDate.isSame(formattedEndDate)) {
+  //       // If both startDate and endDate are the same, filter for transactions on that day
+  //       return formattedProductDate.isSame(formattedStartDate);
+  //     } else if (formattedStartDate && formattedEndDate) {
+  //       // If different startDate and endDate, filter within the range
+  //       return formattedProductDate >= formattedStartDate && formattedProductDate <= formattedEndDate;
+  //     } else {
+  //       // If either startDate or endDate is null, return false
+  //       return false;
+  //     }
+  //   });
 
+  //   console.log("Filtered Data:", filteredDataDateRange);
+  //   setCompanyData(filteredDataDateRange);
+  //   setcompanyDataFilter(filteredDataDateRange);
+  // }, [startDateEmployee, endDateEmployee]);
+
+  function formatDateNew(date) {
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Months are zero-based
+    const year = date.getFullYear();
+    return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+  }
+
+  console.log("companyData", companyData)
 
   //console.log("kuch" , filteredDataDateRange)
 
@@ -1795,6 +1879,9 @@ function Dashboard() {
 
     }
   };
+
+
+
   useEffect(() => {
     setOriginalEmployeeData([...employeeData]); // Store original state of employeeData
   }, [employeeData]);
@@ -2530,19 +2617,19 @@ function Dashboard() {
                               color: "grey"
                             }} /> */}
                           </div>
-                          <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
+                          {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
                             <div>{`${formatDate(startDateEmployee)} - ${formatDate(endDateEmployee)}`}</div>
                             <button onClick={() => setDateRangeDisplayEmployee(!displayDateRangeEmployee)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
                               <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
                             </button>
-                          </div>
-                          {/* <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
+                          </div> */}
+                          <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
                             <DemoContainer components={['SingleInputDateRangeField']}>
                               <DateRangePicker
                                 onChange={(values) => {
-                                  const startDateEmployee = moment(values[0]).format('DD/MM/YYYY');
-                                  const endDateEmployee = moment(values[1]).format('DD/MM/YYYY');
-                                  setSelectedDateRangeEmployee([startDateEmployee, endDateEmployee]);
+                                  const startDate = moment(values[0]).format('DD/MM/YYYY');
+                                  const endDate = moment(values[1]).format('DD/MM/YYYY');
+                                  setSelectedDateRangeEmployee([startDate, endDate]);
                                   handleSelectEmployee(values); // Call handleSelect with the selected values
                                 }}
                                 slots={{ field: SingleInputDateRangeField }}
@@ -2556,7 +2643,8 @@ function Dashboard() {
                               //calendars={1}
                               />
                             </DemoContainer>
-                          </LocalizationProvider> */}
+                          </LocalizationProvider>
+
                         </div>
                       </div>
 

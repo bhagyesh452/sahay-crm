@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import { options } from "../components/Options.js";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
-import { DateRangePicker } from "react-date-range";
+//import { DateRangePicker } from "react-date-range";
 import { FaRegCalendar } from "react-icons/fa";
 import { Drawer, IconButton } from "@mui/material";
 import Swal from "sweetalert2";
@@ -24,6 +24,15 @@ import io from "socket.io-client";
 import Nodata from "../components/Nodata";
 import { RiEditCircleFill } from "react-icons/ri";
 import { IoClose } from "react-icons/io5";
+import Calendar from '@mui/icons-material/Event';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+import { SingleInputDateRangeField } from '@mui/x-date-pickers-pro/SingleInputDateRangeField';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import moment from 'moment'
+import { StaticDateRangePicker } from '@mui/x-date-pickers-pro/StaticDateRangePicker';
+import dayjs from 'dayjs';
 
 
 function EmployeeDashboard() {
@@ -105,7 +114,7 @@ function EmployeeDashboard() {
   const [tempData, setTempData] = useState([])
   const [loadingNew, setLoadingNew] = useState([])
 
-// -------------------------api for contact number-------------------------------------------------------
+  // -------------------------api for contact number-------------------------------------------------------
 
   const fetchNewData = async () => {
     try {
@@ -121,7 +130,7 @@ function EmployeeDashboard() {
     fetchNewData()
   }, [data])
 
-  console.log("tempData" , tempData)
+  //console.log("tempData", tempData)
 
 
   //console.log(data)
@@ -167,7 +176,7 @@ function EmployeeDashboard() {
   //   }
   // };
 
- // const tableEmployee = data.ename;
+  // const tableEmployee = data.ename;
   useEffect(() => {
     fetchData();
   }, []);
@@ -365,7 +374,7 @@ function EmployeeDashboard() {
     }
   };
 
-  console.log("ajki", followDataToday)
+  //console.log("ajki", followDataToday)
 
 
   // console.log(followData);
@@ -446,7 +455,7 @@ function EmployeeDashboard() {
     setSelectedValues([]);
   };
 
-  console.log("currentprojection" , currentProjection)
+  //console.log("currentprojection", currentProjection)
 
   const handleProjectionSubmit = async () => {
     try {
@@ -467,7 +476,7 @@ function EmployeeDashboard() {
         Swal.fire({ title: "Total Payment Can't be 0", icon: 'warning' });
       } else if (finalData.offeredPrize === "") {
         Swal.fire({ title: "Offred Price Can't be 0", icon: 'warning' });
-      }else if (Number(finalData.offeredPrize) === 0) {
+      } else if (Number(finalData.offeredPrize) === 0) {
         Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
       } else if (Number(finalData.totalPayment) > Number(finalData.offeredPrize)) {
         Swal.fire({ title: 'Total Payment cannot be greater than Offered Prize!', icon: 'warning' });
@@ -481,7 +490,7 @@ function EmployeeDashboard() {
           title: "Estimated Payment Date is required!",
           icon: "warning",
         });
-      }else{
+      } else {
         const response = await axios.post(
           `${secretKey}/update-followup`,
           finalData
@@ -497,14 +506,14 @@ function EmployeeDashboard() {
           remarks: "",
           date: "",
           time: "",
-          totalPaymentError:"",
-          totalPayment:0
+          totalPaymentError: "",
+          totalPayment: 0
         });
         fetchFollowUpData();
       }
 
       // Send data to backend API
-      
+
       // Log success message
     } catch (error) {
       console.error("Error updating or adding data:", error.message);
@@ -545,27 +554,88 @@ function EmployeeDashboard() {
     key: "selection",
   };
 
-  const handleSelect = (date) => {
-    const filteredDataDateRange = followData.filter((product) => {
+  const[selectedDateRange , setSelectedDateRange] = useState([])
+
+  console.log("selectedDates" , selectedDateRange)
+
+  // const handleSelect = (values) => {
+    
+  //   const startDate = values[0].format('DD/MM/YYYY');
+  //   const endDate = values[1].format('DD/MM/YYYY');
+
+  //   console.log("startdate" , startDate)
+  //   console.log("endDate" , endDate)
+
+  //   const filteredDataDateRange = followData.filter((product) => {
+  //     const productDate = new Date(product["estPaymentDate"]);
+
+  //     if (
+  //       formatDate(startDate) ===
+  //       formatDate(endDate)
+  //     ) {
+  //       return formatDate(productDate) == formatDate(startDate);
+  //     } else {
+  //       return (
+  //         productDate >= startDate &&
+  //         productDate <= endDate
+  //       );
+  //     }
+  //   });
+  //   setStartDate(startDate);
+  //   setEndDate(endDate);
+  //   setFilteredDataDateRange(filteredDataDateRange);
+  //   //console.log(filteredDataDateRange);
+  // };
+
+  const handleSelect = (values) => {
+    // Extract startDate and endDate from the values array
+    const startDate = values[0];
+    const endDate = values[1];
+
+    // Filter followData based on the selected date range
+    // const filteredDataDateRange = followData.filter(product => {
+    //   const productDate = new Date(product["estPaymentDate"]);
+
+    //   // Check if the productDate is within the selected date range
+    //   return (
+    //     productDate >= startDate &&
+    //     productDate <= endDate
+    //   );
+    // });
+
+    // Set the startDate, endDate, and filteredDataDateRange states
+    setStartDate(startDate);
+    setEndDate(endDate);
+    //setFilteredDataDateRange(filteredDataDateRange);
+  };
+
+  useEffect(() => {
+
+    // Filter followData based on the selected date range
+    const filteredDataDateRange = followData.filter(product => {
       const productDate = new Date(product["estPaymentDate"]);
 
-      if (
-        formatDate(date.selection.startDate) ===
-        formatDate(date.selection.endDate)
-      ) {
-        return formatDate(productDate) == formatDate(date.selection.startDate);
+      // Convert productDate to the sameformat as startDate and endDate
+      const formattedProductDate = dayjs(productDate).startOf('day');
+      const formattedStartDate = startDate ? dayjs(startDate).startOf('day') : null;
+      const formattedEndDate = endDate ? dayjs(endDate).endOf('day') : null;
+
+      // Check if the formatted productDate is within the selected date range
+      if (formattedStartDate && formattedEndDate && formattedStartDate.isSame(formattedEndDate)) {
+        // If both startDate and endDate are the same, filter for transactions on that day
+        return formattedProductDate.isSame(formattedStartDate);
+      } else if (formattedStartDate && formattedEndDate) {
+        // If different startDate and endDate, filter within the range
+        return formattedProductDate >= formattedStartDate && formattedProductDate <= formattedEndDate;
       } else {
-        return (
-          productDate >= date.selection.startDate &&
-          productDate <= date.selection.endDate
-        );
+        // If either startDate or endDate is null, return false
+        return false;
       }
     });
-    setStartDate(date.selection.startDate);
-    setEndDate(date.selection.endDate);
-    setFilteredDataDateRange(filteredDataDateRange);
-    //console.log(filteredDataDateRange);
-  };
+
+    setFollowDataFilter(filteredDataDateRange);
+  }, [startDate, endDate]);
+
 
   const handleSelectTotalSummary = (date) => {
     const filteredDataDateRange = followData.filter((product) => {
@@ -1309,7 +1379,48 @@ function EmployeeDashboard() {
   // };
 
 
+  // ---------------------------newdaterangepicker--------------------------------
 
+  const shortcutsItems = [
+    {
+      label: 'This Week',
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf('week'), today.endOf('week')];
+      },
+    },
+    {
+      label: 'Last Week',
+      getValue: () => {
+        const today = dayjs();
+        const prevWeek = today.subtract(7, 'day');
+        return [prevWeek.startOf('week'), prevWeek.endOf('week')];
+      },
+    },
+    {
+      label: 'Last 7 Days',
+      getValue: () => {
+        const today = dayjs();
+        return [today.subtract(7, 'day'), today];
+      },
+    },
+    {
+      label: 'Current Month',
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf('month'), today.endOf('month')];
+      },
+    },
+    {
+      label: 'Next Month',
+      getValue: () => {
+        const today = dayjs();
+        const startOfNextMonth = today.endOf('month').add(1, 'day');
+        return [startOfNextMonth, startOfNextMonth.endOf('month')];
+      },
+    },
+    { label: 'Reset', getValue: () => [null, null] },
+  ];
 
   return (
     <div>
@@ -2169,7 +2280,31 @@ function EmployeeDashboard() {
                       id="bdeName-search"
                     />
                   </div>
-                  <div
+                  <div style={{ m: 1, width: '40ch', padding: "0px", marginRight: "30px" }}>
+                   <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
+                    <DemoContainer components={['SingleInputDateRangeField']}>
+                      <DateRangePicker
+                        onChange={(values) => {
+                          const startDate = moment(values[0]).format('DD/MM/YYYY');
+                          const endDate = moment(values[1]).format('DD/MM/YYYY');
+                          setSelectedDateRange([startDate, endDate]);
+                          handleSelect(values); // Call handleSelect with the selected values
+                        }}
+                        slots={{ field: SingleInputDateRangeField }}
+                        slotProps={{
+                          shortcuts: {
+                            items: shortcutsItems,
+                          },
+                          actionBar: { actions: [] },
+                          textField: { InputProps: { endAdornment: <Calendar /> } }
+                        }}
+                      //calendars={1}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
+                  </div>
+
+                  {/* <div
                     className="form-control d-flex align-items-center justify-content-between date-range-picker">
                     <div>{`${formatDate(startDateTotalSummary)} - ${formatDate(endDateTotalSummary)}`}</div>
                     <button
@@ -2189,22 +2324,21 @@ function EmployeeDashboard() {
                         }}
                       />
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
-              {dateRangeTotalSummary && (
+              {/* {dateRangeTotalSummary && (
                 <div
                   ref={dateRangePickerProhectionSummaryRef}
                   className="position-absolute "
-                  style={{ zIndex: "1000", top: "14%", left: "75%" }}
-                >
+                  style={{ zIndex: "1000", top: "14%", left: "75%" }}>
                   <DateRangePicker
                     ranges={[selectionRangeTotalSummary]}
                     onClose={() => setdateRangeTotalSummary(false)}
                     onChange={handleSelectTotalSummary}
                   />
                 </div>
-              )}
+              )} */}
               <div className="card-body">
                 <div
                   id="table-default"
@@ -2213,8 +2347,7 @@ function EmployeeDashboard() {
                     overflowY: "auto",
                     maxHeight: "60vh",
                     height: "30vh"
-                  }}
-                >
+                  }}>
                   <table
                     style={{
                       width: "100%",
@@ -2872,7 +3005,7 @@ function EmployeeDashboard() {
                 </div>
               </div>
               <div className="label">
-                <strong>Offered Prices (With GST){!currentProjection.offeredPrize && (<span style={{color:"red"}}>*</span>)}{" "}
+                <strong>Offered Prices (With GST){!currentProjection.offeredPrize && (<span style={{ color: "red" }}>*</span>)}{" "}
                   :</strong>
                 <div className="services mb-3">
                   <input
@@ -2892,8 +3025,8 @@ function EmployeeDashboard() {
               </div>
               <div className="label">
                 <strong>Expected Price (With GST) {currentProjection.totalPayment === 0 && (
-                    <span style={{ color: "red" }}>*</span>
-                  )}{" "}
+                  <span style={{ color: "red" }}>*</span>
+                )}{" "}
                   :</strong>
                 <div className="services mb-3">
                   <input
@@ -2903,13 +3036,13 @@ function EmployeeDashboard() {
                     value={currentProjection.totalPayment}
                     onChange={(e) => {
                       const newTotalPayment = e.target.value
-                      if(Number(newTotalPayment) <= Number(currentProjection.offeredPrize)){
+                      if (Number(newTotalPayment) <= Number(currentProjection.offeredPrize)) {
                         setCurrentProjection((prevLeadData) => ({
                           ...prevLeadData,
                           totalPayment: newTotalPayment,
-                          totalPaymentError:""
+                          totalPaymentError: ""
                         }));
-                      }else{
+                      } else {
                         setCurrentProjection((prevLeadData) => ({
                           ...prevLeadData,
                           totalPayment: newTotalPayment,
@@ -2917,11 +3050,11 @@ function EmployeeDashboard() {
                             "Expected Price should be less than or equal to Offered Price.",
                         }));
                       }
-                     
+
                     }}
                     disabled={!isEditProjection}
                   />
-                   <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
+                  <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
                 </div>
               </div>
               <div className="label">
