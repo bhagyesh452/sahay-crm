@@ -86,6 +86,9 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   bookingSource: {
     type: String,
   },
+  otherBookingSource:{
+    type:String,
+  },
   numberOfServices: {
     type: Number,
   },

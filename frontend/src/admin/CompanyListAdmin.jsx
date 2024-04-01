@@ -212,28 +212,28 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
   };
 
 
-  const FilteredData = companies.filter((company) => {
-    const fieldValue = company[selectedField];
+  // const FilteredData = companies.filter((company) => {
+  //   const fieldValue = company[selectedField];
 
-    if (selectedField === "companyName" || selectedField === "bdeName") {
-      // Handle filtering by company name or Bde name
-      return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
-    } else if (selectedField === "services") {
-      const newselectedValues = selectedValues.join(',').toLowerCase();
-      //console.log("fieldvalue:", fieldValue.join(',').toLowerCase())
-      //console.log("newselectedvalue:", newselectedValues)
-      return (fieldValue.join(",")).toLowerCase().includes(newselectedValues.toLowerCase());
+  //   if (selectedField === "companyName" || selectedField === "bdeName") {
+  //     // Handle filtering by company name or Bde name
+  //     return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
+  //   } else if (selectedField === "services") {
+  //     const newselectedValues = selectedValues.join(',').toLowerCase();
+  //     //console.log("fieldvalue:", fieldValue.join(',').toLowerCase())
+  //     //console.log("newselectedvalue:", newselectedValues)
+  //     return (fieldValue.join(",")).toLowerCase().includes(newselectedValues.toLowerCase());
 
-    } else if (selectedField === "bookingDate") {
-      // Handle filtering by booking date
-      const dateMatch = dateRange.startDate && dateRange.endDate ?
-        new Date(company.bookingDate) >= new Date(dateRange.startDate) &&
-        new Date(company.bookingDate) <= new Date(dateRange.endDate) :
-        true;
-      return dateMatch && fieldValue;
-    }
-    return true;
-  });
+  //   } else if (selectedField === "bookingDate") {
+  //     // Handle filtering by booking date
+  //     const dateMatch = dateRange.startDate && dateRange.endDate ?
+  //       new Date(company.bookingDate) >= new Date(dateRange.startDate) &&
+  //       new Date(company.bookingDate) <= new Date(dateRange.endDate) :
+  //       true;
+  //     return dateMatch && fieldValue;
+  //   }
+  //   return true;
+  // });
 
   // const handleDeleteConfirm = async () => {
   //   // Assuming you have an API endpoint for deleting a company
@@ -253,9 +253,7 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
   //   }
   // };
 
-  const handleDelete = (companyId, companyName) => {
-    const ename = localStorage.getItem("username");
-
+  const handleDelete = (companyId , companyName) => {
     Swal.fire({
       title: `Are you sure you want to Delete ${companyName}?`,
       icon: 'warning',
@@ -265,23 +263,11 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
       confirmButtonText: 'Yes, Confirm deletion!'
     }).then((result) => {
       if (result.isConfirmed) {
-        const date = new Date().toLocaleDateString();
-        const time = new Date().toLocaleTimeString();
-        const deleteRequestData = {
-          companyName,
-          companyId,
-          time,
-          date,
-          request: false,
-          ename
-        };
-
-        fetch(`${secretKey}/company-delete/${companyId}`, {
+        fetch(`${secretKey}/redesigned-delete-booking/${companyId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(deleteRequestData),
+          }
         })
           .then(response => {
             if (response.ok) {
@@ -310,9 +296,9 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
   // Calculate index of the first company on the current page
   const indexOfFirstCompany = indexOfLastCompany - perPage;
   // Slice the companies array to get the companies for the current page
-  const currentCompanies = FilteredData.slice(indexOfFirstCompany, indexOfLastCompany);
+  // const currentCompanies = FilteredData.slice(indexOfFirstCompany, indexOfLastCompany);
 
-  console.log(currentCompanies)
+  // console.log(currentCompanies)
 
 
   // Change page
@@ -324,8 +310,6 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
         <div className="d-flex justify-content-between align-items-center searchfields gap-5 w-100">
           <div className="input-icon d-flex align-items-center justify-content-start w-100">
             <select className="form-select"
-              value={selectedField}
-              onChange={(e) => handleFieldChange(e.target.value)}
             >
               <option value="companyName">Company Name</option>
               <option value="bdeName">BDE Name</option>
@@ -334,7 +318,7 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
             </select>
           </div>
 
-          {searchbde && (
+          {/* {searchbde && (
             <div className="input-icon w-100 d-flex align-items-center justify-content-between">
               <select
                 className="form-select"
@@ -352,9 +336,9 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
                 ))}
               </select>
             </div>
-          )}
+          )} */}
 
-          {searchDisplay && (
+          {/* {searchDisplay && (
             <div className="input-icon w-100 d-flex align-items-center justify-content-between">
               <span className="input-icon-addon">
                 <svg
@@ -383,9 +367,9 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-          )}
+          )} */}
         </div>
-        {searchServices && (<div className="input-icon w-100 d-flex align-items-center mt-2 searchServices">
+        {/* {searchServices && (<div className="input-icon w-100 d-flex align-items-center mt-2 searchServices">
           <Select
             styles={{
               customStyles,
@@ -411,10 +395,9 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
             placeholder="Select Services..."
           >
           </Select>
-        </div>)}
+        </div>)} */}
 
-        {dateRangeDisplay && (<div className="input-icon d-flex align-items-center justify-content-between w-100 mt-2 gap-2">
-
+        {/* {dateRangeDisplay && (<div className="input-icon d-flex align-items-center justify-content-between w-100 mt-2 gap-2">
           <input
             type="date"
             value={dateRange.startDate}
@@ -430,15 +413,14 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
             style={{ paddingLeft: "10px" }}
             onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
           />
-
-        </div>)}
+        </div>)} */}
       </div>
 
       {companies !== null && companies.length > 0 ? (
         <div className="list-group list-group-flush list-group-hoverable cmpy-list-body cursor-pointer w-100">
-          {currentCompanies.map((company, index) => (
+          {companies.map((company, index) => (
             <div
-              className={`${companyClasses[company.companyName] || "list-group-item list-group-item-action"}`}
+              className={`list-group-item list-group-item-action`}
               key={index}
               style={{
                 backgroundColor: company.read === false && "rgb(237 238 249)",
@@ -447,27 +429,25 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
                 fontFamily: company.red === false && "Merriweather, serif"
               }}
             >
-              <div className="align-items-center w-100" onClick={() => handleCompanyClick(company.companyName, company._id)} >
+              <div className="align-items-center w-100" >
                 <div className="card w-100">
                   <div className="card-header w-100 d-flex align-items-center justify-content-between" style={{ backgroundColor: "#f8efef" ,padding:"11px 0px" }}>
                     <div className="d-flex align-items-center justify-content-between p-booking-Cname" title={company.companyName} >
-                      <div><h5 style={{ width: "310px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textWrap: "nowrap" ,fontSize:"14px" }}>{company.companyName}</h5>
+                      <div><h5 style={{ width: "310px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textWrap: "nowrap" ,fontSize:"14px" }}>{company["Company Name"]}</h5>
                       {company.bdeName && (
                           <div className="m-0 bdeName-cmpy-list d-flex justify-content-between" title={company.bdeName} ><span><strong>BDE :</strong>{company.bdeName}</span> <span><strong>BDM :</strong>{company.bdmName}</span></div>)}
                     </div>
                     </div>
                     <div className="d-flex align-items-center justify-content-between">
-                      {company.imported && <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={{ width: "14px", height: "14px", fill: "#0b6240" }}><path d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z" /></svg>}
-                      <IconButton onClick={() => handleDelete(company._id, company.companyName)}>
+                      {/* {company.imported && <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style={{ width: "14px", height: "14px", fill: "#0b6240" }}><path d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z" /></svg>} */}
+                      <IconButton onClick={()=>handleDelete(company.company , company["Company Name"])} >
                         <DeleteIcon
                           style={{
                             width: "16px",
                             height: "16px",
                             color: "#bf0b0b",
                           }}
-                        >
-                          Delete
-                        </DeleteIcon>
+                        />                         
                       </IconButton>
                     </div>
                   </div>
@@ -476,12 +456,12 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
                       <div className="col-lg-6 services-cmpy-list">
                       {company.services && (
                           <div className="m-0" style={{ maxWidth: "200px", overflow: "hidden" }}>
-                            {company.services[0].split(',').map((service, index) => (
-                              <div key={index} title={service.trim()} style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", textWrap: "nowrap" }}>
+                            {company.services.map((service, index) => (
+                              <div key={index} title={service.serviceName} style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", textWrap: "nowrap" }}>
                                 <span
                                   style={{ marginRight: "5px" }}
                                 >
-                                  ●</span>{service.trim()}
+                                  ●</span>{service.serviceName}
                               </div>
                             ))}
                           </div>
@@ -489,20 +469,17 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
                         
                       </div>
                       <div className="col-lg-6 payments-cmpy-list">
-                        <p><span style={{ color: "#336667" }}>Total Payment:</span>{company.totalPayment && (
-                          <span > ₹{company.totalPayment.toLocaleString()}</span>)}</p>
-                        <p><span style={{ color: "#336667" }}>Recieved Payment:</span>{company.firstPayment && (
-                          <span > ₹{company.firstPayment === 0 ? company.totalPayment.toLocaleString() : company.firstPayment.toLocaleString()}</span>)}</p>
-                        <p><span style={{ color: "#336667" }}>Pending Payment:</span>{company.totalPayment && (
-                          <span > ₹{company.firstPayment === 0 ? 0 : (company.totalPayment - company.firstPayment).toLocaleString()}</span>)}</p>
+                        <p><span style={{ color: "#336667" }}>Total Payment:</span>{company.totalAmount && (
+                          <span > ₹{company.totalAmount.toLocaleString()}</span>)}</p>
+                        <p><span style={{ color: "#336667" }}>Recieved Payment:</span>{company.receivedAmount && (
+                          <span > ₹{company.receivedAmount.toLocaleString()}</span>)}</p>
+                        <p><span style={{ color: "#336667" }}>Pending Payment:</span>{company.pendingAmount && (
+                          <span > ₹{company.pendingAmount.toLocaleString()}</span>)}</p>
                       </div>
                     </div>
                   </div>
                   <div className="card-footer d-flex align-items-center justify-content-between w-100" style={{ display: "flex" }}>
-                    <div className="time">
-                      {company.bookingTime && (
-                        <p className="m-0">{company.bookingTime}</p>)}
-                    </div>
+                   
                     <div className="bookingdate">
                       {company.bookingDate && (
                         <p className="m-0">{formatDatelatest(company.bookingDate)}</p>
@@ -524,7 +501,7 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
       {/*---------------------------------- Pagination-------------------------------------- */}
 
 
-      <nav className="d-flex align-items-center justify-content-center mt-2">
+      {/* <nav className="d-flex align-items-center justify-content-center mt-2">
         <ul className="pagination">
           <li className="page-item">
             <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className="page-link">
@@ -554,7 +531,7 @@ function CompanyListAdmin({ companies, onCompanyClick }) {
             </button>
           </li>
         </ul>
-      </nav>
+      </nav> */}
     </div>
   );
 }

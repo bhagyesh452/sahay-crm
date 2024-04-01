@@ -51,7 +51,7 @@ function EmployeePanel() {
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
   const [sortStatus, setSortStatus] = useState("");
-  const [maturedID, setMaturedID] = useState("");
+    const [maturedID, setMaturedID] = useState("");
   const [currentForm, setCurrentForm] = useState(null);
   const [projectionData, setProjectionData] = useState([]);
   const [openLogin, setOpenLogin] = useState(false);
@@ -271,7 +271,7 @@ function EmployeePanel() {
   const functionopenAnchor = () => {
     setTimeout(() => {
       setOpenAnchor(true);
-    }, 500);
+    }, 1000);
   
   };
 
@@ -1111,9 +1111,8 @@ function EmployeePanel() {
       console.log(maturedID);
       const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
       const data = response.data.find(obj=>obj.company === maturedID);
+      console.log(data)
       setCurrentForm(data);
-      
-      
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -1613,6 +1612,52 @@ useEffect(() => {
     const [day, month, year] = dateString.split('/');
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   };
+  const handleRequestDelete = async (companyId, companyName) => {
+    const confirmDelete = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You are about to send a delete request. Are you sure you want to proceed?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, proceed!',
+      cancelButtonText: 'No, cancel',
+    });
+  
+    if (confirmDelete.isConfirmed) {
+      try {
+        const sendingData = {
+          companyName,
+          companyId,
+          time: new Date().toLocaleTimeString(),
+          date: new Date().toLocaleDateString(),
+          ename: data.ename, // Replace 'Your Ename Value' with the actual value
+        };
+    
+        const response = await fetch(`${secretKey}/deleterequestbybde`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(sendingData),
+        });
+    
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        Swal.fire({ title: 'Delete Request Sent', icon: 'success' });
+        const responseData = await response.json();
+        console.log(responseData.message); // Log the response message
+      } catch (error) {
+        Swal.fire({ title: 'Failed to send Request', icon: 'error' });
+        console.error('Error creating delete request:', error);
+        // Handle the error as per your application's requirements
+      }
+    } else {
+      console.log('No, cancel');
+    }
+  };
+  
 
   return (
     <div>
@@ -2264,7 +2309,7 @@ useEffect(() => {
                           setEmployeeData(
                             moreEmpData
                               .filter(obj => obj.Status === 'Matured')
-                              .sort((a, b) => new Date(formatDatePro(b.lastActionDate)) - new Date(formatDatePro(a.lastActionDate)))
+                              .sort((a, b) => new Date((b.lastActionDate)) - new Date((a.lastActionDate)))
                           );
                         }}
                         className={
@@ -2742,12 +2787,30 @@ useEffect(() => {
                                 )}
                                 {dataStatus==="Matured" && <>
                                 <td>
-                                  <div onClick={()=>{
+                                  <div className="d-flex">
+                                  <div style={{marginRight:'5px'}} onClick={()=>{
                                     setMaturedID(company._id)
                                     functionopenAnchor()
-                                  }} style={{cursor:'pointer'}}>
-                                  <IconEye/>
+                                  }} >
+                                  <IconEye style={{
+                                    width: "14px",
+                                    height: "14px",
+                                    color: "#d6a10c",
+                                  }}/>
                                   </div>
+                                  <div onClick={()=>{
+                                      handleRequestDelete(company._id , company["Company Name"])
+                                  }} >
+                                    <DeleteIcon  style={{
+                              cursor: "pointer",
+                              color: "#f70000",
+                              width: "14px",
+                              height:'14px'
+                            }}/>
+                                  </div>
+                                  </div>
+                                 
+
                                  
                                 </td>
                                 </>}

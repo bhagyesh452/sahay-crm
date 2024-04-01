@@ -48,11 +48,17 @@ function BookingsAdmin() {
   const fetchReData = async () => {
     try {
       const response = await fetch(`${secretKey}/redesigned-final-leadData`);
-      setReData(response.data);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const reData = await response.json();
+      console.log('Fetched ReData:', reData);
+      setReData(reData);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
+  
 
   useEffect(() => {
     fetchReData();
@@ -139,7 +145,7 @@ function BookingsAdmin() {
                             <div className="col-sm-12"></div>
                             <div className="col-sm-4">
                                 <CompanyListAdmin
-                                    companies={companies} // Use the correct array
+                                    companies={redata} // Use the correct array
                                     onCompanyClick={handleCompanyClick}
                                     selectedBookingDate={formattedDates}
                                     bookingTime={bookingTime}

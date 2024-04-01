@@ -2890,6 +2890,7 @@ app.post(
                 bookingDate: newData.bookingDate || existingData.bookingDate,
                 bookingSource:
                   newData.bookingSource || existingData.bookingSource,
+                otherBookingSource:newData.otherBookingSource || existingData.otherBookingSource,
                 Step2Status: true,
               },
             },
@@ -3582,6 +3583,21 @@ app.get("/api/redesigned-final-leadData", async (req, res) => {
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).send("Error fetching data");
+  }
+});
+app.delete('/api/redesigned-delete-booking/:companyId', async (req, res) => {
+  try {
+    const companyId = req.params.companyId;
+    // Find and delete the booking with the given companyId
+    const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({ company: companyId });
+    const deleteMainBooking = await CompanyModel.findByIdAndDelete({_id : companyId});
+    if (!deletedBooking) {
+      return res.status(404).send('Booking not found');
+    }
+    res.status(200).send('Booking deleted successfully');
+  } catch (error) {
+    console.error('Error deleting booking:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 // Backend: API endpoint for deleting a draft
@@ -4458,7 +4474,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
             <tbody>
               <tr>
                 <td>Total Payment</td>
-                <td>Received Paymnet</td>
+                <td>Advanced Payment</td>
                 <td>Pending payment</td>
                 <td>Remarks</td>
               </tr>

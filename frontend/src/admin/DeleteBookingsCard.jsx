@@ -29,18 +29,30 @@ function DeleteBookingsCard({
   const handleDelete = async () => {
     // Assuming you have an API endpoint for deleting a company
     try {
-      const response = await axios.delete(
-        `${secretKey}/company-delete/${companyId}`
-      );
-      if (response.status === 200) {
-        await axios.delete(`${secretKey}/deleterequestbybde/${companyName}`);
+      const response = await fetch(`${secretKey}/redesigned-delete-booking/${companyId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
-      console.log("Deleted booking:", response.data);
-      Swal.fire({ title: "Booking Deleted", icon: "success" });
-      // Handle success or update state as needed
+      const response2 = await axios.delete(
+        `${secretKey}/deleterequestbybde/${companyName}`
+      );
+      Swal.fire({
+        title:"Booking Deleted Successfully",
+        icon:'success'
+      })
+     
     } catch (error) {
-      console.error("Error deleting company:", error);
-      Swal.fire({ title: "Failed to Delete booking", icon: "error" });
+      Swal.fire({
+        title:"Error Deleting the booking!",
+        icon:'error'
+      })
+      console.error('Error deleting booking:', error);
+      // Optionally, you can show an error message to the user
     }
   };
 
@@ -96,12 +108,6 @@ function DeleteBookingsCard({
         >
           <React.Fragment>
             <CardContent >
-             {undoOption && <div className="undoButton">
-                <IconButton onClick={redoDelete} style={{float:"right" , backgroundColor:"#fbb900" , color:"white"}}>
-                  <UndoIcon  />
-                </IconButton>
-              </div>}
-
               <Typography
                 style={{ fontSize: "18px" }}
                 variant="h5"

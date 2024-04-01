@@ -72,6 +72,7 @@ export default function RedesignedForm({
     bdmEmail: "",
     bookingDate: "",
     bookingSource: "",
+    otherBookingSource:"",
     numberOfServices: totalServices,
     services: [],
     caCase: false,
@@ -561,6 +562,7 @@ console.log(completed , "this is completed")
             bdmEmail: leadData.bdmEmail,
             bookingDate: leadData.bookingDate,
             bookingSource: selectedValues,
+            otherBookingSource:leadData.otherBookingSource
           };
           console.log("This is sending", dataToSend);
           try {
@@ -1943,6 +1945,13 @@ console.log(completed , "this is completed")
                                           className="form-control mt-1"
                                           placeholder="Enter Other Lead Source"
                                           id="OtherLeadSource"
+                                          value={leadData.otherBookingSource}
+                                          onChange={(e) => {
+                                            handleInputChange(
+                                              e.target.value,
+                                              "otherBookingSource"
+                                            );
+                                          }}
                                         />
                                       </div>
                                     </div>
@@ -2597,7 +2606,7 @@ console.log(completed , "this is completed")
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0">
+                                 {leadData.otherBookingSource!=="" && <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
                                         <b>Other Lead Source</b>
@@ -2605,12 +2614,10 @@ console.log(completed , "this is completed")
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData.bookingSource !== ""
-                                          ? leadData.bookingSource
-                                          : "-"}
+                                        {leadData.otherBookingSource}
                                       </div>
                                     </div>
-                                  </div>
+                                  </div>}
                                 </div>
                               </div>
                               <div className="stepThreePreview">
@@ -2731,11 +2738,11 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {Number(obj.secondPayment).toFixed(2)}
+                                            {Number(obj.secondPayment).toFixed(2)} - { isNaN(new Date(obj.secondPaymentRemarks)) ? obj.secondPaymentRemarks : `Payment On ${obj.secondPaymentRemarks}`}
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="row m-0">
+                                     {obj.thirdPayment!==0 && <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
                                             <b>Third Payment</b>
@@ -2743,11 +2750,11 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {Number(obj.thirdPayment).toFixed(2)}
+                                            {Number(obj.thirdPayment).toFixed(2)} - {isNaN(new Date(obj.thirdPaymentRemarks)) ? obj.thirdPaymentRemarks : `Payment On ${obj.thirdPaymentRemarks}`}
                                           </div>
                                         </div>
-                                      </div>
-                                      <div className="row m-0">
+                                      </div>}
+                                      {obj.fourthPayment!==0 && <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
                                             <b>Fourth Payment</b>
@@ -2755,10 +2762,10 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {Number(obj.fourthPayment).toFixed(2)}
+                                          {Number(obj.fourthPayment).toFixed(2)} - {isNaN(new Date(obj.fourthPaymentRemarks)) ? obj.fourthPaymentRemarks : `Payment On ${obj.fourthPaymentRemarks}`}
                                           </div>
                                         </div>
-                                      </div></>}
+                                      </div>}</>}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
