@@ -2466,17 +2466,15 @@ app.get('/api/exportdatacsv', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-app.get('/api/exportLeads/:dataType' , async (req , res)=>{
+app.post('/api/exportLeads/' , async (req , res)=>{
   try {
-    const dataType = req.params.dataType;
-    const selectedIds = req.query.selectedRows;
+  const selectedIds = req.body
 
     const leads =   await CompanyModel.find({ 
       _id: { $in: selectedIds }
   }) ;
 
     const csvData = [];
-
     // Push the headers as the first row
     csvData.push([
       "SR. NO",
@@ -2513,11 +2511,8 @@ app.get('/api/exportLeads/:dataType' , async (req , res)=>{
 
     // Use fast-csv to stringify the csvData array
     res.setHeader('Content-Type' , 'text/csv')
-    if(dataType=== "Assigned"){
-      res.setHeader('Content-Disposition' , 'attachment; filename=AssignedData.csv');
-    }else{
-      res.setHeader('Content-Disposition' , 'attachment; filename=UnassignedData.csv');
-    }
+    res.setHeader('Content-Disposition' , 'attachment; filename=UnassignedData.csv');
+    
  
     
     const csvString = csvData.map(row => row.join(',')).join('\n');
