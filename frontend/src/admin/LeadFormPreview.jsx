@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import img from "../static/my-images/image.png";
 
 function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
+
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     function formatDate(inputDate) {
         const date = new Date(inputDate);

@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const compression = require('compression');
-const pdf = require('html-pdf');
+const compression = require("compression");
+const pdf = require("html-pdf");
 // const { Server } = require("socket.io");
 // const http = require("http");
 // const server = http.createServer(app);
@@ -34,8 +34,8 @@ const EmployeeHistory = require("./models/EmployeeHistory");
 const LoginDetails = require("./models/loginDetails");
 const RequestDeleteByBDE = require("./models/Deleterequestbybde");
 const BookingsRequestModel = require("./models/BookingsEdit");
-const json2csv = require('json2csv').parse;
-const fastCsv = require('fast-csv');
+const json2csv = require("json2csv").parse;
+const fastCsv = require("fast-csv");
 const RecentUpdatesModel = require("./models/RecentUpdates");
 const FollowUpModel = require("./models/FollowUp");
 const DraftModel = require("./models/DraftLeadform");
@@ -44,7 +44,6 @@ const LeadModel_2 = require("./models/Leadform_2");
 const RedesignedLeadformModel = require("./models/RedesignedLeadform");
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
-
 
 // const http = require('http');
 // const socketIo = require('socket.io');
@@ -102,14 +101,14 @@ app.post("/api/admin/login-admin", async (req, res) => {
   if (user) {
     // Generate a JWT token
     // console.log("user is appropriate");
-    const adminName = user.admin_name
+    const adminName = user.admin_name;
     const token = jwt.sign({ userId: user._id }, secretKey, {
       expiresIn: "1h",
     });
-    res.json({ token , adminName });
+    res.json({ token, adminName });
   } else {
-    res.status(401).json({ message: "Invalid credentials" });
-  }
+    res.status(401).json({ message: "Invalid credentials" });
+  }
 });
 
 // Login for employee
@@ -131,8 +130,7 @@ app.post("/api/admin/login-admin", async (req, res) => {
 //     });
 //     res.json({ newtoken });
 //     socketIO.emit('Employee-login');
-   
-    
+
 //   } else {
 //     res.status(401).json({ message: "Invalid credentials" });
 //   }
@@ -160,37 +158,39 @@ app.post("/api/employeelogin", async (req, res) => {
       expiresIn: "10h",
     });
     res.json({ newtoken });
-    socketIO.emit('Employee-login');
+    socketIO.emit("Employee-login");
   }
 });
 
-
-
-
-
-
-
-app.put('/api/online-status/:id/:socketID', async (req, res) => {
+app.put("/api/online-status/:id/:socketID", async (req, res) => {
   const { id } = req.params;
-  const { socketID }  = req.params;
-console.log(socketID)
+  const { socketID } = req.params;
+  console.log(socketID);
   try {
-    const admin = await adminModel.findByIdAndUpdate(id, { Active: socketID }, { new: true });
+    const admin = await adminModel.findByIdAndUpdate(
+      id,
+      { Active: socketID },
+      { new: true }
+    );
     res.status(200).json(admin);
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.put('/api/online-status/:id/disconnect', async (req, res) => {
+app.put("/api/online-status/:id/disconnect", async (req, res) => {
   const { id } = req.params;
   const date = new Date().toString();
   try {
-    const admin = await adminModel.findByIdAndUpdate(id, { Active: date }, { new: true });
+    const admin = await adminModel.findByIdAndUpdate(
+      id,
+      { Active: date },
+      { new: true }
+    );
     res.status(200).json(admin);
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 app.post("/api/processingLogin", async (req, res) => {
@@ -283,7 +283,7 @@ app.post("/api/employee-history", async (req, res) => {
     console.error("Error in bulk save:", error.message);
   }
 });
-app.get('/api/employee-history/:companyName', async (req, res) => {
+app.get("/api/employee-history/:companyName", async (req, res) => {
   try {
     // Extract the companyName from the URL parameter
     const { companyName } = req.params;
@@ -295,22 +295,22 @@ app.get('/api/employee-history/:companyName', async (req, res) => {
     res.json(employeeHistory);
   } catch (error) {
     // Handle errors
-    console.error('Error fetching employee history:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching employee history:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.get('/api/specific-company/:companyId', async (req, res) => {
+app.get("/api/specific-company/:companyId", async (req, res) => {
   try {
     const companyId = req.params.companyId;
     // Assuming CompanyModel.findById() is used to find a company by its ID
     const company = await CompanyModel.findById(companyId);
     if (!company) {
-      return res.status(404).json({ error: 'Company not found' });
+      return res.status(404).json({ error: "Company not found" });
     }
     res.json(company);
   } catch (error) {
-    console.error('Error fetching company:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching company:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 app.post("/api/requestCompanyData", async (req, res) => {
@@ -365,7 +365,7 @@ app.post("/api/update-status/:id", async (req, res) => {
   try {
     // Update the status field in the database based on the employee id
     await CompanyModel.findByIdAndUpdate(id, { Status: newStatus });
-    
+
     // Create and save a new document in the RecentUpdatesModel collection
     const newUpdate = new RecentUpdatesModel({
       title: title,
@@ -380,7 +380,6 @@ app.post("/api/update-status/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 app.post("/api/update-remarks/:id", async (req, res) => {
   const { id } = req.params;
@@ -404,10 +403,11 @@ app.delete("/api/delete-remarks-history/:id", async (req, res) => {
   const { id } = req.params;
   try {
     // Update remarks and fetch updated data in a single operation
-  
 
     // Fetch updated data and remarks history
-    const remarksHistory = await RemarksHistory.findByIdAndDelete({ companyId: id });
+    const remarksHistory = await RemarksHistory.findByIdAndDelete({
+      companyId: id,
+    });
 
     res.status(200).json({ updatedCompany, remarksHistory });
   } catch (error) {
@@ -416,18 +416,24 @@ app.delete("/api/delete-remarks-history/:id", async (req, res) => {
   }
 });
 
-app.delete('/api/remarks-delete/:companyId', async (req, res) => {
+app.delete("/api/remarks-delete/:companyId", async (req, res) => {
   const { companyId } = req.params;
-  
+
   try {
     // Find the company by companyId and update the remarks field
-    const updatedCompany = await CompanyModel.findByIdAndUpdate(companyId, { Remarks: "No Remarks Added" }, { new: true });
+    const updatedCompany = await CompanyModel.findByIdAndUpdate(
+      companyId,
+      { Remarks: "No Remarks Added" },
+      { new: true }
+    );
 
     if (!updatedCompany) {
       return res.status(404).json({ message: "Company not found" });
     }
 
-    res.status(200).json({ message: "Remarks deleted successfully", updatedCompany });
+    res
+      .status(200)
+      .json({ message: "Remarks deleted successfully", updatedCompany });
   } catch (error) {
     console.error("Error deleting remarks:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -469,8 +475,10 @@ app.get("/api/leads/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
   try {
     // Fetch data using lean queries to retrieve plain JavaScript objects
-    const data = await CompanyModel.findOne({"Company Name" : companyName}).lean();
-  
+    const data = await CompanyModel.findOne({
+      "Company Name": companyName,
+    }).lean();
+
     res.send(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
@@ -482,33 +490,29 @@ app.get("/api/leads/:companyName", async (req, res) => {
 
 app.get("/api/specific-ename-status/:ename/:status", async (req, res) => {
   const ename = req.params.ename;
-  const status = req.params.status
-  
+  const status = req.params.status;
+
   try {
     // Fetch data using lean queries to retrieve plain JavaScript objects
-    if(status === "complete"){
-       const data = await CompanyModel.find({"ename" : ename}).lean();
-  
-    res.send(data);
-    //console.log("Data" ,data)
+    if (status === "complete") {
+      const data = await CompanyModel.find({ ename: ename }).lean();
 
-    }else{
-      const data = await CompanyModel.find({"ename" : ename ,"Status" : status}).lean();
-  
-    res.send(data);
-    //console.log("Data" ,data)
+      res.send(data);
+      //console.log("Data" ,data)
+    } else {
+      const data = await CompanyModel.find({
+        ename: ename,
+        Status: status,
+      }).lean();
 
+      res.send(data);
+      //console.log("Data" ,data)
     }
-    
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
-
-
 
 app.get("/api/new-leads", async (req, res) => {
   try {
@@ -538,7 +542,10 @@ app.get("/api/leads2", async (req, res) => {
     const end = parseInt(endIndex);
 
     // Fetch data using lean queries to retrieve plain JavaScript objects
-    const data = await CompanyModel.find().skip(start).limit(end - start).lean();
+    const data = await CompanyModel.find()
+      .skip(start)
+      .limit(end - start)
+      .lean();
 
     // Send the data as the API response
     res.send(data);
@@ -547,18 +554,18 @@ app.get("/api/leads2", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-app.get('/api/projection-data', async (req, res) => {
+app.get("/api/projection-data", async (req, res) => {
   try {
     // Fetch all data from the FollowUpModel
     const followUps = await FollowUpModel.find();
-   
+
     //console.log(query)
     // Return the data as JSON response
     res.json(followUps);
   } catch (error) {
     // If there's an error, send a 500 internal server error response
-    console.error('Error fetching FollowUp data:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching FollowUp data:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -567,7 +574,11 @@ app.get("/api/card-leads", async (req, res) => {
     const { dAmount } = req.query; // Get the dAmount parameter from the query
 
     // Fetch data from the database with the specified limit
-    const data = await CompanyModel.find({ ename: { $in: ["Select Employee", "Not Alloted"] } }).limit(parseInt(dAmount)).lean();
+    const data = await CompanyModel.find({
+      ename: { $in: ["Select Employee", "Not Alloted"] },
+    })
+      .limit(parseInt(dAmount))
+      .lean();
 
     // Send the data as the API response
     res.send(data);
@@ -577,47 +588,44 @@ app.get("/api/card-leads", async (req, res) => {
   }
 });
 
-
-app.get('/api/projection-data/:ename', async (req, res) => {
+app.get("/api/projection-data/:ename", async (req, res) => {
   try {
     const ename = req.params.ename;
     // Fetch data from the FollowUpModel based on the employeeName if provided
-    const followUps = await FollowUpModel.find({ename : ename});
+    const followUps = await FollowUpModel.find({ ename: ename });
     // Return the data as JSON response
     res.json(followUps);
   } catch (error) {
     // If there's an error, send a 500 internal server error response
-    console.error('Error fetching FollowUp data:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching FollowUp data:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // ----------------------------------api to delete projection data-----------------------------------
 
-app.delete('/api/delete-followup/:companyName', async (req, res) => {
+app.delete("/api/delete-followup/:companyName", async (req, res) => {
   try {
     // Extract the company name from the request parameters
     const { companyName } = req.params;
-    
+
     // Check if a document with the given company name exists
     const existingData = await FollowUpModel.findOne({ companyName });
 
     if (existingData) {
       // If the document exists, delete it
       await FollowUpModel.findOneAndDelete({ companyName });
-      res.status(200).json({ message: 'Data deleted successfully' });
+      res.status(200).json({ message: "Data deleted successfully" });
     } else {
       // If no document with the given company name exists, return a 404 Not Found response
-      res.status(404).json({ error: 'Company not found' });
+      res.status(404).json({ error: "Company not found" });
     }
   } catch (error) {
     // If there's an error during the deletion process, send a 500 Internal Server Error response
-    console.error('Error deleting data:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error deleting data:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
 
 // Backend API to update or add data to FollowUpModel
 // app.post('/api/update-followup', async (req, res) => {
@@ -627,10 +635,10 @@ app.delete('/api/delete-followup/:companyName', async (req, res) => {
 //     const time = todayDate.toLocaleTimeString();
 //     const date = todayDate.toLocaleDateString();
 //     const finalData = { ...req.body, date, time };
-   
+
 //     // Check if a document with companyName exists
 //     const existingData = await FollowUpModel.findOne({ companyName });
-    
+
 //     if (existingData) {
 //       // Update existing document
 //       await FollowUpModel.findOneAndUpdate({ companyName }, finalData);
@@ -648,44 +656,46 @@ app.delete('/api/delete-followup/:companyName', async (req, res) => {
 
 function formatDate(timestamp) {
   const date = new Date(timestamp);
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // January is 0
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 }
 
-app.post('/api/update-followup', async (req, res) => {
+app.post("/api/update-followup", async (req, res) => {
   try {
     const { companyName } = req.body;
     const todayDate = new Date();
     const time = todayDate.toLocaleTimeString();
     const date = todayDate.toLocaleDateString();
     const finalData = { ...req.body, date, time };
-   
+
     // Check if a document with companyName exists
     const existingData = await FollowUpModel.findOne({ companyName });
-    
+
     if (existingData) {
       // Update existing document
       const previousData = { ...existingData.toObject() };
       //console.log(previousData)
-      existingData.history.push({ modifiedAt: formatDate(Date.now()), data: previousData });
-      console.log(existingData)
+      existingData.history.push({
+        modifiedAt: formatDate(Date.now()),
+        data: previousData,
+      });
+      console.log(existingData);
       existingData.set(finalData);
       await existingData.save();
-      res.status(200).json({ message: 'Data updated successfully' });
+      res.status(200).json({ message: "Data updated successfully" });
     } else {
       // Create new document
       const newData = new FollowUpModel(finalData);
       await newData.save();
-      res.status(201).json({ message: 'New data added successfully' });
+      res.status(201).json({ message: "New data added successfully" });
     }
   } catch (error) {
-    console.error('Error updating or adding data:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error updating or adding data:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 app.get("/api/requestCompanyData", async (req, res) => {
   try {
@@ -806,11 +816,13 @@ app.put("/api/leads/:id", async (req, res) => {
   //req.body["Company Incorporation Date  "] = new Date(req.body["Company Incorporation Date  "]);
 
   try {
-    req.body["Company Incorporation Date  "] = new Date(req.body["Company Incorporation Date "]);
+    req.body["Company Incorporation Date  "] = new Date(
+      req.body["Company Incorporation Date "]
+    );
     const updatedData = await CompanyModel.findByIdAndUpdate(id, req.body, {
       new: true,
     });
-    console.log(updatedData)
+    console.log(updatedData);
 
     if (!updatedData) {
       return res.status(404).json({ error: "Data not found" });
@@ -883,7 +895,6 @@ app.get("/api/recent-updates", async (req, res) => {
   }
 });
 
-
 app.delete("/api/delete-data/:ename", async (req, res) => {
   const { ename } = req.params;
 
@@ -914,7 +925,7 @@ app.post("/api/assign-new", async (req, res) => {
     await CompanyModel.updateOne({ _id: data._id }, updatedObj);
 
     // Delete objects from RemarksHistory collection that match the "Company Name"
-    await RemarksHistory.deleteMany({ companyID : data._id });
+    await RemarksHistory.deleteMany({ companyID: data._id });
 
     res.status(200).json({ message: "Data updated successfully" });
   } catch (error) {
@@ -922,7 +933,6 @@ app.post("/api/assign-new", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
 
 app.post("/api/company", async (req, res) => {
   const { newemployeeSelection, csvdata } = req.body;
@@ -1069,7 +1079,7 @@ app.post("/api/requestData", async (req, res) => {
       ename: name,
       cTime: cTime,
       cDate: cDate,
-      AssignRead:false
+      AssignRead: false,
     });
 
     // Save the data to MongoDB
@@ -1084,7 +1094,7 @@ app.post("/api/requestData", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.post('/api/setMarktrue/:id', async (req, res) => {
+app.post("/api/setMarktrue/:id", async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -1096,11 +1106,13 @@ app.post('/api/setMarktrue/:id', async (req, res) => {
     );
     // Optionally, you can send the updated object back in the response
     res.json(updatedObject);
-    socketIO.emit('request-seen');
+    socketIO.emit("request-seen");
   } catch (error) {
     // Handle any errors that occur during the update operation
-    console.error('Error updating object:', error);
-    res.status(500).json({ error: 'An error occurred while updating the object.' });
+    console.error("Error updating object:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while updating the object." });
   }
 });
 app.post("/api/requestgData", async (req, res) => {
@@ -1196,14 +1208,14 @@ app.put("/api/requestgData/:id", async (req, res) => {
   }
 });
 
-app.get('/api/edata-particular/:ename', async (req, res) => {
+app.get("/api/edata-particular/:ename", async (req, res) => {
   try {
     const { ename } = req.params;
-    const filteredEmployeeData = await CompanyModel.find({ ename }); 
+    const filteredEmployeeData = await CompanyModel.find({ ename });
     res.json(filteredEmployeeData);
   } catch (error) {
-    console.error('Error fetching employee data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching employee data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -1328,7 +1340,6 @@ app.post(
       const bdeName = empName;
       const bdeEmail = empEmail;
 
-   
       const otherDocs =
         req.files["otherDocs"] && req.files["otherDocs"].length > 0
           ? req.files["otherDocs"].map((file) => file.filename)
@@ -1362,7 +1373,7 @@ app.post(
         originalTotalPayment,
         totalPayment,
         paymentTerms,
-        paymentMethod : paymentMethod[0],
+        paymentMethod: paymentMethod[0],
         firstPayment,
         secondPayment,
         thirdPayment,
@@ -1783,12 +1794,11 @@ app.post(
         empName,
         empEmail,
         bookingTime,
-        otherDocs ,
-        paymentReceipt
+        otherDocs,
+        paymentReceipt,
       } = req.body;
       const bdeName = empName;
       const bdeEmail = empEmail;
-
 
       const employee = new BookingsRequestModel({
         bdeName,
@@ -1809,7 +1819,7 @@ app.post(
         originalTotalPayment,
         totalPayment,
         paymentTerms,
-        paymentMethod : paymentMethod[0],
+        paymentMethod: paymentMethod[0],
         firstPayment,
         secondPayment,
         thirdPayment,
@@ -1841,7 +1851,7 @@ app.post(
 );
 
 // --------------------api for importing excel data on processing dashboard----------------------------
-app.get('/api/booking-model-filter', async (req, res) => {
+app.get("/api/booking-model-filter", async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
 
@@ -1850,7 +1860,9 @@ app.get('/api/booking-model-filter', async (req, res) => {
     const formattedEndDate = new Date(endDate);
 
     // Convert the start date to match the format of the bookingDate field
-    const formattedBookingStartDate = formattedStartDate.toISOString().split('T')[0];
+    const formattedBookingStartDate = formattedStartDate
+      .toISOString()
+      .split("T")[0];
 
     // Define the filter criteria based on the date range
     let filterCriteria = {};
@@ -1862,8 +1874,8 @@ app.get('/api/booking-model-filter', async (req, res) => {
       filterCriteria = {
         bookingDate: {
           $gte: formattedBookingStartDate,
-          $lte: formattedEndDate.toISOString().split('T')[0]
-        }
+          $lte: formattedEndDate.toISOString().split("T")[0],
+        },
       };
     }
 
@@ -1872,12 +1884,10 @@ app.get('/api/booking-model-filter', async (req, res) => {
 
     res.json({ leads });
   } catch (error) {
-    console.error('Error fetching leads:', error.message);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching leads:", error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
 
 app.post("/api/upload/lead-form", async (req, res) => {
   let successCounter = 0;
@@ -1885,7 +1895,6 @@ app.post("/api/upload/lead-form", async (req, res) => {
 
   try {
     const excelData = req.body; // Assuming req.body is an array of objects
-
 
     for (const data of excelData) {
       try {
@@ -1960,17 +1969,24 @@ app.post("/api/upload/lead-form", async (req, res) => {
         // Save the employee data to the database
         await employee.save();
 
-        socketIO.emit('importcsv' , employee)
+        socketIO.emit("importcsv", employee);
         // console.log(excelData)
         // Increment the success counter
         successCounter++;
       } catch (error) {
         // If an error occurs during data insertion, check if it's due to duplicate companyName
-        if (error.code === 11000 && error.keyPattern && error.keyPattern.companyName) {
+        if (
+          error.code === 11000 &&
+          error.keyPattern &&
+          error.keyPattern.companyName
+        ) {
           // Duplicate companyName detected, save the data to LeadModel_2
           try {
             await LeadModel_2.create(data);
-            console.log("Data saved to LeadModel_2 due to duplicate companyName:", data);
+            console.log(
+              "Data saved to LeadModel_2 due to duplicate companyName:",
+              data
+            );
             successCounter++; // Increment success counter as data was successfully saved to LeadModel_2
           } catch (err) {
             // Error saving to LeadModel_2
@@ -1986,7 +2002,13 @@ app.post("/api/upload/lead-form", async (req, res) => {
     }
 
     // Respond with success and error counters
-    res.status(200).json({ message: "Data sent successfully", successCounter, errorCounter });
+    res
+      .status(200)
+      .json({
+        message: "Data sent successfully",
+        successCounter,
+        errorCounter,
+      });
   } catch (error) {
     // If an error occurs at the outer try-catch block, handle it here
     console.error("Error saving employees:", error.message);
@@ -1994,7 +2016,7 @@ app.post("/api/upload/lead-form", async (req, res) => {
   }
 });
 
-app.post('/api/accept-booking-request/:companyName', async (req, res) => {
+app.post("/api/accept-booking-request/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
   const requestData = req.body;
 
@@ -2017,11 +2039,11 @@ app.post('/api/accept-booking-request/:companyName', async (req, res) => {
     // Send success response with the updated lead data
     res.status(200).json(updatedLead);
   } catch (error) {
-    console.error('Error accepting booking request:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error accepting booking request:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
-app.get('/api/drafts-search/:companyName', async (req, res) => {
+app.get("/api/drafts-search/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
 
   try {
@@ -2031,8 +2053,8 @@ app.get('/api/drafts-search/:companyName', async (req, res) => {
     // Send the draft data as response
     res.status(200).json(draft);
   } catch (error) {
-    console.error('Error fetching draft:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error fetching draft:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -2044,11 +2066,11 @@ app.get("/api/companies", async (req, res) => {
     const companies = await LeadModel.find();
     // Count the total number of companies
     const totalCompanies = companies.length;
-    
+
     // Construct response JSON with company names and count
     const response = {
       totalCompanies: totalCompanies,
-      companies: companies
+      companies: companies,
     };
 
     res.json(response);
@@ -2106,7 +2128,6 @@ app.get("/api/duplicate-company/:companyName", async (req, res) => {
   }
 });
 
-
 app.delete("/api/reverse-delete/:companyName", async (req, res) => {
   try {
     const { companyName } = req.params;
@@ -2139,12 +2160,9 @@ app.delete("/api/company-delete/:id", async (req, res) => {
       // Find the same company name in the CompanyModel and update its Status to "Untouched"
       const companyName = deletedCompany.companyName;
 
-      await CompanyModel.findOneAndDelete(
-        { "Company Name": companyName },
-       
-      );
+      await CompanyModel.findOneAndDelete({ "Company Name": companyName });
 
-      socketIO.emit('companydeleted')
+      socketIO.emit("companydeleted");
 
       res.status(200).json({ message: "Company Deleted Successfully" });
     } else {
@@ -2169,7 +2187,7 @@ app.post("/api/deleterequestbybde", async (req, res) => {
       request,
       ename,
     });
-    socketIO.emit('DeleteRequest');
+    socketIO.emit("DeleteRequest");
     // Save the delete request to the database
     await deleteRequest.save();
 
@@ -2249,20 +2267,23 @@ app.get("/api/loginDetails", (req, res) => {
 
 // ------------------------------------pdf files reader-------------------------------------
 
-app.get('/api/pdf/:filename', (req, res) => {
+app.get("/api/pdf/:filename", (req, res) => {
   const filepath = req.params.filename;
-  const pdfPath = path.join(__dirname, 'ExtraDocs' , filepath);
+  const pdfPath = path.join(__dirname, "ExtraDocs", filepath);
 
   // Read the PDF file
   fs.readFile(pdfPath, (err, data) => {
     if (err) {
-      console.error('Error reading PDF file:', err);
-      res.status(500).send('Internal Server Error');
+      console.error("Error reading PDF file:", err);
+      res.status(500).send("Internal Server Error");
     } else {
       // Set the response headers
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'inline; filename=example.pdf');
-      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", "inline; filename=example.pdf");
+      res.setHeader(
+        "Cache-Control",
+        "no-store, no-cache, must-revalidate, private"
+      );
 
       // Send the PDF file data
       res.sendFile(pdfPath);
@@ -2270,26 +2291,28 @@ app.get('/api/pdf/:filename', (req, res) => {
   });
 });
 
-app.get('/api/paymentrecieptpdf/:filename', (req, res) => {
+app.get("/api/paymentrecieptpdf/:filename", (req, res) => {
   const filepath = req.params.filename;
-  const pdfPath = path.join(__dirname, 'PaymentReceipts' , filepath);
-  console.log(pdfPath)
+  const pdfPath = path.join(__dirname, "PaymentReceipts", filepath);
+  console.log(pdfPath);
   // Read the PDF file
   fs.readFile(pdfPath, (err, data) => {
-    if (err) { 
-      console.error('Error reading PDF file:', err);
-      res.status(500).send('Internal Server Error');
+    if (err) {
+      console.error("Error reading PDF file:", err);
+      res.status(500).send("Internal Server Error");
     } else {
       // Set the response headers
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'inline; filename=example.pdf');
-      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", "inline; filename=example.pdf");
+      res.setHeader(
+        "Cache-Control",
+        "no-store, no-cache, must-revalidate, private"
+      );
       // Send the PDF file data
       res.sendFile(pdfPath);
     }
   });
 });
-
 
 app.get("/api/recieptpdf/:filename", (req, res) => {
   const filepath = req.params.filename;
@@ -2330,13 +2353,11 @@ app.get("/download/recieptpdf/:fileName", (req, res) => {
   res.setHeader("Content-Disposition", attachment, (fileName = `${fileName}`));
   res.setHeader("Content-Type", "application/pdf");
   res.sendFile(filePath);
-  }
-);
+});
 
 // ---------------------------to update the read status of companies-------------------------------------
 
-
-app.put('/api/read/:companyName', async (req, res) => {
+app.put("/api/read/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
   // console.log(companyName)
   try {
@@ -2351,20 +2372,19 @@ app.put('/api/read/:companyName', async (req, res) => {
       await companyDetails.save();
       socketIO.emit("read", companyDetails);
       res.json(companyDetails); // Send the updated company as the response
-
     } else {
       // If company is not found, return a 404 error
-      res.status(404).json({ error: 'Company not found' });
+      res.status(404).json({ error: "Company not found" });
     }
   } catch (error) {
-    console.error('Error updating company:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error updating company:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 // ----------------------------api to download csv from processing dashboard--------------------------
 
-app.get('/api/exportdatacsv', async (req, res) => {
+app.get("/api/exportdatacsv", async (req, res) => {
   try {
     const leads = await LeadModel.find({});
     const csvData = [];
@@ -2402,16 +2422,15 @@ app.get('/api/exportdatacsv', async (req, res) => {
       "INCORPORATION DATE",
       "EXTRA NOTES IF ANY",
       "OTHER DOCS",
-      "BOOKING TIME"
+      "BOOKING TIME",
     ]);
-
 
     const baseDocumentURL = "https://startupsahay.in/api/recieptpdf/";
     const DocumentURL = "https://startupsahay.in/api/otherpdf/";
-    
+
     // Push each lead as a row into the csvData array
     leads.forEach((lead, index) => {
-      const otherDocsUrls = lead.otherDocs.map(doc => `${DocumentURL}${doc}`);
+      const otherDocsUrls = lead.otherDocs.map((doc) => `${DocumentURL}${doc}`);
       const rowData = [
         index + 1,
         lead.bdeName,
@@ -2428,7 +2447,7 @@ app.get('/api/exportdatacsv', async (req, res) => {
         lead.companyName,
         lead.contactNumber,
         lead.companyEmail,
-        `"${lead.services.join(',')}"`, 
+        `"${lead.services.join(",")}"`,
         lead.originalTotalPayment,
         lead.totalPayment,
         lead.paymentTerms,
@@ -2438,41 +2457,40 @@ app.get('/api/exportdatacsv', async (req, res) => {
         lead.thirdPayment,
         lead.fourthPayment,
         lead.paymentRemarks,
-        lead.paymentReceipt ? `${baseDocumentURL}${lead.paymentReceipt}` : '',            // ? baseDocumentURL + lead.paymentReceipt : '',  Concatenate base URL with document name
+        lead.paymentReceipt ? `${baseDocumentURL}${lead.paymentReceipt}` : "", // ? baseDocumentURL + lead.paymentReceipt : '',  Concatenate base URL with document name
         lead.bookingSource,
         lead.cPANorGSTnum,
         lead.incoDate,
         lead.extraNotes,
-        `"${otherDocsUrls.join(',')}"`, // Assuming otherDocs is an array
-        lead.bookingTime
+        `"${otherDocsUrls.join(",")}"`, // Assuming otherDocs is an array
+        lead.bookingTime,
       ];
       csvData.push(rowData);
       // console.log("rowData:" , rowData)
     });
 
     // Use fast-csv to stringify the csvData array
-    res.setHeader('Content-Type' , 'text/csv')
-    res.setHeader('Content-Disposition' , 'attachment; filename=leads.csv')
-    
-    const csvString = csvData.map(row => row.join(',')).join('\n');
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", "attachment; filename=leads.csv");
+
+    const csvString = csvData.map((row) => row.join(",")).join("\n");
     // Send response with CSV data
     // Send response with CSV data
     res.status(200).end(csvString);
     // console.log(csvString)
-     // Here you're ending the response
-
+    // Here you're ending the response
   } catch (err) {
     console.error(err);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send("Internal Server Error");
   }
 });
-app.post('/api/exportLeads/' , async (req , res)=>{
+app.post("/api/exportLeads/", async (req, res) => {
   try {
-  const selectedIds = req.body
+    const selectedIds = req.body;
 
-    const leads =   await CompanyModel.find({ 
-      _id: { $in: selectedIds }
-  }) ;
+    const leads = await CompanyModel.find({
+      _id: { $in: selectedIds },
+    });
 
     const csvData = [];
     // Push the headers as the first row
@@ -2485,9 +2503,9 @@ app.post('/api/exportLeads/' , async (req , res)=>{
       "City",
       "State",
       "ename",
-      "AssignDate", 
+      "AssignDate",
       "Status",
-      "Remarks"
+      "Remarks",
     ]);
 
     // Push each lead as a row into the csvData array
@@ -2502,7 +2520,7 @@ app.post('/api/exportLeads/' , async (req , res)=>{
         lead["State"],
         lead["ename"],
         lead["AssignDate"],
-        lead['Status'],
+        lead["Status"],
         lead["Remarks"],
       ];
       csvData.push(rowData);
@@ -2510,37 +2528,39 @@ app.post('/api/exportLeads/' , async (req , res)=>{
     });
 
     // Use fast-csv to stringify the csvData array
-    res.setHeader('Content-Type' , 'text/csv')
-    res.setHeader('Content-Disposition' , 'attachment; filename=UnassignedData.csv');
-    
- 
-    
-    const csvString = csvData.map(row => row.join(',')).join('\n');
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=UnassignedData.csv"
+    );
+
+    const csvString = csvData.map((row) => row.join(",")).join("\n");
     // Send response with CSV data
     // Send response with CSV data
     res.status(200).end(csvString);
     // console.log(csvString)
-     // Here you're ending the response
-
+    // Here you're ending the response
   } catch (err) {
     console.error(err);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send("Internal Server Error");
   }
-  
-})
+});
 
 // ------------------------------api to upload docs from processing window------------------------------
 
-app.post('/api/uploadAttachment/:companyName', upload.fields([
-  { name: "otherDocs", maxCount: 50 },
-  { name: "paymentReceipt", maxCount: 1 },
-]), async (req, res) => {
-  try {
+app.post(
+  "/api/uploadAttachment/:companyName",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
       const companyName = req.params.companyName;
 
       // Check if company name is provided
       if (!companyName) {
-          return res.status(404).send("Company name not provided");
+        return res.status(404).send("Company name not provided");
       }
 
       // Find the company by its name
@@ -2548,42 +2568,46 @@ app.post('/api/uploadAttachment/:companyName', upload.fields([
       // console.log(company)
       // Check if company exists
       if (!company) {
-          return res.status(404).send("Company not found");
+        return res.status(404).send("Company not found");
       }
 
       // const paymentDoc = req.files["paymentReceipt"];
 
       // Update the payment receipt field of the company document
       const paymentReceipt = req.files["paymentReceipt"]
-          ? req.files["paymentReceipt"][0].filename
-          : null;
+        ? req.files["paymentReceipt"][0].filename
+        : null;
       // console.log(paymentReceipt)
       // console.log(req.files)
 
       // Update the payment receipt field in the company document
       company.paymentReceipt = paymentReceipt;
-      
+
       await company.save();
 
-      socketIO.emit("viewpaymenteciept" , company)
+      socketIO.emit("viewpaymenteciept", company);
 
-      res.status(200).send('Payment receipt updated successfully!');
-  } catch (error) {
-      console.error('Error updating payment receipt:', error);
-      res.status(500).send('Error updating payment receipt.');
+      res.status(200).send("Payment receipt updated successfully!");
+    } catch (error) {
+      console.error("Error updating payment receipt:", error);
+      res.status(500).send("Error updating payment receipt.");
+    }
   }
-});
+);
 
-app.post('/api/uploadotherdocsAttachment/:companyName', upload.fields([
-  { name: "otherDocs", maxCount: 50 },
-  { name: "paymentReceipt", maxCount: 1 },
-]), async (req, res) => {
-  try {
+app.post(
+  "/api/uploadotherdocsAttachment/:companyName",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
       const companyName = req.params.companyName;
 
       // Check if company name is provided
       if (!companyName) {
-          return res.status(404).send("Company name not provided");
+        return res.status(404).send("Company name not provided");
       }
 
       // Find the company by its name
@@ -2591,41 +2615,46 @@ app.post('/api/uploadotherdocsAttachment/:companyName', upload.fields([
       // console.log(company)
       // Check if company exists
       if (!company) {
-          return res.status(404).send("Company not found");
+        return res.status(404).send("Company not found");
       }
 
       // const paymentDoc = req.files["paymentReceipt"];
 
       // Update the payment receipt field of the company document
       const newOtherDocs =
-      req.files["otherDocs"] && req.files["otherDocs"].length > 0
-        ? req.files["otherDocs"].map((file) => file.filename)
-        : [];
+        req.files["otherDocs"] && req.files["otherDocs"].length > 0
+          ? req.files["otherDocs"].map((file) => file.filename)
+          : [];
 
-    // Append new filenames to the existing otherDocs array
-    company.otherDocs = company.otherDocs.concat(newOtherDocs);
+      // Append new filenames to the existing otherDocs array
+      company.otherDocs = company.otherDocs.concat(newOtherDocs);
 
-      
       await company.save();
 
-      socketIO.emit("veiwotherdocs" , company)
+      socketIO.emit("veiwotherdocs", company);
 
-      res.status(200).send('Documents uploaded updated successfully!');
-  } catch (error) {
-      console.error('Error updating payment receipt:', error);
-      res.status(500).send('Error updating payment receipt.');
+      res.status(200).send("Documents uploaded updated successfully!");
+    } catch (error) {
+      console.error("Error updating payment receipt:", error);
+      res.status(500).send("Error updating payment receipt.");
+    }
   }
-});
+);
 
-app.post('/api/redesigned-leadform', async (req, res) => {
+app.post("/api/redesigned-leadform", async (req, res) => {
   try {
     const newData = req.body; // Assuming the request body contains the data to be saved
 
     // Find the related company based on companyName
-    const companyData = await CompanyModel.findOne({ 'Company Name': newData["Company Name"], 'Status': 'Matured' });
+    const companyData = await CompanyModel.findOne({
+      "Company Name": newData["Company Name"],
+      Status: "Matured",
+    });
 
     if (!companyData) {
-      return res.status(404).json({ message: 'Company not found or status is not "Matured"' });
+      return res
+        .status(404)
+        .json({ message: 'Company not found or status is not "Matured"' });
     }
 
     // Add company data to the lead form data
@@ -2640,11 +2669,9 @@ app.post('/api/redesigned-leadform', async (req, res) => {
     res.status(201).json(savedLeadForm); // Respond with the saved data
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
-
 
 // Use the googleAuth router for Google OAuth routes
 
@@ -2666,7 +2693,7 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 //   //   console.info('Tokens acquired.');
 //   //   console.log('Access Token:', tokens.access_token);
 //   //   console.log('Refresh Token:', tokens.refresh_token);
-    
+
 //   //   // Get user data using the access token
 //   //   await getUserData(tokens.access_token);
 //   // } catch (err) {
@@ -2681,7 +2708,7 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 //   callbackURL: '/auth/google/callback',
 //   scope: ["profile", "email"],
-//   accessType: 'offline', 
+//   accessType: 'offline',
 // },
 // async (accessToken, refreshToken, profile, done) => {
 //   console.log('accessToken:', accessToken);
@@ -2715,9 +2742,9 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 // });
 
 // app.get('/auth/google',
-//   passport.authenticate('google', { 
+//   passport.authenticate('google', {
 //     scope: ['profile', 'email', 'offline_access'], // Include 'offline_access' scope
-//     prompt: 'consent' 
+//     prompt: 'consent'
 //   }));
 
 // // Google OAuth callback route
@@ -2755,7 +2782,6 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 //   });
 // }
 
-
 // // Send email route
 // app.post('/api/send-email', (req, res) => {
 //   // Authenticate user based on session or request data
@@ -2780,198 +2806,236 @@ app.post('/api/redesigned-leadform', async (req, res) => {
 //   });
 // });
 
-
 // ---------------------------------------------------- New Booking Form  ---------------------------------------------------------------
 
-app.get('/api/redesigned-leadData/:CompanyName', async (req, res) => {
+app.get("/api/redesigned-leadData/:CompanyName", async (req, res) => {
   try {
     const CompanyName = req.params.CompanyName;
-    const data = await RedesignedDraftModel.find({"Company Name": CompanyName});
+    const data = await RedesignedDraftModel.find({
+      "Company Name": CompanyName,
+    });
     res.json(data);
   } catch (err) {
-    console.error('Error fetching data:', err);
-    res.status(500).json({ error: 'Error fetching data' });
+    console.error("Error fetching data:", err);
+    res.status(500).json({ error: "Error fetching data" });
   }
 });
 
-app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
-  { name: "otherDocs", maxCount: 50 },
-  { name: "paymentReceipt", maxCount: 2 },
-]), async (req, res) => {
-  try {
-    const companyName = req.params.CompanyName;
-    const newData = req.body;
-    const Step = req.params.step
-    if (Step === "step1") {
-      const existingData = await RedesignedDraftModel.findOne({ "Company Name": companyName });
-    
-      if (existingData) {
-        // Update existing data if found
+app.post(
+  "/api/redesigned-leadData/:CompanyName/:step",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 2 },
+  ]),
+  async (req, res) => {
+    try {
+      const companyName = req.params.CompanyName;
+      const newData = req.body;
+      const Step = req.params.step;
+      if (Step === "step1") {
+        const existingData = await RedesignedDraftModel.findOne({
+          "Company Name": companyName,
+        });
+
+        if (existingData) {
+          // Update existing data if found
+          const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                "Company Email":
+                  newData["Company Email"] || existingData["Company Email"],
+                "Company Name":
+                  newData["Company Name"] || existingData["Company Name"],
+                "Company Number":
+                  newData["Company Number"] || existingData["Company Number"],
+                incoDate: newData.incoDate || existingData.incoDate,
+                panNumber: newData.panNumber || existingData.panNumber,
+                gstNumber: newData.gstNumber || existingData.gstNumber,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        } else {
+          // Create new data if not found
+          const createdData = await RedesignedDraftModel.create({
+            "Company Email": newData["Company Email"],
+            "Company Name": newData["Company Name"],
+            "Company Number": newData["Company Number"],
+            incoDate: newData.incoDate,
+            panNumber: newData.panNumber,
+            gstNumber: newData.gstNumber,
+            Step1Status: true,
+          });
+          res.status(201).json(createdData); // Respond with created data
+          return true;
+        }
+      } else if (Step === "step2") {
+        const existingData = await RedesignedDraftModel.findOne({
+          "Company Name": companyName,
+        });
+
+        if (existingData) {
+          // Update existing data if found
+          const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                bdeName: newData.bdeName || existingData.bdeName,
+                bdeEmail: newData.bdeEmail || existingData.bdeEmail,
+                bdmName: newData.bdmName || existingData.bdmName,
+                bdmEmail: newData.bdmEmail || existingData.bdmEmail,
+                bookingDate: newData.bookingDate || existingData.bookingDate,
+                bookingSource:
+                  newData.bookingSource || existingData.bookingSource,
+                Step2Status: true,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        }
+      } else if (Step === "step3") {
+        const existingData = await RedesignedDraftModel.findOne({
+          "Company Name": companyName,
+        });
+
+        if (existingData) {
+          // Update existing data if found
+          const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                services: newData.services || existingData.services,
+                numberOfServices:
+                  newData.numberOfServices || existingData.numberOfServices,
+                caCase: newData.caCase,
+                caCommission: newData.caCommission,
+                caNumber: newData.caNumber,
+                caEmail: newData.caEmail,
+                totalAmount: newData.totalAmount || existingData.totalAmount,
+                pendingAmount:
+                  newData.pendingAmount || existingData.pendingAmount,
+                receivedAmount:
+                  newData.receivedAmount || existingData.receivedAmount,
+                Step3Status: true,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        }
+      } else if (Step === "step4") {
+        const existingData = await RedesignedDraftModel.findOne({
+          "Company Name": companyName,
+        });
+        newData.otherDocs =
+          req.files["otherDocs"] === undefined
+            ? ""
+            : req.files["otherDocs"].map((file) => file);
+        newData.paymentReceipt =
+          req.files["paymentReceipt"] === undefined
+            ? ""
+            : req.files["paymentReceipt"].map((file) => file);
+        if (existingData) {
+          // Update existing data if found
+          const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                totalAmount: newData.totalAmount || existingData.totalAmount,
+                pendingAmount:
+                  newData.pendingAmount || existingData.pendingAmount,
+                receivedAmount:
+                  newData.receivedAmount || existingData.receivedAmount,
+                paymentReceipt:
+                  newData.paymentReceipt || existingData.paymentReceipt,
+                otherDocs: newData.otherDocs || existingData.otherDocs,
+                paymentMethod: newData.paymentMethod || newData.paymentMethod,
+                extraNotes: newData.extraNotes || newData.extraNotes,
+                Step4Status: true,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        }
+      } else if (Step === "step5") {
         const updatedData = await RedesignedDraftModel.findOneAndUpdate(
           { "Company Name": companyName },
           {
             $set: {
-              "Company Email": newData["Company Email"] || existingData["Company Email"],
-              "Company Name": newData["Company Name"] || existingData["Company Name"],
-              "Company Number": newData["Company Number"] || existingData["Company Number"],
-              incoDate: newData.incoDate || existingData.incoDate,
-              panNumber: newData.panNumber || existingData.panNumber,
-              gstNumber: newData.gstNumber || existingData.gstNumber,
+              Step5Status: true,
             },
           },
           { new: true }
         );
         res.status(200).json(updatedData);
-        return true; // Respond with updated data
+        return true; // R
+      }
+      // Add uploaded files information to newData
+
+      newData.otherDocs =
+        req.files["otherDocs"] === undefined
+          ? ""
+          : req.files["otherDocs"].map((file) => file);
+      newData.paymentReceipt =
+        req.files["paymentReceipt"] === undefined
+          ? ""
+          : req.files["paymentReceipt"].map((file) => file);
+
+      // Search for existing data by Company Name
+      const existingData = await RedesignedDraftModel.findOne({
+        "Company Name": companyName,
+      });
+
+      if (existingData) {
+        // Update existing data if found
+        const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+          { "Company Name": companyName },
+          { $set: newData },
+          { new: true }
+        );
+        res.status(200).json(updatedData); // Respond with updated data
       } else {
         // Create new data if not found
         const createdData = await RedesignedDraftModel.create({
-          "Company Email": newData["Company Email"] ,
-          "Company Name": newData["Company Name"],
-          "Company Number": newData["Company Number"],
-          incoDate: newData.incoDate ,
-          panNumber: newData.panNumber ,
-          gstNumber: newData.gstNumber,
-          Step1Status:true
-        },);
+          ...newData,
+          companyName,
+        });
         res.status(201).json(createdData); // Respond with created data
-        return true;
       }
-    } else if (Step === "step2") {
-      const existingData = await RedesignedDraftModel.findOne({ "Company Name": companyName });
-    
-      if (existingData) {
-        // Update existing data if found
-        const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-          { "Company Name": companyName },
-          {
-            $set: {
-              bdeName: newData.bdeName || existingData.bdeName,
-              bdeEmail: newData.bdeEmail || existingData.bdeEmail,
-              bdmName: newData.bdmName || existingData.bdmName,
-              bdmEmail: newData.bdmEmail || existingData.bdmEmail,
-              bookingDate: newData.bookingDate || existingData.bookingDate,
-              bookingSource: newData.bookingSource || existingData.bookingSource,
-              Step2Status:true
-            }            
-          },
-          { new: true }
-        );
-        res.status(200).json(updatedData);
-        return true; // Respond with updated data
-      } 
-    }else if (Step === "step3") {
-      const existingData = await RedesignedDraftModel.findOne({ "Company Name": companyName });
-    
-      if (existingData) {
-        // Update existing data if found
-        const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-          { "Company Name": companyName },
-          {
-            $set: {
-              services:newData.services || existingData.services,
-              numberOfServices : newData.numberOfServices || existingData.numberOfServices,
-              caCase:newData.caCase,
-              caCommission:newData.caCommission,
-              caNumber:newData.caNumber,
-              caEmail:newData.caEmail,
-              totalAmount: newData.totalAmount || existingData.totalAmount,
-              pendingAmount: newData.pendingAmount || existingData.pendingAmount,
-              receivedAmount: newData.receivedAmount || existingData.receivedAmount,
-              Step3Status:true
-            }            
-          },
-          { new: true }
-        );
-        res.status(200).json(updatedData);
-        return true; // Respond with updated data
-      } 
+    } catch (error) {
+      console.error("Error creating/updating data:", error);
+      res.status(500).send("Error creating/updating data"); // Send an error response
     }
-    else if (Step === "step4") {
-      const existingData = await RedesignedDraftModel.findOne({ "Company Name": companyName });
-      newData.otherDocs = req.files['otherDocs'] === undefined ? "" : req.files['otherDocs'].map(file => file);
-      newData.paymentReceipt = req.files['paymentReceipt'] === undefined ? "" : req.files['paymentReceipt'].map(file => file);
-      if (existingData) {
-        // Update existing data if found
-        const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-          { "Company Name": companyName },
-          {
-            $set: {
-              totalAmount: newData.totalAmount || existingData.totalAmount,
-              pendingAmount: newData.pendingAmount || existingData.pendingAmount,
-              receivedAmount: newData.receivedAmount || existingData.receivedAmount,
-              paymentReceipt: newData.paymentReceipt || existingData.paymentReceipt,
-              otherDocs: newData.otherDocs || existingData.otherDocs,
-              paymentMethod:newData.paymentMethod || newData.paymentMethod,
-              extraNotes:newData.extraNotes || newData.extraNotes,
-              Step4Status:true
-            }            
-          },
-          { new: true }
-        );
-        res.status(200).json(updatedData);
-        return true; // Respond with updated data
-      } 
-    }else if (Step === "step5"){
-      const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-        { "Company Name": companyName },
-        {
-          $set: {
-            Step5Status:true
-          }            
-        },
-        { new: true }
-      );
-      res.status(200).json(updatedData);
-      return true; // R
-    }
-    // Add uploaded files information to newData
-
-    newData.otherDocs = req.files['otherDocs'] === undefined ? "" : req.files['otherDocs'].map(file => file);
-    newData.paymentReceipt = req.files['paymentReceipt'] === undefined ? "" : req.files['paymentReceipt'].map(file => file);
-
-
-    // Search for existing data by Company Name
-    const existingData = await RedesignedDraftModel.findOne({ "Company Name" : companyName });
-
-    if (existingData) {
-      // Update existing data if found
-      const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-        { "Company Name" : companyName },
-        { $set: newData },
-        { new: true }
-      );
-      res.status(200).json(updatedData); // Respond with updated data
-    } else {
-      // Create new data if not found
-      const createdData = await RedesignedDraftModel.create({ ...newData, companyName });
-      res.status(201).json(createdData); // Respond with created data
-    }
-  } catch (error) {
-    console.error('Error creating/updating data:', error);
-    res.status(500).send('Error creating/updating data'); // Send an error response
   }
-});
+);
 
 // app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
 //   try {
- 
+
 //     const newData = req.body;
 //     const createdData = await RedesignedLeadformModel.create(newData);
 
 //     const renderServices = ()=>{
 //       const services = [];
-     
+
 //         for(let i = 0; i < newData.numberOfServices; i++){
 //           services.push(
-            
+
 //           )
 
 //         }
-      
+
 //     }
-//     res.status(201).send("Data sent"); 
-  
+//     res.status(201).send("Data sent");
+
 //      const recipients = [
 //         `${newData.bdmEmail}`,
 //         `${newData.bdeName}`,
@@ -3075,7 +3139,7 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
 //                   </div>
 //                 </div>
 //               </div>
-    
+
 //               <div style="display: flex; flex-wrap: wrap">
 //                 <div style="width: 25%">
 //                   <div style="
@@ -3139,8 +3203,7 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
 //             </div>
 //           </div>
 //           <!--Step One End-->
-    
-    
+
 //           <!--Step Two Start-->
 //           <div style="width: 98%; margin: 10px auto">
 //             <!-- Step's heading -->
@@ -3227,7 +3290,7 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
 //                   </div>
 //                 </div>
 //               </div>
-    
+
 //               <div style="display: flex; flex-wrap: wrap">
 //                 <div style="width: 25%">
 //                   <div style="
@@ -3311,8 +3374,7 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
 //             </div>
 //           </div>
 //           <!-- Step 2 Ends -->
-    
-    
+
 //           <!--Step 3 Start-->
 //           <div style="width: 98%; margin: 10px auto">
 //             <!-- Step's heading -->
@@ -3360,11 +3422,11 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
 //                 </div>
 //               </div>
 //              ${renderServices()}
-             
+
 //             </div>
 //           </div>
 //           <!-- Step 3 Ends -->
-    
+
 //           <!--Step 4 Start-->
 //           <div style="width: 98%; margin: 10px auto">
 //             <!-- Step's heading -->
@@ -3431,7 +3493,7 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
 //                       ₹ 38000
 //                     </div>
 //                   </div>
-    
+
 //                 </div>
 //                 <div style="width: 33%; display: flex;">
 //                   <div style="width: 28%">
@@ -3452,9 +3514,9 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
 //                      ₹ 38000
 //                     </div>
 //                   </div>
-    
+
 //                 </div>
-                
+
 //               </div>
 //               <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
 //                 <div style="width: 25%">
@@ -3496,73 +3558,74 @@ app.post('/api/redesigned-leadData/:CompanyName/:step', upload.fields([
 //                   </div>
 //                 </div>
 //               </div>
-    
-          
-             
+
 //             </div>
 //           </div>
 //           <!-- Step 4 Ends -->
 //         </div>
 //       </div>
-        
 
 //         `,
 //         newData.otherDocs,
 //         newData.paymentReceipt
 //       );
-   
+
 //   } catch (error) {
 //     console.error('Error creating/updating data:', error);
 //     res.status(500).send('Error creating/updating data'); // Send an error response
 //   }
 // });
-app.get('/api/redesigned-final-leadData', async (req, res) => {
+app.get("/api/redesigned-final-leadData", async (req, res) => {
   try {
-    
     const allData = await RedesignedLeadformModel.find();
     res.status(200).json(allData);
   } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).send('Error fetching data');
+    console.error("Error fetching data:", error);
+    res.status(500).send("Error fetching data");
   }
 });
 // Backend: API endpoint for deleting a draft
-app.delete('/api/redesigned-delete-model/:companyName', async (req, res) => {
+app.delete("/api/redesigned-delete-model/:companyName", async (req, res) => {
   try {
     const companyName = req.params.companyName;
     // Assuming RedesignedDraftModel is your Mongoose model for drafts
-    const deletedDraft = await RedesignedDraftModel.findOneAndDelete({ "Company Name": companyName });
+    const deletedDraft = await RedesignedDraftModel.findOneAndDelete({
+      "Company Name": companyName,
+    });
     if (deletedDraft) {
-      console.log('Draft deleted successfully:', deletedDraft);
-      res.status(200).json({ message: 'Draft deleted successfully' });
+      console.log("Draft deleted successfully:", deletedDraft);
+      res.status(200).json({ message: "Draft deleted successfully" });
     } else {
-      console.error('Draft not found or already deleted');
-      res.status(404).json({ error: 'Draft not found or already deleted' });
+      console.error("Draft not found or already deleted");
+      res.status(404).json({ error: "Draft not found or already deleted" });
     }
   } catch (error) {
-    console.error('Error deleting draft:', error);
-    res.status(500).json({ error: 'Error deleting draft' });
+    console.error("Error deleting draft:", error);
+    res.status(500).json({ error: "Error deleting draft" });
   }
 });
 
-app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
+app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
   try {
     const newData = req.body;
-    const companyData = await CompanyModel.findOne({ 'Company Name': newData['Company Name'] });
+    const companyData = await CompanyModel.findOne({
+      "Company Name": newData["Company Name"],
+    });
     if (companyData) {
       newData.company = companyData._id; // Assuming 'company' field in RedesignedLeadformModel stores the _id of the CompanyModel
     }
     // Create a new entry in the database
     const createdData = await RedesignedLeadformModel.create(newData);
-    const date = new Date().toLocaleDateString();
+    const date = new Date();
     if (companyData) {
-      await CompanyModel.findByIdAndUpdate(companyData._id, { Status: 'Matured' , lastActionDate : date });
+      await CompanyModel.findByIdAndUpdate(companyData._id, {
+        Status: "Matured",
+        lastActionDate: date,
+      });
     }
-    
+
     const totalAmount = newData.services.reduce(
-      (acc, curr) => 
-      
-        acc + parseInt(curr.totalPaymentWGST),
+      (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
       0
     );
     const receivedAmount = newData.services.reduce((acc, curr) => {
@@ -3573,9 +3636,12 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
     const pendingAmount = totalAmount - receivedAmount;
     // Render services HTML
     const renderServices = () => {
-      let servicesHtml = '';
+      let servicesHtml = "";
       for (let i = 0; i < newData.services.length; i++) {
-        const displayPaymentTerms = newData.services[i].paymentTerms==="Full Advanced" ? "none" : "flex"
+        const displayPaymentTerms =
+          newData.services[i].paymentTerms === "Full Advanced"
+            ? "none"
+            : "flex";
         servicesHtml += `
         <div>
         <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
@@ -3594,9 +3660,13 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].
-              serviceName === "Start Up Certificate" ? newData.services[i].withDSC ? "Start Up Certificate With DSC" : "Start Up Certificate" : newData.services[i].serviceName
-              }
+            ${
+              newData.services[i].serviceName === "Start Up Certificate"
+                ? newData.services[i].withDSC
+                  ? "Start Up Certificate With DSC"
+                  : "Start Up Certificate"
+                : newData.services[i].serviceName
+            }
           </div>
         </div>
       </div>
@@ -3616,9 +3686,7 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].
-              totalPaymentWGST
-              }
+            ${newData.services[i].totalPaymentWGST}
           </div>
         </div>
       </div>
@@ -3765,19 +3833,22 @@ app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
       </div>
       </div>
         `;
-
       }
       return servicesHtml;
     };
 
     // Render services HTML content
     const servicesHtmlContent = renderServices();
-    const visibility = newData.bookingSource!=="Other" && 'none';
+    const visibility = newData.bookingSource !== "Other" && "none";
     // Send email to recipients
-    const recipients = [newData.bdeEmail, newData.bdmEmail,'bookings@startupsahay.com'];
-    const serviceNames = newData.services.map((service, index) => `${service.serviceName}`).join(' , ');
+    const recipients = [
+      newData.bdeEmail,
+      newData.bdmEmail,
+    ];
+    const serviceNames = newData.services
+      .map((service, index) => `${service.serviceName}`)
+      .join(" , ");
 
-console.log(serviceNames);
     sendMail(
       recipients,
       `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
@@ -4005,7 +4076,7 @@ console.log(serviceNames);
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData.bdeEmail }
+                    ${newData.bdeEmail}
                 </div>
               </div>
             </div>
@@ -4313,192 +4384,242 @@ console.log(serviceNames);
       newData.paymentReceipt
     );
 
-
     const renderServiceList = () => {
-      let servicesHtml = '';
+      let servicesHtml = "";
       for (let i = 0; i < newData.services.length; i++) {
         servicesHtml += `
-        <span>Service ${i+1}: ${newData.services[i].serviceName}</span>,  
-        `;
-      }
-      return servicesHtml;
-    };
-    const renderServiceDetails = () => {
-      let servicesHtml = '';
-      for (let i = 0; i < newData.services.length; i++) {
-        servicesHtml += `
-        <tr>
-                    <th>${newData.services[i].serviceName}</th>
-                    <td>${newData.services[i].totalPaymentWGST}</td>
-                  </tr>  
+        <span>Service ${i + 1}: ${newData.services[i].serviceName}</span>,  
         `;
       }
       return servicesHtml;
     };
     const renderPaymentDetails = () => {
-      let servicesHtml = '';
-      let paymentServices = '';
+      let servicesHtml = "";
+      let paymentServices = "";
       for (let i = 0; i < newData.services.length; i++) {
-        const Amount = newData.services[i].paymentTerms === "Full Advanced" ? newData.services[i].totalPaymentWGST : newData.services[i].firstPayment
+        const Amount =
+          newData.services[i].paymentTerms === "Full Advanced"
+            ? newData.services[i].totalPaymentWGST
+            : newData.services[i].firstPayment;
         let rowSpan;
 
         if (newData.services[i].paymentTerms === "two-part") {
-         if (newData.services[i].thirdPayment !== "0" && newData.services[i].fourthPayment === "0") {
+          if (
+            newData.services[i].thirdPayment !== 0 &&
+            newData.services[i].fourthPayment === 0
+          ) {
             rowSpan = 2;
-          } else  if (newData.services[i].fourthPayment !== "0"){
+          } else if (newData.services[i].fourthPayment !== 0) {
             rowSpan = 3;
           }
         } else {
           rowSpan = 1;
         }
-        
-       if(rowSpan===3){paymentServices = `
+
+        if (rowSpan === 3) {
+          paymentServices = `
         <tr>
-          <td>₹${newData.services[i].secondPayment}/-</td>
+          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
          <tr>
-         <td>₹${newData.services[i].thirdPayment}/-</td>
+         <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
          <td>${newData.services[i].thirdPaymentRemarks}</td>
          </tr>
-        `
-        }else if(rowSpan===2){paymentServices = `
+         <tr>
+         <td>₹${Number(newData.services[i].fourthPayment).toFixed(2)}/-</td>
+         <td>${newData.services[i].fourthPaymentRemarks}</td>
+         </tr>
+        `;
+        } else if (rowSpan === 2) {
+          paymentServices = `
         <tr>
-          <td>₹${newData.services[i].secondPayment}/-</td>
+          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
-        `
+        <tr>
+          <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+          <td>${newData.services[i].thirdPaymentRemarks}</td>
+        </tr>
+        `;
+        } else {
+          paymentServices = `
+        <tr>
+          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>${newData.services[i].secondPaymentRemarks}</td>
+        </tr>
+        `;
         }
         servicesHtml += `
-        <tr>
-        <th style="vertical-align: top;" rowspan=${rowSpan}>₹ ${(newData.services[i].totalPaymentWGST)} /-</th>
-        <th style="vertical-align: top;" rowspan=${rowSpan}>₹ ${(newData.services[i].paymentTerms === "Full Advanced" ? (newData.services[i].totalPaymentWGST) : (newData.services[i].firstPayment) )}/-</th>
-       
-      </tr>
-     ${paymentServices}
+        <table style="margin-top:20px">
+            <thead>
+              <td colspan="4">Service Name : ${newData.services[i].serviceName}</td>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Total Payment</td>
+                <td>Received Paymnet</td>
+                <td>Pending payment</td>
+                <td>Remarks</td>
+              </tr>
+              <tr>
+                    <th style="vertical-align: top;" rowspan='4'>₹ ${
+                    newData.services[i].totalPaymentWGST
+                  } /-</th>
+                    <th style="vertical-align: top;" rowspan='4'>₹ ${
+                    newData.services[i].paymentTerms === "Full Advanced"
+                      ? newData.services[i].totalPaymentWGST
+                      : newData.services[i].firstPayment
+                  }/-</th>
+              </tr>
+              ${paymentServices}
+            </tbody>
+        </table>
         `;
       }
       return servicesHtml;
     };
 
-
     // Render services HTML content
     const serviceList = renderServiceList();
   
     const paymentDetails = renderPaymentDetails();
-    
 
-    const htmlTemplate = fs.readFileSync('./helpers/template.html', 'utf-8');
+    const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const filledHtml = htmlTemplate
-    .replace('{{Company Name}}', newData["Company Name"])
-    .replace('{{Company Name}}', newData["Company Name"])
-    .replace('{{Company Name}}', newData["Company Name"])
-    .replace('{{Company Name}}', newData["Company Name"])
-    .replace('{{Services}}', serviceList)
-    .replace('{{Service-Details}}', paymentDetails)
-    .replace('{{Company Number}}', newData["Company Number"]);
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Services}}", serviceList)
+      .replace("{{TotalAmount}}", totalAmount.toFixed(2))
+      .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
+      .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
+      .replace("{{Service-Details}}", paymentDetails)
+      .replace("{{Company Number}}", newData["Company Number"]);
 
-
-
-    pdf.create(filledHtml, { format: 'Letter' }).toFile(path.join(__dirname, './Document', `${newData["Company Name"]}.pdf`), async (err, response) => {
-      if (err) {
-        console.error('Error generating PDF:', err);
-        res.status(500).send('Error generating PDF');
-      } else {
-        try {
-          setTimeout(() => {
-            const mainBuffer = fs.readFileSync(`./Document/${newData["Company Name"]}.pdf`);
-            sendMail2(["aakashseth452@gmail.com"], `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`, ``, `
+    pdf
+      .create(filledHtml, { format: "Letter" })
+      .toFile(
+        path.join(__dirname, "./Document", `${newData["Company Name"]}.pdf`),
+        async (err, response) => {
+          if (err) {
+            console.error("Error generating PDF:", err);
+            res.status(500).send("Error generating PDF");
+          } else {
+            try {
+              setTimeout(() => {
+                const mainBuffer = fs.readFileSync(
+                  `./Document/${newData["Company Name"]}.pdf`
+                );
+                sendMail2(
+                  ["aakashseth452@gmail.com"],
+                  `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
+                  ``,
+                  `
               <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
                 <h1> :-)</h1>       
               </div>
-            `, mainBuffer);
-          }, 5000);
-        } catch (emailError) {
-          console.error('Error sending email:', emailError);
-          res.status(500).send('Error sending email with PDF attachment');
+            `,
+                  mainBuffer
+                );
+              }, 5000);
+            } catch (emailError) {
+              console.error("Error sending email:", emailError);
+              res.status(500).send("Error sending email with PDF attachment");
+            }
+          }
         }
-      }
-    });
+      );
     // Send success response
-    res.status(201).send('Data sent');
+    res.status(201).send("Data sent");
   } catch (error) {
-    console.error('Error creating/updating data:', error);
-    res.status(500).send('Error creating/updating data'); // Send an error response
+    console.error("Error creating/updating data:", error);
+    res.status(500).send("Error creating/updating data"); // Send an error response
   }
 });
 // function generatePdf(htmlContent) {
-//   return 
+//   return
 
 //     pdf.create(htmlContent).toStream(function(err, stream){
 //       stream.pipe(fs.createWriteStream('./foo.pdf'));
 //     });
-  
+
 // }
 
-function generatePdf (htmlContent) {
+function generatePdf(htmlContent) {
   if (!htmlContent) {
-    console.error('Error: HTML content is required');
+    console.error("Error: HTML content is required");
     return; // Exit the function if htmlContent is not provided
-  }else{
-    pdf.create(htmlContent, { format: 'Letter' }).toFile('./foo5.pdf', function(err, res) {
-      if (err) return console.log(err);
-      console.log(res); 
-    })
+  } else {
+    pdf
+      .create(htmlContent, { format: "Letter" })
+      .toFile("./foo5.pdf", function (err, res) {
+        if (err) return console.log(err);
+        console.log(res);
+      });
   }
 }
-app.post('/api/generate-pdf', async (req, res) => {
+app.post("/api/generate-pdf", async (req, res) => {
   const clientName = "Miya bhai";
   const clientAddress = "Ohio";
   const senderName = "Chaganlal";
 
   try {
     // Read the HTML template
-    const htmlTemplate = fs.readFileSync('./helpers/template.html', 'utf-8');
+    const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const filledHtml = htmlTemplate
-      .replace('{{Company Name}}', clientName)
-      .replace('{{Services}}', clientAddress)
-    pdf.create(filledHtml, { format: 'Letter' }).toFile('./foo5.pdf', async (err, response) => {
-      if (err) {
-        console.error('Error generating PDF:', err);
-        res.status(500).send('Error generating PDF');
-      } else {
-        try {
-          setTimeout(() => {
-            const mainBuffer = fs.readFileSync('./foo5.pdf');
-            sendMail2(["aakashseth452@gmail.com"], `Mail Testing`, ``, `
+      .replace("{{Company Name}}", clientName)
+      .replace("{{Services}}", clientAddress);
+    pdf
+      .create(filledHtml, { format: "Letter" })
+      .toFile("./foo5.pdf", async (err, response) => {
+        if (err) {
+          console.error("Error generating PDF:", err);
+          res.status(500).send("Error generating PDF");
+        } else {
+          try {
+            setTimeout(() => {
+              const mainBuffer = fs.readFileSync("./foo5.pdf");
+              sendMail2(
+                ["aakashseth452@gmail.com"],
+                `Mail Testing`,
+                ``,
+                `
               <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
                 <h1> Smile:-) </h1>       
               </div>
-            `, mainBuffer);
-          }, 5000);
+            `,
+                mainBuffer
+              );
+            }, 5000);
 
-          res.setHeader('Content-Type', 'application/pdf');
-          res.setHeader('Content-Disposition', 'attachment; filename=generated_document.pdf');
-          res.send(response); // Send the PDF file
-        } catch (emailError) {
-          console.error('Error sending email:', emailError);
-          res.status(500).send('Error sending email with PDF attachment');
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader(
+              "Content-Disposition",
+              "attachment; filename=generated_document.pdf"
+            );
+            res.send(response); // Send the PDF file
+          } catch (emailError) {
+            console.error("Error sending email:", emailError);
+            res.status(500).send("Error sending email with PDF attachment");
+          }
         }
-      }
-    });
+      });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('Error generating PDF');
+    console.error("Error:", error);
+    res.status(500).send("Error generating PDF");
   }
 });
 
-
 // Function to generate PDF
-
-
 
 http.listen(3001, function () {
   console.log("Server started...");
 
   socketIO.on("connection", function (socket) {
     console.log("User connected: " + socket.id);
-    socketIO.emit('employee-entered'); 
+    socketIO.emit("employee-entered");
 
     socket.on("disconnect", async function () {
       const date = new Date().toString();
@@ -4506,13 +4627,10 @@ http.listen(3001, function () {
       socketIO.emit("user-disconnected");
       try {
         await adminModel.updateOne({ Active: socket.id }, { Active: date });
-        console.log('Admin updated: ' + socket.id);
+        console.log("Admin updated: " + socket.id);
       } catch (error) {
-        console.error('Error updating admin:', error);
+        console.error("Error updating admin:", error);
       }
     });
   });
 });
-
-
-

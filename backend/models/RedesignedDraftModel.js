@@ -20,10 +20,10 @@ const ServiceSchema = new mongoose.Schema({
     type: String,
   },
   firstPayment: {
-    type: String,
+    type: Number,
   },
   secondPayment: {
-    type: String,
+    type: Number,
   },
   secondPaymentRemarks:{
     type: String,
@@ -35,10 +35,10 @@ const ServiceSchema = new mongoose.Schema({
     type: String,
   },
   thirdPayment: {
-    type: String,
+    type: Number,
   },
   fourthPayment: {
-    type: String,
+    type: Number,
   },
   paymentRemarks: {
     type: String,

@@ -144,6 +144,7 @@ function EmployeePanel() {
   const [currentPage, setCurrentPage] = useState(0);
   const [month, setMonth] = useState(0);
   const [updateData, setUpdateData] = useState({});
+  const [nowToFetch, setNowToFetch] = useState(false)
   const [RequestApprovals, setRequestApprovals] = useState([]);
   const [mapArray, setMapArray] = useState([]);
   const [companies, setCompanies] = useState([]);
@@ -349,6 +350,8 @@ function EmployeePanel() {
   //console.log(projectionData)
   const [moreEmpData, setmoreEmpData] = useState([]);
   const [tempData, setTempData] = useState([])
+
+
   const fetchNewData = async (status) => {
     try {
       if (!status) {
@@ -430,6 +433,11 @@ function EmployeePanel() {
       // Set loading to false regardless of success or error
     }
   };
+
+  useEffect(() => {
+   fetchNewData("Matured");
+  }, [nowToFetch])
+  
 
   const handleFieldChange = (event) => {
     if (
@@ -2743,7 +2751,7 @@ useEffect(() => {
                                  
                                 </td>
                                 </>}
-                                <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td>
+                                {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
                               </tr>
                             ))}
                           </tbody>
@@ -2910,6 +2918,7 @@ useEffect(() => {
             companysName={companyName}
             companysEmail={companyEmail}
             companyNumber={companyNumber}
+            setNowToFetch={setNowToFetch}
             companysInco={companyInco}
             employeeName={data.ename}
             employeeEmail={data.email}
