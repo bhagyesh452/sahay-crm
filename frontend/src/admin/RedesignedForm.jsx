@@ -54,6 +54,7 @@ export default function RedesignedForm({
   companysInco,
   employeeName,
   employeeEmail,
+  setNowToFetch
 }) {
   const [totalServices, setTotalServices] = useState(1);
   
@@ -71,6 +72,7 @@ export default function RedesignedForm({
     bdmEmail: "",
     bookingDate: "",
     bookingSource: "",
+    otherBookingSource:"",
     numberOfServices: totalServices,
     services: [],
     caCase: false,
@@ -461,6 +463,7 @@ export default function RedesignedForm({
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
       setDataStatus("Matured");
+      setNowToFetch(true)
       setFormOpen(false);
     }
   };
@@ -559,6 +562,7 @@ console.log(completed , "this is completed")
             bdmEmail: leadData.bdmEmail,
             bookingDate: leadData.bookingDate,
             bookingSource: selectedValues,
+            otherBookingSource:leadData.otherBookingSource
           };
           console.log("This is sending", dataToSend);
           try {
@@ -720,6 +724,7 @@ console.log(completed , "this is completed")
         fetchData();
         handleNext();
         setFormOpen(false);
+        setDataStatus("Matured")
         return true;
       }
       // let dataToSend = {
@@ -1031,11 +1036,11 @@ console.log(completed , "this is completed")
                                         ? Number(
                                             service.secondPayment -
                                               service.totalPaymentWOGST * 0.18
-                                          )
+                                          ).toFixed(2)
                                         : Number(
                                             service.secondPayment +
                                               service.totalPaymentWOGST * 0.18
-                                          )
+                                          ).toFixed(2)
                                       : service.secondPayment,
                                   thirdPayment:
                                     service.paymentCount === 3
@@ -1043,11 +1048,11 @@ console.log(completed , "this is completed")
                                         ? Number(
                                             service.thirdPayment -
                                               service.totalPaymentWOGST * 0.18
-                                          )
+                                          ).toFixed(2)
                                         : Number(
                                             service.thirdPayment +
                                               service.totalPaymentWOGST * 0.18
-                                          )
+                                          ).toFixed(2)
                                       : service.thirdPayment,
                                   fourthPayment:
                                     service.paymentCount === 4
@@ -1055,11 +1060,11 @@ console.log(completed , "this is completed")
                                         ? Number(
                                             service.fourthPayment -
                                               service.totalPaymentWOGST * 0.18
-                                          )
+                                          ).toFixed(2)
                                         : Number(
                                             service.fourthPayment +
                                               service.totalPaymentWOGST * 0.18
-                                          )
+                                          ).toFixed(2)
                                       : service.fourthPayment,
                                 }
                               : service
@@ -1940,6 +1945,13 @@ console.log(completed , "this is completed")
                                           className="form-control mt-1"
                                           placeholder="Enter Other Lead Source"
                                           id="OtherLeadSource"
+                                          value={leadData.otherBookingSource}
+                                          onChange={(e) => {
+                                            handleInputChange(
+                                              e.target.value,
+                                              "otherBookingSource"
+                                            );
+                                          }}
                                         />
                                       </div>
                                     </div>
@@ -2594,7 +2606,7 @@ console.log(completed , "this is completed")
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0">
+                                 {leadData.otherBookingSource!=="" && <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
                                         <b>Other Lead Source</b>
@@ -2602,12 +2614,10 @@ console.log(completed , "this is completed")
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData.bookingSource !== ""
-                                          ? leadData.bookingSource
-                                          : "-"}
+                                        {leadData.otherBookingSource}
                                       </div>
                                     </div>
-                                  </div>
+                                  </div>}
                                 </div>
                               </div>
                               <div className="stepThreePreview">
@@ -2728,11 +2738,11 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {Number(obj.secondPayment).toFixed(2)}
+                                            {Number(obj.secondPayment).toFixed(2)} - { isNaN(new Date(obj.secondPaymentRemarks)) ? obj.secondPaymentRemarks : `Payment On ${obj.secondPaymentRemarks}`}
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="row m-0">
+                                     {obj.thirdPayment!==0 && <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
                                             <b>Third Payment</b>
@@ -2740,11 +2750,11 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {Number(obj.thirdPayment).toFixed(2)}
+                                            {Number(obj.thirdPayment).toFixed(2)} - {isNaN(new Date(obj.thirdPaymentRemarks)) ? obj.thirdPaymentRemarks : `Payment On ${obj.thirdPaymentRemarks}`}
                                           </div>
                                         </div>
-                                      </div>
-                                      <div className="row m-0">
+                                      </div>}
+                                      {obj.fourthPayment!==0 && <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
                                             <b>Fourth Payment</b>
@@ -2752,10 +2762,10 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {Number(obj.fourthPayment).toFixed(2)}
+                                          {Number(obj.fourthPayment).toFixed(2)} - {isNaN(new Date(obj.fourthPaymentRemarks)) ? obj.fourthPaymentRemarks : `Payment On ${obj.fourthPaymentRemarks}`}
                                           </div>
                                         </div>
-                                      </div></>}
+                                      </div>}</>}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">
@@ -2794,7 +2804,12 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
-                                            ₹ {Number(leadData.totalAmount).toFixed(2)}
+                                            ₹ {Number(leadData.services.reduce(
+            (acc, curr) => 
+            
+              acc + Number(curr.totalPaymentWGST),
+            0
+          )).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2808,7 +2823,11 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-7 p-0">
                                           <div className="form-label-data">
-                                            ₹ {Number(leadData.receivedAmount).toFixed(2)}
+                                            ₹ {(leadData.services.reduce((acc, curr) => {
+            return curr.paymentTerms === "Full Advanced"
+              ? acc + Number(curr.totalPaymentWGST)
+              : acc + Number(curr.firstPayment);
+          }, 0)).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -2822,7 +2841,11 @@ console.log(completed , "this is completed")
                                         </div>
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
-                                            ₹ {Number(leadData.pendingAmount).toFixed(2)}
+                                          ₹ {(leadData.services.reduce((acc, curr) => {
+            return curr.paymentTerms === "Full Advanced"
+              ? acc + 0
+              : acc + Number(curr.totalPaymentWOGST) - Number(curr.firstPayment);
+          }, 0)).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>

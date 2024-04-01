@@ -184,7 +184,7 @@ function Dashboard() {
     }
   };
 
-  
+
   useEffect(() => {
     // Call the fetchData function when the component mounts
 
@@ -2651,26 +2651,26 @@ console.log(bookingObject)
                             </button>
                           </div> */}
                           <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
-                            <DemoContainer components={['SingleInputDateRangeField']}>
-                              <DateRangePicker
-                                onChange={(values) => {
-                                  const startDate = moment(values[0]).format('DD/MM/YYYY');
-                                  const endDate = moment(values[1]).format('DD/MM/YYYY');
-                                  setSelectedDateRangeEmployee([startDate, endDate]);
-                                  handleSelectEmployee(values); // Call handleSelect with the selected values
-                                }}
-                                slots={{ field: SingleInputDateRangeField }}
-                                slotProps={{
-                                  shortcuts: {
-                                    items: shortcutsItems,
-                                  },
-                                  actionBar: { actions: [] },
-                                  textField: { InputProps: { endAdornment: <Calendar /> } }
-                                }}
-                              //calendars={1}
-                              />
-                            </DemoContainer>
-                          </LocalizationProvider>
+                    <DemoContainer components={['SingleInputDateRangeField']}>
+                      <DateRangePicker
+                        onChange={(values) => {
+                          const startDateEmp = moment(values[0]).format('DD/MM/YYYY');
+                          const endDateEmp = moment(values[1]).format('DD/MM/YYYY');
+                          setSelectedDateRangeEmployee([startDateEmp, endDateEmp]);
+                          handleSelectNew(values); // Call handleSelect with the selected values
+                        }}
+                        slots={{ field: SingleInputDateRangeField }}
+                        slotProps={{
+                          shortcuts: {
+                            items: shortcutsItems,
+                          },
+                          actionBar: { actions: [] },
+                          textField: { InputProps: { endAdornment: <Calendar /> } }
+                        }}
+                      //calendars={1}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
 
                         </div>
                       </div>

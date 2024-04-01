@@ -52,7 +52,7 @@ function EmployeePanel() {
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
   const [sortStatus, setSortStatus] = useState("");
-  const [maturedID, setMaturedID] = useState("");
+    const [maturedID, setMaturedID] = useState("");
   const [currentForm, setCurrentForm] = useState(null);
   const [projectionData, setProjectionData] = useState([]);
   const [openLogin, setOpenLogin] = useState(false);
@@ -145,6 +145,7 @@ function EmployeePanel() {
   const [currentPage, setCurrentPage] = useState(0);
   const [month, setMonth] = useState(0);
   const [updateData, setUpdateData] = useState({});
+  const [nowToFetch, setNowToFetch] = useState(false)
   const [RequestApprovals, setRequestApprovals] = useState([]);
   const [mapArray, setMapArray] = useState([]);
   const [companies, setCompanies] = useState([]);
@@ -272,7 +273,7 @@ function EmployeePanel() {
     setTimeout(() => {
       setOpenAnchor(true);
     }, 500);
-
+  
   };
 
   const [cid, setcid] = useState("");
@@ -350,6 +351,8 @@ function EmployeePanel() {
   //console.log(projectionData)
   const [moreEmpData, setmoreEmpData] = useState([]);
   const [tempData, setTempData] = useState([])
+
+
   const fetchNewData = async (status) => {
     try {
       if (!status) {
@@ -431,6 +434,11 @@ function EmployeePanel() {
       // Set loading to false regardless of success or error
     }
   };
+
+  useEffect(() => {
+   fetchNewData("Matured");
+  }, [nowToFetch])
+  
 
   const handleFieldChange = (event) => {
     if (
@@ -1103,10 +1111,10 @@ function EmployeePanel() {
     try {
       console.log(maturedID);
       const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
-      const data = response.data.find(obj => obj.company === maturedID);
+      const data = response.data.find(obj=>obj.company === maturedID);
       setCurrentForm(data);
-
-
+      
+      
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -1606,64 +1614,6 @@ function EmployeePanel() {
     const [day, month, year] = dateString.split('/');
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   };
-
-
-  // ------------------------payment link-------------------------------
-
-  // const [paymentLink, setPaymentLink] = useState('');
-  // const [isLoadingPayment, setIsLoadingPayment] = useState(false);
-  // const [sessionId , setSessionId] = useState('')
-  // let version = cashfree.version();
-  
-  // const getSessionId = (e)=>{
-  //   e.preventDefault()
-  //   setIsLoadingPayment(true);
-  //   axios.post(`${secretKey}/payment` , {version})
-  //   .then((res)=>{
-  //     setIsLoadingPayment(false)
-  //     setSessionId(res.data)
-  //   })
-  //   .catch((err)=>{
-  //     setIsLoadingPayment(false);
-  //     console.log(err)
-  //   })
-  // }
-
-
-
-
-  // const generatePaymentLink = async () => {
-  //   try {
-  //     setIsLoadingPayment(true);
-  //     const response = await axios.get(`${secretKey}/generatePaymentLink`);
-  //     setPaymentLink(response.data.paymentLink);
-  //   } catch (error) {
-  //     console.error('Error generating payment link:', error);
-  //   } finally {
-  //     setIsLoadingPayment(false);
-  //   }
-  // };
-
-
-  // const handlePayment =()=>{
-  //   let checkoutOptions = {
-  //     paymentSessionId: "payment-session-id",
-  //     returnUrl: "https://test.cashfree.com/pgappsdemos/v3success.php?myorder={order_id}",
-      
-  //   }
-  //   cashfree.checkout(checkoutOptions).then(function(result){
-  //     if(result.error){
-  //       alert(result.error.message)
-  //     }
-  //     if(result.redirect){
-  //       console.log("Redirection")
-  //     }
-  //   });
-  // }
-
-
-
-
 
   return (
     <div>
@@ -2315,7 +2265,7 @@ function EmployeePanel() {
                           setEmployeeData(
                             moreEmpData
                               .filter(obj => obj.Status === 'Matured')
-                              .sort((a, b) => new Date(formatDatePro(b.lastActionDate)) - new Date(formatDatePro(a.lastActionDate)))
+                              .sort((a, b) => new Date((b.lastActionDate)) - new Date((a.lastActionDate)))
                           );
                         }}
                         className={
@@ -2745,64 +2695,64 @@ function EmployeePanel() {
 
                                 {(dataStatus === "FollowUp" ||
                                   dataStatus === "Interested") && (
-                                    <td>
-                                      {company &&
-                                        projectionData &&
-                                        projectionData.some(
-                                          (item) =>
-                                            item.companyName ===
-                                            company["Company Name"]
-                                        ) ? (
-                                        <>
-                                          <IconButton>
-                                            <RiEditCircleFill
-                                              onClick={() => {
-                                                functionopenprojection(
-                                                  company["Company Name"]
-                                                );
-                                              }}
-                                              //onClick={()=>handleIconButtonClick(company["Company Name"])}
-                                              style={{
-                                                cursor: "pointer",
-                                                width: "17px",
-                                                height: "17px",
-                                              }}
-                                              color="#fbb900"
-                                            />
-                                          </IconButton>
-                                          {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} currentProjection1={currentProjection} /> */}
-                                        </>
-                                      ) : (
+                                  <td>
+                                    {company &&
+                                    projectionData &&
+                                    projectionData.some(
+                                      (item) =>
+                                        item.companyName ===
+                                        company["Company Name"]
+                                    ) ? (
+                                      <>
                                         <IconButton>
                                           <RiEditCircleFill
                                             onClick={() => {
                                               functionopenprojection(
                                                 company["Company Name"]
                                               );
-                                              setIsEditProjection(true);
                                             }}
+                                            //onClick={()=>handleIconButtonClick(company["Company Name"])}
                                             style={{
                                               cursor: "pointer",
                                               width: "17px",
                                               height: "17px",
                                             }}
+                                            color="#fbb900"
                                           />
                                         </IconButton>
-                                      )}
-                                    </td>
-                                  )}
-                                {dataStatus === "Matured" && <>
-                                  <td>
-                                    <div onClick={() => {
-                                      setMaturedID(company._id)
-                                      functionopenAnchor()
-                                    }} style={{ cursor: 'pointer' }}>
-                                      <IconEye />
-                                    </div>
-
+                                        {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} currentProjection1={currentProjection} /> */}
+                                      </>
+                                    ) : (
+                                      <IconButton>
+                                        <RiEditCircleFill
+                                          onClick={() => {
+                                            functionopenprojection(
+                                              company["Company Name"]
+                                            );
+                                            setIsEditProjection(true);
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    )}
                                   </td>
+                                )}
+                                {dataStatus==="Matured" && <>
+                                <td>
+                                  <div onClick={()=>{
+                                    setMaturedID(company._id)
+                                    functionopenAnchor()
+                                  }} style={{cursor:'pointer'}}>
+                                  <IconEye/>
+                                  </div>
+                                 
+                                </td>
                                 </>}
-                                <td onClick={() => setIsOpen(true)}><MailOutlineIcon style={{ cursor: 'pointer' }} /></td>
+                                <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td>
                               </tr>
                             ))}
                           </tbody>
@@ -2969,6 +2919,7 @@ function EmployeePanel() {
             companysName={companyName}
             companysEmail={companyEmail}
             companyNumber={companyNumber}
+            setNowToFetch={setNowToFetch}
             companysInco={companyInco}
             employeeName={data.ename}
             employeeEmail={data.email}

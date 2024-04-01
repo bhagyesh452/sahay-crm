@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import img from "../static/my-images/image.png";
 
 function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
+
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     function formatDate(inputDate) {
         const date = new Date(inputDate);
@@ -283,7 +284,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     <div className="form-label-data">{obj.paymentTerms}</div>
                   </div>
                 </div>
-                <div className="row m-0">
+                {obj.firstPayment!==0 && <div className="row m-0">
                   <div className="col-sm-3 p-0">
                     <div className="form-label-name">
                       <b>First Payment</b>
@@ -292,37 +293,37 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                   <div className="col-sm-9 p-0">
                     <div className="form-label-data">{obj.firstPayment}</div>
                   </div>
-                </div>
-                <div className="row m-0">
+                </div>}
+                {obj.secondPayment!==0 && <div className="row m-0">
                   <div className="col-sm-3 p-0">
                     <div className="form-label-name">
                       <b>Second Payment</b>
                     </div>
                   </div>
                   <div className="col-sm-9 p-0">
-                    <div className="form-label-data">{obj.secondPayment}</div>
+                    <div className="form-label-data">₹{Number(obj.secondPayment).toFixed(2)} - { isNaN(new Date(obj.secondPaymentRemarks)) ? obj.secondPaymentRemarks : `Payment On ${obj.secondPaymentRemarks}`}</div>
                   </div>
-                </div>
-                <div className="row m-0">
+                </div>}
+                {obj.thirdPayment!==0 && <div className="row m-0">
                   <div className="col-sm-3 p-0">
                     <div className="form-label-name">
                       <b>Third Payment</b>
                     </div>
                   </div>
                   <div className="col-sm-9 p-0">
-                    <div className="form-label-data">{obj.thirdPayment}</div>
+                    <div className="form-label-data">{Number(obj.thirdPayment).toFixed(2)} - {isNaN(new Date(obj.thirdPaymentRemarks)) ? obj.thirdPaymentRemarks : `Payment On ${obj.thirdPaymentRemarks}`}</div>
                   </div>
-                </div>
-                <div className="row m-0">
+                </div>}
+               {obj.fourthPayment!==0 && <div className="row m-0">
                   <div className="col-sm-3 p-0">
                     <div className="form-label-name">
                       <b>Fourth Payment</b>
                     </div>
                   </div>
                   <div className="col-sm-9 p-0">
-                    <div className="form-label-data">{obj.fourthPayment}</div>
+                    <div className="form-label-data">{Number(obj.fourthPayment).toFixed(2)} - {isNaN(new Date(obj.fourthPaymentRemarks)) ? obj.fourthPaymentRemarks : `Payment On ${obj.fourthPaymentRemarks}`}</div>
                   </div>
-                </div>
+                </div>}
                 <div className="row m-0">
                   <div className="col-sm-3 p-0">
                     <div className="form-label-name">
