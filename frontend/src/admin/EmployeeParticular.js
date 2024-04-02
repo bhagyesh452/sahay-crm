@@ -1640,12 +1640,12 @@ useEffect(() => {
                                   <div onClick={()=>{
                                     setMaturedID(company._id)
                                     functionopenAnchor()
-                                  }} style={{cursor:'pointer'}}>
-                                  <IconEye/>
+                                  }} >
+                                  <IconEye style={{cursor:'pointer'}}/>
                                   </div>
                                   <div onClick={()=>{
                                       handleDeleteBooking(company._id)
-                                  }} style={{cursor:'pointer'}} className="delete-booking">
+                                  }}  className="delete-booking" style={{cursor:'pointer'}}>
                                     <DeleteIcon/>
                                   </div>
 

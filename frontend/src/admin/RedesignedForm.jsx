@@ -1592,7 +1592,7 @@ console.log(completed , "this is completed")
                                             "Company Name"
                                           );
                                         }}
-                                        readOnly
+                                        disabled
                                       />
                                     </div>
                                   </div>
@@ -1767,7 +1767,7 @@ console.log(completed , "this is completed")
                                             "bdeName"
                                           );
                                         }}
-                                        readOnly
+                                        disabled
                                       />
                                     </div>
                                   </div>
@@ -1793,7 +1793,7 @@ console.log(completed , "this is completed")
                                             "bdeEmail"
                                           );
                                         }}
-                                        readOnly
+                                        disabled
                                       />
                                     </div>
                                   </div>
@@ -1833,7 +1833,7 @@ console.log(completed , "this is completed")
                                             </option>
                                           ))}
 
-                                        <option value="other">Other</option>
+                                        {/* <option value="other">Other</option> */}
                                       </select>
                                     </div>
                                   </div>
@@ -1859,7 +1859,7 @@ console.log(completed , "this is completed")
                                             "bdmEmail"
                                           );
                                         }}
-                                        readOnly
+                                        disabled={leadData.bdmEmail}
                                       />
                                     </div>
                                   </div>
