@@ -87,11 +87,12 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   },
   bdeEmail: {
     type: String,
-
   },
   bdmEmail: {
     type: String,
-  
+  },
+  otherBdmName:{
+    type:String,
   },
   bookingDate: {
     type: String,

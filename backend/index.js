@@ -44,6 +44,7 @@ const LeadModel_2 = require("./models/Leadform_2");
 const RedesignedLeadformModel = require("./models/RedesignedLeadform");
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
+const EditableDraftModel = require("./models/EditableDraftModel");
 
 // const http = require('http');
 // const socketIo = require('socket.io');
@@ -2223,7 +2224,7 @@ app.delete("/api/deleterequestbybde/:cname", async (req, res) => {
 
     // Find document by company name and delete it
     const updatedCompany = await RequestDeleteByBDE.findOneAndUpdate(
-      { companyName },
+      { companyName , request : undefined },
       { $set: { request: true } },
       { new: true }
     );
@@ -2876,20 +2877,18 @@ app.post(
         const existingData = await RedesignedDraftModel.findOne({
           "Company Name": companyName,
         });
-
         if (existingData) {
-          // Update existing data if found
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-            { "Company Name": companyName },
+            {"Company Name": companyName },
             {
               $set: {
                 bdeName: newData.bdeName || existingData.bdeName,
                 bdeEmail: newData.bdeEmail || existingData.bdeEmail,
                 bdmName: newData.bdmName || existingData.bdmName,
+                otherBdmName : newData.otherBdmName || existingData.otherBdmName,
                 bdmEmail: newData.bdmEmail || existingData.bdmEmail,
                 bookingDate: newData.bookingDate || existingData.bookingDate,
-                bookingSource:
-                  newData.bookingSource || existingData.bookingSource,
+                bookingSource: newData.bookingSource || existingData.bookingSource,
                 otherBookingSource:newData.otherBookingSource || existingData.otherBookingSource,
                 Step2Status: true,
               },
@@ -2967,6 +2966,7 @@ app.post(
           return true; // Respond with updated data
         }
       } else if (Step === "step5") {
+
         const updatedData = await RedesignedDraftModel.findOneAndUpdate(
           { "Company Name": companyName },
           {
@@ -3017,6 +3017,210 @@ app.post(
     }
   }
 );
+app.post(
+  "/api/redesigned-edit-leadData/:CompanyName/:step",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 2 },
+  ]),
+  async (req, res) => {
+    try {
+      const companyName = req.params.CompanyName;
+      const newData = req.body;
+      const Step = req.params.step;
+      if (Step === "step1") {
+        const existingData = await EditableDraftModel.findOne({
+          "Company Name": companyName,
+        });
+
+        if (existingData) {
+          // Update existing data if found
+          const updatedData = await EditableDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                "Company Email":
+                  newData["Company Email"] || existingData["Company Email"],
+                "Company Name":
+                  newData["Company Name"] || existingData["Company Name"],
+                "Company Number":
+                  newData["Company Number"] || existingData["Company Number"],
+                incoDate: newData.incoDate || existingData.incoDate,
+                panNumber: newData.panNumber || existingData.panNumber,
+                gstNumber: newData.gstNumber || existingData.gstNumber,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        } else {
+          // Create new data if not found
+          const createdData = await EditableDraftModel.create({
+            "Company Email": newData["Company Email"],
+            "Company Name": newData["Company Name"],
+            "Company Number": newData["Company Number"],
+            incoDate: newData.incoDate,
+            panNumber: newData.panNumber,
+            gstNumber: newData.gstNumber,
+            Step1Status: true,
+          });
+          res.status(201).json(createdData); // Respond with created data
+          return true;
+        }
+      } else if (Step === "step2") {
+        const existingData = await EditableDraftModel.findOne({
+          "Company Name": companyName,
+        });
+        if (existingData) {
+          const updatedData = await EditableDraftModel.findOneAndUpdate(
+            {"Company Name": companyName },
+            {
+              $set: {
+                bdeName: newData.bdeName || existingData.bdeName,
+                bdeEmail: newData.bdeEmail || existingData.bdeEmail,
+                bdmName: newData.bdmName || existingData.bdmName,
+                otherBdmName : newData.otherBdmName || existingData.otherBdmName,
+                bdmEmail: newData.bdmEmail || existingData.bdmEmail,
+                bookingDate: newData.bookingDate || existingData.bookingDate,
+                bookingSource: newData.bookingSource || existingData.bookingSource,
+                otherBookingSource:newData.otherBookingSource || existingData.otherBookingSource,
+                Step2Status: true,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        }
+      } else if (Step === "step3") {
+        const existingData = await EditableDraftModel.findOne({
+          "Company Name": companyName,
+        });
+
+        if (existingData) {
+          // Update existing data if found
+          const updatedData = await EditableDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                services: newData.services || existingData.services,
+                numberOfServices:
+                  newData.numberOfServices || existingData.numberOfServices,
+                caCase: newData.caCase,
+                caCommission: newData.caCommission,
+                caNumber: newData.caNumber,
+                caEmail: newData.caEmail,
+                totalAmount: newData.totalAmount || existingData.totalAmount,
+                pendingAmount:
+                  newData.pendingAmount || existingData.pendingAmount,
+                receivedAmount:
+                  newData.receivedAmount || existingData.receivedAmount,
+                Step3Status: true,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        }
+      } else if (Step === "step4") {
+        const existingData = await EditableDraftModel.findOne({
+          "Company Name": companyName,
+        });
+        console.log(newData.paymentReceipt[0])
+        newData.otherDocs =
+          req.files["otherDocs"] === undefined
+            ? ""
+            : req.files["otherDocs"].map((file) => file);
+        newData.paymentReceipt =
+          req.files["paymentReceipt"] === undefined
+            ? ""
+            : req.files["paymentReceipt"].map((file) => file);
+        if (existingData) {
+          // Update existing data if found
+          const updatedData = await EditableDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                totalAmount: newData.totalAmount || existingData.totalAmount,
+                pendingAmount:
+                  newData.pendingAmount || existingData.pendingAmount,
+                receivedAmount:
+                  newData.receivedAmount || existingData.receivedAmount,
+                paymentReceipt:
+                  newData.paymentReceipt || existingData.paymentReceipt,
+                otherDocs: newData.otherDocs || existingData.otherDocs,
+                paymentMethod: newData.paymentMethod || newData.paymentMethod,
+                extraNotes: newData.extraNotes || newData.extraNotes,
+                Step4Status: true,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        }else{
+          const createdData = await EditableDraftModel.create({
+            totalAmount: newData.totalAmount || existingData.totalAmount,
+                pendingAmount:
+                  newData.pendingAmount || existingData.pendingAmount,
+                receivedAmount:
+                  newData.receivedAmount || existingData.receivedAmount,
+                paymentReceipt:
+                  newData.paymentReceipt || existingData.paymentReceipt,
+                otherDocs: newData.otherDocs || existingData.otherDocs,
+                paymentMethod: newData.paymentMethod || newData.paymentMethod,
+                extraNotes: newData.extraNotes || newData.extraNotes,
+                Step4Status: true,
+          });
+          res.status(200).json(createdData);
+          return true;
+        }
+      } else if (Step === "step5") {
+        const existingData = await EditableDraftModel.findOne({
+          "Company Name": companyName,
+        });
+     if(existingData){
+      const requestBy = req.body;
+      const date = new Date();
+       
+      const updatedData = await EditableDraftModel.findOneAndUpdate(
+        { "Company Name": companyName },
+        {
+          $set: {
+            Step5Status: true,
+            requestBy:requestBy,
+            requestDate
+          },
+        },
+        { new: true }
+      );
+      res.status(200).json(updatedData);
+      return true; 
+     }else{
+      res.status(200).json({message:"No Changes made"});
+      return true;
+     }
+       
+      }
+      // Add uploaded files information to newData
+
+    } catch (error) {
+      console.error("Error creating/updating data:", error);
+      res.status(500).send("Error creating/updating data"); // Send an error response
+    }
+  }
+);
+app.get('/api/editable-LeadData', async (req, res) => {
+  try {
+    const data = await EditableDraftModel.find(); // Fetch all data from the collection
+    res.json(data); // Send the data as JSON response
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 // app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
 //   try {
