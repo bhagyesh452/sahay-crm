@@ -45,7 +45,7 @@ const defaultService = {
   paymentCount: 2,
 };
 
-export default function RedesignedForm({
+export default function EditableLeadform({
   setDataStatus,
   setFormOpen,
   companysName,
@@ -119,7 +119,7 @@ export default function RedesignedForm({
       const data = response.data.find(
         (item) => item["Company Name"] === companysName
       );
-      console.log("Fetched Data");
+      
       if (!data) {
         setCompleted({});
         setActiveStep(0);
@@ -135,6 +135,7 @@ export default function RedesignedForm({
         Step5Status,
         ...newLeadData
       } = data;
+      console.log("Fetched Data" , newLeadData);
       setLeadData(newLeadData);
       if (Step1Status === true && Step2Status === false) {
         setCompleted({ 0: true });
@@ -197,8 +198,10 @@ export default function RedesignedForm({
           extraNotes: data.extraNotes,
         }));
       } else if (Step5Status === true) {
-        setCompleted({ 0: true, 1: true, 2: true, 3: true, 4: true });
-        setActiveStep(5);
+        setCompleted({ 0: true, 1: true, 2: true, 3: true });
+        setActiveStep(4);
+        setfetchedService(true);
+        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -539,7 +542,7 @@ export default function RedesignedForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companysName}/step1`,
+              `${secretKey}/redesigned-edit-leadData/${companysName}/step1`,
               dataToSend
             );
             // Handle response data as needed
@@ -547,7 +550,7 @@ export default function RedesignedForm({
             console.error("Error uploading data:", error);
             // Handle error
           }
-          fetchData();
+          
           handleNext();
           return true;
         }
@@ -581,7 +584,7 @@ export default function RedesignedForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companysName}/step2`,
+              `${secretKey}/redesigned-edit-leadData/${companysName}/step2`,
               dataToSend
             );
             // Handle response data as needed
@@ -589,7 +592,7 @@ export default function RedesignedForm({
             console.error("Error uploading data:", error);
             // Handle error
           }
-          fetchData();
+         
           handleNext();
           return true;
         }
@@ -645,7 +648,7 @@ export default function RedesignedForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companysName}/step3`,
+              `${secretKey}/redesigned-edit-leadData/${companysName}/step3`,
               dataToSend
             );
             // Handle response data as needed
@@ -653,7 +656,7 @@ export default function RedesignedForm({
             console.error("Error uploading data:", error);
             // Handle error
           }
-          fetchData();
+       
           handleNext();
           return true;
         }
@@ -697,19 +700,20 @@ export default function RedesignedForm({
           for (let i = 0; i < leadData.paymentReceipt.length; i++) {
             formData.append("paymentReceipt", leadData.paymentReceipt[i]);
           }
-
           // Append other documents files to formData
           for (let i = 0; i < leadData.otherDocs.length; i++) {
             formData.append("otherDocs", leadData.otherDocs[i]);
           }
-
+          for (const [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+          }
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companysName}/step4`,
+              `${secretKey}/redesigned-edit-leadData/${companysName}/step4`,
               formData
             );
             // Handle successful upload
-            fetchData();
+           
             handleNext();
             return true;
           } catch (error) {
@@ -721,19 +725,19 @@ export default function RedesignedForm({
 
       if (activeStep === 4) {
         try {
+        //   const response = await axios.post(
+        //     `${secretKey}/redesigned-final-leadData/${companysName}`,
+        //     leadData
+        //   );
+        
           const response = await axios.post(
-            `${secretKey}/redesigned-final-leadData/${companysName}`,
-            leadData
+            `${secretKey}/redesigned-edit-leadData/${companysName}/step5`, 
           );
-          const response2 = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}/step5`
-          );
-
           console.log(response.data);
           Swal.fire({
             icon: "success",
-            title: "Form Submitted",
-            text: "Your form has been submitted successfully!",
+            title: "Request Sent",
+            text: "Your form has been successfully sent to the Admin!",
           });
           // Handle response data as needed
         } catch (error) {
@@ -743,13 +747,11 @@ export default function RedesignedForm({
             title: "Error",
             text: "There was an error submitting the form. Please try again later.",
           });
-          // Handle error
         }
 
-        fetchData();
+      
         handleNext();
         setFormOpen(false);
-        setDataStatus("Matured");
         return true;
       }
       // let dataToSend = {
@@ -1651,7 +1653,6 @@ export default function RedesignedForm({
                       className={
                         activeStep === index ? "form-tab-active" : "No-active"
                       }
-                      disabled={!completed[index]}
                     >
                       {label}
                     </StepButton>
@@ -3329,7 +3330,7 @@ export default function RedesignedForm({
                         >
                           {activeStep !== 0 ? "Back" : "Back to Main"}
                         </Button>
-                        <Button
+                        {/* <Button
                           color="primary"
                           variant="contained"
                           disabled={activeStep === 0}
@@ -3337,13 +3338,13 @@ export default function RedesignedForm({
                           onClick={handleResetDraft}
                         >
                           Reset
-                        </Button>
+                        </Button> */}
                         <Box sx={{ flex: "1 1 auto" }} />
                         <Button
                           onClick={handleNext}
                           variant="contained"
                           sx={{ mr: 1 }}
-                          disabled={!completed[activeStep]}
+                         
                         >
                           Next
                         </Button>
