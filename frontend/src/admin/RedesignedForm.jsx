@@ -2606,7 +2606,7 @@ console.log(completed , "this is completed")
                                       </div>
                                     </div>
                                   </div>
-                                 {leadData.otherBookingSource!=="" && <div className="row m-0">
+                                 {leadData.otherBookingSource && <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
                                         <b>Other Lead Source</b>

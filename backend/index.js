@@ -3783,11 +3783,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].secondPayment}
+              ${Number(newData.services[i].secondPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].secondPaymentRemarks)) ? newData.services[i].secondPaymentRemarks : `Payment On ${newData.services[i].secondPaymentRemarks}`}
           </div>
         </div>
       </div>
-      <div style="display: ${displayPaymentTerms}; flex-wrap: wrap">
+      <div style="display: ${newData.services[i].thirdPayment === 0 ? "none" : "flex"}; flex-wrap: wrap">
         <div style="width: 25%">
           <div style="
                 border: 1px solid #ccc;
@@ -3803,11 +3803,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].thirdPayment}
+              ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].thirdPaymentRemarks)) ? newData.services[i].thirdPaymentRemarks : `Payment On ${newData.services[i].thirdPaymentRemarks}`}
           </div>
         </div>
       </div>
-      <div style="display: ${displayPaymentTerms}; flex-wrap: wrap">
+      <div style="display: ${newData.services[i].fourthPayment === 0 ? "none" : "flex"}; flex-wrap: wrap">
         <div style="width: 25%">
           <div style="
                 border: 1px solid #ccc;
@@ -3823,7 +3823,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].fourthPayment}
+              ${Number(newData.services[i].fourthPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].fourthPaymentRemarks)) ? newData.services[i].fourthPaymentRemarks : `Payment On ${newData.services[i].fourthPaymentRemarks}`}
           </div>
         </div>
       </div>
@@ -3860,6 +3860,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const recipients = [
       newData.bdeEmail,
       newData.bdmEmail,
+      "bookings@startupsahay.com"
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -4173,7 +4174,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData.bookingSource}
+                    ${newData.otherBookingSource}
                 </div>
               </div>
             </div>
@@ -4462,7 +4463,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           paymentServices = `
         <tr>
           <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
-          <td>${newData.services[i].secondPaymentRemarks}</td>
+          <td>${newData.services[i].paymentTerms !== "Full Advanced" ? newData.services[i].secondPaymentRemarks : "-"}</td>
         </tr>
         `;
         }
@@ -4529,17 +4530,17 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   `./Document/${newData["Company Name"]}.pdf`
                 );
                 sendMail2(
-                  ["aakashseth452@gmail.com"],
+                  [new Data["Company Email"]],
                   `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                   ``,
                   `
               <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
-                <h1> :-)</h1>       
+                <h1>Thank You for your response.</h1>       
               </div>
             `,
                   mainBuffer
                 );
-              }, 5000);
+              }, 4000);
             } catch (emailError) {
               console.error("Error sending email:", emailError);
               res.status(500).send("Error sending email with PDF attachment");
