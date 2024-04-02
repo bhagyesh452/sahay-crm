@@ -1097,7 +1097,7 @@ console.log(completed , "this is completed")
                       }
                       placeholder="Search for…"
                       id={`Amount-${i}`}
-                      value={leadData.services[i].totalPaymentWGST}
+                      value={Number(leadData.services[i].totalPaymentWGST).toFixed(2)}
                       disabled
                     />
                     <button class="btn" type="button">
@@ -2171,12 +2171,12 @@ console.log(completed , "this is completed")
                                           type="number"
                                           class="form-control"
                                           placeholder="Total Payment"
-                                          value={leadData.services.reduce(
+                                          value={(leadData.services.reduce(
                                             (total, service) =>
                                               total +
                                               Number(service.totalPaymentWGST),
                                             0
-                                          )}
+                                          )).toFixed(2)}
                                           readOnly
                                         />
                                         <button class="btn" type="button">
@@ -2195,7 +2195,7 @@ console.log(completed , "this is completed")
                                           type="number"
                                           class="form-control"
                                           placeholder="Received Payment"
-                                          value={leadData.services.reduce(
+                                          value={(leadData.services.reduce(
                                             (total, service) =>
                                               service.paymentTerms ===
                                               "Full Advanced"
@@ -2206,7 +2206,7 @@ console.log(completed , "this is completed")
                                                 : total +
                                                   Number(service.firstPayment),
                                             0
-                                          )}
+                                          )).toFixed(2)}
                                           readOnly
                                         />
                                         <button class="btn" type="button">
@@ -2225,7 +2225,7 @@ console.log(completed , "this is completed")
                                           type="number"
                                           class="form-control"
                                           placeholder="Pending Payment"
-                                          value={leadData.services.reduce(
+                                          value={(leadData.services.reduce(
                                             (total, service) =>
                                               service.paymentTerms ===
                                               "Full Advanced"
@@ -2236,7 +2236,7 @@ console.log(completed , "this is completed")
                                                   ) -
                                                   Number(service.firstPayment),
                                             0
-                                          )}
+                                          )).toFixed(2)}
                                           readOnly
                                         />
                                         <button class="btn" type="button">
@@ -2687,7 +2687,7 @@ console.log(completed , "this is completed")
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
                                             {obj.totalPaymentWGST !== undefined
-                                              ? obj.totalPaymentWGST
+                                              ? Number(obj.totalPaymentWGST).toFixed(2)
                                               : "0"}
                                           </div>
                                         </div>
