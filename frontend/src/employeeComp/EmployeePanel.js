@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import EmpNav from "./EmpNav.js";
+
 import Header from "../components/Header";
 import { useParams } from "react-router-dom";
 import notificationSound from "../assets/media/iphone_sound.mp3";
@@ -44,9 +45,8 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
 import RedesignedForm from "../admin/RedesignedForm.jsx";
 import LeadFormPreview from "../admin/LeadFormPreview.jsx";
-import { load } from '@cashfreepayments/cashfree-js'
-
-//import  cashfree  from './util.js'
+import Edit from "@mui/icons-material/Edit";
+import EditableLeadform from "../admin/EditableLeadform.jsx";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -57,6 +57,7 @@ function EmployeePanel() {
   const [maturedID, setMaturedID] = useState("");
   const [currentForm, setCurrentForm] = useState(null);
   const [projectionData, setProjectionData] = useState([]);
+  const [requestDeletes, setRequestDeletes] = useState([]);
   const [openLogin, setOpenLogin] = useState(false);
   const [requestData, setRequestData] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
@@ -72,7 +73,7 @@ function EmployeePanel() {
     date: "",
     time: "",
     editCount: -1,
-    totalPaymentError: ""
+    totalPaymentError: "",
   });
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
@@ -137,6 +138,16 @@ function EmployeePanel() {
   const [selectedField, setSelectedField] = useState("Company Name");
   const [cname, setCname] = useState("");
   const [cemail, setCemail] = useState("");
+  const [companyAddress, setCompanyAddress] = useState("");
+  const [directorNameFirst, setDirectorNameFirst] = useState("");
+  const [directorNameSecond, setDirectorNameSecond] = useState("");
+  const [directorNameThird, setDirectorNameThird] = useState("");
+  const [directorNumberFirst, setDirectorNumberFirst] = useState(0);
+  const [directorNumberSecond, setDirectorNumberSecond] = useState(0);
+  const [directorNumberThird, setDirectorNumberThird] = useState(0);
+  const [directorEmailFirst, setDirectorEmailFirst] = useState("");
+  const [directorEmailSecond, setDirectorEmailSecond] = useState("");
+  const [directorEmailThird, setDirectorEmailThird] = useState("");
   const [selectAllChecked, setSelectAllChecked] = useState(true);
   const [selectedYears, setSelectedYears] = useState([]);
   const [selectedMonths, setSelectedMonths] = useState([]);
@@ -147,7 +158,7 @@ function EmployeePanel() {
   const [currentPage, setCurrentPage] = useState(0);
   const [month, setMonth] = useState(0);
   const [updateData, setUpdateData] = useState({});
-  const [nowToFetch, setNowToFetch] = useState(false)
+  const [nowToFetch, setNowToFetch] = useState(false);
   const [RequestApprovals, setRequestApprovals] = useState([]);
   const [mapArray, setMapArray] = useState([]);
   const [companies, setCompanies] = useState([]);
@@ -274,8 +285,7 @@ function EmployeePanel() {
   const functionopenAnchor = () => {
     setTimeout(() => {
       setOpenAnchor(true);
-    }, 500);
-
+    }, 1000);
   };
 
   const [cid, setcid] = useState("");
@@ -331,14 +341,13 @@ function EmployeePanel() {
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
-      console.log(tempData)
+      console.log(tempData);
       setData(userData);
       setmoreFilteredData(userData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
-
 
   const fetchProjections = async () => {
     try {
@@ -352,8 +361,7 @@ function EmployeePanel() {
   };
   //console.log(projectionData)
   const [moreEmpData, setmoreEmpData] = useState([]);
-  const [tempData, setTempData] = useState([])
-
+  const [tempData, setTempData] = useState([]);
 
   const fetchNewData = async (status) => {
     try {
@@ -370,8 +378,8 @@ function EmployeePanel() {
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
 
-      setmoreEmpData(sortedData)
-      setTempData(tempData)
+      setmoreEmpData(sortedData);
+      setTempData(tempData);
       setEmployeeData(
         tempData.filter(
           (obj) =>
@@ -439,8 +447,7 @@ function EmployeePanel() {
 
   useEffect(() => {
     fetchNewData("Matured");
-  }, [nowToFetch])
-
+  }, [nowToFetch]);
 
   const handleFieldChange = (event) => {
     if (
@@ -469,7 +476,7 @@ function EmployeePanel() {
     //console.log(selectedField);
   };
 
-  console.log(tempData)
+  //console.log(tempData);
 
   const handleDateChange = (e) => {
     const dateValue = e.target.value;
@@ -560,7 +567,7 @@ function EmployeePanel() {
   }, [data]);
   useEffect(() => {
     fetchRemarksHistory();
-
+    fetchBookingDeleteRequests();
     fetchRequestDetails();
     // let watchId;
     // const successCallback = (position) => {
@@ -657,6 +664,7 @@ function EmployeePanel() {
   const [companyNumber, setCompanyNumber] = useState(0);
   const [companyId, setCompanyId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
+  const [editFormOpen, setEditFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   console.log(companyName, companyInco);
@@ -711,6 +719,14 @@ function EmployeePanel() {
       console.error("Error updating status:", error.message);
     }
   };
+  const fetchBookingDeleteRequests = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/deleterequestbybde`);
+      setRequestDeletes(response.data); // Assuming your data is returned as an array
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const handleSort = (sortType) => {
     switch (sortType) {
@@ -758,7 +774,7 @@ function EmployeePanel() {
     }));
   };
 
-  console.log(employeeData)
+  console.log(employeeData);
 
   const handleDeleteRemarks = async (remarks_id, remarks_value) => {
     const mainRemarks = remarks_value === currentRemarks ? true : false;
@@ -955,8 +971,19 @@ function EmployeePanel() {
         State: state,
         ename: data.ename,
         AssignDate: new Date(),
+        "Company Address": companyAddress,
+        "Director Name(First)": directorNameFirst,
+        "Director Number(First)": directorNumberFirst,
+        "Director Email(First)": directorEmailFirst,
+        "Director Name(Second)": directorNameSecond,
+        "Director Number(Second)": directorNumberSecond,
+        "Director Email(Second)": directorEmailSecond,
+        "Director Name(Third)": directorNameThird,
+        "Director Number(Third)": directorNumberThird,
+        "Director Email(Third)": directorEmailThird
       })
       .then((response) => {
+        console.log("response" , response)
         console.log("Data sent Successfully");
         Swal.fire({
           title: "Data Added!",
@@ -972,6 +999,51 @@ function EmployeePanel() {
   };
 
   // Function for Parsing Excel File
+  const handleRequestDelete = async (companyId, companyName) => {
+    const confirmDelete = await Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to send a delete request. Are you sure you want to proceed?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, proceed!",
+      cancelButtonText: "No, cancel",
+    });
+
+    if (confirmDelete.isConfirmed) {
+      try {
+        const sendingData = {
+          companyName,
+          companyId,
+          time: new Date().toLocaleTimeString(),
+          date: new Date().toLocaleDateString(),
+          ename: data.ename, // Replace 'Your Ename Value' with the actual value
+        };
+
+        const response = await fetch(`${secretKey}/deleterequestbybde`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(sendingData),
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        Swal.fire({ title: "Delete Request Sent", icon: "success" });
+        const responseData = await response.json();
+        console.log(responseData.message); // Log the response message
+      } catch (error) {
+        Swal.fire({ title: "Failed to send Request", icon: "error" });
+        console.error("Error creating delete request:", error);
+        // Handle the error as per your application's requirements
+      }
+    } else {
+      console.log("No, cancel");
+    }
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -1005,6 +1077,16 @@ function EmployeePanel() {
             State: row[6],
             Status: row[7],
             Remarks: row[8],
+            "Company Address": row[9],
+            "Director Name(First)": row[10],
+            "Director Number(First)": row[11],
+            "Director Email(First)": row[12],
+            "Director Name(Second)": row[13],
+            "Director Number(Second)": row[14],
+            "Director Email(Second)": row[15],
+            "Director Name(Third)": row[16],
+            "Director Number(Third)": row[17],
+            "Director Email(Third)": row[18]
           }));
 
         setCsvData(formattedJsonData);
@@ -1057,12 +1139,15 @@ function EmployeePanel() {
   // csvdata.map((item)=>{
   //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
   // })
+
+  console.log("csv" , csvdata)
   const handleUploadData = async (e) => {
     const name = data.ename;
     const updatedCsvdata = csvdata.map((data) => ({
       ...data,
       ename: name,
     }));
+    console.log("updatedcsv" , updatedCsvdata)
 
     if (updatedCsvdata.length !== 0) {
       // Move setLoading outside of the loop
@@ -1112,8 +1197,11 @@ function EmployeePanel() {
   const fetchRedesignedFormData = async () => {
     try {
       console.log(maturedID);
-      const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
-      const data = response.data.find(obj => obj.company === maturedID);
+      const response = await axios.get(
+        `${secretKey}/redesigned-final-leadData`
+      );
+      const data = response.data.find((obj) => obj.company === maturedID);
+      console.log(data);
       setCurrentForm(data);
 
 
@@ -1126,10 +1214,9 @@ function EmployeePanel() {
     if (maturedID) {
       fetchRedesignedFormData();
     }
+  }, [maturedID]);
 
-  }, [maturedID])
-
-  console.log("Current Form:", currentForm)
+  console.log("Current Form:", currentForm);
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -1259,7 +1346,10 @@ function EmployeePanel() {
 
   const handleProjectionSubmit = async () => {
     try {
-      const newEditCount = currentProjection.editCount === -1 ? 0 : currentProjection.editCount + 1;
+      const newEditCount =
+        currentProjection.editCount === -1
+          ? 0
+          : currentProjection.editCount + 1;
 
       const finalData = {
         ...currentProjection,
@@ -1272,15 +1362,20 @@ function EmployeePanel() {
       if (finalData.offeredServices.length === 0) {
         Swal.fire({ title: "Services is required!", icon: "warning" });
       } else if (finalData.remarks === "") {
-        Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
+        Swal.fire({ title: "Remarks is required!", icon: "warning" });
       } else if (Number(finalData.totalPayment) === 0) {
-        Swal.fire({ title: "Total Payment Can't be 0!", icon: 'warning' });
+        Swal.fire({ title: "Total Payment Can't be 0!", icon: "warning" });
       } else if (finalData.totalPayment === "") {
-        Swal.fire({ title: "Total Payment Can't be 0", icon: 'warning' });
+        Swal.fire({ title: "Total Payment Can't be 0", icon: "warning" });
       } else if (Number(finalData.offeredPrize) === 0) {
-        Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
-      } else if (Number(finalData.totalPayment) > Number(finalData.offeredPrize)) {
-        Swal.fire({ title: 'Total Payment cannot be greater than Offered Prize!', icon: 'warning' });
+        Swal.fire({ title: "Offered Prize is required!", icon: "warning" });
+      } else if (
+        Number(finalData.totalPayment) > Number(finalData.offeredPrize)
+      ) {
+        Swal.fire({
+          title: "Total Payment cannot be greater than Offered Prize!",
+          icon: "warning",
+        });
       } else if (finalData.lastFollowUpdate === null) {
         Swal.fire({
           title: "Last FollowUp Date is required!",
@@ -1309,7 +1404,7 @@ function EmployeePanel() {
           date: "",
           time: "",
           editCount: newEditCount,
-          totalPaymentError: ""  // Increment editCount
+          totalPaymentError: "", // Increment editCount
         });
         fetchProjections();
         setSelectedValues([]);
@@ -1600,21 +1695,21 @@ function EmployeePanel() {
         method: "POST",
         headers: {
           "Content-Type": "application/pdf",
-        }
+        },
       });
 
       if (!response.ok) {
         throw new Error("Failed to send email");
       }
-      console.log("Mail Sent")
+      console.log("Mail Sent");
     } catch (error) {
       console.error("Error sending email:", error);
     }
   };
 
   const formatDatePro = (dateString) => {
-    const [day, month, year] = dateString.split('/');
-    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    const [day, month, year] = dateString.split("/");
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
   };
 
   // ------------------------------------------------------payment-link-work-----------------------------------------
@@ -1625,71 +1720,71 @@ function EmployeePanel() {
   const [orderId, setOrderId] = useState("")
 
 
-  let cashfree;
+  // let cashfree;
 
-  let insitialzeSDK = async function () {
+  // let insitialzeSDK = async function () {
 
-    cashfree = await load({
-      mode: "sandbox",
-    })
-  }
+  //   cashfree = await load({
+  //     mode: "sandbox",
+  //   })
+  // }
 
-  insitialzeSDK()
-  
-  //let version = cashfree.version();
+  // insitialzeSDK()
 
-  const getSessionId = async () => {
-    try {
-      let res = await axios.get(`${secretKey}/payment`)
-      console.log(res.data)
-      if (res.data && res.data.payment_session_id) {
-        console.log(res.data)
-        setOrderId(res.data.order_id)
-        return res.data.payment_session_id
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  // //let version = cashfree.version();
 
-
-  const verifyPayment = async () => {
-    try {
-
-      let res = await axios.post(`${secretKey}/verify`, {
-        orderId: orderId
-      })
-
-      if (res && res.data) {
-        alert("payment verified")
-      }
-
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  const handlePayment = async (e) => {
-    e.preventDefault()
-    try {
-
-      let sessionId = await getSessionId()
-      let checkoutOptions = {
-        paymentSessionId: sessionId,
-        redirectTarget: "_modal",
-      }
-
-      cashfree.checkout(checkoutOptions).then((res) => {
-        console.log("payment initialized")
-
-        verifyPayment(orderId)
-      })
+  // const getSessionId = async () => {
+  //   try {
+  //     let res = await axios.get(`${secretKey}/payment`)
+  //     console.log(res.data)
+  //     if (res.data && res.data.payment_session_id) {
+  //       console.log(res.data)
+  //       setOrderId(res.data.order_id)
+  //       return res.data.payment_session_id
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
 
-    } catch (error) {
-      console.log(error)
-    }
+  // const verifyPayment = async () => {
+  //   try {
 
-  }
+  //     let res = await axios.post(`${secretKey}/verify`, {
+  //       orderId: orderId
+  //     })
+
+  //     if (res && res.data) {
+  //       alert("payment verified")
+  //     }
+
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+  // const handlePayment = async (e) => {
+  //   e.preventDefault()
+  //   try {
+
+  //     let sessionId = await getSessionId()
+  //     let checkoutOptions = {
+  //       paymentSessionId: sessionId,
+  //       redirectTarget: "_modal",
+  //     }
+
+  //     cashfree.checkout(checkoutOptions).then((res) => {
+  //       console.log("payment initialized")
+
+  //       verifyPayment(orderId)
+  //     })
+
+
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+
+  // }
 
 
   // const generatePaymentLink = async () => {
@@ -1718,7 +1813,7 @@ function EmployeePanel() {
       <EmpNav userId={userId} />
 
       {/* Dialog box for Request Data */}
-      {!formOpen ? (
+      {!formOpen ? !editFormOpen ? (
         <>
           <div className="page-wrapper">
             <div className="page-header d-print-none">
@@ -2361,8 +2456,12 @@ function EmployeePanel() {
                           setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData
-                              .filter(obj => obj.Status === 'Matured')
-                              .sort((a, b) => new Date((b.lastActionDate)) - new Date((a.lastActionDate)))
+                              .filter((obj) => obj.Status === "Matured")
+                              .sort(
+                                (a, b) =>
+                                  new Date(b.lastActionDate) -
+                                  new Date(a.lastActionDate)
+                              )
                           );
                         }}
                         className={
@@ -2790,7 +2889,7 @@ function EmployeePanel() {
                                 <td>{company["Company Email"]}</td>
                                 <td>{formatDate(company["AssignDate"])}</td>
 
-                                {(dataStatus === "FollowUp" ||
+                                {/* {(dataStatus === "FollowUp" ||
                                   dataStatus === "Interested") && (
                                     <td>
                                       {company &&
@@ -2817,9 +2916,9 @@ function EmployeePanel() {
                                               color="#fbb900"
                                             />
                                           </IconButton>
-                                          {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} currentProjection1={currentProjection} /> */}
+
                                         </>
-                                      ) : (
+                                      ) : (<>
                                         <IconButton>
                                           <RiEditCircleFill
                                             onClick={() => {
@@ -2835,21 +2934,125 @@ function EmployeePanel() {
                                             }}
                                           />
                                         </IconButton>
-                                      )}
-                                    </td>
-                                  )}
-                                {dataStatus === "Matured" && <>
-                                  <td>
-                                    <div onClick={() => {
-                                      setMaturedID(company._id)
-                                      functionopenAnchor()
-                                    }} style={{ cursor: 'pointer' }}>
-                                      <IconEye />
-                                    </div>
 
+                                      </>
+                                      ) : (
+                                      <IconButton>
+                                        <RiEditCircleFill
+                                          onClick={() => {
+                                            functionopenprojection(
+                                              company["Company Name"]
+                                            );
+                                            setIsEditProjection(true);
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    )}
+                                    </td>
+                                  )} */}
+                                {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                                  <td>
+                                    {company && projectionData && projectionData.some(
+                                      (item) => item.companyName === company["Company Name"]
+                                    ) ? (
+                                      <IconButton>
+                                        <RiEditCircleFill
+                                          onClick={() => {
+                                            functionopenprojection(company["Company Name"]);
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="#fbb900"
+                                        />
+                                      </IconButton>
+                                    ) : (
+                                      <IconButton>
+                                        <RiEditCircleFill
+                                          onClick={() => {
+                                            functionopenprojection(company["Company Name"]);
+                                            setIsEditProjection(true);
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    )}
                                   </td>
-                                </>}
-                                <td onClick={() => setIsOpen(true)}><MailOutlineIcon style={{ cursor: 'pointer' }} /></td>
+                                )}
+
+                                {dataStatus === "Matured" && (
+                                  <>
+                                    <td>
+                                      <div className="d-flex">
+                                        <IconButton
+                                          style={{ marginRight: "5px" }}
+                                          onClick={() => {
+                                            setMaturedID(company._id);
+                                            functionopenAnchor();
+                                          }}
+                                        >
+                                          <IconEye
+                                            style={{
+                                              width: "14px",
+                                              height: "14px",
+                                              color: "#d6a10c",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </IconButton>
+
+                                        <IconButton
+                                          onClick={() => {
+                                            handleRequestDelete(
+                                              company._id,
+                                              company["Company Name"]
+                                            );
+                                          }}
+                                          disabled={requestDeletes.some(
+                                            (item) =>
+                                              item.companyId === company._id &&
+                                              item.request === undefined
+                                          )}
+                                        >
+                                          <DeleteIcon
+                                            style={{
+                                              cursor: "pointer",
+                                              color: "#f70000",
+                                              width: "14px",
+                                              height: "14px",
+                                            }}
+                                          />
+                                        </IconButton>
+                                        {/* <IconButton onClick={()=>{
+                                          setMaturedID(company._id)
+                                          setTimeout(() => {
+                                            setEditFormOpen(true) 
+                                          }, 1000);
+                                          
+                                           }}>
+                                          <Edit style={{
+                                              cursor: "pointer",
+                                              color: "#109c0b",
+                                              width: "14px",
+                                              height: "14px",
+                                            }}/>
+                                        </IconButton> */}
+                                      </div>
+                                    </td>
+                                  </>
+                                )}
+                                {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
                               </tr>
                             ))}
                           </tbody>
@@ -3006,6 +3209,21 @@ function EmployeePanel() {
             </div>
           </div>
         </>
+      ) : (
+        <>
+          <EditableLeadform
+            setFormOpen={setEditFormOpen}
+            companysName={currentForm["Company Name"]}
+            companysEmail={currentForm["Company Email"]}
+            companyNumber={currentForm["Company Number"]}
+            setNowToFetch={setNowToFetch}
+            companysInco={currentForm.incoDate}
+            employeeName={data.ename}
+            employeeEmail={data.email}
+            setDataStatus={setdataStatus}
+          />
+        </>
+
       ) : (
         <>
           <RedesignedForm
@@ -3334,7 +3552,8 @@ function EmployeePanel() {
       </Dialog>
 
       {/* ADD Leads starts here */}
-      <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="sm">
+
+      {/* <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="sm">
         <DialogTitle>
           Company Info{" "}
           <IconButton onClick={closepopupNew} style={{ float: "right" }}>
@@ -3430,7 +3649,263 @@ function EmployeePanel() {
         <button onClick={handleSubmitData} className="btn btn-primary">
           Submit
         </button>
+      </Dialog> */}
+      <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
+        <DialogTitle>
+          Company Info{" "}
+          <IconButton onClick={closepopupNew} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Name</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          setCname(e.target.value);
+                        }}
+                      />
+                    </div>
+
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Email</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setCemail(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Address</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setCompanyAddress(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">Company Number</label>
+                      <input
+                        type="number"
+                        onChange={(e) => {
+                          setCnumber(e.target.value);
+                        }}
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Company Incorporation Date
+                      </label>
+                      <input
+                        onChange={(e) => {
+                          setCidate(e.target.value);
+                        }}
+                        type="date"
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">City</label>
+                      <input
+                        onChange={(e) => {
+                          setCity(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">State</label>
+                      <input
+                        onChange={(e) => {
+                          setState(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                      //disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Name(First)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          setDirectorNameFirst(e.target.value);
+                        }}
+                      />
+                    </div>
+
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Number(First)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorNumberFirst(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Email(First)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorEmailFirst(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Name(Second)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          setDirectorNameSecond(e.target.value);
+                        }}
+                      />
+                    </div>
+
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Number(Second)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorNumberSecond(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Email(Second)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorEmailSecond(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Name(Third)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          setDirectorNameThird(e.target.value);
+                        }}
+                      />
+                    </div>
+
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Number(Third)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorNumberThird(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Email(Third)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorEmailThird(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <button className="btn btn-primary" onClick={handleSubmitData}>
+          Submit
+        </button>
       </Dialog>
+
 
       {/* -------------------------- Import CSV File ---------------------------- */}
       <Dialog open={openCSV} onClose={closepopupCSV} fullWidth maxWidth="sm">
@@ -3449,7 +3924,7 @@ function EmployeePanel() {
               <label for="formFile" class="form-label">
                 Upload CSV File
               </label>
-              <a href={frontendKey + "/EmployeeSample.xlsx"} download>
+              <a href={frontendKey + "/AddLeads_EmployeeSample.xlsx"} download>
                 Download Sample
               </a>
             </div>
@@ -3478,11 +3953,13 @@ function EmployeePanel() {
 
       {/* Side Drawer for Edit Booking Requests */}
       <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
-        <div className="LeadFormPreviewDrawar">
+        <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
           <div className="LeadFormPreviewDrawar-header">
             <div className="Container">
               <div className="d-flex justify-content-between align-items-center">
-                <div ><h2 className="title m-0 ml-1">Current LeadForm</h2></div>
+                <div>
+                  <h2 className="title m-0 ml-1">Current LeadForm</h2>
+                </div>
                 <div>
                   <IconButton onClick={closeAnchor}>
                     <CloseIcon />
@@ -3492,7 +3969,10 @@ function EmployeePanel() {
             </div>
           </div>
           <div>
-            <LeadFormPreview setOpenAnchor={setOpenAnchor} currentLeadForm={currentForm} />
+            <LeadFormPreview
+              setOpenAnchor={setOpenAnchor}
+              currentLeadForm={currentForm}
+            />
           </div>
         </div>
       </Drawer>
@@ -3672,8 +4152,9 @@ function EmployeePanel() {
                     disabled={!isEditProjection}
                   />
 
-                  <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
-
+                  <div style={{ color: "lightred" }}>
+                    {currentProjection.totalPaymentError}
+                  </div>
                 </div>
               </div>
 
@@ -3761,7 +4242,7 @@ function EmployeePanel() {
                 </button>
               </div>
               <div>
-                <button onClick={handlePayment}>
+                <button>
                   Pay now
                 </button>
                 {/* <button onClick={generatePaymentLink}>Generate Payment Link</button>

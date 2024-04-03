@@ -19,6 +19,8 @@ import "../assets/styles.css";
 import Swal from "sweetalert2";
 import ClipLoader from "react-spinners/ClipLoader";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHouseLock } from '@fortawesome/free-solid-svg-icons'
 
 import {
   Button,
@@ -74,6 +76,16 @@ function Leads() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [cname, setCname] = useState("");
   const [cemail, setCemail] = useState("");
+  const [companyAddress, setCompanyAddress] = useState("");
+  const [directorNameFirst, setDirectorNameFirst] = useState("");
+  const [directorNameSecond, setDirectorNameSecond] = useState("");
+  const [directorNameThird, setDirectorNameThird] = useState("");
+  const [directorNumberFirst, setDirectorNumberFirst] = useState(0);
+  const [directorNumberSecond, setDirectorNumberSecond] = useState(0);
+  const [directorNumberThird, setDirectorNumberThird] = useState(0);
+  const [directorEmailFirst, setDirectorEmailFirst] = useState("");
+  const [directorEmailSecond, setDirectorEmailSecond] = useState("");
+  const [directorEmailThird, setDirectorEmailThird] = useState("");
   const [cnumber, setCnumber] = useState(0);
   const [state, setState] = useState("");
   const [openRemarks, openchangeRemarks] = useState(false);
@@ -252,6 +264,12 @@ function Leads() {
   };
   const closepopupNew = () => {
     openchangeNew(false);
+    setOpenFirstDirector(true);
+    setOpenSecondDirector(false);
+    setOpenThirdDirector(false);
+    setFirstPlus(true);
+    setSecondPlus(false);
+    setOpenThirdMinus(false)
     fetchData();
   };
   const closepopupEmp = () => {
@@ -434,6 +452,16 @@ function Leads() {
             "Company Incorporation Date  ": formatDateFromExcel(row[4]), // Assuming the date is in column 'E' (0-based)
             City: row[5],
             State: row[6],
+            "Company Address": row[7],
+            "Director Name(First)": row[8],
+            "Director Number(First)": row[9],
+            "Director Email(First)": row[10],
+            "Director Name(Second)": row[11],
+            "Director Number(Second)": row[12],
+            "Director Email(Second)": row[13],
+            "Director Name(Third)": row[14],
+            "Director Number(Third)": row[15],
+            "Director Email(Third)": row[16]
           }));
 
         setCsvData(formattedJsonData);
@@ -483,12 +511,13 @@ function Leads() {
 
     return formattedDate;
   }
-  
+  //console.log(csvdata)
+
   const handleUploadData = async (e) => {
     // Get current date and time
 
     // newArray now contains objects with updated properties
-    console.log(csvdata)
+
     if (selectedOption === "someoneElse") {
       const updatedCsvdata = csvdata.map((data) => ({
         ...data,
@@ -496,6 +525,7 @@ function Leads() {
       }));
       const currentDate = new Date().toLocaleDateString();
       const currentTime = new Date().toLocaleTimeString();
+      //console.log(updatedCsvdata)
       // Create a new array of objects with desired properties
       const newArray = updatedCsvdata.map((data) => ({
         date: currentDate,
@@ -515,13 +545,12 @@ function Leads() {
           // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
 
           const counter = response.data.counter;
-          console.log("counter", counter)
+          //console.log("counter", counter)
           const successCounter = response.data.sucessCounter;
-          console.log(successCounter)
-          console.log(JSON.stringify(response.data.duplicateEntries))
+          //console.log(successCounter)
 
           if (counter === 0) {
-            console.log(response.data)
+            //console.log(response.data)
             Swal.fire({
               title: "Data Send!",
               text: "Data successfully sent to the Employee",
@@ -530,7 +559,7 @@ function Leads() {
           } else {
             Swal.fire({
               title: 'Do you want dowanload duplicate entries report?',
-              text: 'Do you want to proceed?',
+              text: `Duplicate Entries: ${counter}, Successful Entries: ${successCounter}. Do you want to proceed?`,
               icon: 'question',
               showCancelButton: true,
               confirmButtonText: 'Yes',
@@ -540,7 +569,7 @@ function Leads() {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement("a");
                 link.href = url;
-                link.setAttribute("download", "DuplicateEntries.csv");
+                link.setAttribute("download", "DuplicateEntriesLeads.csv");
                 document.body.appendChild(link);
                 link.click();
                 // User clicked "Yes", perform action
@@ -640,9 +669,19 @@ function Leads() {
         City: city,
         State: state,
         AssignDate: new Date(),
+        "Company Address": companyAddress,
+        "Director Name(First)": directorNameFirst,
+        "Director Number(First)": directorNumberFirst,
+        "Director Email(First)": directorEmailFirst,
+        "Director Name(Second)": directorNameSecond,
+        "Director Number(Second)": directorNumberSecond,
+        "Director Email(Second)": directorEmailSecond,
+        "Director Name(Third)": directorNameThird,
+        "Director Number(Third)": directorNumberThird,
+        "Director Email(Third)": directorEmailThird
       })
       .then((response) => {
-
+        //console.log("response" , response)
         Swal.fire({
           title: "Data Added!",
           text: "Successfully added new Data!",
@@ -655,6 +694,41 @@ function Leads() {
         Swal.fire("Please Enter Unique data!");
       });
   };
+
+  const [openSecondDirector, setOpenSecondDirector] = useState(false)
+  const [openFirstDirector, setOpenFirstDirector] = useState(true)
+  const [openThirdDirector, setOpenThirdDirector] = useState(false)
+  const [firstPlus, setFirstPlus] = useState(true)
+  const [secondPlus, setSecondPlus] = useState(false)
+  const [openThirdMinus, setOpenThirdMinus] = useState(false)
+
+  const functionOpenSecondDirector = () => {
+    setOpenSecondDirector(true);
+    setFirstPlus(false);
+    setSecondPlus(true);
+  };
+  const functionOpenThirdDirector = () => {
+    setOpenSecondDirector(true);
+    setOpenThirdDirector(true);
+    setFirstPlus(false);
+    setSecondPlus(false);
+    setOpenThirdMinus(true);
+  };
+
+  const functionCloseSecondDirector = ()=>{
+    setOpenFirstDirector(false);
+    //setOpenThirdMinus(true);
+    setOpenThirdMinus(false);
+    setOpenSecondDirector(false);
+    setSecondPlus(false);
+  }
+  const functionCloseThirdDirector =()=>{
+    setOpenSecondDirector(true);
+    setOpenThirdDirector(false);
+    setFirstPlus(false);
+    setOpenThirdMinus(false)
+    setSecondPlus(true)
+  }
 
   // ------------------------------------------- CHECK BOX CONTENT----------------------------------------------------
 
@@ -681,7 +755,7 @@ function Leads() {
       });
     }
   };
-  console.log(selectedRows);
+  //console.log(selectedRows);
 
   const exportData = async () => {
     try {
@@ -689,12 +763,13 @@ function Leads() {
         `${secretKey}/exportLeads/`,
         selectedRows
       );
+      //console.log("response",response.data)
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
       dataStatus === "Assigned"
-        ? link.setAttribute("download", "AssignedData.csv")
-        : link.setAttribute("download", "UnAssigned.csv");
+        ? link.setAttribute("download", "AssignedLeads_Admin.csv")
+        : link.setAttribute("download", "UnAssignedLeads_Admin.csv");
 
       document.body.appendChild(link);
       link.click();
@@ -1041,7 +1116,7 @@ function Leads() {
       // Check if the parsed Date object is valid
       if (!isNaN(dateObject.getTime())) {
         // Date object is valid, proceed with further processing
-        console.log("Company Incorporation Date:", dateObject);
+        //console.log("Company Incorporation Date:", dateObject);
 
         // Format the date as yyyy-mm-ddThh:mm:ss.000
         const isoDateString = dateObject.toISOString();
@@ -1056,7 +1131,7 @@ function Leads() {
           "State": companyState,
         };
 
-        console.log("Data to send with updated date format:", dataToSendUpdated);
+        //console.log("Data to send with updated date format:", dataToSendUpdated);
         if (isUpdateMode) {
           await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
           Swal.fire({
@@ -1084,7 +1159,7 @@ function Leads() {
       setIsUpdateMode(false);
       fetchDatadebounce();
       functioncloseModifyPopup();
-      console.log("Data sent successfully");
+      //console.log("Data sent successfully");
     } catch {
       Swal.fire({
         icon: "error",
@@ -1105,7 +1180,7 @@ function Leads() {
   const [isEditProjection, setIsEditProjection] = useState(false);
 
 
-  console.log(companyCity, companyEmail, companyIncoDate, companyState, companyName, companynumber)
+  //console.log(companyCity, companyEmail, companyIncoDate, companyState, companyName, companynumber)
 
   const handleUpdateClick = (id) => {
     console.log(id)
@@ -1116,8 +1191,8 @@ function Leads() {
 
     // // Find the selected data object
     const selectedData = mainData.find((item) => item._id === id);
-    console.log(selectedData["Company Incorporation Date  "])
-    console.log(selectedData)
+    //console.log(selectedData["Company Incorporation Date  "])
+    //console.log(selectedData)
     // console.log(echangename);
 
     // // Update the form data with the selected data values
@@ -1136,7 +1211,7 @@ function Leads() {
     // Check if the parsed Date object is valid
     if (!isNaN(dateObject.getTime())) {
       // Date object is valid, proceed with further processing
-      console.log("Company Incorporation Date:", dateObject);
+      //console.log("Company Incorporation Date:", dateObject);
 
       // Format the date as dd-mm-yyyy
       const day = dateObject.getDate().toString().padStart(2, "0");
@@ -1145,7 +1220,7 @@ function Leads() {
       const formattedDate = `${year}-${month}-${day}`;
       setCompanyIncoDate(formattedDate)
 
-      console.log("Formatted Company Incorporation Date:", formattedDate);
+      //console.log("Formatted Company Incorporation Date:", formattedDate);
 
       // Rest of your code...
     } else {
@@ -1344,7 +1419,7 @@ function Leads() {
 
       {/* Dialog for ADD leads */}
 
-      <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="sm">
+      {/* <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="sm">
         <DialogTitle>
           Company Info{" "}
           <IconButton onClick={closepopupNew} style={{ float: "right" }}>
@@ -1430,7 +1505,7 @@ function Leads() {
                         }}
                         type="text"
                         className="form-control"
-                        disabled={!isEditProjection}
+                        //disabled={!isEditProjection}
                       />
                     </div>
                   </div>
@@ -1442,8 +1517,324 @@ function Leads() {
         <button className="btn btn-primary" onClick={handleSubmitData}>
           Submit
         </button>
-      </Dialog>
+      </Dialog> */}
       {/* Loading Screen */}
+
+      <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
+        <DialogTitle>
+          Company Info{" "}
+          <IconButton onClick={closepopupNew} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="modal-dialog modal-lg" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Name</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          setCname(e.target.value);
+                        }}
+                      />
+                    </div>
+
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Email</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setCemail(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Address</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setCompanyAddress(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">Company Number</label>
+                      <input
+                        type="number"
+                        onChange={(e) => {
+                          setCnumber(e.target.value);
+                        }}
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Company Incorporation Date
+                      </label>
+                      <input
+                        onChange={(e) => {
+                          setCidate(e.target.value);
+                        }}
+                        type="date"
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">City</label>
+                      <input
+                        onChange={(e) => {
+                          setCity(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">State</label>
+                      <input
+                        onChange={(e) => {
+                          setState(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                      //disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                </div>
+                {openFirstDirector && (<div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Name(First)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          setDirectorNameFirst(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Number(First)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorNumberFirst(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Email(First)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorEmailFirst(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>)}
+                {firstPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
+                  <button
+                  onClick={() => { functionOpenSecondDirector() }}
+                  className="btn btn-primary d-none d-sm-inline-block">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 5l0 14" />
+                    <path d="M5 12l14 0" />
+                  </svg>
+                </button>
+                <button className="btn btn-primary d-none d-sm-inline-block">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                    width="24"
+                    height="24"
+                    fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>
+                </button></div>)}
+
+                {openSecondDirector && (
+                  <div className="row">
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Director's Name(Second)</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="Your Company Name"
+                          onChange={(e) => {
+                            setDirectorNameSecond(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Director's Number(Second)</label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="example@gmail.com"
+                          onChange={(e) => {
+                            setDirectorNumberSecond(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Director's Email(Second)</label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="example@gmail.com"
+                          onChange={(e) => {
+                            setDirectorEmailSecond(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>)}
+                {secondPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
+                  <button
+                  onClick={() => { functionOpenThirdDirector() }}
+                  className="btn btn-primary d-none d-sm-inline-block">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 5l0 14" />
+                    <path d="M5 12l14 0" />
+                  </svg>
+                </button>
+                <button className="btn btn-primary d-none d-sm-inline-block" onClick={()=>{functionCloseSecondDirector()}}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                  width="24"
+                  height="24"
+                  fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>
+              </button></div>)}
+
+                {openThirdDirector && (<div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Name(Third)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          setDirectorNameThird(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Number(Third)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorNumberThird(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Email(Third)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorEmailThird(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>)}
+                {openThirdMinus && (<button className="btn btn-primary d-none d-sm-inline-block" onClick={()=>{functionCloseThirdDirector()}}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                  width="24"
+                  height="24"
+                  fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>
+              </button>)}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <button className="btn btn-primary" onClick={handleSubmitData}>
+          Submit
+        </button>
+      </Dialog>
 
       {/* ----------------------------ADD-Lead Ends here------------------------------------------------------------------------  */}
 
@@ -1598,7 +1989,7 @@ function Leads() {
                       Upload CSV File
                     </label>
                   </div>
-                  <a href={frontendKey + "/AdminSample.xlsx"} download>
+                  <a href={frontendKey + "/AddLeads_AdminSample.xlsx"} download>
                     Download Sample
                   </a>
                 </div>
@@ -1813,7 +2204,7 @@ function Leads() {
                   className="feature2"
                 >
                   <div
-                    style={{ margin: "0px 10px" ,display:"none" }}
+                    style={{ margin: "0px 10px", display: "none" }}
                     className="undoDelete"
                   >
                     <div className="btn-list">
@@ -1901,7 +2292,7 @@ function Leads() {
                         data-bs-target="#modal-report"
                         aria-label="Create new report"
                       >
-                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+
                       </a>
                     </div>
                   </div>
@@ -1931,6 +2322,7 @@ function Leads() {
                           <path d="M12 5l0 14" />
                           <path d="M5 12l14 0" />
                         </svg>
+                        {/* <FontAwesomeIcon icon={faHouseLock} /> */}
                         Import CSV
                       </button>
                       <a

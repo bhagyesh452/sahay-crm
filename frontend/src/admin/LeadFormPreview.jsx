@@ -143,7 +143,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                 </div>
               </div>
               <div className="col-sm-9 p-0">
-                <div className="form-label-data">{currentLeadForm.bdeEmail}</div>
+                <div className="form-label-data">{currentLeadForm.bdeEmail ? currentLeadForm.bdeEmail : "-"}</div>
               </div>
             </div>
             <div className="row m-0">
@@ -163,7 +163,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                 </div>
               </div>
               <div className="col-sm-9 p-0">
-                <div className="form-label-data">{currentLeadForm.bdmEmail}</div>
+                <div className="form-label-data">{currentLeadForm.bdmEmail ? currentLeadForm.bdmEmail : "-"}</div>
               </div>
             </div>
             <div className="row m-0">
@@ -188,7 +188,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                 </div>
               </div>
             </div>
-            <div className="row m-0">
+            {currentLeadForm.bookingSource==="Other" && <div className="row m-0">
               <div className="col-sm-3 p-0">
                 <div className="form-label-name">
                   <b>Other Lead Source</b>
@@ -196,10 +196,10 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
               </div>
               <div className="col-sm-9 p-0">
                 <div className="form-label-data">
-                  {currentLeadForm.bookingSource !== "" ? currentLeadForm.bookingSource : "-"}
+                  {currentLeadForm.otherBookingSource}
                 </div>
               </div>
-            </div>
+            </div>}
           </div>
         </div>
         <div className="stepThreePreview">
@@ -281,7 +281,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     </div>
                   </div>
                   <div className="col-sm-9 p-0">
-                    <div className="form-label-data">{obj.paymentTerms}</div>
+                    <div className="form-label-data">{obj.paymentTerms === "Full Advanced" ? "Full Advanced" : "Part-payment"}</div>
                   </div>
                 </div>
                 {obj.firstPayment!==0 && <div className="row m-0">
@@ -291,7 +291,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     </div>
                   </div>
                   <div className="col-sm-9 p-0">
-                    <div className="form-label-data">{obj.firstPayment}</div>
+                    <div className="form-label-data"> ₹ {Number(obj.firstPayment).toFixed(2)}</div>
                   </div>
                 </div>}
                 {obj.secondPayment!==0 && <div className="row m-0">
@@ -301,7 +301,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     </div>
                   </div>
                   <div className="col-sm-9 p-0">
-                    <div className="form-label-data">₹{Number(obj.secondPayment).toFixed(2)} - { isNaN(new Date(obj.secondPaymentRemarks)) ? obj.secondPaymentRemarks : `Payment On ${obj.secondPaymentRemarks}`}</div>
+                    <div className="form-label-data">₹ {Number(obj.secondPayment).toFixed(2)} - { isNaN(new Date(obj.secondPaymentRemarks)) ? obj.secondPaymentRemarks : `Payment On ${obj.secondPaymentRemarks}`}</div>
                   </div>
                 </div>}
                 {obj.thirdPayment!==0 && <div className="row m-0">
@@ -311,7 +311,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     </div>
                   </div>
                   <div className="col-sm-9 p-0">
-                    <div className="form-label-data">{Number(obj.thirdPayment).toFixed(2)} - {isNaN(new Date(obj.thirdPaymentRemarks)) ? obj.thirdPaymentRemarks : `Payment On ${obj.thirdPaymentRemarks}`}</div>
+                    <div className="form-label-data">₹ {Number(obj.thirdPayment).toFixed(2)} - {isNaN(new Date(obj.thirdPaymentRemarks)) ? obj.thirdPaymentRemarks : `Payment On ${obj.thirdPaymentRemarks}`}</div>
                   </div>
                 </div>}
                {obj.fourthPayment!==0 && <div className="row m-0">
@@ -321,7 +321,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     </div>
                   </div>
                   <div className="col-sm-9 p-0">
-                    <div className="form-label-data">{Number(obj.fourthPayment).toFixed(2)} - {isNaN(new Date(obj.fourthPaymentRemarks)) ? obj.fourthPaymentRemarks : `Payment On ${obj.fourthPaymentRemarks}`}</div>
+                    <div className="form-label-data"> ₹ {Number(obj.fourthPayment).toFixed(2)} - {isNaN(new Date(obj.fourthPaymentRemarks)) ? obj.fourthPaymentRemarks : `Payment On ${obj.fourthPaymentRemarks}`}</div>
                   </div>
                 </div>}
                 <div className="row m-0">
@@ -353,12 +353,12 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
             <div className="row m-0">
               <div className="col-sm-4">
                 <div className="row">
-                  <div className="col-sm-4 p-0">
+                  <div className="col-sm-6 p-0">
                     <div className="form-label-name">
                       <b>Total Payment</b>
                     </div>
                   </div>
-                  <div className="col-sm-8 p-0">
+                  <div className="col-sm-6 p-0">
                     <div className="form-label-data">
                       ₹ {(Number(currentLeadForm.totalAmount).toFixed(2)).toLocaleString()}
                     </div>
@@ -367,12 +367,12 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
               </div>
               <div className="col-sm-4">
                 <div className="row">
-                  <div className="col-sm-5 p-0">
+                  <div className="col-sm-6 p-0">
                     <div className="form-label-name">
                       <b>Received Payment</b>
                     </div>
                   </div>
-                  <div className="col-sm-7 p-0">
+                  <div className="col-sm-6 p-0">
                     <div className="form-label-data">
                       ₹ {(Number(currentLeadForm.receivedAmount).toFixed(2)).toLocaleString()}
                     </div>
@@ -381,12 +381,12 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
               </div>
               <div className="col-sm-4">
                 <div className="row">
-                  <div className="col-sm-4 p-0">
+                  <div className="col-sm-6 p-0">
                     <div className="form-label-name">
                       <b>Pending Payment</b>
                     </div>
                   </div>
-                  <div className="col-sm-8 p-0">
+                  <div className="col-sm-6 p-0">
                     <div className="form-label-data">
                       ₹ {(Number(currentLeadForm.pendingAmount).toFixed(2)).toLocaleString()}
                     </div>
