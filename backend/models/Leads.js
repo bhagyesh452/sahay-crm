@@ -47,8 +47,38 @@ const CompanySchema = new mongoose.Schema({
   },
   lastActionDate:{
     type:String
+  },
+  "Company Address":{
+    type:String
+  },
+  'Director Name(First)':{
+    type:String
+  },
+  'Director Number(First)':{
+    type:Number
+  },
+  'Director Email(First)':{
+    type:String
+  },
+  'Director Name(Second)':{
+    type:String
+  },
+  'Director Number(Second)':{
+    type:Number
+  },
+  'Director Email(Second)':{
+    type:String
+  },
+  'Director Name(Third)':{
+    type:String
+  },
+  'Director Number(Third)':{
+    type:Number
+  },
+  'Director Email(Third)':{
+    type:String
   }
-  
+
 });
 
 const CompanyModel = mongoose.model('newCdata', CompanySchema);

@@ -378,19 +378,23 @@ const deleteAllData = async () => {
 
 app.post("/api/leads", async (req, res) => {
   const csvData = req.body;
+  //console.log("csvdata" , csvData)
   let counter = 0;
   let successCounter = 0;
   let duplicateEntries = []; // Array to store duplicate entries
 
   try {
     for (const employeeData of csvData) {
+      console.log("employee" , employeeData)
       try {
         const employeeWithAssignData = {
           ...employeeData,
           AssignDate: new Date(),
         };
         const employee = new CompanyModel(employeeWithAssignData);
-        await employee.save();
+        //console.log("newemployee" , employee)
+        const savedEmployee = await employee.save();
+        //console.log("saved" , savedEmployee)
         successCounter++;
       } catch (error) {
           duplicateEntries.push(employeeData);
@@ -508,7 +512,8 @@ app.get("/api/specific-company/:companyId", async (req, res) => {
   }
 });
 app.post("/api/requestCompanyData", async (req, res) => {
-  const csvData = req.body;
+  //const csvData = req.body;
+  console.log("csv" , csvData)
 
   try {
     for (const employeeData of csvData) {
@@ -517,8 +522,10 @@ app.post("/api/requestCompanyData", async (req, res) => {
           ...employeeData,
           AssignDate: new Date(),
         };
+        //console.log("employeedata" , employeeData)
         const employee = new CompanyRequestModel(employeeWithAssignData);
         const savedEmployee = await employee.save();
+        //console.log("savedemployee" , savedEmployee)
       } catch (error) {
         console.error("Error saving employee:", error.message);
         // res.status(500).json({ error: 'Internal Server Error' });
@@ -536,6 +543,7 @@ app.post("/api/requestCompanyData", async (req, res) => {
 
 app.post("/api/manual", async (req, res) => {
   const receivedData = req.body;
+  console.log("receiveddata" , receivedData)
 
   // console.log(receivedData);
 
@@ -2418,7 +2426,7 @@ app.delete("/api/deleterequestbybde/:cname", async (req, res) => {
 
     // Find document by company name and delete it
     const updatedCompany = await RequestDeleteByBDE.findOneAndUpdate(
-      { companyName },
+      { companyName , request : undefined },
       { $set: { request: true } },
       { new: true }
     );
@@ -2727,75 +2735,13 @@ app.post("/api/exportLeads/", async (req, res) => {
     res.setHeader("Content-Type", "text/csv");
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=UnassignedData.csv"
+      "attachment; filename=UnAssignedLeads_Admin.csv"
     );
 
     const csvString = csvData.map((row) => row.join(",")).join("\n");
     // Send response with CSV data
     // Send response with CSV data
-    console.log(csvString)
-    res.status(200).end(csvString);
-    // console.log(csvString)
-    // Here you're ending the response
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-app.post("/api/exportLeadsDuplicateEntries/", async (req, res) => {
-  try {
-    const selectedIds = req.body;
-
-    const leads = await CompanyModel.find({
-      _id: { $in: selectedIds },
-    });
-
-    const csvData = [];
-    // Push the headers as the first row
-    csvData.push([
-      "SR. NO",
-      "Company Name",
-      "Company Number",
-      "Company Email",
-      "Company Incorporation Date  ",
-      "City",
-      "State",
-      "ename",
-      "AssignDate",
-      "Status",
-      "Remarks",
-    ]);
-
-    // Push each lead as a row into the csvData array
-    leads.forEach((lead, index) => {
-      const rowData = [
-        index + 1,
-        lead["Company Name"],
-        lead["Company Number"],
-        lead["Company Email"],
-        lead["Company Incorporation Date  "],
-        lead["City"],
-        lead["State"],
-        lead["ename"],
-        lead["AssignDate"],
-        lead["Status"],
-        lead["Remarks"],
-      ];
-      csvData.push(rowData);
-      // console.log("rowData:" , rowData)
-    });
-
-    // Use fast-csv to stringify the csvData array
-    res.setHeader("Content-Type", "text/csv");
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=UnassignedData.csv"
-    );
-
-    const csvString = csvData.map((row) => row.join(",")).join("\n");
-    // Send response with CSV data
-    // Send response with CSV data
+    //console.log(csvString)
     res.status(200).end(csvString);
     // console.log(csvString)
     // Here you're ending the response
@@ -2806,60 +2752,6 @@ app.post("/api/exportLeadsDuplicateEntries/", async (req, res) => {
 });
 
 
-
-
-
-
-
-
-// ------------------------------api to upload docs from processing window------------------------------
-
-app.post(
-  "/api/uploadAttachment/:companyName",
-  upload.fields([
-    { name: "otherDocs", maxCount: 50 },
-    { name: "paymentReceipt", maxCount: 1 },
-  ]),
-  async (req, res) => {
-    try {
-      const companyName = req.params.companyName;
-
-      // Check if company name is provided
-      if (!companyName) {
-        return res.status(404).send("Company name not provided");
-      }
-
-      // Find the company by its name
-      const company = await LeadModel.findOne({ companyName });
-      // console.log(company)
-      // Check if company exists
-      if (!company) {
-        return res.status(404).send("Company not found");
-      }
-
-      // const paymentDoc = req.files["paymentReceipt"];
-
-      // Update the payment receipt field of the company document
-      const paymentReceipt = req.files["paymentReceipt"]
-        ? req.files["paymentReceipt"][0].filename
-        : null;
-      // console.log(paymentReceipt)
-      // console.log(req.files)
-
-      // Update the payment receipt field in the company document
-      company.paymentReceipt = paymentReceipt;
-
-      await company.save();
-
-      socketIO.emit("viewpaymenteciept", company);
-
-      res.status(200).send("Payment receipt updated successfully!");
-    } catch (error) {
-      console.error("Error updating payment receipt:", error);
-      res.status(500).send("Error updating payment receipt.");
-    }
-  }
-);
 
 app.post(
   "/api/uploadotherdocsAttachment/:companyName",
@@ -3142,21 +3034,19 @@ app.post(
         const existingData = await RedesignedDraftModel.findOne({
           "Company Name": companyName,
         });
-
         if (existingData) {
-          // Update existing data if found
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-            { "Company Name": companyName },
+            {"Company Name": companyName },
             {
               $set: {
                 bdeName: newData.bdeName || existingData.bdeName,
                 bdeEmail: newData.bdeEmail || existingData.bdeEmail,
                 bdmName: newData.bdmName || existingData.bdmName,
+                otherBdmName : newData.otherBdmName || existingData.otherBdmName,
                 bdmEmail: newData.bdmEmail || existingData.bdmEmail,
                 bookingDate: newData.bookingDate || existingData.bookingDate,
-                bookingSource:
-                  newData.bookingSource || existingData.bookingSource,
-                otherBookingSource: newData.otherBookingSource || existingData.otherBookingSource,
+                bookingSource: newData.bookingSource || existingData.bookingSource,
+                otherBookingSource:newData.otherBookingSource || existingData.otherBookingSource,
                 Step2Status: true,
               },
             },
@@ -3233,6 +3123,7 @@ app.post(
           return true; // Respond with updated data
         }
       } else if (Step === "step5") {
+
         const updatedData = await RedesignedDraftModel.findOneAndUpdate(
           { "Company Name": companyName },
           {
@@ -3283,6 +3174,210 @@ app.post(
     }
   }
 );
+app.post(
+  "/api/redesigned-edit-leadData/:CompanyName/:step",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 2 },
+  ]),
+  async (req, res) => {
+    try {
+      const companyName = req.params.CompanyName;
+      const newData = req.body;
+      const Step = req.params.step;
+      if (Step === "step1") {
+        const existingData = await EditableDraftModel.findOne({
+          "Company Name": companyName,
+        });
+
+        if (existingData) {
+          // Update existing data if found
+          const updatedData = await EditableDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                "Company Email":
+                  newData["Company Email"] || existingData["Company Email"],
+                "Company Name":
+                  newData["Company Name"] || existingData["Company Name"],
+                "Company Number":
+                  newData["Company Number"] || existingData["Company Number"],
+                incoDate: newData.incoDate || existingData.incoDate,
+                panNumber: newData.panNumber || existingData.panNumber,
+                gstNumber: newData.gstNumber || existingData.gstNumber,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        } else {
+          // Create new data if not found
+          const createdData = await EditableDraftModel.create({
+            "Company Email": newData["Company Email"],
+            "Company Name": newData["Company Name"],
+            "Company Number": newData["Company Number"],
+            incoDate: newData.incoDate,
+            panNumber: newData.panNumber,
+            gstNumber: newData.gstNumber,
+            Step1Status: true,
+          });
+          res.status(201).json(createdData); // Respond with created data
+          return true;
+        }
+      } else if (Step === "step2") {
+        const existingData = await EditableDraftModel.findOne({
+          "Company Name": companyName,
+        });
+        if (existingData) {
+          const updatedData = await EditableDraftModel.findOneAndUpdate(
+            {"Company Name": companyName },
+            {
+              $set: {
+                bdeName: newData.bdeName || existingData.bdeName,
+                bdeEmail: newData.bdeEmail || existingData.bdeEmail,
+                bdmName: newData.bdmName || existingData.bdmName,
+                otherBdmName : newData.otherBdmName || existingData.otherBdmName,
+                bdmEmail: newData.bdmEmail || existingData.bdmEmail,
+                bookingDate: newData.bookingDate || existingData.bookingDate,
+                bookingSource: newData.bookingSource || existingData.bookingSource,
+                otherBookingSource:newData.otherBookingSource || existingData.otherBookingSource,
+                Step2Status: true,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        }
+      } else if (Step === "step3") {
+        const existingData = await EditableDraftModel.findOne({
+          "Company Name": companyName,
+        });
+
+        if (existingData) {
+          // Update existing data if found
+          const updatedData = await EditableDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                services: newData.services || existingData.services,
+                numberOfServices:
+                  newData.numberOfServices || existingData.numberOfServices,
+                caCase: newData.caCase,
+                caCommission: newData.caCommission,
+                caNumber: newData.caNumber,
+                caEmail: newData.caEmail,
+                totalAmount: newData.totalAmount || existingData.totalAmount,
+                pendingAmount:
+                  newData.pendingAmount || existingData.pendingAmount,
+                receivedAmount:
+                  newData.receivedAmount || existingData.receivedAmount,
+                Step3Status: true,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        }
+      } else if (Step === "step4") {
+        const existingData = await EditableDraftModel.findOne({
+          "Company Name": companyName,
+        });
+        console.log(newData.paymentReceipt[0])
+        newData.otherDocs =
+          req.files["otherDocs"] === undefined
+            ? ""
+            : req.files["otherDocs"].map((file) => file);
+        newData.paymentReceipt =
+          req.files["paymentReceipt"] === undefined
+            ? ""
+            : req.files["paymentReceipt"].map((file) => file);
+        if (existingData) {
+          // Update existing data if found
+          const updatedData = await EditableDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                totalAmount: newData.totalAmount || existingData.totalAmount,
+                pendingAmount:
+                  newData.pendingAmount || existingData.pendingAmount,
+                receivedAmount:
+                  newData.receivedAmount || existingData.receivedAmount,
+                paymentReceipt:
+                  newData.paymentReceipt || existingData.paymentReceipt,
+                otherDocs: newData.otherDocs || existingData.otherDocs,
+                paymentMethod: newData.paymentMethod || newData.paymentMethod,
+                extraNotes: newData.extraNotes || newData.extraNotes,
+                Step4Status: true,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        }else{
+          const createdData = await EditableDraftModel.create({
+            totalAmount: newData.totalAmount || existingData.totalAmount,
+                pendingAmount:
+                  newData.pendingAmount || existingData.pendingAmount,
+                receivedAmount:
+                  newData.receivedAmount || existingData.receivedAmount,
+                paymentReceipt:
+                  newData.paymentReceipt || existingData.paymentReceipt,
+                otherDocs: newData.otherDocs || existingData.otherDocs,
+                paymentMethod: newData.paymentMethod || newData.paymentMethod,
+                extraNotes: newData.extraNotes || newData.extraNotes,
+                Step4Status: true,
+          });
+          res.status(200).json(createdData);
+          return true;
+        }
+      } else if (Step === "step5") {
+        const existingData = await EditableDraftModel.findOne({
+          "Company Name": companyName,
+        });
+     if(existingData){
+      const requestBy = req.body;
+      const date = new Date();
+       
+      const updatedData = await EditableDraftModel.findOneAndUpdate(
+        { "Company Name": companyName },
+        {
+          $set: {
+            Step5Status: true,
+            requestBy:requestBy,
+            requestDate
+          },
+        },
+        { new: true }
+      );
+      res.status(200).json(updatedData);
+      return true; 
+     }else{
+      res.status(200).json({message:"No Changes made"});
+      return true;
+     }
+       
+      }
+      // Add uploaded files information to newData
+
+    } catch (error) {
+      console.error("Error creating/updating data:", error);
+      res.status(500).send("Error creating/updating data"); // Send an error response
+    }
+  }
+);
+app.get('/api/editable-LeadData', async (req, res) => {
+  try {
+    const data = await EditableDraftModel.find(); // Fetch all data from the collection
+    res.json(data); // Send the data as JSON response
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 // app.post('/api/redesigned-final-leadData/:CompanyName', async (req, res) => {
 //   try {
@@ -4048,11 +4143,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].secondPayment}
+              ${Number(newData.services[i].secondPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].secondPaymentRemarks)) ? newData.services[i].secondPaymentRemarks : `Payment On ${newData.services[i].secondPaymentRemarks}`}
           </div>
         </div>
       </div>
-      <div style="display: ${displayPaymentTerms}; flex-wrap: wrap">
+      <div style="display: ${newData.services[i].thirdPayment === 0 ? "none" : "flex"}; flex-wrap: wrap">
         <div style="width: 25%">
           <div style="
                 border: 1px solid #ccc;
@@ -4068,11 +4163,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].thirdPayment}
+              ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].thirdPaymentRemarks)) ? newData.services[i].thirdPaymentRemarks : `Payment On ${newData.services[i].thirdPaymentRemarks}`}
           </div>
         </div>
       </div>
-      <div style="display: ${displayPaymentTerms}; flex-wrap: wrap">
+      <div style="display: ${newData.services[i].fourthPayment === 0 ? "none" : "flex"}; flex-wrap: wrap">
         <div style="width: 25%">
           <div style="
                 border: 1px solid #ccc;
@@ -4088,7 +4183,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].fourthPayment}
+              ${Number(newData.services[i].fourthPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].fourthPaymentRemarks)) ? newData.services[i].fourthPaymentRemarks : `Payment On ${newData.services[i].fourthPaymentRemarks}`}
           </div>
         </div>
       </div>
@@ -4125,6 +4220,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const recipients = [
       newData.bdeEmail,
       newData.bdmEmail,
+      "bookings@startupsahay.com"
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -4438,7 +4534,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData.bookingSource}
+                    ${newData.otherBookingSource}
                 </div>
               </div>
             </div>
@@ -4727,7 +4823,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           paymentServices = `
         <tr>
           <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
-          <td>${newData.services[i].secondPaymentRemarks}</td>
+          <td>${newData.services[i].paymentTerms !== "Full Advanced" ? newData.services[i].secondPaymentRemarks : "-"}</td>
         </tr>
         `;
         }
@@ -4792,17 +4888,17 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   `./Document/${newData["Company Name"]}.pdf`
                 );
                 sendMail2(
-                  ["aakashseth452@gmail.com"],
+                  [new Data["Company Email"]],
                   `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                   ``,
                   `
               <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
-                <h1> :-)</h1>       
+                <h1>Thank You for your response.</h1>       
               </div>
             `,
                   mainBuffer
                 );
-              }, 5000);
+              }, 4000);
             } catch (emailError) {
               console.error("Error sending email:", emailError);
               res.status(500).send("Error sending email with PDF attachment");

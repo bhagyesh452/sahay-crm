@@ -51,7 +51,6 @@ const ServiceSchema = new mongoose.Schema({
 const RedesignedDraftModelSchema = new mongoose.Schema({
   "Company Name": {
     type: String,
-    unique:true
   },
   "Company Number": {
     type: Number,
@@ -149,11 +148,17 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
     type: Boolean,
     default:false
   },
+  requestBy:{
+    type:String
+  },
+ requestDate:{
+    type:String
+ }
 });
 
-const RedesignedDraftModel = mongoose.model(
-  "RedesignedDraftModel",
+const EditableDraftModel = mongoose.model(
+  "EditableDraftModel",
   RedesignedDraftModelSchema
 );
 
-module.exports = RedesignedDraftModel;
+module.exports = EditableDraftModel;
