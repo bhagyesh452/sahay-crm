@@ -44,6 +44,10 @@ const LeadModel_2 = require("./models/Leadform_2");
 const RedesignedLeadformModel = require("./models/RedesignedLeadform");
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
+const axios = require('axios');
+const crypto = require('crypto');
+const { Cashfree } = require('cashfree-pg');
+
 
 // const http = require('http');
 // const socketIo = require('socket.io');
@@ -53,6 +57,10 @@ const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(cors());
 app.use(compression());
+app.use(express.urlencoded({
+  extended: true
+}));
+
 // app.use(session({
 //   secret: 'boombadaboom', // Replace with a secret key for session encryption
 //   resave: false,
@@ -138,33 +146,108 @@ app.post("/api/admin/login-admin", async (req, res) => {
 
 // -------------------------------api for payment link---------------------------------
 
+// const CASHFREE_API_KEY = '218584e2c3a22f9395f52faa1b485812';
+// const CASHFREE_SECRET_KEY = 'd501ddfae2bdb6fabb52844038e67b592fb09398';
 
-// Define route to generate payment link
-// app.get('/api/generatePaymentLink', async (req, res) => {
-//     try {
-//         const paymentLinkData = {
-//             appId: '218584e2c3a22f9395f52faa1b485812',
-//             secretKey: 'd501ddfae2bdb6fabb52844038e67b592fb09398',
-//             orderId: 'ORDER123',
-//             orderAmount: '100', // Amount in INR
-//             customerName: 'John Doe',
-//             customerPhone: '1234567890',
-//             customerEmail: 'john@example.com',
-//             //returnUrl: 'http://yourwebsite.com/payment/success', // Redirect URL after successful payment
-//            // notifyUrl: 'http://yourwebsite.com/payment/notify', // Webhook URL to receive payment notifications
-//         };
+// app.post('/api/generatePaymentLink', async (req, res) => {
+//   console.log(req.body)
+//   try {
+//     const { orderId, amount, customerName, customerEmail, customerPhone } = req.body;
 
-//         const response = await axios.post('https://test.cashfree.com/api/v1/order/create', paymentLinkData);
-//         const paymentLink = response.data.paymentLink;
-//         res.json({ paymentLink });
-//     } catch (error) {
-//         console.error('Error generating payment link:', error);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
+//     const data = {
+//       appId: CASHFREE_API_KEY,
+//       orderId,
+//       orderAmount: amount.toString(),
+//       orderCurrency: 'INR',
+//       orderNote: 'Payment for services',
+//       customerName,
+//       customerPhone,
+//       customerEmail,
+//     };
+//     const config = {
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'x-client-id': CASHFREE_API_KEY,
+//         'x-client-secret': CASHFREE_SECRET_KEY,
+//       },
+//     };
+
+//     const response = await axios.post('https://test.cashfree.com/api/v1/order/create', data, config);
+//     const paymentLink = response.data;
+//     console.log(paymentLink)
+//     res.json({ paymentLink });
+//   } catch (error) {
+//     console.error('Error generating payment link:', error);
+//     res.status(500).json({ error: 'Could not generate payment link' });
+//   }
 // });
 
-// app.post('/api/payment' , newOrderId)
-// app.get('/status/:orderid' , checkstatus)
+Cashfree.XClientId = process.env.CLIENT_ID;
+Cashfree.XClientSecret = process.env.CLIENT_SECRET;
+Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
+
+
+
+function generateOrderId() {
+  const uniqueId = crypto.randomBytes(16).toString('hex');
+
+  const hash = crypto.createHash('sha256');
+  hash.update(uniqueId);
+
+  const orderId = hash.digest('hex');
+  console.log(orderId)
+  return orderId.substr(0, 12);
+}
+
+
+app.get('/api/payment', async (req, res) => {
+
+  try {
+
+    let request = {
+      "order_amount": 1.00,
+      "order_currency": "INR",
+      "order_id": await generateOrderId(),
+      "customer_details": {
+        "customer_id": "webcodder01",
+        "customer_phone": "9999999999",
+        "customer_name": "Web Codder",
+        "customer_email": "webcodder@example.com"
+      },
+    }
+
+    Cashfree.PGCreateOrder("2022-09-01", request).then(response => {
+      console.log(response.data);
+      res.json(response.data);
+
+    }).catch(error => {
+      console.error(error.response.data.message);
+    })
+
+  } catch (error) {
+    console.log(error);
+  }
+
+
+})
+
+app.post('/api/verify', async (req, res) => {
+  try {
+
+    let { orderId } = req.body;
+
+    Cashfree.PGOrderFetchPayments("2023-08-01", orderId).then((response) => {
+
+      res.json(response.data);
+    }).catch(error => {
+      console.error(error.response.data.message);
+    })
+
+
+  } catch (error) {
+    console.log(error);
+  }
+})
 
 
 
@@ -259,10 +342,45 @@ const deleteAllData = async () => {
 
 // deleteAllData();
 
+// app.post("/api/leads", async (req, res) => {
+//   const csvData = req.body;
+//   let counter = 0;
+//   let sucessCounter = 0;
+
+//   try {
+//     for (const employeeData of csvData) {
+//       try {
+//         const employeeWithAssignData = {
+//           ...employeeData,
+//           AssignDate: new Date(),
+//         };
+//         const employee = new CompanyModel(employeeWithAssignData);
+//         const savedEmployee = await employee.save();
+//         sucessCounter++;
+//       } catch (error) {
+//         console.error("Error saving employee:", error.message);
+//         counter++;
+//         // res.status(500).json({ error: 'Internal Server Error' });
+
+//         // Handle the error for this specific entry, but continue with the next one
+//       }
+//     }
+//     res.status(200).json({
+//       message: "Data sent successfully",
+//       counter: counter,
+//       sucessCounter: sucessCounter,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal Server Error" });
+//     console.error("Error in bulk save:", error.message);
+//   }
+// });
+
 app.post("/api/leads", async (req, res) => {
   const csvData = req.body;
   let counter = 0;
-  let sucessCounter = 0;
+  let successCounter = 0;
+  let duplicateEntries = []; // Array to store duplicate entries
 
   try {
     for (const employeeData of csvData) {
@@ -272,27 +390,68 @@ app.post("/api/leads", async (req, res) => {
           AssignDate: new Date(),
         };
         const employee = new CompanyModel(employeeWithAssignData);
-        const savedEmployee = await employee.save();
-        sucessCounter++;
+        await employee.save();
+        successCounter++;
       } catch (error) {
+          duplicateEntries.push(employeeData);
+          //console.log("kuch h ye" , duplicateEntries);
         console.error("Error saving employee:", error.message);
         counter++;
-        // res.status(500).json({ error: 'Internal Server Error' });
-
-        // Handle the error for this specific entry, but continue with the next one
       }
     }
-
-    res.status(200).json({
-      message: "Data sent successfully",
-      counter: counter,
-      sucessCounter: sucessCounter,
-    });
+    if (duplicateEntries.length > 0) {
+      // If there are duplicate entries, create and send CSV
+      const csvString = createCSVString(duplicateEntries);
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", "attachment; filename=DuplicateEntries.csv");
+      res.status(200).end(csvString);
+      //console.log("csvString" , csvString)
+    } else {
+      res.status(200).json({
+        message: "Data sent successfully",
+        counter: counter,
+        successCounter: successCounter,
+      });
+    }
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
     console.error("Error in bulk save:", error.message);
   }
 });
+
+function createCSVString(data) {
+  const csvData = [];
+  //console.log('data' , data)
+  // Push the headers as the first row
+  csvData.push([
+    "Company Name",
+    "Company Number",
+    "Company Email",
+    "Company Incorporation Date",
+    "City",
+    "State",
+    "ename",
+  ]);
+
+  // Push each duplicate entry as a row into the csvData array
+  data.forEach((entry) => {
+    const rowData = [
+      entry["Company Name"],
+      entry["Company Number"],
+      entry["Company Email"],
+      entry["Company Incorporation Date"],
+      entry["City"],
+      entry["State"],
+      entry["ename"],
+    ];
+    csvData.push(rowData);
+  });
+
+  return csvData.map((row) => row.join(",")).join("\n");
+}
+
+
+
 app.post("/api/employee-history", async (req, res) => {
   const csvData = req.body;
 
@@ -315,6 +474,7 @@ app.post("/api/employee-history", async (req, res) => {
     console.error("Error in bulk save:", error.message);
   }
 });
+
 app.get("/api/employee-history/:companyName", async (req, res) => {
   try {
     // Extract the companyName from the URL parameter
@@ -331,6 +491,8 @@ app.get("/api/employee-history/:companyName", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 app.get("/api/specific-company/:companyId", async (req, res) => {
   try {
     const companyId = req.params.companyId;
@@ -1046,7 +1208,7 @@ app.put("/api/neweinfo/:id", async (req, res) => {
           existing["Company Name"] === data["Company Name"] &&
           existing["Company Number"] === data["Company Number"] &&
           existing["Company Incorporation Date  "] ===
-            data["Company Incorporation Date  "] &&
+          data["Company Incorporation Date  "] &&
           existing["Company Email"] === data["Company Email"] &&
           existing.City === data.City &&
           existing.State === data.State
@@ -2517,7 +2679,71 @@ app.get("/api/exportdatacsv", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
 app.post("/api/exportLeads/", async (req, res) => {
+  try {
+    const selectedIds = req.body;
+
+    const leads = await CompanyModel.find({
+      _id: { $in: selectedIds },
+    });
+
+    const csvData = [];
+    // Push the headers as the first row
+    csvData.push([
+      "SR. NO",
+      "Company Name",
+      "Company Number",
+      "Company Email",
+      "Company Incorporation Date  ",
+      "City",
+      "State",
+      "ename",
+      "AssignDate",
+      "Status",
+      "Remarks",
+    ]);
+
+    // Push each lead as a row into the csvData array
+    leads.forEach((lead, index) => {
+      const rowData = [
+        index + 1,
+        lead["Company Name"],
+        lead["Company Number"],
+        lead["Company Email"],
+        lead["Company Incorporation Date  "],
+        lead["City"],
+        lead["State"],
+        lead["ename"],
+        lead["AssignDate"],
+        lead["Status"],
+        lead["Remarks"],
+      ];
+      csvData.push(rowData);
+      // console.log("rowData:" , rowData)
+    });
+
+    // Use fast-csv to stringify the csvData array
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=UnassignedData.csv"
+    );
+
+    const csvString = csvData.map((row) => row.join(",")).join("\n");
+    // Send response with CSV data
+    // Send response with CSV data
+    console.log(csvString)
+    res.status(200).end(csvString);
+    // console.log(csvString)
+    // Here you're ending the response
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/api/exportLeadsDuplicateEntries/", async (req, res) => {
   try {
     const selectedIds = req.body;
 
@@ -2578,6 +2804,13 @@ app.post("/api/exportLeads/", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+
+
+
+
+
+
 
 // ------------------------------api to upload docs from processing window------------------------------
 
@@ -2923,7 +3156,7 @@ app.post(
                 bookingDate: newData.bookingDate || existingData.bookingDate,
                 bookingSource:
                   newData.bookingSource || existingData.bookingSource,
-                otherBookingSource:newData.otherBookingSource || existingData.otherBookingSource,
+                otherBookingSource: newData.otherBookingSource || existingData.otherBookingSource,
                 Step2Status: true,
               },
             },
@@ -3623,7 +3856,7 @@ app.delete('/api/redesigned-delete-booking/:companyId', async (req, res) => {
     const companyId = req.params.companyId;
     // Find and delete the booking with the given companyId
     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({ company: companyId });
-    const deleteMainBooking = await CompanyModel.findByIdAndDelete({_id : companyId});
+    const deleteMainBooking = await CompanyModel.findByIdAndDelete({ _id: companyId });
     if (!deletedBooking) {
       return res.status(404).send('Booking not found');
     }
@@ -3709,13 +3942,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${
-              newData.services[i].serviceName === "Start Up Certificate"
-                ? newData.services[i].withDSC
-                  ? "Start Up Certificate With DSC"
-                  : "Start Up Certificate"
-                : newData.services[i].serviceName
-            }
+            ${newData.services[i].serviceName === "Start Up Certificate"
+            ? newData.services[i].withDSC
+              ? "Start Up Certificate With DSC"
+              : "Start Up Certificate"
+            : newData.services[i].serviceName
+          }
           </div>
         </div>
       </div>
@@ -4512,14 +4744,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th style="vertical-align: top;" rowspan='4'>₹ ${
-                    newData.services[i].totalPaymentWGST
-                  } /-</th>
-                    <th style="vertical-align: top;" rowspan='4'>₹ ${
-                    newData.services[i].paymentTerms === "Full Advanced"
-                      ? newData.services[i].totalPaymentWGST
-                      : newData.services[i].firstPayment
-                  }/-</th>
+                    <th style="vertical-align: top;" rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
+          } /-</th>
+                    <th style="vertical-align: top;" rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+            ? newData.services[i].totalPaymentWGST
+            : newData.services[i].firstPayment
+          }/-</th>
               </tr>
               ${paymentServices}
             </tbody>
@@ -4531,7 +4761,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
     // Render services HTML content
     const serviceList = renderServiceList();
-  
+
     const paymentDetails = renderPaymentDetails();
 
     const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");

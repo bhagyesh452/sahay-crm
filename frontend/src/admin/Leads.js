@@ -483,16 +483,12 @@ function Leads() {
 
     return formattedDate;
   }
-  // csvdata.map((item)=>{
-  //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
-  // })
-
-
+  
   const handleUploadData = async (e) => {
     // Get current date and time
 
     // newArray now contains objects with updated properties
-
+    console.log(csvdata)
     if (selectedOption === "someoneElse") {
       const updatedCsvdata = csvdata.map((data) => ({
         ...data,
@@ -519,8 +515,13 @@ function Leads() {
           // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
 
           const counter = response.data.counter;
+          console.log("counter", counter)
           const successCounter = response.data.sucessCounter;
+          console.log(successCounter)
+          console.log(JSON.stringify(response.data.duplicateEntries))
+
           if (counter === 0) {
+            console.log(response.data)
             Swal.fire({
               title: "Data Send!",
               text: "Data successfully sent to the Employee",
@@ -528,16 +529,27 @@ function Leads() {
             });
           } else {
             Swal.fire({
-              title: "Data Already exists!",
-              html: `
-              <b> ${counter} </b> Duplicate Entries found!,
-              </br>
-              <small>${successCounter} Data Added </small>
-            `,
-              icon: "info",
+              title: 'Do you want dowanload duplicate entries report?',
+              text: 'Do you want to proceed?',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: 'Yes',
+              cancelButtonText: 'No'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute("download", "DuplicateEntries.csv");
+                document.body.appendChild(link);
+                link.click();
+                // User clicked "Yes", perform action
+                // Call your function or execute your code here
+              } else if (result.dismiss === Swal.DismissReason.cancel) {
+                return true;
+              }
             });
           }
-
           fetchData();
           closepopup();
           setnewEmployeeSelection("Not Alloted");
@@ -551,9 +563,7 @@ function Leads() {
           }
           console.log("Error:", error);
         }
-
         setLoading(false); // Move setLoading outside of the loop
-
         setCsvData([]);
       } else {
         Swal.fire("Please upload data");
@@ -561,15 +571,9 @@ function Leads() {
     } else {
 
       if (csvdata.length !== 0) {
-
         setLoading(true); // Move setLoading outside of the loop
-
         try {
-
-
-
           await axios.post(`${secretKey}/leads`, csvdata);
-
           Swal.fire({
             title: "Data Send!",
             text: "Data successfully sent to the Employee",
@@ -591,11 +595,9 @@ function Leads() {
     }
   };
 
-  // const handleUploadClick = () => {
-  //   fileInputRef.current.click();
-  // };
 
-  // to delete the data
+
+
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
 
   const handleDelete = async (id) => {
@@ -680,11 +682,12 @@ function Leads() {
     }
   };
   console.log(selectedRows);
+
   const exportData = async () => {
     try {
       const response = await axios.post(
         `${secretKey}/exportLeads/`,
-     selectedRows
+        selectedRows
       );
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
@@ -1810,7 +1813,7 @@ function Leads() {
                   className="feature2"
                 >
                   <div
-                    style={{ margin: "0px 10px" , display:'none'}}
+                    style={{ margin: "0px 10px" ,display:"none" }}
                     className="undoDelete"
                   >
                     <div className="btn-list">
@@ -2438,7 +2441,7 @@ function Leads() {
                                 height: "14px",
                                 color: "#d6a10c",
                                 cursor: "pointer",
-                                marginLeft:"4px",
+                                marginLeft: "4px",
                               }}
                             />
                           </td>

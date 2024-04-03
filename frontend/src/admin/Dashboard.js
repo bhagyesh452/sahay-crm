@@ -354,22 +354,22 @@ function Dashboard() {
   //   setFilteredBooking(filteredDataDateRange);
   // };
 
-console.log(bookingObject)
+  console.log(bookingObject)
 
-  const handleSelectAnother = (values)=>{
+  const handleSelectAnother = (values) => {
     console.log(values)
-    if(values[1]){
+    if (values[1]) {
       const startDate = values[0].format('MM/DD/YYYY');
-      const endDate = values[1].format('MM/DD/YYYY');    
-      
+      const endDate = values[1].format('MM/DD/YYYY');
+
       const filteredDataDateRange = bookingObject.filter(product => {
-       const productDate = new Date(product["bookingDate"]).setHours(0, 0, 0, 0);
-        
+        const productDate = new Date(product["bookingDate"]).setHours(0, 0, 0, 0);
+
         // Check if the formatted productDate is within the selected date range
         if (startDate === endDate) {
           // If both startDate and endDate are the same, filter for transactions on that day
-          return  new Date(productDate) === new Date(startDate);
-        } else if (startDate !==endDate) {
+          return new Date(productDate) === new Date(startDate);
+        } else if (startDate !== endDate) {
           // If different startDate and endDate, filter within the range
           return new Date(productDate) >= new Date(startDate) && new Date(productDate) <= new Date(endDate);
         } else {
@@ -377,10 +377,10 @@ console.log(bookingObject)
         }
       });
       setFilteredBooking(filteredDataDateRange);
-    }else{
-      return true;
-    }
-  
+    } else {
+      return true;
+    }
+
   }
 
   //console.log("companyData", companyData)
@@ -2651,26 +2651,26 @@ console.log(bookingObject)
                             </button>
                           </div> */}
                           <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
-                    <DemoContainer components={['SingleInputDateRangeField']}>
-                      <DateRangePicker
-                        onChange={(values) => {
-                          const startDateEmp = moment(values[0]).format('DD/MM/YYYY');
-                          const endDateEmp = moment(values[1]).format('DD/MM/YYYY');
-                          setSelectedDateRangeEmployee([startDateEmp, endDateEmp]);
-                          handleSelectNew(values); // Call handleSelect with the selected values
-                        }}
-                        slots={{ field: SingleInputDateRangeField }}
-                        slotProps={{
-                          shortcuts: {
-                            items: shortcutsItems,
-                          },
-                          actionBar: { actions: [] },
-                          textField: { InputProps: { endAdornment: <Calendar /> } }
-                        }}
-                      //calendars={1}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
+                            <DemoContainer components={['SingleInputDateRangeField']}>
+                              <DateRangePicker
+                                onChange={(values) => {
+                                  const startDateEmp = moment(values[0]).format('DD/MM/YYYY');
+                                  const endDateEmp = moment(values[1]).format('DD/MM/YYYY');
+                                  setSelectedDateRangeEmployee([startDateEmp, endDateEmp]);
+                                  handleSelectEmployee(values); // Call handleSelect with the selected values
+                                }}
+                                slots={{ field: SingleInputDateRangeField }}
+                                slotProps={{
+                                  shortcuts: {
+                                    items: shortcutsItems,
+                                  },
+                                  actionBar: { actions: [] },
+                                  textField: { InputProps: { endAdornment: <Calendar /> } }
+                                }}
+                              //calendars={1}
+                              />
+                            </DemoContainer>
+                          </LocalizationProvider>
 
                         </div>
                       </div>

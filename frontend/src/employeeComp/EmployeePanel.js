@@ -44,6 +44,8 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
 import RedesignedForm from "../admin/RedesignedForm.jsx";
 import LeadFormPreview from "../admin/LeadFormPreview.jsx";
+import { load } from '@cashfreepayments/cashfree-js'
+
 //import  cashfree  from './util.js'
 // import DrawerComponent from "../components/Drawer.js";
 
@@ -52,7 +54,7 @@ function EmployeePanel() {
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
   const [sortStatus, setSortStatus] = useState("");
-    const [maturedID, setMaturedID] = useState("");
+  const [maturedID, setMaturedID] = useState("");
   const [currentForm, setCurrentForm] = useState(null);
   const [projectionData, setProjectionData] = useState([]);
   const [openLogin, setOpenLogin] = useState(false);
@@ -273,7 +275,7 @@ function EmployeePanel() {
     setTimeout(() => {
       setOpenAnchor(true);
     }, 500);
-  
+
   };
 
   const [cid, setcid] = useState("");
@@ -436,9 +438,9 @@ function EmployeePanel() {
   };
 
   useEffect(() => {
-   fetchNewData("Matured");
+    fetchNewData("Matured");
   }, [nowToFetch])
-  
+
 
   const handleFieldChange = (event) => {
     if (
@@ -1111,10 +1113,10 @@ function EmployeePanel() {
     try {
       console.log(maturedID);
       const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
-      const data = response.data.find(obj=>obj.company === maturedID);
+      const data = response.data.find(obj => obj.company === maturedID);
       setCurrentForm(data);
-      
-      
+
+
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -1614,6 +1616,101 @@ function EmployeePanel() {
     const [day, month, year] = dateString.split('/');
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   };
+
+  // ------------------------------------------------------payment-link-work-----------------------------------------
+
+
+  const [paymentLink, setPaymentLink] = useState('');
+  const [error, setError] = useState('');
+  const [orderId, setOrderId] = useState("")
+
+
+  let cashfree;
+
+  let insitialzeSDK = async function () {
+
+    cashfree = await load({
+      mode: "sandbox",
+    })
+  }
+
+  insitialzeSDK()
+  
+  //let version = cashfree.version();
+
+  const getSessionId = async () => {
+    try {
+      let res = await axios.get(`${secretKey}/payment`)
+      console.log(res.data)
+      if (res.data && res.data.payment_session_id) {
+        console.log(res.data)
+        setOrderId(res.data.order_id)
+        return res.data.payment_session_id
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
+  const verifyPayment = async () => {
+    try {
+
+      let res = await axios.post(`${secretKey}/verify`, {
+        orderId: orderId
+      })
+
+      if (res && res.data) {
+        alert("payment verified")
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const handlePayment = async (e) => {
+    e.preventDefault()
+    try {
+
+      let sessionId = await getSessionId()
+      let checkoutOptions = {
+        paymentSessionId: sessionId,
+        redirectTarget: "_modal",
+      }
+
+      cashfree.checkout(checkoutOptions).then((res) => {
+        console.log("payment initialized")
+
+        verifyPayment(orderId)
+      })
+
+
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
+
+  // const generatePaymentLink = async () => {
+  //   try {
+  //     const response = await axios.post(`${secretKey}/generatePaymentLink`, {
+  //       orderId: '121',
+  //       amount: 100, // Amount in INR
+  //       customerName: 'John Doe',
+  //       customerEmail: 'john@example.com',
+  //       customerPhone: '9876543210',
+  //     });
+  //     console.log(response.data.paymentLink)
+  //     setPaymentLink(response.data.paymentLink);
+  //   } catch (error) {
+  //     setError('Could not generate payment link');
+  //   }
+  // };
+
+  // console.log(paymentLink)
+
+
 
   return (
     <div>
@@ -2695,64 +2792,64 @@ function EmployeePanel() {
 
                                 {(dataStatus === "FollowUp" ||
                                   dataStatus === "Interested") && (
-                                  <td>
-                                    {company &&
-                                    projectionData &&
-                                    projectionData.some(
-                                      (item) =>
-                                        item.companyName ===
-                                        company["Company Name"]
-                                    ) ? (
-                                      <>
+                                    <td>
+                                      {company &&
+                                        projectionData &&
+                                        projectionData.some(
+                                          (item) =>
+                                            item.companyName ===
+                                            company["Company Name"]
+                                        ) ? (
+                                        <>
+                                          <IconButton>
+                                            <RiEditCircleFill
+                                              onClick={() => {
+                                                functionopenprojection(
+                                                  company["Company Name"]
+                                                );
+                                              }}
+                                              //onClick={()=>handleIconButtonClick(company["Company Name"])}
+                                              style={{
+                                                cursor: "pointer",
+                                                width: "17px",
+                                                height: "17px",
+                                              }}
+                                              color="#fbb900"
+                                            />
+                                          </IconButton>
+                                          {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} currentProjection1={currentProjection} /> */}
+                                        </>
+                                      ) : (
                                         <IconButton>
                                           <RiEditCircleFill
                                             onClick={() => {
                                               functionopenprojection(
                                                 company["Company Name"]
                                               );
+                                              setIsEditProjection(true);
                                             }}
-                                            //onClick={()=>handleIconButtonClick(company["Company Name"])}
                                             style={{
                                               cursor: "pointer",
                                               width: "17px",
                                               height: "17px",
                                             }}
-                                            color="#fbb900"
                                           />
                                         </IconButton>
-                                        {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} currentProjection1={currentProjection} /> */}
-                                      </>
-                                    ) : (
-                                      <IconButton>
-                                        <RiEditCircleFill
-                                          onClick={() => {
-                                            functionopenprojection(
-                                              company["Company Name"]
-                                            );
-                                            setIsEditProjection(true);
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                        />
-                                      </IconButton>
-                                    )}
+                                      )}
+                                    </td>
+                                  )}
+                                {dataStatus === "Matured" && <>
+                                  <td>
+                                    <div onClick={() => {
+                                      setMaturedID(company._id)
+                                      functionopenAnchor()
+                                    }} style={{ cursor: 'pointer' }}>
+                                      <IconEye />
+                                    </div>
+
                                   </td>
-                                )}
-                                {dataStatus==="Matured" && <>
-                                <td>
-                                  <div onClick={()=>{
-                                    setMaturedID(company._id)
-                                    functionopenAnchor()
-                                  }} style={{cursor:'pointer'}}>
-                                  <IconEye/>
-                                  </div>
-                                 
-                                </td>
                                 </>}
-                                <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td>
+                                <td onClick={() => setIsOpen(true)}><MailOutlineIcon style={{ cursor: 'pointer' }} /></td>
                               </tr>
                             ))}
                           </tbody>
@@ -3663,19 +3760,15 @@ function EmployeePanel() {
                   Submit
                 </button>
               </div>
-              {/* <div>
-                {paymentLink ? (
-                  <div>
-                    <p>Payment Link:</p>
-                    <input type="text" value={paymentLink} readOnly />
-                    <button onClick={() => navigator.clipboard.writeText(paymentLink)}>Copy Link</button>
-                  </div>
-                ) : (
-                  <button onClick={generatePaymentLink} disabled={isLoadingPayment}>
-                    {isLoadingPayment ? 'Generating Payment Link...' : 'Generate Payment Link'}
-                  </button>
-                )}
-              </div> */}
+              <div>
+                <button onClick={handlePayment}>
+                  Pay now
+                </button>
+                {/* <button onClick={generatePaymentLink}>Generate Payment Link</button>
+                {paymentLink && <a href={paymentLink} target="_blank" rel="noopener noreferrer">Proceed to Payment</a>}
+                {error && <p>{error}</p>} */}
+              </div>
+
             </div>
           </div>
         </Drawer>
