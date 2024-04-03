@@ -1089,3 +1089,8 @@ color: #4e884e;
 {
   height: 100vh;
 }
+.highlight-changes{
+  background-color: #d7d9dc;
+  font-weight: bold;
+ 
+}

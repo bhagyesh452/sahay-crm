@@ -4826,6 +4826,34 @@ function generatePdf(htmlContent) {
       });
   }
 }
+app.post('/api/update-redesigned-final-form/:companyName', async (req, res) => {
+ // Assuming updatedBooking contains the updated data
+  const companyName = req.params.companyName; // Get the _id from the request parameters
+  console.log("Api run");
+  const { _id, ...updatedDocWithoutId } = req.body;
+  try {
+    // Find the document by _id and update it with the updatedBooking data
+    const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate({
+      "Company Name":companyName,
+    },
+ 
+      { $set: updatedDocWithoutId },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedDocument) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+    const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
+      "Company Name":companyName
+    })
+    
+    res.status(200).json({ message: 'Document updated successfully', updatedDocument });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 app.post("/api/generate-pdf", async (req, res) => {
   const clientName = "Miya bhai";
   const clientAddress = "Ohio";

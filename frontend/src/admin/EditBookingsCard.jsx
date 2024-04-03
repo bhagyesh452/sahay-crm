@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { FaRegCopy } from "react-icons/fa";
 import CloseIcon from "@mui/icons-material/Close";
 
-function EditBookingsCard({ name, date, time, request, companyName }) {
+function EditBookingsCard({ name, date, time, request, companyName , setCurrentCompany }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [company, setCompany] = useState(null);
   const [companyReal, setCompanyReal] = useState(null);
@@ -144,7 +144,7 @@ console.log("Company data current:" , companyName)
                   },
                 }}
                 className="btn btn-primary d-none d-sm-inline-block"
-                onClick={functionopenpopupCompare}
+                onClick={()=>setCurrentCompany(companyName)}
               >
                 View
               </button>
