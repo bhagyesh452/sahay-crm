@@ -682,14 +682,9 @@ function Leads() {
   console.log(selectedRows);
   const exportData = async () => {
     try {
-      const response = await axios.get(
-        `${secretKey}/exportLeads/${dataStatus}`,
-        {
-          responseType: "blob",
-          params: {
-            selectedRows: selectedRows
-          }
-        }
+      const response = await axios.post(
+        `${secretKey}/exportLeads/`,
+     selectedRows
       );
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
@@ -1815,7 +1810,7 @@ function Leads() {
                   className="feature2"
                 >
                   <div
-                    style={{ margin: "0px 10px" }}
+                    style={{ margin: "0px 10px" , display:'none'}}
                     className="undoDelete"
                   >
                     <div className="btn-list">

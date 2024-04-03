@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import EmpNav from "./EmpNav.js";
+
 import Header from "../components/Header";
 import { useParams } from "react-router-dom";
 import notificationSound from "../assets/media/iphone_sound.mp3";
@@ -44,6 +45,8 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
 import RedesignedForm from "../admin/RedesignedForm.jsx";
 import LeadFormPreview from "../admin/LeadFormPreview.jsx";
+import Edit from "@mui/icons-material/Edit";
+import EditableLeadform from "../admin/EditableLeadform.jsx";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -54,6 +57,7 @@ function EmployeePanel() {
   const [maturedID, setMaturedID] = useState("");
   const [currentForm, setCurrentForm] = useState(null);
   const [projectionData, setProjectionData] = useState([]);
+  const [requestDeletes, setRequestDeletes] = useState([]);
   const [openLogin, setOpenLogin] = useState(false);
   const [requestData, setRequestData] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
@@ -69,7 +73,7 @@ function EmployeePanel() {
     date: "",
     time: "",
     editCount: -1,
-    totalPaymentError: ""
+    totalPaymentError: "",
   });
   const [csvdata, setCsvData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
@@ -144,6 +148,7 @@ function EmployeePanel() {
   const [currentPage, setCurrentPage] = useState(0);
   const [month, setMonth] = useState(0);
   const [updateData, setUpdateData] = useState({});
+  const [nowToFetch, setNowToFetch] = useState(false);
   const [RequestApprovals, setRequestApprovals] = useState([]);
   const [mapArray, setMapArray] = useState([]);
   const [companies, setCompanies] = useState([]);
@@ -270,8 +275,7 @@ function EmployeePanel() {
   const functionopenAnchor = () => {
     setTimeout(() => {
       setOpenAnchor(true);
-    }, 500);
-  
+    }, 1000);
   };
 
   const [cid, setcid] = useState("");
@@ -327,14 +331,13 @@ function EmployeePanel() {
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
-      console.log(tempData)
+      console.log(tempData);
       setData(userData);
       setmoreFilteredData(userData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
-
 
   const fetchProjections = async () => {
     try {
@@ -348,7 +351,8 @@ function EmployeePanel() {
   };
   //console.log(projectionData)
   const [moreEmpData, setmoreEmpData] = useState([]);
-  const [tempData, setTempData] = useState([])
+  const [tempData, setTempData] = useState([]);
+
   const fetchNewData = async (status) => {
     try {
       if (!status) {
@@ -364,8 +368,8 @@ function EmployeePanel() {
         return new Date(b.AssignDate) - new Date(a.AssignDate);
       });
 
-      setmoreEmpData(sortedData)
-      setTempData(tempData)
+      setmoreEmpData(sortedData);
+      setTempData(tempData);
       setEmployeeData(
         tempData.filter(
           (obj) =>
@@ -431,6 +435,10 @@ function EmployeePanel() {
     }
   };
 
+  useEffect(() => {
+    fetchNewData("Matured");
+  }, [nowToFetch]);
+
   const handleFieldChange = (event) => {
     if (
       event.target.value === "Company Incorporation Date  " ||
@@ -458,7 +466,7 @@ function EmployeePanel() {
     //console.log(selectedField);
   };
 
-  console.log(tempData)
+  console.log(tempData);
 
   const handleDateChange = (e) => {
     const dateValue = e.target.value;
@@ -549,7 +557,7 @@ function EmployeePanel() {
   }, [data]);
   useEffect(() => {
     fetchRemarksHistory();
-
+    fetchBookingDeleteRequests();
     fetchRequestDetails();
     // let watchId;
     // const successCallback = (position) => {
@@ -646,6 +654,7 @@ function EmployeePanel() {
   const [companyNumber, setCompanyNumber] = useState(0);
   const [companyId, setCompanyId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
+  const [editFormOpen, setEditFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   console.log(companyName, companyInco);
@@ -700,6 +709,14 @@ function EmployeePanel() {
       console.error("Error updating status:", error.message);
     }
   };
+  const fetchBookingDeleteRequests = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/deleterequestbybde`);
+      setRequestDeletes(response.data); // Assuming your data is returned as an array
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const handleSort = (sortType) => {
     switch (sortType) {
@@ -747,7 +764,7 @@ function EmployeePanel() {
     }));
   };
 
-  console.log(employeeData)
+  console.log(employeeData);
 
   const handleDeleteRemarks = async (remarks_id, remarks_value) => {
     const mainRemarks = remarks_value === currentRemarks ? true : false;
@@ -1101,24 +1118,24 @@ function EmployeePanel() {
   const fetchRedesignedFormData = async () => {
     try {
       console.log(maturedID);
-      const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
-      const data = response.data.find(obj=>obj.company === maturedID);
+      const response = await axios.get(
+        `${secretKey}/redesigned-final-leadData`
+      );
+      const data = response.data.find((obj) => obj.company === maturedID);
+      console.log(data);
       setCurrentForm(data);
-      
-      
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
-useEffect(() => {
-  console.log("Matured ID Changed" , maturedID);
-  if(maturedID){
-    fetchRedesignedFormData();
-  }
+  useEffect(() => {
+    console.log("Matured ID Changed", maturedID);
+    if (maturedID) {
+      fetchRedesignedFormData();
+    }
+  }, [maturedID]);
 
-}, [maturedID])
-
-  console.log("Current Form:",currentForm)
+  console.log("Current Form:", currentForm);
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -1248,7 +1265,10 @@ useEffect(() => {
 
   const handleProjectionSubmit = async () => {
     try {
-      const newEditCount = currentProjection.editCount === -1 ? 0 : currentProjection.editCount + 1;
+      const newEditCount =
+        currentProjection.editCount === -1
+          ? 0
+          : currentProjection.editCount + 1;
 
       const finalData = {
         ...currentProjection,
@@ -1261,15 +1281,20 @@ useEffect(() => {
       if (finalData.offeredServices.length === 0) {
         Swal.fire({ title: "Services is required!", icon: "warning" });
       } else if (finalData.remarks === "") {
-        Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
+        Swal.fire({ title: "Remarks is required!", icon: "warning" });
       } else if (Number(finalData.totalPayment) === 0) {
-        Swal.fire({ title: "Total Payment Can't be 0!", icon: 'warning' });
+        Swal.fire({ title: "Total Payment Can't be 0!", icon: "warning" });
       } else if (finalData.totalPayment === "") {
-        Swal.fire({ title: "Total Payment Can't be 0", icon: 'warning' });
+        Swal.fire({ title: "Total Payment Can't be 0", icon: "warning" });
       } else if (Number(finalData.offeredPrize) === 0) {
-        Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
-      } else if (Number(finalData.totalPayment) > Number(finalData.offeredPrize)) {
-        Swal.fire({ title: 'Total Payment cannot be greater than Offered Prize!', icon: 'warning' });
+        Swal.fire({ title: "Offered Prize is required!", icon: "warning" });
+      } else if (
+        Number(finalData.totalPayment) > Number(finalData.offeredPrize)
+      ) {
+        Swal.fire({
+          title: "Total Payment cannot be greater than Offered Prize!",
+          icon: "warning",
+        });
       } else if (finalData.lastFollowUpdate === null) {
         Swal.fire({
           title: "Last FollowUp Date is required!",
@@ -1298,7 +1323,7 @@ useEffect(() => {
           date: "",
           time: "",
           editCount: newEditCount,
-          totalPaymentError: ""  // Increment editCount
+          totalPaymentError: "", // Increment editCount
         });
         fetchProjections();
         setSelectedValues([]);
@@ -1589,21 +1614,66 @@ useEffect(() => {
         method: "POST",
         headers: {
           "Content-Type": "application/pdf",
-        }
+        },
       });
 
       if (!response.ok) {
         throw new Error("Failed to send email");
       }
-      console.log("Mail Sent")
+      console.log("Mail Sent");
     } catch (error) {
       console.error("Error sending email:", error);
     }
   };
 
   const formatDatePro = (dateString) => {
-    const [day, month, year] = dateString.split('/');
-    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    const [day, month, year] = dateString.split("/");
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  };
+  const handleRequestDelete = async (companyId, companyName) => {
+    const confirmDelete = await Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to send a delete request. Are you sure you want to proceed?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, proceed!",
+      cancelButtonText: "No, cancel",
+    });
+
+    if (confirmDelete.isConfirmed) {
+      try {
+        const sendingData = {
+          companyName,
+          companyId,
+          time: new Date().toLocaleTimeString(),
+          date: new Date().toLocaleDateString(),
+          ename: data.ename, // Replace 'Your Ename Value' with the actual value
+        };
+
+        const response = await fetch(`${secretKey}/deleterequestbybde`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(sendingData),
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        Swal.fire({ title: "Delete Request Sent", icon: "success" });
+        const responseData = await response.json();
+        console.log(responseData.message); // Log the response message
+      } catch (error) {
+        Swal.fire({ title: "Failed to send Request", icon: "error" });
+        console.error("Error creating delete request:", error);
+        // Handle the error as per your application's requirements
+      }
+    } else {
+      console.log("No, cancel");
+    }
   };
 
   return (
@@ -1612,7 +1682,7 @@ useEffect(() => {
       <EmpNav userId={userId} />
 
       {/* Dialog box for Request Data */}
-      {!formOpen ? (
+      {!formOpen ? !editFormOpen ? (
         <>
           <div className="page-wrapper">
             <div className="page-header d-print-none">
@@ -2255,8 +2325,12 @@ useEffect(() => {
                           setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData
-                              .filter(obj => obj.Status === 'Matured')
-                              .sort((a, b) => new Date(formatDatePro(b.lastActionDate)) - new Date(formatDatePro(a.lastActionDate)))
+                              .filter((obj) => obj.Status === "Matured")
+                              .sort(
+                                (a, b) =>
+                                  new Date(b.lastActionDate) -
+                                  new Date(a.lastActionDate)
+                              )
                           );
                         }}
                         className={
@@ -2732,18 +2806,68 @@ useEffect(() => {
                                     )}
                                   </td>
                                 )}
-                                {dataStatus==="Matured" && <>
-                                <td>
-                                  <div onClick={()=>{
-                                    setMaturedID(company._id)
-                                    functionopenAnchor()
-                                  }} style={{cursor:'pointer'}}>
-                                  <IconEye/>
-                                  </div>
-                                 
-                                </td>
-                                </>}
-                                <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td>
+                                {dataStatus === "Matured" && (
+                                  <>
+                                    <td>
+                                      <div className="d-flex">
+                                        <IconButton
+                                          style={{ marginRight: "5px" }}
+                                          onClick={() => {
+                                            setMaturedID(company._id);
+                                            functionopenAnchor();
+                                          }}
+                                        >
+                                          <IconEye
+                                            style={{
+                                              width: "14px",
+                                              height: "14px",
+                                              color: "#d6a10c",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </IconButton>
+
+                                        <IconButton
+                                          onClick={() => {
+                                            handleRequestDelete(
+                                              company._id,
+                                              company["Company Name"]
+                                            );
+                                          }}
+                                          disabled={requestDeletes.some(
+                                            (item) =>
+                                              item.companyId === company._id &&
+                                              item.request === undefined
+                                          )}
+                                        >
+                                          <DeleteIcon
+                                            style={{
+                                              cursor: "pointer",
+                                              color: "#f70000",
+                                              width: "14px",
+                                              height: "14px",
+                                            }}
+                                          />
+                                        </IconButton>
+                                        <IconButton onClick={()=>{
+                                          setMaturedID(company._id)
+                                          setTimeout(() => {
+                                            setEditFormOpen(true) 
+                                          }, 1000);
+                                          
+                                           }}>
+                                          <Edit style={{
+                                              cursor: "pointer",
+                                              color: "#109c0b",
+                                              width: "14px",
+                                              height: "14px",
+                                            }}/>
+                                        </IconButton>
+                                      </div>
+                                    </td>
+                                  </>
+                                )}
+                                {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
                               </tr>
                             ))}
                           </tbody>
@@ -2900,6 +3024,21 @@ useEffect(() => {
             </div>
           </div>
         </>
+      ) :(
+        <>
+        <EditableLeadform
+         setFormOpen={setEditFormOpen}
+         companysName={currentForm["Company Name"]}
+         companysEmail={currentForm["Company Email"]}
+         companyNumber={currentForm["Company Number"]}
+         setNowToFetch={setNowToFetch}
+         companysInco={currentForm.incoDate}
+         employeeName={data.ename}
+         employeeEmail={data.email}
+         setDataStatus={setdataStatus}
+        />
+        </>
+
       ) : (
         <>
           <RedesignedForm
@@ -2910,6 +3049,7 @@ useEffect(() => {
             companysName={companyName}
             companysEmail={companyEmail}
             companyNumber={companyNumber}
+            setNowToFetch={setNowToFetch}
             companysInco={companyInco}
             employeeName={data.ename}
             employeeEmail={data.email}
@@ -3371,21 +3511,26 @@ useEffect(() => {
 
       {/* Side Drawer for Edit Booking Requests */}
       <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
-        <div className="LeadFormPreviewDrawar">
+        <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
           <div className="LeadFormPreviewDrawar-header">
             <div className="Container">
               <div className="d-flex justify-content-between align-items-center">
-                  <div ><h2 className="title m-0 ml-1">Current LeadForm</h2></div>
-                  <div>
-                    <IconButton onClick={closeAnchor}>
-                      <CloseIcon/>
-                    </IconButton>
-                  </div>
+                <div>
+                  <h2 className="title m-0 ml-1">Current LeadForm</h2>
+                </div>
+                <div>
+                  <IconButton onClick={closeAnchor}>
+                    <CloseIcon />
+                  </IconButton>
+                </div>
               </div>
             </div>
           </div>
           <div>
-            <LeadFormPreview setOpenAnchor={setOpenAnchor} currentLeadForm={currentForm} />
+            <LeadFormPreview
+              setOpenAnchor={setOpenAnchor}
+              currentLeadForm={currentForm}
+            />
           </div>
         </div>
       </Drawer>
@@ -3565,8 +3710,9 @@ useEffect(() => {
                     disabled={!isEditProjection}
                   />
 
-                  <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
-
+                  <div style={{ color: "lightred" }}>
+                    {currentProjection.totalPaymentError}
+                  </div>
                 </div>
               </div>
 

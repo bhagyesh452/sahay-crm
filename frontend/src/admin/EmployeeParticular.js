@@ -35,6 +35,7 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
+import LeadFormPreview from "./LeadFormPreview";
 
 
 
@@ -48,6 +49,8 @@ function EmployeeParticular() {
   const [openRemarks, openchangeRemarks] = useState(false);
   const [openlocation, openchangelocation] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
+  const [maturedID, setMaturedID] = useState("");
+  const [currentForm, setCurrentForm] = useState(null);
   const [openProjection, setOpenProjection] = useState(false);
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
@@ -141,11 +144,31 @@ function EmployeeParticular() {
   };
   console.log(currentProjection)
   const functionopenAnchor = () => {
-    setOpenAnchor(true);
+    setTimeout(() => {
+      setOpenAnchor(true);
+    }, 500);
   };
   const closeAnchor = () => {
     setOpenAnchor(false);
   };
+  const fetchRedesignedFormData = async () => {
+    try {
+      console.log(maturedID);
+      const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
+      const data = response.data.find(obj=>obj.company === maturedID);
+      setCurrentForm(data);
+      
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+useEffect(() => {
+  console.log("Matured ID Changed" , maturedID);
+  if(maturedID){
+    fetchRedesignedFormData();
+  }
+
+}, [maturedID])
   useEffect(() => {
     if (employeeName) {
       const fetchCompanies = async () => {
@@ -172,7 +195,6 @@ function EmployeeParticular() {
               Status: "Matured",
               Remarks: "No Remarks Added",
             }));
-
           setCompanies(formattedData);
         } catch (error) {
           console.error("Error fetching companies:", error);
@@ -646,6 +668,48 @@ function EmployeeParticular() {
     }
   };
 
+  const handleDeleteBooking = async (companyId) => {
+    const confirmDelete = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You are about to delete this booking. This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel',
+    });
+  
+    if (confirmDelete.isConfirmed) {
+      try {
+        const response = await fetch(`${secretKey}/redesigned-delete-booking/${companyId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        Swal.fire({
+          title:"Booking Deleted Successfully",
+          icon:'success'
+        })
+        fetchNewData();
+      } catch (error) {
+        Swal.fire({
+          title:"Error Deleting the booking!",
+          icon:'error'
+        })
+        console.error('Error deleting booking:', error);
+        // Optionally, you can show an error message to the user
+      }
+    } else {
+      console.log('No');
+    }
+  };
+  
+  
 
 
   const handleChangeUrlPrev = () => {
@@ -1278,7 +1342,10 @@ function EmployeeParticular() {
                       data-bs-toggle="tab"
                     >
                       <span>Matured </span>
-                      <span className="no_badge">{companies.length}</span>
+                      <span className="no_badge"> {
+                          moreEmpData.filter((obj) => obj.Status === "Matured")
+                            .length
+                        }</span>
                     </a>
                   </li>
                   <li class="nav-item">
@@ -1335,7 +1402,7 @@ function EmployeeParticular() {
                     >
                       <thead>
                         <tr className="tr-sticky">
-                          {dataStatus !== "Matured" && (
+                         
                             <th>
                               <input
                                 type="checkbox"
@@ -1345,7 +1412,7 @@ function EmployeeParticular() {
                                 onChange={() => handleCheckboxChange("all")}
                               />
                             </th>
-                          )}
+                          
 
                           <th className="th-sticky">Sr.No</th>
                           <th className="th-sticky1">Company Name</th>
@@ -1435,7 +1502,7 @@ function EmployeeParticular() {
                               }}
                             />
                           </th>
-                          {(dataStatus === "Matured" && <th>View Projection</th>) ||
+                          {(dataStatus === "Matured" && <th>Action</th>) ||
                             (dataStatus === "FollowUp" && <th>View Projection</th>) ||
                             (dataStatus === "Interested" && <th>View Projection</th>)}
                         </tr>
@@ -1458,7 +1525,7 @@ function EmployeeParticular() {
                         </tbody>
                       ) : (
                         <>
-                          {currentData.length !== 0 && dataStatus !== "Matured" && (
+                          {currentData.length !== 0 && (
                             <tbody>
                               {currentData.map((company, index) => (
                                 <tr
@@ -1567,22 +1634,26 @@ function EmployeeParticular() {
                                     </td>
                                   )}
 
-                                  {dataStatus === "Matured" && (
-                                    <td>
-                                      <HiOutlineEye
-                                        style={{
-                                          fontSize: "15px",
-                                          color: "#fbb900"
-                                        }}
-                                        onClick={() => {
-                                          functionopenAnchor();
-                                          setMaturedCompanyName(
-                                            company["Company Name"]
-                                          );
-                                        }}
-                                      />
-                                    </td>
-                                  )}
+{dataStatus==="Matured" && <>
+                                <td>
+                                  <div className="d-flex">
+                                  <div onClick={()=>{
+                                    setMaturedID(company._id)
+                                    functionopenAnchor()
+                                  }} >
+                                  <IconEye style={{cursor:'pointer'}}/>
+                                  </div>
+                                  <div onClick={()=>{
+                                      handleDeleteBooking(company._id)
+                                  }}  className="delete-booking" style={{cursor:'pointer'}}>
+                                    <DeleteIcon/>
+                                  </div>
+
+                                  </div>
+                                 
+                                 
+                                </td>
+                                </>}
                                 </tr>
                               ))}
                             </tbody>
@@ -1604,7 +1675,7 @@ function EmployeeParticular() {
                       ) : (
                         <>
 
-                          {dataStatus === "Matured" && companies.length !== 0 && (
+                          {dataStatus === "null" && companies.length !== 0 && (
                             <tbody>
                               {companies.map((company, index) => (
                                 <tr
@@ -1681,38 +1752,8 @@ function EmployeeParticular() {
                                   <td>{company["State"]}</td>
                                   <td>{company["Company Email"]}</td>
                                   <td>{formatDate(company["AssignDate"])}</td>
-
                                   <td>
-                                    {/* <button
-                                  style={{
-                                    padding: "5px",
-                                    fontSize: "12px",
-                                    backgroundColor: "lightblue",
-                                    // Additional styles for the "View" button
-                                  }}
-                                  className="btn btn-primary d-none d-sm-inline-block"
-                                  onClick={() => {
-                                    functionopenAnchor();
-                                    setMaturedCompanyName(
-                                      company["Company Name"]
-                                    );
-                                  }}
-                                >
-                                  View
-                                </button> */}
-                                    {/* <HiOutlineEye style={{
-                                  fontSize: "15px",
-                                  color: "#fbb900"
-                                  //backgroundColor: "lightblue",
-                                  // Additional styles for the "View" button
-                                }}
-                                  //className="btn btn-primary d-none d-sm-inline-block"
-                                  onClick={() => {
-                                    functionopenAnchor();
-                                    setMaturedCompanyName(
-                                      company["Company Name"]
-                                    );
-                                  }} /> */}
+                                   
                                     <IconButton>
                                       <RiEditCircleFill
                                         onClick={() => {
@@ -1725,7 +1766,6 @@ function EmployeeParticular() {
                                         color="lightgrey"
                                       />
                                     </IconButton>
-
                                   </td>
                                 </tr>
                               ))}
@@ -2030,11 +2070,22 @@ function EmployeeParticular() {
 
       {/* View Bookings Page */}
       <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
-        <div className="container-xl">
-          <div className="header d-flex justify-content-between">
-            <h1 className="title">LeadForm</h1>
+        <div className="LeadFormPreviewDrawar">
+          <div className="LeadFormPreviewDrawar-header">
+            <div className="Container">
+              <div className="d-flex justify-content-between align-items-center">
+                  <div ><h2 className="title m-0 ml-1">Current LeadForm</h2></div>
+                  <div>
+                    <IconButton onClick={closeAnchor}>
+                      <CloseIcon/>
+                    </IconButton>
+                  </div>
+              </div>
+            </div>
           </div>
-          <EditForm companysName={maturedCompanyName} />
+          <div>
+            <LeadFormPreview setOpenAnchor={setOpenAnchor} currentLeadForm={currentForm} />
+          </div>
         </div>
       </Drawer>
 

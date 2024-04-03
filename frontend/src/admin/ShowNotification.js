@@ -9,16 +9,18 @@ import ApproveCard from "./ApproveCard";
 import Nodata from "../components/Nodata";
 import DeleteBookingsCard from "./DeleteBookingsCard";
 import EditBookingsCard from "./EditBookingsCard";
+import EditBookingPreview from "./EditBookingPreview";
 
 function ShowNotification() {
   const [RequestData, setRequestData] = useState([]);
   const [RequestGData, setRequestGData] = useState([]);
   const [RequestApprovals, setRequestApprovals] = useState([]);
+  const [openRequest, setOpenRequest] = useState(false);
   const [editData, setEditData] = useState([]);
-
   const [mapArray, setMapArray] = useState([]);
   const [dataType, setDataType] = useState("General");
   const [deleteData, setDeleteData] = useState([]);
+  const [currentBooking , setCurrentBooking] = useState([]);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const fetchRequestDetails = async () => {
     try {
@@ -28,6 +30,7 @@ function ShowNotification() {
       console.error("Error fetching data:", error.message);
     }
   };
+
   const fetchRequestGDetails = async () => {
     try {
       const response = await axios.get(`${secretKey}/requestgData`);
@@ -46,15 +49,16 @@ function ShowNotification() {
   };
   const fetchEditRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/editRequestByBde`);
+      const response = await axios.get(`${secretKey}/editable-LeadData`);
       const uniqueEnames = response.data.reduce((acc, curr) => {
-        if (!acc.some((item) => item.bdeName === curr.bdeName)) {
-          const newDate = new Date(curr.bookingDate).toLocaleDateString();
+        if (!acc.some((item) => item.requestBy === curr.requestBy)) {
+          const newDate = new Date(curr.requestDate).toLocaleDateString();
+          const newTime = new Date(curr.requestDate).toLocaleTimeString();
           acc.push({
-            ename: curr.bdeName,
-            date: curr.bookingDate,
-            time: curr.bookingTime,
-            companyName: curr.companyName,
+            ename: curr.requestBy,
+            date: newDate,
+            time: newTime,
+            companyName: curr["Company Name"],
           });
         }
         return acc;
@@ -65,7 +69,6 @@ function ShowNotification() {
     }
   };
  
-
   const fetchApproveRequests = async () => {
     try {
       const response = await axios.get(`${secretKey}/requestCompanyData`);
@@ -101,7 +104,6 @@ function ShowNotification() {
     fetchApproveRequests();
     fetchDataDelete();
     fetchEditRequests();
-
   }, []);
   const [expandedRow, setExpandedRow] = useState(null);
 
@@ -257,15 +259,20 @@ function ShowNotification() {
                     />
                   ))}
                 {dataType === "editBookingRequests" &&
-                  editData.length !== 0 &&
+                  editData.length !== 0 && openRequest === false &&
                   editData.map((company) => (
                     <EditBookingsCard
+                      setOpenRequest={setOpenRequest}
                       date={company.date}
                       time={company.time}
                       name={company.ename}
                       companyName={company.companyName}
                     />
                   ))}
+                  {dataType === "editBookingRequests" &&
+                  editData.length !== 0 && openRequest === true &&
+                    <EditBookingPreview/>
+                  }
                 {mapArray.length !== 0 &&
                   dataType === "AddRequest" &&
                   mapArray.map((company) => (

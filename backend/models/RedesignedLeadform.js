@@ -18,16 +18,16 @@ const ServiceSchema = new mongoose.Schema({
     required: true,
   },
   firstPayment: {
-    type: String,
+    type: Number,
   },
   secondPayment: {
-    type: String,
+    type: Number,
   },
   thirdPayment: {
-    type: String,
+    type: Number,
   },
   fourthPayment: {
-    type: String,
+    type: Number,
   },
   secondPaymentRemarks:{
     type: String,
@@ -84,6 +84,15 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   bdmName: {
     type: String,
     required: true,
+  },
+  bdeEmail: {
+    type: String,
+  },
+  bdmEmail: {
+    type: String,
+  },
+  otherBdmName:{
+    type:String,
   },
   bookingDate: {
     type: String,

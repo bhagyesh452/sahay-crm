@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { IconButton } from "@mui/material";
 import UndoIcon from "@mui/icons-material/Undo";
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
 
 function DeleteBookingsCard({
   name,
@@ -21,26 +21,46 @@ function DeleteBookingsCard({
   const [undoOption, setUndoOption] = useState(false);
   useEffect(() => {
     verifyDelete();
+  }, []);
+  const isToday = (dateString) => {
   
-    
-  }, [])
+  
+    // Get today's date in dd/mm/yyyy format
+    const today = new Date().toLocaleDateString();
+  
+    return dateString === today;
+  };
   
 
   const handleDelete = async () => {
     // Assuming you have an API endpoint for deleting a company
     try {
-      const response = await axios.delete(
-        `${secretKey}/company-delete/${companyId}`
+      const response = await fetch(
+        `${secretKey}/redesigned-delete-booking/${companyId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      if (response.status === 200) {
-        await axios.delete(`${secretKey}/deleterequestbybde/${companyName}`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-      console.log("Deleted booking:", response.data);
-      Swal.fire({ title: "Booking Deleted", icon: "success" });
-      // Handle success or update state as needed
+      const response2 = await axios.delete(
+        `${secretKey}/deleterequestbybde/${companyName}`
+      );
+      Swal.fire({
+        title: "Booking Deleted Successfully",
+        icon: "success",
+      });
     } catch (error) {
-      console.error("Error deleting company:", error);
-      Swal.fire({ title: "Failed to Delete booking", icon: "error" });
+      Swal.fire({
+        title: "Error Deleting the booking!",
+        icon: "error",
+      });
+      console.error("Error deleting booking:", error);
+      // Optionally, you can show an error message to the user
     }
   };
 
@@ -60,9 +80,7 @@ function DeleteBookingsCard({
   };
   const verifyDelete = async () => {
     try {
-      const response = await axios.get(
-        `${secretKey}/company/${companyName}`
-      );
+      const response = await axios.get(`${secretKey}/company/${companyName}`);
       setUndoOption(false);
       // Handle success or update state as needed
     } catch (error) {
@@ -72,69 +90,87 @@ function DeleteBookingsCard({
     }
   };
 
-  const redoDelete = async ()=>{
-    try{
-      const response = await axios.delete(`${secretKey}/reverse-delete/${companyName}`);
+  const redoDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `${secretKey}/reverse-delete/${companyName}`
+      );
       setUndoOption(false);
       Swal.fire("Company Restored Successfully!");
-    }catch{
+    } catch {
       Swal.fire("Failed to retrieve the data");
       setUndoOption(true);
     }
-  }
+  };
 
   return (
     <div>
       <Box sx={{ minWidth: 275, width: "28vw" }} className="col">
         <Card
+          className="g-card"
           style={{
-            padding: "10px",
+            padding: "8px",
+            backgroundColor: "#d3d2d2de",
             margin: "10px 0px",
-            backgroundColor: request && "#cacaca",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            transition: "transform 0.3s",
+            "&:hover": {
+              transform: "scale(1.02)",
+            },
           }}
           variant="outlined"
         >
           <React.Fragment>
-            <CardContent >
-             {undoOption && <div className="undoButton">
-                <IconButton onClick={redoDelete} style={{float:"right" , backgroundColor:"#fbb900" , color:"white"}}>
-                  <UndoIcon  />
-                </IconButton>
-              </div>}
+            <CardContent>
+              <div className="main-content-card d-flex justify-content-between">
+                <div
+                  style={{
+                    fontSize: "16px",
 
-              <Typography
-                style={{ fontSize: "18px" }}
-                variant="h5"
-                component="div"
-              >
-                {name ? name : "UserName"} wants to Delete Bookings
-              </Typography>
+                    marginBottom: "8px",
+                    color: "#333",
+                  }}
+                  variant="h5"
+                  component="div"
+                >
+                  <strong>{name}</strong> wants to Delete Bookings
+                  <div
+                    className="data-type d-flex justify-content-between"
+                    style={{ fontSize: "12px" }}
+                  >
+                    <div style={{ color: "#797878" }} className="c-type">
+                      COMPANY NAME: <strong>{companyName}</strong>
+                    </div>
+                  </div>
+                </div>
 
-              <Typography color="text.secondary">
-                Company Name :{" "}
-                {companyName ? companyName : "Company Name here.."}
-              </Typography>
-              <div className="d-flex justify-content-between">
-                <Typography color="text.secondary">
-                  {date ? date : "dd/mm/yyyy"}
-                </Typography>
-                <Typography color="text.secondary">
-                  {time ? time : "hh:mm"}
-                </Typography>
+                <div className="show-time-card">
+                  {isToday(date) ? time : date}
+                </div>
               </div>
             </CardContent>
 
             <div
-              style={{ display: "flex", justifyContent: "space-around" }}
+              style={{
+                display: "flex",
+                justifyContent: "space-around",
+                marginTop: "auto",
+              }}
               className="footerbutton"
             >
               <button
                 onClick={handleDelete}
                 style={{
-                  width: "100vw",
-                  borderRadius: "0px",
+                  width: "45%",
+                  borderRadius: "4px",
                   backgroundColor: "#f4d0d0",
                   color: "#bc2929",
+                  border: "none",
+                  padding: "6px",
+                  cursor: "pointer",
+                  transition: "background-color 0.3s",
+                  fontSize: "14px",
                 }}
                 className="btn btn-primary d-none d-sm-inline-block"
                 disabled={request}
@@ -144,14 +180,15 @@ function DeleteBookingsCard({
               <button
                 onClick={handleDeleteRequest}
                 style={{
-                  width: "100vw",
-                  borderRadius: "0px",
+                  width: "45%",
+                  borderRadius: "4px",
                   backgroundColor: "#ceedce",
                   color: "#2e830b",
-                  "&:hover": {
-                    backgroundColor: "#aabbcc !important",
-                    color: "#ffffff !important",
-                  },
+                  border: "none",
+                  padding: "6px",
+                  cursor: "pointer",
+                  transition: "background-color 0.3s",
+                  fontSize: "14px",
                 }}
                 className="btn btn-primary d-none d-sm-inline-block"
                 disabled={request}
