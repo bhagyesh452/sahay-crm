@@ -14,7 +14,7 @@ function Navbar() {
       <header className="navbar-expand-md">
         <div className="collapse navbar-collapse" id="navbar-menu">
           <div className="navbar">
-            <div className="container-xl">
+            <div className="container-xl p-0">
               <ul className="navbar-nav">
                 <li
                   className={

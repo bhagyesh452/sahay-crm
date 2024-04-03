@@ -1,3 +1,35 @@
+body {
+  margin: 0;
+  overflow: overlay;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #eee transparent;
+}
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  height: 10px;
+  width: 16px;
+}
+*::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0);
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #ffb900;
+  border-radius: 10px;
+  border: 3px solid #ffffff;
+}
+/* Track */
+*::-webkit-scrollbar-track {
+background: #f1f1f1 !important;
+}
+/* Handle on hover */
+*::-webkit-scrollbar-thumb:hover {
+background: #ffb900 !important;
+}
+
 
 .form-check-input:checked{
     background-color: #ffb900 !important;
@@ -1065,10 +1097,9 @@ color: #4e884e;
 }
 .part-payment-plus-minus
 {
-  width: 90px;
   margin-right: 5px;
-  margin-top: 22px;
-  padding-top: 26px;
+  padding-top: 28px;
+  width: 90px;
 }
 .LeadFormPreviewDrawar
 {
@@ -1089,3 +1120,164 @@ color: #4e884e;
 {
   height: 100vh;
 }
+/************BookingList Page Css Start*************/
+.booking_list_Filter
+{
+  background: #fff;
+  padding: 6px 0 6px 0;
+  border-bottom: 1px solid #dadfe5;
+}
+.booking_list_Dtl_box
+{
+  height: calc(100vh - 180px);
+  background: #fff;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #e5e5e5;
+}
+.booking-list-card
+{
+
+  border-right: 1px solid #e5e5e5;
+  overflow: hidden;
+  background: #fffdf9;
+}
+.booking-list-body
+{
+  height: calc((100vh - 180px) - 39px);
+  overflow-y: scroll;
+}
+.booking-deatils-card
+{
+
+}
+.booking-deatils-body
+{
+  height: calc((100vh - 180px) - 39px);
+  overflow-y: scroll;
+  padding: 6px 20px 8px 20px;
+}
+.cName-text-wrap
+{
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  line-height: 1.5;
+  max-width: 100%;
+  max-width: 75%;
+  overflow: hidden;
+  text-align: left;
+}
+.bookings_Company_Name {
+  padding: 8px 12px 11px 12px;
+  border-bottom: 1px solid #e5e5e5;
+  cursor: pointer;
+  border-left: 3px solid #ccc0;
+}
+.bookings_Company_Name.activeBox
+{
+  border-left: 3px solid #fbb900;
+}
+.bookings_Company_Name:hover
+{
+  background: #f5f5f5;
+}
+.b_cmpny_time
+{
+  font-size: 12px;
+  margin-top: 6px;
+  color: #6e6e6e;
+}
+.b_cmpny_name {
+  font-size: 16px;
+  font-weight: 500;
+  color: #3e3e3e;
+}
+.b_Services_name {
+  font-size: 12px;
+}
+.b_BDE_name
+{
+  font-size: 12px;
+  color: #6e6e6e;
+}
+.b_Services_name .sname
+{
+  background: #f0e8d3;
+  padding: 1px 5px;
+  font-size: 10px;
+  border-radius: 3px;
+  margin-right: 8px;
+}
+.bookings_Company_Name:hover .b_Services_name .sname
+{
+  background:#fff;
+}
+.b_Services_name .amount
+{
+  background: #f0e8d3;
+  padding: 1px 5px;
+  font-size: 10px;
+  border-radius: 3px;
+  margin-right: 8px;
+}
+.bookings_Company_Name:hover .b_Services_name .amount
+{
+  background:#fff;
+}
+.booking-deatils-heading {
+  padding: 6px 20px 8px 20px;
+  background: #f5f5f5;
+  font-weight: 500;
+  border-bottom: 1px solid #e5e5e5;
+}
+.booking-list-heading {
+  padding: 6px 10px 8px 10px;
+  background: #f5f5f5;
+  font-weight: 500;
+  border-bottom: 1px solid #e5e5e5;
+}
+.b_dtl_C_name
+{
+  font-size: 16px;
+}
+.my-card
+{
+  border: 1px solid #eee;
+  border-radius: 5px;
+  box-shadow: 2px 2px 10px -3px #ebebeb;
+}
+.my-card-head
+{
+  border-bottom: 1px solid #eee;
+  padding: 4px 10px;
+  font-weight: 500;
+}
+.my-card-body
+{
+  
+}
+.booking_inner_dtl_h
+{
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.booking_inner_dtl_b
+{
+  padding: 4px 10px;
+  font-size: 12px;
+}
+.bdr-btm-eee
+{
+  border-bottom: 1px solid #eee;
+}
+.bdr-left-eee
+{
+  border-left: 1px solid #eee;
+}
+.bdr-right-eee
+{
+  border-right: 1px solid #eee;
+}
+/************BookingList Page Css End*************/

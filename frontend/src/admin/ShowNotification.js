@@ -9,16 +9,22 @@ import ApproveCard from "./ApproveCard";
 import Nodata from "../components/Nodata";
 import DeleteBookingsCard from "./DeleteBookingsCard";
 import EditBookingsCard from "./EditBookingsCard";
+import EditBookingPreview from "./EditBookingPreview";
 
 function ShowNotification() {
   const [RequestData, setRequestData] = useState([]);
+  const [currentBooking , setCurrentBooking] = useState(null);
+  const [compareBooking, setCompareBooking] = useState(null);
   const [RequestGData, setRequestGData] = useState([]);
   const [RequestApprovals, setRequestApprovals] = useState([]);
+  const [currentCompany, setCurrentCompany] = useState("");
+  const [openRequest, setOpenRequest] = useState(false);
   const [editData, setEditData] = useState([]);
-
   const [mapArray, setMapArray] = useState([]);
   const [dataType, setDataType] = useState("General");
   const [deleteData, setDeleteData] = useState([]);
+
+  const [totalBookings, setTotalBookings] = useState([])
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const fetchRequestDetails = async () => {
     try {
@@ -28,6 +34,23 @@ function ShowNotification() {
       console.error("Error fetching data:", error.message);
     }
   };
+  const fetchCompareBooking = async()=>{
+    try{
+      const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
+      setCompareBooking(response.data.find(obj=> obj["Company Name"] === currentCompany));
+    }catch(error){
+      console.error("Error fetching Current Booking" , error.message);
+    }
+  }
+  useEffect(() => {
+
+    fetchCompareBooking();
+   setCurrentBooking(totalBookings.find(obj=>obj["Company Name"] === currentCompany));
+  }, [currentCompany]);
+
+  console.log("Current Booking",currentBooking);
+  console.log("Compare Booking", compareBooking)
+  
   const fetchRequestGDetails = async () => {
     try {
       const response = await axios.get(`${secretKey}/requestgData`);
@@ -46,25 +69,28 @@ function ShowNotification() {
   };
   const fetchEditRequests = async () => {
     try {
-      const response = await axios.get(`${secretKey}/editRequestByBde`);
+      const response = await axios.get(`${secretKey}/editable-LeadData`);
+      setTotalBookings(response.data);
       const uniqueEnames = response.data.reduce((acc, curr) => {
-        if (!acc.some((item) => item.bdeName === curr.bdeName)) {
-          const newDate = new Date(curr.bookingDate).toLocaleDateString();
+        if (!acc.some((item) => item.requestBy === curr.requestBy)) {
+          const newDate = new Date(curr.requestDate).toLocaleDateString();
+          const newTime = new Date(curr.requestDate).toLocaleTimeString();
           acc.push({
-            ename: curr.bdeName,
-            date: curr.bookingDate,
-            time: curr.bookingTime,
-            companyName: curr.companyName,
+            ename: curr.requestBy,
+            date: newDate,
+            time: newTime,
+            companyName: curr["Company Name"],
           });
         }
         return acc;
       }, []);
       setEditData(uniqueEnames);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching data:", error); 
     }
   };
- 
+
+  console.log(currentBooking)
 
   const fetchApproveRequests = async () => {
     try {
@@ -85,6 +111,7 @@ function ShowNotification() {
     }
   };
 
+
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -101,7 +128,6 @@ function ShowNotification() {
     fetchApproveRequests();
     fetchDataDelete();
     fetchEditRequests();
-
   }, []);
   const [expandedRow, setExpandedRow] = useState(null);
 
@@ -109,7 +135,7 @@ function ShowNotification() {
     setExpandedRow(expandedRow === index ? null : index);
   };
   // setEnameArray(uniqueEnames);
-
+  console.log("Current Booking" , currentBooking, compareBooking)
   return (
     <div>
       {" "}
@@ -121,7 +147,7 @@ function ShowNotification() {
             <div className="row g-2 align-items-center">
               <div className="col">
                 {/* <!-- Page pre-title --> */}
-                <h2 className="page-title">Notifications</h2>
+                <h2 className="page-title">Notifications </h2>
               </div>
             </div>
 
@@ -257,15 +283,20 @@ function ShowNotification() {
                     />
                   ))}
                 {dataType === "editBookingRequests" &&
-                  editData.length !== 0 &&
+                  editData.length !== 0 && !currentBooking && !compareBooking &&
                   editData.map((company) => (
-                    <EditBookingsCard
+                    <EditBookingsCard                   
+                      setCurrentCompany={setCurrentCompany}
                       date={company.date}
                       time={company.time}
                       name={company.ename}
                       companyName={company.companyName}
                     />
                   ))}
+                  {dataType === "editBookingRequests" &&
+                  editData.length !== 0 && currentBooking && compareBooking &&
+                    <EditBookingPreview requestedBooking={currentBooking} existingBooking={compareBooking} setCurrentBooking={setCurrentBooking}  setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany}/>
+                  }
                 {mapArray.length !== 0 &&
                   dataType === "AddRequest" &&
                   mapArray.map((company) => (

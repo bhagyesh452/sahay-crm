@@ -199,6 +199,8 @@ export default function EditableLeadform({
         }));
       } else if (Step5Status === true) {
         setCompleted({ 0: true, 1: true, 2: true, 3: true });
+        setSelectedValues(data.bookingSource);
+
         setActiveStep(4);
         setfetchedService(true);
         setTotalServices(data.services.length !== 0 ? data.services.length : 1);
@@ -486,6 +488,8 @@ export default function EditableLeadform({
     return `${year}-${month}-${day}`;
   }
 
+  console.log(activeStep);
+
   const getOrdinal = (number) => {
     const suffixes = ["th", "st", "nd", "rd"];
     const lastDigit = number % 10;
@@ -506,7 +510,7 @@ export default function EditableLeadform({
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
-  console.log(completed, "this is completed");
+  
   const handleComplete = async () => {
     try {
       const formData = new FormData();
@@ -677,7 +681,7 @@ export default function EditableLeadform({
           });
           return true;
         } else {
-          console.log("Re work");
+       
           const totalAmount = leadData.services.reduce(
             (acc, curr) => acc + curr.totalPaymentWGST,
             0
@@ -697,17 +701,15 @@ export default function EditableLeadform({
           formData.append("extraNotes", leadData.extraNotes);
 
           // Append payment receipt files to formData
-          for (let i = 0; i < leadData.paymentReceipt.length; i++) {
-            formData.append("paymentReceipt", leadData.paymentReceipt[i]);
-          }
+        
+            formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+          
           // Append other documents files to formData
           for (let i = 0; i < leadData.otherDocs.length; i++) {
             formData.append("otherDocs", leadData.otherDocs[i]);
           }
-          for (const [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-          }
           try {
+            console.log("Api is about to work")
             const response = await axios.post(
               `${secretKey}/redesigned-edit-leadData/${companysName}/step4`,
               formData
@@ -730,14 +732,18 @@ export default function EditableLeadform({
         //     leadData
         //   );
         
+
+          const dataSending = {
+            requestBy:employeeName
+          }
           const response = await axios.post(
-            `${secretKey}/redesigned-edit-leadData/${companysName}/step5`, 
+            `${secretKey}/redesigned-edit-leadData/${companysName}/step5`, dataSending
           );
           console.log(response.data);
           Swal.fire({
             icon: "success",
             title: "Request Sent",
-            text: "Your form has been successfully sent to the Admin!",
+            text: "Your Request has been successfully sent to the Admin!",
           });
           // Handle response data as needed
         } catch (error) {
@@ -3367,8 +3373,8 @@ export default function EditableLeadform({
                               variant="contained"
                               sx={{ mr: 1, background: "#ffba00 " }}
                             >
-                              {completedSteps() === totalSteps() - 1
-                                ? "Submit"
+                              {activeStep === 4
+                                ? "Request Changes"
                                 : "Save Draft"}
                             </Button>
                           ))}

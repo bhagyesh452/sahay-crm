@@ -17,7 +17,7 @@ function Header({ name, designation}) {
   return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
-        <div className="container-xl">
+        <div className="p-0">
           <button
             className="navbar-toggler"
             type="button"

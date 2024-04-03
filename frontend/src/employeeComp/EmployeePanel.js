@@ -476,7 +476,7 @@ function EmployeePanel() {
     //console.log(selectedField);
   };
 
-  //console.log(tempData);
+  console.log(tempData);
 
   const handleDateChange = (e) => {
     const dateValue = e.target.value;
@@ -2990,7 +2990,6 @@ function EmployeePanel() {
                                     )}
                                   </td>
                                 )}
-
                                 {dataStatus === "Matured" && (
                                   <>
                                     <td>
@@ -3034,7 +3033,7 @@ function EmployeePanel() {
                                             }}
                                           />
                                         </IconButton>
-                                        {/* <IconButton onClick={()=>{
+                                        <IconButton onClick={()=>{
                                           setMaturedID(company._id)
                                           setTimeout(() => {
                                             setEditFormOpen(true) 
@@ -3047,7 +3046,7 @@ function EmployeePanel() {
                                               width: "14px",
                                               height: "14px",
                                             }}/>
-                                        </IconButton> */}
+                                        </IconButton>
                                       </div>
                                     </td>
                                   </>
@@ -3209,19 +3208,19 @@ function EmployeePanel() {
             </div>
           </div>
         </>
-      ) : (
+      ) :(
         <>
-          <EditableLeadform
-            setFormOpen={setEditFormOpen}
-            companysName={currentForm["Company Name"]}
-            companysEmail={currentForm["Company Email"]}
-            companyNumber={currentForm["Company Number"]}
-            setNowToFetch={setNowToFetch}
-            companysInco={currentForm.incoDate}
-            employeeName={data.ename}
-            employeeEmail={data.email}
-            setDataStatus={setdataStatus}
-          />
+        <EditableLeadform
+         setFormOpen={setEditFormOpen}
+         companysName={currentForm["Company Name"]}
+         companysEmail={currentForm["Company Email"]}
+         companyNumber={currentForm["Company Number"]}
+         setNowToFetch={setNowToFetch}
+         companysInco={currentForm.incoDate}
+         employeeName={data.ename}
+         employeeEmail={data.email}
+         setDataStatus={setdataStatus}
+        />
         </>
 
       ) : (

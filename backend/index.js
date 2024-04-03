@@ -3090,6 +3090,8 @@ app.post(
         const existingData = await RedesignedDraftModel.findOne({
           "Company Name": companyName,
         });
+
+      
         newData.otherDocs =
           req.files["otherDocs"] === undefined
             ? ""
@@ -3185,6 +3187,7 @@ app.post(
       const companyName = req.params.CompanyName;
       const newData = req.body;
       const Step = req.params.step;
+      console.log(Step , newData);
       if (Step === "step1") {
         const existingData = await EditableDraftModel.findOne({
           "Company Name": companyName,
@@ -3229,19 +3232,20 @@ app.post(
         const existingData = await EditableDraftModel.findOne({
           "Company Name": companyName,
         });
+        console.log("Second Step Working")
         if (existingData) {
           const updatedData = await EditableDraftModel.findOneAndUpdate(
             {"Company Name": companyName },
             {
               $set: {
-                bdeName: newData.bdeName || existingData.bdeName,
-                bdeEmail: newData.bdeEmail || existingData.bdeEmail,
-                bdmName: newData.bdmName || existingData.bdmName,
-                otherBdmName : newData.otherBdmName || existingData.otherBdmName,
-                bdmEmail: newData.bdmEmail || existingData.bdmEmail,
-                bookingDate: newData.bookingDate || existingData.bookingDate,
-                bookingSource: newData.bookingSource || existingData.bookingSource,
-                otherBookingSource:newData.otherBookingSource || existingData.otherBookingSource,
+                bdeName: newData.bdeName || "",
+                bdeEmail: newData.bdeEmail || "",
+                bdmName: newData.bdmName || "",
+                otherBdmName : newData.otherBdmName || "",
+                bdmEmail: newData.bdmEmail || "",
+                bookingDate: newData.bookingDate || "",
+                bookingSource: newData.bookingSource || "",
+                otherBookingSource:newData.otherBookingSource || "",
                 Step2Status: true,
               },
             },
@@ -3249,6 +3253,23 @@ app.post(
           );
           res.status(200).json(updatedData);
           return true; // Respond with updated data
+        }else{
+          const createdData = await EditableDraftModel.create({
+            "Company Name":
+            companyName || existingData["Company Name"],
+            bdeName: newData.bdeName || "",
+            bdeEmail: newData.bdeEmail || "",
+            bdmName: newData.bdmName || "",
+            otherBdmName : newData.otherBdmName || "",
+            bdmEmail: newData.bdmEmail || "",
+            bookingDate: newData.bookingDate || "",
+            bookingSource: newData.bookingSource || "",
+            otherBookingSource:newData.otherBookingSource || "",
+            Step2Status: true,
+           
+          });
+          res.status(200).json(createdData);
+          return true;
         }
       } else if (Step === "step3") {
         const existingData = await EditableDraftModel.findOne({
@@ -3280,19 +3301,39 @@ app.post(
           );
           res.status(200).json(updatedData);
           return true; // Respond with updated data
+        }else{
+          const createdData = await EditableDraftModel.create({
+            "Company Name":
+            companyName || existingData["Company Name"],
+            services: newData.services || existingData.services,
+            numberOfServices:
+              newData.numberOfServices || existingData.numberOfServices,
+            caCase: newData.caCase,
+            caCommission: newData.caCommission,
+            caNumber: newData.caNumber,
+            caEmail: newData.caEmail,
+            totalAmount: newData.totalAmount || existingData.totalAmount,
+            pendingAmount:
+              newData.pendingAmount || existingData.pendingAmount,
+            receivedAmount:
+              newData.receivedAmount || existingData.receivedAmount,
+            Step3Status: true,
+          });
+          res.status(200).json(createdData);
+          return true;
         }
       } else if (Step === "step4") {
         const existingData = await EditableDraftModel.findOne({
           "Company Name": companyName,
         });
-        console.log(newData.paymentReceipt[0])
+
         newData.otherDocs =
           req.files["otherDocs"] === undefined
-            ? ""
+            ? []
             : req.files["otherDocs"].map((file) => file);
         newData.paymentReceipt =
           req.files["paymentReceipt"] === undefined
-            ? ""
+            ? []
             : req.files["paymentReceipt"].map((file) => file);
         if (existingData) {
           // Update existing data if found
@@ -3318,7 +3359,10 @@ app.post(
           res.status(200).json(updatedData);
           return true; // Respond with updated data
         }else{
+     
           const createdData = await EditableDraftModel.create({
+            "Company Name":
+            companyName || existingData["Company Name"],
             totalAmount: newData.totalAmount || existingData.totalAmount,
                 pendingAmount:
                   newData.pendingAmount || existingData.pendingAmount,
@@ -3339,16 +3383,17 @@ app.post(
           "Company Name": companyName,
         });
      if(existingData){
-      const requestBy = req.body;
+
       const date = new Date();
+      console.log(newData.requestBy);
        
       const updatedData = await EditableDraftModel.findOneAndUpdate(
         { "Company Name": companyName },
         {
           $set: {
             Step5Status: true,
-            requestBy:requestBy,
-            requestDate
+            requestBy: newData.requestBy,
+            requestDate: date
           },
         },
         { new: true }
@@ -4935,6 +4980,34 @@ function generatePdf(htmlContent) {
       });
   }
 }
+app.post('/api/update-redesigned-final-form/:companyName', async (req, res) => {
+ // Assuming updatedBooking contains the updated data
+  const companyName = req.params.companyName; // Get the _id from the request parameters
+  console.log("Api run");
+  const { _id, ...updatedDocWithoutId } = req.body;
+  try {
+    // Find the document by _id and update it with the updatedBooking data
+    const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate({
+      "Company Name":companyName,
+    },
+ 
+      { $set: updatedDocWithoutId },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedDocument) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+    const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
+      "Company Name":companyName
+    })
+    
+    res.status(200).json({ message: 'Document updated successfully', updatedDocument });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 app.post("/api/generate-pdf", async (req, res) => {
   const clientName = "Miya bhai";
   const clientAddress = "Ohio";

@@ -702,7 +702,11 @@ export default function RedesignedForm({
           for (let i = 0; i < leadData.otherDocs.length; i++) {
             formData.append("otherDocs", leadData.otherDocs[i]);
           }
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> dc97a20cf0d25df7e062350f6b0c499934d47a18
           try {
             const response = await axios.post(
               `${secretKey}/redesigned-leadData/${companysName}/step4`,
