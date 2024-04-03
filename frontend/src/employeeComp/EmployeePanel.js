@@ -2849,7 +2849,7 @@ function EmployeePanel() {
                                             }}
                                           />
                                         </IconButton>
-                                        {/* <IconButton onClick={()=>{
+                                        <IconButton onClick={()=>{
                                           setMaturedID(company._id)
                                           setTimeout(() => {
                                             setEditFormOpen(true) 
@@ -2862,7 +2862,7 @@ function EmployeePanel() {
                                               width: "14px",
                                               height: "14px",
                                             }}/>
-                                        </IconButton> */}
+                                        </IconButton>
                                       </div>
                                     </td>
                                   </>

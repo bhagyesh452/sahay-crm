@@ -28,6 +28,7 @@ import DrawerComponent from "./components/Drawer.js";
 import NotFound from "./NotFound.js";
 import StausInfo from "./admin/StausInfo.js";
 import MaterialUIPickers from "./components/MaterialUIPickers.js";
+import BookingList from "./admin/BookingList.jsx";
 
 
 
@@ -80,7 +81,7 @@ function App() {
               />
               <Route path="/admin/leads" element={<Leads />} />
               <Route path="/admin/leads/:companyId" element={<CompanyParticular />} />
-              <Route path="/admin/bookings" element={<BookingsAdmin />} />
+              <Route path="/admin/bookings" element={<BookingList />} />
               <Route
                 path="/admin/notification"
                 element={<ShowNotification />}
