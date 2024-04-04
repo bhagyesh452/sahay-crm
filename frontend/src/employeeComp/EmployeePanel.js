@@ -677,6 +677,7 @@ function EmployeePanel() {
   const [companyId, setCompanyId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [editFormOpen, setEditFormOpen] = useState(false);
+  const [addFormOpen , setAddFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   console.log(companyName, companyInco);
@@ -1850,12 +1851,11 @@ function EmployeePanel() {
     <div>
       <Header name={data.ename} designation={data.designation} />
       <EmpNav userId={userId} />
-
       {/* Dialog box for Request Data */}
       {!formOpen ? (
         !editFormOpen ? (
           <>
-            <div className="page-wrapper">
+            <div  className="page-wrapper">
               <div className="page-header d-print-none">
                 <div className="container-xl">
                   {requestData !== null && requestData !== undefined && (

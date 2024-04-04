@@ -67,7 +67,7 @@ const sendMail2 = async (recipients, subject, text, html, paymentReceipt) => {
       const info = await transporter.sendMail({
         from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>', // Replace with your Gmail email ID
         to: recipients.join(', '),
-        replyTo: 'bookings@my.com',
+        replyTo: 'bookings@startupsahay.com',
         subject,
         text,
         html,
