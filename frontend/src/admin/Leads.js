@@ -19,8 +19,8 @@ import "../assets/styles.css";
 import Swal from "sweetalert2";
 import ClipLoader from "react-spinners/ClipLoader";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouseLock } from '@fortawesome/free-solid-svg-icons'
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { faHouseLock } from '@fortawesome/free-solid-svg-icons'
 
 import {
   Button,

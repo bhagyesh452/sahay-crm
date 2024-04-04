@@ -5008,6 +5008,22 @@ app.post('/api/update-redesigned-final-form/:companyName', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+app.delete("/api/delete-redesigned-booking-request/:CompanyName" , async(req, res)=>{
+  try{
+    const companyName = req.params.CompanyName; 
+    const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
+      "Company Name":companyName
+    })
+    res.status(200).json({ message: 'Document updated successfully' });
+
+  }catch{
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+
+
+})
 app.post("/api/generate-pdf", async (req, res) => {
   const clientName = "Miya bhai";
   const clientAddress = "Ohio";

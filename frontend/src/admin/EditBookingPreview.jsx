@@ -32,6 +32,16 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
   };
 
   console.log(requestedBooking, existingBooking);
+  const handleRejectClick = async ()=>{
+
+    try {
+      const response = await axios.delete(`${secretKey}/delete-redesigned-booking-request/${existingBooking["Company Name"]}`);
+     Swal.fire({title:"Request Deleted" , icon:"success"}) // Display success message
+    } catch (error) {
+      console.log("Error updating data" ,error) ;
+      Swal.fire({title:"Error Deleting Request" , icon:"error"})// Display error message
+    }
+  }
 
   const handleAcceptClick =async () => {
     const updatedBooking = { ...existingBooking }; // Create a copy of existingBooking
@@ -1097,7 +1107,10 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                     transition: "background-color 0.3s",
                     fontSize: "14px",
                   }}
-                  className="btn btn-primary d-none d-sm-inline-block">
+                  className="btn btn-primary d-none d-sm-inline-block"
+                  onClick={handleRejectClick}
+                  >
+                 
                     Reject
                 </button>
             </div>
