@@ -4270,7 +4270,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const recipients = [
       newData.bdeEmail,
       newData.bdmEmail,
-      "bookings@startupsahay.com"
+      // "bookings@startupsahay.com"
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -4905,11 +4905,116 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       return servicesHtml;
     };
 
+    const renderServiceKawali = ()=>{
+      let servicesHtml = "";
+      let fundingServices = "";
+      let fundingServicesArray = "";
+      let incomeTaxServices = ""
+      const allowedServiceNames = [
+        "Seed Funding Support",
+        "Angel Funding Support",
+        "VC Funding Support",
+        "Crowd Funding Support",
+        "I-Create",
+        "Nidhi Seed Support Scheme",
+        "Nidhi Prayash Yojna",
+        "NAIF",
+        "Raftaar",
+        "CSR Funding",
+        "Stand-Up India",
+        "PMEGP",
+        "USAID",
+        "UP Grant",
+        "DBS Grant",
+        "MSME Innovation",
+        "MSME Hackathon",
+        "Gujarat Grant",
+        "CGTMSC",
+        "Mudra Loan",
+        "SIDBI Loan",
+        "Incubation Support"
+      ];
+      for(let i = 0; i < newData.services.length; i++){
+        if(newData.services[i].serviceName === "Start-Up India Certificate"){
+            servicesHtml = `
+            <p>
+              <b>Start-Up India Certification Support Service Acknowledgement:</b>
+            </p>
+            <p>
+              I, Director of <b> ${newData["Company Name"]} </b>, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing consultancy services. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-up India certificate is issued free of charge by the government, and I have not been charged for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
+            </p>
+            <br>
+            `
+        }else if(allowedServiceNames.includes(newData.services[i].serviceName)){
+            fundingServicesArray += `${newData.services[i].serviceName},`
+            fundingServices = `
+            <p>
+            <b>
+              ${newData.services[i].serviceName} Support Services Acknowledgement:   
+            </b>
+          </p>
+          <p>
+            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+          </p>
+          <br>
+            `
+        }else if(newData.services[i].serviceName === "Income Tax Excemption"){
+          incomeTaxServices = `
+          <p>
+              <p>
+                <b>
+                  Income Tax Exemption Services Acknowledgement:   
+                </b>
+              </p>
+              <p>
+                I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+              </p>
+            </p>
+            <br>
+          `
+        }else{
+          servicesHtml += `
+          <br>
+          `
+        }
+
+
+      }
+
+      if(fundingServicesArray !== ""){
+        servicesHtml += `
+        <p>
+        <b>
+          ${fundingServicesArray} Support Services Acknowledgement:   
+        </b>
+      </p>
+      <p>
+        I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+      </p>
+      <br>
+        `
+      }else if(incomeTaxServices!==""){
+        servicesHtml += `
+        <p>
+        <p>
+          <b>
+            Income Tax Exemption Services Acknowledgement:   
+          </b>
+        </p>
+        <p>
+          I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+        </p>
+      </p>
+      <br>
+      `
+      }
+      return servicesHtml
+    }
+
     // Render services HTML content
     const serviceList = renderServiceList();
-
     const paymentDetails = renderPaymentDetails();
-
+    const serviceKawali = renderServiceKawali();
     const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const filledHtml = htmlTemplate
       .replace("{{Company Name}}", newData["Company Name"])
@@ -4917,6 +5022,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Services}}", serviceList)
+      .replace("{{Service-Kawali}}",serviceKawali)
       .replace("{{TotalAmount}}", totalAmount.toFixed(2))
       .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
       .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
@@ -4938,7 +5044,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   `./Document/${newData["Company Name"]}.pdf`
                 );
                 sendMail2(
-                  [newData["Company Email"]],
+                  ["aakashseth452@gmail.com"],
                   `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                   ``,
                   `
