@@ -1884,9 +1884,9 @@ function EmployeePanel() {
                         <DialogContent>
                         <div className="sign-in-google">
 
-      <p>Please sign in with your Google account.</p>
-      <button onClick={handleGoogleLogin} >Sign in with Google</button>
-    </div>
+                             <p>Please sign in with your Google account.</p>
+                            <button onClick={handleGoogleLogin} >Sign in with Google</button>
+                                 </div>
                         </DialogContent>
 
                       </Dialog> */}

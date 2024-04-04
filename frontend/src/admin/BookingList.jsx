@@ -1,13 +1,69 @@
-import React from "react";
+import React , {useState , useEffect} from "react";
 import Header from "./Header";
 import Navbar from "./Navbar";
+import AdminBookingForm from "./AdminBookingForm";
+import axios from 'axios'
+
 
 function BookingList() {
+
+  const [bookingFormOpen, setBookingFormOpen] = useState(false);
+  const [currentDataLoading, setCurrentDataLoading] = useState(false)
+  const [data , setData] = useState([])
+  const [companyName , setCompanyName] = ("")
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+  
+  
+  const fetchDatadebounce = async () => {
+    try {
+      // Set isLoading to true while fetching data
+      //setIsLoading(true);
+      //setCurrentDataLoading(true)
+
+      const response = await axios.get(`${secretKey}/leads`);
+
+      // Set the retrieved data in the state
+      setData(response.data);
+      //setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
+
+      // Set isLoading back to false after data is fetched
+      //setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+      // Set isLoading back to false if an error occurs
+      //setIsLoading(false);
+    } finally {
+      setCurrentDataLoading(false)
+    }
+  };
+  
+  console.log(data)
+
+
+  useEffect(() => {
+    // if (data.companyName) {
+    //   console.log("Company Found");
+      fetchDatadebounce();
+    // } else {
+    //   console.log("No Company Found");
+    // }
+  }, []);
+ 
+
+ const functionOpenBookingForm =()=>{
+  setBookingFormOpen(true)
+  //setCompanyName(data.companyName)
+ }
+
+
+
+
+
   return (
     <div>
       <Header />
       <Navbar />
-      <div className="booking-list-main">
+     {!bookingFormOpen ? (<div className="booking-list-main">
         <div className="booking_list_Filter">
           <div className="container-xl">
             <div className="row justify-content-between">
@@ -29,7 +85,7 @@ function BookingList() {
                 <div className="d-flex justify-content-end" >
                     <button className="btn btn-primary mr-1">Import CSV</button>
                     <button className="btn btn-primary mr-1">Export CSV</button>
-                    <button className="btn btn-primary">Add Booking</button>
+                    <button className="btn btn-primary" onClick={()=>functionOpenBookingForm()}>Add Booking</button>
                 </div>
               </div>
             </div>
@@ -336,6 +392,22 @@ function BookingList() {
           </div>
         </div>
       </div>
+      ) : (<>
+      <AdminBookingForm
+        // matured={true}
+        // companysId={companyId}
+        //setDataStatus={setdataStatus}
+        setFormOpen={setBookingFormOpen}
+        //companysName={companyName}
+        // companysEmail={companyEmail}
+        // companyNumber={companyNumber}
+        // setNowToFetch={setNowToFetch}
+        // companysInco={companyInco}
+        // employeeName={data.ename}
+        // employeeEmail={data.email}
+      />
+    </>
+    )}
     </div>
   );
 }
