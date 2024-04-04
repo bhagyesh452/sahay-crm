@@ -164,6 +164,7 @@ function EmployeePanel() {
   const [companies, setCompanies] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
   const [currentRemarks, setCurrentRemarks] = useState("");
+  const [totalBookings, setTotalBookings] = useState([])
   const itemsPerPage = 500;
   const [year, setYear] = useState(0);
   const [socketID, setSocketID] = useState("");
@@ -205,6 +206,14 @@ function EmployeePanel() {
   //console.log("projectingcompnay", projectingCompany)
 
   //console.log("kuchlikho", currentProjection)
+  const fetchEditRequests = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/editable-LeadData`);
+      setTotalBookings(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error); 
+    }
+  };
 
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
@@ -569,6 +578,7 @@ function EmployeePanel() {
     fetchRemarksHistory();
     fetchBookingDeleteRequests();
     fetchRequestDetails();
+    fetchEditRequests();
     // let watchId;
     // const successCallback = (position) => {
     //   const userLatitude = position.coords.latitude;

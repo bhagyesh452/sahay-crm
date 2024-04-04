@@ -42,6 +42,7 @@ const DraftModel = require("./models/DraftLeadform");
 const { type } = require("os");
 const LeadModel_2 = require("./models/Leadform_2");
 const RedesignedLeadformModel = require("./models/RedesignedLeadform");
+const EditableDraftModel = require("./models/EditableDraftModel")
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
 //const axios = require('axios');
@@ -3386,6 +3387,7 @@ app.post(
 
       const date = new Date();
       console.log(newData.requestBy);
+      
        
       const updatedData = await EditableDraftModel.findOneAndUpdate(
         { "Company Name": companyName },
@@ -3393,7 +3395,8 @@ app.post(
           $set: {
             Step5Status: true,
             requestBy: newData.requestBy,
-            requestDate: date
+            requestDate: date,
+            services: existingData.services.length!==0 ? existingData.services : newData.services
           },
         },
         { new: true }
@@ -5012,7 +5015,7 @@ app.post('/api/update-redesigned-final-form/:companyName', async (req, res) => {
 app.delete("/api/delete-redesigned-booking-request/:CompanyName" , async(req, res)=>{
   try{
     const companyName = req.params.CompanyName; 
-    const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
+    const deleteFormRequest = await Edit.findOneAndDelete({
       "Company Name":companyName
     })
     res.status(200).json({ message: 'Document updated successfully' });
