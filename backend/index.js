@@ -386,7 +386,7 @@ app.post("/api/leads", async (req, res) => {
 
   try {
     for (const employeeData of csvData) {
-      console.log("employee" , employeeData)
+      //console.log("employee" , employeeData)
       try {
         const employeeWithAssignData = {
           ...employeeData,
@@ -410,6 +410,7 @@ app.post("/api/leads", async (req, res) => {
       res.setHeader("Content-Type", "text/csv");
       res.setHeader("Content-Disposition", "attachment; filename=DuplicateEntries.csv");
       res.status(200).end(csvString);
+      
       //console.log("csvString" , csvString)
     } else {
       res.status(200).json({
@@ -544,7 +545,7 @@ app.post("/api/requestCompanyData", async (req, res) => {
 
 app.post("/api/manual", async (req, res) => {
   const receivedData = req.body;
-  console.log("receiveddata" , receivedData)
+  //console.log("receiveddata" , receivedData)
 
   // console.log(receivedData);
 

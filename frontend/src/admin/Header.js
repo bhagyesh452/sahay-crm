@@ -19,8 +19,8 @@ import io from 'socket.io-client';
 function Header({ name, designation}) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-  console.log(name)
-  console.log(designation)
+  //console.log(name)
+  //console.log(designation)
   useEffect(() => {
     const socket = io('wss://startupsahay.in/socket.io');
 
