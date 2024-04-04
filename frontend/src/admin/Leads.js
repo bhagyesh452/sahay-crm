@@ -545,7 +545,7 @@ function Leads() {
           // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
 
           const counter = response.data.counter;
-          //console.log("counter", counter)
+         // console.log("counter", counter)
           const successCounter = response.data.sucessCounter;
           //console.log(successCounter)
 
@@ -557,15 +557,21 @@ function Leads() {
               icon: "success",
             });
           } else {
+            const lines = response.data.split('\n');
+
+            // Count the number of lines (entries)
+            const numberOfDuplicateEntries = lines.length - 1;
+            const noofSuccessEntries = newArray.length - numberOfDuplicateEntries
             Swal.fire({
-              title: 'Do you want dowanload duplicate entries report?',
-              text: `Duplicate Entries: ${counter}, Successful Entries: ${successCounter}. Do you want to proceed?`,
+              title: 'Do you want download duplicate entries report?',
+              html: `Successful Entries: ${noofSuccessEntries}<br>Duplicate Entries: ${numberOfDuplicateEntries}<br>Click Yes to download report?`,
               icon: 'question',
               showCancelButton: true,
               confirmButtonText: 'Yes',
               cancelButtonText: 'No'
             }).then((result) => {
               if (result.isConfirmed) {
+                //console.log(response.data)
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement("a");
                 link.href = url;
@@ -715,14 +721,15 @@ function Leads() {
     setOpenThirdMinus(true);
   };
 
-  const functionCloseSecondDirector = ()=>{
+  const functionCloseSecondDirector = () => {
     setOpenFirstDirector(false);
     //setOpenThirdMinus(true);
     setOpenThirdMinus(false);
     setOpenSecondDirector(false);
     setSecondPlus(false);
+    setFirstPlus(true)
   }
-  const functionCloseThirdDirector =()=>{
+  const functionCloseThirdDirector = () => {
     setOpenSecondDirector(true);
     setOpenThirdDirector(false);
     setFirstPlus(false);
@@ -1528,7 +1535,7 @@ function Leads() {
           </IconButton>{" "}
         </DialogTitle>
         <DialogContent>
-          <div className="modal-dialog modal-lg" role="document">
+          <div className="modal-dialog" role="document">
             <div className="modal-content">
               <div className="modal-body">
                 <div className="row">
@@ -1632,7 +1639,7 @@ function Leads() {
                     </div>
                   </div>
                 </div>
-                {openFirstDirector && (<div className="row">
+                <div className="row">
                   <div className="col-4">
                     <div className="mb-3">
                       <label className="form-label">Director's Name(First)</label>
@@ -1675,34 +1682,34 @@ function Leads() {
                       />
                     </div>
                   </div>
-                </div>)}
+                </div>
                 {firstPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
                   <button
-                  onClick={() => { functionOpenSecondDirector() }}
-                  className="btn btn-primary d-none d-sm-inline-block">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="icon"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M12 5l0 14" />
-                    <path d="M5 12l14 0" />
-                  </svg>
-                </button>
-                <button className="btn btn-primary d-none d-sm-inline-block">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="icon"
-                    width="24"
-                    height="24"
-                    fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>
-                </button></div>)}
+                    onClick={() => { functionOpenSecondDirector() }}
+                    className="btn btn-primary d-none d-sm-inline-block">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M12 5l0 14" />
+                      <path d="M5 12l14 0" />
+                    </svg>
+                  </button>
+                  <button className="btn btn-primary d-none d-sm-inline-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                      width="24"
+                      height="24"
+                      fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                  </button></div>)}
 
                 {openSecondDirector && (
                   <div className="row">
@@ -1751,31 +1758,31 @@ function Leads() {
                   </div>)}
                 {secondPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
                   <button
-                  onClick={() => { functionOpenThirdDirector() }}
-                  className="btn btn-primary d-none d-sm-inline-block">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="icon"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M12 5l0 14" />
-                    <path d="M5 12l14 0" />
-                  </svg>
-                </button>
-                <button className="btn btn-primary d-none d-sm-inline-block" onClick={()=>{functionCloseSecondDirector()}}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="icon"
-                  width="24"
-                  height="24"
-                  fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>
-              </button></div>)}
+                    onClick={() => { functionOpenThirdDirector() }}
+                    className="btn btn-primary d-none d-sm-inline-block">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M12 5l0 14" />
+                      <path d="M5 12l14 0" />
+                    </svg>
+                  </button>
+                  <button className="btn btn-primary d-none d-sm-inline-block" onClick={() => { functionCloseSecondDirector() }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                      width="24"
+                      height="24"
+                      fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                  </button></div>)}
 
                 {openThirdDirector && (<div className="row">
                   <div className="col-4">
@@ -1821,12 +1828,12 @@ function Leads() {
                     </div>
                   </div>
                 </div>)}
-                {openThirdMinus && (<button className="btn btn-primary d-none d-sm-inline-block" onClick={()=>{functionCloseThirdDirector()}}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="icon"
-                  width="24"
-                  height="24"
-                  fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>
-              </button>)}
+                {openThirdMinus && (<button className="btn btn-primary d-none d-sm-inline-block" style={{ float: "right" }} onClick={() => { functionCloseThirdDirector() }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                    width="24"
+                    height="24"
+                    fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                </button>)}
               </div>
             </div>
           </div>

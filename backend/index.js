@@ -44,9 +44,9 @@ const LeadModel_2 = require("./models/Leadform_2");
 const RedesignedLeadformModel = require("./models/RedesignedLeadform");
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
-const axios = require('axios');
-const crypto = require('crypto');
-const { Cashfree } = require('cashfree-pg');
+//const axios = require('axios');
+//const crypto = require('crypto');
+//const { Cashfree } = require('cashfree-pg');
 
 
 // const http = require('http');
@@ -182,72 +182,72 @@ app.post("/api/admin/login-admin", async (req, res) => {
 //   }
 // });
 
-Cashfree.XClientId = process.env.CLIENT_ID;
-Cashfree.XClientSecret = process.env.CLIENT_SECRET;
-Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
+// Cashfree.XClientId = process.env.CLIENT_ID;
+// Cashfree.XClientSecret = process.env.CLIENT_SECRET;
+// Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
 
 
 
-function generateOrderId() {
-  const uniqueId = crypto.randomBytes(16).toString('hex');
+// function generateOrderId() {
+//   const uniqueId = crypto.randomBytes(16).toString('hex');
 
-  const hash = crypto.createHash('sha256');
-  hash.update(uniqueId);
+//   const hash = crypto.createHash('sha256');
+//   hash.update(uniqueId);
 
-  const orderId = hash.digest('hex');
-  console.log(orderId)
-  return orderId.substr(0, 12);
-}
-
-
-app.get('/api/payment', async (req, res) => {
-
-  try {
-
-    let request = {
-      "order_amount": 1.00,
-      "order_currency": "INR",
-      "order_id": await generateOrderId(),
-      "customer_details": {
-        "customer_id": "webcodder01",
-        "customer_phone": "9999999999",
-        "customer_name": "Web Codder",
-        "customer_email": "webcodder@example.com"
-      },
-    }
-
-    Cashfree.PGCreateOrder("2022-09-01", request).then(response => {
-      console.log(response.data);
-      res.json(response.data);
-
-    }).catch(error => {
-      console.error(error.response.data.message);
-    })
-
-  } catch (error) {
-    console.log(error);
-  }
+//   const orderId = hash.digest('hex');
+//   console.log(orderId)
+//   return orderId.substr(0, 12);
+// }
 
 
-})
+// app.get('/api/payment', async (req, res) => {
 
-app.post('/api/verify', async (req, res) => {
-  try {
+//   try {
 
-    let { orderId } = req.body;
+//     let request = {
+//       "order_amount": 1.00,
+//       "order_currency": "INR",
+//       "order_id": await generateOrderId(),
+//       "customer_details": {
+//         "customer_id": "webcodder01",
+//         "customer_phone": "9999999999",
+//         "customer_name": "Web Codder",
+//         "customer_email": "webcodder@example.com"
+//       },
+//     }
 
-    Cashfree.PGOrderFetchPayments("2023-08-01", orderId).then((response) => {
+//     Cashfree.PGCreateOrder("2022-09-01", request).then(response => {
+//       console.log(response.data);
+//       res.json(response.data);
 
-      res.json(response.data);
-    }).catch(error => {
-      console.error(error.response.data.message);
-    })
+//     }).catch(error => {
+//       console.error(error.response.data.message);
+//     })
+
+//   } catch (error) {
+//     console.log(error);
+//   }
 
 
-  } catch (error) {
-    console.log(error);
-  }
-})
+// })
+
+// app.post('/api/verify', async (req, res) => {
+//   try {
+
+//     let { orderId } = req.body;
+
+//     Cashfree.PGOrderFetchPayments("2023-08-01", orderId).then((response) => {
+
+//       res.json(response.data);
+//     }).catch(error => {
+//       console.error(error.response.data.message);
+//     })
+
+
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })
 
 
 
@@ -385,7 +385,7 @@ app.post("/api/leads", async (req, res) => {
 
   try {
     for (const employeeData of csvData) {
-      console.log("employee" , employeeData)
+      //console.log("employee" , employeeData)
       try {
         const employeeWithAssignData = {
           ...employeeData,
@@ -409,6 +409,7 @@ app.post("/api/leads", async (req, res) => {
       res.setHeader("Content-Type", "text/csv");
       res.setHeader("Content-Disposition", "attachment; filename=DuplicateEntries.csv");
       res.status(200).end(csvString);
+      
       //console.log("csvString" , csvString)
     } else {
       res.status(200).json({
@@ -543,7 +544,7 @@ app.post("/api/requestCompanyData", async (req, res) => {
 
 app.post("/api/manual", async (req, res) => {
   const receivedData = req.body;
-  console.log("receiveddata" , receivedData)
+  //console.log("receiveddata" , receivedData)
 
   // console.log(receivedData);
 
