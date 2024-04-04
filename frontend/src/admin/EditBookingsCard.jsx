@@ -100,38 +100,42 @@ console.log("Company data current:" , companyName)
   return (
     <div>
       <Box sx={{ minWidth: 275, width: "28vw" }} className="col">
-        <Card
-          style={{
-            padding: "10px",
-            margin: "10px 0px",
-            backgroundColor: request && "#cacaca",
-          }}
-          variant="outlined"
-        >
+       
           <React.Fragment>
-            <CardContent>
-              <Typography
-                style={{ fontSize: "18px" }}
-                variant="h5"
-                component="div"
-              >
-                {name} wants to Edit Bookings
-              </Typography>
-
-              <div className="d-flex justify-content-between">
-                <Typography color="text.secondary">
-                  {date ? formatDatelatest(date) : "dd/mm/yyyy"}
-                </Typography>
-                <Typography color="text.secondary">
-                  {time ? time : "hh:mm"}
-                </Typography>
-              </div>
-            </CardContent>
-
-            <div
+          <Card
+  className="g-card"
+  style={{
+    padding: "8px",
+    backgroundColor: "inherit",
+    margin: "10px 0px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    transition: "transform 0.3s",
+    "&:hover": {
+      transform: "scale(1.02)",
+    },
+  }}
+  variant="outlined"
+>
+  <CardContent>
+    <div className="main-content-card d-flex justify-content-between">
+      <div style={{ fontSize: "16px", marginBottom: "8px", color: "#333" }}>
+        <strong>{name}</strong> wants to Edit Booking Form of <br/>
+        <strong>{companyName}</strong>
+        <div className="data-type d-flex justify-content-between mt-1" style={{ fontSize: '12px' }}>
+          <div style={{ color: '#797878' }} className="c-type">
+            <strong>{date}</strong>
+          </div>
+          <div style={{ color: '#797878' }} className="c-year">
+            <strong>{time}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
               style={{ display: "flex", justifyContent: "space-around" }}
               className="footerbutton"
-            >
+             >
               <button
                 style={{
                   width: "100vw",
@@ -149,8 +153,13 @@ console.log("Company data current:" , companyName)
                 View
               </button>
             </div>
+  </CardContent>
+</Card>
+
+
+          
           </React.Fragment>
-        </Card>
+        
       </Box>
 
       {/* Dialog Box for Comparing both the forms */}

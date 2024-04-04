@@ -82,6 +82,9 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   bdmEmail: {
     type: String,
   },
+  bdmType:{
+    type:String,
+  },
   bookingDate: {
     type: String,
   },

@@ -45,7 +45,7 @@ const defaultService = {
   paymentCount: 2,
 };
 
-export default function RedesignedForm({
+export default function AddLeadForm({
   setDataStatus,
   setFormOpen,
   companysName,
@@ -69,10 +69,9 @@ export default function RedesignedForm({
     bdeName: employeeName ? employeeName : "",
     bdeEmail: employeeEmail ? employeeEmail : "",
     bdmName: "",
-    bdmType:"Close-by",
     otherBdmName:'',
     bdmEmail: "",
-    bookingDate: new Date(),
+    bookingDate: "",
     bookingSource: "",
     otherBookingSource: "",
     numberOfServices: totalServices,
@@ -110,19 +109,8 @@ export default function RedesignedForm({
       console.error("Error fetching data:", error.message);
     }
   };
-  const formatInputDate = (dateString)=>{
- 
-    const parsedDate = new Date(dateString);
-    const year = parsedDate.getFullYear();
-    const month = String(parsedDate.getMonth() + 1).padStart(2, '0'); // Adding 1 to month index since it starts from 0
-    const day = String(parsedDate.getDate()).padStart(2, '0');
-    
-    const formattedDate = `${year}-${month}-${day}`;
- return formattedDate
-  }
 
   const [leadData, setLeadData] = useState(defaultLeadData);
-  
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -131,7 +119,7 @@ export default function RedesignedForm({
       const data = response.data.find(
         (item) => item["Company Name"] === companysName
       );
-      console.log("Fetched Data");
+      
       if (!data) {
         setCompleted({});
         setActiveStep(0);
@@ -147,6 +135,7 @@ export default function RedesignedForm({
         Step5Status,
         ...newLeadData
       } = data;
+      console.log("Fetched Data" , newLeadData);
       setLeadData(newLeadData);
       if (Step1Status === true && Step2Status === false) {
         setCompleted({ 0: true });
@@ -156,7 +145,6 @@ export default function RedesignedForm({
           ...prevState,
           bdeName: employeeName ? employeeName : "",
           bdeEmail: employeeEmail ? employeeEmail : "",
-          bookingDate:formatInputDate(new Date())
         }));
       } else if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
@@ -210,8 +198,12 @@ export default function RedesignedForm({
           extraNotes: data.extraNotes,
         }));
       } else if (Step5Status === true) {
-        setCompleted({ 0: true, 1: true, 2: true, 3: true, 4: true });
-        setActiveStep(5);
+        setCompleted({ 0: true, 1: true, 2: true, 3: true });
+        setSelectedValues(data.bookingSource);
+
+        setActiveStep(4);
+        setfetchedService(true);
+        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -496,6 +488,8 @@ export default function RedesignedForm({
     return `${year}-${month}-${day}`;
   }
 
+  console.log(activeStep);
+
   const getOrdinal = (number) => {
     const suffixes = ["th", "st", "nd", "rd"];
     const lastDigit = number % 10;
@@ -516,7 +510,7 @@ export default function RedesignedForm({
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
-  console.log(completed, "this is completed");
+  
   const handleComplete = async () => {
     try {
       const formData = new FormData();
@@ -552,7 +546,7 @@ export default function RedesignedForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companysName}/step1`,
+              `${secretKey}/redesigned-addmore-booking/${companysName}/step1`,
               dataToSend
             );
             // Handle response data as needed
@@ -560,7 +554,7 @@ export default function RedesignedForm({
             console.error("Error uploading data:", error);
             // Handle error
           }
-          fetchData();
+          
           handleNext();
           return true;
         }
@@ -585,7 +579,6 @@ export default function RedesignedForm({
             bdeName: leadData.bdeName,
             bdeEmail: leadData.bdeEmail,
             bdmName: leadData.bdmName,
-            bdmType:leadData.bdmType,
             otherBdmName:leadData.otherBdmName,
             bdmEmail: leadData.bdmEmail,
             bookingDate: leadData.bookingDate,
@@ -595,7 +588,7 @@ export default function RedesignedForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companysName}/step2`,
+              `${secretKey}/redesigned-addmore-booking/${companysName}/step2`,
               dataToSend
             );
             // Handle response data as needed
@@ -603,7 +596,7 @@ export default function RedesignedForm({
             console.error("Error uploading data:", error);
             // Handle error
           }
-          fetchData();
+         
           handleNext();
           return true;
         }
@@ -659,7 +652,7 @@ export default function RedesignedForm({
           console.log("This is sending", dataToSend);
           try {
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companysName}/step3`,
+              `${secretKey}/redesigned-addmore-booking/${companysName}/step3`,
               dataToSend
             );
             // Handle response data as needed
@@ -667,7 +660,7 @@ export default function RedesignedForm({
             console.error("Error uploading data:", error);
             // Handle error
           }
-          fetchData();
+       
           handleNext();
           return true;
         }
@@ -688,7 +681,7 @@ export default function RedesignedForm({
           });
           return true;
         } else {
-          console.log("Re work");
+       
           const totalAmount = leadData.services.reduce(
             (acc, curr) => acc + curr.totalPaymentWGST,
             0
@@ -708,21 +701,21 @@ export default function RedesignedForm({
           formData.append("extraNotes", leadData.extraNotes);
 
           // Append payment receipt files to formData
-          for (let i = 0; i < leadData.paymentReceipt.length; i++) {
-            formData.append("paymentReceipt", leadData.paymentReceipt[i]);
-          }
-
+        
+            formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+          
           // Append other documents files to formData
           for (let i = 0; i < leadData.otherDocs.length; i++) {
             formData.append("otherDocs", leadData.otherDocs[i]);
           }
           try {
+            console.log("Api is about to work")
             const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companysName}/step4`,
+              `${secretKey}/redesigned-addmore-booking/${companysName}/step4`,
               formData
             );
             // Handle successful upload
-            fetchData();
+           
             handleNext();
             return true;
           } catch (error) {
@@ -734,19 +727,24 @@ export default function RedesignedForm({
 
       if (activeStep === 4) {
         try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-final-leadData/${companysName}`,
-            leadData
-          );
-          const response2 = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}/step5`
-          );
+        //   const response = await axios.post(
+        //     `${secretKey}/redesigned-final-leadData/${companysName}`,
+        //     leadData
+        //   );
+        
 
+          const dataSending = {
+            requestBy:employeeName,
+            services:leadData.services
+          }
+          const response = await axios.post(
+            `${secretKey}/redesigned-addmore-booking/${companysName}/step5`, dataSending
+          );
           console.log(response.data);
           Swal.fire({
             icon: "success",
-            title: "Form Submitted",
-            text: "Your form has been submitted successfully!",
+            title: "Request Sent",
+            text: "Your Request has been successfully sent to the Admin!",
           });
           // Handle response data as needed
         } catch (error) {
@@ -756,13 +754,11 @@ export default function RedesignedForm({
             title: "Error",
             text: "There was an error submitting the form. Please try again later.",
           });
-          // Handle error
         }
 
-        fetchData();
+      
         handleNext();
         setFormOpen(false);
-        setDataStatus("Matured");
         return true;
       }
       // let dataToSend = {
@@ -996,7 +992,7 @@ export default function RedesignedForm({
                           ),
                         }));
                       }}
-                      disabled={completed[activeStep] === true}
+                      readOnly={completed[activeStep] === true}
                     />
                     <label class="form-check-label" for="dsc">
                       WITH DSC
@@ -1038,7 +1034,7 @@ export default function RedesignedForm({
                           ),
                         }));
                       }}
-                      disabled={completed[activeStep] === true}
+                      readOnly={completed[activeStep] === true}
                     />
 
                     <button class="btn" type="button">
@@ -1108,7 +1104,7 @@ export default function RedesignedForm({
                           ),
                         }));
                       }}
-                      disabled={completed[activeStep] === true}
+                      readOnly={completed[activeStep] === true}
                     />
                     <label class="form-check-label" for="GST">
                       WITH GST (18%)
@@ -1239,7 +1235,7 @@ export default function RedesignedForm({
                                 ),
                               }));
                             }}
-                            disabled={completed[activeStep] === true}
+                            readOnly={completed[activeStep] === true}
                           />
                           <button class="btn" type="button">
                             ₹
@@ -1277,7 +1273,7 @@ export default function RedesignedForm({
                                   ),
                                 }));
                               }}
-                              disabled={leadData.services[i].paymentCount === 2}
+                              readOnly={leadData.services[i].paymentCount === 2}
                             />
                             <button class="btn" type="button">
                               ₹
@@ -1373,7 +1369,7 @@ export default function RedesignedForm({
                                   ),
                                 }));
                               }}
-                              disabled={leadData.services[i].paymentCount === 3}
+                              readOnly={leadData.services[i].paymentCount === 3}
                             />
                             <button class="btn" type="button">
                               ₹
@@ -1461,7 +1457,7 @@ export default function RedesignedForm({
                                   ),
                                 }));
                               }}
-                              disabled={leadData.services[i].paymentCount === 4}
+                              readOnly={leadData.services[i].paymentCount === 4}
                             />
                             <button class="btn" type="button">
                               ₹
@@ -1609,7 +1605,7 @@ export default function RedesignedForm({
                       ),
                     }));
                   }}
-                  disabled={completed[activeStep] === true}
+                  readOnly={completed[activeStep] === true}
                 ></textarea>
               </div>
             </div>
@@ -1649,12 +1645,6 @@ export default function RedesignedForm({
     });
   };
 
-
-
-
-
-
-
   return (
     <div>
       <div className="container mt-2">
@@ -1670,7 +1660,6 @@ export default function RedesignedForm({
                       className={
                         activeStep === index ? "form-tab-active" : "No-active"
                       }
-                      disabled={!completed[index]}
                     >
                       {label}
                     </StepButton>
@@ -1750,7 +1739,7 @@ export default function RedesignedForm({
                                             "Company Email"
                                           );
                                         }}
-                                        disabled={
+                                        readOnly={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -1778,7 +1767,7 @@ export default function RedesignedForm({
                                             handleInputChange(inputValue, "Company Number");
                                           }
                                         }}
-                                        disabled={completed[activeStep] === true}
+                                        readOnly={completed[activeStep] === true}
                                       />
                                     </div>
                                   </div>
@@ -1804,7 +1793,7 @@ export default function RedesignedForm({
                                             "incoDate"
                                           );
                                         }}
-                                        disabled={
+                                        readOnly={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -1832,7 +1821,7 @@ export default function RedesignedForm({
                                             "panNumber"
                                           );
                                         }}
-                                        disabled={
+                                        readOnly={
                                           completed[activeStep] === true
                                         }
                                         required
@@ -1854,7 +1843,7 @@ export default function RedesignedForm({
                                             "gstNumber"
                                           );
                                         }}
-                                        disabled={
+                                        readOnly={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -1967,33 +1956,6 @@ export default function RedesignedForm({
                                       </select>
                                     </div>
                                   </div>
-                                  {leadData.bdmName !== "other" && <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label for="BDMemail">
-                                        BDM Email Address:{" "}
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
-                                      </label>
-                                      <input
-                                        type="email"
-                                        className="form-control mt-1"
-                                        placeholder="Enter BDM email"
-                                        id="BDMemail"
-                                        value={leadData.bdmEmail}
-                                        onChange={(e) => {
-                                          handleInputChange(
-                                            e.target.value,
-                                            "bdmEmail"
-                                          );
-                                        }}
-                                        disabled={leadData.bdmEmail}
-                                      />
-                                    </div>
-                                  </div>}
-
                                   {leadData.bdmName === "other" && 
                                   <>
                                   <div className="row">
@@ -2047,63 +2009,39 @@ export default function RedesignedForm({
                                       />
                                     </div>
                                   </div>
-                                  
-                                 
+
                                   </div>
+                                  
 
                                   </>}
-                                  <div className="row mt-1">
-                                    <div className="col-sm-2 mr-2">
-                                      <label htmlFor="bdmType
-                                      ">
-                                        BDM Type :
-                                      </label>
-                                      
-                                    <label className="form-check form-check-inline">
-                                          <input
-                                            className="form-check-input"
-                                            type="radio"
-                                            name="bdm-type"
-                                            
-                                            onChange={(e) => {
-                                              setLeadData((prevLeadData) => ({
-                                                ...prevLeadData,
-                                                bdmType: "Close-by", // Set the value based on the selected radio button
-                                              }));
-                                            }}
-                                           
-                                            // Set the value attribute for "Yes"
-                                            checked={leadData.bdmType === "Close-by"} // Check condition based on state
-                                          />
-                                          <span className="form-check-label">
-                                           Close By
-                                          </span>
-                                        </label>
-                                    </div>
-                                    <div className="col-sm-2">
-                                    <label className="form-check form-check-inline">
-                                          <input
-                                            className="form-check-input"
-                                            type="radio"
-                                            name="bdmType"
-                                            onChange={(e) => {
-                                              setLeadData((prevLeadData) => ({
-                                                ...prevLeadData,
-                                                bdmType: "Supported-by", // Set the value based on the selected radio button
-                                              }));
-                                            }}
-                                           
-                                            // Set the value attribute for "Yes"
-                                            checked={leadData.bdmType === "Supported-by"} // Check condition based on state
-                                          />
-                                          <span className="form-check-label">
-                                            Supported By
-                                          </span>
-                                        </label>
-                                    </div>
-                                  </div>
 
                                   
+                                  {leadData.bdmName !== "other" && <div className="col-sm-3">
+                                    <div className="form-group mt-2 mb-2">
+                                      <label for="BDMemail">
+                                        BDM Email Address:{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
+                                      </label>
+                                      <input
+                                        type="email"
+                                        className="form-control mt-1"
+                                        placeholder="Enter BDM email"
+                                        id="BDMemail"
+                                        value={leadData.bdmEmail}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "bdmEmail"
+                                          );
+                                        }}
+                                        disabled={leadData.bdmEmail}
+                                      />
+                                    </div>
+                                  </div>}
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="booking-date">
@@ -2126,7 +2064,7 @@ export default function RedesignedForm({
                                             "bookingDate"
                                           );
                                         }}
-                                        disabled={
+                                        readOnly={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -2200,7 +2138,6 @@ export default function RedesignedForm({
                                       </div>
                                     </div>
                                   )}
-                                  
                                 </div>
                               </form>
                             </div>
@@ -2321,7 +2258,7 @@ export default function RedesignedForm({
                                               caNumber: e.target.value, // Set the value based on the selected radio button
                                             }));
                                           }}
-                                          disabled={
+                                          readOnly={
                                             completed[activeStep] === true
                                           }
                                           value={leadData.caNumber}
@@ -2350,7 +2287,7 @@ export default function RedesignedForm({
                                                 caEmail: e.target.value, // Set the value based on the selected radio button
                                               }));
                                             }}
-                                            disabled={
+                                            readOnly={
                                               completed[activeStep] === true
                                             }
                                           />
@@ -2379,7 +2316,7 @@ export default function RedesignedForm({
                                             }));
                                           }}
                                           value={leadData.caCommission}
-                                          disabled={
+                                          readOnly={
                                             completed[activeStep] === true
                                           }
                                         />
@@ -2427,7 +2364,7 @@ export default function RedesignedForm({
                                               0
                                             )
                                             .toFixed(2)}
-                                          disabled
+                                          readOnly
                                         />
                                         <button class="btn" type="button">
                                           ₹
@@ -2461,7 +2398,7 @@ export default function RedesignedForm({
                                               0
                                             )
                                             .toFixed(2)}
-                                          disabled
+                                          readOnly
                                         />
                                         <button class="btn" type="button">
                                           ₹
@@ -2495,7 +2432,7 @@ export default function RedesignedForm({
                                               0
                                             )
                                             .toFixed(2)}
-                                          disabled
+                                          readOnly
                                         />
                                         <button class="btn" type="button">
                                           ₹
@@ -2611,7 +2548,7 @@ export default function RedesignedForm({
                                             "extraNotes"
                                           );
                                         }}
-                                        disabled={
+                                        readOnly={
                                           completed[activeStep] === true
                                         }
                                       ></textarea>
@@ -3400,7 +3337,7 @@ export default function RedesignedForm({
                         >
                           {activeStep !== 0 ? "Back" : "Back to Main"}
                         </Button>
-                        <Button
+                        {/* <Button
                           color="primary"
                           variant="contained"
                           disabled={activeStep === 0}
@@ -3408,13 +3345,13 @@ export default function RedesignedForm({
                           onClick={handleResetDraft}
                         >
                           Reset
-                        </Button>
+                        </Button> */}
                         <Box sx={{ flex: "1 1 auto" }} />
                         <Button
                           onClick={handleNext}
                           variant="contained"
                           sx={{ mr: 1 }}
-                          disabled={!completed[activeStep]}
+                         
                         >
                           Next
                         </Button>
@@ -3422,12 +3359,9 @@ export default function RedesignedForm({
                           (completed[activeStep] ? (
                             <>
                               <Button
-                              onClick={() => {
-                                setCompleted(prevCompleted => ({
-                                  ...prevCompleted,
-                                  [activeStep]: false
-                                }));
-                              }}
+                                onClick={() => {
+                                  setCompleted({ activeStep: false });
+                                }}
                                 variant="contained"
                                 sx={{ mr: 1, background: "#ffba00 " }}
                               >
@@ -3440,8 +3374,8 @@ export default function RedesignedForm({
                               variant="contained"
                               sx={{ mr: 1, background: "#ffba00 " }}
                             >
-                              {completedSteps() === totalSteps() - 1
-                                ? "Submit"
+                              {activeStep === 4
+                                ? "Request Changes"
                                 : "Save Draft"}
                             </Button>
                           ))}

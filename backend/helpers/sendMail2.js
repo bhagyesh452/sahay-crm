@@ -53,10 +53,9 @@ const processAttachments = (files, prefix) => {
     const buffer = Buffer.from(files.buffer); // Convert ArrayBuffer to Buffer
 
     attachments.push({
-        filename: `Acknowlegment.pdf`,
+        filename: `Self-Declaration.pdf`,
         content: buffer, // Use the converted Buffer
     });
-
     return attachments;
 };
 // Function to send email
@@ -68,7 +67,7 @@ const sendMail2 = async (recipients, subject, text, html, paymentReceipt) => {
       const info = await transporter.sendMail({
         from: '"Start-Up Sahay Private Limited" <alerts@startupsahay.com>', // Replace with your Gmail email ID
         to: recipients.join(', '),
-        replyTo: 'bookings@my.com',
+        replyTo: 'bookings@startupsahay.com',
         subject,
         text,
         html,

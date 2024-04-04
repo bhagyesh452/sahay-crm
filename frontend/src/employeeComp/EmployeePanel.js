@@ -164,6 +164,7 @@ function EmployeePanel() {
   const [companies, setCompanies] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
   const [currentRemarks, setCurrentRemarks] = useState("");
+  const [totalBookings, setTotalBookings] = useState([]);
   const itemsPerPage = 500;
   const [year, setYear] = useState(0);
   const [socketID, setSocketID] = useState("");
@@ -205,6 +206,16 @@ function EmployeePanel() {
   //console.log("projectingcompnay", projectingCompany)
 
   //console.log("kuchlikho", currentProjection)
+  const fetchEditRequests = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/editable-LeadData`);
+      setTotalBookings(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  console.log(totalBookings, "This is elon musk");
 
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
@@ -569,6 +580,7 @@ function EmployeePanel() {
     fetchRemarksHistory();
     fetchBookingDeleteRequests();
     fetchRequestDetails();
+    fetchEditRequests();
     // let watchId;
     // const successCallback = (position) => {
     //   const userLatitude = position.coords.latitude;
@@ -665,6 +677,7 @@ function EmployeePanel() {
   const [companyId, setCompanyId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [editFormOpen, setEditFormOpen] = useState(false);
+  const [addFormOpen , setAddFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   console.log(companyName, companyInco);
@@ -980,10 +993,10 @@ function EmployeePanel() {
         "Director Email(Second)": directorEmailSecond,
         "Director Name(Third)": directorNameThird,
         "Director Number(Third)": directorNumberThird,
-        "Director Email(Third)": directorEmailThird
+        "Director Email(Third)": directorEmailThird,
       })
       .then((response) => {
-        console.log("response", response)
+        console.log("response", response);
         console.log("Data sent Successfully");
         Swal.fire({
           title: "Data Added!",
@@ -998,12 +1011,12 @@ function EmployeePanel() {
       });
   };
 
-  const [openSecondDirector, setOpenSecondDirector] = useState(false)
-  const [openFirstDirector, setOpenFirstDirector] = useState(true)
-  const [openThirdDirector, setOpenThirdDirector] = useState(false)
-  const [firstPlus, setFirstPlus] = useState(true)
-  const [secondPlus, setSecondPlus] = useState(false)
-  const [openThirdMinus, setOpenThirdMinus] = useState(false)
+  const [openSecondDirector, setOpenSecondDirector] = useState(false);
+  const [openFirstDirector, setOpenFirstDirector] = useState(true);
+  const [openThirdDirector, setOpenThirdDirector] = useState(false);
+  const [firstPlus, setFirstPlus] = useState(true);
+  const [secondPlus, setSecondPlus] = useState(false);
+  const [openThirdMinus, setOpenThirdMinus] = useState(false);
 
   const functionOpenSecondDirector = () => {
     setOpenSecondDirector(true);
@@ -1024,15 +1037,15 @@ function EmployeePanel() {
     setOpenThirdMinus(false);
     setOpenSecondDirector(false);
     setSecondPlus(false);
-    setFirstPlus(true)
-  }
+    setFirstPlus(true);
+  };
   const functionCloseThirdDirector = () => {
     setOpenSecondDirector(true);
     setOpenThirdDirector(false);
     setFirstPlus(false);
-    setOpenThirdMinus(false)
-    setSecondPlus(true)
-  }
+    setOpenThirdMinus(false);
+    setSecondPlus(true);
+  };
 
   // Function for Parsing Excel File
   const handleRequestDelete = async (companyId, companyName) => {
@@ -1087,7 +1100,7 @@ function EmployeePanel() {
     if (
       file &&
       file.type ===
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ) {
       const reader = new FileReader();
 
@@ -1122,7 +1135,7 @@ function EmployeePanel() {
             "Director Email(Second)": row[15],
             "Director Name(Third)": row[16],
             "Director Number(Third)": row[17],
-            "Director Email(Third)": row[18]
+            "Director Email(Third)": row[18],
           }));
 
         setCsvData(formattedJsonData);
@@ -1176,14 +1189,14 @@ function EmployeePanel() {
   //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
   // })
 
-  console.log("csv", csvdata)
+  console.log("csv", csvdata);
   const handleUploadData = async (e) => {
     const name = data.ename;
     const updatedCsvdata = csvdata.map((data) => ({
       ...data,
       ename: name,
     }));
-    console.log("updatedcsv", updatedCsvdata)
+    console.log("updatedcsv", updatedCsvdata);
 
     if (updatedCsvdata.length !== 0) {
       // Move setLoading outside of the loop
@@ -1239,8 +1252,6 @@ function EmployeePanel() {
       const data = response.data.find((obj) => obj.company === maturedID);
       console.log(data);
       setCurrentForm(data);
-
-
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -1559,20 +1570,20 @@ function EmployeePanel() {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-            (obj) =>
-              obj.Status === "Untouched" ||
-              obj.Status === "Busy" ||
-              obj.Status === "Not Picked Up"
-          )
+              (obj) =>
+                obj.Status === "Untouched" ||
+                obj.Status === "Busy" ||
+                obj.Status === "Not Picked Up"
+            )
           : dataStatus === "Interested"
-            ? moreEmpData.filter((obj) => obj.Status === "Interested")
-            : dataStatus === "Not Interested"
-              ? moreEmpData.filter(
-                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-              )
-              : dataStatus === "FollowUp"
-                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                : [];
+          ? moreEmpData.filter((obj) => obj.Status === "Interested")
+          : dataStatus === "Not Interested"
+          ? moreEmpData.filter(
+              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+            )
+          : dataStatus === "FollowUp"
+          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+          : [];
 
       setEmployeeData(newEmpData);
       setSelectedYears([
@@ -1600,20 +1611,20 @@ function EmployeePanel() {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-            (obj) =>
-              obj.Status === "Untouched" ||
-              obj.Status === "Busy" ||
-              obj.Status === "Not Picked Up"
-          )
+              (obj) =>
+                obj.Status === "Untouched" ||
+                obj.Status === "Busy" ||
+                obj.Status === "Not Picked Up"
+            )
           : dataStatus === "Interested"
-            ? moreEmpData.filter((obj) => obj.Status === "Interested")
-            : dataStatus === "Not Interested"
-              ? moreEmpData.filter(
-                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-              )
-              : dataStatus === "FollowUp"
-                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                : [];
+          ? moreEmpData.filter((obj) => obj.Status === "Interested")
+          : dataStatus === "Not Interested"
+          ? moreEmpData.filter(
+              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+            )
+          : dataStatus === "FollowUp"
+          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+          : [];
       setSelectedYears([...selectedYears, selectedYear]); // Add selected year to the list
       const filteredData = newEmpData.filter(
         (data) =>
@@ -1641,20 +1652,20 @@ function EmployeePanel() {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-            (obj) =>
-              obj.Status === "Untouched" ||
-              obj.Status === "Busy" ||
-              obj.Status === "Not Picked Up"
-          )
+              (obj) =>
+                obj.Status === "Untouched" ||
+                obj.Status === "Busy" ||
+                obj.Status === "Not Picked Up"
+            )
           : dataStatus === "Interested"
-            ? moreEmpData.filter((obj) => obj.Status === "Interested")
-            : dataStatus === "Not Interested"
-              ? moreEmpData.filter(
-                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-              )
-              : dataStatus === "FollowUp"
-                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                : [];
+          ? moreEmpData.filter((obj) => obj.Status === "Interested")
+          : dataStatus === "Not Interested"
+          ? moreEmpData.filter(
+              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+            )
+          : dataStatus === "FollowUp"
+          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+          : [];
       const filteredData = newEmpData.filter((data) => {
         const year = new Date(data["Company Incorporation Date  "])
           .getFullYear()
@@ -1750,11 +1761,9 @@ function EmployeePanel() {
 
   // ------------------------------------------------------payment-link-work-----------------------------------------
 
-
-  const [paymentLink, setPaymentLink] = useState('');
-  const [error, setError] = useState('');
-  const [orderId, setOrderId] = useState("")
-
+  const [paymentLink, setPaymentLink] = useState("");
+  const [error, setError] = useState("");
+  const [orderId, setOrderId] = useState("");
 
   // let cashfree;
 
@@ -1782,7 +1791,6 @@ function EmployeePanel() {
   //     console.log(error)
   //   }
   // }
-
 
   // const verifyPayment = async () => {
   //   try {
@@ -1815,13 +1823,11 @@ function EmployeePanel() {
   //       verifyPayment(orderId)
   //     })
 
-
   //   } catch (error) {
   //     console.log(error)
   //   }
 
   // }
-
 
   // const generatePaymentLink = async () => {
   //   try {
@@ -1841,40 +1847,41 @@ function EmployeePanel() {
 
   // console.log(paymentLink)
 
-
-
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
       <EmpNav userId={userId} />
-
       {/* Dialog box for Request Data */}
-      {!formOpen ? !editFormOpen ? (
-        <>
-          <div className="page-wrapper">
-            <div className="page-header d-print-none">
-              <div className="container-xl">
-                {requestData !== null && requestData !== undefined && (
-                  <div className="notification-bar">
-                    <div className="noti-text">
-                      <h1>
-                        You have just received {requestData.dAmount} data!
-                      </h1>
+      {!formOpen ? (
+        !editFormOpen ? (
+          <>
+            <div  className="page-wrapper">
+              <div className="page-header d-print-none">
+                <div className="container-xl">
+                  {requestData !== null && requestData !== undefined && (
+                    <div className="notification-bar">
+                      <div className="noti-text">
+                        <h1>
+                          You have just received {requestData.dAmount} data!
+                        </h1>
+                      </div>
+                      <div className="close-icon">
+                        <IconButton onClick={handleMarktrue}>
+                          <CloseIcon />
+                        </IconButton>
+                      </div>
                     </div>
-                    <div className="close-icon">
-                      <IconButton onClick={handleMarktrue}>
-                        <CloseIcon />
-                      </IconButton>
-                    </div>
-                  </div>
-                )}
-                <div className="row g-2 align-items-center">
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                    className="features"
-                  >
-                    <div style={{ display: "flex" }} className="feature1">
-                      {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
+                  )}
+                  <div className="row g-2 align-items-center">
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                      className="features"
+                    >
+                      <div style={{ display: "flex" }} className="feature1">
+                        {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
                           Gmail SignIn
                       </button>
                       <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
@@ -1891,371 +1898,377 @@ function EmployeePanel() {
 
                       </Dialog> */}
 
-                      <div
-                        className="form-control"
-                        style={{ height: "fit-content", width: "auto" }}
-                      >
-                        <select
-                          style={{
-                            border: "none",
-                            outline: "none",
-                            width: "fit-content",
-                          }}
-                          value={selectedField}
-                          onChange={handleFieldChange}
-                        >
-                          <option value="Company Name">Company Name</option>
-                          <option value="Company Number">Company Number</option>
-                          <option value="Company Email">Company Email</option>
-                          <option value="Company Incorporation Date  ">
-                            Company Incorporation Date
-                          </option>
-                          <option value="City">City</option>
-                          <option value="State">State</option>
-                          <option value="Status">Status</option>
-                          <option value="AssignDate">Assigned Date</option>
-                        </select>
-                      </div>
-                      {visibility === "block" && (
-                        <div>
-                          <input
-                            onChange={handleDateChange}
-                            style={{
-                              display: visibility,
-                              width: "83%",
-                              marginLeft: "10px",
-                            }}
-                            type="date"
-                            className="form-control"
-                          />
-                        </div>
-                      )}
-
-                      {visibilityOther === "block" ? (
                         <div
-                          style={{
-                            //width: "20vw",
-                            margin: "0px 0px 0px 9px",
-                            display: visibilityOther,
-                          }}
-                          className="input-icon"
-                        >
-                          <span className="input-icon-addon">
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="20"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              stroke-width="2"
-                              stroke="currentColor"
-                              fill="none"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                              <path d="M21 21l-6 -6" />
-                            </svg>
-                          </span>
-                          <input
-                            type="text"
-                            value={searchText}
-                            onChange={(e) => {
-                              setSearchText(e.target.value);
-                              setCurrentPage(0);
-                            }}
-                            className="form-control"
-                            placeholder="Search…"
-                            aria-label="Search in website"
-                            style={{ width: "60%" }}
-                          />
-                        </div>
-                      ) : (
-                        <div></div>
-                      )}
-                      {visibilityOthernew === "block" ? (
-                        <div
-                          style={{
-                            //width: "20vw",
-                            margin: "0px 0px 0px 9px",
-                            display: visibilityOthernew,
-                          }}
-                          className="input-icon"
+                          className="form-control"
+                          style={{ height: "fit-content", width: "auto" }}
                         >
                           <select
-                            value={searchText}
-                            onChange={(e) => {
-                              setSearchText(e.target.value);
-                              // Set dataStatus based on selected option
-                              if (
-                                e.target.value === "All" ||
-                                e.target.value === "Busy" ||
-                                e.target.value === "Not Picked Up"
-                              ) {
-                                setdataStatus("All");
-                                setEmployeeData(
-                                  moreEmpData.filter(
-                                    (obj) =>
-                                      obj.Status === "Busy" ||
-                                      obj.Status === "Not Picked Up" ||
-                                      obj.Status === "Untouched"
-                                  )
-                                );
-                              } else if (
-                                e.target.value === "Junk" ||
-                                e.target.value === "Not Interested"
-                              ) {
-                                setdataStatus("NotInterested");
-                                setEmployeeData(
-                                  moreEmpData.filter(
-                                    (obj) =>
-                                      obj.Status === "Not Interested" ||
-                                      obj.Status === "Junk"
-                                  )
-                                );
-                              } else if (e.target.value === "Interested") {
-                                setdataStatus("Interested");
-                                setEmployeeData(
-                                  moreEmpData.filter(
-                                    (obj) => obj.Status === "Interested"
-                                  )
-                                );
-                              } else if (e.target.value === "Untouched") {
-                                setdataStatus("All");
-                                setEmployeeData(
-                                  moreEmpData.filter(
-                                    (obj) => obj.Status === "Untouched"
-                                  )
-                                );
-                              }
+                            style={{
+                              border: "none",
+                              outline: "none",
+                              width: "fit-content",
                             }}
-                            className="form-select"
+                            value={selectedField}
+                            onChange={handleFieldChange}
                           >
-                            <option value="All">All </option>
-                            <option value="Busy">Busy </option>
-                            <option value="Not Picked Up">
-                              Not Picked Up{" "}
+                            <option value="Company Name">Company Name</option>
+                            <option value="Company Number">
+                              Company Number
                             </option>
-                            <option value="Junk">Junk</option>
-                            <option value="Interested">Interested</option>
-                            <option value="Not Interested">
-                              Not Interested
+                            <option value="Company Email">Company Email</option>
+                            <option value="Company Incorporation Date  ">
+                              Company Incorporation Date
                             </option>
-                            <option value="Untouched">Untouched</option>
+                            <option value="City">City</option>
+                            <option value="State">State</option>
+                            <option value="Status">Status</option>
+                            <option value="AssignDate">Assigned Date</option>
                           </select>
                         </div>
-                      ) : (
-                        <div></div>
-                      )}
-                      {searchText !== "" && (
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "end",
-                            fontsize: "10px",
-                            fontfamily: "Poppins",
-                            //marginLeft: "-70px"
-                          }}
-                          className="results"
-                        >
-                          {filteredData.length} results found
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      style={{ display: "flex", alignItems: "center" }}
-                      className="feature2"
-                    >
-                      <div
-                        className="form-control mr-1 sort-by"
-                        style={{ width: "190px" }}
-                      >
-                        <label htmlFor="sort-by">Sort By:</label>
-                        <select
-                          style={{
-                            border: "none",
-                            outline: "none",
-                            color: "#666a66",
-                          }}
-                          name="sort-by"
-                          id="sort-by"
-                          onChange={(e) => {
-                            setSortStatus(e.target.value);
-                            const selectedOption = e.target.value;
+                        {visibility === "block" && (
+                          <div>
+                            <input
+                              onChange={handleDateChange}
+                              style={{
+                                display: visibility,
+                                width: "83%",
+                                marginLeft: "10px",
+                              }}
+                              type="date"
+                              className="form-control"
+                            />
+                          </div>
+                        )}
 
-                            switch (selectedOption) {
-                              case "Busy":
-                              case "Untouched":
-                              case "Not Picked Up":
-                                setdataStatus("All");
-                                setEmployeeData(
-                                  moreEmpData
-                                    .filter((data) =>
-                                      [
-                                        "Busy",
-                                        "Untouched",
-                                        "Not Picked Up",
-                                      ].includes(data.Status)
+                        {visibilityOther === "block" ? (
+                          <div
+                            style={{
+                              //width: "20vw",
+                              margin: "0px 0px 0px 9px",
+                              display: visibilityOther,
+                            }}
+                            className="input-icon"
+                          >
+                            <span className="input-icon-addon">
+                              {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="icon"
+                                width="20"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                fill="none"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              >
+                                <path
+                                  stroke="none"
+                                  d="M0 0h24v24H0z"
+                                  fill="none"
+                                />
+                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                                <path d="M21 21l-6 -6" />
+                              </svg>
+                            </span>
+                            <input
+                              type="text"
+                              value={searchText}
+                              onChange={(e) => {
+                                setSearchText(e.target.value);
+                                setCurrentPage(0);
+                              }}
+                              className="form-control"
+                              placeholder="Search…"
+                              aria-label="Search in website"
+                              style={{ width: "60%" }}
+                            />
+                          </div>
+                        ) : (
+                          <div></div>
+                        )}
+                        {visibilityOthernew === "block" ? (
+                          <div
+                            style={{
+                              //width: "20vw",
+                              margin: "0px 0px 0px 9px",
+                              display: visibilityOthernew,
+                            }}
+                            className="input-icon"
+                          >
+                            <select
+                              value={searchText}
+                              onChange={(e) => {
+                                setSearchText(e.target.value);
+                                // Set dataStatus based on selected option
+                                if (
+                                  e.target.value === "All" ||
+                                  e.target.value === "Busy" ||
+                                  e.target.value === "Not Picked Up"
+                                ) {
+                                  setdataStatus("All");
+                                  setEmployeeData(
+                                    moreEmpData.filter(
+                                      (obj) =>
+                                        obj.Status === "Busy" ||
+                                        obj.Status === "Not Picked Up" ||
+                                        obj.Status === "Untouched"
                                     )
-                                    .sort((a, b) => {
+                                  );
+                                } else if (
+                                  e.target.value === "Junk" ||
+                                  e.target.value === "Not Interested"
+                                ) {
+                                  setdataStatus("NotInterested");
+                                  setEmployeeData(
+                                    moreEmpData.filter(
+                                      (obj) =>
+                                        obj.Status === "Not Interested" ||
+                                        obj.Status === "Junk"
+                                    )
+                                  );
+                                } else if (e.target.value === "Interested") {
+                                  setdataStatus("Interested");
+                                  setEmployeeData(
+                                    moreEmpData.filter(
+                                      (obj) => obj.Status === "Interested"
+                                    )
+                                  );
+                                } else if (e.target.value === "Untouched") {
+                                  setdataStatus("All");
+                                  setEmployeeData(
+                                    moreEmpData.filter(
+                                      (obj) => obj.Status === "Untouched"
+                                    )
+                                  );
+                                }
+                              }}
+                              className="form-select"
+                            >
+                              <option value="All">All </option>
+                              <option value="Busy">Busy </option>
+                              <option value="Not Picked Up">
+                                Not Picked Up{" "}
+                              </option>
+                              <option value="Junk">Junk</option>
+                              <option value="Interested">Interested</option>
+                              <option value="Not Interested">
+                                Not Interested
+                              </option>
+                              <option value="Untouched">Untouched</option>
+                            </select>
+                          </div>
+                        ) : (
+                          <div></div>
+                        )}
+                        {searchText !== "" && (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "end",
+                              fontsize: "10px",
+                              fontfamily: "Poppins",
+                              //marginLeft: "-70px"
+                            }}
+                            className="results"
+                          >
+                            {filteredData.length} results found
+                          </div>
+                        )}
+                      </div>
+                      <div
+                        style={{ display: "flex", alignItems: "center" }}
+                        className="feature2"
+                      >
+                        <div
+                          className="form-control mr-1 sort-by"
+                          style={{ width: "190px" }}
+                        >
+                          <label htmlFor="sort-by">Sort By:</label>
+                          <select
+                            style={{
+                              border: "none",
+                              outline: "none",
+                              color: "#666a66",
+                            }}
+                            name="sort-by"
+                            id="sort-by"
+                            onChange={(e) => {
+                              setSortStatus(e.target.value);
+                              const selectedOption = e.target.value;
+
+                              switch (selectedOption) {
+                                case "Busy":
+                                case "Untouched":
+                                case "Not Picked Up":
+                                  setdataStatus("All");
+                                  setEmployeeData(
+                                    moreEmpData
+                                      .filter((data) =>
+                                        [
+                                          "Busy",
+                                          "Untouched",
+                                          "Not Picked Up",
+                                        ].includes(data.Status)
+                                      )
+                                      .sort((a, b) => {
+                                        if (a.Status === selectedOption)
+                                          return -1;
+                                        if (b.Status === selectedOption)
+                                          return 1;
+                                        return 0;
+                                      })
+                                  );
+                                  break;
+                                case "Interested":
+                                  setdataStatus("Interested");
+                                  setEmployeeData(
+                                    moreEmpData
+                                      .filter(
+                                        (data) => data.Status === "Interested"
+                                      )
+                                      .sort((a, b) =>
+                                        a.AssignDate.localeCompare(b.AssignDate)
+                                      )
+                                  );
+                                  break;
+                                case "Not Interested":
+                                  setdataStatus("NotInterested");
+                                  setEmployeeData(
+                                    moreEmpData
+                                      .filter((data) =>
+                                        ["Not Interested", "Junk"].includes(
+                                          data.Status
+                                        )
+                                      )
+                                      .sort((a, b) =>
+                                        a.AssignDate.localeCompare(b.AssignDate)
+                                      )
+                                  );
+                                  break;
+                                case "FollowUp":
+                                  setdataStatus("FollowUp");
+                                  setEmployeeData(
+                                    moreEmpData
+                                      .filter(
+                                        (data) => data.Status === "FollowUp"
+                                      )
+                                      .sort((a, b) =>
+                                        a.AssignDate.localeCompare(b.AssignDate)
+                                      )
+                                  );
+                                  break;
+
+                                default:
+                                  // No filtering if default option selected
+                                  setdataStatus("All");
+                                  setEmployeeData(
+                                    moreEmpData.sort((a, b) => {
                                       if (a.Status === selectedOption)
                                         return -1;
                                       if (b.Status === selectedOption) return 1;
                                       return 0;
                                     })
-                                );
-                                break;
-                              case "Interested":
-                                setdataStatus("Interested");
-                                setEmployeeData(
-                                  moreEmpData
-                                    .filter(
-                                      (data) => data.Status === "Interested"
-                                    )
-                                    .sort((a, b) =>
-                                      a.AssignDate.localeCompare(b.AssignDate)
-                                    )
-                                );
-                                break;
-                              case "Not Interested":
-                                setdataStatus("NotInterested");
-                                setEmployeeData(
-                                  moreEmpData
-                                    .filter((data) =>
-                                      ["Not Interested", "Junk"].includes(
-                                        data.Status
-                                      )
-                                    )
-                                    .sort((a, b) =>
-                                      a.AssignDate.localeCompare(b.AssignDate)
-                                    )
-                                );
-                                break;
-                              case "FollowUp":
-                                setdataStatus("FollowUp");
-                                setEmployeeData(
-                                  moreEmpData
-                                    .filter(
-                                      (data) => data.Status === "FollowUp"
-                                    )
-                                    .sort((a, b) =>
-                                      a.AssignDate.localeCompare(b.AssignDate)
-                                    )
-                                );
-                                break;
-
-                              default:
-                                // No filtering if default option selected
-                                setdataStatus("All");
-                                setEmployeeData(
-                                  moreEmpData.sort((a, b) => {
-                                    if (a.Status === selectedOption) return -1;
-                                    if (b.Status === selectedOption) return 1;
-                                    return 0;
-                                  })
-                                );
-                                break;
-                            }
-                          }}
-                        >
-                          <option value="" disabled selected>
-                            Select Status
-                          </option>
-                          <option value="Untouched">Untouched</option>
-                          <option value="Busy">Busy</option>
-                          <option value="Not Picked Up">Not Picked Up</option>
-                          <option value="FollowUp">Follow Up</option>
-                          <option value="Interested">Interested</option>
-                          <option value="Not Interested">Not Interested</option>
-                        </select>
-                      </div>
-
-                      {selectedField === "State" && (
-                        <div style={{ width: "15vw" }} className="input-icon">
-                          <span className="input-icon-addon">
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="20"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              stroke-width="2"
-                              stroke="currentColor"
-                              fill="none"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                              <path d="M21 21l-6 -6" />
-                            </svg>
-                          </span>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={citySearch}
-                            onChange={(e) => {
-                              setcitySearch(e.target.value);
-                              setCurrentPage(0);
+                                  );
+                                  break;
+                              }
                             }}
-                            placeholder="Search City"
-                            aria-label="Search in website"
-                          />
-                        </div>
-                      )}
-                      {selectedField === "Company Incorporation Date  " && (
-                        <>
-                          <div
-                            style={{ width: "fit-content" }}
-                            className="form-control"
                           >
-                            <select
-                              style={{
-                                border: "none",
-                                outline: "none",
-                                marginRight: "10px",
-                                width: "115px",
-                                paddingLeft: "10px",
-                              }}
+                            <option value="" disabled selected>
+                              Select Status
+                            </option>
+                            <option value="Untouched">Untouched</option>
+                            <option value="Busy">Busy</option>
+                            <option value="Not Picked Up">Not Picked Up</option>
+                            <option value="FollowUp">Follow Up</option>
+                            <option value="Interested">Interested</option>
+                            <option value="Not Interested">
+                              Not Interested
+                            </option>
+                          </select>
+                        </div>
+
+                        {selectedField === "State" && (
+                          <div style={{ width: "15vw" }} className="input-icon">
+                            <span className="input-icon-addon">
+                              {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="icon"
+                                width="20"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                fill="none"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              >
+                                <path
+                                  stroke="none"
+                                  d="M0 0h24v24H0z"
+                                  fill="none"
+                                />
+                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                                <path d="M21 21l-6 -6" />
+                              </svg>
+                            </span>
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={citySearch}
                               onChange={(e) => {
-                                setMonth(e.target.value);
+                                setcitySearch(e.target.value);
                                 setCurrentPage(0);
                               }}
-                            >
-                              <option value="" disabled selected>
-                                Select Month
-                              </option>
-                              <option value="12">December</option>
-                              <option value="11">November</option>
-                              <option value="10">October</option>
-                              <option value="9">September</option>
-                              <option value="8">August</option>
-                              <option value="7">July</option>
-                              <option value="6">June</option>
-                              <option value="5">May</option>
-                              <option value="4">April</option>
-                              <option value="3">March</option>
-                              <option value="2">February</option>
-                              <option value="1">January</option>
-                            </select>
+                              placeholder="Search City"
+                              aria-label="Search in website"
+                            />
                           </div>
-                          <div
-                            className="input-icon  form-control"
-                            style={{ margin: "0px 10px", width: "110px" }}
-                          >
-                            {/* <input
+                        )}
+                        {selectedField === "Company Incorporation Date  " && (
+                          <>
+                            <div
+                              style={{ width: "fit-content" }}
+                              className="form-control"
+                            >
+                              <select
+                                style={{
+                                  border: "none",
+                                  outline: "none",
+                                  marginRight: "10px",
+                                  width: "115px",
+                                  paddingLeft: "10px",
+                                }}
+                                onChange={(e) => {
+                                  setMonth(e.target.value);
+                                  setCurrentPage(0);
+                                }}
+                              >
+                                <option value="" disabled selected>
+                                  Select Month
+                                </option>
+                                <option value="12">December</option>
+                                <option value="11">November</option>
+                                <option value="10">October</option>
+                                <option value="9">September</option>
+                                <option value="8">August</option>
+                                <option value="7">July</option>
+                                <option value="6">June</option>
+                                <option value="5">May</option>
+                                <option value="4">April</option>
+                                <option value="3">March</option>
+                                <option value="2">February</option>
+                                <option value="1">January</option>
+                              </select>
+                            </div>
+                            <div
+                              className="input-icon  form-control"
+                              style={{ margin: "0px 10px", width: "110px" }}
+                            >
+                              {/* <input
                               type="number"
                               value={year}
                               defaultValue="Select Year"
@@ -2266,666 +2279,678 @@ function EmployeePanel() {
                               }}
                               aria-label="Search in website"
                             /> */}
-                            <select
-                              select
-                              style={{ border: "none", outline: "none" }}
-                              value={year}
-                              onChange={(e) => {
-                                setYear(e.target.value);
-                                setCurrentPage(0); // Reset page when year changes
-                              }}
-                            >
-                              <option value="">Select Year</option>
-                              {[...Array(15)].map((_, index) => {
-                                const yearValue = 2024 - index;
-                                return (
-                                  <option key={yearValue} value={yearValue}>
-                                    {yearValue}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
-                        </>
-                      )}
+                              <select
+                                select
+                                style={{ border: "none", outline: "none" }}
+                                value={year}
+                                onChange={(e) => {
+                                  setYear(e.target.value);
+                                  setCurrentPage(0); // Reset page when year changes
+                                }}
+                              >
+                                <option value="">Select Year</option>
+                                {[...Array(15)].map((_, index) => {
+                                  const yearValue = 2024 - index;
+                                  return (
+                                    <option key={yearValue} value={yearValue}>
+                                      {yearValue}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                            </div>
+                          </>
+                        )}
 
-                      <div className="request" style={{ marginRight: "15px" }}>
-                        <div className="btn-list">
-                          <button
-                            onClick={functionopenpopup}
-                            className="btn btn-primary d-none d-sm-inline-block"
-                          >
-                            Request Data
-                          </button>
-                          <a
-                            href="#"
-                            className="btn btn-primary d-sm-none btn-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-report"
-                            aria-label="Create new report"
-                          >
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                          </a>
-                        </div>
-                      </div>
-                      <div className="request" style={{ marginRight: "15px" }}>
-                        <div className="btn-list">
-                          <button
-                            onClick={functionopenpopupNew}
-                            className="btn btn-primary d-none d-sm-inline-block"
-                          >
-                            ADD Leads
-                          </button>
-                          <a
-                            href="#"
-                            className="btn btn-primary d-sm-none btn-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-report"
-                            aria-label="Create new report"
-                          >
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                          </a>
-                        </div>
-                      </div>
-                      <div className="importCSV request">
-                        <div className="btn-list">
-                          <button
-                            className="btn btn-primary d-none d-sm-inline-block"
-                            onClick={functionopenpopupCSV}
-                          >
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                            <svg
-                              style={{
-                                verticalAlign: "middle",
-                              }}
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              stroke-width="2"
-                              stroke="currentColor"
-                              fill="none"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
+                        <div
+                          className="request"
+                          style={{ marginRight: "15px" }}
+                        >
+                          <div className="btn-list">
+                            <button
+                              onClick={functionopenpopup}
+                              className="btn btn-primary d-none d-sm-inline-block"
                             >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
+                              Request Data
+                            </button>
+                            <a
+                              href="#"
+                              className="btn btn-primary d-sm-none btn-icon"
+                              data-bs-toggle="modal"
+                              data-bs-target="#modal-report"
+                              aria-label="Create new report"
+                            >
+                              {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                            </a>
+                          </div>
+                        </div>
+                        <div
+                          className="request"
+                          style={{ marginRight: "15px" }}
+                        >
+                          <div className="btn-list">
+                            <button
+                              onClick={functionopenpopupNew}
+                              className="btn btn-primary d-none d-sm-inline-block"
+                            >
+                              ADD Leads
+                            </button>
+                            <a
+                              href="#"
+                              className="btn btn-primary d-sm-none btn-icon"
+                              data-bs-toggle="modal"
+                              data-bs-target="#modal-report"
+                              aria-label="Create new report"
+                            >
+                              {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                            </a>
+                          </div>
+                        </div>
+                        <div className="importCSV request">
+                          <div className="btn-list">
+                            <button
+                              className="btn btn-primary d-none d-sm-inline-block"
+                              onClick={functionopenpopupCSV}
+                            >
+                              {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                              <svg
+                                style={{
+                                  verticalAlign: "middle",
+                                }}
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="icon"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
                                 fill="none"
-                              />
-                              <path d="M12 5l0 14" />
-                              <path d="M5 12l14 0" />
-                            </svg>
-                            Import CSV
-                          </button>
-                          <a
-                            href="#"
-                            className="btn btn-primary d-sm-none btn-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-report"
-                            aria-label="Create new report"
-                          >
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                          </a>
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              >
+                                <path
+                                  stroke="none"
+                                  d="M0 0h24v24H0z"
+                                  fill="none"
+                                />
+                                <path d="M12 5l0 14" />
+                                <path d="M5 12l14 0" />
+                              </svg>
+                              Import CSV
+                            </button>
+                            <a
+                              href="#"
+                              className="btn btn-primary d-sm-none btn-icon"
+                              data-bs-toggle="modal"
+                              data-bs-target="#modal-report"
+                              aria-label="Create new report"
+                            >
+                              {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                            </a>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* <!-- Page title actions --> */}
+                    {/* <!-- Page title actions --> */}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div
-              onCopy={(e) => {
-                e.preventDefault();
-              }}
-              className="page-body"
-            >
-              <div className="container-xl">
-                <div class="card-header my-tab">
-                  <ul
-                    class="nav nav-tabs card-header-tabs nav-fill p-0"
-                    data-bs-toggle="tabs"
-                  >
-                    <li class="nav-item data-heading">
-                      <a
-                        href="#tabs-home-5"
-                        onClick={() => {
-                          setdataStatus("All");
-                          setCurrentPage(0);
-                          setEmployeeData(
-                            moreEmpData.filter(
-                              (obj) =>
-                                obj.Status === "Busy" ||
-                                obj.Status === "Not Picked Up" ||
-                                obj.Status === "Untouched"
-                            )
-                          );
-                        }}
-                        className={
-                          dataStatus === "All"
-                            ? "nav-link active item-act"
-                            : "nav-link"
-                        }
-                        data-bs-toggle="tab"
-                      >
-                        General{" "}
-                        <span className="no_badge">
-                          {
-                            moreEmpData.filter(
-                              (obj) =>
-                                obj.Status === "Busy" ||
-                                obj.Status === "Not Picked Up" ||
-                                obj.Status === "Untouched"
-                            ).length
-                          }
-                        </span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a
-                        href="#tabs-activity-5"
-                        onClick={() => {
-                          setdataStatus("Interested");
-                          setCurrentPage(0);
-                          setEmployeeData(
-                            moreEmpData.filter(
-                              (obj) => obj.Status === "Interested"
-                            )
-                          );
-                        }}
-                        className={
-                          dataStatus === "Interested"
-                            ? "nav-link active item-act"
-                            : "nav-link"
-                        }
-                        data-bs-toggle="tab"
-                      >
-                        Interested{" "}
-                        <span className="no_badge">
-                          {
-                            moreEmpData.filter(
-                              (obj) => obj.Status === "Interested"
-                            ).length
-                          }
-                        </span>
-                      </a>
-                    </li>
-
-                    <li class="nav-item">
-                      <a
-                        href="#tabs-activity-5"
-                        onClick={() => {
-                          setdataStatus("FollowUp");
-                          setCurrentPage(0);
-                          setEmployeeData(
-                            moreEmpData.filter(
-                              (obj) => obj.Status === "FollowUp"
-                            )
-                          );
-                        }}
-                        className={
-                          dataStatus === "FollowUp"
-                            ? "nav-link active item-act"
-                            : "nav-link"
-                        }
-                        data-bs-toggle="tab"
-                      >
-                        Follow Up{" "}
-                        <span className="no_badge">
-                          {
-                            moreEmpData.filter(
-                              (obj) => obj.Status === "FollowUp"
-                            ).length
-                          }
-                        </span>
-                      </a>
-                    </li>
-
-                    <li class="nav-item">
-                      <a
-                        href="#tabs-activity-5"
-                        onClick={() => {
-                          setdataStatus("Matured");
-                          setCurrentPage(0);
-                          setEmployeeData(
-                            moreEmpData
-                              .filter((obj) => obj.Status === "Matured")
-                              .sort(
-                                (a, b) =>
-                                  new Date(b.lastActionDate) -
-                                  new Date(a.lastActionDate)
-                              )
-                          );
-                        }}
-                        className={
-                          dataStatus === "Matured"
-                            ? "nav-link active item-act"
-                            : "nav-link"
-                        }
-                        data-bs-toggle="tab"
-                      >
-                        Matured{" "}
-                        <span className="no_badge">
-                          {" "}
-                          {
-                            moreEmpData.filter(
-                              (obj) => obj.Status === "Matured"
-                            ).length
-                          }
-                        </span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a
-                        href="#tabs-activity-5"
-                        onClick={() => {
-                          setdataStatus("NotInterested");
-                          setCurrentPage(0);
-                          setEmployeeData(
-                            moreEmpData.filter(
-                              (obj) =>
-                                obj.Status === "Not Interested" ||
-                                obj.Status === "Junk"
-                            )
-                          );
-                        }}
-                        className={
-                          dataStatus === "NotInterested"
-                            ? "nav-link active item-act"
-                            : "nav-link"
-                        }
-                        data-bs-toggle="tab"
-                      >
-                        Not-Interested{" "}
-                        <span className="no_badge">
-                          {
-                            moreEmpData.filter(
-                              (obj) =>
-                                obj.Status === "Not Interested" ||
-                                obj.Status === "Junk"
-                            ).length
-                          }
-                        </span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                <div className="card">
-                  <div className="card-body p-0">
-                    <div
-                      style={{
-                        overflowX: "auto",
-                        overflowY: "auto",
-                        maxHeight: "66vh",
-                      }}
+              <div
+                onCopy={(e) => {
+                  e.preventDefault();
+                }}
+                className="page-body"
+              >
+                <div className="container-xl">
+                  <div class="card-header my-tab">
+                    <ul
+                      class="nav nav-tabs card-header-tabs nav-fill p-0"
+                      data-bs-toggle="tabs"
                     >
-                      <table
+                      <li class="nav-item data-heading">
+                        <a
+                          href="#tabs-home-5"
+                          onClick={() => {
+                            setdataStatus("All");
+                            setCurrentPage(0);
+                            setEmployeeData(
+                              moreEmpData.filter(
+                                (obj) =>
+                                  obj.Status === "Busy" ||
+                                  obj.Status === "Not Picked Up" ||
+                                  obj.Status === "Untouched"
+                              )
+                            );
+                          }}
+                          className={
+                            dataStatus === "All"
+                              ? "nav-link active item-act"
+                              : "nav-link"
+                          }
+                          data-bs-toggle="tab"
+                        >
+                          General{" "}
+                          <span className="no_badge">
+                            {
+                              moreEmpData.filter(
+                                (obj) =>
+                                  obj.Status === "Busy" ||
+                                  obj.Status === "Not Picked Up" ||
+                                  obj.Status === "Untouched"
+                              ).length
+                            }
+                          </span>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          href="#tabs-activity-5"
+                          onClick={() => {
+                            setdataStatus("Interested");
+                            setCurrentPage(0);
+                            setEmployeeData(
+                              moreEmpData.filter(
+                                (obj) => obj.Status === "Interested"
+                              )
+                            );
+                          }}
+                          className={
+                            dataStatus === "Interested"
+                              ? "nav-link active item-act"
+                              : "nav-link"
+                          }
+                          data-bs-toggle="tab"
+                        >
+                          Interested{" "}
+                          <span className="no_badge">
+                            {
+                              moreEmpData.filter(
+                                (obj) => obj.Status === "Interested"
+                              ).length
+                            }
+                          </span>
+                        </a>
+                      </li>
+
+                      <li class="nav-item">
+                        <a
+                          href="#tabs-activity-5"
+                          onClick={() => {
+                            setdataStatus("FollowUp");
+                            setCurrentPage(0);
+                            setEmployeeData(
+                              moreEmpData.filter(
+                                (obj) => obj.Status === "FollowUp"
+                              )
+                            );
+                          }}
+                          className={
+                            dataStatus === "FollowUp"
+                              ? "nav-link active item-act"
+                              : "nav-link"
+                          }
+                          data-bs-toggle="tab"
+                        >
+                          Follow Up{" "}
+                          <span className="no_badge">
+                            {
+                              moreEmpData.filter(
+                                (obj) => obj.Status === "FollowUp"
+                              ).length
+                            }
+                          </span>
+                        </a>
+                      </li>
+
+                      <li class="nav-item">
+                        <a
+                          href="#tabs-activity-5"
+                          onClick={() => {
+                            setdataStatus("Matured");
+                            setCurrentPage(0);
+                            setEmployeeData(
+                              moreEmpData
+                                .filter((obj) => obj.Status === "Matured")
+                                .sort(
+                                  (a, b) =>
+                                    new Date(b.lastActionDate) -
+                                    new Date(a.lastActionDate)
+                                )
+                            );
+                          }}
+                          className={
+                            dataStatus === "Matured"
+                              ? "nav-link active item-act"
+                              : "nav-link"
+                          }
+                          data-bs-toggle="tab"
+                        >
+                          Matured{" "}
+                          <span className="no_badge">
+                            {" "}
+                            {
+                              moreEmpData.filter(
+                                (obj) => obj.Status === "Matured"
+                              ).length
+                            }
+                          </span>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          href="#tabs-activity-5"
+                          onClick={() => {
+                            setdataStatus("NotInterested");
+                            setCurrentPage(0);
+                            setEmployeeData(
+                              moreEmpData.filter(
+                                (obj) =>
+                                  obj.Status === "Not Interested" ||
+                                  obj.Status === "Junk"
+                              )
+                            );
+                          }}
+                          className={
+                            dataStatus === "NotInterested"
+                              ? "nav-link active item-act"
+                              : "nav-link"
+                          }
+                          data-bs-toggle="tab"
+                        >
+                          Not-Interested{" "}
+                          <span className="no_badge">
+                            {
+                              moreEmpData.filter(
+                                (obj) =>
+                                  obj.Status === "Not Interested" ||
+                                  obj.Status === "Junk"
+                              ).length
+                            }
+                          </span>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="card">
+                    <div className="card-body p-0">
+                      <div
                         style={{
-                          width: "100%",
-                          borderCollapse: "collapse",
-                          border: "1px solid #ddd",
+                          overflowX: "auto",
+                          overflowY: "auto",
+                          maxHeight: "66vh",
                         }}
-                        className="table-vcenter table-nowrap"
                       >
-                        <thead>
-                          <tr className="tr-sticky">
-                            <th className="th-sticky">Sr.No</th>
-                            <th className="th-sticky1">Company Name</th>
-                            <th>Company Number</th>
-                            <th>Status</th>
-                            <th>Remarks</th>
+                        <table
+                          style={{
+                            width: "100%",
+                            borderCollapse: "collapse",
+                            border: "1px solid #ddd",
+                          }}
+                          className="table-vcenter table-nowrap"
+                        >
+                          <thead>
+                            <tr className="tr-sticky">
+                              <th className="th-sticky">Sr.No</th>
+                              <th className="th-sticky1">Company Name</th>
+                              <th>Company Number</th>
+                              <th>Status</th>
+                              <th>Remarks</th>
 
-                            <th>
-                              Incorporation Date
-                              <FilterListIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                  marginLeft: "4px",
-                                }}
-                                // onClick={() => {
-                                //   setEmployeeData(
-                                //     [...moreEmpData].sort((a, b) =>
-                                //       b[
-                                //         "Company Incorporation Date  "
-                                //       ].localeCompare(
-                                //         a["Company Incorporation Date  "]
-                                //       )
-                                //     )
-                                //   );
-                                // }}
-                                onClick={handleFilterIncoDate}
-                              />
-                              {openIncoDate && (
-                                <div className="inco-filter">
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("oldest")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Oldest
-                                  </div>
-
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("newest")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    Newest
-                                  </div>
-
-                                  <div
-                                    style={{ marginLeft: "5px" }}
-                                    className="inco-subFilter d-flex"
-                                  >
-                                    <div style={{ marginRight: "5px" }}>
-                                      <input
-                                        type="checkbox"
-                                        name="year-filter"
-                                        id={`year-filter-all`}
-                                        checked={selectAllChecked}
-                                        onChange={(e) =>
-                                          handleSelectAllChange(e)
-                                        }
+                              <th>
+                                Incorporation Date
+                                <FilterListIcon
+                                  style={{
+                                    height: "15px",
+                                    width: "15px",
+                                    cursor: "pointer",
+                                    marginLeft: "4px",
+                                  }}
+                                  // onClick={() => {
+                                  //   setEmployeeData(
+                                  //     [...moreEmpData].sort((a, b) =>
+                                  //       b[
+                                  //         "Company Incorporation Date  "
+                                  //       ].localeCompare(
+                                  //         a["Company Incorporation Date  "]
+                                  //       )
+                                  //     )
+                                  //   );
+                                  // }}
+                                  onClick={handleFilterIncoDate}
+                                />
+                                {openIncoDate && (
+                                  <div className="inco-filter">
+                                    <div
+                                      className="inco-subFilter"
+                                      onClick={(e) => handleSort("oldest")}
+                                    >
+                                      <SwapVertIcon
+                                        style={{ height: "16px" }}
                                       />
+                                      Oldest
                                     </div>
-                                    <div className="year-val">Select All</div>
-                                  </div>
 
-                                  {resultArray.length !== 0 &&
-                                    resultArray.map((obj) => (
-                                      <div key={obj.year}>
-                                        <div
-                                          style={{ marginLeft: "5px" }}
-                                          className="inco-subFilter d-flex"
-                                        >
-                                          <div style={{ marginRight: "5px" }}>
-                                            <input
-                                              type="checkbox"
-                                              name="year-filter"
-                                              id={`year-filter-${obj.year}`}
-                                              checked={selectedYears.includes(
-                                                obj.year
-                                              )}
-                                              onChange={(e) =>
-                                                handleYearFilterChange(
-                                                  e,
+                                    <div
+                                      className="inco-subFilter"
+                                      onClick={(e) => handleSort("newest")}
+                                    >
+                                      <SwapVertIcon
+                                        style={{ height: "16px" }}
+                                      />
+                                      Newest
+                                    </div>
+
+                                    <div
+                                      style={{ marginLeft: "5px" }}
+                                      className="inco-subFilter d-flex"
+                                    >
+                                      <div style={{ marginRight: "5px" }}>
+                                        <input
+                                          type="checkbox"
+                                          name="year-filter"
+                                          id={`year-filter-all`}
+                                          checked={selectAllChecked}
+                                          onChange={(e) =>
+                                            handleSelectAllChange(e)
+                                          }
+                                        />
+                                      </div>
+                                      <div className="year-val">Select All</div>
+                                    </div>
+
+                                    {resultArray.length !== 0 &&
+                                      resultArray.map((obj) => (
+                                        <div key={obj.year}>
+                                          <div
+                                            style={{ marginLeft: "5px" }}
+                                            className="inco-subFilter d-flex"
+                                          >
+                                            <div style={{ marginRight: "5px" }}>
+                                              <input
+                                                type="checkbox"
+                                                name="year-filter"
+                                                id={`year-filter-${obj.year}`}
+                                                checked={selectedYears.includes(
                                                   obj.year
-                                                )
-                                              }
-                                            />
-                                          </div>
-                                          <div className="year-val">
-                                            {obj.year}
-                                          </div>
-                                          {expandYear !== obj.year && (
-                                            <div
-                                              className="expand-year d-flex"
-                                              onClick={() => {
-                                                setExpandYear(obj.year);
-                                              }}
-                                            >
-                                              <AddCircle
-                                                style={{ height: "15px" }}
+                                                )}
+                                                onChange={(e) =>
+                                                  handleYearFilterChange(
+                                                    e,
+                                                    obj.year
+                                                  )
+                                                }
                                               />
                                             </div>
-                                          )}
-                                          {expandYear === obj.year && (
-                                            <div
-                                              className="expand-year d-flex"
-                                              onClick={() => {
-                                                setExpandYear(0);
-                                              }}
-                                            >
-                                              <RemoveCircleIcon
-                                                style={{ height: "15px" }}
-                                              />
+                                            <div className="year-val">
+                                              {obj.year}
                                             </div>
-                                          )}
-                                        </div>
-                                        {obj.month.length !== 0 &&
-                                          expandYear === obj.year &&
-                                          obj.month.map((month) => (
-                                            <div
-                                              key={`${obj.year}-${month}`}
-                                              style={{ marginLeft: "25px" }}
-                                              className="inco-subFilter d-flex"
-                                            >
+                                            {expandYear !== obj.year && (
                                               <div
-                                                style={{ marginRight: "5px" }}
+                                                className="expand-year d-flex"
+                                                onClick={() => {
+                                                  setExpandYear(obj.year);
+                                                }}
                                               >
-                                                <input
-                                                  type="checkbox"
-                                                  name="month-filter"
-                                                  id={`month-filter-${month}`}
-                                                  checked={selectedMonths.includes(
-                                                    month
-                                                  )}
-                                                  onChange={(e) =>
-                                                    handleMonthFilterChange(
-                                                      e,
-                                                      obj.year,
-                                                      month
-                                                    )
-                                                  }
+                                                <AddCircle
+                                                  style={{ height: "15px" }}
                                                 />
                                               </div>
-                                              <div className="month-val">
-                                                {month}
+                                            )}
+                                            {expandYear === obj.year && (
+                                              <div
+                                                className="expand-year d-flex"
+                                                onClick={() => {
+                                                  setExpandYear(0);
+                                                }}
+                                              >
+                                                <RemoveCircleIcon
+                                                  style={{ height: "15px" }}
+                                                />
                                               </div>
-                                            </div>
-                                          ))}
-                                      </div>
-                                    ))}
+                                            )}
+                                          </div>
+                                          {obj.month.length !== 0 &&
+                                            expandYear === obj.year &&
+                                            obj.month.map((month) => (
+                                              <div
+                                                key={`${obj.year}-${month}`}
+                                                style={{ marginLeft: "25px" }}
+                                                className="inco-subFilter d-flex"
+                                              >
+                                                <div
+                                                  style={{ marginRight: "5px" }}
+                                                >
+                                                  <input
+                                                    type="checkbox"
+                                                    name="month-filter"
+                                                    id={`month-filter-${month}`}
+                                                    checked={selectedMonths.includes(
+                                                      month
+                                                    )}
+                                                    onChange={(e) =>
+                                                      handleMonthFilterChange(
+                                                        e,
+                                                        obj.year,
+                                                        month
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
+                                                <div className="month-val">
+                                                  {month}
+                                                </div>
+                                              </div>
+                                            ))}
+                                        </div>
+                                      ))}
 
-                                  <div
-                                    className="inco-subFilter"
-                                    onClick={(e) => handleSort("none")}
-                                  >
-                                    <SwapVertIcon style={{ height: "16px" }} />
-                                    None
-                                  </div>
-                                </div>
-                              )}
-                            </th>
-                            <th>City</th>
-                            <th>State</th>
-                            <th>Company Email</th>
-                            <th>
-                              Assigned Date
-                              <SwapVertIcon
-                                style={{
-                                  height: "15px",
-                                  width: "15px",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => {
-                                  const sortedData = [...employeeData].sort(
-                                    (a, b) => {
-                                      if (sortOrder === "asc") {
-                                        return b.AssignDate.localeCompare(
-                                          a.AssignDate
-                                        );
-                                      } else {
-                                        return a.AssignDate.localeCompare(
-                                          b.AssignDate
-                                        );
-                                      }
-                                    }
-                                  );
-                                  setEmployeeData(sortedData);
-                                  setSortOrder(
-                                    sortOrder === "asc" ? "desc" : "asc"
-                                  );
-                                }}
-                              />
-                            </th>
-
-                            {(dataStatus === "Matured" && <th>Action</th>) ||
-                              (dataStatus === "FollowUp" && (
-                                <th>Add Projection</th>
-                              )) ||
-                              (dataStatus === "Interested" && (
-                                <th>Add Projection</th>
-                              ))}
-                          </tr>
-                        </thead>
-                        {loading ? (
-                          <tbody>
-                            <tr>
-                              <td colSpan="11" className="LoaderTDSatyle">
-                                <ClipLoader
-                                  color="lightgrey"
-                                  loading
-                                  size={30}
-                                  aria-label="Loading Spinner"
-                                  data-testid="loader"
-                                />
-                              </td>
-                            </tr>
-                          </tbody>
-                        ) : (
-                          <tbody>
-                            {currentData.map((company, index) => (
-                              <tr
-                                key={index}
-                                style={{ border: "1px solid #ddd" }}
-                              >
-                                <td className="td-sticky">
-                                  {startIndex + index + 1}
-                                </td>
-                                <td className="td-sticky1">
-                                  {company["Company Name"]}
-                                </td>
-                                <td>{company["Company Number"]}</td>
-                                <td>
-                                  {company["Status"] === "Matured" ? (
-                                    <span>{company["Status"]}</span>
-                                  ) : (
-                                    <select
-                                      style={{
-                                        background: "none",
-                                        padding: ".4375rem .75rem",
-                                        border:
-                                          "1px solid var(--tblr-border-color)",
-                                        borderRadius:
-                                          "var(--tblr-border-radius)",
-                                      }}
-                                      value={company["Status"]}
-                                      onChange={(e) =>
-                                        handleStatusChange(
-                                          company._id,
-                                          e.target.value,
-                                          company["Company Name"],
-                                          company["Company Email"],
-                                          company[
-                                          "Company Incorporation Date  "
-                                          ],
-                                          company["Company Number"],
-                                          company["Status"]
-                                        )
-                                      }
+                                    <div
+                                      className="inco-subFilter"
+                                      onClick={(e) => handleSort("none")}
                                     >
-                                      <option value="Not Picked Up">
-                                        Not Picked Up
-                                      </option>
-                                      <option value="Busy">Busy </option>
-                                      <option value="Junk">Junk</option>
-                                      <option value="Not Interested">
-                                        Not Interested
-                                      </option>
-                                      {dataStatus === "All" && (
-                                        <>
-                                          <option value="Untouched">
-                                            Untouched{" "}
-                                          </option>
-                                          <option value="Interested">
-                                            Interested
-                                          </option>
-                                        </>
-                                      )}
-
-                                      {dataStatus === "Interested" && (
-                                        <>
-                                          <option value="Interested">
-                                            Interested
-                                          </option>
-                                          <option value="FollowUp">
-                                            Follow Up{" "}
-                                          </option>
-                                          <option value="Matured">
-                                            Matured
-                                          </option>
-                                        </>
-                                      )}
-
-                                      {dataStatus === "FollowUp" && (
-                                        <>
-                                          <option value="FollowUp">
-                                            Follow Up{" "}
-                                          </option>
-                                          <option value="Matured">
-                                            Matured
-                                          </option>
-                                        </>
-                                      )}
-                                    </select>
-                                  )}
-                                </td>
-                                <td>
-                                  <div
-                                    key={company._id}
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "space-between",
-                                      width: "100px",
-                                    }}
-                                  >
-                                    <p
-                                      className="rematkText text-wrap m-0"
-                                      title={company.Remarks}
-                                    >
-                                      {!company["Remarks"]
-                                        ? "No Remarks"
-                                        : company.Remarks}
-                                    </p>
-
-                                    <IconButton
-                                      onClick={() => {
-                                        functionopenpopupremarks(
-                                          company._id,
-                                          company.Status
-                                        );
-                                        setCurrentRemarks(company.Remarks);
-                                        setCompanyId(company._id);
-                                      }}
-                                    >
-                                      <EditIcon
-                                        style={{
-                                          width: "12px",
-                                          height: "12px",
-                                        }}
+                                      <SwapVertIcon
+                                        style={{ height: "16px" }}
                                       />
-                                    </IconButton>
+                                      None
+                                    </div>
                                   </div>
-                                </td>
+                                )}
+                              </th>
+                              <th>City</th>
+                              <th>State</th>
+                              <th>Company Email</th>
+                              <th>
+                                Assigned Date
+                                <SwapVertIcon
+                                  style={{
+                                    height: "15px",
+                                    width: "15px",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() => {
+                                    const sortedData = [...employeeData].sort(
+                                      (a, b) => {
+                                        if (sortOrder === "asc") {
+                                          return b.AssignDate.localeCompare(
+                                            a.AssignDate
+                                          );
+                                        } else {
+                                          return a.AssignDate.localeCompare(
+                                            b.AssignDate
+                                          );
+                                        }
+                                      }
+                                    );
+                                    setEmployeeData(sortedData);
+                                    setSortOrder(
+                                      sortOrder === "asc" ? "desc" : "asc"
+                                    );
+                                  }}
+                                />
+                              </th>
 
-                                <td>
-                                  {formatDate(
-                                    company["Company Incorporation Date  "]
-                                  )}
+                              {(dataStatus === "Matured" && <th>Action</th>) ||
+                                (dataStatus === "FollowUp" && (
+                                  <th>Add Projection</th>
+                                )) ||
+                                (dataStatus === "Interested" && (
+                                  <th>Add Projection</th>
+                                ))}
+                            </tr>
+                          </thead>
+                          {loading ? (
+                            <tbody>
+                              <tr>
+                                <td colSpan="11" className="LoaderTDSatyle">
+                                  <ClipLoader
+                                    color="lightgrey"
+                                    loading
+                                    size={30}
+                                    aria-label="Loading Spinner"
+                                    data-testid="loader"
+                                  />
                                 </td>
-                                <td>{company["City"]}</td>
-                                <td>{company["State"]}</td>
-                                <td>{company["Company Email"]}</td>
-                                <td>{formatDate(company["AssignDate"])}</td>
+                              </tr>
+                            </tbody>
+                          ) : (
+                            <tbody>
+                              {currentData.map((company, index) => (
+                                <tr
+                                  key={index}
+                                  style={{ border: "1px solid #ddd" }}
+                                >
+                                  <td className="td-sticky">
+                                    {startIndex + index + 1}
+                                  </td>
+                                  <td className="td-sticky1">
+                                    {company["Company Name"]}
+                                  </td>
+                                  <td>{company["Company Number"]}</td>
+                                  <td>
+                                    {company["Status"] === "Matured" ? (
+                                      <span>{company["Status"]}</span>
+                                    ) : (
+                                      <select
+                                        style={{
+                                          background: "none",
+                                          padding: ".4375rem .75rem",
+                                          border:
+                                            "1px solid var(--tblr-border-color)",
+                                          borderRadius:
+                                            "var(--tblr-border-radius)",
+                                        }}
+                                        value={company["Status"]}
+                                        onChange={(e) =>
+                                          handleStatusChange(
+                                            company._id,
+                                            e.target.value,
+                                            company["Company Name"],
+                                            company["Company Email"],
+                                            company[
+                                              "Company Incorporation Date  "
+                                            ],
+                                            company["Company Number"],
+                                            company["Status"]
+                                          )
+                                        }
+                                      >
+                                        <option value="Not Picked Up">
+                                          Not Picked Up
+                                        </option>
+                                        <option value="Busy">Busy </option>
+                                        <option value="Junk">Junk</option>
+                                        <option value="Not Interested">
+                                          Not Interested
+                                        </option>
+                                        {dataStatus === "All" && (
+                                          <>
+                                            <option value="Untouched">
+                                              Untouched{" "}
+                                            </option>
+                                            <option value="Interested">
+                                              Interested
+                                            </option>
+                                          </>
+                                        )}
 
-                                {/* {(dataStatus === "FollowUp" ||
+                                        {dataStatus === "Interested" && (
+                                          <>
+                                            <option value="Interested">
+                                              Interested
+                                            </option>
+                                            <option value="FollowUp">
+                                              Follow Up{" "}
+                                            </option>
+                                            <option value="Matured">
+                                              Matured
+                                            </option>
+                                          </>
+                                        )}
+
+                                        {dataStatus === "FollowUp" && (
+                                          <>
+                                            <option value="FollowUp">
+                                              Follow Up{" "}
+                                            </option>
+                                            <option value="Matured">
+                                              Matured
+                                            </option>
+                                          </>
+                                        )}
+                                      </select>
+                                    )}
+                                  </td>
+                                  <td>
+                                    <div
+                                      key={company._id}
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        width: "100px",
+                                      }}
+                                    >
+                                      <p
+                                        className="rematkText text-wrap m-0"
+                                        title={company.Remarks}
+                                      >
+                                        {!company["Remarks"]
+                                          ? "No Remarks"
+                                          : company.Remarks}
+                                      </p>
+
+                                      <IconButton
+                                        onClick={() => {
+                                          functionopenpopupremarks(
+                                            company._id,
+                                            company.Status
+                                          );
+                                          setCurrentRemarks(company.Remarks);
+                                          setCompanyId(company._id);
+                                        }}
+                                      >
+                                        <EditIcon
+                                          style={{
+                                            width: "12px",
+                                            height: "12px",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    </div>
+                                  </td>
+
+                                  <td>
+                                    {formatDate(
+                                      company["Company Incorporation Date  "]
+                                    )}
+                                  </td>
+                                  <td>{company["City"]}</td>
+                                  <td>{company["State"]}</td>
+                                  <td>{company["Company Email"]}</td>
+                                  <td>{formatDate(company["AssignDate"])}</td>
+
+                                  {/* {(dataStatus === "FollowUp" ||
                                   dataStatus === "Interested") && (
                                     <td>
                                       {company &&
@@ -2991,154 +3016,180 @@ function EmployeePanel() {
                                     )}
                                     </td>
                                   )} */}
-                                {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                                  {(dataStatus === "FollowUp" ||
+                                    dataStatus === "Interested") && (
+                                    <td>
+                                      {company &&
+                                      projectionData &&
+                                      projectionData.some(
+                                        (item) =>
+                                          item.companyName ===
+                                          company["Company Name"]
+                                      ) ? (
+                                        <IconButton>
+                                          <RiEditCircleFill
+                                            onClick={() => {
+                                              functionopenprojection(
+                                                company["Company Name"]
+                                              );
+                                            }}
+                                            style={{
+                                              cursor: "pointer",
+                                              width: "17px",
+                                              height: "17px",
+                                            }}
+                                            color="#fbb900"
+                                          />
+                                        </IconButton>
+                                      ) : (
+                                        <IconButton>
+                                          <RiEditCircleFill
+                                            onClick={() => {
+                                              functionopenprojection(
+                                                company["Company Name"]
+                                              );
+                                              setIsEditProjection(true);
+                                            }}
+                                            style={{
+                                              cursor: "pointer",
+                                              width: "17px",
+                                              height: "17px",
+                                            }}
+                                          />
+                                        </IconButton>
+                                      )}
+                                    </td>
+                                  )}
+                                  {dataStatus === "Matured" && (
+                                    <>
+                                      <td>
+                                        <div className="d-flex">
+                                          <IconButton
+                                            style={{ marginRight: "5px" }}
+                                            onClick={() => {
+                                              setMaturedID(company._id);
+                                              functionopenAnchor();
+                                            }}
+                                          >
+                                            <IconEye
+                                              style={{
+                                                width: "14px",
+                                                height: "14px",
+                                                color: "#d6a10c",
+                                                cursor: "pointer",
+                                              }}
+                                            />
+                                          </IconButton>
+
+                                          <IconButton
+                                            onClick={() => {
+                                              handleRequestDelete(
+                                                company._id,
+                                                company["Company Name"]
+                                              );
+                                            }}
+                                            disabled={requestDeletes.some(
+                                              (item) =>
+                                                item.companyId ===
+                                                  company._id &&
+                                                item.request === undefined
+                                            )}
+                                          >
+                                            <DeleteIcon
+                                              style={{
+                                                cursor: "pointer",
+                                                color: "#f70000",
+                                                width: "14px",
+                                                height: "14px",
+                                              }}
+                                            />
+                                          </IconButton>
+                                          <IconButton
+                                            onClick={() => {
+                                              setMaturedID(company._id);
+                                              setTimeout(() => {
+                                                setEditFormOpen(true);
+                                              }, 1000);
+                                            }}
+                                            disabled={totalBookings.some(
+                                              (obj) =>
+                                                obj["Company Name"] ===
+                                                company["Company Name"]
+                                            )}
+                                          >
+                                            <Edit
+                                              style={{
+                                                cursor: "pointer",
+                                                color: "#109c0b",
+                                                width: "14px",
+                                                height: "14px",
+                                              }}
+                                            />
+                                          </IconButton>
+                                          <IconButton>
+                                            <AddCircleIcon style={{
+                                                cursor: "pointer",
+                                                color: "#4f5b74",
+                                                width: "14px",
+                                                height: "14px",
+                                              }}/>
+                                          </IconButton>
+                                        </div>
+                                      </td>
+                                    </>
+                                  )}
+                                  {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
+                                </tr>
+                              ))}
+                            </tbody>
+                          )}
+                          {dataStatus === "null" && companies.length !== 0 && (
+                            <tbody>
+                              {companies.map((company, index) => (
+                                <tr
+                                  key={index}
+                                  style={{ border: "1px solid #ddd" }}
+                                >
+                                  <td className="td-sticky">
+                                    {startIndex + index + 1}
+                                  </td>
+                                  <td className="td-sticky1">
+                                    {company["Company Name"]}
+                                  </td>
+                                  <td>{company["Company Number"]}</td>
                                   <td>
-                                    {company && projectionData && projectionData.some(
-                                      (item) => item.companyName === company["Company Name"]
-                                    ) ? (
-                                      <IconButton>
-                                        <RiEditCircleFill
-                                          onClick={() => {
-                                            functionopenprojection(company["Company Name"]);
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                          color="#fbb900"
-                                        />
-                                      </IconButton>
-                                    ) : (
-                                      <IconButton>
-                                        <RiEditCircleFill
-                                          onClick={() => {
-                                            functionopenprojection(company["Company Name"]);
-                                            setIsEditProjection(true);
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                        />
-                                      </IconButton>
+                                    <span>{company["Status"]}</span>
+                                  </td>
+                                  <td>
+                                    <div
+                                      key={company._id}
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                      }}
+                                    >
+                                      <p
+                                        className="rematkText text-wrap m-0"
+                                        title={company.Remarks}
+                                      >
+                                        {company.Remarks}
+                                      </p>
+                                    </div>
+                                  </td>
+
+                                  <td>
+                                    {formatDate(
+                                      company["Company Incorporation Date"]
                                     )}
                                   </td>
-                                )}
-                                {dataStatus === "Matured" && (
-                                  <>
-                                    <td>
-                                      <div className="d-flex">
-                                        <IconButton
-                                          style={{ marginRight: "5px" }}
-                                          onClick={() => {
-                                            setMaturedID(company._id);
-                                            functionopenAnchor();
-                                          }}
-                                        >
-                                          <IconEye
-                                            style={{
-                                              width: "14px",
-                                              height: "14px",
-                                              color: "#d6a10c",
-                                              cursor: "pointer",
-                                            }}
-                                          />
-                                        </IconButton>
+                                  <td>{company["City"]}</td>
+                                  <td>{company["State"]}</td>
+                                  <td>{company["Company Email"]}</td>
+                                  <td>{formatDate(company["AssignDate"])}</td>
 
-                                        <IconButton
-                                          onClick={() => {
-                                            handleRequestDelete(
-                                              company._id,
-                                              company["Company Name"]
-                                            );
-                                          }}
-                                          disabled={requestDeletes.some(
-                                            (item) =>
-                                              item.companyId === company._id &&
-                                              item.request === undefined
-                                          )}
-                                        >
-                                          <DeleteIcon
-                                            style={{
-                                              cursor: "pointer",
-                                              color: "#f70000",
-                                              width: "14px",
-                                              height: "14px",
-                                            }}
-                                          />
-                                        </IconButton>
-                                        <IconButton onClick={() => {
-                                          setMaturedID(company._id)
-                                          setTimeout(() => {
-                                            setEditFormOpen(true)
-                                          }, 1000);
-
-                                        }}>
-                                          <Edit style={{
-                                            cursor: "pointer",
-                                            color: "#109c0b",
-                                            width: "14px",
-                                            height: "14px",
-                                          }} />
-                                        </IconButton>
-                                      </div>
-                                    </td>
-                                  </>
-                                )}
-                                {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
-                              </tr>
-                            ))}
-                          </tbody>
-                        )}
-                        {dataStatus === "null" && companies.length !== 0 && (
-                          <tbody>
-                            {companies.map((company, index) => (
-                              <tr
-                                key={index}
-                                style={{ border: "1px solid #ddd" }}
-                              >
-                                <td className="td-sticky">
-                                  {startIndex + index + 1}
-                                </td>
-                                <td className="td-sticky1">
-                                  {company["Company Name"]}
-                                </td>
-                                <td>{company["Company Number"]}</td>
-                                <td>
-                                  <span>{company["Status"]}</span>
-                                </td>
-                                <td>
-                                  <div
-                                    key={company._id}
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "space-between",
-                                    }}
-                                  >
-                                    <p
-                                      className="rematkText text-wrap m-0"
-                                      title={company.Remarks}
-                                    >
-                                      {company.Remarks}
-                                    </p>
-                                  </div>
-                                </td>
-
-                                <td>
-                                  {formatDate(
-                                    company["Company Incorporation Date"]
-                                  )}
-                                </td>
-                                <td>{company["City"]}</td>
-                                <td>{company["State"]}</td>
-                                <td>{company["Company Email"]}</td>
-                                <td>{formatDate(company["AssignDate"])}</td>
-
-                                <td>
-                                  {/* <button
+                                  <td>
+                                    {/* <button
                                     style={{
                                       padding: "5px",
                                       fontSize: "12px",
@@ -3155,36 +3206,36 @@ function EmployeePanel() {
                                   >
                                     View
                                   </button> */}
-                                  <HiOutlineEye
-                                    style={{
-                                      fontSize: "15px",
-                                      color: "#fbb900",
-                                      //backgroundColor: "lightblue",
-                                      // Additional styles for the "View" button
-                                    }}
-                                    //className="btn btn-primary d-none d-sm-inline-block"
-                                    onClick={() => {
-                                      functionopenAnchor();
-                                      setMaturedCompanyName(
-                                        company["Company Name"]
-                                      );
-                                    }}
-                                  />
+                                    <HiOutlineEye
+                                      style={{
+                                        fontSize: "15px",
+                                        color: "#fbb900",
+                                        //backgroundColor: "lightblue",
+                                        // Additional styles for the "View" button
+                                      }}
+                                      //className="btn btn-primary d-none d-sm-inline-block"
+                                      onClick={() => {
+                                        functionopenAnchor();
+                                        setMaturedCompanyName(
+                                          company["Company Name"]
+                                        );
+                                      }}
+                                    />
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          )}
+                          {currentData.length === 0 && !loading && (
+                            <tbody>
+                              <tr>
+                                <td colSpan="11" className="p-2 particular">
+                                  <Nodata />
                                 </td>
                               </tr>
-                            ))}
-                          </tbody>
-                        )}
-                        {currentData.length === 0 && !loading && (
-                          <tbody>
-                            <tr>
-                              <td colSpan="11" className="p-2 particular">
-                                <Nodata />
-                              </td>
-                            </tr>
-                          </tbody>
-                        )}
-                        {/* {companies.length === 0 && !loading && dataStatus === "Matured" && (
+                            </tbody>
+                          )}
+                          {/* {companies.length === 0 && !loading && dataStatus === "Matured" && (
                           <tbody>
                             <tr>
                               <td colSpan="11" className="p-2 particular">
@@ -3193,72 +3244,73 @@ function EmployeePanel() {
                             </tr>
                           </tbody>
                         )} */}
-                      </table>
-                    </div>
-                    {currentData.length !== 0 && (
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                        className="pagination"
-                      >
-                        <IconButton
-                          onClick={() =>
-                            setCurrentPage((prevPage) =>
-                              Math.max(prevPage - 1, 0)
-                            )
-                          }
-                          disabled={currentPage === 0}
-                        >
-                          <IconChevronLeft />
-                        </IconButton>
-                        <span>
-                          Page {currentPage + 1} of{" "}
-                          {Math.ceil(filteredData.length / itemsPerPage)}
-                        </span>
-
-                        <IconButton
-                          onClick={() =>
-                            setCurrentPage((prevPage) =>
-                              Math.min(
-                                prevPage + 1,
-                                Math.ceil(filteredData.length / itemsPerPage) -
-                                1
-                              )
-                            )
-                          }
-                          disabled={
-                            currentPage ===
-                            Math.ceil(filteredData.length / itemsPerPage) - 1
-                          }
-                        >
-                          <IconChevronRight />
-                        </IconButton>
+                        </table>
                       </div>
-                    )}
+                      {currentData.length !== 0 && (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                          className="pagination"
+                        >
+                          <IconButton
+                            onClick={() =>
+                              setCurrentPage((prevPage) =>
+                                Math.max(prevPage - 1, 0)
+                              )
+                            }
+                            disabled={currentPage === 0}
+                          >
+                            <IconChevronLeft />
+                          </IconButton>
+                          <span>
+                            Page {currentPage + 1} of{" "}
+                            {Math.ceil(filteredData.length / itemsPerPage)}
+                          </span>
+
+                          <IconButton
+                            onClick={() =>
+                              setCurrentPage((prevPage) =>
+                                Math.min(
+                                  prevPage + 1,
+                                  Math.ceil(
+                                    filteredData.length / itemsPerPage
+                                  ) - 1
+                                )
+                              )
+                            }
+                            disabled={
+                              currentPage ===
+                              Math.ceil(filteredData.length / itemsPerPage) - 1
+                            }
+                          >
+                            <IconChevronRight />
+                          </IconButton>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </>
-      ) : (
-        <>
-          <EditableLeadform
-            setFormOpen={setEditFormOpen}
-            companysName={currentForm["Company Name"]}
-            companysEmail={currentForm["Company Email"]}
-            companyNumber={currentForm["Company Number"]}
-            setNowToFetch={setNowToFetch}
-            companysInco={currentForm.incoDate}
-            employeeName={data.ename}
-            employeeEmail={data.email}
-            setDataStatus={setdataStatus}
-          />
-        </>
-
+          </>
+        ) : (
+          <>
+            <EditableLeadform
+              setFormOpen={setEditFormOpen}
+              companysName={currentForm["Company Name"]}
+              companysEmail={currentForm["Company Email"]}
+              companyNumber={currentForm["Company Number"]}
+              setNowToFetch={setNowToFetch}
+              companysInco={currentForm.incoDate}
+              employeeName={data.ename}
+              employeeEmail={data.email}
+              setDataStatus={setdataStatus}
+            />
+          </>
+        )
       ) : (
         <>
           <RedesignedForm
@@ -3292,16 +3344,16 @@ function EmployeePanel() {
                 style={
                   selectedOption === "general"
                     ? {
-                      backgroundColor: "#ffb900",
-                      margin: "10px 10px 0px 0px",
-                      cursor: "pointer",
-                      color: "white",
-                    }
+                        backgroundColor: "#ffb900",
+                        margin: "10px 10px 0px 0px",
+                        cursor: "pointer",
+                        color: "white",
+                      }
                     : {
-                      backgroundColor: "white",
-                      margin: "10px 10px 0px 0px",
-                      cursor: "pointer",
-                    }
+                        backgroundColor: "white",
+                        margin: "10px 10px 0px 0px",
+                        cursor: "pointer",
+                      }
                 }
                 onClick={() => {
                   setSelectedOption("general");
@@ -3324,16 +3376,16 @@ function EmployeePanel() {
                 style={
                   selectedOption === "notgeneral"
                     ? {
-                      backgroundColor: "#ffb900",
-                      margin: "10px 0px 0px 0px",
-                      cursor: "pointer",
-                      color: "white",
-                    }
+                        backgroundColor: "#ffb900",
+                        margin: "10px 0px 0px 0px",
+                        cursor: "pointer",
+                        color: "white",
+                      }
                     : {
-                      backgroundColor: "white",
-                      margin: "10px 0px 0px 0px",
-                      cursor: "pointer",
-                    }
+                        backgroundColor: "white",
+                        margin: "10px 0px 0px 0px",
+                        cursor: "pointer",
+                      }
                 }
                 className="notgeneral form-control col"
                 onClick={() => {
@@ -3710,7 +3762,6 @@ function EmployeePanel() {
                         }}
                       />
                     </div>
-
                   </div>
                   <div className="col-4">
                     <div className="mb-3">
@@ -3779,7 +3830,6 @@ function EmployeePanel() {
                         }}
                         type="text"
                         className="form-control"
-
                       />
                     </div>
                   </div>
@@ -3792,7 +3842,7 @@ function EmployeePanel() {
                         }}
                         type="text"
                         className="form-control"
-                      //disabled={!isEditProjection}
+                        //disabled={!isEditProjection}
                       />
                     </div>
                   </div>
@@ -3800,7 +3850,9 @@ function EmployeePanel() {
                 <div className="row">
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Director's Name(First)</label>
+                      <label className="form-label">
+                        Director's Name(First)
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -3814,7 +3866,9 @@ function EmployeePanel() {
                   </div>
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Director's Number(First)</label>
+                      <label className="form-label">
+                        Director's Number(First)
+                      </label>
                       <input
                         type="email"
                         className="form-control"
@@ -3828,7 +3882,9 @@ function EmployeePanel() {
                   </div>
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Director's Email(First)</label>
+                      <label className="form-label">
+                        Director's Email(First)
+                      </label>
                       <input
                         type="email"
                         className="form-control"
@@ -3841,39 +3897,53 @@ function EmployeePanel() {
                     </div>
                   </div>
                 </div>
-                {firstPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
-                  <button
-                    onClick={() => { functionOpenSecondDirector() }}
-                    className="btn btn-primary d-none d-sm-inline-block">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="icon"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                {firstPlus && (
+                  <div className="d-flex align-items-center justify-content-end gap-2">
+                    <button
+                      onClick={() => {
+                        functionOpenSecondDirector();
+                      }}
+                      className="btn btn-primary d-none d-sm-inline-block"
                     >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M12 5l0 14" />
-                      <path d="M5 12l14 0" />
-                    </svg>
-                  </button>
-                  <button className="btn btn-primary d-none d-sm-inline-block">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon"
-                      width="24"
-                      height="24"
-                      fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
-                  </button></div>)}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="icon"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M12 5l0 14" />
+                        <path d="M5 12l14 0" />
+                      </svg>
+                    </button>
+                    <button className="btn btn-primary d-none d-sm-inline-block">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="icon"
+                        width="24"
+                        height="24"
+                        fill="white"
+                        viewBox="0 0 448 512"
+                      >
+                        <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
 
                 {openSecondDirector && (
                   <div className="row">
                     <div className="col-4">
                       <div className="mb-3">
-                        <label className="form-label">Director's Name(Second)</label>
+                        <label className="form-label">
+                          Director's Name(Second)
+                        </label>
                         <input
                           type="text"
                           className="form-control"
@@ -3887,7 +3957,9 @@ function EmployeePanel() {
                     </div>
                     <div className="col-4">
                       <div className="mb-3">
-                        <label className="form-label">Director's Number(Second)</label>
+                        <label className="form-label">
+                          Director's Number(Second)
+                        </label>
                         <input
                           type="email"
                           className="form-control"
@@ -3901,7 +3973,9 @@ function EmployeePanel() {
                     </div>
                     <div className="col-4">
                       <div className="mb-3">
-                        <label className="form-label">Director's Email(Second)</label>
+                        <label className="form-label">
+                          Director's Email(Second)
+                        </label>
                         <input
                           type="email"
                           className="form-control"
@@ -3913,85 +3987,125 @@ function EmployeePanel() {
                         />
                       </div>
                     </div>
-                  </div>)}
-                {secondPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
+                  </div>
+                )}
+                {secondPlus && (
+                  <div className="d-flex align-items-center justify-content-end gap-2">
+                    <button
+                      onClick={() => {
+                        functionOpenThirdDirector();
+                      }}
+                      className="btn btn-primary d-none d-sm-inline-block"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="icon"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M12 5l0 14" />
+                        <path d="M5 12l14 0" />
+                      </svg>
+                    </button>
+                    <button
+                      className="btn btn-primary d-none d-sm-inline-block"
+                      onClick={() => {
+                        functionCloseSecondDirector();
+                      }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="icon"
+                        width="24"
+                        height="24"
+                        fill="white"
+                        viewBox="0 0 448 512"
+                      >
+                        <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+
+                {openThirdDirector && (
+                  <div className="row">
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">
+                          Director's Name(Third)
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="Your Company Name"
+                          onChange={(e) => {
+                            setDirectorNameThird(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">
+                          Director's Number(Third)
+                        </label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="example@gmail.com"
+                          onChange={(e) => {
+                            setDirectorNumberThird(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">
+                          Director's Email(Third)
+                        </label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="example@gmail.com"
+                          onChange={(e) => {
+                            setDirectorEmailThird(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {openThirdMinus && (
                   <button
-                    onClick={() => { functionOpenThirdDirector() }}
-                    className="btn btn-primary d-none d-sm-inline-block">
+                    className="btn btn-primary d-none d-sm-inline-block"
+                    style={{ float: "right" }}
+                    onClick={() => {
+                      functionCloseThirdDirector();
+                    }}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="icon"
                       width="24"
                       height="24"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      fill="white"
+                      viewBox="0 0 448 512"
                     >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M12 5l0 14" />
-                      <path d="M5 12l14 0" />
+                      <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
                     </svg>
                   </button>
-                  <button className="btn btn-primary d-none d-sm-inline-block" onClick={() => { functionCloseSecondDirector() }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon"
-                      width="24"
-                      height="24"
-                      fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
-                  </button></div>)}
-
-                {openThirdDirector && (<div className="row">
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Director's Name(Third)</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="Your Company Name"
-                        onChange={(e) => {
-                          setDirectorNameThird(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Director's Number(Third)</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="example@gmail.com"
-                        onChange={(e) => {
-                          setDirectorNumberThird(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Director's Email(Third)</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="example@gmail.com"
-                        onChange={(e) => {
-                          setDirectorEmailThird(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>)}
-                {openThirdMinus && (<button className="btn btn-primary d-none d-sm-inline-block" style={{ float: "right" }} onClick={() => { functionCloseThirdDirector() }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="icon"
-                    width="24"
-                    height="24"
-                    fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
-                </button>)}
+                )}
               </div>
             </div>
           </div>
@@ -4091,10 +4205,10 @@ function EmployeePanel() {
               </h1>
               <div>
                 {projectingCompany &&
-                  projectionData &&
-                  projectionData.some(
-                    (item) => item.companyName === projectingCompany
-                  ) ? (
+                projectionData &&
+                projectionData.some(
+                  (item) => item.companyName === projectingCompany
+                ) ? (
                   <>
                     <IconButton
                       onClick={() => {
@@ -4336,14 +4450,11 @@ function EmployeePanel() {
                 </button>
               </div>
               <div>
-                <button>
-                  Pay now
-                </button>
+                <button>Pay now</button>
                 {/* <button onClick={generatePaymentLink}>Generate Payment Link</button>
                 {paymentLink && <a href={paymentLink} target="_blank" rel="noopener noreferrer">Proceed to Payment</a>}
                 {error && <p>{error}</p>} */}
               </div>
-
             </div>
           </div>
         </Drawer>

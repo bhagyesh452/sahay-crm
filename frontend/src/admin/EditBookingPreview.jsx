@@ -520,13 +520,16 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                       </div>
                       <div className="col-sm-9 p-0">
                         <div
-                          className={
-                            requestedBooking.services.length !== 0 &&
-                            requestedBooking.services[index].serviceName !==
-                              existingBooking.services[index].serviceName
-                              ? "form-label-data highlight-changes"
-                              : "form-label-data"
-                          }
+                        className={
+                          requestedBooking.services.length !== 0 &&
+                          requestedBooking.services[index] &&
+                          existingBooking.services[index] &&
+                          requestedBooking.services[index].serviceName !== existingBooking.services[index].serviceName
+                            ? "form-label-data highlight-changes"
+                            : "form-label-data"
+                        }
+                        
+                        
                         >
                           {( requestedBooking.services[index].serviceName && requestedBooking.services[index].serviceName !== existingBooking.services[index].serviceName) ? 
                           <span>
@@ -567,12 +570,12 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                         <div
                           className={
                             requestedBooking.services.length !== 0 &&
-                            requestedBooking.services[index]
-                              .totalPaymentWGST !==
-                              existingBooking.services[index].totalPaymentWGST
+                            requestedBooking.services[index] &&
+                            requestedBooking.services[index].totalPaymentWGST !== existingBooking.services[index].totalPaymentWGST
                               ? "form-label-data highlight-changes"
                               : "form-label-data"
                           }
+                          
                         >
                          {( requestedBooking.services[index].totalPaymentWGST && requestedBooking.services[index].totalPaymentWGST !== existingBooking.services[index].totalPaymentWGST) ? 
                           <span> 
@@ -607,13 +610,14 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                       </div>
                       <div className="col-sm-9 p-0">
                         <div
-                          className={
-                            requestedBooking.services.length !== 0 &&
-                            requestedBooking.services[index].paymentTerms !==
-                              existingBooking.services[index].paymentTerms
-                              ? "form-label-data highlight-changes"
-                              : "form-label-data"
-                          }
+                         className={
+                          requestedBooking.services.length !== 0 &&
+                          requestedBooking.services[index] &&
+                          requestedBooking.services[index].paymentTerms !== existingBooking.services[index].paymentTerms
+                            ? "form-label-data highlight-changes"
+                            : "form-label-data"
+                        }
+                        
                         >
                           {obj.paymentTerms === "Full Advanced"
                             ? "Full Advanced"
@@ -632,11 +636,12 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                           <div
                             className={
                               requestedBooking.services.length !== 0 &&
-                              requestedBooking.services[index].firstPayment !==
-                                existingBooking.services[index].firstPayment
+                              requestedBooking.services[index] &&
+                              requestedBooking.services[index].firstPayment !== existingBooking.services[index].firstPayment
                                 ? "form-label-data highlight-changes"
                                 : "form-label-data"
                             }
+                            
                           >
                             {" "}
                             ₹ {Number(obj.firstPayment).toFixed(2)}
@@ -653,13 +658,14 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                         </div>
                         <div className="col-sm-9 p-0">
                           <div
-                            className={
-                              requestedBooking.services.length !== 0 &&
-                              requestedBooking.services[index].secondPayment !==
-                                existingBooking.services[index].secondPayment
-                                ? "form-label-data highlight-changes"
-                                : "form-label-data"
-                            }
+                           className={
+                            requestedBooking.services.length !== 0 &&
+                            requestedBooking.services[index] &&
+                            requestedBooking.services[index].secondPayment !== existingBooking.services[index].secondPayment
+                              ? "form-label-data highlight-changes"
+                              : "form-label-data"
+                          }
+                          
                           >
                             ₹ {Number(obj.secondPayment).toFixed(2)} -{" "}
                             {isNaN(new Date(obj.secondPaymentRemarks))

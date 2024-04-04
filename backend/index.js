@@ -42,6 +42,7 @@ const DraftModel = require("./models/DraftLeadform");
 const { type } = require("os");
 const LeadModel_2 = require("./models/Leadform_2");
 const RedesignedLeadformModel = require("./models/RedesignedLeadform");
+const EditableDraftModel = require("./models/EditableDraftModel")
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
 //const axios = require('axios');
@@ -3026,6 +3027,7 @@ app.post(
             incoDate: newData.incoDate,
             panNumber: newData.panNumber,
             gstNumber: newData.gstNumber,
+
             Step1Status: true,
           });
           res.status(201).json(createdData); // Respond with created data
@@ -3044,6 +3046,7 @@ app.post(
                 bdeEmail: newData.bdeEmail || existingData.bdeEmail,
                 bdmName: newData.bdmName || existingData.bdmName,
                 otherBdmName : newData.otherBdmName || existingData.otherBdmName,
+                bdmType:newData.bdmType || existingData.bdmType,
                 bdmEmail: newData.bdmEmail || existingData.bdmEmail,
                 bookingDate: newData.bookingDate || existingData.bookingDate,
                 bookingSource: newData.bookingSource || existingData.bookingSource,
@@ -3060,7 +3063,6 @@ app.post(
         const existingData = await RedesignedDraftModel.findOne({
           "Company Name": companyName,
         });
-
         if (existingData) {
           // Update existing data if found
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(
@@ -3387,6 +3389,7 @@ app.post(
 
       const date = new Date();
       console.log(newData.requestBy);
+      
        
       const updatedData = await EditableDraftModel.findOneAndUpdate(
         { "Company Name": companyName },
@@ -3394,7 +3397,8 @@ app.post(
           $set: {
             Step5Status: true,
             requestBy: newData.requestBy,
-            requestDate: date
+            requestDate: date,
+            services: existingData.services.length!==0 ? existingData.services : newData.services
           },
         },
         { new: true }
@@ -4901,11 +4905,116 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       return servicesHtml;
     };
 
+    const renderServiceKawali = ()=>{
+      let servicesHtml = "";
+      let fundingServices = "";
+      let fundingServicesArray = "";
+      let incomeTaxServices = ""
+      const allowedServiceNames = [
+        "Seed Funding Support",
+        "Angel Funding Support",
+        "VC Funding Support",
+        "Crowd Funding Support",
+        "I-Create",
+        "Nidhi Seed Support Scheme",
+        "Nidhi Prayash Yojna",
+        "NAIF",
+        "Raftaar",
+        "CSR Funding",
+        "Stand-Up India",
+        "PMEGP",
+        "USAID",
+        "UP Grant",
+        "DBS Grant",
+        "MSME Innovation",
+        "MSME Hackathon",
+        "Gujarat Grant",
+        "CGTMSC",
+        "Mudra Loan",
+        "SIDBI Loan",
+        "Incubation Support"
+      ];
+      for(let i = 0; i < newData.services.length; i++){
+        if(newData.services[i].serviceName === "Start-Up India Certificate"){
+            servicesHtml = `
+            <p>
+              <b>Start-Up India Certification Support Service Acknowledgement:</b>
+            </p>
+            <p>
+              I, Director of <b> ${newData["Company Name"]} </b>, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing consultancy services. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-up India certificate is issued free of charge by the government, and I have not been charged for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
+            </p>
+            <br>
+            `
+        }else if(allowedServiceNames.includes(newData.services[i].serviceName)){
+            fundingServicesArray += `${newData.services[i].serviceName},`
+            fundingServices = `
+            <p>
+            <b>
+              ${newData.services[i].serviceName} Support Services Acknowledgement:   
+            </b>
+          </p>
+          <p>
+            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+          </p>
+          <br>
+            `
+        }else if(newData.services[i].serviceName === "Income Tax Excemption"){
+          incomeTaxServices = `
+          <p>
+              <p>
+                <b>
+                  Income Tax Exemption Services Acknowledgement:   
+                </b>
+              </p>
+              <p>
+                I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+              </p>
+            </p>
+            <br>
+          `
+        }else{
+          servicesHtml += `
+          <br>
+          `
+        }
+
+
+      }
+
+      if(fundingServicesArray !== ""){
+        servicesHtml += `
+        <p>
+        <b>
+          ${fundingServicesArray} Support Services Acknowledgement:   
+        </b>
+      </p>
+      <p>
+        I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+      </p>
+      <br>
+        `
+      }else if(incomeTaxServices!==""){
+        servicesHtml += `
+        <p>
+        <p>
+          <b>
+            Income Tax Exemption Services Acknowledgement:   
+          </b>
+        </p>
+        <p>
+          I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+        </p>
+      </p>
+      <br>
+      `
+      }
+      return servicesHtml
+    }
+    const bdNames = newData.bdeName == newData.bdmName ? newData.bdeName : `${newData.bdeName} & ${newData.bdmName}`
     // Render services HTML content
     const serviceList = renderServiceList();
-
     const paymentDetails = renderPaymentDetails();
-
+    const serviceKawali = renderServiceKawali();
     const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const filledHtml = htmlTemplate
       .replace("{{Company Name}}", newData["Company Name"])
@@ -4913,12 +5022,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Services}}", serviceList)
+      .replace("{{Service-Kawali}}",serviceKawali)
       .replace("{{TotalAmount}}", totalAmount.toFixed(2))
       .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
       .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
       .replace("{{Service-Details}}", paymentDetails)
       .replace("{{Company Number}}", newData["Company Number"]);
-
     pdf
       .create(filledHtml, { format: "Letter" })
       .toFile(
@@ -4934,12 +5043,26 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   `./Document/${newData["Company Name"]}.pdf`
                 );
                 sendMail2(
-                  [new Data["Company Email"]],
+                  [newData["Company Email"]],
                   `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                   ``,
                   `
-              <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
-                <h1>Thank You for your response.</h1>       
+                  <div class="container">
+       
+                  <p>Dear ${newData["Company Name"]},</p>
+                  <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
+                  <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
+                  <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
+                  <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+                  <p style="display:${serviceNames == "Start-Up India Certificate" ? "none" : "block"}">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+                  <p style="display:${serviceNames == "Start-Up India Certificate" ? "none" : "block"}">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
+                  <p >Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
+                  <div class="signature">
+                      <div>Best regards,</div>
+                      <div>Shubhi Banthiya – Relationship Manager</div>
+                      <div>+91 9998992601</div>
+                      <div>Start-Up Sahay Private Limited</div>
+                  </div>
               </div>
             `,
                   mainBuffer
@@ -5013,7 +5136,7 @@ app.post('/api/update-redesigned-final-form/:companyName', async (req, res) => {
 app.delete("/api/delete-redesigned-booking-request/:CompanyName" , async(req, res)=>{
   try{
     const companyName = req.params.CompanyName; 
-    const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
+    const deleteFormRequest = await Edit.findOneAndDelete({
       "Company Name":companyName
     })
     res.status(200).json({ message: 'Document updated successfully' });
