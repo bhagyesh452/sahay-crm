@@ -5028,7 +5028,6 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
       .replace("{{Service-Details}}", paymentDetails)
       .replace("{{Company Number}}", newData["Company Number"]);
-
     pdf
       .create(filledHtml, { format: "Letter" })
       .toFile(

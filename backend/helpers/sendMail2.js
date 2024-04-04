@@ -53,10 +53,9 @@ const processAttachments = (files, prefix) => {
     const buffer = Buffer.from(files.buffer); // Convert ArrayBuffer to Buffer
 
     attachments.push({
-        filename: `Acknowlegment.pdf`,
+        filename: `Self-Declaration.pdf`,
         content: buffer, // Use the converted Buffer
     });
-
     return attachments;
 };
 // Function to send email
