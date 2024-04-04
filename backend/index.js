@@ -45,8 +45,8 @@ const RedesignedLeadformModel = require("./models/RedesignedLeadform");
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
 //const axios = require('axios');
-//const crypto = require('crypto');
-//const { Cashfree } = require('cashfree-pg');
+const crypto = require('crypto');
+// const { Cashfree } = require('cashfree-pg');
 
 
 // const http = require('http');
@@ -181,7 +181,7 @@ app.post("/api/admin/login-admin", async (req, res) => {
 //     res.status(500).json({ error: 'Could not generate payment link' });
 //   }
 // });
-
+// ---------------------------------------------------------- Kam ka code -------------------------------------------------------
 // Cashfree.XClientId = process.env.CLIENT_ID;
 // Cashfree.XClientSecret = process.env.CLIENT_SECRET;
 // Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
@@ -249,7 +249,7 @@ app.post("/api/admin/login-admin", async (req, res) => {
 //   }
 // })
 
-
+//----------------------------------------------------- Kam Ka code End -------------------------------------------------------------
 
 app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
@@ -5009,6 +5009,22 @@ app.post('/api/update-redesigned-final-form/:companyName', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+app.delete("/api/delete-redesigned-booking-request/:CompanyName" , async(req, res)=>{
+  try{
+    const companyName = req.params.CompanyName; 
+    const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
+      "Company Name":companyName
+    })
+    res.status(200).json({ message: 'Document updated successfully' });
+
+  }catch{
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+
+
+})
 app.post("/api/generate-pdf", async (req, res) => {
   const clientName = "Miya bhai";
   const clientAddress = "Ohio";

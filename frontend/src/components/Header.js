@@ -17,7 +17,7 @@ function Header({ name, designation}) {
   return (
     <div>
       <header className="navbar navbar-expand-md d-print-none">
-        <div className="p-0">
+        <div className="container-xl">
           <button
             className="navbar-toggler"
             type="button"
@@ -56,9 +56,6 @@ function Header({ name, designation}) {
                   </div>
                 </div>
               </button>
-
-
-
               <div className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <a href="#" className="dropdown-item">
                   Status
