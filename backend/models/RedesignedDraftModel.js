@@ -71,6 +71,9 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   bdeName: {
     type: String,
   },
+  bdmType:{
+    type:String,
+  },
   bdeEmail: {
     type: String,
   },

@@ -69,9 +69,10 @@ export default function RedesignedForm({
     bdeName: employeeName ? employeeName : "",
     bdeEmail: employeeEmail ? employeeEmail : "",
     bdmName: "",
+    bdmType:"Close-by",
     otherBdmName:'',
     bdmEmail: "",
-    bookingDate: "",
+    bookingDate: new Date(),
     bookingSource: "",
     otherBookingSource: "",
     numberOfServices: totalServices,
@@ -109,6 +110,16 @@ export default function RedesignedForm({
       console.error("Error fetching data:", error.message);
     }
   };
+  const formatInputDate = (dateString)=>{
+ 
+    const parsedDate = new Date(dateString);
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, '0'); // Adding 1 to month index since it starts from 0
+    const day = String(parsedDate.getDate()).padStart(2, '0');
+    
+    const formattedDate = `${year}-${month}-${day}`;
+ return formattedDate
+  }
 
   const [leadData, setLeadData] = useState(defaultLeadData);
   const fetchData = async () => {
@@ -144,6 +155,7 @@ export default function RedesignedForm({
           ...prevState,
           bdeName: employeeName ? employeeName : "",
           bdeEmail: employeeEmail ? employeeEmail : "",
+          bookingDate:formatInputDate(new Date())
         }));
       } else if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
@@ -2005,6 +2017,57 @@ export default function RedesignedForm({
                                   
 
                                   </>}
+                                  <div className="row mt-1">
+                                    <div className="col-sm-2 mr-2">
+                                      <label htmlFor="bdmType
+                                      ">
+                                        BDM Type :
+                                      </label>
+                                      
+                                    <label className="form-check form-check-inline">
+                                          <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="bdm-type"
+                                            
+                                            onChange={(e) => {
+                                              setLeadData((prevLeadData) => ({
+                                                ...prevLeadData,
+                                                bdmType: "Close-by", // Set the value based on the selected radio button
+                                              }));
+                                            }}
+                                           
+                                            // Set the value attribute for "Yes"
+                                            checked={leadData.bdmType === "Close-by"} // Check condition based on state
+                                          />
+                                          <span className="form-check-label">
+                                           Close By
+                                          </span>
+                                        </label>
+                                    </div>
+                                    <div className="col-sm-2">
+                                    <label className="form-check form-check-inline">
+                                          <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="bdmType"
+                                            
+                                            onChange={(e) => {
+                                              setLeadData((prevLeadData) => ({
+                                                ...prevLeadData,
+                                                bdmType: "Supported-by", // Set the value based on the selected radio button
+                                              }));
+                                            }}
+                                           
+                                            // Set the value attribute for "Yes"
+                                            checked={leadData.bdmType === "Supported-by"} // Check condition based on state
+                                          />
+                                          <span className="form-check-label">
+                                            Supported By
+                                          </span>
+                                        </label>
+                                    </div>
+                                  </div>
 
                                   
                                   {leadData.bdmName !== "other" && <div className="col-sm-3">
@@ -2129,6 +2192,7 @@ export default function RedesignedForm({
                                       </div>
                                     </div>
                                   )}
+                                  
                                 </div>
                               </form>
                             </div>

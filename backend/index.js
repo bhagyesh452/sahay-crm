@@ -3027,6 +3027,7 @@ app.post(
             incoDate: newData.incoDate,
             panNumber: newData.panNumber,
             gstNumber: newData.gstNumber,
+
             Step1Status: true,
           });
           res.status(201).json(createdData); // Respond with created data
@@ -3045,6 +3046,7 @@ app.post(
                 bdeEmail: newData.bdeEmail || existingData.bdeEmail,
                 bdmName: newData.bdmName || existingData.bdmName,
                 otherBdmName : newData.otherBdmName || existingData.otherBdmName,
+                bdmType:newData.bdmType || existingData.bdmType,
                 bdmEmail: newData.bdmEmail || existingData.bdmEmail,
                 bookingDate: newData.bookingDate || existingData.bookingDate,
                 bookingSource: newData.bookingSource || existingData.bookingSource,
@@ -3061,7 +3063,6 @@ app.post(
         const existingData = await RedesignedDraftModel.findOne({
           "Company Name": companyName,
         });
-
         if (existingData) {
           // Update existing data if found
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(

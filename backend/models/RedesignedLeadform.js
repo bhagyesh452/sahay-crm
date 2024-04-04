@@ -88,6 +88,9 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   bdeEmail: {
     type: String,
   },
+  bdmType:{
+    type:String,
+  },
   bdmEmail: {
     type: String,
   },
