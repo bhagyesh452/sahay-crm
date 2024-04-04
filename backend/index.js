@@ -44,7 +44,10 @@ const LeadModel_2 = require("./models/Leadform_2");
 const RedesignedLeadformModel = require("./models/RedesignedLeadform");
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
-const EditableDraftModel = require("./models/EditableDraftModel");
+//const axios = require('axios');
+const crypto = require('crypto');
+// const { Cashfree } = require('cashfree-pg');
+
 
 // const http = require('http');
 // const socketIo = require('socket.io');
@@ -54,6 +57,10 @@ const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(cors());
 app.use(compression());
+app.use(express.urlencoded({
+  extended: true
+}));
+
 // app.use(session({
 //   secret: 'boombadaboom', // Replace with a secret key for session encryption
 //   resave: false,
@@ -136,6 +143,113 @@ app.post("/api/admin/login-admin", async (req, res) => {
 //     res.status(401).json({ message: "Invalid credentials" });
 //   }
 // });
+
+// -------------------------------api for payment link---------------------------------
+
+// const CASHFREE_API_KEY = '218584e2c3a22f9395f52faa1b485812';
+// const CASHFREE_SECRET_KEY = 'd501ddfae2bdb6fabb52844038e67b592fb09398';
+
+// app.post('/api/generatePaymentLink', async (req, res) => {
+//   console.log(req.body)
+//   try {
+//     const { orderId, amount, customerName, customerEmail, customerPhone } = req.body;
+
+//     const data = {
+//       appId: CASHFREE_API_KEY,
+//       orderId,
+//       orderAmount: amount.toString(),
+//       orderCurrency: 'INR',
+//       orderNote: 'Payment for services',
+//       customerName,
+//       customerPhone,
+//       customerEmail,
+//     };
+//     const config = {
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'x-client-id': CASHFREE_API_KEY,
+//         'x-client-secret': CASHFREE_SECRET_KEY,
+//       },
+//     };
+
+//     const response = await axios.post('https://test.cashfree.com/api/v1/order/create', data, config);
+//     const paymentLink = response.data;
+//     console.log(paymentLink)
+//     res.json({ paymentLink });
+//   } catch (error) {
+//     console.error('Error generating payment link:', error);
+//     res.status(500).json({ error: 'Could not generate payment link' });
+//   }
+// });
+// ---------------------------------------------------------- Kam ka code -------------------------------------------------------
+// Cashfree.XClientId = process.env.CLIENT_ID;
+// Cashfree.XClientSecret = process.env.CLIENT_SECRET;
+// Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
+
+
+
+// function generateOrderId() {
+//   const uniqueId = crypto.randomBytes(16).toString('hex');
+
+//   const hash = crypto.createHash('sha256');
+//   hash.update(uniqueId);
+
+//   const orderId = hash.digest('hex');
+//   console.log(orderId)
+//   return orderId.substr(0, 12);
+// }
+
+
+// app.get('/api/payment', async (req, res) => {
+
+//   try {
+
+//     let request = {
+//       "order_amount": 1.00,
+//       "order_currency": "INR",
+//       "order_id": await generateOrderId(),
+//       "customer_details": {
+//         "customer_id": "webcodder01",
+//         "customer_phone": "9999999999",
+//         "customer_name": "Web Codder",
+//         "customer_email": "webcodder@example.com"
+//       },
+//     }
+
+//     Cashfree.PGCreateOrder("2022-09-01", request).then(response => {
+//       console.log(response.data);
+//       res.json(response.data);
+
+//     }).catch(error => {
+//       console.error(error.response.data.message);
+//     })
+
+//   } catch (error) {
+//     console.log(error);
+//   }
+
+
+// })
+
+// app.post('/api/verify', async (req, res) => {
+//   try {
+
+//     let { orderId } = req.body;
+
+//     Cashfree.PGOrderFetchPayments("2023-08-01", orderId).then((response) => {
+
+//       res.json(response.data);
+//     }).catch(error => {
+//       console.error(error.response.data.message);
+//     })
+
+
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })
+
+//----------------------------------------------------- Kam Ka code End -------------------------------------------------------------
 
 app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
@@ -228,40 +342,120 @@ const deleteAllData = async () => {
 
 // deleteAllData();
 
+// app.post("/api/leads", async (req, res) => {
+//   const csvData = req.body;
+//   let counter = 0;
+//   let sucessCounter = 0;
+
+//   try {
+//     for (const employeeData of csvData) {
+//       try {
+//         const employeeWithAssignData = {
+//           ...employeeData,
+//           AssignDate: new Date(),
+//         };
+//         const employee = new CompanyModel(employeeWithAssignData);
+//         const savedEmployee = await employee.save();
+//         sucessCounter++;
+//       } catch (error) {
+//         console.error("Error saving employee:", error.message);
+//         counter++;
+//         // res.status(500).json({ error: 'Internal Server Error' });
+
+//         // Handle the error for this specific entry, but continue with the next one
+//       }
+//     }
+//     res.status(200).json({
+//       message: "Data sent successfully",
+//       counter: counter,
+//       sucessCounter: sucessCounter,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal Server Error" });
+//     console.error("Error in bulk save:", error.message);
+//   }
+// });
+
 app.post("/api/leads", async (req, res) => {
   const csvData = req.body;
+  //console.log("csvdata" , csvData)
   let counter = 0;
-  let sucessCounter = 0;
+  let successCounter = 0;
+  let duplicateEntries = []; // Array to store duplicate entries
 
   try {
     for (const employeeData of csvData) {
+      console.log("employee" , employeeData)
       try {
         const employeeWithAssignData = {
           ...employeeData,
           AssignDate: new Date(),
         };
         const employee = new CompanyModel(employeeWithAssignData);
+        //console.log("newemployee" , employee)
         const savedEmployee = await employee.save();
-        sucessCounter++;
+        //console.log("saved" , savedEmployee)
+        successCounter++;
       } catch (error) {
+          duplicateEntries.push(employeeData);
+          //console.log("kuch h ye" , duplicateEntries);
         console.error("Error saving employee:", error.message);
         counter++;
-        // res.status(500).json({ error: 'Internal Server Error' });
-
-        // Handle the error for this specific entry, but continue with the next one
       }
     }
-
-    res.status(200).json({
-      message: "Data sent successfully",
-      counter: counter,
-      sucessCounter: sucessCounter,
-    });
+    if (duplicateEntries.length > 0) {
+      // If there are duplicate entries, create and send CSV
+      const csvString = createCSVString(duplicateEntries);
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", "attachment; filename=DuplicateEntries.csv");
+      res.status(200).end(csvString);
+      //console.log("csvString" , csvString)
+    } else {
+      res.status(200).json({
+        message: "Data sent successfully",
+        counter: counter,
+        successCounter: successCounter,
+      });
+    }
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
     console.error("Error in bulk save:", error.message);
   }
 });
+
+function createCSVString(data) {
+  const csvData = [];
+  //console.log('data' , data)
+  // Push the headers as the first row
+  csvData.push([
+    "Company Name",
+    "Company Number",
+    "Company Email",
+    "Company Incorporation Date",
+    "City",
+    "State",
+    "ename",
+  ]);
+
+  // Push each duplicate entry as a row into the csvData array
+  data.forEach((entry) => {
+    const rowData = [
+      entry["Company Name"],
+      entry["Company Number"],
+      entry["Company Email"],
+      entry["Company Incorporation Date"],
+      entry["City"],
+      entry["State"],
+      entry["ename"],
+    ];
+    csvData.push(rowData);
+  });
+
+  return csvData.map((row) => row.join(",")).join("\n");
+}
+
+
+
 app.post("/api/employee-history", async (req, res) => {
   const csvData = req.body;
 
@@ -284,6 +478,7 @@ app.post("/api/employee-history", async (req, res) => {
     console.error("Error in bulk save:", error.message);
   }
 });
+
 app.get("/api/employee-history/:companyName", async (req, res) => {
   try {
     // Extract the companyName from the URL parameter
@@ -300,6 +495,8 @@ app.get("/api/employee-history/:companyName", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 app.get("/api/specific-company/:companyId", async (req, res) => {
   try {
     const companyId = req.params.companyId;
@@ -315,7 +512,8 @@ app.get("/api/specific-company/:companyId", async (req, res) => {
   }
 });
 app.post("/api/requestCompanyData", async (req, res) => {
-  const csvData = req.body;
+  //const csvData = req.body;
+  console.log("csv" , csvData)
 
   try {
     for (const employeeData of csvData) {
@@ -324,8 +522,10 @@ app.post("/api/requestCompanyData", async (req, res) => {
           ...employeeData,
           AssignDate: new Date(),
         };
+        //console.log("employeedata" , employeeData)
         const employee = new CompanyRequestModel(employeeWithAssignData);
         const savedEmployee = await employee.save();
+        //console.log("savedemployee" , savedEmployee)
       } catch (error) {
         console.error("Error saving employee:", error.message);
         // res.status(500).json({ error: 'Internal Server Error' });
@@ -343,6 +543,7 @@ app.post("/api/requestCompanyData", async (req, res) => {
 
 app.post("/api/manual", async (req, res) => {
   const receivedData = req.body;
+  console.log("receiveddata" , receivedData)
 
   // console.log(receivedData);
 
@@ -1015,7 +1216,7 @@ app.put("/api/neweinfo/:id", async (req, res) => {
           existing["Company Name"] === data["Company Name"] &&
           existing["Company Number"] === data["Company Number"] &&
           existing["Company Incorporation Date  "] ===
-            data["Company Incorporation Date  "] &&
+          data["Company Incorporation Date  "] &&
           existing["Company Email"] === data["Company Email"] &&
           existing.City === data.City &&
           existing.State === data.State
@@ -1116,6 +1317,7 @@ app.post("/api/setMarktrue/:id", async (req, res) => {
       .json({ error: "An error occurred while updating the object." });
   }
 });
+
 app.post("/api/requestgData", async (req, res) => {
   const { numberOfData, name, cTime, cDate } = req.body;
 
@@ -2485,6 +2687,7 @@ app.get("/api/exportdatacsv", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
 app.post("/api/exportLeads/", async (req, res) => {
   try {
     const selectedIds = req.body;
@@ -2532,12 +2735,13 @@ app.post("/api/exportLeads/", async (req, res) => {
     res.setHeader("Content-Type", "text/csv");
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=UnassignedData.csv"
+      "attachment; filename=UnAssignedLeads_Admin.csv"
     );
 
     const csvString = csvData.map((row) => row.join(",")).join("\n");
     // Send response with CSV data
     // Send response with CSV data
+    //console.log(csvString)
     res.status(200).end(csvString);
     // console.log(csvString)
     // Here you're ending the response
@@ -2547,54 +2751,7 @@ app.post("/api/exportLeads/", async (req, res) => {
   }
 });
 
-// ------------------------------api to upload docs from processing window------------------------------
 
-app.post(
-  "/api/uploadAttachment/:companyName",
-  upload.fields([
-    { name: "otherDocs", maxCount: 50 },
-    { name: "paymentReceipt", maxCount: 1 },
-  ]),
-  async (req, res) => {
-    try {
-      const companyName = req.params.companyName;
-
-      // Check if company name is provided
-      if (!companyName) {
-        return res.status(404).send("Company name not provided");
-      }
-
-      // Find the company by its name
-      const company = await LeadModel.findOne({ companyName });
-      // console.log(company)
-      // Check if company exists
-      if (!company) {
-        return res.status(404).send("Company not found");
-      }
-
-      // const paymentDoc = req.files["paymentReceipt"];
-
-      // Update the payment receipt field of the company document
-      const paymentReceipt = req.files["paymentReceipt"]
-        ? req.files["paymentReceipt"][0].filename
-        : null;
-      // console.log(paymentReceipt)
-      // console.log(req.files)
-
-      // Update the payment receipt field in the company document
-      company.paymentReceipt = paymentReceipt;
-
-      await company.save();
-
-      socketIO.emit("viewpaymenteciept", company);
-
-      res.status(200).send("Payment receipt updated successfully!");
-    } catch (error) {
-      console.error("Error updating payment receipt:", error);
-      res.status(500).send("Error updating payment receipt.");
-    }
-  }
-);
 
 app.post(
   "/api/uploadotherdocsAttachment/:companyName",
@@ -3839,7 +3996,7 @@ app.delete('/api/redesigned-delete-booking/:companyId', async (req, res) => {
     const companyId = req.params.companyId;
     // Find and delete the booking with the given companyId
     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({ company: companyId });
-    const deleteMainBooking = await CompanyModel.findByIdAndDelete({_id : companyId});
+    const deleteMainBooking = await CompanyModel.findByIdAndDelete({ _id: companyId });
     if (!deletedBooking) {
       return res.status(404).send('Booking not found');
     }
@@ -3925,13 +4082,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${
-              newData.services[i].serviceName === "Start Up Certificate"
-                ? newData.services[i].withDSC
-                  ? "Start Up Certificate With DSC"
-                  : "Start Up Certificate"
-                : newData.services[i].serviceName
-            }
+            ${newData.services[i].serviceName === "Start Up Certificate"
+            ? newData.services[i].withDSC
+              ? "Start Up Certificate With DSC"
+              : "Start Up Certificate"
+            : newData.services[i].serviceName
+          }
           </div>
         </div>
       </div>
@@ -4729,14 +4885,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th style="vertical-align: top;" rowspan='4'>₹ ${
-                    newData.services[i].totalPaymentWGST
-                  } /-</th>
-                    <th style="vertical-align: top;" rowspan='4'>₹ ${
-                    newData.services[i].paymentTerms === "Full Advanced"
-                      ? newData.services[i].totalPaymentWGST
-                      : newData.services[i].firstPayment
-                  }/-</th>
+                    <th style="vertical-align: top;" rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
+          } /-</th>
+                    <th style="vertical-align: top;" rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+            ? newData.services[i].totalPaymentWGST
+            : newData.services[i].firstPayment
+          }/-</th>
               </tr>
               ${paymentServices}
             </tbody>
@@ -4748,7 +4902,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
     // Render services HTML content
     const serviceList = renderServiceList();
-  
+
     const paymentDetails = renderPaymentDetails();
 
     const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");

@@ -183,11 +183,9 @@ function Dashboard() {
       console.error("Error Fetching Booking Details", error.message);
     }
   };
+
+
   useEffect(() => {
-
-
-
-
     // Call the fetchData function when the component mounts
 
     fetchCompanies();
@@ -343,18 +341,47 @@ function Dashboard() {
     endDate: endDateAnother,
     key: "selection",
   };
-  const handleSelectAnother = (date) => {
-    const filteredDataDateRange = bookingObject.filter((product) => {
-      const productDate = new Date(product["bookingDate"]);
-      return (
-        productDate >= date.selection.startDate &&
-        productDate <= date.selection.endDate
-      );
-    });
-    setStartDateAnother(date.selection.startDate);
-    setEndDateAnother(date.selection.endDate);
-    setFilteredBooking(filteredDataDateRange);
-  };
+  // const handleSelectAnother = (date) => {
+  //   const filteredDataDateRange = bookingObject.filter((product) => {
+  //     const productDate = new Date(product["bookingDate"]);
+  //     return (
+  //       productDate >= date.selection.startDate &&
+  //       productDate <= date.selection.endDate
+  //     );
+  //   });
+  //   setStartDateAnother(date.selection.startDate);
+  //   setEndDateAnother(date.selection.endDate);
+  //   setFilteredBooking(filteredDataDateRange);
+  // };
+
+  console.log(bookingObject)
+
+  const handleSelectAnother = (values) => {
+    console.log(values)
+    if (values[1]) {
+      const startDate = values[0].format('MM/DD/YYYY');
+      const endDate = values[1].format('MM/DD/YYYY');
+
+      const filteredDataDateRange = bookingObject.filter(product => {
+        const productDate = new Date(product["bookingDate"]).setHours(0, 0, 0, 0);
+
+        // Check if the formatted productDate is within the selected date range
+        if (startDate === endDate) {
+          // If both startDate and endDate are the same, filter for transactions on that day
+          return new Date(productDate) === new Date(startDate);
+        } else if (startDate !== endDate) {
+          // If different startDate and endDate, filter within the range
+          return new Date(productDate) >= new Date(startDate) && new Date(productDate) <= new Date(endDate);
+        } else {
+          return false;
+        }
+      });
+      setFilteredBooking(filteredDataDateRange);
+    } else {
+      return true;
+    }
+
+  }
 
   //console.log("companyData", companyData)
   //console.log("employeeData", employeeData)
@@ -586,7 +613,7 @@ function Dashboard() {
       if (companyDataProjection.history) {
         // Access the history data
         const historyData = companyDataProjection.history;
-        console.log("History Data for", companyHistoryName, ":", historyData);
+        //console.log("History Data for", companyHistoryName, ":", historyData);
         sethistoryDataCompany(historyData)
         // Now you can use the historyData array as needed
       } else {
@@ -836,88 +863,36 @@ function Dashboard() {
 
 
   const [selectedDateRangeEmployee, setSelectedDateRangeEmployee] = useState([]);
-  
-const handleSelectNew = (values)=>{
-  console.log(values)
-  if(values[1]){
-    const startDate = values[0].format('MM/DD/YYYY');
-    const endDate = values[1].format('MM/DD/YYYY');    
-    
-    const filteredDataDateRange = companyDataFilter.filter(product => {
-     const productDate = new Date(product.AssignDate).setHours(0, 0, 0, 0);
-      
-      // Check if the formatted productDate is within the selected date range
-      if (startDate === endDate) {
-        // If both startDate and endDate are the same, filter for transactions on that day
-        return  new Date(productDate) === new Date(startDate);
-      } else if (startDate !==endDate) {
-        // If different startDate and endDate, filter within the range
-        return new Date(productDate) >= new Date(startDate) && new Date(productDate) <= new Date(endDate);
-      } else {
-        return false;
-      }
-    });
-setCompanyData(filteredDataDateRange);
-  }else{
-    return true;
-  }
-
-}
 
 
   const handleSelectEmployee = (values) => {
-    console.log("values" , values)
+    console.log(values)
+    if (values[1]) {
+      const startDate = values[0].format('MM/DD/YYYY');
+      const endDate = values[1].format('MM/DD/YYYY');
 
-    const startDate = values[0].format('DD/MM/YYYY');
-    const endDate = values[1].format('DD/MM/YYYY');
-    console.log(startDate , endDate)
+      const filteredDataDateRange = companyDataFilter.filter(product => {
+        const productDate = new Date(product.AssignDate).setHours(0, 0, 0, 0);
 
-    //console.log("selecteddates", selectedDateRangeEmployee)
-    //console.log("Start Date:", startDate);
-    //console.log("End Date:", endDate);
+        // Check if the formatted productDate is within the selected date range
+        if (startDate === endDate) {
+          // If both startDate and endDate are the same, filter for transactions on that day
+          return new Date(productDate) === new Date(startDate);
+        } else if (startDate !== endDate) {
+          // If different startDate and endDate, filter within the range
+          return new Date(productDate) >= new Date(startDate) && new Date(productDate) <= new Date(endDate);
+        } else {
+          return false;
+        }
+      });
+      setCompanyData(filteredDataDateRange);
+    } else {
+      return true;
+    }
 
-    const filteredDataDateRange = companyDataFilter.filter(product => {
-      const productDate = new Date(product["AssignDate"]);
-      const newproductDate = formatDateNew(productDate)
-      //console.log(newproductDate ,)
-      // Convert productDate to the sameformat as startDate and endDate
+  }
 
 
-      // console.log(formattedProductDate)
-      // console.log(formattedStartDate)
-      // console.log(formattedEndDate)
-
-
-
-      
-
-console.log("here it is ",new Date(newproductDate) , new Date(startDate) ,new Date(endDate));
-      // Check if the formatted productDate is within the selected date range
-      if (startDate === endDate) {
-        // If both startDate and endDate are the same, filter for transactions on that day
-        return  new Date(newproductDate) === new Date(startDate);
-      } else if (new Date(startDate) !== new Date(endDate)) {
-        // If different startDate and endDate, filter within the range
-        return new Date(newproductDate) >= new Date(startDate) && new Date(newproductDate) <= new Date(endDate);
-      } else {
-        // If either startDate or endDate is null, return false
-        return false;
-      }
-    });
-
-    console.log("Filtered Data",filteredDataDateRange);
-
-    //console.log("Filtered Data:", filteredDataDateRange);
-    setStartDateEmployee(startDate);
-    setEndDateEmployee(endDate);
-    setCompanyData(filteredDataDateRange);
-   setcompanyDataFilter(filteredDataDateRange);
-  };
-
-  console.log(selectedDateRangeEmployee)
-  console.log(startDateEmployee, endDateEmployee)
-
- 
 
 
 
@@ -963,7 +938,7 @@ console.log("here it is ",new Date(newproductDate) , new Date(startDate) ,new Da
     return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
   }
 
-  console.log("companyData", companyData)
+  //console.log("companyData", companyData)
 
   //console.log("kuch" , filteredDataDateRange)
 
@@ -2313,14 +2288,37 @@ console.log("here it is ",new Date(newproductDate) , new Date(startDate) ,new Da
                             <h2 style={{ marginBottom: '5px' }}>Total Bookings</h2>
                           </div>
                         </div>
-                        <div className=" form-control date-range-picker d-flex align-items-center justify-content-between">
+                        <div style={{ m: 1, padding: "0px", marginRight: "30px" }}>
+                          <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
+                            <DemoContainer components={['SingleInputDateRangeField']}>
+                              <DateRangePicker
+                                onChange={(values) => {
+                                  const startDate = moment(values[0]).format('DD/MM/YYYY');
+                                  const endDate = moment(values[1]).format('DD/MM/YYYY');
+                                  //setSelectedDateRange([startDate, endDate]);
+                                  handleSelectAnother(values); // Call handleSelect with the selected values
+                                }}
+                                slots={{ field: SingleInputDateRangeField }}
+                                slotProps={{
+                                  shortcuts: {
+                                    items: shortcutsItems,
+                                  },
+                                  actionBar: { actions: [] },
+                                  textField: { InputProps: { endAdornment: <Calendar /> } }
+                                }}
+                              //calendars={1}
+                              />
+                            </DemoContainer>
+                          </LocalizationProvider>
+                        </div>
+                        {/* <div className=" form-control date-range-picker d-flex align-items-center justify-content-between">
                           <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
                             {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
                           </div>
                           <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
                             <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
                           </button>
-                        </div>
+                        </div> */}
                       </div>
                       {/* {showBookingDate && <div
                       ref={dateRangePickerRef}
@@ -2653,26 +2651,26 @@ console.log("here it is ",new Date(newproductDate) , new Date(startDate) ,new Da
                             </button>
                           </div> */}
                           <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
-                    <DemoContainer components={['SingleInputDateRangeField']}>
-                      <DateRangePicker
-                        onChange={(values) => {
-                          const startDateEmp = moment(values[0]).format('DD/MM/YYYY');
-                          const endDateEmp = moment(values[1]).format('DD/MM/YYYY');
-                          setSelectedDateRangeEmployee([startDateEmp, endDateEmp]);
-                          handleSelectNew(values); // Call handleSelect with the selected values
-                        }}
-                        slots={{ field: SingleInputDateRangeField }}
-                        slotProps={{
-                          shortcuts: {
-                            items: shortcutsItems,
-                          },
-                          actionBar: { actions: [] },
-                          textField: { InputProps: { endAdornment: <Calendar /> } }
-                        }}
-                      //calendars={1}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
+                            <DemoContainer components={['SingleInputDateRangeField']}>
+                              <DateRangePicker
+                                onChange={(values) => {
+                                  const startDateEmp = moment(values[0]).format('DD/MM/YYYY');
+                                  const endDateEmp = moment(values[1]).format('DD/MM/YYYY');
+                                  setSelectedDateRangeEmployee([startDateEmp, endDateEmp]);
+                                  handleSelectEmployee(values); // Call handleSelect with the selected values
+                                }}
+                                slots={{ field: SingleInputDateRangeField }}
+                                slotProps={{
+                                  shortcuts: {
+                                    items: shortcutsItems,
+                                  },
+                                  actionBar: { actions: [] },
+                                  textField: { InputProps: { endAdornment: <Calendar /> } }
+                                }}
+                              //calendars={1}
+                              />
+                            </DemoContainer>
+                          </LocalizationProvider>
 
                         </div>
                       </div>

@@ -325,18 +325,20 @@ function EmployeeDashboard() {
     endDate: endDateAnother,
     key: "selection",
   };
-  const handleSelectAnother = (date) => {
-    const filteredDataDateRange = totalBooking.filter((product) => {
-      const productDate = new Date(product["bookingDate"]);
-      return (
-        productDate >= date.selection.startDate &&
-        productDate <= date.selection.endDate
-      );
-    });
-    setStartDateAnother(date.selection.startDate);
-    setEndDateAnother(date.selection.endDate);
-    setFilteredBooking(filteredDataDateRange);
-  };
+  // const handleSelectAnother = (date) => {
+
+
+  //   const filteredDataDateRange = totalBooking.filter((product) => {
+  //     const productDate = new Date(product["bookingDate"]);
+  //     return (
+  //       productDate >= date.selection.startDate &&
+  //       productDate <= date.selection.endDate
+  //     );
+  //   });
+  //   setStartDateAnother(date.selection.startDate);
+  //   setEndDateAnother(date.selection.endDate);
+  //   setFilteredBooking(filteredDataDateRange);
+  // };
 
   // ---------------------------projectiondata-------------------------------------
 
@@ -558,51 +560,14 @@ function EmployeeDashboard() {
 
   console.log("selectedDates" , selectedDateRange)
 
-  // const handleSelect = (values) => {
-    
-  //   const startDate = values[0].format('DD/MM/YYYY');
-  //   const endDate = values[1].format('DD/MM/YYYY');
-
-  //   console.log("startdate" , startDate)
-  //   console.log("endDate" , endDate)
-
-  //   const filteredDataDateRange = followData.filter((product) => {
-  //     const productDate = new Date(product["estPaymentDate"]);
-
-  //     if (
-  //       formatDate(startDate) ===
-  //       formatDate(endDate)
-  //     ) {
-  //       return formatDate(productDate) == formatDate(startDate);
-  //     } else {
-  //       return (
-  //         productDate >= startDate &&
-  //         productDate <= endDate
-  //       );
-  //     }
-  //   });
-  //   setStartDate(startDate);
-  //   setEndDate(endDate);
-  //   setFilteredDataDateRange(filteredDataDateRange);
-  //   //console.log(filteredDataDateRange);
-  // };
+  
 
   const handleSelect = (values) => {
     // Extract startDate and endDate from the values array
     const startDate = values[0];
     const endDate = values[1];
 
-    // Filter followData based on the selected date range
-    // const filteredDataDateRange = followData.filter(product => {
-    //   const productDate = new Date(product["estPaymentDate"]);
-
-    //   // Check if the productDate is within the selected date range
-    //   return (
-    //     productDate >= startDate &&
-    //     productDate <= endDate
-    //   );
-    // });
-
+    
     // Set the startDate, endDate, and filteredDataDateRange states
     setStartDate(startDate);
     setEndDate(endDate);
@@ -635,6 +600,36 @@ function EmployeeDashboard() {
 
     setFollowDataFilter(filteredDataDateRange);
   }, [startDate, endDate]);
+
+
+console.log(totalBooking)
+
+  const handleSelectAnother = (values)=>{
+    console.log(values)
+    if(values[1]){
+      const startDate = values[0].format('MM/DD/YYYY');
+      const endDate = values[1].format('MM/DD/YYYY');    
+      
+      const filteredDataDateRange = totalBooking.filter(product => {
+       const productDate = new Date(product["bookingDate"]).setHours(0, 0, 0, 0);
+        
+        // Check if the formatted productDate is within the selected date range
+        if (startDate === endDate) {
+          // If both startDate and endDate are the same, filter for transactions on that day
+          return  new Date(productDate) === new Date(startDate);
+        } else if (startDate !==endDate) {
+          // If different startDate and endDate, filter within the range
+          return new Date(productDate) >= new Date(startDate) && new Date(productDate) <= new Date(endDate);
+        } else {
+          return false;
+        }
+      });
+      setFilteredBooking(filteredDataDateRange);
+    }else{
+      return true;
+    }
+  }
+
 
 
   const handleSelectTotalSummary = (date) => {
@@ -2731,7 +2726,30 @@ function EmployeeDashboard() {
                   }} 
                 /> */}
               </div>
-              <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
+              <div style={{ m: 1, padding: "0px", marginRight: "30px" }}>
+                   <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
+                    <DemoContainer components={['SingleInputDateRangeField']}>
+                      <DateRangePicker
+                        onChange={(values) => {
+                          const startDate = moment(values[0]).format('DD/MM/YYYY');
+                          const endDate = moment(values[1]).format('DD/MM/YYYY');
+                          //setSelectedDateRange([startDate, endDate]);
+                          handleSelectAnother(values); // Call handleSelect with the selected values
+                        }}
+                        slots={{ field: SingleInputDateRangeField }}
+                        slotProps={{
+                          shortcuts: {
+                            items: shortcutsItems,
+                          },
+                          actionBar: { actions: [] },
+                          textField: { InputProps: { endAdornment: <Calendar /> } }
+                        }}
+                      //calendars={1}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
+                  </div>
+              {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
                 <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
                   {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
                 </div>
@@ -2739,10 +2757,10 @@ function EmployeeDashboard() {
                   style={{ border: "none", padding: "0px", backgroundColor: "white" }} onClick={() => setShowBookingDate(!showBookingDate)}>
                   <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
-          {showBookingDate && <div
+          {/* {showBookingDate && <div
             ref={dateRangePickerRef}
             style={{
               position: "absolute",
@@ -2759,7 +2777,7 @@ function EmployeeDashboard() {
               onClose={() => setShowBookingDate(false)}
               position="auto"
             />
-          </div>}
+          </div>} */}
           <div className="card-body">
             <div
               id="table-default"

@@ -138,6 +138,16 @@ function EmployeePanel() {
   const [selectedField, setSelectedField] = useState("Company Name");
   const [cname, setCname] = useState("");
   const [cemail, setCemail] = useState("");
+  const [companyAddress, setCompanyAddress] = useState("");
+  const [directorNameFirst, setDirectorNameFirst] = useState("");
+  const [directorNameSecond, setDirectorNameSecond] = useState("");
+  const [directorNameThird, setDirectorNameThird] = useState("");
+  const [directorNumberFirst, setDirectorNumberFirst] = useState(0);
+  const [directorNumberSecond, setDirectorNumberSecond] = useState(0);
+  const [directorNumberThird, setDirectorNumberThird] = useState(0);
+  const [directorEmailFirst, setDirectorEmailFirst] = useState("");
+  const [directorEmailSecond, setDirectorEmailSecond] = useState("");
+  const [directorEmailThird, setDirectorEmailThird] = useState("");
   const [selectAllChecked, setSelectAllChecked] = useState(true);
   const [selectedYears, setSelectedYears] = useState([]);
   const [selectedMonths, setSelectedMonths] = useState([]);
@@ -961,8 +971,19 @@ function EmployeePanel() {
         State: state,
         ename: data.ename,
         AssignDate: new Date(),
+        "Company Address": companyAddress,
+        "Director Name(First)": directorNameFirst,
+        "Director Number(First)": directorNumberFirst,
+        "Director Email(First)": directorEmailFirst,
+        "Director Name(Second)": directorNameSecond,
+        "Director Number(Second)": directorNumberSecond,
+        "Director Email(Second)": directorEmailSecond,
+        "Director Name(Third)": directorNameThird,
+        "Director Number(Third)": directorNumberThird,
+        "Director Email(Third)": directorEmailThird
       })
       .then((response) => {
+        console.log("response" , response)
         console.log("Data sent Successfully");
         Swal.fire({
           title: "Data Added!",
@@ -978,6 +999,51 @@ function EmployeePanel() {
   };
 
   // Function for Parsing Excel File
+  const handleRequestDelete = async (companyId, companyName) => {
+    const confirmDelete = await Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to send a delete request. Are you sure you want to proceed?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, proceed!",
+      cancelButtonText: "No, cancel",
+    });
+
+    if (confirmDelete.isConfirmed) {
+      try {
+        const sendingData = {
+          companyName,
+          companyId,
+          time: new Date().toLocaleTimeString(),
+          date: new Date().toLocaleDateString(),
+          ename: data.ename, // Replace 'Your Ename Value' with the actual value
+        };
+
+        const response = await fetch(`${secretKey}/deleterequestbybde`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(sendingData),
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        Swal.fire({ title: "Delete Request Sent", icon: "success" });
+        const responseData = await response.json();
+        console.log(responseData.message); // Log the response message
+      } catch (error) {
+        Swal.fire({ title: "Failed to send Request", icon: "error" });
+        console.error("Error creating delete request:", error);
+        // Handle the error as per your application's requirements
+      }
+    } else {
+      console.log("No, cancel");
+    }
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -985,7 +1051,7 @@ function EmployeePanel() {
     if (
       file &&
       file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ) {
       const reader = new FileReader();
 
@@ -1011,6 +1077,16 @@ function EmployeePanel() {
             State: row[6],
             Status: row[7],
             Remarks: row[8],
+            "Company Address": row[9],
+            "Director Name(First)": row[10],
+            "Director Number(First)": row[11],
+            "Director Email(First)": row[12],
+            "Director Name(Second)": row[13],
+            "Director Number(Second)": row[14],
+            "Director Email(Second)": row[15],
+            "Director Name(Third)": row[16],
+            "Director Number(Third)": row[17],
+            "Director Email(Third)": row[18]
           }));
 
         setCsvData(formattedJsonData);
@@ -1063,12 +1139,15 @@ function EmployeePanel() {
   // csvdata.map((item)=>{
   //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
   // })
+
+  console.log("csv" , csvdata)
   const handleUploadData = async (e) => {
     const name = data.ename;
     const updatedCsvdata = csvdata.map((data) => ({
       ...data,
       ename: name,
     }));
+    console.log("updatedcsv" , updatedCsvdata)
 
     if (updatedCsvdata.length !== 0) {
       // Move setLoading outside of the loop
@@ -1124,6 +1203,8 @@ function EmployeePanel() {
       const data = response.data.find((obj) => obj.company === maturedID);
       console.log(data);
       setCurrentForm(data);
+
+
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -1442,20 +1523,20 @@ function EmployeePanel() {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-              (obj) =>
-                obj.Status === "Untouched" ||
-                obj.Status === "Busy" ||
-                obj.Status === "Not Picked Up"
-            )
+            (obj) =>
+              obj.Status === "Untouched" ||
+              obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up"
+          )
           : dataStatus === "Interested"
-          ? moreEmpData.filter((obj) => obj.Status === "Interested")
-          : dataStatus === "Not Interested"
-          ? moreEmpData.filter(
-              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-            )
-          : dataStatus === "FollowUp"
-          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-          : [];
+            ? moreEmpData.filter((obj) => obj.Status === "Interested")
+            : dataStatus === "Not Interested"
+              ? moreEmpData.filter(
+                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+              )
+              : dataStatus === "FollowUp"
+                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                : [];
 
       setEmployeeData(newEmpData);
       setSelectedYears([
@@ -1483,20 +1564,20 @@ function EmployeePanel() {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-              (obj) =>
-                obj.Status === "Untouched" ||
-                obj.Status === "Busy" ||
-                obj.Status === "Not Picked Up"
-            )
+            (obj) =>
+              obj.Status === "Untouched" ||
+              obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up"
+          )
           : dataStatus === "Interested"
-          ? moreEmpData.filter((obj) => obj.Status === "Interested")
-          : dataStatus === "Not Interested"
-          ? moreEmpData.filter(
-              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-            )
-          : dataStatus === "FollowUp"
-          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-          : [];
+            ? moreEmpData.filter((obj) => obj.Status === "Interested")
+            : dataStatus === "Not Interested"
+              ? moreEmpData.filter(
+                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+              )
+              : dataStatus === "FollowUp"
+                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                : [];
       setSelectedYears([...selectedYears, selectedYear]); // Add selected year to the list
       const filteredData = newEmpData.filter(
         (data) =>
@@ -1524,20 +1605,20 @@ function EmployeePanel() {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-              (obj) =>
-                obj.Status === "Untouched" ||
-                obj.Status === "Busy" ||
-                obj.Status === "Not Picked Up"
-            )
+            (obj) =>
+              obj.Status === "Untouched" ||
+              obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up"
+          )
           : dataStatus === "Interested"
-          ? moreEmpData.filter((obj) => obj.Status === "Interested")
-          : dataStatus === "Not Interested"
-          ? moreEmpData.filter(
-              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-            )
-          : dataStatus === "FollowUp"
-          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-          : [];
+            ? moreEmpData.filter((obj) => obj.Status === "Interested")
+            : dataStatus === "Not Interested"
+              ? moreEmpData.filter(
+                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+              )
+              : dataStatus === "FollowUp"
+                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                : [];
       const filteredData = newEmpData.filter((data) => {
         const year = new Date(data["Company Incorporation Date  "])
           .getFullYear()
@@ -1630,51 +1711,101 @@ function EmployeePanel() {
     const [day, month, year] = dateString.split("/");
     return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
   };
-  const handleRequestDelete = async (companyId, companyName) => {
-    const confirmDelete = await Swal.fire({
-      title: "Are you sure?",
-      text: "You are about to send a delete request. Are you sure you want to proceed?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, proceed!",
-      cancelButtonText: "No, cancel",
-    });
 
-    if (confirmDelete.isConfirmed) {
-      try {
-        const sendingData = {
-          companyName,
-          companyId,
-          time: new Date().toLocaleTimeString(),
-          date: new Date().toLocaleDateString(),
-          ename: data.ename, // Replace 'Your Ename Value' with the actual value
-        };
+  // ------------------------------------------------------payment-link-work-----------------------------------------
 
-        const response = await fetch(`${secretKey}/deleterequestbybde`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(sendingData),
-        });
 
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        Swal.fire({ title: "Delete Request Sent", icon: "success" });
-        const responseData = await response.json();
-        console.log(responseData.message); // Log the response message
-      } catch (error) {
-        Swal.fire({ title: "Failed to send Request", icon: "error" });
-        console.error("Error creating delete request:", error);
-        // Handle the error as per your application's requirements
-      }
-    } else {
-      console.log("No, cancel");
-    }
-  };
+  const [paymentLink, setPaymentLink] = useState('');
+  const [error, setError] = useState('');
+  const [orderId, setOrderId] = useState("")
+
+
+  // let cashfree;
+
+  // let insitialzeSDK = async function () {
+
+  //   cashfree = await load({
+  //     mode: "sandbox",
+  //   })
+  // }
+
+  // insitialzeSDK()
+
+  // //let version = cashfree.version();
+
+  // const getSessionId = async () => {
+  //   try {
+  //     let res = await axios.get(`${secretKey}/payment`)
+  //     console.log(res.data)
+  //     if (res.data && res.data.payment_session_id) {
+  //       console.log(res.data)
+  //       setOrderId(res.data.order_id)
+  //       return res.data.payment_session_id
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+
+
+  // const verifyPayment = async () => {
+  //   try {
+
+  //     let res = await axios.post(`${secretKey}/verify`, {
+  //       orderId: orderId
+  //     })
+
+  //     if (res && res.data) {
+  //       alert("payment verified")
+  //     }
+
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+  // const handlePayment = async (e) => {
+  //   e.preventDefault()
+  //   try {
+
+  //     let sessionId = await getSessionId()
+  //     let checkoutOptions = {
+  //       paymentSessionId: sessionId,
+  //       redirectTarget: "_modal",
+  //     }
+
+  //     cashfree.checkout(checkoutOptions).then((res) => {
+  //       console.log("payment initialized")
+
+  //       verifyPayment(orderId)
+  //     })
+
+
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+
+  // }
+
+
+  // const generatePaymentLink = async () => {
+  //   try {
+  //     const response = await axios.post(`${secretKey}/generatePaymentLink`, {
+  //       orderId: '121',
+  //       amount: 100, // Amount in INR
+  //       customerName: 'John Doe',
+  //       customerEmail: 'john@example.com',
+  //       customerPhone: '9876543210',
+  //     });
+  //     console.log(response.data.paymentLink)
+  //     setPaymentLink(response.data.paymentLink);
+  //   } catch (error) {
+  //     setError('Could not generate payment link');
+  //   }
+  // };
+
+  // console.log(paymentLink)
+
+
 
   return (
     <div>
@@ -2656,7 +2787,7 @@ function EmployeePanel() {
                                           company["Company Name"],
                                           company["Company Email"],
                                           company[
-                                            "Company Incorporation Date  "
+                                          "Company Incorporation Date  "
                                           ],
                                           company["Company Number"],
                                           company["Status"]
@@ -2758,42 +2889,95 @@ function EmployeePanel() {
                                 <td>{company["Company Email"]}</td>
                                 <td>{formatDate(company["AssignDate"])}</td>
 
-                                {(dataStatus === "FollowUp" ||
+                                {/* {(dataStatus === "FollowUp" ||
                                   dataStatus === "Interested") && (
-                                  <td>
-                                    {company &&
-                                    projectionData &&
-                                    projectionData.some(
-                                      (item) =>
-                                        item.companyName ===
-                                        company["Company Name"]
-                                    ) ? (
-                                      <>
+                                    <td>
+                                      {company &&
+                                        projectionData &&
+                                        projectionData.some(
+                                          (item) =>
+                                            item.companyName ===
+                                            company["Company Name"]
+                                        ) ? (
+                                        <>
+                                          <IconButton>
+                                            <RiEditCircleFill
+                                              onClick={() => {
+                                                functionopenprojection(
+                                                  company["Company Name"]
+                                                );
+                                              }}
+                                              //onClick={()=>handleIconButtonClick(company["Company Name"])}
+                                              style={{
+                                                cursor: "pointer",
+                                                width: "17px",
+                                                height: "17px",
+                                              }}
+                                              color="#fbb900"
+                                            />
+                                          </IconButton>
+
+                                        </>
+                                      ) : (<>
                                         <IconButton>
                                           <RiEditCircleFill
                                             onClick={() => {
                                               functionopenprojection(
                                                 company["Company Name"]
                                               );
+                                              setIsEditProjection(true);
                                             }}
-                                            //onClick={()=>handleIconButtonClick(company["Company Name"])}
                                             style={{
                                               cursor: "pointer",
                                               width: "17px",
                                               height: "17px",
                                             }}
-                                            color="#fbb900"
                                           />
                                         </IconButton>
-                                        {/* <DrawerComponent open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} currentProjection1={currentProjection} /> */}
+
                                       </>
-                                    ) : (
+                                      ) : (
                                       <IconButton>
                                         <RiEditCircleFill
                                           onClick={() => {
                                             functionopenprojection(
                                               company["Company Name"]
                                             );
+                                            setIsEditProjection(true);
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    )}
+                                    </td>
+                                  )} */}
+                                {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                                  <td>
+                                    {company && projectionData && projectionData.some(
+                                      (item) => item.companyName === company["Company Name"]
+                                    ) ? (
+                                      <IconButton>
+                                        <RiEditCircleFill
+                                          onClick={() => {
+                                            functionopenprojection(company["Company Name"]);
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="#fbb900"
+                                        />
+                                      </IconButton>
+                                    ) : (
+                                      <IconButton>
+                                        <RiEditCircleFill
+                                          onClick={() => {
+                                            functionopenprojection(company["Company Name"]);
                                             setIsEditProjection(true);
                                           }}
                                           style={{
@@ -3005,7 +3189,7 @@ function EmployeePanel() {
                               Math.min(
                                 prevPage + 1,
                                 Math.ceil(filteredData.length / itemsPerPage) -
-                                  1
+                                1
                               )
                             )
                           }
@@ -3072,16 +3256,16 @@ function EmployeePanel() {
                 style={
                   selectedOption === "general"
                     ? {
-                        backgroundColor: "#ffb900",
-                        margin: "10px 10px 0px 0px",
-                        cursor: "pointer",
-                        color: "white",
-                      }
+                      backgroundColor: "#ffb900",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                      color: "white",
+                    }
                     : {
-                        backgroundColor: "white",
-                        margin: "10px 10px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "white",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                    }
                 }
                 onClick={() => {
                   setSelectedOption("general");
@@ -3104,16 +3288,16 @@ function EmployeePanel() {
                 style={
                   selectedOption === "notgeneral"
                     ? {
-                        backgroundColor: "#ffb900",
-                        margin: "10px 0px 0px 0px",
-                        cursor: "pointer",
-                        color: "white",
-                      }
+                      backgroundColor: "#ffb900",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                      color: "white",
+                    }
                     : {
-                        backgroundColor: "white",
-                        margin: "10px 0px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "white",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                    }
                 }
                 className="notgeneral form-control col"
                 onClick={() => {
@@ -3367,7 +3551,8 @@ function EmployeePanel() {
       </Dialog>
 
       {/* ADD Leads starts here */}
-      <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="sm">
+
+      {/* <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="sm">
         <DialogTitle>
           Company Info{" "}
           <IconButton onClick={closepopupNew} style={{ float: "right" }}>
@@ -3463,7 +3648,263 @@ function EmployeePanel() {
         <button onClick={handleSubmitData} className="btn btn-primary">
           Submit
         </button>
+      </Dialog> */}
+      <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
+        <DialogTitle>
+          Company Info{" "}
+          <IconButton onClick={closepopupNew} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Name</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          setCname(e.target.value);
+                        }}
+                      />
+                    </div>
+
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Email</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setCemail(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Address</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setCompanyAddress(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">Company Number</label>
+                      <input
+                        type="number"
+                        onChange={(e) => {
+                          setCnumber(e.target.value);
+                        }}
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Company Incorporation Date
+                      </label>
+                      <input
+                        onChange={(e) => {
+                          setCidate(e.target.value);
+                        }}
+                        type="date"
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">City</label>
+                      <input
+                        onChange={(e) => {
+                          setCity(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">State</label>
+                      <input
+                        onChange={(e) => {
+                          setState(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                      //disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Name(First)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          setDirectorNameFirst(e.target.value);
+                        }}
+                      />
+                    </div>
+
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Number(First)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorNumberFirst(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Email(First)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorEmailFirst(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Name(Second)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          setDirectorNameSecond(e.target.value);
+                        }}
+                      />
+                    </div>
+
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Number(Second)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorNumberSecond(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Email(Second)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorEmailSecond(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Name(Third)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          setDirectorNameThird(e.target.value);
+                        }}
+                      />
+                    </div>
+
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Number(Third)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorNumberThird(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Email(Third)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          setDirectorEmailThird(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <button className="btn btn-primary" onClick={handleSubmitData}>
+          Submit
+        </button>
       </Dialog>
+
 
       {/* -------------------------- Import CSV File ---------------------------- */}
       <Dialog open={openCSV} onClose={closepopupCSV} fullWidth maxWidth="sm">
@@ -3482,7 +3923,7 @@ function EmployeePanel() {
               <label for="formFile" class="form-label">
                 Upload CSV File
               </label>
-              <a href={frontendKey + "/EmployeeSample.xlsx"} download>
+              <a href={frontendKey + "/AddLeads_EmployeeSample.xlsx"} download>
                 Download Sample
               </a>
             </div>
@@ -3555,10 +3996,10 @@ function EmployeePanel() {
               </h1>
               <div>
                 {projectingCompany &&
-                projectionData &&
-                projectionData.some(
-                  (item) => item.companyName === projectingCompany
-                ) ? (
+                  projectionData &&
+                  projectionData.some(
+                    (item) => item.companyName === projectingCompany
+                  ) ? (
                   <>
                     <IconButton
                       onClick={() => {
@@ -3799,6 +4240,15 @@ function EmployeePanel() {
                   Submit
                 </button>
               </div>
+              <div>
+                <button>
+                  Pay now
+                </button>
+                {/* <button onClick={generatePaymentLink}>Generate Payment Link</button>
+                {paymentLink && <a href={paymentLink} target="_blank" rel="noopener noreferrer">Proceed to Payment</a>}
+                {error && <p>{error}</p>} */}
+              </div>
+
             </div>
           </div>
         </Drawer>

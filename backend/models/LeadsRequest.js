@@ -43,10 +43,41 @@ const CompanySchema = new mongoose.Schema({
     type: String,
     default: "No Remarks Added",
   },
+  "Company Address":{
+    type:String
+  },
+  'Director Name(First)':{
+    type:String
+  },
+  'Director Number(First)':{
+    type:Number
+  },
+  'Director Email(First)':{
+    type:String
+  },
+  'Director Name(Second)':{
+    type:String
+  },
+  'Director Number(Second)':{
+    type:Number
+  },
+  'Director Email(Second)':{
+    type:String
+  },
+  'Director Name(Third)':{
+    type:String
+  },
+  'Director Number(Third)':{
+    type:Number
+  },
+  'Director Email(Third)':{
+    type:String
+  },
   RequestStatus:{
     type:Boolean,
     default:"false"
-  }
+  },
+
 });
 
 const CompanyRequestModel = mongoose.model("companyRequests", CompanySchema);

@@ -211,8 +211,8 @@ function EmployeeLogin({ setnewToken }) {
     }
   };
   
-  console.log(email)
-  console.log(password)
+  //console.log(email)
+  //console.log(password)
 
 
   return (
