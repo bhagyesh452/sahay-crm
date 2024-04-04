@@ -215,6 +215,8 @@ function EmployeePanel() {
     }
   };
 
+  console.log(totalBookings , "This is elon musk")
+
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
     setOpenProjection(true);
@@ -3079,13 +3081,17 @@ function EmployeePanel() {
                                             }}
                                           />
                                         </IconButton>
-                                        <IconButton onClick={() => {
-                                          setMaturedID(company._id)
-                                          setTimeout(() => {
-                                            setEditFormOpen(true)
-                                          }, 1000);
-
-                                        }}>
+                                        <IconButton
+  onClick={() => {
+   
+      setMaturedID(company._id);
+      setTimeout(() => {
+        setEditFormOpen(true);
+      }, 1000);
+    
+  }}
+  disabled={totalBookings.some(obj => obj["Company Name"] === company["Company Name"])}
+>
                                           <Edit style={{
                                             cursor: "pointer",
                                             color: "#109c0b",

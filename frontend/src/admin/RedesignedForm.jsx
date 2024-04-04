@@ -584,6 +584,7 @@ export default function RedesignedForm({
             bdeName: leadData.bdeName,
             bdeEmail: leadData.bdeEmail,
             bdmName: leadData.bdmName,
+            bdmType:leadData.bdmType,
             otherBdmName:leadData.otherBdmName,
             bdmEmail: leadData.bdmEmail,
             bookingDate: leadData.bookingDate,
@@ -994,7 +995,7 @@ export default function RedesignedForm({
                           ),
                         }));
                       }}
-                      readOnly={completed[activeStep] === true}
+                      disabled={completed[activeStep] === true}
                     />
                     <label class="form-check-label" for="dsc">
                       WITH DSC
@@ -1036,7 +1037,7 @@ export default function RedesignedForm({
                           ),
                         }));
                       }}
-                      readOnly={completed[activeStep] === true}
+                      disabled={completed[activeStep] === true}
                     />
 
                     <button class="btn" type="button">
@@ -1106,7 +1107,7 @@ export default function RedesignedForm({
                           ),
                         }));
                       }}
-                      readOnly={completed[activeStep] === true}
+                      disabled={completed[activeStep] === true}
                     />
                     <label class="form-check-label" for="GST">
                       WITH GST (18%)
@@ -1237,7 +1238,7 @@ export default function RedesignedForm({
                                 ),
                               }));
                             }}
-                            readOnly={completed[activeStep] === true}
+                            disabled={completed[activeStep] === true}
                           />
                           <button class="btn" type="button">
                             ₹
@@ -1275,7 +1276,7 @@ export default function RedesignedForm({
                                   ),
                                 }));
                               }}
-                              readOnly={leadData.services[i].paymentCount === 2}
+                              disabled={leadData.services[i].paymentCount === 2}
                             />
                             <button class="btn" type="button">
                               ₹
@@ -1371,7 +1372,7 @@ export default function RedesignedForm({
                                   ),
                                 }));
                               }}
-                              readOnly={leadData.services[i].paymentCount === 3}
+                              disabled={leadData.services[i].paymentCount === 3}
                             />
                             <button class="btn" type="button">
                               ₹
@@ -1459,7 +1460,7 @@ export default function RedesignedForm({
                                   ),
                                 }));
                               }}
-                              readOnly={leadData.services[i].paymentCount === 4}
+                              disabled={leadData.services[i].paymentCount === 4}
                             />
                             <button class="btn" type="button">
                               ₹
@@ -1607,7 +1608,7 @@ export default function RedesignedForm({
                       ),
                     }));
                   }}
-                  readOnly={completed[activeStep] === true}
+                  disabled={completed[activeStep] === true}
                 ></textarea>
               </div>
             </div>
@@ -1742,7 +1743,7 @@ export default function RedesignedForm({
                                             "Company Email"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -1770,7 +1771,7 @@ export default function RedesignedForm({
                                             handleInputChange(inputValue, "Company Number");
                                           }
                                         }}
-                                        readOnly={completed[activeStep] === true}
+                                        disabled={completed[activeStep] === true}
                                       />
                                     </div>
                                   </div>
@@ -1796,7 +1797,7 @@ export default function RedesignedForm({
                                             "incoDate"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -1824,7 +1825,7 @@ export default function RedesignedForm({
                                             "panNumber"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                         required
@@ -1846,7 +1847,7 @@ export default function RedesignedForm({
                                             "gstNumber"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -1959,6 +1960,33 @@ export default function RedesignedForm({
                                       </select>
                                     </div>
                                   </div>
+                                  {leadData.bdmName !== "other" && <div className="col-sm-3">
+                                    <div className="form-group mt-2 mb-2">
+                                      <label for="BDMemail">
+                                        BDM Email Address:{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
+                                      </label>
+                                      <input
+                                        type="email"
+                                        className="form-control mt-1"
+                                        placeholder="Enter BDM email"
+                                        id="BDMemail"
+                                        value={leadData.bdmEmail}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "bdmEmail"
+                                          );
+                                        }}
+                                        disabled={leadData.bdmEmail}
+                                      />
+                                    </div>
+                                  </div>}
+
                                   {leadData.bdmName === "other" && 
                                   <>
                                   <div className="row">
@@ -2012,9 +2040,9 @@ export default function RedesignedForm({
                                       />
                                     </div>
                                   </div>
-
-                                  </div>
                                   
+                                 
+                                  </div>
 
                                   </>}
                                   <div className="row mt-1">
@@ -2051,7 +2079,6 @@ export default function RedesignedForm({
                                             className="form-check-input"
                                             type="radio"
                                             name="bdmType"
-                                            
                                             onChange={(e) => {
                                               setLeadData((prevLeadData) => ({
                                                 ...prevLeadData,
@@ -2070,32 +2097,6 @@ export default function RedesignedForm({
                                   </div>
 
                                   
-                                  {leadData.bdmName !== "other" && <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label for="BDMemail">
-                                        BDM Email Address:{" "}
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
-                                      </label>
-                                      <input
-                                        type="email"
-                                        className="form-control mt-1"
-                                        placeholder="Enter BDM email"
-                                        id="BDMemail"
-                                        value={leadData.bdmEmail}
-                                        onChange={(e) => {
-                                          handleInputChange(
-                                            e.target.value,
-                                            "bdmEmail"
-                                          );
-                                        }}
-                                        disabled={leadData.bdmEmail}
-                                      />
-                                    </div>
-                                  </div>}
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="booking-date">
@@ -2118,7 +2119,7 @@ export default function RedesignedForm({
                                             "bookingDate"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -2313,7 +2314,7 @@ export default function RedesignedForm({
                                               caNumber: e.target.value, // Set the value based on the selected radio button
                                             }));
                                           }}
-                                          readOnly={
+                                          disabled={
                                             completed[activeStep] === true
                                           }
                                           value={leadData.caNumber}
@@ -2342,7 +2343,7 @@ export default function RedesignedForm({
                                                 caEmail: e.target.value, // Set the value based on the selected radio button
                                               }));
                                             }}
-                                            readOnly={
+                                            disabled={
                                               completed[activeStep] === true
                                             }
                                           />
@@ -2371,7 +2372,7 @@ export default function RedesignedForm({
                                             }));
                                           }}
                                           value={leadData.caCommission}
-                                          readOnly={
+                                          disabled={
                                             completed[activeStep] === true
                                           }
                                         />
@@ -2419,7 +2420,7 @@ export default function RedesignedForm({
                                               0
                                             )
                                             .toFixed(2)}
-                                          readOnly
+                                          disabled
                                         />
                                         <button class="btn" type="button">
                                           ₹
@@ -2453,7 +2454,7 @@ export default function RedesignedForm({
                                               0
                                             )
                                             .toFixed(2)}
-                                          readOnly
+                                          disabled
                                         />
                                         <button class="btn" type="button">
                                           ₹
@@ -2487,7 +2488,7 @@ export default function RedesignedForm({
                                               0
                                             )
                                             .toFixed(2)}
-                                          readOnly
+                                          disabled
                                         />
                                         <button class="btn" type="button">
                                           ₹
@@ -2603,7 +2604,7 @@ export default function RedesignedForm({
                                             "extraNotes"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       ></textarea>
@@ -3414,9 +3415,12 @@ export default function RedesignedForm({
                           (completed[activeStep] ? (
                             <>
                               <Button
-                                onClick={() => {
-                                  setCompleted({ activeStep: false });
-                                }}
+                              onClick={() => {
+                                setCompleted(prevCompleted => ({
+                                  ...prevCompleted,
+                                  [activeStep]: false
+                                }));
+                              }}
                                 variant="contained"
                                 sx={{ mr: 1, background: "#ffba00 " }}
                               >
