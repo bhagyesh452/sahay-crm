@@ -1280,4 +1280,8 @@ color: #4e884e;
 {
   border-right: 1px solid #eee;
 }
+.highlight-changes{
+  font-weight: bold;
+  background-color: #e0e2e6;
+}
 /************BookingList Page Css End*************/

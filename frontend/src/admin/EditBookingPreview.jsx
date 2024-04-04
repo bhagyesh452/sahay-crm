@@ -65,7 +65,6 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
           }
         }
       }
-
       try {
         const response = await axios.post(`${secretKey}/update-redesigned-final-form/${updatedBooking["Company Name"]}`, updatedBooking);
        Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
@@ -519,7 +518,16 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                               : "form-label-data"
                           }
                         >
-                          {obj.serviceName}
+                          {( requestedBooking.services[index].serviceName && requestedBooking.services[index].serviceName !== existingBooking.services[index].serviceName) ? 
+                          <span>
+                          <span>
+                            Old : {existingBooking.services[index].serviceName }
+                          </span>
+                          <span className="ml-2">
+                            New : {obj.serviceName}
+                          </span>
+                        </span> : <span>{obj.serviceName}</span>
+                        }
                         </div>
                       </div>
                     </div>
@@ -556,9 +564,16 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                               : "form-label-data"
                           }
                         >
-                          {obj.totalPaymentWGST !== undefined
-                            ? Number(obj.totalPaymentWGST).toFixed(2)
-                            : "0"}
+                         {( requestedBooking.services[index].totalPaymentWGST && requestedBooking.services[index].totalPaymentWGST !== existingBooking.services[index].totalPaymentWGST) ? 
+                          <span> 
+                          <span>
+                            Old : {Number(existingBooking.services[index].totalPaymentWGST).toFixed(2) }
+                          </span>
+                          <span className="ml-2">
+                            New : {Number(obj.totalPaymentWGST).toFixed(2)}
+                          </span>
+                        </span> : <span>{Number(obj.totalPaymentWGST).toFixed(2)}</span>
+                        }
                         </div>
                       </div>
                     </div>
