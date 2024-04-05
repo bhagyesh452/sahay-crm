@@ -257,7 +257,7 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
     type: Boolean,
     default:false
   },
-  moreBookings : [TempSchema]
+  moreBookings : TempSchema
 });
 
 const RedesignedDraftModel = mongoose.model(

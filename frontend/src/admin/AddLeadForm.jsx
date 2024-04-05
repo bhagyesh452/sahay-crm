@@ -111,104 +111,64 @@ export default function AddLeadForm({
   };
 
   const [leadData, setLeadData] = useState(defaultLeadData);
+
+
   const fetchData = async () => {
     try {
       const response = await axios.get(
         `${secretKey}/redesigned-leadData/${companysName}`
       );
-      const data = response.data.find(
-        (item) => item["Company Name"] === companysName
-      );
-      
-      if (!data) {
-        setCompleted({});
-        setActiveStep(0);
-        setSelectedValues("");
-        setLeadData(defaultLeadData);
-        return true;
-      }
-      const {
-        Step1Status,
-        Step2Status,
-        Step3Status,
-        Step4Status,
-        Step5Status,
-        ...newLeadData
-      } = data;
-      console.log("Fetched Data" , newLeadData);
-      setLeadData(newLeadData);
-      if (Step1Status === true && Step2Status === false) {
-        setCompleted({ 0: true });
+      const data = response.data[0];
+      console.log("Fetched Data:", response.data);
+  
+      let updatedLeadData = { ...leadData }; // Create a copy of existing leadData
+  
+      // Set common properties from fetched data to leadData
+      updatedLeadData = {
+        ...updatedLeadData,
+        "Company Name": data["Company Name"],
+        "Company Email": data["Company Email"],
+        "Company Number": data["Company Number"],
+        incoDate: data.incoDate,
+        panNumber: data.panNumber,
+        gstNumber: data.gstNumber,
+        bdeName: data.bdeName,
+        bdeEmail: data.bdeEmail,
+      };
+      // Check if moreBookings is available and has data
+      if (data.moreBookings && data.moreBookings.length > 0) {
+        const booking = data.moreBookings[0];
+  
+        // Check the condition for setting additional leadData
+        if (booking.Step2Status === true && booking.Step3Status === false) {
+          updatedLeadData = {
+            ...updatedLeadData,
+            bdmName: booking.bdmName,
+            otherBdmName: booking.otherBdmName,
+            bdmEmail: booking.bdmEmail,
+            bookingDate: booking.bookingDate,
+            bookingSource: booking.bookingSource,
+            otherBookingSource: booking.otherBookingSource,
+          };
+  
+          setActiveStep(2);
+          setCompleted({ 0: true, 1: true });
+          setSelectedValues(booking.bookingSource);
+          setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+        }
+      } else {
         setActiveStep(1);
-        setSelectedValues(newLeadData.bookingSource);
-        setLeadData((prevState) => ({
-          ...prevState,
-          bdeName: employeeName ? employeeName : "",
-          bdeEmail: employeeEmail ? employeeEmail : "",
-        }));
-      } else if (Step2Status === true && Step3Status === false) {
-        setCompleted({ 0: true, 1: true });
-        setActiveStep(2);
-        setLeadData((prevState) => ({
-          ...prevState,
-          services:
-            data.services.length !== 0 ? data.services : [defaultService],
-          numberOfServices:
-            data.services.length !== 0 ? data.services.length : 1,
-        }));
-        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-      } else if (Step3Status === true && Step4Status === false) {
-        console.log(data.services, "This is services");
-        setfetchedService(true);
-        setCompleted({ 0: true, 1: true, 2: true });
-        setActiveStep(3);
-        const servicestoSend = data.services.map((service) => ({
-          ...service,
-          secondPaymentRemarks: isNaN(new Date(service.secondPaymentRemarks))
-            ? service.secondPaymentRemarks
-            : "On Particular Date",
-          thirdPaymentRemarks: isNaN(new Date(service.thirdPaymentRemarks))
-            ? service.thirdPaymentRemarks
-            : "On Particular Date",
-          fourthPaymentRemarks: isNaN(new Date(service.fourthPaymentRemarks))
-            ? service.fourthPaymentRemarks
-            : "On Particular Date",
-        }));
-        setLeadData((prevState) => ({
-          ...prevState,
-          services:
-            data.services.length !== 0 ? servicestoSend : [defaultService],
-          caCase: data.caCase,
-          caCommission: data.caCommission,
-          caNumber: data.caNumber,
-          caEmail: data.caEmail,
-        }));
-        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
-      } else if (Step4Status === true && Step5Status === false) {
-        setCompleted({ 0: true, 1: true, 2: true, 3: true });
-        setActiveStep(4);
-        setLeadData((prevState) => ({
-          ...prevState,
-          totalAmount: data.totalAmount,
-          pendingAmount: data.pendingAmount,
-          receivedAmount: data.receivedAmount,
-          otherDocs: data.otherDocs,
-          paymentReceipt: data.paymentReceipt,
-          paymentMethod: data.paymentMethod,
-          extraNotes: data.extraNotes,
-        }));
-      } else if (Step5Status === true) {
-        setCompleted({ 0: true, 1: true, 2: true, 3: true });
-        setSelectedValues(data.bookingSource);
-
-        setActiveStep(4);
-        setfetchedService(true);
-        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+        setCompleted({ 0: true });
       }
+  
+      // Set the updated leadData
+      setLeadData(updatedLeadData);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Data not Found", error);
     }
   };
+  
+ 
   // if (data.Step1Status === true && data.Step2Status === false) {
   //   setLeadData({
   //     ...leadData,
@@ -419,7 +379,6 @@ export default function AddLeadForm({
   useEffect(() => {
     fetchData();
     fetchDataEmp();
-    console.log("Fetch After Component Mount", leadData);
   }, []);
   useEffect(() => {
     // Create new services array based on totalServices
@@ -596,7 +555,7 @@ export default function AddLeadForm({
             console.error("Error uploading data:", error);
             // Handle error
           }
-         
+         fetchData();
           handleNext();
           return true;
         }
@@ -660,7 +619,7 @@ export default function AddLeadForm({
             console.error("Error uploading data:", error);
             // Handle error
           }
-       
+          fetchData();
           handleNext();
           return true;
         }

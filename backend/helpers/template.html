@@ -9,8 +9,7 @@
       body {
         font-family: Arial, sans-serif;
       }
-      .position-relative
-      {
+      .position-relative {
         position: relative;
       }
       .page {
@@ -18,24 +17,30 @@
         height: 1169px;
       }
       .pagination {
-        margin-top: 40px;
-    font-size: 12px;
-    color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    }
-    
-      .page-2
-      {
-        height: 1169px;
+        /* margin-top: 100px;
+        font-size: 12px;
+        color: #333;
+        width: 100%;
+         text-align: center; */
+         font-size: 12px;
+        color: #333;
+        position: absolute;
+        bottom:0px ;
+        left: calc(50% - 50px );
       }
-      .front-page , .back-page
-      {
-        padding-top:50px;
-        height: 100%;;
+      .pagination-text {
+        text-align: center;
       }
-      .page-heading{
+      .page-2 {
+        /* height: 1169px; */
+        position: relative;
+      }
+      .front-page,
+      .back-page {
+        padding-top: 50px;
+        height: 100%;
+      }
+      .page-heading {
         margin-top: 20px;
       }
       .container {
@@ -53,70 +58,68 @@
       }
       .page-footer {
         margin-top: 40px;
-        bottom:0;
+        bottom: 0;
       }
-      .page-body{
+      .page-body {
         margin-top: 40px;
         min-height: 800px;
       }
-      table{
+      table {
         border-spacing: 0px;
         width: 100%;
         border: 1px solid #dee2e6;
       }
-      td, th{
+      td,
+      th {
         border: 1px solid #dee2e6;
         width: auto;
         text-align: center;
         padding: 8px;
         font-size: 14px;
       }
-      th
-      {
+      th {
         font-weight: 600 !important;
       }
-      .text-right
-      {
+      .text-right {
         text-align: right;
       }
-      .text-left
-      {
+      .text-left {
         text-align: left;
       }
-      .page-table{
+      .page-table {
         margin: 20px 0px;
       }
       p {
-          line-height: 24px;
+        line-height: 24px;
       }
-      .pagination-text{
-        text-align: center;
-      }
+  
     </style>
   </head>
   <body>
-    <div class="page">
+    {{Main-page}}
+    <!-- <div class="page">
       <div class="container position-relative">
         <div class="front-page">
           <div class="page-heading">
-         
             <div class="date">Date: 28-02-2024</div>
             <div class="acknowledgement">
-             <b>
-              Self Declaration
-             </b> 
+              <b> Self Declaration </b>
             </div>
           </div>
           <div class="page-body">
             {{Service-Kawali}}
-           
+
             <p>
-              I, understands that because of government regulations and portal, I have no objections if the process takes longer than initially committed, knowing it's just how government schemes related process works.
+              I, understands that because of government regulations and portal,
+              I have no objections if the process takes longer than initially
+              committed, knowing it's just how government schemes related
+              process works.
             </p>
             <p>
-              I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up India certificate application if required on my behalf, as I am not familiar with the process.
-            </p> 
-            
+              I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up
+              India certificate application if required on my behalf, as I am
+              not familiar with the process.
+            </p>
           </div>
 
           <div class="page-footer">
@@ -127,20 +130,16 @@
 
           <div class="pagination">
             <span class="pagination-text"> Page 1/2 </span>
-
-           
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="page-2">
       <div class="container position-relative">
         <div class="back-page">
           <div class="page-heading">
-            <h2>
-              Annexure - Service Provider, Service Receiver, and Payment Details
-            </h2>
+            <h2>Service And Payment Terms Acknowledgment</h2>
           </div>
           <div class="page-body">
             <div class="page-table">
@@ -151,19 +150,21 @@
                 <tbody>
                   <tr>
                     <td class="text-left">Company Name:</td>
-                    <td  class="text-left">START-UP SAHAY PRIVATE LIMITED</td>
+                    <td class="text-left">START-UP SAHAY PRIVATE LIMITED</td>
                   </tr>
                   <tr>
                     <td class="text-left">Contact Details:</td>
-                    <td  class="text-left">Mo: 9998992601 | Email: rm@startupsahay.com</td>
+                    <td class="text-left">
+                      Mo: {{Authorized-Number}} | Email: {{Authorized-Email}}
+                    </td>
                   </tr>
                   <tr>
                     <td class="text-left">Authorized Person Name:</td>
-                    <td  class="text-left">Shubhi Banthiya</td>
+                    <td class="text-left">{{Authorized-Person}}</td>
                   </tr>
                   <tr>
                     <td class="text-left">Authorized Person Designation:</td>
-                    <td  class="text-left">Relationship Manager</td>
+                    <td class="text-left">Relationship Manager</td>
                   </tr>
                 </tbody>
               </table>
@@ -171,34 +172,32 @@
             <div class="page-table">
               <table>
                 <thead>
-                  <th colspan="2">2. Services Receiver Details</th>
+                  <th colspan="2">Services Receiver Details</th>
                 </thead>
                 <tbody>
                   <tr>
-                    <td  class="text-left">Company Name:</td>
-                    <td  class="text-left"> {{Company Name}} </td>
+                    <td class="text-left">Company Name:</td>
+                    <td class="text-left">{{Company Name}}</td>
                   </tr>
                   <tr>
-                    <td  class="text-left">Contact Details:</td>
-                    <td  class="text-left">{{Company Number}}</td>
+                    <td class="text-left">Contact Details:</td>
+                    <td class="text-left">{{Company Number}}</td>
                   </tr>
                   <tr>
-                    <td  class="text-left">Authorized Person Name:</td>
-                    <td  class="text-left">  </td>
+                    <td class="text-left">Authorized Person Name:</td>
+                    <td class="text-left"></td>
                   </tr>
                   <tr>
-                    <td  class="text-left">Authorized Person's Designation:</td>
-                    <td  class="text-left"> </td>
+                    <td class="text-left">Authorized Person's Designation:</td>
+                    <td class="text-left"></td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <div class="page-table">
-           
-             
-                 {{Service-Details}}
-            
-                <!-- <tr>
+              {{Service-Details}}
+
+              <!-- <tr>
                     <td>
                       0
                     </td>
@@ -206,44 +205,40 @@
                       -
                     </td>
                 </tr> -->
-             
-                
             </div>
             <div class="page-table">
               <table>
                 <thead>
-                  <th colspan="3"> Total Payment Details</th>
+                  <th colspan="3">Total Payment Details</th>
                 </thead>
                 <tbody>
                   <tr>
-                    <td  >Total Payment</td>
-                    <td  >Advanced Payment</td>
-                    <td  >Pending Payment</td>
+                    <td>Total Payment</td>
+                    <td>Advanced Payment</td>
+                    <td>Pending Payment</td>
                   </tr>
                   <tr>
-                    <td  >₹ {{TotalAmount}}/-</td>
-                    <td  >₹ {{ReceivedAmount}}/-</td>
-                    <td >₹ {{PendingAmount}}/-</td>
+                    <td>₹ {{TotalAmount}}/-</td>
+                    <td>₹ {{ReceivedAmount}}/-</td>
+                    <td>₹ {{PendingAmount}}/-</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          
+
             <div class="page-para">
               <p>
-                I, _________________________________________________________________, hereby confirm and acknowledge that the payment details and terms outlined above accurately reflect the agreed-upon arrangements between {{Company Name}} and START-UP SAHAY PRIVATE LIMITED and The charges mentioned are solely for the specified services, and no additional or complimentary services will be provided in the case of rejection without separate payment.
+                I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between {{Company Name}} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
               </p>
             </div>
           </div>
-          <div style="margin-top: 70px;" class="page-footer">
+          <div style="margin-top: 70px" class="page-footer">
             <span>
               Client's Signature: ___________________________________
             </span>
           </div>
           <div class="pagination">
-            <span class="pagination-text"> Page 2/2 </span>
-
-           
+            <span class="pagination-text"> {{pagination}} </span>
           </div>
         </div>
       </div>
