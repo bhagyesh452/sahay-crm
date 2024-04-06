@@ -1213,17 +1213,50 @@ color: #4e884e;
 {
   background:#fff;
 }
-.b_Services_name .amount
+.b_Services_amount
 {
-  background: #f0e8d3;
+
+}
+.b_Services_amount .amount
+{
   padding: 1px 5px;
   font-size: 10px;
   border-radius: 3px;
   margin-right: 8px;
 }
-.bookings_Company_Name:hover .b_Services_name .amount
+
+.total_amount_bg
 {
-  background:#fff;
+  background: #d1e7ff;
+}
+.receive_amount_bg
+{
+  background: #c7ffc5;
+}
+.pending_amount_bg
+{
+  background: #ffe3bf;
+}
+.bookings_Company_Name:hover .b_Services_amount .total_amount_bg
+{
+  background: #c7e2fe;
+}
+.bookings_Company_Name:hover .b_Services_amount .receive_amount_bg
+{
+  background: #b1f9af;
+}
+.bookings_Company_Name:hover .b_Services_amount .pending_amount_bg
+{
+  background: #ffdcad;
+}
+.b_Services_multipal_services
+{
+  width: 24px;
+  text-align: center;
+  height: 24px;
+  background: #ededed;
+  border-radius: 100px;
+  color: #868686;
 }
 .booking-deatils-heading {
   padding: 6px 20px 8px 20px;
