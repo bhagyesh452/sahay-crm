@@ -302,16 +302,22 @@ function EmployeePanel() {
 
   const [cid, setcid] = useState("");
   const [cstat, setCstat] = useState("");
-  const functionopenpopupremarks = (companyID, companyStatus) => {
+  const [currentCompanyName , setCurrentCompanyName] = useState("")
+  
+  const functionopenpopupremarks = (companyID, companyStatus ,companyName) => {
     openchangeRemarks(true);
     setFilteredRemarks(
       remarksHistory.filter((obj) => obj.companyID === companyID)
     );
     // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
-
     setcid(companyID);
     setCstat(companyStatus);
+    setCurrentCompanyName(companyName)
   };
+  console.log("currentcompanyname" , currentCompanyName)
+
+
+
   const debouncedSetChangeRemarks = useCallback(
     debounce((value) => {
       setChangeRemarks(value);
@@ -684,6 +690,8 @@ function EmployeePanel() {
   console.log(companyName, companyInco);
 
   const currentData = filteredData.slice(startIndex, endIndex);
+
+  console.log("currentData" , currentData)
 
   const handleStatusChange = async (
     employeeId,
@@ -1311,6 +1319,7 @@ function EmployeePanel() {
       fetchCompanies();
     }
   }, [data]);
+
   console.log(companies);
 
   // const handleProjectionSubmit = async () => {
@@ -3576,7 +3585,7 @@ function EmployeePanel() {
         maxWidth="sm"
       >
         <DialogTitle>
-          Remarks
+          <span style={{fontSize:"14px"}}>{currentCompanyName}'s Remarks</span>
           <IconButton onClick={closepopupRemarks} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
           </IconButton>{" "}
@@ -3586,7 +3595,6 @@ function EmployeePanel() {
             {filteredRemarks.length !== 0 ? (
               filteredRemarks
                 .slice()
-
                 .map((historyItem) => (
                   <div className="col-sm-12" key={historyItem._id}>
                     <div className="card RemarkCard position-relative">
@@ -3935,7 +3943,7 @@ function EmployeePanel() {
                         <path d="M5 12l14 0" />
                       </svg>
                     </button>
-                    <button className="btn btn-primary d-none d-sm-inline-block">
+                    {/* <button className="btn btn-primary d-none d-sm-inline-block">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="icon"
@@ -3946,7 +3954,7 @@ function EmployeePanel() {
                       >
                         <path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
                       </svg>
-                    </button>
+                    </button> */}
                   </div>
                 )}
 

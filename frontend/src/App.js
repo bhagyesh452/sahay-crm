@@ -29,6 +29,10 @@ import NotFound from "./NotFound.js";
 import StausInfo from "./admin/StausInfo.js";
 import MaterialUIPickers from "./components/MaterialUIPickers.js";
 import BookingList from "./admin/BookingList.jsx";
+import BDMLogin from "./BDM/Login/BDMLogin.jsx";
+import DataManagerLogin from "./DataManager/DataMangerLogin/DataManagerLogin.jsx";
+import DataManagerDashboard from "./DataManager/Dashboard/DataManagerDashboard.jsx";
+import ManageLeads from "./DataManager/Dashboard/ManageLeads/ManageLeads.jsx";
 
 
 
@@ -38,6 +42,7 @@ function App() {
   const [newtoken, setnewToken] = useState(
     localStorage.getItem("newtoken") || null
   );
+  const [managerToken , setManagerToken] = useState(localStorage.getItem("managerToken") || null)
 
   return (
     <div className="App">
@@ -47,14 +52,27 @@ function App() {
             path="/"
             element={<EmployeeLogin setnewToken={setnewToken} />}
           />
+
+          <Route path="/bdmlogin" element={<BDMLogin/>} />
+          <Route path="/datamanagerlogin" element={<DataManagerLogin setManagerToken={setManagerToken}/>} />
+          
           <Route
             path="/employee-data/:userId/"
             element={newtoken ? <EmployeePanel /> : <Navigate to="/" />}
           ></Route>
+
           <Route
             path="/employee-dashboard/:userId/"
             element={newtoken ? <EmployeeDashboard /> : <Navigate to="/" />}
           ></Route>
+
+          <Route path='/datamanager-dashboard/:userId/' element= {<DataManagerDashboard />} />
+
+          <Route
+            path="/datamanager/manageleads/"
+            element={<ManageLeads/>}
+          ></Route>
+
           <Route
             path="/converted-leads/:userId/"
             element={

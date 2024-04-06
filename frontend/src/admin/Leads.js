@@ -892,6 +892,7 @@ function Leads() {
         time,
       });
       Swal.fire("Data Assigned");
+      openchangeEmp(false);
       fetchData();
 
     } catch (err) {
@@ -1238,12 +1239,6 @@ function Leads() {
 
 
   };
-
-
-
-
-
-
 
 
   return (
