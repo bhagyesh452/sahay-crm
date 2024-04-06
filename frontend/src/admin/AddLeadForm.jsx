@@ -69,9 +69,10 @@ export default function AddLeadForm({
     bdeName: employeeName ? employeeName : "",
     bdeEmail: employeeEmail ? employeeEmail : "",
     bdmName: "",
+    bdmType: "Close-by",
     otherBdmName:'',
     bdmEmail: "",
-    bookingDate: "",
+    bookingDate: new Date().toString(),
     bookingSource: "",
     otherBookingSource: "",
     numberOfServices: totalServices,
@@ -111,7 +112,15 @@ export default function AddLeadForm({
   };
 
   const [leadData, setLeadData] = useState(defaultLeadData);
+  const formatInputDate = (dateString) => {
+    const parsedDate = new Date(dateString);
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0"); // Adding 1 to month index since it starts from 0
+    const day = String(parsedDate.getDate()).padStart(2, "0");
 
+    const formattedDate = `${year}-${month}-${day}`;
+    return formattedDate;
+  };
 
   const fetchData = async () => {
     try {
@@ -134,11 +143,11 @@ export default function AddLeadForm({
         gstNumber: data.gstNumber,
         bdeName: data.bdeName,
         bdeEmail: data.bdeEmail,
+        bookingDate:formatInputDate(new Date())
       };
       // Check if moreBookings is available and has data
-      if (data.moreBookings && data.moreBookings.length > 0) {
-        const booking = data.moreBookings[0];
-  
+      if (data.moreBookings ) {
+        const booking = data.moreBookings;
         // Check the condition for setting additional leadData
         if (booking.Step2Status === true && booking.Step3Status === false) {
           updatedLeadData = {
@@ -149,12 +158,60 @@ export default function AddLeadForm({
             bookingDate: booking.bookingDate,
             bookingSource: booking.bookingSource,
             otherBookingSource: booking.otherBookingSource,
+            services:booking.services.length !== 0 ? booking.services.length : [defaultService]
           };
   
           setActiveStep(2);
           setCompleted({ 0: true, 1: true });
           setSelectedValues(booking.bookingSource);
-          setTotalServices(data.services.length !== 0 ? data.services.length : 1);
+          setTotalServices(booking.services.length !== 0 ? booking.services.length : 1);
+        } else if (booking.Step3Status === true && booking.Step4Status === false) {
+          updatedLeadData = {
+            ...updatedLeadData,
+          services:booking.services,
+          caCase:booking.caCase,
+          caCommission:booking.caCommission,
+          caEmail:booking.caEmail,
+          caNumber:booking.caNumber,
+          bdmName: booking.bdmName,
+          otherBdmName: booking.otherBdmName,
+          bdmEmail: booking.bdmEmail,
+          bookingDate: booking.bookingDate,
+          bookingSource: booking.bookingSource,
+          otherBookingSource: booking.otherBookingSource,
+          };
+          setActiveStep(3);
+          setCompleted({ 0: true, 1: true , 2 : true });
+          setSelectedValues(booking.bookingSource);
+          setTotalServices(booking.services.length !== 0 ? booking.services.length : 1);
+          setfetchedService(true);
+        }else if (booking.Step4Status === true && booking.Step5Status === false) {
+          updatedLeadData = {
+            ...updatedLeadData,
+          services:booking.services,
+          caCase:booking.caCase,
+          caCommission:booking.caCommission,
+          caEmail:booking.caEmail,
+          caNumber:booking.caNumber,
+          bdmName: booking.bdmName,
+          otherBdmName: booking.otherBdmName,
+          bdmEmail: booking.bdmEmail,
+          bookingDate: booking.bookingDate,
+          bookingSource: booking.bookingSource,
+          otherBookingSource: booking.otherBookingSource,
+          totalAmount:booking.totalAmount,
+          receivedAmount:booking.receivedAmount,
+          pendingAmount:booking.pendingAmount,
+          paymentReceipt:booking.paymentReceipt,
+          paymentMethod:booking.paymentMethod,
+          extraNotes:booking.extraNotes,
+          otherDocs:booking.otherDocs
+          };
+          setActiveStep(4);
+          setCompleted({ 0: true, 1: true , 2 : true , 3:true});
+          setSelectedValues(booking.bookingSource);
+          setTotalServices(booking.services.length !== 0 ? booking.services.length : 1);
+          setfetchedService(true);
         }
       } else {
         setActiveStep(1);
@@ -386,6 +443,7 @@ export default function AddLeadForm({
       const newServices = Array.from({ length: totalServices }, () => ({
         ...defaultService,
       }));
+      console.log(fetchedService , newServices , totalServices , "This is elon musk");
       setLeadData((prevState) => ({
         ...prevState,
         services: !fetchedService ? newServices : leadData.services,
@@ -539,6 +597,7 @@ export default function AddLeadForm({
             bdeEmail: leadData.bdeEmail,
             bdmName: leadData.bdmName,
             otherBdmName:leadData.otherBdmName,
+            bdmType: leadData.bdmType,
             bdmEmail: leadData.bdmEmail,
             bookingDate: leadData.bookingDate,
             bookingSource: selectedValues,
@@ -674,7 +733,7 @@ export default function AddLeadForm({
               formData
             );
             // Handle successful upload
-           
+           fetchData();
             handleNext();
             return true;
           } catch (error) {
@@ -692,18 +751,15 @@ export default function AddLeadForm({
         //   );
         
 
-          const dataSending = {
-            requestBy:employeeName,
-            services:leadData.services
-          }
+        
           const response = await axios.post(
-            `${secretKey}/redesigned-addmore-booking/${companysName}/step5`, dataSending
+            `${secretKey}/redesigned-addmore-booking/${companysName}/step5`, leadData
           );
           console.log(response.data);
           Swal.fire({
             icon: "success",
-            title: "Request Sent",
-            text: "Your Request has been successfully sent to the Admin!",
+            title: "Booking Submitted",
+            text: "Your Booking has been submitted Successfully!",
           });
           // Handle response data as needed
         } catch (error) {
@@ -714,8 +770,6 @@ export default function AddLeadForm({
             text: "There was an error submitting the form. Please try again later.",
           });
         }
-
-      
         handleNext();
         setFormOpen(false);
         return true;
@@ -1619,6 +1673,7 @@ export default function AddLeadForm({
                       className={
                         activeStep === index ? "form-tab-active" : "No-active"
                       }
+                      disabled={!completed[index]}
                     >
                       {label}
                     </StepButton>
@@ -1973,7 +2028,7 @@ export default function AddLeadForm({
                                   
 
                                   </>}
-
+                                  
                                   
                                   {leadData.bdmName !== "other" && <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
@@ -2001,6 +2056,67 @@ export default function AddLeadForm({
                                       />
                                     </div>
                                   </div>}
+                                  <div className="row mt-1">
+                                    <div className="col-sm-2 mr-2">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label htmlFor="bdmType">
+                                          BDM Type :
+                                          {
+                                            <span style={{ color: "red" }}>
+                                              *
+                                            </span>
+                                          }
+                                        </label>
+                                        <div
+                                          style={{ minWidth: "16vw" }}
+                                          className="d-flex mt-2"
+                                        >
+                                          <label className="form-check form-check-inline">
+                                            <input
+                                              className="form-check-input"
+                                              type="radio"
+                                              name="bdm-type"
+                                              onChange={(e) => {
+                                                setLeadData((prevLeadData) => ({
+                                                  ...prevLeadData,
+                                                  bdmType: "Close-by", // Set the value based on the selected radio button
+                                                }));
+                                              }}
+                                              // Set the value attribute for "Yes"
+                                              checked={
+                                                leadData.bdmType === "Close-by"
+                                              } // Check condition based on state
+                                            />
+                                            <span className="form-check-label">
+                                              Close By
+                                            </span>
+                                          </label>
+                                          <label className="form-check form-check-inline">
+                                            <input
+                                              className="form-check-input"
+                                              type="radio"
+                                              name="bdmType"
+                                              onChange={(e) => {
+                                                setLeadData((prevLeadData) => ({
+                                                  ...prevLeadData,
+                                                  bdmType: "Supported-by", // Set the value based on the selected radio button
+                                                }));
+                                              }}
+                                              // Set the value attribute for "Yes"
+                                              checked={
+                                                leadData.bdmType ===
+                                                "Supported-by"
+                                              } // Check condition based on state
+                                            />
+                                            <span className="form-check-label">
+                                              Supported By
+                                            </span>
+                                          </label>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="booking-date">
@@ -3310,7 +3426,7 @@ export default function AddLeadForm({
                           onClick={handleNext}
                           variant="contained"
                           sx={{ mr: 1 }}
-                         
+                         disabled={!completed[activeStep]}
                         >
                           Next
                         </Button>
@@ -3334,7 +3450,7 @@ export default function AddLeadForm({
                               sx={{ mr: 1, background: "#ffba00 " }}
                             >
                               {activeStep === 4
-                                ? "Request Changes"
+                                ? "Submit"
                                 : "Save Draft"}
                             </Button>
                           ))}
