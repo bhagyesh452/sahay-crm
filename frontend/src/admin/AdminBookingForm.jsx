@@ -1923,8 +1923,6 @@ export default function AdminBookingForm({
 
 
                                                                         </>}
-
-
                                                                     {leadData.bdmName !== "other" && <div className="col-sm-3">
                                                                         <div className="form-group mt-2 mb-2">
                                                                             <label for="BDMemail">
@@ -1947,7 +1945,7 @@ export default function AdminBookingForm({
                                                                                         "bdmEmail"
                                                                                     );
                                                                                 }}
-                                                                                disabled={leadData.bdmEmail}
+                                                                                //disabled={leadData.bdmEmail}
                                                                             />
                                                                         </div>
                                                                     </div>}

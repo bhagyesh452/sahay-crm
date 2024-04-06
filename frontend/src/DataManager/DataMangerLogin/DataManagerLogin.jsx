@@ -4,22 +4,20 @@ import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import Swal from "sweetalert2";
 import socketIO from "socket.io-client";
-import logo from "../static/mainLogo.png"
+import logo from "../../static/mainLogo.png"
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 
-function EmployeeLogin({ setnewToken }) {
+function DataManagerLogin({ setManagerToken}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [userId, setUserId] = useState(null);
   const [address1, setAddress] = useState("");
-  const [isSendOpt, setIsSendOpt] = useState(false);
-  const [otp, setOtp] = useState(0);
   const [designation, setDesignation] = useState("")
-
   const [showPassword, setShowPassword] = useState(false);
+  const [ename , setEname] = useState("")
 
 
 
@@ -42,68 +40,72 @@ function EmployeeLogin({ setnewToken }) {
     if (user) {
       setDesignation(user.designation)
       setUserId(user._id);
+      setEname(user.ename)
     } else {
       setUserId(null);
     }
   };
   //console.log(userId)
-
-  useEffect(() => {
+console.log(designation , userId , data)
+  
+useEffect(() => {
     fetchData();
   }, []);
   
-  async function getLocationInfo(latitude, longitude) {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-      );
+//   async function getLocationInfo(latitude, longitude) {
+//     try {
+//       const response = await fetch(
+//         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+//       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+//       if (!response.ok) {
+//         throw new Error(`HTTP error! Status: ${response.status}`);
+//       }
 
-      const data = await response.json();
+//       const data = await response.json();
 
-      if (data.error) {
-        throw new Error(`Nominatim API error: ${data.error}`);
-      }
+//       if (data.error) {
+//         throw new Error(`Nominatim API error: ${data.error}`);
+//       }
 
-      const { address } = data;
-      setAddress(`${address.suburb} ,${address.state_district}`);
+//       const { address } = data;
+//       //console.log(address)
+//       setAddress(`${address.suburb} ,${address.state_district}`);
 
-      // Log the location information
-    } catch (error) {
-      console.error("Error fetching location:", error.message);
-    }
-  }
+//       // Log the location information
+//     } catch (error) {
+//       console.error("Error fetching location:", error.message);
+//     }
+//   }
 
-  const [locationAccess, setLocationAccess] = useState(false);
-  useEffect(() => {
-    let watchId;
-    const successCallback = (position) => {
-      const userLatitude = position.coords.latitude;
-      const userLongitude = position.coords.longitude;
-      setLocationAccess(true);
-      getLocationInfo(userLatitude, userLongitude);
-    };
+//   const [locationAccess, setLocationAccess] = useState(false);
+  
+//   useEffect(() => {
+//     let watchId;
+//     const successCallback = (position) => {
+//       const userLatitude = position.coords.latitude;
+//       const userLongitude = position.coords.longitude;
+//       setLocationAccess(true);
+//       getLocationInfo(userLatitude, userLongitude);
+//     };
 
-    const errorCallback = (error) => {
-      console.error("Geolocation error:", error.message);
-      if (error.code === error.PERMISSION_DENIED) {
-        setLocationAccess(false);
-      }
-      // Handle other error cases if needed
-    };
+//     const errorCallback = (error) => {
+//       console.error("Geolocation error:", error.message);
+//       if (error.code === error.PERMISSION_DENIED) {
+//         setLocationAccess(false);
+//       }
+//       // Handle other error cases if needed
+//     };
 
-    navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+//     navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
 
-    // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
+//     // If you want to watch for continuous updates, you can use navigator.geolocation.watchPosition
 
-    // Cleanup function to clear the watch if the component unmounts
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
-    };
-  }, []);
+//     // Cleanup function to clear the watch if the component unmounts
+//     return () => {
+//       navigator.geolocation.clearWatch(watchId);
+//     };
+//   }, []);
 
   // Trigger the findUserId function when email or password changes
   useEffect(() => {
@@ -130,78 +132,45 @@ function EmployeeLogin({ setnewToken }) {
     return `${year}-${month}-${day}`;
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const date = getCurrentDate();
-  //   const time = getCurrentTime();
-  //   const address = address1 !== "" ? address1 : "No Location Found";
-  //   const ename = email;
-
-  //   try {
-  //     const response = await axios.post(`${secretKey}/employeelogin`, {
-  //       email,
-  //       password,
-  //       designation,
-
-  //     });
-  //     const response2 = await axios.post(`${secretKey}/loginDetails`, {
-  //                    ename,
-  //                     date,
-  //                     time,
-  //                    address,
-  //                   });
-
-      
-
-  //     const { newtoken } = response.data;
-  //     console.log("token", newtoken)
-  //     setnewToken(newtoken);
-  //     localStorage.setItem("newtoken", newtoken);
-  //     localStorage.setItem("userId", userId);
-
-  //     window.location.replace(`/employee-dashboard/${userId}`);
-
-  //   } catch (error) {
-  //     console.error("Login failed:", error.message);
-  //     setErrorMessage(error.message);
-
-  //   }
-
-  // };
+  console.log(email , password , designation , ename)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const date = getCurrentDate();
-    const time = getCurrentTime();
-    const address = address1 !== "" ? address1 : "No Location Found";
-    const ename = email;
+    // const date = getCurrentDate();
+    // const time = getCurrentTime();
+    // const address = address1 !== "" ? address1 : "No Location Found";
+    //const ename = email;
+   
   
     try {
-      const response = await axios.post(`${secretKey}/employeelogin`, {
+      const response = await axios.post(`${secretKey}/datamanagerlogin`, {
         email,
         password,
         designation,
       });
-      const response2 = await axios.post(`${secretKey}/loginDetails`, {
-              ename,
-               date,
-               time,
-              address,
-             });
+      console.log(response.data)
+    //   const response2 = await axios.post(`${secretKey}/loginDetails`, {
+    //           ename,
+    //            date,
+    //            time,
+    //           address,
+    //          });
   
       const { newtoken } = response.data;
-      console.log("token", newtoken);
-      setnewToken(newtoken);
-      localStorage.setItem("newtoken", newtoken);
-      localStorage.setItem("userId", userId);
-      window.location.replace(`/employee-dashboard/${userId}`);
+      setManagerToken(newtoken);
+      console.log("managerToken", newtoken);
+      console.log(userId)
+      localStorage.setItem("dataManagerName" , ename )
+      localStorage.setItem("managerToken", newtoken);
+      localStorage.setItem("dataManagerUserId", userId);
+      window.location.replace(`/datamanager-dashboard/${userId}`);
     } catch (error) {
-      console.error("Login failed:", error.response.data.message);
+      console.error("Login failed:", error);
       if (error.response.status === 401) {
         if (error.response.data.message === "Invalid email or password") {
           setErrorMessage("Invalid credentials");
         } else if (error.response.data.message === "Designation is incorrect") {
-          setErrorMessage("Only Authorized for Sales Executive!");
+          setErrorMessage("Only Authorized for Data Manager!");
         } else {
           setErrorMessage("Unknown error occurred");
         }
@@ -233,7 +202,7 @@ function EmployeeLogin({ setnewToken }) {
               <div className="col-sm-6 p-0">
                 <div className="card card-md login-box">
                   <div className="card-body">
-                    <h2 className="h2 text-center mb-4">Employee Login</h2>
+                    <h2 className="h2 text-center mb-4">Data Manager Login</h2>
                     <form action="#" method="get" autocomplete="off" novalidate>
                       <div className="mb-3">
                         <label className="form-label">Username</label>
@@ -317,4 +286,4 @@ function EmployeeLogin({ setnewToken }) {
   );
 }
 
-export default EmployeeLogin;
+export default DataManagerLogin;

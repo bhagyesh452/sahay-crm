@@ -603,12 +603,12 @@ function Employees({ onEyeButtonClick }) {
                         </option>
                         <option value="Finance Analyst">Finance Analyst</option>
                         <option value="Content Writer">Content Writer</option>
+                        <option value="Data Manager">Data Manager</option>
                         <option value="Admin Team">Admin Team</option>
                         <option value="Others">Others</option>
                       </select>
                     </div>
                   </div>
-
                   <div className="col-lg-6 mb-3">
                     <label className="form-label">Branch Office</label>
                     <div className="form-control">

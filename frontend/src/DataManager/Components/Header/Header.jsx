@@ -1,32 +1,33 @@
 import React, { useEffect, useState } from "react";
-import "../dist/css/tabler.min.css?1684106062";
-import "../dist/css/tabler-flags.min.css?1684106062";
-import "../dist/css/tabler-payments.min.css?1684106062";
-import "../dist/css/tabler-vendors.min.css?1684106062";
-import "../dist/css/demo.min.css?1684106062";
+import '../../../dist/css/tabler.min.css?1684106062';
+//import "../../../dist/css/tabler.min.css?1684106062";
+import "../../../dist/css/tabler-flags.min.css?1684106062";
+import "../../../dist/css/tabler-payments.min.css?1684106062";
+import "../../../dist/css/tabler-vendors.min.css?1684106062";
+import "../../../dist/css/demo.min.css?1684106062";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import myImage from "../static/mainLogo.png";
+import myImage from "../../../static/mainLogo.png";
 import { useNavigate } from "react-router-dom";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import Notification from "./Notification";
+//import Notification from "./Notification";
 import Avatar from '@mui/material/Avatar';
 import axios from "axios";
-import Bellicon from "./Bellicon";
+//import Bellicon from "./Bellicon";
 import io from 'socket.io-client';
+import { AiOutlineLogout } from "react-icons/ai";
 // import "./styles/header.css"
+import Notification from "../../Components/Notification/Notification.jsx";
 
 
-function Header({ name, designation}) {
+function Header({ name }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
 
-  //console.log(name)
-  //console.log(designation)
   useEffect(() => {
     const socket = io('wss://startupsahay.in/socket.io');
 
     // Listen for the 'welcome' event from the server
     socket.on('welcome', (message) => {
-      console.log(message); 
+      console.log(message);
     });
     fetchRequestDetails();
     fetchRequestGDetails();
@@ -37,17 +38,27 @@ function Header({ name, designation}) {
 
       // Fetch updated data when a new request is received
       fetchRequestDetails();
-    fetchRequestGDetails();
+      fetchRequestGDetails();
     });
     // Clean up the socket connection when the component unmounts
     return () => {
       socket.disconnect();
     };
   }, []);
- 
-  const adminName = localStorage.getItem("adminName")
 
- 
+
+   const dataManagerName = localStorage.getItem("dataManagerName")
+
+  // const handleLogout = () => {
+  //   // Clear any user authentication state, such as tokens or user information stored in local storage
+  //   localStorage.removeItem('managerToken'); // Remove token
+  //   // Redirect user to login page or perform any other action necessary for logout
+  //   // For example, if you're using React Router, you can redirect the user to the login page like this:
+  //   window.location.href = '/datamanagerlogin';
+  // };
+
+
+
   const [requestData, setRequestData] = useState([]);
   const [requestGData, setRequestGData] = useState([]);
   const [requestAppData, setRequestAppData] = useState([]);
@@ -126,22 +137,21 @@ function Header({ name, designation}) {
               />
             </a>
           </h1>
-          <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
-          <Bellicon data={requestData} gdata = {requestGData} adata={mapArray}/>
-          <Avatar sx={{ width: 32, height: 32 }}/>
+          <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
+            {/* <Bellicon data={requestData} gdata = {requestGData} adata={mapArray}/> */}
+            <Avatar sx={{ width: 32, height: 32 }} />
             <div className="nav-item dropdown">
               <button
                 className="nav-link d-flex lh-1 text-reset p-0"
                 data-bs-toggle="dropdown"
-                aria-label="Open user menu"
-              >
-                
+                aria-label="Open user menu">
                 <div className="d-xl-block ps-2">
-                  <div style={{textTransform:"capitalize"}}>{adminName ? adminName : "Admin" }</div>
-                  <div style={{textAlign:"left"}} className="mt-1 small text-muted">
-                    {designation ? designation : "Admin"}
+                  <div style={{ textTransform: "capitalize" }}>{name ? name : "Name"}</div>
+                  <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
+                    Data Manager
                   </div>
                 </div>
+                {/* <AiOutlineLogout style={{ width: "25px", height: "25px", marginLeft: "5px" }} onClick={() => handleLogout()} /> */}
               </button>
               <div className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <a href="#" className="dropdown-item">
@@ -165,9 +175,7 @@ function Header({ name, designation}) {
             <Notification/>
             <div
               style={{ display: "flex", alignItems: "center" }}
-              className="item"
-            >
-              
+              className="item">
             </div>
           </div>
         </div>
