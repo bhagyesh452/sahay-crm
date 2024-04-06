@@ -4187,7 +4187,7 @@ function EmployeePanel() {
             <div className="Container">
               <div className="d-flex justify-content-between align-items-center">
                 <div>
-                  <h2 className="title m-0 ml-1">Current LeadForm</h2>
+                  <h2 className="title m-0 ml-1">{currentForm? currentForm["Company Name"] : "Company Name"}</h2>
                 </div>
                 <div>
                   <IconButton onClick={closeAnchor}>

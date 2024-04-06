@@ -13,6 +13,12 @@ const ServiceSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  withGST:{
+    type:Boolean
+  },
+  withDSC:{
+    type:Boolean
+  },
   paymentTerms: {
     type: String,
     required: true,
