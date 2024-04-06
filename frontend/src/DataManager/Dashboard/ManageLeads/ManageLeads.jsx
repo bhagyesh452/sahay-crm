@@ -120,8 +120,21 @@ function ManageLeads() {
 
             // Set the retrieved data in the state
             setData(response.data.reverse());
+            // setData(
+            //     response.data.sort((a, b) => {
+            //         const dateA = a["AssignDate"] || "";
+            //         const dateB = b["AssignDate"] || "";
+            //         return dateB.localeCompare(dateA);
+            //     })
+            // );
             setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
-
+            // setmainData(
+            //     response.data.sort((a, b) => {
+            //         const dateA = a["AssignDate"] || "";
+            //         const dateB = b["AssignDate"] || "";
+            //         return dateB.localeCompare(dateA);
+            //     })
+            // );
             // Set isLoading back to false after data is fetched
             setIsLoading(false);
         } catch (error) {
@@ -139,14 +152,21 @@ function ManageLeads() {
         const data = await fetchDatadebounce();
         if (data) {
             setData(data.reverse());
+            // setData(
+            //     data.sort((a, b) => {
+            //         const dateA = a["AssignDate"] || "";
+            //         const dateB = b["AssignDate"] || "";
+            //         return dateB.localeCompare(dateA);
+            //     })
+            // );
             setmainData(data.filter((item) => item.ename === 'Not Alloted'));
-            setmainData(
-                mainData.sort((a, b) => {
-                    const dateA = a["AssignDate"] || "";
-                    const dateB = b["AssignDate"] || "";
-                    return dateB.localeCompare(dateA);
-                })
-            );
+            // setmainData(
+            //     mainData.sort((a, b) => {
+            //         const dateA = a["AssignDate"] || "";
+            //         const dateB = b["AssignDate"] || "";
+            //         return dateB.localeCompare(dateA);
+            //     })
+            // );
         }
     }, 300); // Adjust debounce delay as needed
 
@@ -1107,9 +1127,17 @@ function ManageLeads() {
         // Filtering logic to set the mainData based on the status
         if (status === "Assigned") {
             setmainData(data.filter((item) => item.ename !== "Not Alloted"));
+            setmainData(
+                data.sort((a, b) => {
+                    const dateA = a["AssignDate"] || "";
+                    const dateB = b["AssignDate"] || "";
+                    return dateB.localeCompare(dateA);
+                })
+            );
         }
         else {
             setmainData(data.filter((item) => item.ename === "Not Alloted"));
+
         }
 
         setDataStatus(status)

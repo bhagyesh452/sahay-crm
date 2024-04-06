@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import AdminBookingForm from "./AdminBookingForm";
 import axios from 'axios'
 import pdfimg from "../static/my-images/pdf.png";
-
+import { TbBoxMultiple } from "react-icons/tb";
 
 function BookingList() {
 
@@ -106,7 +106,7 @@ function BookingList() {
                     </div>
                   </div>  
                   <div className="booking-list-body">
-                    <div className="bookings_Company_Name ">
+                    <div className="bookings_Company_Name activeBox">
                       <div className="d-flex justify-content-between align-items-center">
                           <div className="b_cmpny_name cName-text-wrap">
                               SEAVY CORP SOLUTIONS (OPC) PRIVATE LIMITE
@@ -116,201 +116,69 @@ function BookingList() {
                           </div>
                       </div>
                       <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Seed Fund
-                            </div>
-                            <div className="amount">
-                              ₹ 25000/-
-                            </div>
+                        <div className="b_Services_name d-flex">
+                          <div className="sname">
+                            Seed Fund
                           </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
+                          <div className="sname">
+                            ISO Certificate 
                           </div>
+                        </div>
+                        <div className="b_Services_multipal_services" title="Multipal Bookings">
+                          <TbBoxMultiple />
+                        </div>
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center mt-2">
+                        <div className="b_Services_amount d-flex">
+                          <div className="amount total_amount_bg">
+                            Total: ₹ 25000 
+                          </div>
+                          <div className="amount receive_amount_bg">
+                            Receive: ₹ 25000 
+                          </div>
+                          <div className="amount pending_amount_bg">
+                            Pending: ₹ 25000 
+                          </div>
+                        </div>
+                        <div className="b_BDE_name">
+                            Vaibhav Acharya
+                        </div>
                       </div>
                     </div>
                     <div className="bookings_Company_Name">
                       <div className="d-flex justify-content-between align-items-center">
                           <div className="b_cmpny_name cName-text-wrap">
-                            Incscale Technologies Private Limited
+                              SEAVY CORP SOLUTIONS (OPC) PRIVATE LIMITE
                           </div>
                           <div className="b_cmpny_time">
                               10:00 AM
                           </div>
                       </div>
                       <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Seed Fund, Startup Certificate 
-                            </div>
-                            <div className="amount">
-                              ₹ 25000/-
-                            </div>
+                        <div className="b_Services_name d-flex">
+                          <div className="sname">
+                            Seed Fund
                           </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
+                          <div className="sname">
+                            ISO Certificate 
                           </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name activeBox">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                              Start-Up Sahay Private Limited
-                          </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
+                        </div>
                       </div>
                       <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Seed Fund, Startup Certificate 
-                            </div>
-                            <div className="amount">
-                              ₹ 25000/-
-                            </div>
+                        <div className="b_Services_amount d-flex">
+                          <div className="amount total_amount_bg">
+                            Total: ₹ 25000 
                           </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
+                          <div className="amount receive_amount_bg">
+                            Receive: ₹ 25000 
                           </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                          CENTAGON TECHNOLOGY INDIA PRIVATE LIMITED
+                          <div className="amount pending_amount_bg">
+                            Pending: ₹ 25000 
                           </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Startup Certificate 
-                            </div>
-                            <div className="amount">
-                              ₹ 5000/-
-                            </div>
-                          </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
-                          </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                          YANTRIKI BHARAT PRIVATE LIMITED
-                          </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Seed Fund
-                            </div>
-                            <div className="amount">
-                              ₹ 25000/-
-                            </div>
-                          </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
-                          </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                          RYAL JADIBOOTI BY BHARAT PRIVATE LIMITED
-                          </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                             Startup Certificate 
-                            </div>
-                            <div className="amount">
-                              ₹ 25000/-
-                            </div>
-                          </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
-                          </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                          ASHA SNR CONFECTIONERY PRIVATE LIMITED
-                          </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Website
-                            </div>
-                            <div className="amount">
-                              ₹ 15000/-
-                            </div>
-                          </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
-                          </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                          JAYMAHABALI FARMER PRODUCER COMPANY LIMITED
-                          </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              ISO Certificate  
-                            </div>
-                            <div className="amount">
-                              ₹ 2000/-
-                            </div>
-                          </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
-                          </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                          DORICS ARTIFICE PRIVATE LIMITED
-                          </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Seed Fund, Startup Certificate 
-                            </div>
-                            <div className="amount">
-                              ₹ 25000/-
-                            </div>
-                          </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
-                          </div>
+                        </div>
+                        <div className="b_BDE_name">
+                            Vaibhav Acharya
+                        </div>
                       </div>
                     </div>
                   </div>
