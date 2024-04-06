@@ -254,7 +254,7 @@ app.post("/api/admin/login-admin", async (req, res) => {
 
 app.post("/api/employeelogin", async (req, res) => {
   const { email, password } = req.body;
-
+  //console.log(email , password)
   // Replace this with your actual Employee authentication logic
   const user = await adminModel.findOne({
     email: email,
@@ -277,6 +277,60 @@ app.post("/api/employeelogin", async (req, res) => {
     socketIO.emit("Employee-login");
   }
 });
+
+app.post("/api/datamanagerlogin", async (req, res) => {
+  const { email, password } = req.body;
+
+  // Replace this with your actual Employee authentication logic
+  const user = await adminModel.findOne({
+    email: email,
+    password: password,
+    //designation: "Sales Executive",
+  });
+  //console.log(user)
+
+  if (!user) {
+    
+    //console.log("not user condition")
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "Data Manager") {
+    // If designation is incorrect
+   
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    
+    //console.log("user condition")
+      const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    //console.log(newtoken)
+    res.status(200).json({ newtoken });
+   // socketIO.emit("Employee-login");
+  }
+});
+
+// app.post("/api/datamanagerlogin", async (req, res) => {
+//   const { email, password } = req.body;
+//   console.log(email,password)
+//   // Replace this with your actual Employee authentication logic
+//   const user = await adminModel.findOne({
+//     email: email,
+//     password: password,
+//     designation: "Data Manager",
+//   });
+//   // console.log(user);
+
+//   if (user) {
+//     const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
+//       expiresIn: "10h",
+//     });
+//     res.json({ newtoken });
+//     //socketIO.emit('Employee-login');
+
+//   } else {
+//     res.status(401).json({ message: "Invalid credentials" });
+//   }
+// });
 
 app.put("/api/online-status/:id/:socketID", async (req, res) => {
   const { id } = req.params;
