@@ -3252,19 +3252,17 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
           {"Company Name": companyName },
           {
             $set: {
-              moreBookings: 
-                {
-                  bdeName: newData.bdeName || "",
-                  bdeEmail: newData.bdeEmail || "",
-                  bdmName: newData.bdmName || "",
-                  otherBdmName : newData.otherBdmName || "",
-                  bdmEmail: newData.bdmEmail || "",
-                  bookingDate: newData.bookingDate || "",
-                  bookingSource: newData.bookingSource || "",
-                  otherBookingSource:newData.otherBookingSource || "",
-                  Step2Status: true,
-                }
-              
+            
+                  "moreBookings.bdeName": newData.bdeName || "",
+                  "moreBookings.bdeEmail": newData.bdeEmail || "",
+                  "moreBookings.bdmName": newData.bdmName || "",
+                  "moreBookings.otherBdmName" : newData.otherBdmName || "",
+                  "moreBookings.bdmEmail": newData.bdmEmail || "",
+                  "moreBookings.bdmType":newData.bdmType || "",
+                  "moreBookings.bookingDate": newData.bookingDate || "",
+                  "moreBookings.bookingSource": newData.bookingSource || "",
+                  "moreBookings.otherBookingSource":newData.otherBookingSource || "",
+                  "moreBookings.Step2Status": true,
             },
           },
           { new: true }
@@ -3282,38 +3280,1189 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
       console.log("Third step Working")
       if (existingData) {
         const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-          {"Company Name": companyName },
+          { "Company Name": companyName },
           {
             $set: {
-              moreBookings: 
-              
-                {
-                 
-                  services: newData.services || existingData.services,
-                numberOfServices:
-                  newData.numberOfServices || existingData.numberOfServices,
-                caCase: newData.caCase,
-                caCommission: newData.caCommission,
-                caNumber: newData.caNumber,
-                caEmail: newData.caEmail,
-                totalAmount: newData.totalAmount || existingData.totalAmount,
-                pendingAmount:
-                  newData.pendingAmount || existingData.pendingAmount,
-                receivedAmount:
-                  newData.receivedAmount || existingData.receivedAmount,
-                Step3Status: true,
-                }
-              
+              "moreBookings.services": newData.services || existingData.moreBookings.services,
+              "moreBookings.numberOfServices": newData.numberOfServices || existingData.moreBookings.numberOfServices,
+              "moreBookings.caCase": newData.caCase,
+              "moreBookings.caCommission": newData.caCommission,
+              "moreBookings.caNumber": newData.caNumber,
+              "moreBookings.caEmail": newData.caEmail,
+              "moreBookings.totalAmount": newData.totalAmount || existingData.moreBookings.totalAmount,
+              "moreBookings.pendingAmount": newData.pendingAmount || existingData.moreBookings.pendingAmount,
+              "moreBookings.receivedAmount": newData.receivedAmount || existingData.moreBookings.receivedAmount,
+              "moreBookings.Step3Status": true,
             },
           },
           { new: true }
         );
         res.status(200).json(updatedData);
         return true; // Respond with updated data
-      }else{
+      }
+      
+      else {
         res.status(404).json("Company Not found");
         return true;
       }
+      
+    }else if(Step === "step4"){
+      const existingData = await RedesignedDraftModel.findOne({
+        "Company Name": companyName,
+      });
+      newData.otherDocs =
+      req.files["otherDocs"] === undefined
+        ? []
+        : req.files["otherDocs"].map((file) => file);
+    newData.paymentReceipt =
+      req.files["paymentReceipt"] === undefined
+        ? []
+        : req.files["paymentReceipt"].map((file) => file);
+      if (existingData) {
+        const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+          { "Company Name": companyName },
+          {
+            $set: {
+           
+              "moreBookings.totalAmount": newData.totalAmount || existingData.moreBookings.totalAmount,
+              "moreBookings.pendingAmount": newData.pendingAmount || existingData.moreBookings.pendingAmount,
+              "moreBookings.receivedAmount": newData.receivedAmount || existingData.moreBookings.receivedAmount,
+              "moreBookings.Step4Status":true ,
+              "moreBookings.paymentReceipt": newData.paymentReceipt || existingData.moreBookings.paymentReceipt,
+              "moreBookings.otherDocs": newData.otherDocs || existingData.moreBookings.otherDocs,
+              "moreBookings.paymentMethod": newData.paymentMethod || existingData.moreBookings.paymentMethod,
+              "moreBookings.extraNotes": newData.extraNotes || existingData.moreBookings.extraNotes,
+            },
+          },
+          { new: true }
+        );
+        res.status(200).json(updatedData);
+        return true; // Respond with updated data
+      }
+      
+      else {
+        res.status(404).json("Company Not found");
+        return true;
+      }
+    
+    } else if(Step === "step5"){
+      const existingData = await RedesignedLeadformModel.findOne({
+        "Company Name": companyName,
+      });
+      if (existingData) {
+        const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
+          { "Company Name": companyName },
+          {
+            $set: {
+           
+             moreBookings:[...existingData.moreBookings , newData]
+            },
+          },
+          { new: true }
+        );
+        const removeDraft  = await RedesignedDraftModel.findOneAndUpdate({
+          "Company Name": companyName
+        },
+        {
+          $set: {
+           moreBookings:[]
+          },
+        },
+        { new: true }
+      )
+      const totalAmount = newData.services.reduce(
+        (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
+        0
+      );
+      const receivedAmount = newData.services.reduce((acc, curr) => {
+        return curr.paymentTerms === "Full Advanced"
+          ? acc + parseInt(curr.totalPaymentWGST)
+          : acc + parseInt(curr.firstPayment);
+      }, 0);
+      const pendingAmount = totalAmount - receivedAmount;
+      // Render services HTML
+      const renderServices = () => {
+        let servicesHtml = "";
+        for (let i = 0; i < newData.services.length; i++) {
+          const displayPaymentTerms =
+            newData.services[i].paymentTerms === "Full Advanced"
+              ? "none"
+              : "flex";
+          servicesHtml += `
+          <div>
+          <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
+          <div style="width: 25%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+              Services Name
+            </div>
+          </div>
+          <div style="width: 75%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+              ${newData.services[i].serviceName === "Start Up Certificate"
+              ? newData.services[i].withDSC
+                ? "Start Up Certificate With DSC"
+                : "Start Up Certificate"
+              : newData.services[i].serviceName
+            }
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap">
+          <div style="width: 25%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+            Total Amount
+            </div>
+          </div>
+          <div style="width: 75%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+              ${newData.services[i].totalPaymentWGST}
+            </div>
+          </div>
+        </div>
+  
+        <div style="display: flex; flex-wrap: wrap">
+          <div style="width: 25%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+             With GST
+            </div>
+          </div>
+          <div style="width: 75%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+              ${newData.services[i].withGST}
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap">
+          <div style="width: 25%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+             Payment Terms
+            </div>
+          </div>
+          <div style="width: 75%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+             ${newData.services[i].paymentTerms}
+            </div>
+          </div>
+        </div>
+        <div style="display: ${displayPaymentTerms}; flex-wrap: wrap">
+          <div style="width: 25%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+             First Payment
+            </div>
+          </div>
+          <div style="width: 75%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+              ${newData.services[i].firstPayment}
+            </div>
+          </div>
+        </div>
+        <div style="display: ${displayPaymentTerms}; flex-wrap: wrap">
+          <div style="width: 25%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+             Second Payment
+            </div>
+          </div>
+          <div style="width: 75%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                ${Number(newData.services[i].secondPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].secondPaymentRemarks)) ? newData.services[i].secondPaymentRemarks : `Payment On ${newData.services[i].secondPaymentRemarks}`}
+            </div>
+          </div>
+        </div>
+        <div style="display: ${newData.services[i].thirdPayment === 0 ? "none" : "flex"}; flex-wrap: wrap">
+          <div style="width: 25%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+             Third Payment
+            </div>
+          </div>
+          <div style="width: 75%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].thirdPaymentRemarks)) ? newData.services[i].thirdPaymentRemarks : `Payment On ${newData.services[i].thirdPaymentRemarks}`}
+            </div>
+          </div>
+        </div>
+        <div style="display: ${newData.services[i].fourthPayment === 0 ? "none" : "flex"}; flex-wrap: wrap">
+          <div style="width: 25%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+             Fourth Payment
+            </div>
+          </div>
+          <div style="width: 75%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+                ${Number(newData.services[i].fourthPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].fourthPaymentRemarks)) ? newData.services[i].fourthPaymentRemarks : `Payment On ${newData.services[i].fourthPaymentRemarks}`}
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap">
+          <div style="width: 25%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+             Payment Remarks
+            </div>
+          </div>
+          <div style="width: 75%">
+            <div style="
+                  border: 1px solid #ccc;
+                  font-size: 12px;
+                  padding: 5px 10px;
+                ">
+              ${newData.services[i].paymentRemarks}
+            </div>
+          </div>
+        </div>
+        </div>
+          `;
+        }
+        return servicesHtml;
+      };
+      const serviceNames = newData.services
+      .map((service, index) => `${service.serviceName}`)
+      .join(" , ");
+      const visibility = newData.bookingSource !== "Other" && "none";
+      const servicesHtmlContent = renderServices();
+      const recipients = [newData.bdeEmail , newData.bdmEmail];
+
+      sendMail(
+        recipients,
+        `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
+        ``,
+        ` <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
+        <h3 style="text-align: center">Booking Form Deatils</h3>
+        <div style="
+              width: 95%;
+              margin: 0 auto;
+              padding: 20px 10px;
+              background: #fff;
+              border-radius: 10px;
+            ">
+          <!--Step One Start-->
+          <div style="width: 98%; margin: 0 auto">
+            <!-- Step's heading -->
+            <div style="display: flex; align-items: center">
+              <div style="
+                    width: 30px;
+                    height: 30px;
+                    line-height: 30px;
+                    border-radius: 100px;
+                    background: #fbb900;
+                    text-align: center;
+                    font-weight: bold;
+                    color: #fff;
+                  ">
+                1
+              </div>
+              <div style="margin-left: 10px">Company's Basic Informations</div>
+            </div>
+            <!-- Step's Table -->
+            <div style="
+                  background: #f7f7f7;
+                  padding: 15px;
+                  border-radius: 10px;
+                  position: relative;
+                  margin-top: 15px;
+                ">
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    Company Name
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    ${newData["Company Name"]}
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    Email Address:
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData["Company Email"]}
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    Phone No:
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData["Company Number"]}
+                  </div>
+                </div>
+              </div>
+    
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    Incorporation date:
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData["incoDate"]}
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    Company's PAN:
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.panNumber}
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    Company's GST:
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.gstNumber}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--Step One End-->
+    
+    
+          <!--Step Two Start-->
+          <div style="width: 98%; margin: 10px auto">
+            <!-- Step's heading -->
+            <div style="display: flex; align-items: center">
+              <div style="
+                    width: 30px;
+                    height: 30px;
+                    line-height: 30px;
+                    border-radius: 100px;
+                    background: #fbb900;
+                    text-align: center;
+                    font-weight: bold;
+                    color: #fff;
+                  ">
+                2
+              </div>
+              <div style="margin-left: 10px">Booking Details</div>
+            </div>
+            <!-- Step's Table -->
+            <div style="
+                  background: #f7f7f7;
+                  padding: 15px;
+                  border-radius: 10px;
+                  position: relative;
+                  margin-top: 15px;
+                ">
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    BDE Name:
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.bdeName}
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    BDE Email
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.bdeEmail}
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    BDM Name
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.bdmName}
+                  </div>
+                </div>
+              </div>
+    
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    BDM Email
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.bdmEmail}
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                   Booking Date
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.bookingDate}
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    Lead Source
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.bookingSource}
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; display: ${visibility}">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    Other Lead Source
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.otherBookingSource}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Step 2 Ends -->
+    
+    
+          <!--Step 3 Start-->
+          <div style="width: 98%; margin: 10px auto">
+            <!-- Step's heading -->
+            <div style="display: flex; align-items: center">
+              <div style="
+                    width: 30px;
+                    height: 30px;
+                    line-height: 30px;
+                    border-radius: 100px;
+                    background: #fbb900;
+                    text-align: center;
+                    font-weight: bold;
+                    color: #fff;
+                  ">
+                3
+              </div>
+              <div style="margin-left: 10px">Services And Payment Details</div>
+            </div>
+            <!-- Step's Table -->
+            <div style="
+                  background: #f7f7f7;
+                  padding: 15px;
+                  border-radius: 10px;
+                  position: relative;
+                  margin-top: 15px;
+                ">
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    Total Selected Services
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.services.length}
+                  </div>
+                </div>
+              </div>
+             ${servicesHtmlContent}
+             
+            </div>
+          </div>
+          <!-- Step 3 Ends -->
+    
+          <!--Step 4 Start-->
+          <div style="width: 98%; margin: 10px auto">
+            <!-- Step's heading -->
+            <div style="display: flex; align-items: center">
+              <div style="
+                    width: 30px;
+                    height: 30px;
+                    line-height: 30px;
+                    border-radius: 100px;
+                    background: #fbb900;
+                    text-align: center;
+                    font-weight: bold;
+                    color: #fff;
+                  ">
+                4
+              </div>
+              <div style="margin-left: 10px">Payment Summery</div>
+            </div>
+            <!-- Step's Table -->
+            <div style="
+                  background: #f7f7f7;
+                  padding: 15px;
+                  border-radius: 10px;
+                  position: relative;
+                  margin-top: 15px;
+                ">
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 33.33%; display: flex;">
+                  <div style="width: 50%">
+                    <div style="
+                          border: 1px solid #ccc;
+                          font-size: 12px;
+                          padding: 5px 10px;
+                        ">
+                      Total Payment
+                    </div>
+                  </div>
+                  <div style="width: 50%">
+                    <div style="
+                          border: 1px solid #ccc;
+                          font-size: 12px;
+                          padding: 5px 10px;
+                        ">
+                      ₹ ${totalAmount.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+                <div style="width: 33.33%; display: flex;">
+                  <div style="width: 50%">
+                    <div style="
+                          border: 1px solid #ccc;
+                          font-size: 12px;
+                          padding: 5px 10px;
+                        ">
+                     Received Payment
+                    </div>
+                  </div>
+                  <div style="width: 50%">
+                    <div style="
+                          border: 1px solid #ccc;
+                          font-size: 12px;
+                          padding: 5px 10px;
+                        ">
+                      ₹ ${receivedAmount.toFixed(2)}
+                    </div>
+                  </div>
+    
+                </div>
+                <div style="width: 33.33%; display: flex;">
+                  <div style="width: 50%">
+                    <div style="
+                          border: 1px solid #ccc;
+                          font-size: 12px;
+                          padding: 5px 10px;
+                        ">
+                      Pending Payment
+                    </div>
+                  </div>
+                  <div style="width: 50%">
+                    <div style="
+                          border: 1px solid #ccc;
+                          font-size: 12px;
+                          padding: 5px 10px;
+                        ">
+                     ₹ ${pendingAmount.toFixed(2)}
+                    </div>
+                  </div>
+    
+                </div>
+                
+              </div>
+              <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                   Payment Method
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    ${newData.paymentMethod}
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                  Extra Remarks
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    ${newData.extraNotes}
+                  </div>
+                </div>
+              </div>
+    
+          
+             
+            </div>
+          </div>
+          <!-- Step 4 Ends -->
+        </div>
+      </div>
+        
+  
+        `,
+        newData.otherDocs,
+        newData.paymentReceipt
+      );
+      const renderServiceList = () => {
+        let servicesHtml = "";
+        for (let i = 0; i < newData.services.length; i++) {
+          servicesHtml += `
+          <span>Service ${i + 1}: ${newData.services[i].serviceName}</span>,  
+          `;
+        }
+        return servicesHtml;
+      };
+      const renderPaymentDetails = () => {
+        let servicesHtml = "";
+        let paymentServices = "";
+        for (let i = 0; i < newData.services.length; i++) {
+          const Amount =
+            newData.services[i].paymentTerms === "Full Advanced"
+              ? newData.services[i].totalPaymentWGST
+              : newData.services[i].firstPayment;
+          let rowSpan;
+  
+          if (newData.services[i].paymentTerms === "two-part") {
+            if (
+              newData.services[i].thirdPayment !== 0 &&
+              newData.services[i].fourthPayment === 0
+            ) {
+              rowSpan = 2;
+            } else if (newData.services[i].fourthPayment !== 0) {
+              rowSpan = 3;
+            }
+          } else {
+            rowSpan = 1;
+          }
+  
+          if (rowSpan === 3) {
+            paymentServices = `
+          <tr>
+            <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+            <td>${newData.services[i].secondPaymentRemarks}</td>
+          </tr>
+           <tr>
+           <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+           <td>${newData.services[i].thirdPaymentRemarks}</td>
+           </tr>
+           <tr>
+           <td>₹${Number(newData.services[i].fourthPayment).toFixed(2)}/-</td>
+           <td>${newData.services[i].fourthPaymentRemarks}</td>
+           </tr>
+          `;
+          } else if (rowSpan === 2) {
+            paymentServices = `
+          <tr>
+            <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+            <td>${newData.services[i].secondPaymentRemarks}</td>
+          </tr>
+          <tr>
+            <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+            <td>${newData.services[i].thirdPaymentRemarks}</td>
+          </tr>
+          `;
+          } else {
+            paymentServices = `
+          <tr>
+            <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+            <td>${newData.services[i].paymentTerms !== "Full Advanced" ? newData.services[i].secondPaymentRemarks : "100% Advance Payment"}</td>
+          </tr>
+          `;
+          }
+          servicesHtml += `
+          <table style="margin-top:20px">
+              <thead>
+                <td colspan="4">Service Name : ${newData.services[i].serviceName}</td>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Total Payment</td>
+                  <td>Advanced Payment</td>
+                  <td>Pending payment</td>
+                  <td>Remarks</td>
+                </tr>
+                <tr>
+                      <th style="vertical-align: top;" rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
+            } /-</th>
+                      <th style="vertical-align: top;" rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
+              ? Number(newData.services[i].totalPaymentWGST).toFixed(2)
+              : Number(newData.services[i].firstPayment).toFixed(2)
+            }/-</th>
+                </tr>
+                ${paymentServices}
+              </tbody>
+          </table>
+          `;
+        }
+        return servicesHtml;
+      };
+      const allowedServiceNames = [
+        "Seed Funding Support",
+        "Angel Funding Support",
+        "VC Funding Support",
+        "Crowd Funding Support",
+        "I-Create",
+        "Nidhi Seed Support Scheme",
+        "Nidhi Prayash Yojna",
+        "NAIF",
+        "Raftaar",
+        "CSR Funding",
+        "Stand-Up India",
+        "PMEGP",
+        "USAID",
+        "UP Grant",
+        "DBS Grant",
+        "MSME Innovation",
+        "MSME Hackathon",
+        "Gujarat Grant",
+        "CGTMSC",
+        "Mudra Loan",
+        "SIDBI Loan",
+        "Incubation Support"
+      ];
+      const AuthorizedName = newData.services.some(service => {
+        const tempServices = [...allowedServiceNames, "Income Tax Excemption"];
+        return tempServices.includes(service);
+      }) ? "Shubhi Banthiya" : "Dhruvi Gohel";
+  
+      console.log(newData.services);
+      const newPageDisplay = newData.services.some(service => {
+        const tempServices = [...allowedServiceNames, "Income Tax Excemption" , "Start-Up India Certificate"];
+        return tempServices.includes(service.serviceName);
+      }) ? 'style="display:block' : 'style="display:none';
+  
+      console.log(newPageDisplay);
+      const AuthorizedNumber = AuthorizedName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
+      const AuthorizedEmail = AuthorizedName === "Dhruvi Gohel" ? "dhruvi@startupsahay.com" : "rm@startupsahay.com";
+      
+      const renderServiceKawali = ()=>{
+        let servicesHtml = "";
+        let fundingServices = "";
+        let fundingServicesArray = "";
+        let incomeTaxServices = ""
+      
+        for(let i = 0; i < newData.services.length; i++){
+          if(newData.services[i].serviceName === "Start-Up India Certificate"){
+              servicesHtml = `
+              <p>
+                <b>Start-Up India Certification Support Service Acknowledgement:</b>
+              </p>
+              <p>
+                I, Director of <b> ${newData["Company Name"]} </b>, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing consultancy services. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-up India certificate is issued free of charge by the government, and I have not been charged for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
+              </p>
+              <br>
+              `
+          }else if(allowedServiceNames.includes(newData.services[i].serviceName)){
+              fundingServicesArray += `${newData.services[i].serviceName},`
+              fundingServices = `
+              <p>
+              <b>
+                ${newData.services[i].serviceName} Support Services Acknowledgement:   
+              </b>
+            </p>
+            <p>
+              I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+            </p>
+            <br>
+              `
+          }else if(newData.services[i].serviceName === "Income Tax Excemption"){
+            incomeTaxServices = `
+            <p>
+                <p>
+                  <b>
+                    Income Tax Exemption Services Acknowledgement:   
+                  </b>
+                </p>
+                <p>
+                  I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+                </p>
+              </p>
+              <br>
+            `
+          }else{
+            servicesHtml += `
+            <br>
+            `
+          }
+  
+  
+        }
+  
+        if(fundingServicesArray !== ""){
+          servicesHtml += `
+          <p>
+          <b>
+            ${fundingServicesArray} Support Services Acknowledgement:   
+          </b>
+        </p>
+        <p>
+          I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+        </p>
+        <br>
+          `
+        }else if(incomeTaxServices!==""){
+          servicesHtml += `
+          <p>
+          <p>
+            <b>
+              Income Tax Exemption Services Acknowledgement:   
+            </b>
+          </p>
+          <p>
+            I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+          </p>
+        </p>
+        <br>
+        `
+        }
+        return servicesHtml
+      }
+  
+  
+      const serviceKawali = renderServiceKawali();
+      const todaysDate = new Date().toLocaleDateString();
+      const mainPageHtml = `
+      <div class="page">
+        <div class="container position-relative">
+          <div class="front-page">
+            <div class="page-heading">
+              <div class="date">Date: ${todaysDate}</div>
+              <div class="acknowledgement">
+                <b> Self Declaration </b>
+              </div>
+            </div>
+            <div class="page-body">
+              ${serviceKawali}
+              <p>
+                I, understands that because of government regulations and portal,
+                I have no objections if the process takes longer than initially
+                committed, knowing it's just how government schemes related
+                process works.
+              </p>
+              <p>
+                I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up
+                India certificate application if required on my behalf, as I am
+                not familiar with the process.
+              </p>
+            </div>
+  
+            <div class="page-footer">
+              <span>
+                Client's Signature: ___________________________________
+              </span>
+            </div>
+  
+            <div class="pagination">
+              <span class="pagination-text"> Page 1/2 </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      `
+  
+      const mainPage = newPageDisplay === 'style="display:block' ? mainPageHtml : "";
+      const bdNames = newData.bdeName == newData.bdmName ? newData.bdeName : `${newData.bdeName} & ${newData.bdmName}`;
+      const pagination = newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
+      // Render services HTML content
+      const serviceList = renderServiceList();
+      const paymentDetails = renderPaymentDetails();
+      const pdfIndex = (!existingData.moreBookings || existingData.moreBookings.length === 0) ? 1 :( existingData.moreBookings.length +1);
+     
+      const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
+      const filledHtml = htmlTemplate
+        .replace("{{Company Name}}", newData["Company Name"])
+        .replace("{{Company Name}}", newData["Company Name"])
+        .replace("{{Company Name}}", newData["Company Name"])
+        .replace("{{Company Name}}", newData["Company Name"])
+        .replace("{{Services}}", serviceList)
+        .replace("{{page-display}}", newPageDisplay)
+        .replace("{{pagination}}", pagination)
+        .replace("{{Authorized-Person}}", AuthorizedName)
+        .replace("{{Authorized-Number}}", AuthorizedNumber)
+        .replace("{{Authorized-Email}}", AuthorizedEmail)
+        .replace("{{Main-page}}",mainPage)
+        .replace("{{TotalAmount}}", totalAmount.toFixed(2))
+        .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
+        .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
+        .replace("{{Service-Details}}", paymentDetails)
+        .replace("{{Company Number}}", newData["Company Number"]);
+      pdf
+        .create(filledHtml, { format: "Letter" })
+        .toFile(
+          path.join(__dirname, "./Document", `${newData["Company Name"]}-Rebooking.pdf`),
+          async (err, response) => {
+            if (err) {
+              console.error("Error generating PDF:", err);
+              res.status(500).send("Error generating PDF");
+            } else {
+              try {
+                setTimeout(() => {
+                  const mainBuffer = fs.readFileSync(
+                    `./Document/${newData["Company Name"]}-Rebooking.pdf`
+                  );
+                  sendMail2(
+                    ["aakashseth452@gmail.com"],
+                    `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
+                    ``,
+                    `
+                    <div class="container">
+         
+                    <p>Dear ${newData["Company Name"]},</p>
+                    <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
+                    <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
+                    <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
+                    <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+                    <p style="display:${serviceNames == "Start-Up India Certificate" ? "none" : "block"}">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+                    <p style="display:${serviceNames == "Start-Up India Certificate" ? "none" : "block"}">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
+                    <p >Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
+                    <div class="signature">
+                        <div>Best regards,</div>
+                        <div>${AuthorizedName} - Relationship Manager</div>
+                        <div>${AuthorizedNumber}</div>
+                        <div>Start-Up Sahay Private Limited</div>
+                    </div>
+                </div>
+              `,
+                    mainBuffer
+                  );
+                }, 4000);
+              } catch (emailError) {
+                console.error("Error sending email:", emailError);
+                res.status(500).send("Error sending email with PDF attachment");
+              }
+            }
+          }
+        );
+
+      
+        res.status(200).json(updatedData);
+        return true; // Respond with updated data
+      }
+      
+      else {
+        res.status(404).json("Company Not found");
+        return true;
+      }
+
     }
     else{
       res.status(200).json("No Action Done")
@@ -4183,7 +5332,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Company Name": newData["Company Name"],
     });
     if (companyData) {
-      newData.company = companyData._id; // Assuming 'company' field in RedesignedLeadformModel stores the _id of the CompanyModel
+      newData.company = companyData._id; 
     }
     // Create a new entry in the database
     const createdData = await RedesignedLeadformModel.create(newData);

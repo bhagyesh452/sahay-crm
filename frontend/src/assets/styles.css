@@ -1157,6 +1157,12 @@ color: #4e884e;
   overflow-y: scroll;
   padding: 6px 20px 8px 20px;
 }
+.booking-deatils-body-preview
+{
+  height: calc((100vh - 44px) - 20px);
+  overflow-y: scroll;
+  padding: 6px 20px 8px 20px;
+}
 .cName-text-wrap
 {
   -webkit-line-clamp: 1;

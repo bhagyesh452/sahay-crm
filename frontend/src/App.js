@@ -33,6 +33,8 @@ import BDMLogin from "./BDM/Login/BDMLogin.jsx";
 import DataManagerLogin from "./DataManager/DataMangerLogin/DataManagerLogin.jsx";
 import DataManagerDashboard from "./DataManager/Dashboard/DataManagerDashboard.jsx";
 import ManageLeads from "./DataManager/Dashboard/ManageLeads/ManageLeads.jsx";
+import DataManager_Employees from './DataManager/Dashboard/Employees/DataManager_Employees.jsx'
+import EmployeeLeads from "./DataManager/Dashboard/EmployeeLeads/EmployeeLeads.jsx";
 
 
 
@@ -72,6 +74,8 @@ function App() {
             path="/datamanager/manageleads/"
             element={<ManageLeads/>}
           ></Route>
+          <Route path="/datamanager/employees" element={<DataManager_Employees/>}></Route>
+          <Route path="/datamanager/employeeLeads/:id" element={<EmployeeLeads/>}></Route>
 
           <Route
             path="/converted-leads/:userId/"
@@ -125,7 +129,7 @@ function App() {
           <Route path="/Processing/analysis_dashboard" element={<Analysis_dashboard />} />
           <Route path="/Processing/bellicon" element={<Bellicon_processing />} />
           <Route path="/Components/Drawer" element={<DrawerComponent />} />
-          <Route path="/admindashboard/:ename/:status" element={<StausInfo />} />
+          <Route path="/employeereport/:ename/:status" element={<StausInfo />} />
           <Route path='/daterange' element={<MaterialUIPickers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

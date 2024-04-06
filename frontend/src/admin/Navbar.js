@@ -55,8 +55,7 @@ function Navbar() {
                     location.pathname.startsWith("/admin/employees")
                       ? "nav-item active"
                       : "nav-item"
-                  }
-                >
+                  }>
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
                     to="/admin/employees"
