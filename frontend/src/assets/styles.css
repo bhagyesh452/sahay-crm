@@ -1246,6 +1246,7 @@ color: #4e884e;
   border: 1px solid #eee;
   border-radius: 5px;
   box-shadow: 2px 2px 10px -3px #ebebeb;
+  background: #fff;
 }
 .my-card-head
 {
@@ -1283,5 +1284,28 @@ color: #4e884e;
 .highlight-changes{
   font-weight: bold;
   background-color: #e0e2e6;
+}
+.mul-booking-card
+{
+  padding: 10px 10px;
+  background: #f8f8f8;
+  border-radius: 5px;
+}
+.mul_booking_heading
+{
+  text-align: left;
+}
+.mul_booking_date
+{
+  text-align: right;
+}
+.mul-booking-card-inner-head
+{
+  font-size: 12px;
+}
+.services-name
+{
+  font-weight: bold;
+  color: #ffb900;
 }
 /************BookingList Page Css End*************/
