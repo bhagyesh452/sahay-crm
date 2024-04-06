@@ -69,8 +69,8 @@ export default function RedesignedForm({
     bdeName: employeeName ? employeeName : "",
     bdeEmail: employeeEmail ? employeeEmail : "",
     bdmName: "",
-    bdmType:"Close-by",
-    otherBdmName:'',
+    bdmType: "Close-by",
+    otherBdmName: "",
     bdmEmail: "",
     bookingDate: new Date(),
     bookingSource: "",
@@ -110,19 +110,18 @@ export default function RedesignedForm({
       console.error("Error fetching data:", error.message);
     }
   };
-  const formatInputDate = (dateString)=>{
- 
+  const formatInputDate = (dateString) => {
     const parsedDate = new Date(dateString);
     const year = parsedDate.getFullYear();
-    const month = String(parsedDate.getMonth() + 1).padStart(2, '0'); // Adding 1 to month index since it starts from 0
-    const day = String(parsedDate.getDate()).padStart(2, '0');
-    
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0"); // Adding 1 to month index since it starts from 0
+    const day = String(parsedDate.getDate()).padStart(2, "0");
+
     const formattedDate = `${year}-${month}-${day}`;
- return formattedDate
-  }
+    return formattedDate;
+  };
 
   const [leadData, setLeadData] = useState(defaultLeadData);
-  
+
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -156,7 +155,7 @@ export default function RedesignedForm({
           ...prevState,
           bdeName: employeeName ? employeeName : "",
           bdeEmail: employeeEmail ? employeeEmail : "",
-          bookingDate:formatInputDate(new Date())
+          bookingDate: formatInputDate(new Date()),
         }));
       } else if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
@@ -585,8 +584,8 @@ export default function RedesignedForm({
             bdeName: leadData.bdeName,
             bdeEmail: leadData.bdeEmail,
             bdmName: leadData.bdmName,
-            bdmType:leadData.bdmType,
-            otherBdmName:leadData.otherBdmName,
+            bdmType: leadData.bdmType,
+            otherBdmName: leadData.otherBdmName,
             bdmEmail: leadData.bdmEmail,
             bookingDate: leadData.bookingDate,
             bookingSource: selectedValues,
@@ -1649,12 +1648,6 @@ export default function RedesignedForm({
     });
   };
 
-
-
-
-
-
-
   return (
     <div>
       <div className="container mt-2">
@@ -1774,11 +1767,17 @@ export default function RedesignedForm({
                                         value={leadData["Company Number"]}
                                         onChange={(e) => {
                                           const inputValue = e.target.value;
-                                          if (/^\d{0,10}$/.test(inputValue)) { // Check if input matches the pattern
-                                            handleInputChange(inputValue, "Company Number");
+                                          if (/^\d{0,10}$/.test(inputValue)) {
+                                            // Check if input matches the pattern
+                                            handleInputChange(
+                                              inputValue,
+                                              "Company Number"
+                                            );
                                           }
                                         }}
-                                        disabled={completed[activeStep] === true}
+                                        disabled={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -1967,143 +1966,152 @@ export default function RedesignedForm({
                                       </select>
                                     </div>
                                   </div>
-                                  {leadData.bdmName !== "other" && <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label for="BDMemail">
-                                        BDM Email Address:{" "}
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
-                                      </label>
-                                      <input
-                                        type="email"
-                                        className="form-control mt-1"
-                                        placeholder="Enter BDM email"
-                                        id="BDMemail"
-                                        value={leadData.bdmEmail}
-                                        onChange={(e) => {
-                                          handleInputChange(
-                                            e.target.value,
-                                            "bdmEmail"
-                                          );
-                                        }}
-                                        disabled={leadData.bdmEmail}
-                                      />
+                                  {leadData.bdmName !== "other" && (
+                                    <div className="col-sm-3">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label for="BDMemail">
+                                          BDM Email Address:{" "}
+                                          {
+                                            <span style={{ color: "red" }}>
+                                              *
+                                            </span>
+                                          }
+                                        </label>
+                                        <input
+                                          type="email"
+                                          className="form-control mt-1"
+                                          placeholder="Enter BDM email"
+                                          id="BDMemail"
+                                          value={leadData.bdmEmail}
+                                          onChange={(e) => {
+                                            handleInputChange(
+                                              e.target.value,
+                                              "bdmEmail"
+                                            );
+                                          }}
+                                          disabled={leadData.bdmEmail}
+                                        />
+                                      </div>
                                     </div>
-                                  </div>}
+                                  )}
 
-                                  {leadData.bdmName === "other" && 
-                                  <>
-                                  <div className="row">
-                                  <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label for="otherBdmName">
-                                        Other BDM Name:
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control mt-1"
-                                        placeholder="Enter Other BDM Name"
-                                        id="otherBdmName"
-                                        value={leadData.otherBdmName}
-                                        onChange={(e) => {
-                                          handleInputChange(
-                                            e.target.value,
-                                            "otherBdmName"
-                                          );
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col-sm-3">
-                                    <div className="form-group mt-2 mb-2">
-                                      <label for="otherEmail">
-                                        BDM Email:
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control mt-1"
-                                        placeholder="Enter BDM Email"
-                                        id="otherBdmEmail"
-                                        value={leadData.bdmEmail}
-                                        onChange={(e) => {
-                                          handleInputChange(
-                                            e.target.value,
-                                            "bdmEmail"
-                                          );
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-                                  
-                                 
-                                  </div>
-
-                                  </>}
+                                  {leadData.bdmName === "other" && (
+                                    <>
+                                      <div className="row">
+                                        <div className="col-sm-3">
+                                          <div className="form-group mt-2 mb-2">
+                                            <label for="otherBdmName">
+                                              Other BDM Name:
+                                              {
+                                                <span style={{ color: "red" }}>
+                                                  *
+                                                </span>
+                                              }
+                                            </label>
+                                            <input
+                                              type="text"
+                                              className="form-control mt-1"
+                                              placeholder="Enter Other BDM Name"
+                                              id="otherBdmName"
+                                              value={leadData.otherBdmName}
+                                              onChange={(e) => {
+                                                handleInputChange(
+                                                  e.target.value,
+                                                  "otherBdmName"
+                                                );
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-3">
+                                          <div className="form-group mt-2 mb-2">
+                                            <label for="otherEmail">
+                                              BDM Email:
+                                              {
+                                                <span style={{ color: "red" }}>
+                                                  *
+                                                </span>
+                                              }
+                                            </label>
+                                            <input
+                                              type="text"
+                                              className="form-control mt-1"
+                                              placeholder="Enter BDM Email"
+                                              id="otherBdmEmail"
+                                              value={leadData.bdmEmail}
+                                              onChange={(e) => {
+                                                handleInputChange(
+                                                  e.target.value,
+                                                  "bdmEmail"
+                                                );
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </>
+                                  )}
                                   <div className="row mt-1">
                                     <div className="col-sm-2 mr-2">
-                                      <label htmlFor="bdmType
-                                      ">
-                                        BDM Type :
-                                      </label>
-                                      
-                                    <label className="form-check form-check-inline">
-                                          <input
-                                            className="form-check-input"
-                                            type="radio"
-                                            name="bdm-type"
-                                            
-                                            onChange={(e) => {
-                                              setLeadData((prevLeadData) => ({
-                                                ...prevLeadData,
-                                                bdmType: "Close-by", // Set the value based on the selected radio button
-                                              }));
-                                            }}
-                                           
-                                            // Set the value attribute for "Yes"
-                                            checked={leadData.bdmType === "Close-by"} // Check condition based on state
-                                          />
-                                          <span className="form-check-label">
-                                           Close By
-                                          </span>
+                                      <div className="form-group mt-2 mb-2">
+                                        <label htmlFor="bdmType">
+                                          BDM Type :
+                                          {
+                                            <span style={{ color: "red" }}>
+                                              *
+                                            </span>
+                                          }
                                         </label>
-                                    </div>
-                                    <div className="col-sm-2">
-                                    <label className="form-check form-check-inline">
-                                          <input
-                                            className="form-check-input"
-                                            type="radio"
-                                            name="bdmType"
-                                            onChange={(e) => {
-                                              setLeadData((prevLeadData) => ({
-                                                ...prevLeadData,
-                                                bdmType: "Supported-by", // Set the value based on the selected radio button
-                                              }));
-                                            }}
-                                           
-                                            // Set the value attribute for "Yes"
-                                            checked={leadData.bdmType === "Supported-by"} // Check condition based on state
-                                          />
-                                          <span className="form-check-label">
-                                            Supported By
-                                          </span>
-                                        </label>
+                                        <div
+                                          style={{ minWidth: "16vw" }}
+                                          className="d-flex mt-2"
+                                        >
+                                          <label className="form-check form-check-inline">
+                                            <input
+                                              className="form-check-input"
+                                              type="radio"
+                                              name="bdm-type"
+                                              onChange={(e) => {
+                                                setLeadData((prevLeadData) => ({
+                                                  ...prevLeadData,
+                                                  bdmType: "Close-by", // Set the value based on the selected radio button
+                                                }));
+                                              }}
+                                              // Set the value attribute for "Yes"
+                                              checked={
+                                                leadData.bdmType === "Close-by"
+                                              } // Check condition based on state
+                                            />
+                                            <span className="form-check-label">
+                                              Close By
+                                            </span>
+                                          </label>
+                                          <label className="form-check form-check-inline">
+                                            <input
+                                              className="form-check-input"
+                                              type="radio"
+                                              name="bdmType"
+                                              onChange={(e) => {
+                                                setLeadData((prevLeadData) => ({
+                                                  ...prevLeadData,
+                                                  bdmType: "Supported-by", // Set the value based on the selected radio button
+                                                }));
+                                              }}
+                                              // Set the value attribute for "Yes"
+                                              checked={
+                                                leadData.bdmType ===
+                                                "Supported-by"
+                                              } // Check condition based on state
+                                            />
+                                            <span className="form-check-label">
+                                              Supported By
+                                            </span>
+                                          </label>
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
 
-                                  
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="booking-date">
@@ -2200,7 +2208,6 @@ export default function RedesignedForm({
                                       </div>
                                     </div>
                                   )}
-                                  
                                 </div>
                               </form>
                             </div>
@@ -3422,12 +3429,12 @@ export default function RedesignedForm({
                           (completed[activeStep] ? (
                             <>
                               <Button
-                              onClick={() => {
-                                setCompleted(prevCompleted => ({
-                                  ...prevCompleted,
-                                  [activeStep]: false
-                                }));
-                              }}
+                                onClick={() => {
+                                  setCompleted((prevCompleted) => ({
+                                    ...prevCompleted,
+                                    [activeStep]: false,
+                                  }));
+                                }}
                                 variant="contained"
                                 sx={{ mr: 1, background: "#ffba00 " }}
                               >
