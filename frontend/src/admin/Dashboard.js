@@ -2232,7 +2232,6 @@ function Dashboard() {
       <Header />
       <Navbar />
       <div className="d-flex align-items-center">
-
         <div>
           <div className="page-wrapper">
             {/* <div className="recent-updates-icon">
@@ -2917,7 +2916,7 @@ function Dashboard() {
                                       <td key={`row-${index}-2`}>{obj.ename}</td>
 
                                       <td key={`row-${index}-3`} >
-                                        <Link to={`/admindashboard/${obj.ename}/Untouched`} style={{
+                                        <Link to={`/employeereport/${obj.ename}/Untouched`} style={{
                                           color: "black",
                                           textDecoration: "none"
                                         }}
@@ -2935,7 +2934,7 @@ function Dashboard() {
 
 
                                       <td key={`row-${index}-4`}>
-                                        <Link to={`/admindashboard/${obj.ename}/Busy`} style={{
+                                        <Link to={`/employeereport/${obj.ename}/Busy`} style={{
                                           color: "black",
                                           textDecoration: "none"
                                         }}
@@ -2954,7 +2953,7 @@ function Dashboard() {
 
                                       <td key={`row-${index}-5`}>
                                         <Link
-                                          to={`/admindashboard/${obj.ename}/Not Picked Up`}
+                                          to={`/employeereport/${obj.ename}/Not Picked Up`}
                                           style={{ color: "black", textDecoration: "none" }}
                                           target="_blank"
                                           rel="noopener noreferrer"
@@ -2971,7 +2970,7 @@ function Dashboard() {
 
 
                                       <td key={`row-${index}-6`}>
-                                        <Link to={`/admindashboard/${obj.ename}/Junk`} style={{
+                                        <Link to={`/employeereport/${obj.ename}/Junk`} style={{
                                           color: "black",
                                           textDecoration: "none"
                                         }}
@@ -2988,7 +2987,7 @@ function Dashboard() {
                                       </td>
 
                                       <td key={`row-${index}-7`}>
-                                        <Link to={`/admindashboard/${obj.ename}/FollowUp`} style={{
+                                        <Link to={`/employeereport/${obj.ename}/FollowUp`} style={{
                                           color: "black",
                                           textDecoration: "none"
                                         }}
@@ -3004,7 +3003,7 @@ function Dashboard() {
                                         </Link>
                                       </td>
                                       <td key={`row-${index}-8`}>
-                                        <Link to={`/admindashboard/${obj.ename}/Interested`} style={{
+                                        <Link to={`/employeereport/${obj.ename}/Interested`} style={{
                                           color: "black",
                                           textDecoration: "none"
                                         }}
@@ -3020,7 +3019,7 @@ function Dashboard() {
                                         </Link>
                                       </td>
                                       <td key={`row-${index}-9`}>
-                                        <Link to={`/admindashboard/${obj.ename}/Not Interested`} style={{
+                                        <Link to={`/employeereport/${obj.ename}/Not Interested`} style={{
                                           color: "black",
                                           textDecoration: "none"
                                         }}
@@ -3036,7 +3035,7 @@ function Dashboard() {
                                         </Link>
                                       </td>
                                       <td key={`row-${index}-10`}>
-                                        <Link to={`/admindashboard/${obj.ename}/Matured`} style={{
+                                        <Link to={`/employeereport/${obj.ename}/Matured`} style={{
                                           color: "black",
                                           textDecoration: "none"
                                         }}
@@ -3053,7 +3052,7 @@ function Dashboard() {
                                         </Link>
                                       </td>
                                       <td key={`row-${index}-11`}>
-                                        <Link to={`/admindashboard/${obj.ename}/complete`} style={{
+                                        <Link to={`/employeereport/${obj.ename}/complete`} style={{
                                           color: "black",
                                           textDecoration: "none"
                                         }}
@@ -3518,8 +3517,7 @@ function Dashboard() {
             open={openEmployeeTable}
             onClose={closeEmployeeTable}
             fullWidth
-            maxWidth="lg"
-          >
+            maxWidth="lg">
             <DialogTitle>
               <div className="title-header d-flex justify-content-between">
                 <div className="title-name">

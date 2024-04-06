@@ -105,6 +105,7 @@ function Leads() {
   const [isLoading, setIsLoading] = useState(false)
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
+
   //fetch data
   const fetchDatadebounce = async () => {
     try {
@@ -128,7 +129,6 @@ function Leads() {
       setCurrentDataLoading(false)
     }
   };
-
   //console.log("Main-Data" , mainData)
 
   const fetchData = debounce(async () => {
@@ -1095,6 +1095,13 @@ function Leads() {
     // Filtering logic to set the mainData based on the status
     if (status === "Assigned") {
       setmainData(data.filter((item) => item.ename !== "Not Alloted"));
+      setmainData(
+        data.sort((a, b) => {
+            const dateA = a["AssignDate"] || "";
+            const dateB = b["AssignDate"] || "";
+            return dateB.localeCompare(dateA);
+        })
+    );
     }
     else {
       setmainData(data.filter((item) => item.ename === "Not Alloted"));

@@ -41,6 +41,7 @@ import Modal from "react-modal";
 import { Link, json } from "react-router-dom";
 import Nodata from "../Components/Nodata/Nodata.jsx";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import EmployeeDataReport from "../Components/EmployeeDataReport/EmployeeDataReport.jsx";
 
 function DataManagerDashboard() {
   const { userId } = useParams();
@@ -1212,7 +1213,7 @@ console.log(dataManagerName)
     <div>
       <Header name={dataManagerName}/>
       <Navbar name={dataManagerName} />
-      <Nodata/>
+      <EmployeeDataReport/>
     </div>
   );
 }
