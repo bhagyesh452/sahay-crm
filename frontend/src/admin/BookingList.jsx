@@ -3,6 +3,7 @@ import Header from "./Header";
 import Navbar from "./Navbar";
 import AdminBookingForm from "./AdminBookingForm";
 import axios from 'axios'
+import pdfimg from "../static/my-images/pdf.png";
 
 
 function BookingList() {
@@ -643,7 +644,7 @@ function BookingList() {
                       </div>
                       {/* -------- Step 4 ---------*/}
                       <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                          <b>Payment Summary</b>
+                          <b>Payment Summary:</b>
                       </div>
                       <div className="my-card">
                         <div className="my-card-body">
@@ -699,6 +700,72 @@ function BookingList() {
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">no</div>
                                 </div>
                               </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                          <b>Payment Recipt and Additional Documents:</b>
+                      </div>
+                      <div className="row">
+                        <div className="col-sm-2 mb-1">
+                          <div className="booking-docs-preview">
+                            <div className="booking-docs-preview-img">
+                              <img src={pdfimg}></img>
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="rematkText text-wrap m-auto m-0">recipt.pdf</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-sm-2 mb-1">
+                          <div className="booking-docs-preview">
+                            <div className="booking-docs-preview-img">
+                              <img src={pdfimg}></img>
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="rematkText text-wrap m-auto m-0">recipt.pdf</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-sm-2 mb-1">
+                          <div className="booking-docs-preview">
+                            <div className="booking-docs-preview-img">
+                              <img src={pdfimg}></img>
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="rematkText text-wrap m-auto m-0">recipt.pdf</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-sm-2 mb-1">
+                          <div className="booking-docs-preview">
+                            <div className="booking-docs-preview-img">
+                              <img src={pdfimg}></img>
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="rematkText text-wrap m-auto m-0">recipt.pdf</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="col-sm-2 mb-1">
+                          <div className="booking-docs-preview">
+                            <div className="booking-docs-preview-img">
+                              <img src={pdfimg}></img>
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="rematkText text-wrap m-auto m-0">recipt.pdf</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-sm-2 mb-1">
+                          <div className="booking-docs-preview">
+                            <div className="booking-docs-preview-img">
+                              <img src={pdfimg}></img>
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="rematkText text-wrap m-auto m-0">recipt.pdf</p>
                             </div>
                           </div>
                         </div>
