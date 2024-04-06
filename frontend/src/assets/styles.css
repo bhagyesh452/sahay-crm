@@ -1213,17 +1213,50 @@ color: #4e884e;
 {
   background:#fff;
 }
-.b_Services_name .amount
+.b_Services_amount
 {
-  background: #f0e8d3;
+
+}
+.b_Services_amount .amount
+{
   padding: 1px 5px;
   font-size: 10px;
   border-radius: 3px;
   margin-right: 8px;
 }
-.bookings_Company_Name:hover .b_Services_name .amount
+
+.total_amount_bg
 {
-  background:#fff;
+  background: #d1e7ff;
+}
+.receive_amount_bg
+{
+  background: #c7ffc5;
+}
+.pending_amount_bg
+{
+  background: #ffe3bf;
+}
+.bookings_Company_Name:hover .b_Services_amount .total_amount_bg
+{
+  background: #c7e2fe;
+}
+.bookings_Company_Name:hover .b_Services_amount .receive_amount_bg
+{
+  background: #b1f9af;
+}
+.bookings_Company_Name:hover .b_Services_amount .pending_amount_bg
+{
+  background: #ffdcad;
+}
+.b_Services_multipal_services
+{
+  width: 24px;
+  text-align: center;
+  height: 24px;
+  background: #ededed;
+  border-radius: 100px;
+  color: #868686;
 }
 .booking-deatils-heading {
   padding: 6px 20px 8px 20px;
@@ -1246,6 +1279,7 @@ color: #4e884e;
   border: 1px solid #eee;
   border-radius: 5px;
   box-shadow: 2px 2px 10px -3px #ebebeb;
+  background: #fff;
 }
 .my-card-head
 {
@@ -1283,5 +1317,71 @@ color: #4e884e;
 .highlight-changes{
   font-weight: bold;
   background-color: #e0e2e6;
+}
+.mul-booking-card
+{
+  padding: 10px 10px;
+  background: #f8f8f8;
+  border-radius: 5px;
+}
+.mul_booking_heading
+{
+  text-align: left;
+}
+.mul_booking_date
+{
+  text-align: right;
+}
+.mul-booking-card-inner-head
+{
+  font-size: 12px;
+}
+.services-name
+{
+  font-weight: bold;
+  color: #ffb900;
+}
+.booking-docs-preview
+{
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 10px -3px #ebebeb;
+}
+.booking-docs-preview-img
+{
+  height: 100%;
+  width: 60px;
+  position: relative;
+  border-radius: 5px;
+  margin: 0 auto;
+  overflow: hidden;
+  cursor: pointer;
+}
+.booking-docs-preview-img img
+{
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  object-position: center center;
+  border-radius: 5px;
+  position: relative;
+  transition: 0.5s;
+  transform-origin: center center;
+}
+.booking-docs-preview-text
+{
+  text-align: center;
+  font-size: 12px;
+  margin-top: 10px;
+}
+.booking-docs-preview-text p
+{
+  text-align: center;
+}
+.booking-docs-preview
+{
+  padding: 10px ;
 }
 /************BookingList Page Css End*************/

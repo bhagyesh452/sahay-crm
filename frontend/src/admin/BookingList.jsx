@@ -3,7 +3,8 @@ import Header from "./Header";
 import Navbar from "./Navbar";
 import AdminBookingForm from "./AdminBookingForm";
 import axios from 'axios'
-
+import pdfimg from "../static/my-images/pdf.png";
+import { TbBoxMultiple } from "react-icons/tb";
 
 function BookingList() {
 
@@ -94,6 +95,7 @@ function BookingList() {
         <div className="container-xl">
           <div className="booking_list_Dtl_box">
             <div className="row m-0">
+              {/* --------booking list left Part---------*/}
               <div className="col-4 p-0">
                 <div className="booking-list-card">
                   <div className="booking-list-heading">
@@ -104,7 +106,7 @@ function BookingList() {
                     </div>
                   </div>  
                   <div className="booking-list-body">
-                    <div className="bookings_Company_Name ">
+                    <div className="bookings_Company_Name activeBox">
                       <div className="d-flex justify-content-between align-items-center">
                           <div className="b_cmpny_name cName-text-wrap">
                               SEAVY CORP SOLUTIONS (OPC) PRIVATE LIMITE
@@ -114,206 +116,75 @@ function BookingList() {
                           </div>
                       </div>
                       <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Seed Fund
-                            </div>
-                            <div className="amount">
-                              ₹ 25000/-
-                            </div>
+                        <div className="b_Services_name d-flex">
+                          <div className="sname">
+                            Seed Fund
                           </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
+                          <div className="sname">
+                            ISO Certificate 
                           </div>
+                        </div>
+                        <div className="b_Services_multipal_services" title="Multipal Bookings">
+                          <TbBoxMultiple />
+                        </div>
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center mt-2">
+                        <div className="b_Services_amount d-flex">
+                          <div className="amount total_amount_bg">
+                            Total: ₹ 25000 
+                          </div>
+                          <div className="amount receive_amount_bg">
+                            Receive: ₹ 25000 
+                          </div>
+                          <div className="amount pending_amount_bg">
+                            Pending: ₹ 25000 
+                          </div>
+                        </div>
+                        <div className="b_BDE_name">
+                            Vaibhav Acharya
+                        </div>
                       </div>
                     </div>
                     <div className="bookings_Company_Name">
                       <div className="d-flex justify-content-between align-items-center">
                           <div className="b_cmpny_name cName-text-wrap">
-                            Incscale Technologies Private Limited
+                              SEAVY CORP SOLUTIONS (OPC) PRIVATE LIMITE
                           </div>
                           <div className="b_cmpny_time">
                               10:00 AM
                           </div>
                       </div>
                       <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Seed Fund, Startup Certificate 
-                            </div>
-                            <div className="amount">
-                              ₹ 25000/-
-                            </div>
+                        <div className="b_Services_name d-flex">
+                          <div className="sname">
+                            Seed Fund
                           </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
+                          <div className="sname">
+                            ISO Certificate 
                           </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name activeBox">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                              Start-Up Sahay Private Limited
-                          </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
+                        </div>
                       </div>
                       <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Seed Fund, Startup Certificate 
-                            </div>
-                            <div className="amount">
-                              ₹ 25000/-
-                            </div>
+                        <div className="b_Services_amount d-flex">
+                          <div className="amount total_amount_bg">
+                            Total: ₹ 25000 
                           </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
+                          <div className="amount receive_amount_bg">
+                            Receive: ₹ 25000 
                           </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                          CENTAGON TECHNOLOGY INDIA PRIVATE LIMITED
+                          <div className="amount pending_amount_bg">
+                            Pending: ₹ 25000 
                           </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Startup Certificate 
-                            </div>
-                            <div className="amount">
-                              ₹ 5000/-
-                            </div>
-                          </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
-                          </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                          YANTRIKI BHARAT PRIVATE LIMITED
-                          </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Seed Fund
-                            </div>
-                            <div className="amount">
-                              ₹ 25000/-
-                            </div>
-                          </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
-                          </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                          RYAL JADIBOOTI BY BHARAT PRIVATE LIMITED
-                          </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                             Startup Certificate 
-                            </div>
-                            <div className="amount">
-                              ₹ 25000/-
-                            </div>
-                          </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
-                          </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                          ASHA SNR CONFECTIONERY PRIVATE LIMITED
-                          </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Website
-                            </div>
-                            <div className="amount">
-                              ₹ 15000/-
-                            </div>
-                          </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
-                          </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                          JAYMAHABALI FARMER PRODUCER COMPANY LIMITED
-                          </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              ISO Certificate  
-                            </div>
-                            <div className="amount">
-                              ₹ 2000/-
-                            </div>
-                          </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
-                          </div>
-                      </div>
-                    </div>
-                    <div className="bookings_Company_Name">
-                      <div className="d-flex justify-content-between align-items-center">
-                          <div className="b_cmpny_name cName-text-wrap">
-                          DORICS ARTIFICE PRIVATE LIMITED
-                          </div>
-                          <div className="b_cmpny_time">
-                              10:00 AM
-                          </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                          <div className="b_Services_name d-flex">
-                            <div className="sname">
-                              Seed Fund, Startup Certificate 
-                            </div>
-                            <div className="amount">
-                              ₹ 25000/-
-                            </div>
-                          </div>
-                          <div className="b_BDE_name">
-                              Vaibhav Acharya
-                          </div>
+                        </div>
+                        <div className="b_BDE_name">
+                            Vaibhav Acharya
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+              {/* --------booking Details Right Part---------*/}
               <div className="col-8 p-0">
                 <div className="booking-deatils-card">
                   <div className="booking-deatils-heading">
@@ -324,66 +195,449 @@ function BookingList() {
                     </div>
                   </div>  
                   <div className="booking-deatils-body">
+                    {/* --------Basic Information Which is Common For all bookingdd  ---------*/}
                     <div className="my-card mt-2">
                       <div className="my-card-head">
                         Basic Informations:
                       </div>   
                       <div className="my-card-body">
                         <div className="row m-0 bdr-btm-eee">
-                          <div className="col-sm-6 p-0">
+                          <div className="col-lg-5 col-sm-6 p-0">
                             <div class="row m-0">
-                              <div class="col-sm-4 p-0">
-                                  <div class="booking_inner_dtl_h">Email Address</div>
+                              <div class="col-sm-4 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_h h-100">Company Name:</div>
                               </div>
-                              <div class="col-sm-6 p-0">
-                                  <div class="booking_inner_dtl_b bdr-left-eee">info@startupsahay.in</div>
+                              <div class="col-sm-6 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">Start-Up Sahay Private Limited</div>
                               </div>
                             </div>
                           </div>
-                          <div className="col-sm-6 p-0">
+                          <div className="col-lg-4 col-sm-6 p-0">
                             <div class="row m-0">
-                              <div class="col-sm-4 p-0">
-                                  <div class="booking_inner_dtl_h bdr-left-eee">Phone No</div>
+                              <div class="col-sm-4 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">Email Address</div>
                               </div>
-                              <div class="col-sm-6 p-0">
-                                  <div class="booking_inner_dtl_b bdr-left-eee">9924283530</div>
+                              <div class="col-sm-6 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">info@startupsahay.in</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-lg-3 col-sm-6 p-0">
+                            <div class="row m-0">
+                              <div class="col-sm-4 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">Phone No</div>
+                              </div>
+                              <div class="col-sm-6 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">9924283530</div>
                               </div>
                             </div>
                           </div>
                         </div>
                         <div className="row m-0 bdr-btm-eee">
-                          <div className="col-sm-4 p-0">
+                          <div className="col-lg-4 col-sm-6 p-0">
                             <div class="row m-0">
-                              <div class="col-sm-6 p-0">
-                                  <div class="booking_inner_dtl_h">Incorporation date</div>
+                              <div class="col-sm-6 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_h h-100">Incorporation date</div>
                               </div>
-                              <div class="col-sm-6 p-0">
-                                  <div class="booking_inner_dtl_b bdr-left-eee">20 Jun 2024</div>
+                              <div class="col-sm-6 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">20 Jun 2024</div>
                               </div>
                             </div>
                           </div>
-                          <div className="col-sm-4">
+                          <div className="col-lg-4 col-sm-6">
                             <div class="row m-0">
-                              <div class="col-sm-5 p-0">
-                                  <div class="booking_inner_dtl_h bdr-left-eee">Company's PAN:</div>
+                              <div class="col-sm-5 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">Company's PAN:</div>
                               </div>
-                              <div class="col-sm-7 p-0">
-                                  <div class="booking_inner_dtl_b bdr-left-eee">DLGPP5927K</div>
+                              <div class="col-sm-7 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">DLGPP5927K</div>
                               </div>
                             </div>
                           </div>
-                          <div className="col-sm-4">
+                          <div className="col-lg-4 col-sm-6">
                             <div class="row m-0">
-                              <div class="col-sm-5 p-0">
-                                  <div class="booking_inner_dtl_h bdr-left-eee">Company's GST:</div>
+                              <div class="col-sm-5 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">Company's GST:</div>
                               </div>
-                              <div class="col-sm-7 p-0">
-                                  <div class="booking_inner_dtl_b bdr-left-eee">256336111111</div>
+                              <div class="col-sm-7 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">256336111111</div>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>      
+                    </div>
+                    {/* --------If Multipal Booking (Bookign heading) ---------*/}
+                    <div className="row align-items-center m-0 justify-content-between mb-1 mt-3">
+                      <div className="mul_booking_heading col-6">
+                        <b>Booking 1</b>
+                      </div>
+                      <div className="mul_booking_date col-6">
+                          <b>1st jan 2024</b>
+                      </div>
+                    </div>
+                    {/* -------- Booking Details ---------*/}
+                    <div className="mul-booking-card mt-2">
+                      {/* -------- Step 2 ---------*/}
+                      <div className="mb-2 mul-booking-card-inner-head">
+                          <b>Booking Details:</b>
+                      </div>
+                      <div className="my-card">
+                        <div className="my-card-body">
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100">BDE Name</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">Nimesh parekh</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">BDE Email</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">info@startupsahay.in</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">BDM Name</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">Nimesh Parekh</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100">BDM Email</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">info@startupsahay.in</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">Booking Date </div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">12 Jun 2024</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">Lead Source</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">CRM Data</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* -------- Step 3 ---------*/}
+                      <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                          <b>Services And Payment Details:</b>
+                      </div>
+                      <div className="my-card">
+                        <div className="my-card-body">
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100">No. Of Services</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">2</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="my-card mt-1">
+                        <div className="my-card-body">
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100">1st Services Name</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">Start Up certificate (With DSC)</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">Total Amount</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">₹ 12000 /- (With GST)</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100">Payment Terms</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">Full Advance</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">Notes</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">Work Complate Before 19th of Jun </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="my-card mt-1">
+                        <div className="my-card-body">
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100">2nd Services Name</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">Seed Fund Support</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">Total Amount</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">₹ 22000 (With GST)</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100">Payment Terms</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">Part paymnet</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">Notes</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">2nd Payment is aftre Docs</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100">First payment</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 11000</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">Second Paymnet</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">₹ 11000 (Before Application)</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100">Third Paymnet</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">₹ 11000 (Before Application)</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">Forth Paymnet</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">₹ 11000 /- (Before Application)</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* -------- Step 4 ---------*/}
+                      <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                          <b>Payment Summary:</b>
+                      </div>
+                      <div className="my-card">
+                        <div className="my-card-body">
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-5 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100">Total Amount</div>
+                                </div>
+                                <div class="col-sm-7 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">₹ 22000</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-5 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">Received Amount</div>
+                                </div>
+                                <div class="col-sm-7 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 22000</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-5 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending Amount</div>
+                                </div>
+                                <div class="col-sm-7 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 22000</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100">Payment Method</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">ICICI Bank</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">Extra Remarks</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">no</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                          <b>Payment Recipt and Additional Documents:</b>
+                      </div>
+                      <div className="row">
+                        <div className="col-sm-2 mb-1">
+                          <div className="booking-docs-preview">
+                            <div className="booking-docs-preview-img">
+                              <img src={pdfimg}></img>
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="rematkText text-wrap m-auto m-0">recipt.pdf</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-sm-2 mb-1">
+                          <div className="booking-docs-preview">
+                            <div className="booking-docs-preview-img">
+                              <img src={pdfimg}></img>
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="rematkText text-wrap m-auto m-0">recipt.pdf</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-sm-2 mb-1">
+                          <div className="booking-docs-preview">
+                            <div className="booking-docs-preview-img">
+                              <img src={pdfimg}></img>
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="rematkText text-wrap m-auto m-0">recipt.pdf</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-sm-2 mb-1">
+                          <div className="booking-docs-preview">
+                            <div className="booking-docs-preview-img">
+                              <img src={pdfimg}></img>
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="rematkText text-wrap m-auto m-0">recipt.pdf</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="col-sm-2 mb-1">
+                          <div className="booking-docs-preview">
+                            <div className="booking-docs-preview-img">
+                              <img src={pdfimg}></img>
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="rematkText text-wrap m-auto m-0">recipt.pdf</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-sm-2 mb-1">
+                          <div className="booking-docs-preview">
+                            <div className="booking-docs-preview-img">
+                              <img src={pdfimg}></img>
+                            </div>
+                            <div className="booking-docs-preview-text">
+                              <p className="rematkText text-wrap m-auto m-0">recipt.pdf</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
