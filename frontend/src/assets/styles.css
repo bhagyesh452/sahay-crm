@@ -1140,7 +1140,7 @@ color: #4e884e;
 
   border-right: 1px solid #e5e5e5;
   overflow: hidden;
-  background: #fffdf9;
+  background: #fff;
 }
 .booking-list-body
 {
@@ -1183,6 +1183,7 @@ color: #4e884e;
 .bookings_Company_Name.activeBox
 {
   border-left: 3px solid #fbb900;
+  background: #f8f8f8;
 }
 .bookings_Company_Name:hover
 {
@@ -1382,6 +1383,7 @@ color: #4e884e;
   font-size: 12px;
   margin-top: 10px;
 }
+.booking-docs-preview-text p
 .booking-docs-preview-text p
 {
   text-align: center;
