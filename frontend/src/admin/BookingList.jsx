@@ -9,6 +9,8 @@ import { TbBoxMultiple } from "react-icons/tb";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
+  const [infiniteBooking, setInfiniteBooking] = useState([]);
+  const [searchText, setSearchText] = useState("");
   const [leadFormData, setLeadFormData] = useState([]);
   const [currentLeadform, setCurrentLeadform] = useState(null);
   const [currentDataLoading, setCurrentDataLoading] = useState(false);
@@ -42,11 +44,16 @@ function BookingList() {
     setCurrentLeadform(leadFormData[0]);
   }, [leadFormData]);
 
+  useEffect(()=>{
+    setLeadFormData(infiniteBooking.filter((obj=> ((obj["Company Name"])).toLowerCase().includes(searchText))))
+  }, [searchText])
+
   const fetchRedesignedFormData = async () => {
     try {
       const response = await axios.get(
         `${secretKey}/redesigned-final-leadData`
       );
+      setInfiniteBooking(response.data);
       setLeadFormData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -160,9 +167,11 @@ function BookingList() {
                       </span>
                       <input
                         type="text"
+                        value={searchText}
                         class="form-control"
                         placeholder="Search…"
                         aria-label="Search in website"
+                        onChange={(e)=>setSearchText(e.target.value)}
                       />
                     </div>
                   </div>
