@@ -292,11 +292,11 @@ function BookingList() {
                         <div className="my-card-head">Basic Informations:</div>
                         <div className="my-card-body">
                           <div className="row m-0 bdr-btm-eee">
-                            <div className="col-lg-5 col-sm-6 p-0">
-                              <div class="row m-0">
+                            <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
+                              <div class="row m-0 h-100">
                                 <div class="col-sm-4 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_h h-100">
-                                    Company Name:
+                                    Company Name
                                   </div>
                                 </div>
                                 <div class="col-sm-6 align-self-stretch p-0">
@@ -312,8 +312,8 @@ function BookingList() {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-lg-4 col-sm-6 p-0">
-                              <div class="row m-0">
+                            <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
+                              <div class="row m-0 h-100">
                                 <div class="col-sm-4 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_h bdr-left-eee h-100">
                                     Email Address
@@ -332,10 +332,12 @@ function BookingList() {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-lg-3 col-sm-6 p-0">
-                              <div class="row m-0">
-                                <div class="col-sm-4 align-self-stretch p-0">
-                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-3 col-sm-6 p-0 align-self-stretch">
+                              <div class="row m-0 h-100">
+                                <div class="col-sm-6 align-self-stretch p-0">
+                                  <div class="booking_inner_dtl_h h-100">
                                     Phone No
                                   </div>
                                 </div>
@@ -352,16 +354,14 @@ function BookingList() {
                                 </div>
                               </div>
                             </div>
-                          </div>
-                          <div className="row m-0 bdr-btm-eee">
-                            <div className="col-lg-4 col-sm-6 p-0">
-                              <div class="row m-0">
-                                <div class="col-sm-6 align-self-stretch p-0">
-                                  <div class="booking_inner_dtl_h h-100">
+                            <div className="col-lg-3 col-sm-6 p-0 align-self-stretch">
+                              <div class="row m-0 h-100">
+                                <div class="col-sm-7 align-self-stretch p-0">
+                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">
                                     Incorporation date
                                   </div>
                                 </div>
-                                <div class="col-sm-6 align-self-stretch p-0">
+                                <div class="col-sm-5 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                     {currentLeadform &&
                                     formatDatePro(Object.keys(currentLeadform).length !== 0
@@ -374,11 +374,11 @@ function BookingList() {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-lg-4 col-sm-6">
-                              <div class="row m-0">
+                            <div className="col-lg-2 col-sm-6 p-0 align-self-stretch">
+                              <div class="row m-0 h-100">
                                 <div class="col-sm-5 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                    Company's PAN:
+                                    PAN
                                   </div>
                                 </div>
                                 <div class="col-sm-7 align-self-stretch p-0">
@@ -394,14 +394,14 @@ function BookingList() {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-lg-4 col-sm-6">
-                              <div class="row m-0">
-                                <div class="col-sm-5 align-self-stretch p-0">
+                            <div className="col-lg-3 col-sm-6 p-0 align-self-stretch">
+                              <div class="row m-0 h-100">
+                                <div class="col-sm-4 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                    Company's GST:
+                                    GST 
                                   </div>
                                 </div>
-                                <div class="col-sm-7 align-self-stretch p-0">
+                                <div class="col-sm-8 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                     {currentLeadform &&
                                     Object.keys(currentLeadform).length !== 0
