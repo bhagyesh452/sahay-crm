@@ -1393,8 +1393,14 @@ color: #4e884e;
   padding: 10px ;
 }
 /************BookingList Page Css End*************/
-td a
+.wApp a
 {
   text-decoration: none !important;
+  color: #097c1b !important;
+  transition: transform .2s
+}
+.wApp a:active
+{
+  transform: scale(1.3);
   color: #000 !important;
 }
