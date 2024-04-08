@@ -1427,7 +1427,7 @@ export default function AdminBookingForm({
     useEffect(() => {
         const fetchDataNew = async () => {
             const companyName = companyNewName
-            console.log("gadbadyahin hain")
+            // console.log("gadbadyahin hain")
             try {
                 const response = await axios.get(`${secretKey}/leads/${companyName}`);
                 console.log(response.data)

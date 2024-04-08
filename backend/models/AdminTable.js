@@ -13,7 +13,6 @@ const yourSchema = new mongoose.Schema({
   admin_email:{
     type:String
   }
- 
 });
 
 
