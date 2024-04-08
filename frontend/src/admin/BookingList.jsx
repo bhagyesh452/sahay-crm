@@ -6,6 +6,7 @@ import axios from "axios";
 import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
 import { TbBoxMultiple } from "react-icons/tb";
+import Nodata from "../components/Nodata";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -143,6 +144,7 @@ function BookingList() {
                 <div className="col-2">
                   <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
                     <div class="input-icon">
+                 
                       <span class="input-icon-addon">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +171,7 @@ function BookingList() {
                         type="text"
                         value={searchText}
                         class="form-control"
-                        placeholder="Search…"
+                        placeholder="Search Company"
                         aria-label="Search in website"
                         onChange={(e)=>setSearchText(e.target.value)}
                       />
@@ -277,6 +279,9 @@ function BookingList() {
                             </div>
                           </div>
                         ))}
+                        {leadFormData.length === 0 && <div>
+                          <Nodata/>
+                          </div>} 
                     </div>
                   </div>
                 </div>
