@@ -861,7 +861,7 @@ function Employees({ onEyeButtonClick }) {
                     </tr>
                   </thead>
                   {filteredData.length == 0 ? (
-                    <tbody>
+                    <tbody >
                       <tr>
                         <td
                           className="particular"
@@ -873,7 +873,7 @@ function Employees({ onEyeButtonClick }) {
                       </tr>
                     </tbody>
                   ) : (
-                    <tbody className="table-tbody">
+                    <tbody className="table-tbody" style={{ userSelect: "none" }} onContextMenu={(e) => e.preventDefault()}>
                       {filteredData.map((item, index) => (
                         <tr key={index} style={{ border: "1px solid #ddd" }}>
                           <td className="td-sticky">{index + 1}</td>

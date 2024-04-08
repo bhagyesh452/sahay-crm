@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import axios from "axios";
-import logo from '../../static/mainLogo.png'
-import { TbNumber0Small } from "react-icons/tb";
+import Swal from "sweetalert2";
+import socketIO from "socket.io-client";
+import logo from "../../static/mainLogo.png"
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+//import { TbNumber0Small } from "react-icons/tb";
 
 
 
 
-export default function BDMLogin() {
+export default function BDMLogin({ setBdmToken }) {
+    
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const frontendkey = process.env.REACT_APP_FRONTEND_KEY;
 
@@ -16,8 +22,8 @@ export default function BDMLogin() {
     const [showPassword , setShowPassword] = useState(false)
     const [designation , setDesignation] = useState("")
     const [userId , setUserId] = useState(null)
-
-
+    const[errorMessage , setErrorMessage] = useState("")
+    const [ename , setEname] = useState("")
 
 
 
@@ -28,12 +34,15 @@ export default function BDMLogin() {
     const fetchData = async () => {
         try {
             const response = await axios.get(`${secretKey}/einfo`);
+            //console.log(response.data)
             setData(response.data)
 
         } catch (error) {
             console.log(error);
         }
     }
+
+    
     useEffect(()=>{
         fetchData()
         console.log("data", data)
@@ -47,6 +56,7 @@ export default function BDMLogin() {
         console.log("user", user)
         if (user) {
           setDesignation(user.designation)
+          setEname(user.ename)
           setUserId(user._id);
         } else {
           setUserId(null);
@@ -58,31 +68,41 @@ export default function BDMLogin() {
         findUserId();
     },[email , password])
 
-    console.log(email , password , designation)
+   // console.log(email , password , designation)
 
     const handleSubmit = async(e) => {
         e.preventDefault()
-
-        const ename = email;
         try{
-            const response = await axios.post(`${secretKey}/managerlogin` , {
+            const response = await axios.post(`${secretKey}/bdmlogin` , {
                 email,
                 password,
+                designation,
             })
-        }catch{
-
+            //console.log(response.data)
+            const { bdmToken } = response.data
+            //console.log(bdmToken)
+            setBdmToken(bdmToken)
+            localStorage.setItem("bdmName" , ename)
+            localStorage.setItem("bdmToken" , bdmToken)
+            localStorage.setItem("bdmUserId" , userId)
+            window.location.replace(`/bdmdashboard/${userId}`)  
+        }catch(error){
+            console.error("Login Failed" , error);
+            if(error.response.status === 401){
+               if(error.response.data.message === "Invalid email or password"){
+                setErrorMessage("Invalid Credentials");
+               }else if(error.response.data.message === "Designation id incorrect"){
+                setErrorMessage("Only Authorized for Sales Manager or BDM !")
+               }else{
+                setErrorMessage("Unknown Error Occured")
+               }
+            }else{
+                setErrorMessage("Unknown Error Occured")
+            }
         }
 
     }
     
-
-
-
-
-    
-
-    
-
 
 
     return (
@@ -160,9 +180,8 @@ export default function BDMLogin() {
                                                 </div>
                                             </div>
                                             <div style={{ textAlign: "center", color: "red" }}>
-                                                <span></span>
+                                                <span>{errorMessage}</span>
                                             </div>
-
                                             <div className="form-footer">
                                                 <button
                                                     type="submit"

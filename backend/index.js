@@ -309,6 +309,31 @@ app.post("/api/datamanagerlogin", async (req, res) => {
   }
 });
 
+app.post("/api/bdmlogin" , async(req,res)=>{
+  const { email , password } = req.body
+  //console.log(email,password)
+  const user = await adminModel.findOne({
+    email : email,
+    password : password,
+  })
+  //console.log(user)
+  if (!user) {
+    // If user is not found
+    return res.status(401).json({ message: "Invalid email or password" });
+  } else if (user.designation !== "Sales Manager") {
+    // If designation is incorrect
+    return res.status(401).json({ message: "Designation is incorrect" });
+  } else {
+    // If credentials are correct
+    const bdmToken = jwt.sign({ employeeId: user._id }, secretKey, {
+      expiresIn: "10h",
+    });
+    //console.log(bdmToken)
+    res.status(200).json({ bdmToken })
+    //socketIO.emit("Employee-login");
+  }
+});
+
 // app.post("/api/datamanagerlogin", async (req, res) => {
 //   const { email, password } = req.body;
 //   console.log(email,password)

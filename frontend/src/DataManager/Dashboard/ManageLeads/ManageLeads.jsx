@@ -1127,19 +1127,17 @@ function ManageLeads() {
         // Filtering logic to set the mainData based on the status
         if (status === "Assigned") {
             setmainData(data.filter((item) => item.ename !== "Not Alloted"));
-            setmainData(
-                data.sort((a, b) => {
-                    const dateA = a["AssignDate"] || "";
-                    const dateB = b["AssignDate"] || "";
-                    return dateB.localeCompare(dateA);
-                })
-            );
+            // setmainData(
+            //     data.sort((a, b) => {
+            //         const dateA = a["AssignDate"] || "";
+            //         const dateB = b["AssignDate"] || "";
+            //         return dateB.localeCompare(dateA);
+            //     })
+            // );
         }
         else {
             setmainData(data.filter((item) => item.ename === "Not Alloted"));
-
         }
-
         setDataStatus(status)
     }, 300);
 
@@ -2504,7 +2502,6 @@ function ManageLeads() {
                                             <th>State</th>
                                             <th>Company Email</th>
                                             <th>Status</th>
-                                            <th>Remarks</th>
                                             <th>Assigned to</th>
 
                                             <th>
@@ -2557,7 +2554,7 @@ function ManageLeads() {
                                             </tr>
                                         </tbody>
                                     ) : (
-                                        <tbody>
+                                        <tbody style={{ userSelect: "none" }} onContextMenu={(e) => e.preventDefault()}>
                                             {currentData.map((company, index) => (
                                                 <tr
                                                     key={index}
@@ -2582,54 +2579,10 @@ function ManageLeads() {
                                                     <td>{company["State"]}</td>
                                                     <td>{company["Company Email"]}</td>
                                                     <td>{company["Status"]}</td>
-                                                    <td>
-                                                        {company["Remarks"]}{" "}
-                                                        <IconEye
-                                                            onClick={() => {
-                                                                functionopenpopupremarks(company._id, company.Status);
-                                                            }}
-                                                            style={{
-                                                                width: "14px",
-                                                                height: "14px",
-                                                                color: "#d6a10c",
-                                                                cursor: "pointer",
-                                                                marginLeft: "4px",
-                                                            }}
-                                                        />
-                                                    </td>
                                                     <td>{company["ename"]}</td>
                                                     <td>{formatDate(company["AssignDate"])}</td>
                                                     <td>
-                                                        <IconButton onClick={() => handleDeleteClick(company._id)}>
-                                                            <DeleteIcon
-                                                                style={{
-                                                                    width: "14px",
-                                                                    height: "14px",
-                                                                    color: "#bf0b0b",
-                                                                }}
-                                                            >
-                                                                Delete
-                                                            </DeleteIcon>
-                                                        </IconButton>
-                                                        <IconButton onClick={
-                                                            data.length === "0"
-                                                                ? Swal.fire("Please Import Some data first")
-                                                                : () => {
-                                                                    functionopenModifyPopup();
-                                                                    handleUpdateClick(company._id);
-                                                                }
-                                                        }>
-                                                            < ModeEditIcon
-                                                                style={{
-                                                                    width: "14px",
-                                                                    height: "14px",
-                                                                    color: "grey",
-                                                                }}
-                                                            >
-                                                                Delete
-                                                            </ ModeEditIcon>
-                                                        </IconButton>
-                                                        <Link to={`/admin/leads/${company._id}`}>
+                                                        <Link to={`/datamanager/leads/${company._id}`}>
                                                             <IconButton>
                                                                 <IconEye
                                                                     style={{

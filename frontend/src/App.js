@@ -35,6 +35,9 @@ import DataManagerDashboard from "./DataManager/Dashboard/DataManagerDashboard.j
 import ManageLeads from "./DataManager/Dashboard/ManageLeads/ManageLeads.jsx";
 import DataManager_Employees from './DataManager/Dashboard/Employees/DataManager_Employees.jsx'
 import EmployeeLeads from "./DataManager/Dashboard/EmployeeLeads/EmployeeLeads.jsx";
+import BdmDashboard from "./BDM/Dashboard/BdmDashboard.jsx";
+import CompanyParticular_Datamanager from "./DataManager/Dashboard/ManageLeads/CompanyParticular_Datamanager.jsx";
+//import CompanyDetails from "./Processing/CompanyDetails.jsx";
 
 
 
@@ -45,6 +48,7 @@ function App() {
     localStorage.getItem("newtoken") || null
   );
   const [managerToken , setManagerToken] = useState(localStorage.getItem("managerToken") || null)
+  const [bdmToken , setBdmToken] = useState(localStorage.getItem("bdmToken") || null)
 
   return (
     <div className="App">
@@ -55,7 +59,7 @@ function App() {
             element={<EmployeeLogin setnewToken={setnewToken} />}
           />
 
-          <Route path="/bdmlogin" element={<BDMLogin/>} />
+          <Route path="/bdmlogin" element={<BDMLogin setBdmToken={setBdmToken}/>} />
           <Route path="/datamanagerlogin" element={<DataManagerLogin setManagerToken={setManagerToken}/>} />
           
           <Route
@@ -67,6 +71,7 @@ function App() {
             path="/employee-dashboard/:userId/"
             element={newtoken ? <EmployeeDashboard /> : <Navigate to="/" />}
           ></Route>
+          <Route path="/bdmdashboard/:userId/" element={<BdmDashboard/>}></Route>
 
           <Route path='/datamanager-dashboard/:userId/' element= {<DataManagerDashboard />} />
 
@@ -74,6 +79,7 @@ function App() {
             path="/datamanager/manageleads/"
             element={<ManageLeads/>}
           ></Route>
+           <Route path="/datamanager/leads/:companyId" element={<CompanyParticular_Datamanager/>}/>
           <Route path="/datamanager/employees" element={<DataManager_Employees/>}></Route>
           <Route path="/datamanager/employeeLeads/:id" element={<EmployeeLeads/>}></Route>
 

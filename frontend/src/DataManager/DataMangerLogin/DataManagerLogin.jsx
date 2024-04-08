@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 
 function DataManagerLogin({ setManagerToken}) {
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [data, setData] = useState([]);
@@ -132,7 +133,7 @@ useEffect(() => {
     return `${year}-${month}-${day}`;
   };
 
-  console.log(email , password , designation , ename)
+  //console.log(email , password , designation , ename)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -148,7 +149,7 @@ useEffect(() => {
         password,
         designation,
       });
-      console.log(response.data)
+      //console.log(response.data)
     //   const response2 = await axios.post(`${secretKey}/loginDetails`, {
     //           ename,
     //            date,
@@ -158,8 +159,6 @@ useEffect(() => {
   
       const { newtoken } = response.data;
       setManagerToken(newtoken);
-      console.log("managerToken", newtoken);
-      console.log(userId)
       localStorage.setItem("dataManagerName" , ename )
       localStorage.setItem("managerToken", newtoken);
       localStorage.setItem("dataManagerUserId", userId);

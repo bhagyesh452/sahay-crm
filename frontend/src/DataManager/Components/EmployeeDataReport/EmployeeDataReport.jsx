@@ -1188,7 +1188,7 @@ export default function EmployeeDataReport() {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody style={{ userSelect: "none" }} onContextMenu={(e) => e.preventDefault()}>
                                 {employeeData.length !== 0 &&
                                     companyData.length !== 0 &&
                                     employeeData.map((obj, index) => (
@@ -1392,8 +1392,9 @@ export default function EmployeeDataReport() {
                                         backgroundColor: "#f6f2e9",
                                         color: "black",
                                         fontWeight: 500,
-                                        zIndex: 2, // Ensure it's above the content
-                                    }}>
+                                        zIndex: 2,
+                                        userSelect: "none" // Ensure it's above the content
+                                    }} onContextMenu={(e) => e.preventDefault()}>
                                         <tr style={{ fontWeight: 500 }}>
                                             <td style={{ lineHeight: "32px" }} colSpan="2">
                                                 Total
@@ -1531,7 +1532,7 @@ export default function EmployeeDataReport() {
                       <th>Total Leads</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody style={{ userSelect: "none" }} onContextMenu={(e) => e.preventDefault()}>
                     {uniqueArray &&
                       uniqueArray.map((obj, index) => (
                         <tr key={`row-${index}`}>
@@ -1622,7 +1623,7 @@ export default function EmployeeDataReport() {
                       ))}
                   </tbody>
                   {uniqueArray && (
-                    <tfoot>
+                    <tfoot style={{ userSelect: "none" }} onContextMenu={(e) => e.preventDefault()}>
                       <tr style={{ fontWeight: 500 }}>
                         <td colSpan="2">Total</td>
                         <td>
