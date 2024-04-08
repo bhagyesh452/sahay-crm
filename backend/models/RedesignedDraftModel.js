@@ -51,7 +51,6 @@ const ServiceSchema = new mongoose.Schema({
 const TempSchema = new mongoose.Schema({
   "Company Name": {
     type: String,
-    unique:true
   },
   "Company Number": {
     type: Number,

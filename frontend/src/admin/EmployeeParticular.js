@@ -1773,7 +1773,7 @@ useEffect(() => {
                           )}
                         </>
                       )}
-                      {currentData.length === 0 && !loading && dataStatus !== "Matured" && (
+                      {currentData.length === 0 && !loading && (
                         <tbody>
                           <tr>
                             <td colSpan="11" className="p-2">
@@ -1782,15 +1782,7 @@ useEffect(() => {
                           </tr>
                         </tbody>
                       )}
-                      {companies.length === 0 && !companiesLoading && dataStatus === "Matured" && (
-                        <tbody>
-                          <tr>
-                            <td colSpan="11" className="p-2">
-                              <Nodata />
-                            </td>
-                          </tr>
-                        </tbody>
-                      )}
+                   
                     </table>
                   </div>
                   {currentData.length !== 0 && (

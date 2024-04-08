@@ -5,7 +5,7 @@ import AdminBookingForm from "./AdminBookingForm";
 import axios from "axios";
 import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
-import { TbBoxMultiple } from "react-icons/tb";
+import { TbBoxMultiple, TbMathPiDivide2 } from "react-icons/tb";
 import Nodata from "../components/Nodata";
 
 function BookingList() {
@@ -45,9 +45,13 @@ function BookingList() {
     setCurrentLeadform(leadFormData[0]);
   }, [leadFormData]);
 
-  useEffect(()=>{
-    setLeadFormData(infiniteBooking.filter((obj=> ((obj["Company Name"])).toLowerCase().includes(searchText))))
-  }, [searchText])
+  useEffect(() => {
+    setLeadFormData(
+      infiniteBooking.filter((obj) =>
+        obj["Company Name"].toLowerCase().includes(searchText)
+      )
+    );
+  }, [searchText]);
 
   const fetchRedesignedFormData = async () => {
     try {
@@ -144,7 +148,6 @@ function BookingList() {
                 <div className="col-2">
                   <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
                     <div class="input-icon">
-                 
                       <span class="input-icon-addon">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -173,7 +176,7 @@ function BookingList() {
                         class="form-control"
                         placeholder="Search Company"
                         aria-label="Search in website"
-                        onChange={(e)=>setSearchText(e.target.value)}
+                        onChange={(e) => setSearchText(e.target.value)}
                       />
                     </div>
                   </div>
@@ -208,8 +211,13 @@ function BookingList() {
                       {leadFormData.length !== 0 &&
                         leadFormData.map((obj, index) => (
                           <div
-                           
-                            className = {currentLeadform && currentLeadform["Company Name"] === obj["Company Name"] ?"bookings_Company_Name activeBox" : "bookings_Company_Name" }
+                            className={
+                              currentLeadform &&
+                              currentLeadform["Company Name"] ===
+                                obj["Company Name"]
+                                ? "bookings_Company_Name activeBox"
+                                : "bookings_Company_Name"
+                            }
                             onClick={() =>
                               setCurrentLeadform(
                                 leadFormData.find(
@@ -225,43 +233,48 @@ function BookingList() {
                               </div>
                               <div className="b_cmpny_time">
                                 {
-                                 formatDatePro( obj.moreBookings &&
-                                  obj.moreBookings.length !== 0
-                                    ? obj.moreBookings[
-                                        obj.moreBookings.length - 1
-                                      ].bookingDate // Get the latest bookingDate from moreBookings
-                                    : obj.bookingDate )// Use obj.bookingDate if moreBookings is empty or not present
+                                  formatDatePro(
+                                    obj.moreBookings &&
+                                      obj.moreBookings.length !== 0
+                                      ? obj.moreBookings[
+                                          obj.moreBookings.length - 1
+                                        ].bookingDate // Get the latest bookingDate from moreBookings
+                                      : obj.bookingDate
+                                  ) // Use obj.bookingDate if moreBookings is empty or not present
                                 }
                               </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                              <div className="b_Services_name d-flex">
-                                {(obj.services.length !== 0 ||
-                                  (obj.moreBookings &&
-                                    obj.moreBookings.length !== 0)) &&
-                                  [
-                                    ...obj.services,
-                                    ...(obj.moreBookings || []).map(
-                                      (booking) => booking.services
-                                    ),
-                                  ]
-                                    .flat()
-                                    .map((service) => (
-                                      <div
-                                        className="sname"
-                                        key={service.serviceId}
-                                      >
-                                        {service.serviceName}
-                                      </div>
-                                    ))}
-                              </div>
+                            <div className="b_Services_name d-flex flex-wrap">
+  {(obj.services.length !== 0 || (obj.moreBookings && obj.moreBookings.length !== 0)) &&
+    [
+      ...obj.services,
+      ...(obj.moreBookings || []).map((booking) => booking.services),
+    ]
+      .flat()
+      .slice(0, 3) // Limit to first 3 services
+      .map((service, index, array) => (
+        <div className="sname mb-1" key={service.serviceId}>
+          {service.serviceName}
+          {index === 2 && // Check if it's the last visible service
+            array.length > 3 && (
+              <div className="sname mb-1">
+                +{Math.max(obj.services.length + obj.moreBookings.length - 3, 0)}
+              </div>
+            )}
+        </div>
+      ))}
+</div>
 
-                              {obj.moreBookings.length!==0 && <div
-                                className="b_Services_multipal_services"
-                                title="Multipal Bookings"
-                              >
-                                <TbBoxMultiple />
-                              </div>}
+
+                              {obj.moreBookings.length !== 0 && (
+                                <div
+                                  className="b_Services_multipal_services"
+                                  title="Multipal Bookings"
+                                >
+                                  <TbBoxMultiple />
+                                </div>
+                              )}
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_amount d-flex">
@@ -279,9 +292,11 @@ function BookingList() {
                             </div>
                           </div>
                         ))}
-                        {leadFormData.length === 0 && <div>
-                          <Nodata/>
-                          </div>} 
+                      {leadFormData.length === 0 && (
+                        <div>
+                          <Nodata />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -378,12 +393,15 @@ function BookingList() {
                                 <div class="col-sm-5 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                     {currentLeadform &&
-                                    formatDatePro(Object.keys(currentLeadform).length !== 0
-                                      ? currentLeadform.incoDate
-                                      : leadFormData &&
-                                        leadFormData.length !== 0
-                                      ? leadFormData[0].incoDate
-                                      : "-")}
+                                      formatDatePro(
+                                        Object.keys(currentLeadform).length !==
+                                          0
+                                          ? currentLeadform.incoDate
+                                          : leadFormData &&
+                                            leadFormData.length !== 0
+                                          ? leadFormData[0].incoDate
+                                          : "-"
+                                      )}
                                   </div>
                                 </div>
                               </div>
@@ -412,7 +430,7 @@ function BookingList() {
                               <div class="row m-0 h-100">
                                 <div class="col-sm-4 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                    GST 
+                                    GST
                                   </div>
                                 </div>
                                 <div class="col-sm-8 align-self-stretch p-0">
@@ -664,7 +682,6 @@ function BookingList() {
                                             {Number(obj.firstPayment).toFixed(
                                               2
                                             )}
-                                          
                                           </div>
                                         </div>
                                       </div>
@@ -713,7 +730,7 @@ function BookingList() {
                                             {Number(obj.thirdPayment).toFixed(
                                               2
                                             )}
-                                             {"("}
+                                            {"("}
                                             {isNaN(
                                               new Date(obj.thirdPaymentRemarks)
                                             )
@@ -740,7 +757,7 @@ function BookingList() {
                                             {Number(obj.fourthPayment).toFixed(
                                               2
                                             )}{" "}
-                                             {"("}
+                                            {"("}
                                             {isNaN(
                                               new Date(obj.fourthPaymentRemarks)
                                             )
@@ -919,7 +936,10 @@ function BookingList() {
                                     )}
                                   </div>
                                   <div className="booking-docs-preview-text">
-                                    <p className="rematkText text-wrap m-auto m-0" title={obj.originalname}>
+                                    <p
+                                      className="rematkText text-wrap m-auto m-0"
+                                      title={obj.originalname}
+                                    >
                                       {obj.originalname}
                                     </p>
                                   </div>
@@ -930,495 +950,494 @@ function BookingList() {
                       </div>
 
                       {/* ------------------------------------------ Multiple Booking Section Starts here ----------------------------- */}
-                      {currentLeadform && currentLeadform.moreBookings.length!==0 && currentLeadform.moreBookings.map((objMain,index)=>(
-<>
-<div className="row align-items-center m-0 justify-content-between mb-1 mt-3">
-                            <div className="mul_booking_heading col-6">
-                              <b>Booking {index+2}</b>
+                      {currentLeadform &&
+                        currentLeadform.moreBookings.length !== 0 &&
+                        currentLeadform.moreBookings.map((objMain, index) => (
+                          <>
+                            <div className="row align-items-center m-0 justify-content-between mb-1 mt-3">
+                              <div className="mul_booking_heading col-6">
+                                <b>Booking {index + 2}</b>
+                              </div>
+                              <div className="mul_booking_date col-6">
+                                <b>{formatDatePro(objMain.bookingDate)}</b>
+                              </div>
                             </div>
-                            <div className="mul_booking_date col-6">
-                              <b>
-                                {formatDatePro(objMain.bookingDate)}
-                              </b>
+                            <div className="mul-booking-card mt-2">
+                              {/* -------- Step 2 ---------*/}
+                              <div className="mb-2 mul-booking-card-inner-head">
+                                <b>Booking Details:</b>
+                              </div>
+                              <div className="my-card">
+                                <div className="my-card-body">
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100">
+                                            BDE Name
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            {objMain.bdeName}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                            BDE Email
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            {objMain.bdeEmail}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                            BDM Name
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            {objMain.bdmName}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100">
+                                            BDM Email
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            {objMain.bdmEmail}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                            Booking Date{" "}
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            {objMain.bookingDate}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                            Lead Source
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            {objMain.bookingSource === "Other"
+                                              ? objMain.otherBookingSource
+                                              : objMain.bookingSource}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              {/* -------- Step 3 ---------*/}
+                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                                <b>Services And Payment Details:</b>
+                              </div>
+                              <div className="my-card">
+                                <div className="my-card-body">
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-6 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100">
+                                            No. Of Services
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            {objMain.services.length}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              {objMain.services.map((obj, index) => (
+                                <div className="my-card mt-1">
+                                  <div className="my-card-body">
+                                    <div className="row m-0 bdr-btm-eee">
+                                      <div className="col-lg-6 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h h-100">
+                                              {getOrdinal(index + 1)} Services
+                                              Name
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">
+                                              {obj.serviceName}{" "}
+                                              {obj.withDSC && "With DSC"}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-6 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                              Total Amount
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                              ₹ {obj.totalPaymentWGST}/- {"("}
+                                              {obj.totalPaymentWGST !==
+                                              obj.totalPaymentWOGST
+                                                ? "With GST"
+                                                : "Without GST"}
+                                              {")"}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0 bdr-btm-eee">
+                                      <div className="col-lg-6 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h h-100">
+                                              Payment Terms
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              {obj.paymentTerms}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-6 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                              Notes
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                              {obj.paymentRemarks
+                                                ? obj.paymentRemarks
+                                                : "N/A"}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0 bdr-btm-eee">
+                                      {obj.firstPayment !== 0 && (
+                                        <div className="col-lg-6 col-sm-6 p-0">
+                                          <div class="row m-0">
+                                            <div class="col-sm-4 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_h h-100">
+                                                First payment
+                                              </div>
+                                            </div>
+                                            <div class="col-sm-8 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                ₹{" "}
+                                                {Number(
+                                                  obj.firstPayment
+                                                ).toFixed(2)}
+                                                /-
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                      {obj.secondPayment !== 0 && (
+                                        <div className="col-lg-6 col-sm-6 p-0">
+                                          <div class="row m-0">
+                                            <div class="col-sm-4 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                Second Paymnet
+                                              </div>
+                                            </div>
+                                            <div class="col-sm-8 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                ₹
+                                                {Number(
+                                                  obj.secondPayment
+                                                ).toFixed(2)}
+                                                /- {"("}
+                                                {isNaN(
+                                                  new Date(
+                                                    obj.secondPaymentRemarks
+                                                  )
+                                                )
+                                                  ? obj.secondPaymentRemarks
+                                                  : "On " +
+                                                    obj.secondPaymentRemarks +
+                                                    ")"}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="row m-0 bdr-btm-eee">
+                                      {obj.thirdPayment !== 0 && (
+                                        <div className="col-lg-6 col-sm-6 p-0">
+                                          <div class="row m-0">
+                                            <div class="col-sm-4 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_h h-100">
+                                                Third Payment
+                                              </div>
+                                            </div>
+                                            <div class="col-sm-8 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                ₹{" "}
+                                                {Number(
+                                                  obj.thirdPayment
+                                                ).toFixed(2)}
+                                                /- {"("}
+                                                {isNaN(
+                                                  new Date(
+                                                    obj.thirdPaymentRemarks
+                                                  )
+                                                )
+                                                  ? obj.thirdPaymentRemarks
+                                                  : "On " +
+                                                    obj.thirdPaymentRemarks +
+                                                    ")"}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                      {obj.fourthPayment !== 0 && (
+                                        <div className="col-lg-6 col-sm-6 p-0">
+                                          <div class="row m-0">
+                                            <div class="col-sm-4 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                Fourth Payment
+                                              </div>
+                                            </div>
+                                            <div class="col-sm-8 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                ₹{" "}
+                                                {Number(
+                                                  obj.fourthPayment
+                                                ).toFixed(2)}{" "}
+                                                /- {"("}
+                                                {isNaN(
+                                                  new Date(
+                                                    obj.fourthPaymentRemarks
+                                                  )
+                                                )
+                                                  ? obj.fourthPaymentRemarks
+                                                  : "On " +
+                                                    obj.fourthPaymentRemarks +
+                                                    ")"}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              {/* -------- Step 4 ---------*/}
+                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                                <b>Payment Summary:</b>
+                              </div>
+                              <div className="my-card">
+                                <div className="my-card-body">
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-5 align-self-stretchh p-0">
+                                          <div class="booking_inner_dtl_h h-100">
+                                            Total Amount
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-7 align-self-stretchh p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            ₹{" "}
+                                            {Number(
+                                              objMain.totalAmount
+                                            ).toFixed(2)}
+                                            /-
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-5 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                            Received Amount
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-7 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            ₹{" "}
+                                            {Number(
+                                              objMain.receivedAmount
+                                            ).toFixed(2)}
+                                            /-
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-5 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                            Pending Amount
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-7 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            ₹{" "}
+                                            {Number(
+                                              objMain.pendingAmount
+                                            ).toFixed(2)}
+                                            /-
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-6 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100">
+                                            Payment Method
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            {objMain.paymentMethod}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-6 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                            Extra Remarks
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            {objMain.extraNotes}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                                <b>Payment Receipt and Additional Documents:</b>
+                              </div>
+                              <div className="row">
+                                <div className="col-sm-2 mb-1">
+                                  <div className="booking-docs-preview">
+                                    <div
+                                      className="booking-docs-preview-img"
+                                      onClick={() =>
+                                        handleViewPdfReciepts(
+                                          objMain.paymentReceipt[0].filename
+                                        )
+                                      }
+                                    >
+                                      {objMain.paymentReceipt[0].filename.endsWith(
+                                        ".pdf"
+                                      ) ? (
+                                        <PdfImageViewerAdmin
+                                          type="pdf"
+                                          path={
+                                            objMain.paymentReceipt[0].filename
+                                          }
+                                        />
+                                      ) : (
+                                        <img
+                                          src={`${secretKey}/recieptpdf/${objMain.paymentReceipt[0].filename}`}
+                                          alt={"MyImg"}
+                                        ></img>
+                                      )}
+                                    </div>
+                                    <div className="booking-docs-preview-text">
+                                      <p className="rematkText text-wrap m-auto m-0">
+                                        Receipt.pdf
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                                {objMain.otherDocs.map((obj) => (
+                                  <div className="col-sm-2 mb-1">
+                                    <div className="booking-docs-preview">
+                                      <div
+                                        className="booking-docs-preview-img"
+                                        onClick={() =>
+                                          handleViewPdOtherDocs(obj.filename)
+                                        }
+                                      >
+                                        {obj.filename.endsWith(".pdf") ? (
+                                          <PdfImageViewerAdmin
+                                            type="pdf"
+                                            path={obj.filename}
+                                          />
+                                        ) : (
+                                          <img
+                                            src={`${secretKey}/otherpdf/${obj.filename}`}
+                                            alt={pdfimg}
+                                          ></img>
+                                        )}
+                                      </div>
+                                      <div className="booking-docs-preview-text">
+                                        <p
+                                          className="rematkText text-wrap m-auto m-0"
+                                          title={obj.originalname}
+                                        >
+                                          {obj.originalname}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                          </div>                                                    
-<div className="mul-booking-card mt-2">
-
-                         
-                    
-{/* -------- Step 2 ---------*/}
-<div className="mb-2 mul-booking-card-inner-head">
-  <b>Booking Details:</b>
-</div>
-<div className="my-card">
-  <div className="my-card-body">
-    <div className="row m-0 bdr-btm-eee">
-      <div className="col-lg-4 col-sm-6 p-0">
-        <div class="row m-0">
-          <div class="col-sm-4 align-self-stretch p-0">
-            <div class="booking_inner_dtl_h h-100">
-              BDE Name
-            </div>
-          </div>
-          <div class="col-sm-8 align-self-stretch p-0">
-            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-              {objMain.bdeName}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col-lg-4 col-sm-6 p-0">
-        <div class="row m-0">
-          <div class="col-sm-4 align-self-stretch p-0">
-            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-              BDE Email
-            </div>
-          </div>
-          <div class="col-sm-8 align-self-stretch p-0">
-            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-              {objMain.bdeEmail}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col-lg-4 col-sm-6 p-0">
-        <div class="row m-0">
-          <div class="col-sm-4 align-self-stretch p-0">
-            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-              BDM Name
-            </div>
-          </div>
-          <div class="col-sm-8 align-self-stretch p-0">
-            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-              {objMain.bdmName}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div className="row m-0 bdr-btm-eee">
-      <div className="col-lg-4 col-sm-6 p-0">
-        <div class="row m-0">
-          <div class="col-sm-4 align-self-stretch p-0">
-            <div class="booking_inner_dtl_h h-100">
-              BDM Email
-            </div>
-          </div>
-          <div class="col-sm-8 align-self-stretch p-0">
-            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-              {objMain.bdmEmail}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col-lg-4 col-sm-6 p-0">
-        <div class="row m-0">
-          <div class="col-sm-4 align-self-stretch p-0">
-            <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-              Booking Date{" "}
-            </div>
-          </div>
-          <div class="col-sm-8 align-self-stretch p-0">
-            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-              {objMain.bookingDate}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col-lg-4 col-sm-6 p-0">
-        <div class="row m-0">
-          <div class="col-sm-4 align-self-stretch p-0">
-            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-              Lead Source
-            </div>
-          </div>
-          <div class="col-sm-8 align-self-stretch p-0">
-            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-              {
-                (objMain.bookingSource ===
-                "Other"
-                  ? objMain.otherBookingSource
-                  : objMain.bookingSource)}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-{/* -------- Step 3 ---------*/}
-<div className="mb-2 mt-3 mul-booking-card-inner-head">
-  <b>Services And Payment Details:</b>
-</div>
-<div className="my-card">
-  <div className="my-card-body">
-    <div className="row m-0 bdr-btm-eee">
-      <div className="col-lg-6 col-sm-6 p-0">
-        <div class="row m-0">
-          <div class="col-sm-4 align-self-stretch p-0">
-            <div class="booking_inner_dtl_h h-100">
-              No. Of Services
-            </div>
-          </div>
-          <div class="col-sm-8 align-self-stretch p-0">
-            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-              {objMain.services.length}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-{objMain.services.map((obj, index) => (
-    <div className="my-card mt-1">
-      <div className="my-card-body">
-        <div className="row m-0 bdr-btm-eee">
-          <div className="col-lg-6 col-sm-6 p-0">
-            <div class="row m-0">
-              <div class="col-sm-4 align-self-stretch p-0">
-                <div class="booking_inner_dtl_h h-100">
-                  {getOrdinal(index + 1)} Services Name
-                </div>
-              </div>
-              <div class="col-sm-8 align-self-stretch p-0">
-                <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">
-                  {obj.serviceName}{" "}
-                  {obj.withDSC && "With DSC"}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-lg-6 col-sm-6 p-0">
-            <div class="row m-0">
-              <div class="col-sm-4 align-self-stretch p-0">
-                <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                  Total Amount
-                </div>
-              </div>
-              <div class="col-sm-8 align-self-stretch p-0">
-                <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                  ₹ {obj.totalPaymentWGST}/- {"("}
-                  {obj.totalPaymentWGST !==
-                  obj.totalPaymentWOGST
-                    ? "With GST"
-                    : "Without GST"}
-                  {")"}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="row m-0 bdr-btm-eee">
-          <div className="col-lg-6 col-sm-6 p-0">
-            <div class="row m-0">
-              <div class="col-sm-4 align-self-stretch p-0">
-                <div class="booking_inner_dtl_h h-100">
-                  Payment Terms
-                </div>
-              </div>
-              <div class="col-sm-8 align-self-stretch p-0">
-                <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                  {obj.paymentTerms}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-lg-6 col-sm-6 p-0">
-            <div class="row m-0">
-              <div class="col-sm-4 align-self-stretch p-0">
-                <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                  Notes
-                </div>
-              </div>
-              <div class="col-sm-8 align-self-stretch p-0">
-                <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                  {obj.paymentRemarks
-                    ? obj.paymentRemarks
-                    : "N/A"}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="row m-0 bdr-btm-eee">
-          {obj.firstPayment !== 0 && (
-            <div className="col-lg-6 col-sm-6 p-0">
-              <div class="row m-0">
-                <div class="col-sm-4 align-self-stretch p-0">
-                  <div class="booking_inner_dtl_h h-100">
-                    First payment
-                  </div>
-                </div>
-                <div class="col-sm-8 align-self-stretch p-0">
-                  <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                    ₹{" "}
-                    {Number(obj.firstPayment).toFixed(
-                      2
-                    )}
-                    /-
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          {obj.secondPayment !== 0 && (
-            <div className="col-lg-6 col-sm-6 p-0">
-              <div class="row m-0">
-                <div class="col-sm-4 align-self-stretch p-0">
-                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                    Second Paymnet
-                  </div>
-                </div>
-                <div class="col-sm-8 align-self-stretch p-0">
-                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                    ₹
-                    {Number(obj.secondPayment).toFixed(
-                      2
-                    )}
-                    /- {"("}
-                    {isNaN(
-                      new Date(obj.secondPaymentRemarks)
-                    )
-                      ? obj.secondPaymentRemarks
-                      : "On " +
-                        obj.secondPaymentRemarks +
-                        ")"}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="row m-0 bdr-btm-eee">
-          {obj.thirdPayment !== 0 && (
-            <div className="col-lg-6 col-sm-6 p-0">
-              <div class="row m-0">
-                <div class="col-sm-4 align-self-stretch p-0">
-                  <div class="booking_inner_dtl_h h-100">
-                    Third Payment
-                  </div>
-                </div>
-                <div class="col-sm-8 align-self-stretch p-0">
-                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                    ₹{" "}
-                    {Number(obj.thirdPayment).toFixed(
-                      2
-                    )}
-                    /- {"("}
-                    {isNaN(
-                      new Date(obj.thirdPaymentRemarks)
-                    )
-                      ? obj.thirdPaymentRemarks
-                      : "On " +
-                        obj.thirdPaymentRemarks +
-                        ")"}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          {obj.fourthPayment !== 0 && (
-            <div className="col-lg-6 col-sm-6 p-0">
-              <div class="row m-0">
-                <div class="col-sm-4 align-self-stretch p-0">
-                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                    Fourth Payment
-                  </div>
-                </div>
-                <div class="col-sm-8 align-self-stretch p-0">
-                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                    ₹{" "}
-                    {Number(obj.fourthPayment).toFixed(
-                      2
-                    )}{" "}
-                    /- {"("}
-                    {isNaN(
-                      new Date(obj.fourthPaymentRemarks)
-                    )
-                      ? obj.fourthPaymentRemarks
-                      : "On " +
-                        obj.fourthPaymentRemarks +
-                        ")"}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  ))}
-{/* -------- Step 4 ---------*/}
-<div className="mb-2 mt-3 mul-booking-card-inner-head">
-  <b>Payment Summary:</b>
-</div>
-<div className="my-card">
-  <div className="my-card-body">
-    <div className="row m-0 bdr-btm-eee">
-      <div className="col-lg-4 col-sm-6 p-0">
-        <div class="row m-0">
-          <div class="col-sm-5 align-self-stretchh p-0">
-            <div class="booking_inner_dtl_h h-100">
-              Total Amount
-            </div>
-          </div>
-          <div class="col-sm-7 align-self-stretchh p-0">
-            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-              ₹{" "}
-              {
-                Number(
-                  objMain.totalAmount
-                ).toFixed(2)}
-              /-
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col-lg-4 col-sm-6 p-0">
-        <div class="row m-0">
-          <div class="col-sm-5 align-self-stretch p-0">
-            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-              Received Amount
-            </div>
-          </div>
-          <div class="col-sm-7 align-self-stretch p-0">
-            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-              ₹{" "}
-              {
-                Number(
-                  objMain.receivedAmount
-                ).toFixed(2)}
-              /-
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col-lg-4 col-sm-6 p-0">
-        <div class="row m-0">
-          <div class="col-sm-5 align-self-stretch p-0">
-            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-              Pending Amount
-            </div>
-          </div>
-          <div class="col-sm-7 align-self-stretch p-0">
-            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-              ₹{" "}
-              {
-                Number(
-                  objMain.pendingAmount
-                ).toFixed(2)}
-              /-
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div className="row m-0 bdr-btm-eee">
-      <div className="col-lg-6 col-sm-6 p-0">
-        <div class="row m-0">
-          <div class="col-sm-4 align-self-stretch p-0">
-            <div class="booking_inner_dtl_h h-100">
-              Payment Method
-            </div>
-          </div>
-          <div class="col-sm-8 align-self-stretch p-0">
-            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-              {objMain.paymentMethod}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col-lg-6 col-sm-6 p-0">
-        <div class="row m-0">
-          <div class="col-sm-4 align-self-stretch p-0">
-            <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-              Extra Remarks
-            </div>
-          </div>
-          <div class="col-sm-8 align-self-stretch p-0">
-            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-              {objMain.extraNotes}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div className="mb-2 mt-3 mul-booking-card-inner-head">
-  <b>Payment Receipt and Additional Documents:</b>
-</div>
-<div className="row">
-  <div className="col-sm-2 mb-1">
-    <div className="booking-docs-preview">
-      <div
-        className="booking-docs-preview-img"
-        onClick={() =>
-          handleViewPdfReciepts(
-            objMain.paymentReceipt[0].filename
-          )
-        }
-      >
-        {objMain.paymentReceipt[0].filename.endsWith(
-          ".pdf"
-        ) ? (
-          <PdfImageViewerAdmin
-            type="pdf"
-            path={
-              objMain.paymentReceipt[0].filename
-            }
-          />
-        ) : (
-          <img
-            src={`${secretKey}/recieptpdf/${
-              objMain.paymentReceipt[0].filename
-            }`}
-            alt={"MyImg"}
-          ></img>
-        )}
-      </div>
-      <div className="booking-docs-preview-text">
-        <p className="rematkText text-wrap m-auto m-0">
-          Receipt.pdf
-        </p>
-      </div>
-    </div>
-  </div>
-  {objMain.otherDocs.map((obj) => (
-      <div className="col-sm-2 mb-1">
-        <div className="booking-docs-preview">
-          <div
-            className="booking-docs-preview-img"
-            onClick={() =>
-              handleViewPdOtherDocs(obj.filename)
-            }
-          >
-            {obj.filename.endsWith(".pdf") ? (
-              <PdfImageViewerAdmin
-                type="pdf"
-                path={obj.filename}
-              />
-            ) : (
-              <img
-                src={`${secretKey}/otherpdf/${obj.filename}`}
-                alt={pdfimg}
-              ></img>
-            )}
-          </div>
-          <div className="booking-docs-preview-text">
-            <p className="rematkText text-wrap m-auto m-0" title={obj.originalname}>
-              {obj.originalname}
-            </p>
-          </div>
-        </div>
-      </div>
-    ))}
-</div>
-</div>
-</>
-
-                      ))}
+                          </>
+                        ))}
                     </div>
                   </div>
                 </div>

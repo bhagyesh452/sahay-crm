@@ -5319,7 +5319,12 @@ app.delete('/api/redesigned-delete-booking/:companyId', async (req, res) => {
     const companyId = req.params.companyId;
     // Find and delete the booking with the given companyId
     const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({ company: companyId });
-    const deleteMainBooking = await CompanyModel.findByIdAndDelete({ _id: companyId });
+    const updateMainBooking = await CompanyModel.findByIdAndUpdate(
+      companyId,
+      { $set: { "Status": "Interested" } },
+      { new: true }
+    );
+    
     if (!deletedBooking) {
       return res.status(404).send('Booking not found');
     }
