@@ -3,7 +3,7 @@ import Header from "./Header";
 import Navbar from "./Navbar";
 import AdminBookingForm from "./AdminBookingForm";
 import axios from "axios";
-import PdfImageViewerAdmin from './PdfViewerAdmin'
+import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
 import { TbBoxMultiple } from "react-icons/tb";
 
@@ -40,8 +40,7 @@ function BookingList() {
   };
   useEffect(() => {
     setCurrentLeadform(leadFormData[0]);
-  }, [leadFormData])
-  
+  }, [leadFormData]);
 
   const fetchRedesignedFormData = async () => {
     try {
@@ -78,7 +77,6 @@ function BookingList() {
     }
     return total.toFixed(2);
   };
-  
 
   const calculateReceivedAmount = (obj) => {
     let received = Number(obj.receivedAmount);
@@ -198,7 +196,17 @@ function BookingList() {
                     <div className="booking-list-body">
                       {leadFormData.length !== 0 &&
                         leadFormData.map((obj, index) => (
-                          <div className="bookings_Company_Name activeBox" onClick={()=>setCurrentLeadform(leadFormData.find(data=>data["Company Name"] === obj["Company Name"]))}>
+                          <div
+                            className="bookings_Company_Name activeBox"
+                            onClick={() =>
+                              setCurrentLeadform(
+                                leadFormData.find(
+                                  (data) =>
+                                    data["Company Name"] === obj["Company Name"]
+                                )
+                              )
+                            }
+                          >
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="b_cmpny_name cName-text-wrap">
                                 {obj["Company Name"]}
@@ -268,10 +276,12 @@ function BookingList() {
                     <div className="booking-deatils-heading">
                       <div className="d-flex justify-content-between">
                         <div className="b_dtl_C_name">
-                        {currentLeadform && Object.keys(currentLeadform).length !== 0 ? 
-  currentLeadform["Company Name"] : 
-  (leadFormData && leadFormData.length !== 0 ? leadFormData[0]["Company Name"] : "-")
-}
+                          {currentLeadform &&
+                          Object.keys(currentLeadform).length !== 0
+                            ? currentLeadform["Company Name"]
+                            : leadFormData && leadFormData.length !== 0
+                            ? leadFormData[0]["Company Name"]
+                            : "-"}
                         </div>
                       </div>
                     </div>
@@ -290,11 +300,13 @@ function BookingList() {
                                 </div>
                                 <div class="col-sm-6 align-self-stretc p-0">
                                   <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                  {currentLeadform && Object.keys(currentLeadform).length !== 0 ? 
-  currentLeadform["Company Name"] : 
-  (leadFormData && leadFormData.length !== 0 ? leadFormData[0]["Company Name"] : "-")
-}
-
+                                    {currentLeadform &&
+                                    Object.keys(currentLeadform).length !== 0
+                                      ? currentLeadform["Company Name"]
+                                      : leadFormData &&
+                                        leadFormData.length !== 0
+                                      ? leadFormData[0]["Company Name"]
+                                      : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -308,10 +320,13 @@ function BookingList() {
                                 </div>
                                 <div class="col-sm-6 align-self-stretc p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                  {currentLeadform && Object.keys(currentLeadform).length !== 0 ? 
-  currentLeadform["Company Email"] : 
-  (leadFormData && leadFormData.length !== 0 ? leadFormData[0]["Company Email"] : "-")
-}
+                                    {currentLeadform &&
+                                    Object.keys(currentLeadform).length !== 0
+                                      ? currentLeadform["Company Email"]
+                                      : leadFormData &&
+                                        leadFormData.length !== 0
+                                      ? leadFormData[0]["Company Email"]
+                                      : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -325,10 +340,13 @@ function BookingList() {
                                 </div>
                                 <div class="col-sm-6 align-self-stretc p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                  {currentLeadform && Object.keys(currentLeadform).length !== 0 ? 
-  currentLeadform["Company Number"] : 
-  (leadFormData && leadFormData.length !== 0 ? leadFormData[0]["Company Number"] : "-")
-}
+                                    {currentLeadform &&
+                                    Object.keys(currentLeadform).length !== 0
+                                      ? currentLeadform["Company Number"]
+                                      : leadFormData &&
+                                        leadFormData.length !== 0
+                                      ? leadFormData[0]["Company Number"]
+                                      : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -344,10 +362,13 @@ function BookingList() {
                                 </div>
                                 <div class="col-sm-6 align-self-stretc p-0">
                                   <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                  {currentLeadform && Object.keys(currentLeadform).length !== 0 ? 
-  currentLeadform.incoDate : 
-  (leadFormData && leadFormData.length !== 0 ? leadFormData[0].incoDate: "-")
-}
+                                    {currentLeadform &&
+                                    Object.keys(currentLeadform).length !== 0
+                                      ? currentLeadform.incoDate
+                                      : leadFormData &&
+                                        leadFormData.length !== 0
+                                      ? leadFormData[0].incoDate
+                                      : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -361,10 +382,13 @@ function BookingList() {
                                 </div>
                                 <div class="col-sm-7 align-self-stretc p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                  {currentLeadform && Object.keys(currentLeadform).length !== 0 ? 
-  currentLeadform.panNumber : 
-  (leadFormData && leadFormData.length !== 0 ? leadFormData[0].panNumber : "-")
-}
+                                    {currentLeadform &&
+                                    Object.keys(currentLeadform).length !== 0
+                                      ? currentLeadform.panNumber
+                                      : leadFormData &&
+                                        leadFormData.length !== 0
+                                      ? leadFormData[0].panNumber
+                                      : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -378,10 +402,13 @@ function BookingList() {
                                 </div>
                                 <div class="col-sm-7 align-self-stretc p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                  {currentLeadform && Object.keys(currentLeadform).length !== 0 ? 
-  currentLeadform.gstNumber : 
-  (leadFormData && leadFormData.length !== 0 ? leadFormData[0].gstNumber : "-")
-}
+                                    {currentLeadform &&
+                                    Object.keys(currentLeadform).length !== 0
+                                      ? currentLeadform.gstNumber
+                                      : leadFormData &&
+                                        leadFormData.length !== 0
+                                      ? leadFormData[0].gstNumber
+                                      : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -390,16 +417,19 @@ function BookingList() {
                         </div>
                       </div>
                       {/* --------If Multipal Booking (Bookign heading) ---------*/}
-                      {currentLeadform && currentLeadform.moreBookings.length !== 0 && (
-          <div className="row align-items-center m-0 justify-content-between mb-1 mt-3">
-            <div className="mul_booking_heading col-6">
-              <b>Booking 1</b>
-            </div>
-            <div className="mul_booking_date col-6">
-              <b>{formatDatePro(currentLeadform.bookingDate)}</b>
-            </div>
-          </div>
-        )}
+                      {currentLeadform &&
+                        currentLeadform.moreBookings.length !== 0 && (
+                          <div className="row align-items-center m-0 justify-content-between mb-1 mt-3">
+                            <div className="mul_booking_heading col-6">
+                              <b>Booking 1</b>
+                            </div>
+                            <div className="mul_booking_date col-6">
+                              <b>
+                                {formatDatePro(currentLeadform.bookingDate)}
+                              </b>
+                            </div>
+                          </div>
+                        )}
                       {/* -------- Booking Details ---------*/}
                       <div className="mul-booking-card mt-2">
                         {/* -------- Step 2 ---------*/}
@@ -418,7 +448,8 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-8 align-self-stretc p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                      {currentLeadform && currentLeadform.bdeName}
+                                      {currentLeadform &&
+                                        currentLeadform.bdeName}
                                     </div>
                                   </div>
                                 </div>
@@ -432,7 +463,8 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-8 align-self-stretc p-0">
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    {currentLeadform && currentLeadform.bdeEmail}
+                                      {currentLeadform &&
+                                        currentLeadform.bdeEmail}
                                     </div>
                                   </div>
                                 </div>
@@ -446,7 +478,8 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-8 align-self-stretc p-0">
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    {currentLeadform && currentLeadform.bdmName}
+                                      {currentLeadform &&
+                                        currentLeadform.bdmName}
                                     </div>
                                   </div>
                                 </div>
@@ -462,7 +495,8 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-8 align-self-stretc p-0">
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    {currentLeadform && currentLeadform.bdmEmail}
+                                      {currentLeadform &&
+                                        currentLeadform.bdmEmail}
                                     </div>
                                   </div>
                                 </div>
@@ -476,7 +510,8 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-8 align-self-stretc p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                    {currentLeadform && currentLeadform.bookingDate}
+                                      {currentLeadform &&
+                                        currentLeadform.bookingDate}
                                     </div>
                                   </div>
                                 </div>
@@ -490,7 +525,11 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-8 align-self-stretc p-0">
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    {currentLeadform && (currentLeadform.bookingSource === "Other" ? currentLeadform.otherBookingSource : currentLeadform.bookingSource)}
+                                      {currentLeadform &&
+                                        (currentLeadform.bookingSource ===
+                                        "Other"
+                                          ? currentLeadform.otherBookingSource
+                                          : currentLeadform.bookingSource)}
                                     </div>
                                   </div>
                                 </div>
@@ -514,7 +553,8 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-8 align-self-stretc p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                    {currentLeadform && currentLeadform.services.length}
+                                      {currentLeadform &&
+                                        currentLeadform.services.length}
                                     </div>
                                   </div>
                                 </div>
@@ -522,153 +562,186 @@ function BookingList() {
                             </div>
                           </div>
                         </div>
-                        {currentLeadform && currentLeadform.services.map((obj, index) => (
-            <div className="my-card mt-1">
-              <div className="my-card-body">
-                <div className="row m-0 bdr-btm-eee">
-                  <div className="col-lg-6 col-sm-6 p-0">
-                    <div class="row m-0">
-                      <div class="col-sm-4 align-self-stretc p-0">
-                        <div class="booking_inner_dtl_h h-100">
-                          {getOrdinal(index + 1)} Services Name
-                        </div>
-                      </div>
-                      <div class="col-sm-8 align-self-stretc p-0">
-                        <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">
-                          {obj.serviceName} {obj.withDSC && "With DSC"}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-6 col-sm-6 p-0">
-                    <div class="row m-0">
-                      <div class="col-sm-4 align-self-stretc p-0">
-                        <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                          Total Amount
-                        </div>
-                      </div>
-                      <div class="col-sm-8 align-self-stretc p-0">
-                        <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                          ₹ {obj.totalPaymentWGST}/- {"("}
-                          {obj.totalPaymentWGST !== obj.totalPaymentWOGST
-                            ? "With GST"
-                            : "Without GST"}
-                          {")"}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="row m-0 bdr-btm-eee">
-                  <div className="col-lg-6 col-sm-6 p-0">
-                    <div class="row m-0">
-                      <div class="col-sm-4 align-self-stretc p-0">
-                        <div class="booking_inner_dtl_h h-100">
-                          Payment Terms
-                        </div>
-                      </div>
-                      <div class="col-sm-8 align-self-stretc p-0">
-                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                          {obj.paymentTerms}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-6 col-sm-6 p-0">
-                    <div class="row m-0">
-                      <div class="col-sm-4 align-self-stretc p-0">
-                        <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                          Notes
-                        </div>
-                      </div>
-                      <div class="col-sm-8 align-self-stretc p-0">
-                        <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                          {obj.paymentRemarks ? obj.paymentRemarks : "N/A"}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="row m-0 bdr-btm-eee">
-                  {obj.firstPayment !== 0 && (
-                    <div className="col-lg-6 col-sm-6 p-0">
-                      <div class="row m-0">
-                        <div class="col-sm-4 align-self-stretc p-0">
-                          <div class="booking_inner_dtl_h h-100">
-                            First payment
-                          </div>
-                        </div>
-                        <div class="col-sm-8 align-self-stretc p-0">
-                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                            ₹ {Number(obj.firstPayment).toFixed(2)}/-
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {obj.secondPayment !== 0 && (
-                    <div className="col-lg-6 col-sm-6 p-0">
-                      <div class="row m-0">
-                        <div class="col-sm-4 align-self-stretc p-0">
-                          <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                            Second Paymnet
-                          </div>
-                        </div>
-                        <div class="col-sm-8 align-self-stretc p-0">
-                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                            ₹{Number(obj.secondPayment).toFixed(2)}/- {"("}
-                            {isNaN(new Date(obj.secondPaymentRemarks))
-                              ? obj.secondPaymentRemarks
-                              : "On " + obj.secondPaymentRemarks + ")"}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="row m-0 bdr-btm-eee">
-                  {obj.thirdPayment !== 0 && (
-                    <div className="col-lg-6 col-sm-6 p-0">
-                      <div class="row m-0">
-                        <div class="col-sm-4 align-self-stretc p-0">
-                          <div class="booking_inner_dtl_h h-100">
-                            Third Payment
-                          </div>
-                        </div>
-                        <div class="col-sm-8 align-self-stretc p-0">
-                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                            ₹ {Number(obj.thirdPayment).toFixed(2)}/- {"("}
-                            {isNaN(new Date(obj.thirdPaymentRemarks))
-                              ? obj.thirdPaymentRemarks
-                              : "On " + obj.thirdPaymentRemarks + ")"}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {obj.fourthPayment !== 0 && (
-                    <div className="col-lg-6 col-sm-6 p-0">
-                      <div class="row m-0">
-                        <div class="col-sm-4 align-self-stretc p-0">
-                          <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                            Fourth Payment
-                          </div>
-                        </div>
-                        <div class="col-sm-8 align-self-stretc p-0">
-                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                            ₹ {Number(obj.fourthPayment).toFixed(2)} /- {"("}
-                            {isNaN(new Date(obj.fourthPaymentRemarks))
-                              ? obj.fourthPaymentRemarks
-                              : "On " + obj.fourthPaymentRemarks + ")"}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+                        {currentLeadform &&
+                          currentLeadform.services.map((obj, index) => (
+                            <div className="my-card mt-1">
+                              <div className="my-card-body">
+                                <div className="row m-0 bdr-btm-eee">
+                                  <div className="col-lg-6 col-sm-6 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-4 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_h h-100">
+                                          {getOrdinal(index + 1)} Services Name
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-8 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">
+                                          {obj.serviceName}{" "}
+                                          {obj.withDSC && "With DSC"}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="col-lg-6 col-sm-6 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-4 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                          Total Amount
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-8 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                          ₹ {obj.totalPaymentWGST}/- {"("}
+                                          {obj.totalPaymentWGST !==
+                                          obj.totalPaymentWOGST
+                                            ? "With GST"
+                                            : "Without GST"}
+                                          {")"}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row m-0 bdr-btm-eee">
+                                  <div className="col-lg-6 col-sm-6 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-4 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_h h-100">
+                                          Payment Terms
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-8 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                          {obj.paymentTerms}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="col-lg-6 col-sm-6 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-4 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                          Notes
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-8 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                          {obj.paymentRemarks
+                                            ? obj.paymentRemarks
+                                            : "N/A"}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row m-0 bdr-btm-eee">
+                                  {obj.firstPayment !== 0 && (
+                                    <div className="col-lg-6 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretc p-0">
+                                          <div class="booking_inner_dtl_h h-100">
+                                            First payment
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretc p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            ₹{" "}
+                                            {Number(obj.firstPayment).toFixed(
+                                              2
+                                            )}
+                                            /-
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                  {obj.secondPayment !== 0 && (
+                                    <div className="col-lg-6 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretc p-0">
+                                          <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                            Second Paymnet
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretc p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            ₹
+                                            {Number(obj.secondPayment).toFixed(
+                                              2
+                                            )}
+                                            /- {"("}
+                                            {isNaN(
+                                              new Date(obj.secondPaymentRemarks)
+                                            )
+                                              ? obj.secondPaymentRemarks
+                                              : "On " +
+                                                obj.secondPaymentRemarks +
+                                                ")"}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="row m-0 bdr-btm-eee">
+                                  {obj.thirdPayment !== 0 && (
+                                    <div className="col-lg-6 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretc p-0">
+                                          <div class="booking_inner_dtl_h h-100">
+                                            Third Payment
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretc p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            ₹{" "}
+                                            {Number(obj.thirdPayment).toFixed(
+                                              2
+                                            )}
+                                            /- {"("}
+                                            {isNaN(
+                                              new Date(obj.thirdPaymentRemarks)
+                                            )
+                                              ? obj.thirdPaymentRemarks
+                                              : "On " +
+                                                obj.thirdPaymentRemarks +
+                                                ")"}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                  {obj.fourthPayment !== 0 && (
+                                    <div className="col-lg-6 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretc p-0">
+                                          <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                            Fourth Payment
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretc p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            ₹{" "}
+                                            {Number(obj.fourthPayment).toFixed(
+                                              2
+                                            )}{" "}
+                                            /- {"("}
+                                            {isNaN(
+                                              new Date(obj.fourthPaymentRemarks)
+                                            )
+                                              ? obj.fourthPaymentRemarks
+                                              : "On " +
+                                                obj.fourthPaymentRemarks +
+                                                ")"}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         {/* -------- Step 4 ---------*/}
                         <div className="mb-2 mt-3 mul-booking-card-inner-head">
                           <b>Payment Summary:</b>
@@ -685,7 +758,12 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-7 align-self-stretc p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                      ₹ {currentLeadform &&  Number(currentLeadform.totalAmount).toFixed(2)}/-
+                                      ₹{" "}
+                                      {currentLeadform &&
+                                        Number(
+                                          currentLeadform.totalAmount
+                                        ).toFixed(2)}
+                                      /-
                                     </div>
                                   </div>
                                 </div>
@@ -699,7 +777,12 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-7 align-self-stretc p-0">
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    ₹ {currentLeadform &&  Number(currentLeadform.receivedAmount).toFixed(2)}/-
+                                      ₹{" "}
+                                      {currentLeadform &&
+                                        Number(
+                                          currentLeadform.receivedAmount
+                                        ).toFixed(2)}
+                                      /-
                                     </div>
                                   </div>
                                 </div>
@@ -713,7 +796,12 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-7 align-self-stretc p-0">
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    ₹ {currentLeadform && Number(currentLeadform.pendingAmount).toFixed(2)}/-
+                                      ₹{" "}
+                                      {currentLeadform &&
+                                        Number(
+                                          currentLeadform.pendingAmount
+                                        ).toFixed(2)}
+                                      /-
                                     </div>
                                   </div>
                                 </div>
@@ -729,7 +817,8 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-8 align-self-stretc p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                    {currentLeadform && currentLeadform.paymentMethod}
+                                      {currentLeadform &&
+                                        currentLeadform.paymentMethod}
                                     </div>
                                   </div>
                                 </div>
@@ -743,7 +832,8 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-8 align-self-stretc p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                    {currentLeadform && currentLeadform.extraNotes}
+                                      {currentLeadform &&
+                                        currentLeadform.extraNotes}
                                     </div>
                                   </div>
                                 </div>
@@ -755,81 +845,75 @@ function BookingList() {
                           <b>Payment Receipt and Additional Documents:</b>
                         </div>
                         <div className="row">
-                        <div className="col-sm-2 mb-1">
-                    <div className="booking-docs-preview">
-                      <div className="booking-docs-preview-img" onClick={()=>handleViewPdfReciepts(currentLeadform && currentLeadform.paymentReceipt[0].filename)}>
-                      {currentLeadform && currentLeadform.paymentReceipt[0].filename.endsWith(".pdf") ? (
-                              <PdfImageViewerAdmin type="pdf" path={currentLeadform && currentLeadform.paymentReceipt[0].filename} />
-                            ) :  <img  src={`${secretKey}/recieptpdf/${currentLeadform &&currentLeadform.paymentReceipt[0].filename}`} alt={"MyImg"}></img> }
-                      </div>
-                      <div className="booking-docs-preview-text">
-                        <p className="rematkText text-wrap m-auto m-0">
-                          Receipt.pdf
-                        </p>
-                      </div>
-                    </div>
-                  </div>
                           <div className="col-sm-2 mb-1">
                             <div className="booking-docs-preview">
-                              <div className="booking-docs-preview-img">
-                                <img src={pdfimg}></img>
+                              <div
+                                className="booking-docs-preview-img"
+                                onClick={() =>
+                                  handleViewPdfReciepts(
+                                    currentLeadform &&
+                                      currentLeadform.paymentReceipt[0].filename
+                                  )
+                                }
+                              >
+                                {currentLeadform &&
+                                currentLeadform.paymentReceipt[0].filename.endsWith(
+                                  ".pdf"
+                                ) ? (
+                                  <PdfImageViewerAdmin
+                                    type="pdf"
+                                    path={
+                                      currentLeadform &&
+                                      currentLeadform.paymentReceipt[0].filename
+                                    }
+                                  />
+                                ) : (
+                                  <img
+                                    src={`${secretKey}/recieptpdf/${
+                                      currentLeadform &&
+                                      currentLeadform.paymentReceipt[0].filename
+                                    }`}
+                                    alt={"MyImg"}
+                                  ></img>
+                                )}
                               </div>
                               <div className="booking-docs-preview-text">
                                 <p className="rematkText text-wrap m-auto m-0">
-                                  recipt.pdf
+                                  Receipt.pdf
                                 </p>
                               </div>
                             </div>
                           </div>
-                          <div className="col-sm-2 mb-1">
-                            <div className="booking-docs-preview">
-                              <div className="booking-docs-preview-img">
-                                <img src={pdfimg}></img>
+                          {currentLeadform &&
+                            currentLeadform.otherDocs.map((obj) => (
+                              <div className="col-sm-2 mb-1">
+                                <div className="booking-docs-preview">
+                                  <div
+                                    className="booking-docs-preview-img"
+                                    onClick={() =>
+                                      handleViewPdOtherDocs(obj.filename)
+                                    }
+                                  >
+                                    {obj.filename.endsWith(".pdf") ? (
+                                      <PdfImageViewerAdmin
+                                        type="pdf"
+                                        path={obj.filename}
+                                      />
+                                    ) : (
+                                      <img
+                                        src={`${secretKey}/otherpdf/${obj.filename}`}
+                                        alt={pdfimg}
+                                      ></img>
+                                    )}
+                                  </div>
+                                  <div className="booking-docs-preview-text">
+                                    <p className="rematkText text-wrap m-auto m-0">
+                                      {obj.originalname}
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
-                              <div className="booking-docs-preview-text">
-                                <p className="rematkText text-wrap m-auto m-0">
-                                  recipt.pdf
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-sm-2 mb-1">
-                            <div className="booking-docs-preview">
-                              <div className="booking-docs-preview-img">
-                                <img src={pdfimg}></img>
-                              </div>
-                              <div className="booking-docs-preview-text">
-                                <p className="rematkText text-wrap m-auto m-0">
-                                  recipt.pdf
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="col-sm-2 mb-1">
-                            <div className="booking-docs-preview">
-                              <div className="booking-docs-preview-img">
-                                <img src={pdfimg}></img>
-                              </div>
-                              <div className="booking-docs-preview-text">
-                                <p className="rematkText text-wrap m-auto m-0">
-                                  recipt.pdf
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-sm-2 mb-1">
-                            <div className="booking-docs-preview">
-                              <div className="booking-docs-preview-img">
-                                <img src={pdfimg}></img>
-                              </div>
-                              <div className="booking-docs-preview-text">
-                                <p className="rematkText text-wrap m-auto m-0">
-                                  recipt.pdf
-                                </p>
-                              </div>
-                            </div>
-                          </div>
+                            ))}
                         </div>
                       </div>
                     </div>
