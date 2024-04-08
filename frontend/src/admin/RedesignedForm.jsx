@@ -763,6 +763,8 @@ export default function RedesignedForm({
         setFormOpen(false);
         setDataStatus("Matured");
         return true;
+      }else{
+        Swal.fire("Form Submitted")
       }
       // let dataToSend = {
       //   ...leadData,

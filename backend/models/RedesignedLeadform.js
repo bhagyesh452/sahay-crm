@@ -13,6 +13,12 @@ const ServiceSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  withGST:{
+    type:Boolean
+  },
+  withDSC:{
+    type:Boolean
+  },
   paymentTerms: {
     type: String,
     required: true,
@@ -44,6 +50,111 @@ const ServiceSchema = new mongoose.Schema({
   },
 });
 
+const TempSchema = new mongoose.Schema({
+  "Company Name": {
+    type: String,
+    unique:true
+  },
+  "Company Number": {
+    type: Number,
+  },
+  "Company Email": {
+    type: String,
+  },
+  panNumber:{
+    type:String,
+  },
+  gstNumber:{
+    type:String
+  },
+  incoDate: {
+    type: String,
+  },
+  bdeName: {
+    type: String,
+  },
+  bdmType:{
+    type:String,
+  },
+  bdeEmail: {
+    type: String,
+  },
+  bdmName: {
+    type: String,
+  },
+  otherBdmName:{
+    type:String,
+  },
+  bdmEmail: {
+    type: String,
+  },
+  bookingDate: {
+    type: String,
+  },
+  bookingSource: {
+    type: String,
+  },
+  otherBookingSource:{
+    type:String,
+  },
+  numberOfServices: {
+    type: Number,
+  },
+  services: [ServiceSchema],
+  caCase: {
+    type: String,
+  },
+  caNumber: {
+    type: String,
+  },
+  caEmail: {
+    type: String,
+  },
+  caCommission: {
+    type: String,
+  },
+  paymentMethod: {
+    type: String,
+  },
+  paymentReceipt: {
+    type: Array,
+  },
+  extraNotes: {
+    type: String,
+  },
+  totalAmount: {
+    type: Number,
+  },
+  receivedAmount: {
+    type: Number,
+  },
+  pendingAmount: {
+    type: Number,
+  },
+  otherDocs : {
+    type : Array
+  },
+  Step1Status: {
+    type: Boolean,
+    default:false
+  },
+  Step2Status: {
+    type: Boolean,
+    default:false
+  },
+  Step3Status: {
+    type: Boolean,
+    default:false
+  },
+  Step4Status: {
+    type: Boolean,
+    default:false
+  },
+  Step5Status: {
+    type: Boolean,
+    default:false
+  },
+});
 const RedesignedLeadformSchema = new mongoose.Schema({
     company: {
         type: mongoose.Schema.Types.ObjectId,
@@ -142,6 +253,7 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   pendingAmount: {
     type: Number,
   },
+  moreBookings:[TempSchema]
 });
 
 const RedesignedLeadformModel = mongoose.model(
