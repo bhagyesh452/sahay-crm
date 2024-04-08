@@ -876,7 +876,7 @@ function BookingList() {
                                 )}
                               </div>
                               <div className="booking-docs-preview-text">
-                                <p className="rematkText text-wrap m-auto m-0">
+                                <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
                                   Receipt.pdf
                                 </p>
                               </div>
@@ -905,7 +905,7 @@ function BookingList() {
                                     )}
                                   </div>
                                   <div className="booking-docs-preview-text">
-                                    <p className="rematkText text-wrap m-auto m-0" title={obj.originalname}>
+                                    <p className="booking-img-name-txtwrap text-wrap m-auto m-0" title={obj.originalname}>
                                       {obj.originalname}
                                     </p>
                                   </div>
@@ -1365,7 +1365,7 @@ function BookingList() {
         )}
       </div>
       <div className="booking-docs-preview-text">
-        <p className="rematkText text-wrap m-auto m-0">
+        <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
           Receipt.pdf
         </p>
       </div>
@@ -1393,7 +1393,7 @@ function BookingList() {
             )}
           </div>
           <div className="booking-docs-preview-text">
-            <p className="rematkText text-wrap m-auto m-0" title={obj.originalname}>
+            <p className="booking-img-name-txtwrap text-wrap m-auto m-0" title={obj.originalname}>
               {obj.originalname}
             </p>
           </div>

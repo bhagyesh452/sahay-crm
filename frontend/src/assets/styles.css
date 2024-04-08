@@ -1392,6 +1392,17 @@ color: #4e884e;
 {
   padding: 10px ;
 }
+.booking-img-name-txtwrap
+{
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    line-height: 1.5;
+    max-width: 100%;
+    max-width: fit-content;
+    overflow: hidden;
+    text-align: center;
+}
 /************BookingList Page Css End*************/
 .wApp a
 {
