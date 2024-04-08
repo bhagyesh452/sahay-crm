@@ -4445,7 +4445,7 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
                     `./Document/${newData["Company Name"]}-Rebooking.pdf`
                   );
                   sendMail2(
-                    ["nimesh@inscale.in"],
+                    ["nimesh@incscale.in"],
                     `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                     ``,
                     `
@@ -5594,7 +5594,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       // newData.bdeEmail,
       // newData.bdmEmail,
       // // "bookings@startupsahay.com",
-      "nimesh@inscale.in"
+      "nimesh@incscale.in"
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -6432,7 +6432,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   `./Document/${newData["Company Name"]}.pdf`
                 );
                 sendMail2(
-                  ["nimesh@inscale.in"],
+                  ["nimesh@incscale.in"],
                   `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                   ``,
                   `
@@ -6559,7 +6559,7 @@ app.post("/api/generate-pdf", async (req, res) => {
             setTimeout(() => {
               const mainBuffer = fs.readFileSync("./foo5.pdf");
               sendMail2(
-                ["nimesh@inscale.in"],
+                ["nimesh@incscale.in"],
                 `Mail Testing`,
                 ``,
                 `
