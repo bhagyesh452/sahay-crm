@@ -214,12 +214,12 @@ function BookingList() {
                               </div>
                               <div className="b_cmpny_time">
                                 {
-                                  obj.moreBookings &&
+                                 formatDatePro( obj.moreBookings &&
                                   obj.moreBookings.length !== 0
                                     ? obj.moreBookings[
                                         obj.moreBookings.length - 1
                                       ].bookingDate // Get the latest bookingDate from moreBookings
-                                    : obj.bookingDate // Use obj.bookingDate if moreBookings is empty or not present
+                                    : obj.bookingDate )// Use obj.bookingDate if moreBookings is empty or not present
                                 }
                               </div>
                             </div>
@@ -245,12 +245,12 @@ function BookingList() {
                                     ))}
                               </div>
 
-                              <div
+                              {obj.moreBookings.length!==0 && <div
                                 className="b_Services_multipal_services"
                                 title="Multipal Bookings"
                               >
                                 <TbBoxMultiple />
-                              </div>
+                              </div>}
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_amount d-flex">
@@ -930,7 +930,7 @@ function BookingList() {
                                 {formatDatePro(objMain.bookingDate)}
                               </b>
                             </div>
-                          </div>
+                          </div>                                                    
 <div className="mul-booking-card mt-2">
 
                          
