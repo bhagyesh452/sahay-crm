@@ -1209,7 +1209,7 @@ color: #4e884e;
 }
 .b_Services_name .sname
 {
-  background: #f0e8d3;
+  background: #f8f4ea;
   padding: 1px 5px;
   font-size: 10px;
   border-radius: 3px;
@@ -1233,15 +1233,15 @@ color: #4e884e;
 
 .total_amount_bg
 {
-  background: #d1e7ff;
+  background: #edf5ff;
 }
 .receive_amount_bg
 {
-  background: #c7ffc5;
+  background: #e4ffe3;
 }
 .pending_amount_bg
 {
-  background: #ffe3bf;
+  background: #fff2e1;
 }
 .bookings_Company_Name:hover .b_Services_amount .total_amount_bg
 {
