@@ -1391,3 +1391,8 @@ color: #4e884e;
   padding: 10px ;
 }
 /************BookingList Page Css End*************/
+td a
+{
+  text-decoration: none !important;
+  color: #000 !important;
+}

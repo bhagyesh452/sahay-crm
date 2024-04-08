@@ -2837,7 +2837,7 @@ function EmployeePanel() {
                                 <td className="td-sticky1">
                                   {company["Company Name"]}
                                 </td>
-                                <td>{company["Company Number"]}</td>
+                                <td><a target="_blank" href={`https://wa.me/91${company["Company Number"]}`}>{company["Company Number"]}</a></td>
                                 <td>
                                   {company["Status"] === "Matured" ? (
                                     <span>{company["Status"]}</span>
