@@ -1386,7 +1386,7 @@ color: #4e884e;
 .booking-docs-preview-text p
 .booking-docs-preview-text p
 {
-  text-align: center;
+  text-align: center !important;
 }
 .booking-docs-preview
 {

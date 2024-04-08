@@ -255,13 +255,13 @@ function BookingList() {
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_amount d-flex">
                                 <div className="amount total_amount_bg">
-                                  Total: ₹ {calculateTotalAmount(obj)} /-
+                                  Total: ₹ {calculateTotalAmount(obj)}
                                 </div>
                                 <div className="amount receive_amount_bg">
-                                  Receive: ₹ {calculateReceivedAmount(obj)} /-
+                                  Receive: ₹ {calculateReceivedAmount(obj)}
                                 </div>
                                 <div className="amount pending_amount_bg">
-                                  Pending: ₹ {calculatePendingAmount(obj)} /-
+                                  Pending: ₹ {calculatePendingAmount(obj)}
                                 </div>
                               </div>
                               <div className="b_BDE_name">{obj.bdeName}</div>
@@ -354,7 +354,7 @@ function BookingList() {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-lg-3 col-sm-6 p-0 align-self-stretch">
+                            <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
                               <div class="row m-0 h-100">
                                 <div class="col-sm-7 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_h bdr-left-eee h-100">
@@ -592,7 +592,7 @@ function BookingList() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                          ₹ {obj.totalPaymentWGST}/- {"("}
+                                          ₹ {obj.totalPaymentWGST} {"("}
                                           {obj.totalPaymentWGST !==
                                           obj.totalPaymentWOGST
                                             ? "With GST"
@@ -650,7 +650,7 @@ function BookingList() {
                                             {Number(obj.firstPayment).toFixed(
                                               2
                                             )}
-                                            /-
+                                          
                                           </div>
                                         </div>
                                       </div>
@@ -670,7 +670,7 @@ function BookingList() {
                                             {Number(obj.secondPayment).toFixed(
                                               2
                                             )}
-                                            /- {"("}
+                                            {"("}
                                             {isNaN(
                                               new Date(obj.secondPaymentRemarks)
                                             )
@@ -699,7 +699,7 @@ function BookingList() {
                                             {Number(obj.thirdPayment).toFixed(
                                               2
                                             )}
-                                            /- {"("}
+                                             {"("}
                                             {isNaN(
                                               new Date(obj.thirdPaymentRemarks)
                                             )
@@ -726,7 +726,7 @@ function BookingList() {
                                             {Number(obj.fourthPayment).toFixed(
                                               2
                                             )}{" "}
-                                            /- {"("}
+                                             {"("}
                                             {isNaN(
                                               new Date(obj.fourthPaymentRemarks)
                                             )
@@ -750,8 +750,8 @@ function BookingList() {
                         <div className="my-card">
                           <div className="my-card-body">
                             <div className="row m-0 bdr-btm-eee">
-                              <div className="col-lg-4 col-sm-6 p-0">
-                                <div class="row m-0">
+                              <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
+                                <div class="row m-0 h-100">
                                   <div class="col-sm-5 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_h h-100">
                                       Total Amount
@@ -764,13 +764,12 @@ function BookingList() {
                                         Number(
                                           currentLeadform.totalAmount
                                         ).toFixed(2)}
-                                      /-
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                              <div className="col-lg-4 col-sm-6 p-0">
-                                <div class="row m-0">
+                              <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
+                                <div class="row m-0 h-100">
                                   <div class="col-sm-5 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_h bdr-left-eee h-100">
                                       Received Amount
@@ -783,13 +782,12 @@ function BookingList() {
                                         Number(
                                           currentLeadform.receivedAmount
                                         ).toFixed(2)}
-                                      /-
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                              <div className="col-lg-4 col-sm-6 p-0">
-                                <div class="row m-0">
+                              <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
+                                <div class="row m-0 h-100">
                                   <div class="col-sm-5 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_h bdr-left-eee h-100">
                                       Pending Amount
@@ -802,15 +800,14 @@ function BookingList() {
                                         Number(
                                           currentLeadform.pendingAmount
                                         ).toFixed(2)}
-                                      /-
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
                             <div className="row m-0 bdr-btm-eee">
-                              <div className="col-lg-6 col-sm-6 p-0">
-                                <div class="row m-0">
+                              <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
+                                <div class="row m-0 h-100">
                                   <div class="col-sm-4 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_h h-100">
                                       Payment Method
@@ -824,8 +821,8 @@ function BookingList() {
                                   </div>
                                 </div>
                               </div>
-                              <div className="col-lg-6 col-sm-6 p-0">
-                                <div class="row m-0">
+                              <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
+                                <div class="row m-0 h-100">
                                   <div class="col-sm-4 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_h h-100 bdr-left-eee">
                                       Extra Remarks
@@ -908,7 +905,7 @@ function BookingList() {
                                     )}
                                   </div>
                                   <div className="booking-docs-preview-text">
-                                    <p className="rematkText text-wrap m-auto m-0">
+                                    <p className="rematkText text-wrap m-auto m-0" title={obj.originalname}>
                                       {obj.originalname}
                                     </p>
                                   </div>
@@ -1396,7 +1393,7 @@ function BookingList() {
             )}
           </div>
           <div className="booking-docs-preview-text">
-            <p className="rematkText text-wrap m-auto m-0">
+            <p className="rematkText text-wrap m-auto m-0" title={obj.originalname}>
               {obj.originalname}
             </p>
           </div>
