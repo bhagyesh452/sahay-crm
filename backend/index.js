@@ -4445,7 +4445,7 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
                     `./Document/${newData["Company Name"]}-Rebooking.pdf`
                   );
                   sendMail2(
-                    ["aakashseth452@gmail.com"],
+                    ["nimesh@inscale.in"],
                     `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                     ``,
                     `
@@ -5586,9 +5586,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const visibility = newData.bookingSource !== "Other" && "none";
     // Send email to recipients
     const recipients = [
-      newData.bdeEmail,
-      newData.bdmEmail,
-      // "bookings@startupsahay.com"
+      // newData.bdeEmail,
+      // newData.bdmEmail,
+      // // "bookings@startupsahay.com",
+      "nimesh@inscale.in"
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -6426,7 +6427,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   `./Document/${newData["Company Name"]}.pdf`
                 );
                 sendMail2(
-                  ["aakashseth452@gmail.com"],
+                  ["nimesh@inscale.in"],
                   `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                   ``,
                   `
@@ -6553,7 +6554,7 @@ app.post("/api/generate-pdf", async (req, res) => {
             setTimeout(() => {
               const mainBuffer = fs.readFileSync("./foo5.pdf");
               sendMail2(
-                ["aakashseth452@gmail.com"],
+                ["nimesh@inscale.in"],
                 `Mail Testing`,
                 ``,
                 `
