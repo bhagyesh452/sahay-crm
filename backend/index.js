@@ -754,8 +754,8 @@ app.post('/api/teaminfo', async (req, res) => {
       res.status(201).json(newTeam);
       console.log("newTeam" , newTeam)
   } catch (error) {
-      console.error('Error creating team:', error);
-      res.status(500).json({ error: 'Error creating team' });
+      console.error('Error creating team:', error.message);
+      res.status(500).json({ message: "Duplicate Entries Found" });
   }
 });
 
