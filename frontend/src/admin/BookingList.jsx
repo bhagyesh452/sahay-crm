@@ -7,6 +7,8 @@ import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
 import { TbBoxMultiple, TbMathPiDivide2 } from "react-icons/tb";
 import Nodata from "../components/Nodata";
+import { MdModeEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -473,8 +475,16 @@ function BookingList() {
                       {/* -------- Booking Details ---------*/}
                       <div className="mul-booking-card mt-2">
                         {/* -------- Step 2 ---------*/}
-                        <div className="mb-2 mul-booking-card-inner-head">
+                        <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                           <b>Booking Details:</b>
+                          <div className="Services_Preview_action d-flex">
+                            <div className="Services_Preview_action_edit mr-2">
+                              <MdModeEdit />
+                            </div>
+                            <div className="Services_Preview_action_delete">
+                              <MdDelete />
+                            </div>
+                          </div>
                         </div>
                         <div className="my-card">
                           <div className="my-card-body">
