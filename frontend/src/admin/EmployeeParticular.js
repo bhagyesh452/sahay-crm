@@ -4,12 +4,12 @@ import Navbar from "./Navbar";
 import Header from "./Header";
 import { useParams } from "react-router-dom";
 import { IconBoxPadding, IconChevronLeft, IconEye } from "@tabler/icons-react";
-import PageviewIcon from '@mui/icons-material/Pageview';
+import PageviewIcon from "@mui/icons-material/Pageview";
 import { IconChevronRight } from "@tabler/icons-react";
 import { IconButton, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { options } from "../components/Options";
 import CloseIcon from "@mui/icons-material/Close";
-import KeyboardTabIcon from '@mui/icons-material/KeyboardTab';
+import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
 import { Link } from "react-router-dom";
 import Select from "react-select";
 import "../../src/assets/styles.css";
@@ -36,9 +36,8 @@ import { IoClose } from "react-icons/io5";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
 import LeadFormPreview from "./LeadFormPreview";
-
-
-
+import EditableLeadform from "./EditableLeadform";
+import AddLeadForm from "./AddLeadForm";
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -49,6 +48,9 @@ function EmployeeParticular() {
   const [openRemarks, openchangeRemarks] = useState(false);
   const [openlocation, openchangelocation] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
+  const [AddForm, setAddForm] = useState(false);
+  const [EditForm, setEditForm] = useState(false)
+  const [companyName, setCompanyName] = useState("");
   const [maturedID, setMaturedID] = useState("");
   const [currentForm, setCurrentForm] = useState(null);
   const [openProjection, setOpenProjection] = useState(false);
@@ -64,6 +66,7 @@ function EmployeeParticular() {
   });
   const [projectionData, setProjectionData] = useState([]);
   const [loginDetails, setLoginDetails] = useState([]);
+  const [nowToFetch, setNowToFetch] = useState(false);
   const [employeeData, setEmployeeData] = useState([]);
   const [employeeName, setEmployeeName] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -89,8 +92,8 @@ function EmployeeParticular() {
   const [incoFilter, setIncoFilter] = useState("");
   const [openIncoDate, setOpenIncoDate] = useState(false);
   const [backButton, setBackButton] = useState(false);
-  const [loading, setLoading] = useState(false)
-  const [companiesLoading, setCompaniesLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [companiesLoading, setCompaniesLoading] = useState(false);
   // const [updateData, setUpdateData] = useState({});
   const [eData, seteData] = useState([]);
   const [year, setYear] = useState(0);
@@ -124,12 +127,15 @@ function EmployeeParticular() {
       //console.log("eData", eData[0])
       //console.log(salesExecutivesIds)
 
-      if (salesExecutivesIds.length > 0 && salesExecutivesIds[0] === selectedEmployee._id) {
+      if (
+        salesExecutivesIds.length > 0 &&
+        salesExecutivesIds[0] === selectedEmployee._id
+      ) {
         // If it's at 0th position, set the visibility of the back button to false
         setBackButton(false); // assuming backButton is your back button element
       } else {
         // Otherwise, set the visibility to true
-        setBackButton(true) // or any other appropriate display style
+        setBackButton(true); // or any other appropriate display style
       }
 
       if (selectedEmployee) {
@@ -142,7 +148,7 @@ function EmployeeParticular() {
       console.error("Error fetching employee details:", error.message);
     }
   };
-  console.log(currentProjection)
+  console.log(currentProjection);
   const functionopenAnchor = () => {
     setTimeout(() => {
       setOpenAnchor(true);
@@ -154,26 +160,26 @@ function EmployeeParticular() {
   const fetchRedesignedFormData = async () => {
     try {
       console.log(maturedID);
-      const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
-      const data = response.data.find(obj=>obj.company === maturedID);
+      const response = await axios.get(
+        `${secretKey}/redesigned-final-leadData`
+      );
+      const data = response.data.find((obj) => obj.company === maturedID);
       setCurrentForm(data);
-      
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
-useEffect(() => {
-  console.log("Matured ID Changed" , maturedID);
-  if(maturedID){
-    fetchRedesignedFormData();
-  }
-
-}, [maturedID])
+  useEffect(() => {
+    console.log("Matured ID Changed", maturedID);
+    if (maturedID) {
+      fetchRedesignedFormData();
+    }
+  }, [maturedID]);
   useEffect(() => {
     if (employeeName) {
       const fetchCompanies = async () => {
         try {
-          setCompaniesLoading(true)
+          setCompaniesLoading(true);
           const response = await fetch(`${secretKey}/companies`);
           const data = await response.json();
 
@@ -200,7 +206,7 @@ useEffect(() => {
           console.error("Error fetching companies:", error);
           setCompanies([]);
         } finally {
-          setCompaniesLoading(false)
+          setCompaniesLoading(false);
         }
       };
 
@@ -208,11 +214,11 @@ useEffect(() => {
     }
   }, [employeeName]);
 
+
   // Function to fetch new data based on employee name
   const fetchNewData = async () => {
     try {
-
-      setLoading(true)
+      setLoading(true);
       const response = await axios.get(
         `${secretKey}/employees/${employeeName}`
       );
@@ -235,10 +241,10 @@ useEffect(() => {
     } catch (error) {
       console.error("Error fetching new data:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
-  console.log("employeedata", employeeData)
+  console.log("employeedata", employeeData);
   useEffect(() => {
     // Fetch employee details and related data when the component mounts or id changes
     fetchEmployeeDetails();
@@ -403,6 +409,8 @@ useEffect(() => {
   const [newemployeeSelection, setnewEmployeeSelection] =
     useState("Not Alloted");
 
+
+
   const fetchnewData = async () => {
     try {
       const response = await axios.get(`${secretKey}/einfo`);
@@ -417,6 +425,9 @@ useEffect(() => {
   const handleFilterIncoDate = () => {
     setOpenIncoDate(!openIncoDate);
   };
+  useEffect(() => {
+    fetchNewData();
+  }, [nowToFetch]);
   const handleSort = (sortType) => {
     switch (sortType) {
       case "oldest":
@@ -518,16 +529,23 @@ useEffect(() => {
     const currentTime = new Date().toLocaleTimeString();
 
     const csvdata = employeeData
-    .filter((employee) => selectedRows.includes(employee._id))
-    .map((employee) => {
-      if (employee.Status === "Interested" || employee.Status === "FollowUp") {
-        // If Status is "Interested" or "FollowUp", don't change Status and Remarks
-        return { ...employee };
-      } else {
-        // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
-        return { ...employee, Status: "Untouched", Remarks: "No Remarks Added" };
-      }
-    });
+      .filter((employee) => selectedRows.includes(employee._id))
+      .map((employee) => {
+        if (
+          employee.Status === "Interested" ||
+          employee.Status === "FollowUp"
+        ) {
+          // If Status is "Interested" or "FollowUp", don't change Status and Remarks
+          return { ...employee };
+        } else {
+          // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
+          return {
+            ...employee,
+            Status: "Untouched",
+            Remarks: "No Remarks Added",
+          };
+        }
+      });
 
     // Create an array to store promises for updating CompanyModel
     const updatePromises = [];
@@ -670,47 +688,47 @@ useEffect(() => {
 
   const handleDeleteBooking = async (companyId) => {
     const confirmDelete = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'You are about to delete this booking. This action cannot be undone.',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "You are about to delete this booking. This action cannot be undone.",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, cancel',
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel",
     });
-  
+
     if (confirmDelete.isConfirmed) {
       try {
-        const response = await fetch(`${secretKey}/redesigned-delete-booking/${companyId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await fetch(
+          `${secretKey}/redesigned-delete-booking/${companyId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         Swal.fire({
-          title:"Booking Deleted Successfully",
-          icon:'success'
-        })
+          title: "Booking Deleted Successfully",
+          icon: "success",
+        });
         fetchNewData();
       } catch (error) {
         Swal.fire({
-          title:"Error Deleting the booking!",
-          icon:'error'
-        })
-        console.error('Error deleting booking:', error);
+          title: "Error Deleting the booking!",
+          icon: "error",
+        });
+        console.error("Error deleting booking:", error);
         // Optionally, you can show an error message to the user
       }
     } else {
-      console.log('No');
+      console.log("No");
     }
   };
-  
-  
-
 
   const handleChangeUrlPrev = () => {
     const currId = id;
@@ -724,7 +742,6 @@ useEffect(() => {
       const prevIndex = (currentIndex - 1 + eData.length) % eData.length;
 
       if (currentIndex === 0) {
-
         // If it's the first page, navigate to the employees page
         window.location.replace(`/admin/employees`);
         //setBackButton(false)
@@ -740,12 +757,6 @@ useEffect(() => {
     }
   };
 
-
-
-
-
-
-
   return (
     <div>
       <Header />
@@ -755,7 +766,8 @@ useEffect(() => {
           style={{
             margin: "3px 0px 1px 0px",
           }}
-          className="page-header d-print-none">
+          className="page-header d-print-none"
+        >
           <div className="container-xl">
             <div className="row g-2 align-items-center">
               <div className="col d-flex justify-content-between">
@@ -774,17 +786,20 @@ useEffect(() => {
                   <h2 className="page-title">{employeeName}</h2>
                   <div className="nextBtn">
                     <IconButton onClick={handleChangeUrl}>
-                      < IconChevronRight style={{
-                        // backgroundColor: "#fbb900",
-                        // borderRadius: "5px",
-                        // padding: "2px",
-                        // color: "white"
-                      }} />
+                      <IconChevronRight
+                        style={
+                          {
+                            // backgroundColor: "#fbb900",
+                            // borderRadius: "5px",
+                            // padding: "2px",
+                            // color: "white"
+                          }
+                        }
+                      />
                     </IconButton>
                   </div>
                 </div>
                 <div className="d-flex align-items-center justify-content-center">
-
                   {selectedRows.length !== 0 && (
                     <div className="request">
                       <div className="btn-list">
@@ -806,7 +821,7 @@ useEffect(() => {
                       </div>
                     </div>
                   )}
-                  <div className="form-control sort-by" >
+                  <div className="form-control sort-by">
                     <label htmlFor="sort-by">Sort By:</label>
                     <select
                       style={{
@@ -930,16 +945,26 @@ useEffect(() => {
                     </button>
                   </Link>
 
-                  {backButton && <div><Link
-                    to={`/admin/employees`}
-                    style={{ marginLeft: "10px" }}>
-                    <button className="btn btn-primary d-none d-sm-inline-block">
-                      <span><FaArrowLeft style={{ marginRight: "10px", marginBottom: "3px" }} /></span>
-                      Back
-                    </button>
-                  </Link></div>}
-
-
+                  {backButton && (
+                    <div>
+                      <Link
+                        to={`/admin/employees`}
+                        style={{ marginLeft: "10px" }}
+                      >
+                        <button className="btn btn-primary d-none d-sm-inline-block">
+                          <span>
+                            <FaArrowLeft
+                              style={{
+                                marginRight: "10px",
+                                marginBottom: "3px",
+                              }}
+                            />
+                          </span>
+                          Back
+                        </button>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -960,7 +985,7 @@ useEffect(() => {
             </div>
           </div>
         </div>
-        {!openLogin && (
+        {!openLogin && !AddForm && !EditForm && (
           <div
             onCopy={(e) => {
               e.preventDefault();
@@ -1098,7 +1123,15 @@ useEffect(() => {
                     </div>
                   )}
                 </div>
-                <div className="col-2" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "7px" }}>
+                <div
+                  className="col-2"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "7px",
+                  }}
+                >
                   {selectedField === "State" && (
                     <div style={{ marginLeft: "-16px" }} className="input-icon">
                       <span className="input-icon-addon">
@@ -1175,7 +1208,8 @@ useEffect(() => {
                           }}
                           aria-label="Search in website"
                         /> */}
-                        <select select
+                        <select
+                          select
                           style={{ border: "none", outline: "none" }}
                           value={year}
                           onChange={(e) => {
@@ -1342,10 +1376,13 @@ useEffect(() => {
                       data-bs-toggle="tab"
                     >
                       <span>Matured </span>
-                      <span className="no_badge"> {
+                      <span className="no_badge">
+                        {" "}
+                        {
                           moreEmpData.filter((obj) => obj.Status === "Matured")
                             .length
-                        }</span>
+                        }
+                      </span>
                     </a>
                   </li>
                   <li class="nav-item">
@@ -1402,17 +1439,15 @@ useEffect(() => {
                     >
                       <thead>
                         <tr className="tr-sticky">
-                         
-                            <th>
-                              <input
-                                type="checkbox"
-                                checked={
-                                  selectedRows.length === filteredData.length
-                                }
-                                onChange={() => handleCheckboxChange("all")}
-                              />
-                            </th>
-                          
+                          <th>
+                            <input
+                              type="checkbox"
+                              checked={
+                                selectedRows.length === filteredData.length
+                              }
+                              onChange={() => handleCheckboxChange("all")}
+                            />
+                          </th>
 
                           <th className="th-sticky">Sr.No</th>
                           <th className="th-sticky1">Company Name</th>
@@ -1503,25 +1538,36 @@ useEffect(() => {
                             />
                           </th>
                           {(dataStatus === "Matured" && <th>Action</th>) ||
-                            (dataStatus === "FollowUp" && <th>View Projection</th>) ||
-                            (dataStatus === "Interested" && <th>View Projection</th>)}
+                            (dataStatus === "FollowUp" && (
+                              <th>View Projection</th>
+                            )) ||
+                            (dataStatus === "Interested" && (
+                              <th>View Projection</th>
+                            ))}
                         </tr>
                       </thead>
                       {loading ? (
                         <tbody>
                           <tr>
-                          <td colSpan="11" style={{height:"100px !important", padding:"80px !important"}} className="LoaderTDSatyle">
-                           <ClipLoader
-                            color="lightgrey"
-                            loading
-                            size={35}
-                            height="25"
-                            width="25"
-                            aria-label="Loading Spinner"
-                            data-testid="loader"
-                          />
-                        </td>
-                        </tr>  
+                            <td
+                              colSpan="11"
+                              style={{
+                                height: "100px !important",
+                                padding: "80px !important",
+                              }}
+                              className="LoaderTDSatyle"
+                            >
+                              <ClipLoader
+                                color="lightgrey"
+                                loading
+                                size={35}
+                                height="25"
+                                width="25"
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                              />
+                            </td>
+                          </tr>
                         </tbody>
                       ) : (
                         <>
@@ -1547,7 +1593,9 @@ useEffect(() => {
                                   >
                                     <input
                                       type="checkbox"
-                                      checked={selectedRows.includes(company._id)}
+                                      checked={selectedRows.includes(
+                                        company._id
+                                      )}
                                       onChange={(e) =>
                                         handleCheckboxChange(company._id, e)
                                       }
@@ -1587,17 +1635,20 @@ useEffect(() => {
                                         {company.Remarks}
                                       </p>
                                       <span>
-                                        <IconButton onClick={() => {
-                                              functionopenpopupremarks(
-                                                company._id,
-                                                company.Status
-                                              );
-                                            }} >
-                                          <HiOutlineEye style={{
-                                            fontSize: "14px",
-                                            color: "#fbb900"
+                                        <IconButton
+                                          onClick={() => {
+                                            functionopenpopupremarks(
+                                              company._id,
+                                              company.Status
+                                            );
                                           }}
-                                             />
+                                        >
+                                          <HiOutlineEye
+                                            style={{
+                                              fontSize: "14px",
+                                              color: "#fbb900",
+                                            }}
+                                          />
                                         </IconButton>
                                       </span>
                                     </div>
@@ -1612,21 +1663,39 @@ useEffect(() => {
                                   <td>{company["State"]}</td>
                                   <td>{company["Company Email"]}</td>
                                   <td>{formatDate(company["AssignDate"])}</td>
-                                  {(dataStatus === "FollowUp" || dataStatus === "Interested") && (
+                                  {(dataStatus === "FollowUp" ||
+                                    dataStatus === "Interested") && (
                                     <td>
-                                      {company && projectionData && projectionData.some(item => item.companyName === company["Company Name"]) ? (
+                                      {company &&
+                                      projectionData &&
+                                      projectionData.some(
+                                        (item) =>
+                                          item.companyName ===
+                                          company["Company Name"]
+                                      ) ? (
                                         <IconButton>
                                           <HiOutlineEye
                                             onClick={() => {
-                                              functionopenprojection(company["Company Name"]);
+                                              functionopenprojection(
+                                                company["Company Name"]
+                                              );
                                             }}
-                                            style={{ cursor: "pointer", width: "17px", height: "17px", color: "fbb900" }}
+                                            style={{
+                                              cursor: "pointer",
+                                              width: "17px",
+                                              height: "17px",
+                                              color: "fbb900",
+                                            }}
                                           />
                                         </IconButton>
                                       ) : (
                                         <IconButton>
                                           <HiOutlineEye
-                                            style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                                            style={{
+                                              cursor: "pointer",
+                                              width: "17px",
+                                              height: "17px",
+                                            }}
                                             color="lightgrey"
                                           />
                                         </IconButton>
@@ -1634,26 +1703,55 @@ useEffect(() => {
                                     </td>
                                   )}
 
-{dataStatus==="Matured" && <>
-                                <td>
-                                  <div className="d-flex">
-                                  <div onClick={()=>{
-                                    setMaturedID(company._id)
-                                    functionopenAnchor()
-                                  }} >
-                                  <IconEye style={{cursor:'pointer'}}/>
-                                  </div>
-                                  <div onClick={()=>{
-                                      handleDeleteBooking(company._id)
-                                  }}  className="delete-booking" style={{cursor:'pointer'}}>
-                                    <DeleteIcon/>
-                                  </div>
-
-                                  </div>
-                                 
-                                 
-                                </td>
-                                </>}
+                                  {dataStatus === "Matured" && (
+                                    <>
+                                      <td>
+                                        <div className="d-flex">
+                                          <div
+                                            style={{ marginRight: "5px" }}
+                                            onClick={() => {
+                                              setMaturedID(company._id);
+                                              functionopenAnchor();
+                                            }}
+                                          >
+                                            <IconEye
+                                              style={{
+                                                width: "14px",
+                                                height: "14px",
+                                                color: "#d6a10c",
+                                                cursor: "pointer",
+                                              }}
+                                            />
+                                          </div>
+                                          <div
+                                            onClick={() => {
+                                              handleDeleteBooking(company._id);
+                                            }}
+                                            className="delete-booking"
+                                            style={{ cursor: "pointer", marginRight: "5px" }}
+                                          >
+                                            <DeleteIcon
+                                              style={{
+                                                cursor: "pointer",
+                                                color: "#f70000",
+                                                width: "14px",
+                                                height: "14px",
+                                              }}
+                                            />
+                                          </div>
+                                          <div onClick={()=>{setCompanyName(company["Company Name"])
+                                              setAddForm(true)}} >
+                                              <AddCircleIcon style={{
+                                                  cursor: "pointer",
+                                                  color: "#4f5b74",
+                                                  width: "14px",
+                                                  height: "14px",
+                                                }}/>
+                                        </div>
+                                        </div>
+                                      </td>
+                                    </>
+                                  )}
                                 </tr>
                               ))}
                             </tbody>
@@ -1674,7 +1772,6 @@ useEffect(() => {
                         </tbody>
                       ) : (
                         <>
-
                           {dataStatus === "null" && companies.length !== 0 && (
                             <tbody>
                               {companies.map((company, index) => (
@@ -1727,19 +1824,21 @@ useEffect(() => {
                                         cursor: "pointer",
                                       }}
                                     /> */}
-                                        <HiOutlineEye style={{
-                                          fontSize: "15px",
-                                          color: "#fbb900"
-                                          //backgroundColor: "lightblue",
-                                          // Additional styles for the "View" button
-                                        }}
+                                        <HiOutlineEye
+                                          style={{
+                                            fontSize: "15px",
+                                            color: "#fbb900",
+                                            //backgroundColor: "lightblue",
+                                            // Additional styles for the "View" button
+                                          }}
                                           //className="btn btn-primary d-none d-sm-inline-block"
                                           onClick={() => {
                                             functionopenpopupremarks(
                                               company._id,
                                               company.Status
                                             );
-                                          }} />
+                                          }}
+                                        />
                                       </span>
                                     </div>
                                   </td>
@@ -1753,7 +1852,6 @@ useEffect(() => {
                                   <td>{company["Company Email"]}</td>
                                   <td>{formatDate(company["AssignDate"])}</td>
                                   <td>
-                                   
                                     <IconButton>
                                       <RiEditCircleFill
                                         onClick={() => {
@@ -1762,7 +1860,11 @@ useEffect(() => {
                                             company["Company Name"]
                                           );
                                         }}
-                                        style={{ cursor: "pointer", width: "17px", height: "17px" }}
+                                        style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
                                         color="lightgrey"
                                       />
                                     </IconButton>
@@ -1773,16 +1875,7 @@ useEffect(() => {
                           )}
                         </>
                       )}
-                      {currentData.length === 0 && !loading && dataStatus !== "Matured" && (
-                        <tbody>
-                          <tr>
-                            <td colSpan="11" className="p-2">
-                              <Nodata />
-                            </td>
-                          </tr>
-                        </tbody>
-                      )}
-                      {companies.length === 0 && !companiesLoading && dataStatus === "Matured" && (
+                      {currentData.length === 0 && !loading && (
                         <tbody>
                           <tr>
                             <td colSpan="11" className="p-2">
@@ -1847,6 +1940,23 @@ useEffect(() => {
             <LoginDetails loginDetails={loginDetails} />
           </>
         )}
+         {
+ EditForm && ( <>
+  <EditableLeadform
+    setFormOpen={EditForm}
+  />
+</>)
+        } 
+        {
+          AddForm && (
+            <> <AddLeadForm    setFormOpen={setAddForm}
+            companysName={companyName}
+            setDataStatus={setdataStatus}
+            setNowToFetch={setNowToFetch} />
+           
+            </>
+          )
+        }
       </div>
       {/* ------------------------------- Assign data -------------------------- */}
       <Dialog
@@ -1854,7 +1964,7 @@ useEffect(() => {
         onClose={closepopupAssign}
         fullWidth
         maxWidth="sm"
-       >
+      >
         <DialogTitle>
           Change BDE{" "}
           <IconButton onClick={closepopupAssign} style={{ float: "right" }}>
@@ -1868,15 +1978,15 @@ useEffect(() => {
                 style={
                   selectedOption === "direct"
                     ? {
-                      backgroundColor: "#e9eae9",
-                      margin: "10px 10px 0px 0px",
-                      cursor: "pointer",
-                    }
+                        backgroundColor: "#e9eae9",
+                        margin: "10px 10px 0px 0px",
+                        cursor: "pointer",
+                      }
                     : {
-                      backgroundColor: "white",
-                      margin: "10px 10px 0px 0px",
-                      cursor: "pointer",
-                    }
+                        backgroundColor: "white",
+                        margin: "10px 10px 0px 0px",
+                        cursor: "pointer",
+                      }
                 }
                 onClick={() => {
                   setSelectedOption("direct");
@@ -1899,15 +2009,15 @@ useEffect(() => {
                 style={
                   selectedOption === "someoneElse"
                     ? {
-                      backgroundColor: "#e9eae9",
-                      margin: "10px 0px 0px 0px",
-                      cursor: "pointer",
-                    }
+                        backgroundColor: "#e9eae9",
+                        margin: "10px 0px 0px 0px",
+                        cursor: "pointer",
+                      }
                     : {
-                      backgroundColor: "white",
-                      margin: "10px 0px 0px 0px",
-                      cursor: "pointer",
-                    }
+                        backgroundColor: "white",
+                        margin: "10px 0px 0px 0px",
+                        cursor: "pointer",
+                      }
                 }
                 className="indirect form-control"
                 onClick={() => {
@@ -2074,17 +2184,22 @@ useEffect(() => {
           <div className="LeadFormPreviewDrawar-header">
             <div className="Container">
               <div className="d-flex justify-content-between align-items-center">
-                  <div ><h2 className="title m-0 ml-1">Current LeadForm</h2></div>
-                  <div>
-                    <IconButton onClick={closeAnchor}>
-                      <CloseIcon/>
-                    </IconButton>
-                  </div>
+                <div>
+                  <h2 className="title m-0 ml-1">Current LeadForm</h2>
+                </div>
+                <div>
+                  <IconButton onClick={closeAnchor}>
+                    <CloseIcon />
+                  </IconButton>
+                </div>
               </div>
             </div>
           </div>
           <div>
-            <LeadFormPreview setOpenAnchor={setOpenAnchor} currentLeadForm={currentForm} />
+            <LeadFormPreview
+              setOpenAnchor={setOpenAnchor}
+              currentLeadForm={currentForm}
+            />
           </div>
         </div>
       </Drawer>
@@ -2097,26 +2212,39 @@ useEffect(() => {
         onClose={closeProjection}
       >
         <div style={{ width: "31em" }} className="container-xl">
-          <div className="header d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
-            <h1 style={{ marginBottom: "0px", fontSize: "20px", }} className="title">
+          <div
+            className="header d-flex justify-content-between align-items-center"
+            style={{ margin: "10px 0px" }}
+          >
+            <h1
+              style={{ marginBottom: "0px", fontSize: "20px" }}
+              className="title"
+            >
               Projection Form
             </h1>
             <IconButton>
-              <IoClose onClick={closeProjection} style={{ width: "17px", height: "17px" }} />
+              <IoClose
+                onClick={closeProjection}
+                style={{ width: "17px", height: "17px" }}
+              />
             </IconButton>
           </div>
           <hr style={{ margin: "0px" }} />
           <div className="body-projection">
             <div className="header mb-2">
-              <h1 style={{
-                fontSize: "14px",
-                textShadow: "none",
-                fontFamily: "sans-serif",
-                fontWeight: "400",
+              <h1
+                style={{
+                  fontSize: "14px",
+                  textShadow: "none",
+                  fontFamily: "sans-serif",
+                  fontWeight: "400",
 
-                fontFamily: "Poppins, sans-serif",
-                margin: "10px 0px"
-              }}>{projectingCompany}</h1>
+                  fontFamily: "Poppins, sans-serif",
+                  margin: "10px 0px",
+                }}
+              >
+                {projectingCompany}
+              </h1>
             </div>
             <div className="label">
               <strong>Offered Services</strong>
@@ -2144,7 +2272,7 @@ useEffect(() => {
                   className="form-control"
                   placeholder="0"
                   value={currentProjection.offeredPrize}
-                //disabled
+                  //disabled
                 />
               </div>
             </div>
@@ -2156,7 +2284,7 @@ useEffect(() => {
                   className="form-control"
                   placeholder="Lasf followUp date is not mentioned"
                   value={currentProjection.lastFollowUpdate}
-                //disabled
+                  //disabled
                 />
               </div>
             </div>
@@ -2169,7 +2297,7 @@ useEffect(() => {
                   placeholder="Total Payment is not mentioned"
                   value={currentProjection.totalPayment}
 
-                //disabled
+                  //disabled
                 />
               </div>
             </div>
@@ -2181,11 +2309,10 @@ useEffect(() => {
                   className="form-control"
                   placeholder="Estimated Date not mentioned"
                   value={currentProjection.estPaymentDate}
-                //disabled
+                  //disabled
                 />
               </div>
             </div>
-
           </div>
         </div>
       </Drawer>

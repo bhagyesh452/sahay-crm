@@ -297,7 +297,7 @@ tr:focus{
     top: 0px;
     z-index: 99;
     border-right: 1px solid #eee !important;
-    box-shadow: 1px 1px 10px 42px #000 !important;
+    /* box-shadow: 1px 1px 10px 42px #000 !important; */
     background: #f2f2f2;
 }
 .tf-sticky
@@ -315,7 +315,7 @@ tr:focus{
     top: 0px;
     z-index: 99;
     border-right: 1px solid #eee !important;
-    box-shadow: 1px 1px 10px 42px #000 !important;
+    /* box-shadow: 1px 1px 10px 42px #000 !important; */
     background: #f2f2f2;
 }
 .td-sticky
@@ -326,7 +326,7 @@ tr:focus{
     z-index: 98;
     background: white;
     border-right: 1px solid #eee !important;
-    box-shadow: 1px 1px 10px 42px #000 !important;
+    /* box-shadow: 1px 1px 10px 42px #000 !important; */
 }
 .td-sticky1
 {
@@ -336,7 +336,7 @@ tr:focus{
     z-index: 98;
     background: white;
     border-right: 1px solid #eee !important;
-    box-shadow: 1px 1px 10px 42px #000 !important;
+    /* box-shadow: 1px 1px 10px 42px #000 !important; */
 }
 tr:hover .td-sticky
 {
@@ -1140,7 +1140,7 @@ color: #4e884e;
 
   border-right: 1px solid #e5e5e5;
   overflow: hidden;
-  background: #fffdf9;
+  background: #fff;
 }
 .booking-list-body
 {
@@ -1183,6 +1183,7 @@ color: #4e884e;
 .bookings_Company_Name.activeBox
 {
   border-left: 3px solid #fbb900;
+  background: #f8f8f8;
 }
 .bookings_Company_Name:hover
 {
@@ -1383,16 +1384,34 @@ color: #4e884e;
   margin-top: 10px;
 }
 .booking-docs-preview-text p
+.booking-docs-preview-text p
 {
-  text-align: center;
+  text-align: center !important;
 }
 .booking-docs-preview
 {
   padding: 10px ;
 }
+.booking-img-name-txtwrap
+{
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    line-height: 1.5;
+    max-width: 100%;
+    max-width: fit-content;
+    overflow: hidden;
+    text-align: center;
+}
 /************BookingList Page Css End*************/
-td a
+.wApp a
 {
   text-decoration: none !important;
+  color: #097c1b !important;
+  transition: transform .2s
+}
+.wApp a:active
+{
+  transform: scale(1.3);
   color: #000 !important;
 }

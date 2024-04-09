@@ -48,6 +48,7 @@ import LeadFormPreview from "../admin/LeadFormPreview.jsx";
 import Edit from "@mui/icons-material/Edit";
 import EditableLeadform from "../admin/EditableLeadform.jsx";
 import AddLeadForm from "../admin/AddLeadForm.jsx";
+import { FaWhatsapp } from "react-icons/fa";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -2837,7 +2838,14 @@ function EmployeePanel() {
                                 <td className="td-sticky1">
                                   {company["Company Name"]}
                                 </td>
-                                <td><a target="_blank" href={`https://wa.me/91${company["Company Number"]}`}>{company["Company Number"]}</a></td>
+                                <td>
+                                  <div className="d-flex align-items-center justify-content-between wApp">
+                                    <div>{company["Company Number"]}</div>
+                                    <a target="_blank" href={`https://wa.me/91${company["Company Number"]}`}>
+                                      <FaWhatsapp />
+                                    </a>
+                                  </div>
+                                </td>
                                 <td>
                                   {company["Status"] === "Matured" ? (
                                     <span>{company["Status"]}</span>

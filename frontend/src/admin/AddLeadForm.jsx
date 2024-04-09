@@ -212,6 +212,9 @@ export default function AddLeadForm({
           setSelectedValues(booking.bookingSource);
           setTotalServices(booking.services.length !== 0 ? booking.services.length : 1);
           setfetchedService(true);
+        }else {
+          setActiveStep(1);
+          setCompleted({ 0: true });
         }
       } else {
         setActiveStep(1);

@@ -193,7 +193,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     </div>
                     <div class="col-sm-8 align-self-stretc p-0">
                       <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                        {currentLeadForm.bdmName}
+                        {currentLeadForm.bdmName} {" "} {currentLeadForm.bdmType}
                       </div>
                     </div>
                   </div>
