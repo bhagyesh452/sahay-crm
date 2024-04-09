@@ -38,6 +38,7 @@ import EmployeeLeads from "./DataManager/Dashboard/EmployeeLeads/EmployeeLeads.j
 import BdmDashboard from "./BDM/Dashboard/BdmDashboard.jsx";
 import CompanyParticular_Datamanager from "./DataManager/Dashboard/ManageLeads/CompanyParticular_Datamanager.jsx";
 //import CompanyDetails from "./Processing/CompanyDetails.jsx";
+import Team from './admin/Team.js'
 
 
 
@@ -73,8 +74,11 @@ function App() {
           ></Route>
           <Route path="/bdmdashboard/:userId/" element={<BdmDashboard/>}></Route>
 
-          <Route path='/datamanager-dashboard/:userId/' element= {<DataManagerDashboard />} />
 
+
+{/* 
+-----------------------------------------datamanager components--------------------------------------- */}
+          <Route path='/datamanager-dashboard/:userId/' element= {<DataManagerDashboard />} />
           <Route
             path="/datamanager/manageleads/"
             element={<ManageLeads/>}
@@ -82,7 +86,9 @@ function App() {
            <Route path="/datamanager/leads/:companyId" element={<CompanyParticular_Datamanager/>}/>
           <Route path="/datamanager/employees" element={<DataManager_Employees/>}></Route>
           <Route path="/datamanager/employeeLeads/:id" element={<EmployeeLeads/>}></Route>
-
+          
+          
+          
           <Route
             path="/converted-leads/:userId/"
             element={
@@ -108,6 +114,7 @@ function App() {
                 element={<LoginDetails />}
               />
               <Route path="/admin/leads" element={<Leads />} />
+              <Route path="/admin/team" element={<Team />} />
               <Route path="/admin/leads/:companyId" element={<CompanyParticular />} />
               <Route path="/admin/bookings" element={<BookingList />} />
               <Route

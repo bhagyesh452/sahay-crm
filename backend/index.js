@@ -47,6 +47,7 @@ const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
 //const axios = require('axios');
 const crypto = require('crypto');
+const TeamModel = require("./models/TeamModel.js")
 // const { Cashfree } = require('cashfree-pg');
 
 
@@ -98,14 +99,13 @@ app.get("/api", (req, res) => {
 app.post("/api/admin/login-admin", async (req, res) => {
   const { username, password } = req.body;
   console.log(username, password);
-  // Simulate user authentication (replace with actual authentication logic)
-  // (u) => u.email === username && u.password === password
-  // const user = await adminModel.find();
+ 
 
   const user = await onlyAdminModel.findOne({
     admin_email: username,
     admin_password: password,
   });
+  console.log("user" , user)
   //console.log(user);
   if (user) {
     // Generate a JWT token
@@ -114,10 +114,11 @@ app.post("/api/admin/login-admin", async (req, res) => {
     const token = jwt.sign({ userId: user._id }, secretKey, {
       expiresIn: "1h",
     });
-    res.json({ token, adminName });
+    console.log(adminName , token)
+    res.status(200).json({ token, adminName });
   } else {
-    res.status(401).json({ message: "Invalid credentials" });
-  }
+    res.status(401).json({ message: "Invalid credentials"});
+  }
 });
 
 // Login for employee
@@ -743,6 +744,26 @@ app.get("/api/einfo", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+// --------------------------api for teams----------------------------------------
+
+app.post('/api/teaminfo', async (req, res) => {
+  try {
+      const teamData = req.body;
+      const newTeam = await TeamModel.create(teamData);
+      res.status(201).json(newTeam);
+      console.log("newTeam" , newTeam)
+  } catch (error) {
+      console.error('Error creating team:', error);
+      res.status(500).json({ error: 'Error creating team' });
+  }
+});
+
+
+
+
+
+
 app.get("/api/leads", async (req, res) => {
   try {
     // Fetch data using lean queries to retrieve plain JavaScript objects

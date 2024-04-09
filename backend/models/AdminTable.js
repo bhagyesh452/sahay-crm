@@ -15,8 +15,6 @@ const yourSchema = new mongoose.Schema({
   }
 });
 
-
-
 // Create the model
 const onlyAdminModel= mongoose.model('admin-info', yourSchema);
 

@@ -1474,24 +1474,6 @@ export default function AdminBookingForm({
     const handleInputCompanyName = (value) => {
         setCompanyNewName(value);
     };
-    //console.log("foundCompany", foundCompany)
-
-
-    //console.log(companyName)
-
-    // const foundCompany = data.filter(company => company["Company Name"] === companyNewName);
-    // console.log("foundcompany", foundCompany);
-    // if (foundCompany.length > 0) {
-    //     //setCompanyNewEmail(foundCompany["Company Email"])
-    //     // Found the company
-    //     console.log("Found company:", foundCompany);
-    // } else {
-    //     // Company not found
-    //     console.log("Company not found");
-    // }
-
-    //console.log(companyNewName)
-
     const handleRemoveFile = () => {
         setLeadData({ ...leadData, paymentReceipt: null });
     };
