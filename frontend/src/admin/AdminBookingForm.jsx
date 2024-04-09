@@ -148,6 +148,7 @@ export default function AdminBookingForm({
                     ...prevState,
                     bdeName: employeeName ? employeeName : "",
                     bdeEmail: employeeEmail ? employeeEmail : "",
+                    bookingDate : formatDate(new Date()),
                 }));
             } else if (Step2Status === true && Step3Status === false) {
                 setCompleted({ 0: true, 1: true });
@@ -303,7 +304,14 @@ export default function AdminBookingForm({
             const isEmptyOrNull = (value) => {
                 return value === "" || value === null || value === 0;
             };
-
+            if(!foundCompany){
+                Swal.fire({
+                    title: "Company Not Found!",
+                    text:"Please Add Lead to Continue",
+                    icon: "warning",
+                });
+                return true;
+            }
             // Prepare the data to send to the backend
             let dataToSend = {};
             if (activeStep === 0) {
@@ -312,13 +320,14 @@ export default function AdminBookingForm({
                     isEmptyOrNull(leadData["Company Name"]) ||
                     isEmptyOrNull(leadData["Company Number"]) ||
                     isEmptyOrNull(leadData.incoDate) ||
-                    isEmptyOrNull(leadData.panNumber)
+                    isEmptyOrNull(leadData.panNumber) 
                 ) {
                     Swal.fire({
                         title: "Please fill all the details",
                         icon: "warning",
                     });
-                } else {
+                }
+                 else {
                     dataToSend = {
                         "Company Email": leadData["Company Email"],
                         "Company Name": leadData["Company Name"],
@@ -1414,15 +1423,26 @@ export default function AdminBookingForm({
     //   };
 
     const handleInputChange = (value, fieldName) => {
+        if (fieldName === "bdmName") {
+                  const foundUser = unames.find((item) => item.ename === value);
+                  setLeadData({
+                    ...leadData,
+                    bdmName: value,
+                    bdmEmail: foundUser ? foundUser.email : "", // Check if foundUser exists before accessing email
+                  });
+                }
+                else{
+                    setLeadData(prevState => ({
+                        ...prevState,
+                        [fieldName]: value
+                    }));
+                }
         //setCompanyNewName(value)
-            setLeadData(prevState => ({
-                ...prevState,
-                [fieldName]: value
-            }));
+           
     };
 
     const [companyNewName, setCompanyNewName] = useState('');
-    const [foundCompany, setFoundCompany] = useState([]);
+    const [foundCompany, setFoundCompany] = useState(false);
 
     useEffect(() => {
         const fetchDataNew = async () => {
@@ -1430,7 +1450,8 @@ export default function AdminBookingForm({
             // console.log("gadbadyahin hain")
             try {
                 const response = await axios.get(`${secretKey}/leads/${companyName}`);
-                console.log(response.data)
+                console.log(response.data);
+                setFoundCompany(response.data ? true : false);
                 setLeadData((prevLeadData)=>({
                     ...prevLeadData,
                     "Company Name" : response.data ? response.data["Company Name"]  : companyName,
