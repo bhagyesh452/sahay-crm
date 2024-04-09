@@ -297,7 +297,7 @@ tr:focus{
     top: 0px;
     z-index: 99;
     border-right: 1px solid #eee !important;
-    box-shadow: 1px 1px 10px 42px #000 !important;
+    /* box-shadow: 1px 1px 10px 42px #000 !important; */
     background: #f2f2f2;
 }
 .tf-sticky
@@ -315,7 +315,7 @@ tr:focus{
     top: 0px;
     z-index: 99;
     border-right: 1px solid #eee !important;
-    box-shadow: 1px 1px 10px 42px #000 !important;
+    /* box-shadow: 1px 1px 10px 42px #000 !important; */
     background: #f2f2f2;
 }
 .td-sticky
@@ -326,7 +326,7 @@ tr:focus{
     z-index: 98;
     background: white;
     border-right: 1px solid #eee !important;
-    box-shadow: 1px 1px 10px 42px #000 !important;
+    /* box-shadow: 1px 1px 10px 42px #000 !important; */
 }
 .td-sticky1
 {
@@ -336,7 +336,7 @@ tr:focus{
     z-index: 98;
     background: white;
     border-right: 1px solid #eee !important;
-    box-shadow: 1px 1px 10px 42px #000 !important;
+    /* box-shadow: 1px 1px 10px 42px #000 !important; */
 }
 tr:hover .td-sticky
 {
