@@ -7,6 +7,8 @@ import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
 import { TbBoxMultiple, TbMathPiDivide2 } from "react-icons/tb";
 import Nodata from "../components/Nodata";
+import { MdModeEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -183,8 +185,8 @@ function BookingList() {
                 </div>
                 <div className="col-6">
                   <div className="d-flex justify-content-end">
-                    <button className="btn btn-primary mr-1">Import CSV</button>
-                    <button className="btn btn-primary mr-1">Export CSV</button>
+                    <button className="btn btn-primary mr-1" disabled>Import CSV</button>
+                    <button className="btn btn-primary mr-1" disabled>Export CSV</button>
                     <button
                       className="btn btn-primary"
                       onClick={() => functionOpenBookingForm()}
@@ -300,7 +302,7 @@ function BookingList() {
                           </div>
                         ))}
                       {leadFormData.length === 0 && (
-                        <div>
+                        <div className="d-flex align-items-center justify-content-center" style={{height:'inherit'}}>
                           <Nodata />
                         </div>
                       )}
@@ -335,7 +337,7 @@ function BookingList() {
                                     Company Name
                                   </div>
                                 </div>
-                                <div class="col-sm-6 align-self-stretch p-0">
+                                <div class="col-sm-8 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                     {currentLeadform &&
                                     Object.keys(currentLeadform).length !== 0
@@ -473,8 +475,16 @@ function BookingList() {
                       {/* -------- Booking Details ---------*/}
                       <div className="mul-booking-card mt-2">
                         {/* -------- Step 2 ---------*/}
-                        <div className="mb-2 mul-booking-card-inner-head">
+                        <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                           <b>Booking Details:</b>
+                          <div className="Services_Preview_action d-flex">
+                            <div className="Services_Preview_action_edit mr-2">
+                              <MdModeEdit />
+                            </div>
+                            <div className="Services_Preview_action_delete">
+                              <MdDelete />
+                            </div>
+                          </div>
                         </div>
                         <div className="my-card">
                           <div className="my-card-body">
@@ -518,7 +528,7 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                      {currentLeadform &&
+                                    <span><i>Close By</i></span> {currentLeadform &&
                                         currentLeadform.bdmName}
                                     </div>
                                   </div>
@@ -699,23 +709,23 @@ function BookingList() {
                                       <div class="row m-0">
                                         <div class="col-sm-4 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                            Second Paymnet
+                                            Second Payment
                                           </div>
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹
                                             {Number(obj.secondPayment).toFixed(
-                                              2
-                                            )}
-                                            {"("}
+                                              2 
+                                            )} 
+                                             {"("}
                                             {isNaN(
                                               new Date(obj.secondPaymentRemarks)
                                             )
                                               ? obj.secondPaymentRemarks
                                               : "On " +
                                                 obj.secondPaymentRemarks +
-                                                ")"}
+                                                ")"}{")"}
                                           </div>
                                         </div>
                                       </div>
@@ -781,6 +791,56 @@ function BookingList() {
                               </div>
                             </div>
                           ))}
+                        {/* -------- CA Case -------- */}
+                        <div className="my-card mt-1">
+                          <div className="my-card-body">
+                            <div className="row m-0 bdr-btm-eee">
+                              <div className="col-lg-12 col-sm-6 p-0">
+                                <div class="row m-0">
+                                  <div class="col-sm-2 align-self-stretc p-0">
+                                      <div class="booking_inner_dtl_h h-100">CA Case</div>
+                                  </div>
+                                  <div class="col-sm-10 align-self-stretc p-0">
+                                      <div class="booking_inner_dtl_b h-100 bdr-left-eee">Yes</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="row m-0 bdr-btm-eee">
+                              <div className="col-lg-3 col-sm-6 p-0">
+                                <div class="row m-0">
+                                  <div class="col-sm-5 align-self-stretc p-0">
+                                      <div class="booking_inner_dtl_h h-100">CA's Number</div>
+                                  </div>
+                                  <div class="col-sm-7 align-self-stretc p-0">
+                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">9924283530</div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col-lg-5 col-sm-6 p-0">
+                                <div class="row m-0">
+                                  <div class="col-sm-4 align-self-stretc p-0">
+                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Email</div>
+                                  </div>
+                                  <div class="col-sm-8 align-self-stretc p-0">
+                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">nirmesh@gmail.com</div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col-lg-4 col-sm-6 p-0">
+                                <div class="row m-0">
+                                  <div class="col-sm-5 align-self-stretc p-0">
+                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Commission</div>
+                                  </div>
+                                  <div class="col-sm-7 align-self-stretc p-0">
+                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 22000</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                         {/* -------- Step 4 ---------*/}
                         <div className="mb-2 mt-3 mul-booking-card-inner-head">
                           <b>Payment Summary:</b>
@@ -1014,7 +1074,7 @@ function BookingList() {
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                            {objMain.bdmName}
+                                           <span><i>Support By</i></span> {objMain.bdmName}
                                           </div>
                                         </div>
                                       </div>
@@ -1190,7 +1250,7 @@ function BookingList() {
                                           <div class="row m-0">
                                             <div class="col-sm-4 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                                Second Paymnet
+                                                Second Payment
                                               </div>
                                             </div>
                                             <div class="col-sm-8 align-self-stretch p-0">
@@ -1278,6 +1338,57 @@ function BookingList() {
                                   </div>
                                 </div>
                               ))}
+
+                              {/* -------- CA Case -------- */}
+                              <div className="my-card mt-1">
+                                <div className="my-card-body">
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-12 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-2 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h h-100">CA Case</div>
+                                        </div>
+                                        <div class="col-sm-10 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">Yes</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-3 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-5 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h h-100">CA's Number</div>
+                                        </div>
+                                        <div class="col-sm-7 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">9924283530</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-5 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Email</div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">nirmesh@gmail.com</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-5 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Commission</div>
+                                        </div>
+                                        <div class="col-sm-7 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 22000</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
                               {/* -------- Step 4 ---------*/}
                               <div className="mb-2 mt-3 mul-booking-card-inner-head">
                                 <b>Payment Summary:</b>
