@@ -15,7 +15,7 @@ const ServiceSchema = new mongoose.Schema({
   },
   withGST:{
     type:Boolean
-  },
+  },  
   withDSC:{
     type:Boolean
   },
@@ -51,25 +51,7 @@ const ServiceSchema = new mongoose.Schema({
 });
 
 const TempSchema = new mongoose.Schema({
-  "Company Name": {
-    type: String,
-    unique:true
-  },
-  "Company Number": {
-    type: Number,
-  },
-  "Company Email": {
-    type: String,
-  },
-  panNumber:{
-    type:String,
-  },
-  gstNumber:{
-    type:String
-  },
-  incoDate: {
-    type: String,
-  },
+
   bdeName: {
     type: String,
   },

@@ -49,24 +49,7 @@ const ServiceSchema = new mongoose.Schema({
   }
 });
 const TempSchema = new mongoose.Schema({
-  "Company Name": {
-    type: String,
-  },
-  "Company Number": {
-    type: Number,
-  },
-  "Company Email": {
-    type: String,
-  },
-  panNumber:{
-    type:String,
-  },
-  gstNumber:{
-    type:String
-  },
-  incoDate: {
-    type: String,
-  },
+  
   bdeName: {
     type: String,
   },
@@ -256,7 +239,11 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
     type: Boolean,
     default:false
   },
-  moreBookings : TempSchema
+  moreBookings: {
+    type: TempSchema,
+    required: false,
+    default:null // Set to false to make it optional
+  },
 });
 
 const RedesignedDraftModel = mongoose.model(
