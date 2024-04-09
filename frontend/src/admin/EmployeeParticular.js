@@ -821,6 +821,7 @@ function EmployeeParticular() {
                       </div>
                     </div>
                   )}
+                {!AddForm && <>
                   <div className="form-control sort-by">
                     <label htmlFor="sort-by">Sort By:</label>
                     <select
@@ -944,10 +945,11 @@ function EmployeeParticular() {
                       Login Details
                     </button>
                   </Link>
+                  </>}
 
                   {backButton && (
                     <div>
-                      <Link
+                      {!AddForm ? <Link
                         to={`/admin/employees`}
                         style={{ marginLeft: "10px" }}
                       >
@@ -962,7 +964,19 @@ function EmployeeParticular() {
                           </span>
                           Back
                         </button>
-                      </Link>
+                      </Link> : <>
+                      <button className="btn btn-primary d-none d-sm-inline-block" onClick={()=>setAddForm(false)}>
+                          <span>
+                            <FaArrowLeft
+                              style={{
+                                marginRight: "10px",
+                                marginBottom: "3px",
+                              }}
+                            />
+                          </span>
+                          Back
+                        </button>
+                      </>}
                     </div>
                   )}
                 </div>

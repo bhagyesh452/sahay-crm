@@ -3172,16 +3172,16 @@ app.post(
         const existingData = await RedesignedDraftModel.findOne({
           "Company Name": companyName,
         });
-
       
         newData.otherDocs =
-          req.files["otherDocs"] === undefined
-            ? ""
+          req.files["otherDocs"] === undefined || req.files["otherDocs"].length === 0
+            ? []
             : req.files["otherDocs"].map((file) => file);
         newData.paymentReceipt =
-          req.files["paymentReceipt"] === undefined
-            ? ""
+          req.files["paymentReceipt"] === undefined || req.files["paymentReceipt"].length === 0
+            ? []
             : req.files["paymentReceipt"].map((file) => file);
+      
         if (existingData) {
           // Update existing data if found
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(
@@ -3189,15 +3189,12 @@ app.post(
             {
               $set: {
                 totalAmount: newData.totalAmount || existingData.totalAmount,
-                pendingAmount:
-                  newData.pendingAmount || existingData.pendingAmount,
-                receivedAmount:
-                  newData.receivedAmount || existingData.receivedAmount,
-                paymentReceipt:
-                  newData.paymentReceipt || existingData.paymentReceipt,
+                pendingAmount: newData.pendingAmount || existingData.pendingAmount,
+                receivedAmount: newData.receivedAmount || existingData.receivedAmount,
+                paymentReceipt: newData.paymentReceipt || existingData.paymentReceipt,
                 otherDocs: newData.otherDocs || existingData.otherDocs,
                 paymentMethod: newData.paymentMethod || newData.paymentMethod,
-                extraNotes: newData.extraNotes || newData.extraNotes,
+                extraNotes: newData.extraNotes || existingData.extraNotes,
                 Step4Status: true,
               },
             },
@@ -3206,7 +3203,8 @@ app.post(
           res.status(200).json(updatedData);
           return true; // Respond with updated data
         }
-      } else if (Step === "step5") {
+      }
+       else if (Step === "step5") {
 
         const updatedData = await RedesignedDraftModel.findOneAndUpdate(
           { "Company Name": companyName },
@@ -5324,10 +5322,36 @@ app.delete('/api/redesigned-delete-booking/:companyId', async (req, res) => {
       { $set: { "Status": "Interested" } },
       { new: true }
     );
-    
-    if (!deletedBooking) {
+    if(deletedBooking){
+
+      const deleteDraft = await RedesignedDraftModel.findOneAndDelete({"Company Name" : deletedBooking["Company Name"]});
+    }
+    else  {
       return res.status(404).send('Booking not found');
     }
+    res.status(200).send('Booking deleted successfully');
+  } catch (error) {
+    console.error('Error deleting booking:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Deleting booking for particular id 
+app.delete('/api/redesigned-delete-particular-booking/:company/:companyId', async (req, res) => {
+  try {
+    const company = req.params.company;
+    const companyId = req.params.companyId;
+
+    const updatedLeadForm = await RedesignedLeadformModel.findOneAndUpdate(
+      { company: company },
+      { $pull: { "moreBookings": { "_id": companyId } } },
+      { new: true }
+    );
+
+    if (!updatedLeadForm) {
+      return res.status(404).send('Booking not found');
+    }
+    
     res.status(200).send('Booking deleted successfully');
   } catch (error) {
     console.error('Error deleting booking:', error);

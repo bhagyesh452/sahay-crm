@@ -3,9 +3,11 @@ import Header from "./Header";
 import Navbar from "./Navbar";
 import AdminBookingForm from "./AdminBookingForm";
 import axios from "axios";
+import Swal from "sweetalert2";
 import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
 import { TbBoxMultiple, TbMathPiDivide2 } from "react-icons/tb";
+import wordimg from "../static/my-images/word.png";
 import Nodata from "../components/Nodata";
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
@@ -137,6 +139,80 @@ function BookingList() {
     const pathname = pdfurl;
     console.log(pathname);
     window.open(`${secretKey}/otherpdf/${pathname}`, "_blank");
+  };
+
+
+  // ------------------------------------------------- Delete booking ----------------------------------------------
+
+  const handleDeleteBooking = async (company, id) => {
+    const confirmation = await Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to delete the booking?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel!',
+      reverseButtons: true,
+    });
+  
+    if (confirmation.isConfirmed) {
+      if(id){
+        fetch(`${secretKey}/redesigned-delete-particular-booking/${company}/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+          .then(response => {
+            if (response.ok) {
+              Swal.fire(
+                'Success!',
+                'Booking Deleted',
+                'success'
+              );
+            } else {
+              Swal.fire(
+                'Error!',
+                'Failed to Delete Booking',
+                'error'
+              );
+            }
+          })
+          .catch(error => {
+            console.error('Error during delete request:', error);
+          });
+      }else{
+        fetch(`${secretKey}/redesigned-delete-booking/${company}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+          .then(response => {
+            if (response.ok) {
+              Swal.fire(
+                'Success!',
+                'Booking Deleted',
+                'success'
+              );
+              fetchRedesignedFormData()
+            } else {
+              Swal.fire(
+                'Error!',
+                'Failed to Delete Company',
+                'error'
+              );
+            }
+          })
+          .catch(error => {
+            console.error('Error during delete request:', error);
+          });
+
+      }
+
+    } else if (confirmation.dismiss === Swal.DismissReason.cancel) {
+      console.log('Cancellation or closed without confirming');
+    }
   };
   return (
     <div>
@@ -478,10 +554,10 @@ function BookingList() {
                         <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                           <b>Booking Details:</b>
                           <div className="Services_Preview_action d-flex">
-                            <div className="Services_Preview_action_edit mr-2">
+                            <div className="Services_Preview_action_edit mr-1">
                               <MdModeEdit />
                             </div>
-                            <div className="Services_Preview_action_delete">
+                            <div onClick={()=>handleDeleteBooking(currentLeadform.company)} className="Services_Preview_action_delete">
                               <MdDelete />
                             </div>
                           </div>
@@ -801,29 +877,29 @@ function BookingList() {
                                       <div class="booking_inner_dtl_h h-100">CA Case</div>
                                   </div>
                                   <div class="col-sm-10 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b h-100 bdr-left-eee">Yes</div>
+                                      <div class="booking_inner_dtl_b h-100 bdr-left-eee">{currentLeadform && currentLeadform.caCase}</div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div className="row m-0 bdr-btm-eee">
-                              <div className="col-lg-3 col-sm-6 p-0">
+                            {currentLeadform && currentLeadform.caCase!=="No" && <div className="row m-0 bdr-btm-eee">
+                              <div className="col-lg-4 col-sm-6 p-0">
                                 <div class="row m-0">
-                                  <div class="col-sm-5 align-self-stretc p-0">
+                                  <div class="col-sm-6 align-self-stretc p-0">
                                       <div class="booking_inner_dtl_h h-100">CA's Number</div>
                                   </div>
-                                  <div class="col-sm-7 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">9924283530</div>
+                                  <div class="col-sm-6 align-self-stretc p-0">
+                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">{currentLeadform && currentLeadform.caNumber}</div>
                                   </div>
                                 </div>
                               </div>
-                              <div className="col-lg-5 col-sm-6 p-0">
+                              <div className="col-lg-4 col-sm-6 p-0">
                                 <div class="row m-0">
                                   <div class="col-sm-4 align-self-stretc p-0">
                                       <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Email</div>
                                   </div>
                                   <div class="col-sm-8 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">nirmesh@gmail.com</div>
+                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">{currentLeadform && currentLeadform.caEmail}</div>
                                   </div>
                                 </div>
                               </div>
@@ -833,11 +909,11 @@ function BookingList() {
                                       <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Commission</div>
                                   </div>
                                   <div class="col-sm-7 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 22000</div>
+                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ {currentLeadform && currentLeadform.caCommission}</div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
+                            </div>}
                           </div>
                         </div>
 
@@ -952,30 +1028,29 @@ function BookingList() {
                                   )
                                 }
                               >
-                                {currentLeadform &&
-                                currentLeadform.paymentReceipt[0].filename.endsWith(
-                                  ".pdf"
-                                ) ? (
-                                  <PdfImageViewerAdmin
-                                    type="pdf"
-                                    path={
-                                      currentLeadform &&
-                                      currentLeadform.paymentReceipt[0].filename
-                                    }
-                                  />
-                                ) : (
-                                  <img
-                                    src={`${secretKey}/recieptpdf/${
-                                      currentLeadform &&
-                                      currentLeadform.paymentReceipt[0].filename
-                                    }`}
-                                    alt={"MyImg"}
-                                  ></img>
-                                )}
+                               {currentLeadform && currentLeadform.paymentReceipt[0] ? (
+  currentLeadform.paymentReceipt[0].filename.endsWith(".pdf") ? (
+    <PdfImageViewerAdmin
+      type="pdf"
+      path={currentLeadform.paymentReceipt[0].filename}
+    />
+  ) : (
+    currentLeadform.paymentReceipt[0].filename.endsWith(".png") ||
+    currentLeadform.paymentReceipt[0].filename.endsWith(".jpg") ? (
+      <img
+        src={`${secretKey}/recieptpdf/${currentLeadform.paymentReceipt[0].filename}`}
+        alt="Receipt Image"
+      />
+    ) : (
+      <img src={wordimg} alt="Default Image" />
+    )
+  )
+) : null}
+
                               </div>
                               <div className="booking-docs-preview-text">
                                 <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                  Receipt.pdf
+                                  Receipt
                                 </p>
                               </div>
                             </div>
@@ -1031,9 +1106,17 @@ function BookingList() {
                             </div>
                             <div className="mul-booking-card mt-2">
                               {/* -------- Step 2 ---------*/}
-                              <div className="mb-2 mul-booking-card-inner-head">
-                                <b>Booking Details:</b>
-                              </div>
+                              <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
+                          <b>Booking Details:</b>
+                          <div className="Services_Preview_action d-flex">
+                            <div className="Services_Preview_action_edit mr-2">
+                              <MdModeEdit />
+                            </div>
+                            <div onClick={()=>handleDeleteBooking(currentLeadform.company, objMain._id)} className="Services_Preview_action_delete">
+                              <MdDelete />
+                            </div>
+                          </div>
+                        </div>
                               <div className="my-card">
                                 <div className="my-card-body">
                                   <div className="row m-0 bdr-btm-eee">
@@ -1349,29 +1432,29 @@ function BookingList() {
                                             <div class="booking_inner_dtl_h h-100">CA Case</div>
                                         </div>
                                         <div class="col-sm-10 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">Yes</div>
+                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">{objMain.caCase}</div>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0 bdr-btm-eee">
-                                    <div className="col-lg-3 col-sm-6 p-0">
+                                  {objMain.caCase !== "No" && <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-4 col-sm-6 p-0">
                                       <div class="row m-0">
                                         <div class="col-sm-5 align-self-stretc p-0">
                                             <div class="booking_inner_dtl_h h-100">CA's Number</div>
                                         </div>
                                         <div class="col-sm-7 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">9924283530</div>
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">{objMain.caNumber}</div>
                                         </div>
                                       </div>
                                     </div>
-                                    <div className="col-lg-5 col-sm-6 p-0">
+                                    <div className="col-lg-4 col-sm-6 p-0">
                                       <div class="row m-0">
                                         <div class="col-sm-4 align-self-stretc p-0">
                                             <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Email</div>
                                         </div>
                                         <div class="col-sm-8 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">nirmesh@gmail.com</div>
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">{objMain.caEmail}</div>
                                         </div>
                                       </div>
                                     </div>
@@ -1381,11 +1464,11 @@ function BookingList() {
                                             <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Commission</div>
                                         </div>
                                         <div class="col-sm-7 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 22000</div>
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ {objMain.caCommission}</div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
+                                  </div>}
                                 </div>
                               </div>
 
