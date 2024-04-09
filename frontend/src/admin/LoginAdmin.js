@@ -30,7 +30,9 @@ function LoginAdmin({ setToken }) {
   //   window.alert("Incorrect email or password")
   // }
   // console.log("button clicked")
+  
   const secretKey = process.env.REACT_APP_SECRET_KEY;
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -49,8 +51,8 @@ function LoginAdmin({ setToken }) {
     } catch (error) {
       console.error("Login failed:", error.message);
       setErrorMessage("Incorrect Credentials!");
-    }
-  };
+    }
+  };
 
   return (
     <div>

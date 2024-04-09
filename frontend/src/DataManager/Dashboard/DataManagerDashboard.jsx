@@ -4,23 +4,23 @@ import { useParams } from "react-router-dom";
 import Header from "../Components/Header/Header.jsx";
 import Navbar from "../Components/Navbar/Navbar.jsx";
 import axios from "axios";
-import { IconChevronLeft } from "@tabler/icons-react";
+///import { IconChevronLeft } from "@tabler/icons-react";
 import debounce from 'lodash/debounce';
-import { IconChevronRight } from "@tabler/icons-react";
-import CircularProgress from "@mui/material/CircularProgress";
-import UndoIcon from "@mui/icons-material/Undo";
-import Box from "@mui/material/Box";
-import { IconEye } from "@tabler/icons-react";
+//import { IconChevronRight } from "@tabler/icons-react";
+//import CircularProgress from "@mui/material/CircularProgress";
+//import UndoIcon from "@mui/icons-material/Undo";
+//import Box from "@mui/material/Box";
+//import { IconEye } from "@tabler/icons-react";
 import { useRef, useState, useEffect } from "react";
 import * as XLSX from "xlsx";
-import DatePicker from "react-datepicker";
-import SwapVertIcon from "@mui/icons-material/SwapVert";
+//import DatePicker from "react-datepicker";
+//import SwapVertIcon from "@mui/icons-material/SwapVert";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../assets/styles.css"
 //import "../assets/styles.css";
 import Swal from "sweetalert2";
-import ClipLoader from "react-spinners/ClipLoader";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
+//import ClipLoader from "react-spinners/ClipLoader";
+//import ModeEditIcon from "@mui/icons-material/ModeEdit";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faHouseLock } from '@fortawesome/free-solid-svg-icons'
 
@@ -35,13 +35,14 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CloseIcon from "@mui/icons-material/Close";
-import Modal from "react-modal";
-import { Link, json } from "react-router-dom";
-import Nodata from "../Components/Nodata/Nodata.jsx";
-import FilterListIcon from "@mui/icons-material/FilterList";
+//import DeleteIcon from "@mui/icons-material/Delete";
+//import CloseIcon from "@mui/icons-material/Close";
+//import Modal from "react-modal";
+//import { Link, json } from "react-router-dom";
+//import Nodata from "../Components/Nodata/Nodata.jsx";
+//import FilterListIcon from "@mui/icons-material/FilterList";
 import EmployeeDataReport from "../Components/EmployeeDataReport/EmployeeDataReport.jsx";
+
 
 function DataManagerDashboard() {
   const { userId } = useParams();

@@ -10,7 +10,7 @@ import { BsFillPersonVcardFill } from "react-icons/bs";
 import dashboardicon from '../../../dist/img/dashboardicon/dashboardico0n.jpg'
 
 
-function Navbar({ name, designation }) {
+function Navbar() {
   // const active = number;
   const location = useLocation();
   //console.log(name, designation)

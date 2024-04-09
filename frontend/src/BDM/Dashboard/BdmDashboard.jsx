@@ -1,5 +1,7 @@
 import React from 'react'
 import { useParams } from "react-router-dom";
+import Header from '../Components/Header/Header.jsx'
+import Navbar from '../Components/Navbar/Navbar.jsx';
 
 function BdmDashboard() {
     const { userId } = useParams();
@@ -11,7 +13,10 @@ function BdmDashboard() {
 
 
   return (
-    <div>BdmDashboard</div>
+    <div>
+      <Header/>
+      <Navbar/>
+    </div>
   )
 }
 

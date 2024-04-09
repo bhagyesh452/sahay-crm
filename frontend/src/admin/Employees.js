@@ -31,6 +31,30 @@ import { IconEye } from "@tabler/icons-react";
 import Nodata from "../components/Nodata";
 
 function Employees({ onEyeButtonClick }) {
+
+  const [itemIdToDelete, setItemIdToDelete] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [companyDdata, setCompanyDdata] = useState([]);
+  const [nametodelete, setnametodelete] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [data, setData] = useState([]);
+  const [cdata, setCData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const [selectedDataId, setSelectedDataId] = useState("2024-01-03");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [number, setNumber] = useState(0);
+  const [ename, setEname] = useState("");
+  const [jdate, setJdate] = useState(null);
+  const [designation, setDesignation] = useState("");
+  const [branchOffice, setBranchOffice] = useState("");
+  const [otherdesignation, setotherDesignation] = useState("");
+  const [companyData, setCompanyData] = useState([]);
+
+  const [open, openchange] = useState(false);
+
+
   // const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedin')==='true');
   // const handleLogin = ()=>{
   //   setIsLoggedIn(true)
@@ -57,11 +81,6 @@ function Employees({ onEyeButtonClick }) {
     };
   }, []);
 
-  const [itemIdToDelete, setItemIdToDelete] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [companyDdata, setCompanyDdata] = useState([]);
-  const [nametodelete, setnametodelete] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleDeleteClick = (itemId, nametochange) => {
     // Open the confirm delete modal
@@ -117,23 +136,7 @@ function Employees({ onEyeButtonClick }) {
     jdate: "ascending",
     addedOn: 'ascending'
   })
-  const [data, setData] = useState([]);
-  const [cdata, setCData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [isUpdateMode, setIsUpdateMode] = useState(false);
-  const [selectedDataId, setSelectedDataId] = useState("2024-01-03");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [number, setNumber] = useState(0);
-  const [ename, setEname] = useState("");
-  const [jdate, setJdate] = useState(null);
-  const [designation, setDesignation] = useState("");
-  const [branchOffice, setBranchOffice] = useState("");
-  const [otherdesignation, setotherDesignation] = useState("");
-  const [companyData, setCompanyData] = useState([]);
-
-  const [open, openchange] = useState(false);
-
+  
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/einfo`);
@@ -298,7 +301,7 @@ function Employees({ onEyeButtonClick }) {
         password: password,
         jdate: jdate,
         designation: designation,
-        branchOffice:branchOffice
+        branchOffice: branchOffice
 
       };
 
@@ -345,7 +348,7 @@ function Employees({ onEyeButtonClick }) {
           icon: "success",
         });
       }
-      console.log("datatosend" , dataToSend)
+      console.log("datatosend", dataToSend)
 
       setEmail("");
       setEname("");
@@ -375,20 +378,6 @@ function Employees({ onEyeButtonClick }) {
   const closepopup = () => {
     openchange(false);
   };
-
-  //   cInfo:{
-  //     "Company Name": referenceId + "company",
-
-  // "Company Email": referenceId + "email",
-  // "Company Incorporation Date  ": new Date(),
-  // "Company Number": Math.floor(Math.random() * 1000000),
-  // City: referenceId + "city",
-  // State: referenceId + "state",
-  //   }
-
-  // const formattedDate = new Date(jdate).toLocaleDateString();
-  //   console.log('Formatted Date:', formattedDate);
-
   function formatDate(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
     const formattedDate = new Date(inputDate).toLocaleDateString(
@@ -397,7 +386,7 @@ function Employees({ onEyeButtonClick }) {
     );
     return formattedDate;
   }
-  console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
+  //console.log(new Date("06/02/2024").toLocaleDateString('en-GB'));
   const sortDataByName = () => {
     if (sortedFormat.ename === "ascending") {
       setSortedFormat({
@@ -492,8 +481,7 @@ function Employees({ onEyeButtonClick }) {
             margin: "auto",
             textAlign: "center",
           },
-        }}
-      >
+        }}>
         <div className="modal-header">
           <h3 style={{ fontSize: "20px" }} className="modal-title">
             Confirm Delete?
@@ -573,7 +561,6 @@ function Employees({ onEyeButtonClick }) {
                     </button>
                   </div>
                 </div>
-
                 <div className="row">
                   <div className="col-lg-6 mb-3">
                     <label className="form-label">Designation</label>
@@ -773,12 +760,10 @@ function Employees({ onEyeButtonClick }) {
         onCopy={(e) => {
           e.preventDefault();
         }}
-        className="page-body"
-      >
+        className="page-body">
         <div
           style={{ maxWidth: "89vw", overflowX: "auto" }}
-          className="container-xl"
-        >
+          className="container-xl">
           <div className="card">
             <div style={{ padding: "0px" }} className="card-body">
               <div
@@ -976,7 +961,6 @@ function Employees({ onEyeButtonClick }) {
                       ))}
                     </tbody>
                   )}
-                  <tbody className="table-tbody"></tbody>
                 </table>
               </div>
             </div>

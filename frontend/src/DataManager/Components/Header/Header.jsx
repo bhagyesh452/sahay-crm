@@ -46,19 +46,6 @@ function Header({ name }) {
     };
   }, []);
 
-
-   const dataManagerName = localStorage.getItem("dataManagerName")
-
-  // const handleLogout = () => {
-  //   // Clear any user authentication state, such as tokens or user information stored in local storage
-  //   localStorage.removeItem('managerToken'); // Remove token
-  //   // Redirect user to login page or perform any other action necessary for logout
-  //   // For example, if you're using React Router, you can redirect the user to the login page like this:
-  //   window.location.href = '/datamanagerlogin';
-  // };
-
-
-
   const [requestData, setRequestData] = useState([]);
   const [requestGData, setRequestGData] = useState([]);
   const [requestAppData, setRequestAppData] = useState([]);
