@@ -515,6 +515,10 @@ export default function RedesignedForm({
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
+  const handleTextAreaChange = (e) => {
+    e.target.style.height = '1px';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
   console.log(completed, "this is completed");
   const handleComplete = async () => {
     try {
@@ -619,13 +623,13 @@ export default function RedesignedForm({
           return true;
         } else {
           const totalAmount = leadData.services.reduce(
-            (acc, curr) => acc + curr.totalPaymentWGST,
+            (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
             0
           );
           const receivedAmount = leadData.services.reduce((acc, curr) => {
             return curr.paymentTerms === "Full Advanced"
-              ? acc + curr.totalPaymentWGST
-              : acc + curr.firstPayment;
+              ? acc + parseInt(curr.totalPaymentWGST)
+              : acc + parseInt(curr.firstPayment);
           }, 0);
           const pendingAmount = totalAmount - receivedAmount;
           const servicestoSend = leadData.services.map((service) => ({
@@ -677,25 +681,16 @@ export default function RedesignedForm({
           leadData.paymentReceipt,
           leadData.otherDocs
         );
-        if (
-          leadData.paymentReceipt.length === 0 ||
-          leadData.otherDocs.length === 0
-        ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
-          return true;
-        } else {
+        
           console.log("Re work");
           const totalAmount = leadData.services.reduce(
-            (acc, curr) => acc + curr.totalPaymentWGST,
+            (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
             0
           );
           const receivedAmount = leadData.services.reduce((acc, curr) => {
             return curr.paymentTerms === "Full Advanced"
-              ? acc + curr.totalPaymentWGST
-              : acc + curr.firstPayment;
+              ? acc + parseInt(curr.totalPaymentWGST)
+              : acc + parseInt(curr.firstPayment);
           }, 0);
           const pendingAmount = totalAmount - receivedAmount;
 
@@ -728,7 +723,7 @@ export default function RedesignedForm({
             console.error("Error uploading data:", error);
             // Handle error
           }
-        }
+        
       }
 
       if (activeStep === 4) {
@@ -1609,6 +1604,7 @@ export default function RedesignedForm({
                           : service
                       ),
                     }));
+                    handleTextAreaChange(e)
                   }}
                   disabled={completed[activeStep] === true}
                 ></textarea>
@@ -2520,11 +2516,7 @@ export default function RedesignedForm({
                                         for="Payment Receipt"
                                       >
                                         Upload Payment Reciept{" "}
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
+                                      
                                       </label>
                                       <input
                                         type="file"
@@ -2602,11 +2594,7 @@ export default function RedesignedForm({
                                         for="remarks"
                                       >
                                         Any Extra Remarks{" "}
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
+                                     
                                       </label>
                                       <textarea
                                         rows={1}
@@ -2619,6 +2607,7 @@ export default function RedesignedForm({
                                             e.target.value,
                                             "extraNotes"
                                           );
+                                          handleTextAreaChange(e)
                                         }}
                                         disabled={
                                           completed[activeStep] === true
@@ -2626,15 +2615,11 @@ export default function RedesignedForm({
                                       ></textarea>
                                     </div>
                                   </div>
-                                  <div className="col-sm-6 mt-2">
+                                 <div className="col-sm-6 mt-2">
                                     <div className="form-group">
                                       <label className="form-label" for="docs">
                                         Upload Additional Docs{" "}
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
+                                       
                                       </label>
                                       <input
                                         type="file"
@@ -3165,23 +3150,27 @@ export default function RedesignedForm({
                                           <div className="form-label-data">
                                             ₹{" "}
                                             {leadData.services
-                                              .reduce((acc, curr) => {
-                                                return curr.paymentTerms ===
-                                                  "Full Advanced"
-                                                  ? acc + 0
-                                                  : acc +
-                                                      Number(
-                                                        curr.totalPaymentWOGST
-                                                      ) -
-                                                      Number(curr.firstPayment);
-                                              }, 0)
-                                              .toFixed(2)}
+                                            .reduce(
+                                              (total, service) =>
+                                                service.paymentTerms ===
+                                                "Full Advanced"
+                                                  ? total + 0
+                                                  : total +
+                                                    Number(
+                                                      service.totalPaymentWGST
+                                                    ) -
+                                                    Number(
+                                                      service.firstPayment
+                                                    ),
+                                              0
+                                            )
+                                            .toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0">
+                                 {leadData.paymentReceipt.length!==0 && <div className="row m-0">
                                     <div className="col-sm-3 align-self-stretc p-0">
                                       <div className="form-label-name h-100">
                                         <b>Upload Payment Receipt</b>
@@ -3263,7 +3252,7 @@ export default function RedesignedForm({
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
+                                  </div>}
                                   <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
@@ -3288,7 +3277,7 @@ export default function RedesignedForm({
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0">
+                                  {leadData.otherDocs.length!==0 && <div className="row m-0">
                                     <div className="col-sm-3 align-self-stretc p-0">
                                       <div className="form-label-name h-100">
                                         <b>Additional Docs</b>
@@ -3392,7 +3381,7 @@ export default function RedesignedForm({
                                         </div> */}
                                       </div>
                                     </div>
-                                  </div>
+                                  </div>}
                                 </div>
                               </div>
                             </div>

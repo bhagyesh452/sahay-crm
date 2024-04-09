@@ -1,7 +1,7 @@
 import React from "react";
 import pdfimg from "../static/my-images/pdf.png";
 import Swal from "sweetalert2";
-import PdfImageViewerAdmin from './PdfViewerAdmin'
+import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import img from "../static/my-images/image.png";
 
 function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
@@ -193,7 +193,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     </div>
                     <div class="col-sm-8 align-self-stretc p-0">
                       <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                        {currentLeadForm.bdmName} {" "} {currentLeadForm.bdmType}
+                        {currentLeadForm.bdmName} {currentLeadForm.bdmType}
                       </div>
                     </div>
                   </div>
@@ -269,7 +269,6 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
               </div>
             </div>
           </div>
-          
 
           {currentLeadForm.services.map((obj, index) => (
             <div className="my-card mt-1">
@@ -418,6 +417,55 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
               </div>
             </div>
           ))}
+          {/* -------------------------------------------- CA Case ------------------------------------------- */}
+                              <div className="my-card mt-1">
+                                <div className="my-card-body">
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-12 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-2 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h h-100">CA Case</div>
+                                        </div>
+                                        <div class="col-sm-10 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">{currentLeadForm.caCase}</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {currentLeadForm.caCase !== "No" && <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-5 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h h-100">CA's Number</div>
+                                        </div>
+                                        <div class="col-sm-7 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">{currentLeadForm.caNumber}</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Email</div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">{currentLeadForm.caEmail}</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-5 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Commission</div>
+                                        </div>
+                                        <div class="col-sm-7 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ {currentLeadForm.caCommission}</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>}
+                                </div>
+                              </div>
           {/* -------- Step 4 ---------*/}
           <div className="mb-2 mt-3 mul-booking-card-inner-head">
             <b>Payment Summary</b>
@@ -498,43 +546,64 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
               </div>
             </div>
           </div>
-          <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                  <b>Payment Receipt and Additional Documents:</b>
+          {(currentLeadForm.paymentReceipt.length!==0 || currentLeadForm.otherDocs.length!==0) && (<> <div className="mb-2 mt-3 mul-booking-card-inner-head">
+            <b>Payment Receipt and Additional Documents:</b>
+          </div>
+          <div className="row">
+            {currentLeadForm.paymentReceipt.length!==0 && <div className="col-sm-2 mb-1">
+              <div className="booking-docs-preview">
+                <div
+                  className="booking-docs-preview-img"
+                  onClick={() =>
+                    handleViewPdfReciepts(
+                      currentLeadForm.paymentReceipt[0].filename
+                    )
+                  }
+                >
+                  {currentLeadForm.paymentReceipt[0].filename.endsWith(
+                    ".pdf"
+                  ) ? (
+                    <PdfImageViewerAdmin
+                      type="pdf"
+                      path={currentLeadForm.paymentReceipt[0].filename}
+                    />
+                  ) : (
+                    <img
+                      src={`${secretKey}/recieptpdf/${currentLeadForm.paymentReceipt[0].filename}`}
+                      alt={pdfimg}
+                    ></img>
+                  )}
                 </div>
-                <div className="row">
-                  <div className="col-sm-2 mb-1">
-                    <div className="booking-docs-preview">
-                      <div className="booking-docs-preview-img" onClick={()=>handleViewPdfReciepts(currentLeadForm.paymentReceipt[0].filename)}>
-                      {currentLeadForm.paymentReceipt[0].filename.endsWith(".pdf") ? (
-                              <PdfImageViewerAdmin type="pdf" path={currentLeadForm.paymentReceipt[0].filename} />
-                            ) :  <img  src={`${secretKey}/recieptpdf/${currentLeadForm.paymentReceipt[0].filename}`} alt={pdfimg}></img> }
-                      </div>
-                      <div className="booking-docs-preview-text">
-                        <p className="rematkText text-wrap m-auto m-0">
-                          Receipt.pdf
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  {currentLeadForm.otherDocs.map((obj)=>(
-                    <div className="col-sm-2 mb-1">
-                    <div className="booking-docs-preview">
-                      <div className="booking-docs-preview-img" onClick={()=>handleViewPdOtherDocs(obj.filename)}>
-                  {obj.filename.endsWith(".pdf") ? (
-                              <PdfImageViewerAdmin type="pdf" path={obj.filename} />
-                            ) :  <img  src={`${secretKey}/otherpdf/${obj.filename}`} alt={pdfimg}></img> }
-                       
-                      </div>
-                      <div className="booking-docs-preview-text">
-                        <p className="rematkText text-wrap m-auto m-0">
-                          {obj.originalname}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  ))}
-                 
+                <div className="booking-docs-preview-text">
+                  <p className="rematkText text-wrap m-auto m-0">Receipt.pdf</p>
                 </div>
+              </div>
+            </div>}
+            {currentLeadForm.paymentReceipt.length!==0 && currentLeadForm.otherDocs.map((obj) => (
+              <div className="col-sm-2 mb-1">
+                <div className="booking-docs-preview">
+                  <div
+                    className="booking-docs-preview-img"
+                    onClick={() => handleViewPdOtherDocs(obj.filename)}
+                  >
+                    {obj.filename.endsWith(".pdf") ? (
+                      <PdfImageViewerAdmin type="pdf" path={obj.filename} />
+                    ) : (
+                      <img
+                        src={`${secretKey}/otherpdf/${obj.filename}`}
+                        alt={pdfimg}
+                      ></img>
+                    )}
+                  </div>
+                  <div className="booking-docs-preview-text">
+                    <p className="rematkText text-wrap m-auto m-0">
+                      {obj.originalname}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div></>)}
         </div>
         {currentLeadForm.moreBookings &&
           currentLeadForm.moreBookings.map((objMain, index) => (
@@ -822,6 +891,55 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     </div>
                   </div>
                 ))}
+                {/* -------------------------------------------- CA Case ------------------------------------------- */}
+                <div className="my-card mt-1">
+                                <div className="my-card-body">
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-12 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-2 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h h-100">CA Case</div>
+                                        </div>
+                                        <div class="col-sm-10 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">{objMain.caCase}</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {objMain.caCase !== "No" && <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-5 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h h-100">CA's Number</div>
+                                        </div>
+                                        <div class="col-sm-7 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">{objMain.caNumber}</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Email</div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">{objMain.caEmail}</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-5 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Commission</div>
+                                        </div>
+                                        <div class="col-sm-7 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ {objMain.caCommission}</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>}
+                                </div>
+                              </div>
                 {/* -------- Step 4 ---------*/}
                 <div className="mb-2 mt-3 mul-booking-card-inner-head">
                   <b>Payment Summary</b>
@@ -902,47 +1020,72 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                         </div>
                       </div>
                     </div>
-
                   </div>
                 </div>
+
+               {(objMain.paymentReceipt.length!==0 || objMain.otherDocs.length!==0) && <>
                 <div className="mb-2 mt-3 mul-booking-card-inner-head">
                   <b>Payment Receipt and Additional Documents:</b>
                 </div>
                 <div className="row">
-                <div className="col-sm-2 mb-1">
+                  {objMain.paymentReceipt.length!==0 && <div className="col-sm-2 mb-1">
                     <div className="booking-docs-preview">
-                      <div className="booking-docs-preview-img" onClick={()=>handleViewPdfReciepts(objMain.paymentReceipt[0].filename)}>
-                      {objMain.paymentReceipt[0].filename.endsWith(".pdf") ? (
-                              <PdfImageViewerAdmin type="pdf" path={objMain.paymentReceipt[0].filename} />
-                            ) :  <img  src={`${secretKey}/recieptpdf/${objMain.paymentReceipt[0].filename}`} alt={pdfimg}></img> }
+                      <div
+                        className="booking-docs-preview-img"
+                        onClick={() =>
+                          handleViewPdfReciepts(
+                            objMain.paymentReceipt[0].filename
+                          )
+                        }
+                      >
+                        {objMain.paymentReceipt[0].filename.endsWith(".pdf") ? (
+                          <PdfImageViewerAdmin
+                            type="pdf"
+                            path={objMain.paymentReceipt[0].filename}
+                          />
+                        ) : (
+                          <img
+                            src={`${secretKey}/recieptpdf/${objMain.paymentReceipt[0].filename}`}
+                            alt={pdfimg}
+                          ></img>
+                        )}
                       </div>
                       <div className="booking-docs-preview-text">
                         <p className="rematkText text-wrap m-auto m-0">
-                        {objMain.paymentReceipt[0].originalname}
+                          {objMain.paymentReceipt[0].originalname}
                         </p>
                       </div>
                     </div>
-                  </div>
-                  {objMain.otherDocs.map((obj)=>(
+                  </div>}
+                  {objMain.otherDocs.length!==0 && objMain.otherDocs.map((obj) => (
                     <div className="col-sm-2 mb-1">
-                    <div className="booking-docs-preview">
-                      <div className="booking-docs-preview-img" onClick={()=>handleViewPdOtherDocs(obj.filename)}>
-                  {obj.filename.endsWith(".pdf") ? (
-                              <PdfImageViewerAdmin type="pdf" path={obj.filename} />
-                            ) :  <img  src={`${secretKey}/otherpdf/${obj.filename}`} alt={pdfimg}></img> }
-                       
-                      </div>
-                      <div className="booking-docs-preview-text">
-                        <p className="rematkText text-wrap m-auto m-0">
-                          {obj.originalname}
-                        </p>
+                      <div className="booking-docs-preview">
+                        <div
+                          className="booking-docs-preview-img"
+                          onClick={() => handleViewPdOtherDocs(obj.filename)}
+                        >
+                          {obj.filename.endsWith(".pdf") ? (
+                            <PdfImageViewerAdmin
+                              type="pdf"
+                              path={obj.filename}
+                            />
+                          ) : (
+                            <img
+                              src={`${secretKey}/otherpdf/${obj.filename}`}
+                              alt={pdfimg}
+                            ></img>
+                          )}
+                        </div>
+                        <div className="booking-docs-preview-text">
+                          <p className="rematkText text-wrap m-auto m-0">
+                            {obj.originalname}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
                   ))}
-                 
-                 
                 </div>
+                </>}
               </div>
             </>
           ))}

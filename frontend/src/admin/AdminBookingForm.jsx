@@ -148,6 +148,7 @@ export default function AdminBookingForm({
                     ...prevState,
                     bdeName: employeeName ? employeeName : "",
                     bdeEmail: employeeEmail ? employeeEmail : "",
+                    bookingDate : formatDate(new Date()),
                 }));
             } else if (Step2Status === true && Step3Status === false) {
                 setCompleted({ 0: true, 1: true });
@@ -303,7 +304,14 @@ export default function AdminBookingForm({
             const isEmptyOrNull = (value) => {
                 return value === "" || value === null || value === 0;
             };
-
+            if(!foundCompany){
+                Swal.fire({
+                    title: "Company Not Found!",
+                    text:"Please Add Lead to Continue",
+                    icon: "warning",
+                });
+                return true;
+            }
             // Prepare the data to send to the backend
             let dataToSend = {};
             if (activeStep === 0) {
@@ -312,13 +320,14 @@ export default function AdminBookingForm({
                     isEmptyOrNull(leadData["Company Name"]) ||
                     isEmptyOrNull(leadData["Company Number"]) ||
                     isEmptyOrNull(leadData.incoDate) ||
-                    isEmptyOrNull(leadData.panNumber)
+                    isEmptyOrNull(leadData.panNumber) 
                 ) {
                     Swal.fire({
                         title: "Please fill all the details",
                         icon: "warning",
                     });
-                } else {
+                }
+                 else {
                     dataToSend = {
                         "Company Email": leadData["Company Email"],
                         "Company Name": leadData["Company Name"],
@@ -456,16 +465,7 @@ export default function AdminBookingForm({
                     leadData.paymentReceipt,
                     leadData.otherDocs
                 );
-                if (
-                    leadData.paymentReceipt.length === 0 ||
-                    leadData.otherDocs.length === 0
-                ) {
-                    Swal.fire({
-                        title: "Please fill all the details",
-                        icon: "warning",
-                    });
-                    return true;
-                } else {
+                
                     console.log("Re work");
                     const totalAmount = leadData.services.reduce(
                         (acc, curr) => acc + curr.totalPaymentWGST,
@@ -507,7 +507,7 @@ export default function AdminBookingForm({
                         console.error("Error uploading data:", error);
                         // Handle error
                     }
-                }
+                
             }
 
             if (activeStep === 4) {
@@ -1414,15 +1414,33 @@ export default function AdminBookingForm({
     //   };
 
     const handleInputChange = (value, fieldName) => {
+        if (fieldName === "bdmName") {
+                  const foundUser = unames.find((item) => item.ename === value);
+                  setLeadData({
+                    ...leadData,
+                    bdmName: value,
+                    bdmEmail: foundUser ? foundUser.email : "", // Check if foundUser exists before accessing email
+                  });
+                }else if (fieldName === "bdeName"){
+                    const foundUser = unames.find((item) => item.ename === value);
+                  setLeadData({
+                    ...leadData,
+                    bdeName: value,
+                    bdeEmail: foundUser ? foundUser.email : "", // Check if foundUser exists before accessing email
+                  });
+                }
+                else{
+                    setLeadData(prevState => ({
+                        ...prevState,
+                        [fieldName]: value
+                    }));
+                }
         //setCompanyNewName(value)
-            setLeadData(prevState => ({
-                ...prevState,
-                [fieldName]: value
-            }));
+           
     };
 
     const [companyNewName, setCompanyNewName] = useState('');
-    const [foundCompany, setFoundCompany] = useState([]);
+    const [foundCompany, setFoundCompany] = useState(false);
 
     useEffect(() => {
         const fetchDataNew = async () => {
@@ -1430,7 +1448,8 @@ export default function AdminBookingForm({
             // console.log("gadbadyahin hain")
             try {
                 const response = await axios.get(`${secretKey}/leads/${companyName}`);
-                console.log(response.data)
+                console.log(response.data);
+                setFoundCompany(response.data ? true : false);
                 setLeadData((prevLeadData)=>({
                     ...prevLeadData,
                     "Company Name" : response.data ? response.data["Company Name"]  : companyName,
@@ -1755,30 +1774,44 @@ export default function AdminBookingForm({
                                                         <div className="steprForm-inner">
                                                             <form>
                                                                 <div className="row">
-                                                                    <div className="col-sm-3">
+                                                                <div className="col-sm-3">
                                                                         <div className="form-group mt-2 mb-2">
-                                                                            <label for="bdeName">
-                                                                                BDE Name:
+                                                                            <label for="bdmName">
+                                                                                BDE Name:{" "}
                                                                                 {
                                                                                     <span style={{ color: "red" }}>
                                                                                         *
                                                                                     </span>
                                                                                 }
                                                                             </label>
-                                                                            <input
+
+                                                                            <select
                                                                                 type="text"
-                                                                                className="form-control mt-1"
-                                                                                placeholder="Enter BDE Name"
-                                                                                id="bdeName"
-                                                                                value={leadData.bdeName}
+                                                                                className="form-select mt-1"
+                                                                                id="select-users"
+                                                                                value={leadData.bdmName}
                                                                                 onChange={(e) => {
                                                                                     handleInputChange(
                                                                                         e.target.value,
                                                                                         "bdeName"
                                                                                     );
                                                                                 }}
-                                                                                
-                                                                            />
+                                                                                disabled={
+                                                                                    completed[activeStep] === true
+                                                                                }
+                                                                            >
+                                                                                <option value="" disabled selected>
+                                                                                    Please select BDE Name
+                                                                                </option>
+                                                                                {unames &&
+                                                                                    unames.map((names) => (
+                                                                                        <option value={names.ename}>
+                                                                                            {names.ename}
+                                                                                        </option>
+                                                                                    ))}
+
+                                                                               
+                                                                            </select>
                                                                         </div>
                                                                     </div>
                                                                     <div className="col-sm-3">
@@ -2337,11 +2370,7 @@ export default function AdminBookingForm({
                                                                                 for="Payment Receipt"
                                                                             >
                                                                                 Upload Payment Reciept{" "}
-                                                                                {
-                                                                                    <span style={{ color: "red" }}>
-                                                                                        *
-                                                                                    </span>
-                                                                                }
+                                                                               
                                                                             </label>
                                                                             <input
                                                                                 type="file"
@@ -2447,11 +2476,7 @@ export default function AdminBookingForm({
                                                                         <div className="form-group">
                                                                             <label className="form-label" for="docs">
                                                                                 Upload Additional Docs{" "}
-                                                                                {
-                                                                                    <span style={{ color: "red" }}>
-                                                                                        *
-                                                                                    </span>
-                                                                                }
+                                                                              
                                                                             </label>
                                                                             <input
                                                                                 type="file"
@@ -2998,7 +3023,7 @@ export default function AdminBookingForm({
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="row m-0">
+                                                                   {leadData.paymentReceipt.length!==0 && <div className="row m-0">
                                                                         <div className="col-sm-3 align-self-stretc p-0">
                                                                             <div className="form-label-name h-100">
                                                                                 <b>Upload Payment Receipt</b>
@@ -3080,7 +3105,7 @@ export default function AdminBookingForm({
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
+                                                                    </div>}
                                                                     <div className="row m-0">
                                                                         <div className="col-sm-3 p-0">
                                                                             <div className="form-label-name">
@@ -3105,7 +3130,7 @@ export default function AdminBookingForm({
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="row m-0">
+                                                                    {leadData.otherDocs.length!==0 && <div className="row m-0">
                                                                         <div className="col-sm-3 align-self-stretc p-0">
                                                                             <div className="form-label-name h-100">
                                                                                 <b>Additional Docs</b>
@@ -3209,7 +3234,7 @@ export default function AdminBookingForm({
                                         </div> */}
                                                                             </div>
                                                                         </div>
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             </div>
                                                         </div>
