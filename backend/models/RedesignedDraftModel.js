@@ -241,8 +241,6 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   },
   moreBookings: {
     type: TempSchema,
-    required: false,
-    default:null // Set to false to make it optional
   },
 });
 
