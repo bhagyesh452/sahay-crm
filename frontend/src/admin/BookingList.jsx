@@ -254,15 +254,22 @@ function BookingList() {
       .flat()
       .slice(0, 3) // Limit to first 3 services
       .map((service, index, array) => (
+        <> 
         <div className="sname mb-1" key={service.serviceId}>
           {service.serviceName}
-          {index === 2 && // Check if it's the last visible service
-            array.length > 3 && (
-              <div className="sname mb-1">
-                +{Math.max(obj.services.length + obj.moreBookings.length - 3, 0)}
-              </div>
-            )}
+          
         </div>
+      
+        {index === 2 && (
+          Math.max(obj.services.length + obj.moreBookings.length - 3, 0) !== 0 &&
+  <div className="sname mb-1">
+    {
+      `+${Math.max(obj.services.length + obj.moreBookings.length - 3, 0)}`
+    }
+  </div>
+)}
+
+        </>
       ))}
 </div>
 
@@ -610,7 +617,7 @@ function BookingList() {
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">
                                           {obj.serviceName}{" "}
-                                          {obj.withDSC && "With DSC"}
+                                          {obj.withDSC && obj.serviceName === "Start Up Certificate" && "With DSC"}
                                         </div>
                                       </div>
                                     </div>
@@ -1099,8 +1106,8 @@ function BookingList() {
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">
-                                              {obj.serviceName}{" "}
-                                              {obj.withDSC && "With DSC"}
+                                            {obj.serviceName}{" "}
+                                          {obj.withDSC && obj.serviceName === "Start Up Certificate" && "With DSC"}
                                             </div>
                                           </div>
                                         </div>
