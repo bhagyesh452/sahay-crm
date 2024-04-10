@@ -112,7 +112,7 @@ function Team() {
         console.log(index)
         const newSelectedBdes = [...selectedBdes];
         newSelectedBdes[index] = value;
-        setLatestName(newSelectedBdes[index])
+        //setLatestName(newSelectedBdes[index])
         // console.log(newSelectedBdes[index])
         setSelectedBdes(newSelectedBdes);
     };
@@ -457,7 +457,7 @@ function Team() {
                                             >
                                                 <option value="" disabled>Select BDE Name</option>
                                                 {employeeData
-                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice && !selectedBdes.includes(employee.ename))
+                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice)
                                                     .map(employee => (
                                                         <option key={employee._id} value={employee.ename}>
                                                             {employee.ename}
@@ -492,7 +492,7 @@ function Team() {
                                             >
                                                 <option value="" disabled>Select BDE Name</option>
                                                 {employeeData
-                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice && !selectedBdes.includes(employee.ename))
+                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice)
                                                     .map(employee => (
                                                         <option key={employee._id} value={employee.ename}>
                                                             {employee.ename}

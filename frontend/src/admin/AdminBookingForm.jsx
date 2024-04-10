@@ -72,6 +72,7 @@ export default function AdminBookingForm({
         bdmName: "",
         otherBdmName: '',
         bdmEmail: "",
+        bdmType: "Close-by",
         bookingDate: "",
         bookingSource: "",
         otherBookingSource: "",
@@ -114,6 +115,10 @@ export default function AdminBookingForm({
         }
     };
     const [leadData, setLeadData] = useState(defaultLeadData);
+    const handleTextAreaChange = (e) => {
+        e.target.style.height = '1px';
+        e.target.style.height = `${e.target.scrollHeight}px`;
+      };
     
     const fetchData = async () => {
         try {
@@ -146,13 +151,12 @@ export default function AdminBookingForm({
                 setSelectedValues(newLeadData.bookingSource);
                 setLeadData((prevState) => ({
                     ...prevState,
-                    bdeName: employeeName ? employeeName : "",
-                    bdeEmail: employeeEmail ? employeeEmail : "",
                     bookingDate : formatDate(new Date()),
                 }));
             } else if (Step2Status === true && Step3Status === false) {
                 setCompleted({ 0: true, 1: true });
                 setActiveStep(2);
+                setSelectedValues(newLeadData.bookingSource);
                 setLeadData((prevState) => ({
                     ...prevState,
                     services:
@@ -163,6 +167,7 @@ export default function AdminBookingForm({
                 setTotalServices(data.services.length !== 0 ? data.services.length : 1);
             } else if (Step3Status === true && Step4Status === false) {
                 console.log(data.services, "This is services");
+                setSelectedValues(newLeadData.bookingSource);
                 setfetchedService(true);
                 setCompleted({ 0: true, 1: true, 2: true });
                 setActiveStep(3);
@@ -190,6 +195,7 @@ export default function AdminBookingForm({
                 setTotalServices(data.services.length !== 0 ? data.services.length : 1);
             } else if (Step4Status === true && Step5Status === false) {
                 setCompleted({ 0: true, 1: true, 2: true, 3: true });
+                setSelectedValues(newLeadData.bookingSource);
                 setActiveStep(4);
                 setLeadData((prevState) => ({
                     ...prevState,
@@ -203,6 +209,7 @@ export default function AdminBookingForm({
                 }));
             } else if (Step5Status === true) {
                 setCompleted({ 0: true, 1: true, 2: true, 3: true, 4: true });
+             
                 setActiveStep(5);
             }
         } catch (error) {
@@ -335,6 +342,8 @@ export default function AdminBookingForm({
                         incoDate: leadData.incoDate,
                         panNumber: leadData.panNumber,
                         gstNumber: leadData.gstNumber,
+                        bdeName : foundCompany && foundCompany.ename !== "Not Alloted" ? foundCompany.ename : "",
+                        bdeEmail : foundCompany && foundCompany.ename !== "Not Alloted" ? unames.find((item) => item.ename === foundCompany.ename).email : ""
                     };
 
                     console.log("This is sending", dataToSend);
@@ -375,6 +384,7 @@ export default function AdminBookingForm({
                         bdmName: leadData.bdmName,
                         otherBdmName: leadData.otherBdmName,
                         bdmEmail: leadData.bdmEmail,
+                        bdmType: leadData.bdmType,
                         bookingDate: leadData.bookingDate,
                         bookingSource: selectedValues,
                         otherBookingSource: leadData.otherBookingSource,
@@ -1386,7 +1396,9 @@ export default function AdminBookingForm({
                                                     : service
                                             ),
                                         }));
+                                        handleTextAreaChange(e)
                                     }}
+                                    
                                     readOnly={completed[activeStep] === true}
                                 ></textarea>
                             </div>
@@ -1440,7 +1452,7 @@ export default function AdminBookingForm({
     };
 
     const [companyNewName, setCompanyNewName] = useState('');
-    const [foundCompany, setFoundCompany] = useState(false);
+    const [foundCompany, setFoundCompany] = useState(null);
 
     useEffect(() => {
         const fetchDataNew = async () => {
@@ -1449,7 +1461,7 @@ export default function AdminBookingForm({
             try {
                 const response = await axios.get(`${secretKey}/leads/${companyName}`);
                 console.log(response.data);
-                setFoundCompany(response.data ? true : false);
+                setFoundCompany(response.data);
                 setLeadData((prevLeadData)=>({
                     ...prevLeadData,
                     "Company Name" : response.data ? response.data["Company Name"]  : companyName,
@@ -1457,6 +1469,7 @@ export default function AdminBookingForm({
                     "Company Number" : response.data ? response.data["Company Number"]  : 0 ,
                     "incoDate" : response.data ? formatDate(response.data["Company Incorporation Date  "])  : " " ,
                 }));
+            
             } catch (error) {
                 console.error('Error fetching company data:', error);
             }
@@ -1471,6 +1484,15 @@ export default function AdminBookingForm({
         }
     }, [companyNewName]);
 
+    useEffect(() => {
+        if(foundCompany){setLeadData((prevLeadData)=>({
+            ...prevLeadData,
+           bdeName : foundCompany.ename !== "Not Alloted"? foundCompany.ename : "",
+           bdeEmail : foundCompany.ename !== "Not Alloted" ? (unames.find((item) => item.ename === foundCompany.ename).email) : '',
+        }))}
+    }, [foundCompany])
+    
+console.log("Found Company" , foundCompany)
     const handleInputCompanyName = (value) => {
         setCompanyNewName(value);
     };
@@ -1789,7 +1811,7 @@ export default function AdminBookingForm({
                                                                                 type="text"
                                                                                 className="form-select mt-1"
                                                                                 id="select-users"
-                                                                                value={leadData.bdmName}
+                                                                                value={leadData.bdeName}
                                                                                 onChange={(e) => {
                                                                                     handleInputChange(
                                                                                         e.target.value,
@@ -1964,6 +1986,69 @@ export default function AdminBookingForm({
                                                                             />
                                                                         </div>
                                                                     </div>}
+
+                                                                    <div className="row mt-1">
+                                    <div className="col-sm-2 mr-2">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label htmlFor="bdmType">
+                                          BDM Type :
+                                          {
+                                            <span style={{ color: "red" }}>
+                                              *
+                                            </span>
+                                          }
+                                        </label>
+                                        <div
+                                          style={{ minWidth: "16vw" }}
+                                          className="d-flex mt-2"
+                                        >
+                                          <label className="form-check form-check-inline">
+                                            <input
+                                              className="form-check-input"
+                                              type="radio"
+                                              name="bdm-type"
+                                              onChange={(e) => {
+                                                setLeadData((prevLeadData) => ({
+                                                  ...prevLeadData,
+                                                  bdmType: "Close-by", // Set the value based on the selected radio button
+                                                }));
+                                              }}
+                                              // Set the value attribute for "Yes"
+                                              checked={
+                                                leadData.bdmType === "Close-by"
+                                              } // Check condition based on state
+                                            />
+                                            <span className="form-check-label">
+                                              Close By
+                                            </span>
+                                          </label>
+                                          <label className="form-check form-check-inline">
+                                            <input
+                                              className="form-check-input"
+                                              type="radio"
+                                              name="bdmType"
+                                              onChange={(e) => {
+                                                setLeadData((prevLeadData) => ({
+                                                  ...prevLeadData,
+                                                  bdmType: "Supported-by", // Set the value based on the selected radio button
+                                                }));
+                                              }}
+                                              // Set the value attribute for "Yes"
+                                              checked={
+                                                leadData.bdmType ===
+                                                "Supported-by"
+                                              } // Check condition based on state
+                                            />
+                                            <span className="form-check-label">
+                                              Supported By
+                                            </span>
+                                          </label>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                                                    
                                                                     <div className="col-sm-4">
                                                                         <div className="form-group mt-2 mb-2">
                                                                             <label for="booking-date">
@@ -2465,6 +2550,7 @@ export default function AdminBookingForm({
                                                                                         e.target.value,
                                                                                         "extraNotes"
                                                                                     );
+                                                                                    handleTextAreaChange(e)
                                                                                 }}
                                                                                 readOnly={
                                                                                     completed[activeStep] === true

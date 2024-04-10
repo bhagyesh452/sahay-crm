@@ -3123,18 +3123,21 @@ function EmployeePanel() {
                                             }}
                                           />
                                         </IconButton>
-                                        <IconButton
-                                          onClick={() => {
-                                            setMaturedID(company._id);
-                                            setTimeout(() => {
-                                              setEditFormOpen(true);
-                                            }, 1000);
-                                          }}
-                                          disabled={totalBookings.some(
-                                            (obj) =>
-                                              obj["Company Name"] ===
-                                              company["Company Name"]
-                                          )}
+                                        {/* <IconButton
+                                        onClick={()=>{
+                                          handleEditClick()
+                                        }}
+                                          // onClick={() => {
+                                          //   setMaturedID(company._id);
+                                          //   setTimeout(() => {
+                                          //     setEditFormOpen(true);
+                                          //   }, 1000);
+                                          // }}
+                                          // disabled={totalBookings.some(
+                                          //   (obj) =>
+                                          //     obj["Company Name"] ===
+                                          //     company["Company Name"]
+                                          // )}
                                         >
                                           <Edit
                                             style={{
@@ -3144,7 +3147,7 @@ function EmployeePanel() {
                                               height: "14px",
                                             }}
                                           />
-                                        </IconButton>
+                                        </IconButton> */}
                                         <IconButton onClick={()=>{setCompanyName(company["Company Name"])
                                           setAddFormOpen(true)}} >
                                           <AddCircleIcon style={{

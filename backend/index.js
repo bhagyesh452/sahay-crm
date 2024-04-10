@@ -3105,13 +3105,13 @@ app.post(
               $set: {
                 "Company Email":
                   newData["Company Email"] || existingData["Company Email"],
-                "Company Name":
-                  newData["Company Name"] || existingData["Company Name"],
                 "Company Number":
                   newData["Company Number"] || existingData["Company Number"],
                 incoDate: newData.incoDate || existingData.incoDate,
                 panNumber: newData.panNumber || existingData.panNumber,
                 gstNumber: newData.gstNumber || existingData.gstNumber,
+                bdeName : newData.bdeName || existingData.bdeName,
+                bdeEmail : newData.bdeEmail || existingData.bdeEmail
               },
             },
             { new: true }
@@ -3127,7 +3127,8 @@ app.post(
             incoDate: newData.incoDate,
             panNumber: newData.panNumber,
             gstNumber: newData.gstNumber,
-
+            bdeName : newData.bdeName ,
+            bdeEmail : newData.bdeEmail,
             Step1Status: true,
           });
           res.status(201).json(createdData); // Respond with created data
