@@ -750,6 +750,7 @@ app.get("/api/einfo", async (req, res) => {
 app.post('/api/teaminfo', async (req, res) => {
   try {
       const teamData = req.body;
+      console.log(teamData)
       const newTeam = await TeamModel.create(teamData);
       res.status(201).json(newTeam);
       console.log("newTeam" , newTeam)

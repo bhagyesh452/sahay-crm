@@ -112,7 +112,7 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
-                <li
+                {/* <li
                   className={
                     location.pathname === "/admin/team"
                       ? "nav-item active"
@@ -130,7 +130,7 @@ function Navbar() {
                       <span className="nav-link-title">Team</span>
                     </a>
                   </Link>
-                </li>
+                </li> */}
               </ul>
               
             </div>
