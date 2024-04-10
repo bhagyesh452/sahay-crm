@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react"
 import Header from './Header.js'
 import Navbar from './Navbar.js'
@@ -459,7 +460,7 @@ function Team() {
                                                 {employeeData
                                                     .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice)
                                                     .map(employee => (
-                                                        <option key={employee._id} value={employee.ename}>
+                                                        <option key={employee._id} value={employee.ename} >
                                                             {employee.ename}
                                                         </option>
                                                     ))}
@@ -494,7 +495,7 @@ function Team() {
                                                 {employeeData
                                                     .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice)
                                                     .map(employee => (
-                                                        <option key={employee._id} value={employee.ename}>
+                                                        <option key={employee._id} value={employee.ename} disabled={selectedBdes.includes(employee.ename)}>
                                                             {employee.ename}
                                                         </option>
                                                     ))}
