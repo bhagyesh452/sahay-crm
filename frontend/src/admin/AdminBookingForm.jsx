@@ -536,6 +536,7 @@ export default function AdminBookingForm({
                         title: "Form Submitted",
                         text: "Your form has been submitted successfully!",
                     });
+                    setNowToFetch(true);
                     // Handle response data as needed
                 } catch (error) {
                     console.error("Error uploading data:", error);

@@ -1857,6 +1857,11 @@ function EmployeePanel() {
   // };
 
   // console.log(paymentLink)
+  const handleEditClick = async(company)=>{
+    console.log(totalBookings)
+    const currentBooking = totalBookings.find(obj => obj.company === company)
+    console.log("This is current Booking", currentBooking)
+  }
 
   return (
     <div>
@@ -3123,9 +3128,9 @@ function EmployeePanel() {
                                             }}
                                           />
                                         </IconButton>
-                                        {/* <IconButton
+                                        <IconButton
                                         onClick={()=>{
-                                          handleEditClick()
+                                          handleEditClick(company._id)
                                         }}
                                           // onClick={() => {
                                           //   setMaturedID(company._id);
@@ -3147,7 +3152,7 @@ function EmployeePanel() {
                                               height: "14px",
                                             }}
                                           />
-                                        </IconButton> */}
+                                        </IconButton>
                                         <IconButton onClick={()=>{setCompanyName(company["Company Name"])
                                           setAddFormOpen(true)}} >
                                           <AddCircleIcon style={{
