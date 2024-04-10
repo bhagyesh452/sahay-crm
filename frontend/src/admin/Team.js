@@ -112,7 +112,7 @@ function Team() {
         console.log(index)
         const newSelectedBdes = [...selectedBdes];
         newSelectedBdes[index] = value;
-        setLatestName(newSelectedBdes[index])
+        //setLatestName(newSelectedBdes[index])
         // console.log(newSelectedBdes[index])
         setSelectedBdes(newSelectedBdes);
     };
