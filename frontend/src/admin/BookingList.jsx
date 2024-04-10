@@ -5,10 +5,11 @@ import AdminBookingForm from "./AdminBookingForm";
 import axios from "axios";
 import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
-import { TbBoxMultiple, TbMathPiDivide2 } from "react-icons/tb";
+import { FcTreeStructure } from "react-icons/fc";
 import Nodata from "../components/Nodata";
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+import  MulBookingImg  from "../static/my-images/multiple.png";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -247,41 +248,40 @@ function BookingList() {
                               </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                            <div className="b_Services_name d-flex flex-wrap">
-  {(obj.services.length !== 0 || (obj.moreBookings && obj.moreBookings.length !== 0)) &&
-    [
-      ...obj.services,
-      ...(obj.moreBookings || []).map((booking) => booking.services),
-    ]
-      .flat()
-      .slice(0, 3) // Limit to first 3 services
-      .map((service, index, array) => (
-        <> 
-        <div className="sname mb-1" key={service.serviceId}>
-          {service.serviceName}
-          
-        </div>
-      
-        {index === 2 && (
-          Math.max(obj.services.length + obj.moreBookings.length - 3, 0) !== 0 &&
-  <div className="sname mb-1">
-    {
-      `+${Math.max(obj.services.length + obj.moreBookings.length - 3, 0)}`
-    }
-  </div>
-)}
+                              <div className="b_Services_name d-flex flex-wrap">
+                                {(obj.services.length !== 0 || (obj.moreBookings && obj.moreBookings.length !== 0)) &&
+                                  [
+                                    ...obj.services,
+                                    ...(obj.moreBookings || []).map((booking) => booking.services),
+                                  ]
+                                    .flat()
+                                    .slice(0, 3) // Limit to first 3 services
+                                    .map((service, index, array) => (
+                                      <> 
+                                      <div className="sname mb-1" key={service.serviceId}>
+                                        {service.serviceName}
+                                        
+                                      </div>
+                                    
+                                      {index === 2 && (
+                                        Math.max(obj.services.length + obj.moreBookings.length - 3, 0) !== 0 &&
+                                      <div className="sname mb-1">
+                                        {
+                                          `+${Math.max(obj.services.length + obj.moreBookings.length - 3, 0)}`
+                                        }
+                                      </div>
+                                    )}
 
-        </>
-      ))}
-</div>
-
-
+                                      </>
+                                ))}
+                              </div>
                               {obj.moreBookings.length !== 0 && (
                                 <div
                                   className="b_Services_multipal_services"
                                   title="Multipal Bookings"
                                 >
-                                  <TbBoxMultiple />
+                                  <FcTreeStructure />
+                                  {/* <img src={MulBookingImg}></img> */}
                                 </div>
                               )}
                             </div>

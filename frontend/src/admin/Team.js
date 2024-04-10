@@ -243,59 +243,8 @@ function Team() {
                     </div>
                 </div>
             </div>
-            <div onCopy={(e) => {
-                e.preventDefault();
-            }} className="page-body">
-                <div style={{ maxWidth: "89vw", overflowX: "auto" }}
-                    className="container-xl">
-                    <div className="card">
-                        <div style={{ padding: "0px" }} className="card-body">
-                            <div id="table-default"
-                                style={{ overflow: "auto", maxHeight: "70vh" }}>
-                                <table style={{
-                                    width: "100%",
-                                    borderCollapse: "collapse",
-                                    border: "1px solid #ddd",
-                                }}
-                                    className="table-vcenter table-nowrap" >
-                                    <thead>
-                                        <tr className="tr-sticky">
-                                            <th>
-                                                Sr.No
-                                            </th>
-                                            <th>
-                                                Name
-                                            </th>
-                                            <th>
-                                                Phone No
-                                            </th>
-                                            <th>
-                                                Email
-                                            </th>
-                                            <th>
-                                                Joining Date
-                                            </th>
-                                            <th>
-                                                Designation
-                                            </th>
-                                            <th>
-                                                Branch Office
-                                            </th>
-                                            <th>
-                                                Added On
-                                            </th>
-                                            <th>
-                                                View Employees
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="table-tbody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div className="page-body">
+                
             </div>
             <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
                 <DialogTitle>
