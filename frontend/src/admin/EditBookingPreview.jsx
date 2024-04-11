@@ -84,7 +84,13 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
           Swal.fire({title:"Error Updating Data" , icon:"error"})// Display error message
         }
       }else {
-        console.log("Editing this company" , updatedBooking)
+        try {
+          const response = await axios.put(`${secretKey}/update-more-booking/${updatedBooking["Company Name"]}/${updatedBooking.bookingIndex}`, updatedBooking);
+         Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
+        } catch (error) {
+          console.log("Error updating data" ,error) ;
+          Swal.fire({title:"Error Updating Data" , icon:"error"})// Display error message
+        }
       }
     
       

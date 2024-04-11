@@ -1436,6 +1436,28 @@ color: #4e884e;
 .Services_Preview_action_delete:active{
   transform: scale(1.3);
 }
+.chooseBooking-particular{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #fdd974;
+  margin: 10px;
+  padding: 11px 18px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 19px;
+  background-color: #fff8e4;
+  color: #5e4400;
+  transition: transform .1s
+}
+.chooseBooking-particular:hover{
+  color: #000;
+  background-color: #fdd974;
+}
+.chooseBooking-particular-active{
+  color: #000;
+  background-color: #fdd974;
+}
 /************BookingList Page Css End*************/
 .wApp a
 {
