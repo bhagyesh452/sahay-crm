@@ -49,12 +49,14 @@ import Edit from "@mui/icons-material/Edit";
 import EditableLeadform from "../admin/EditableLeadform.jsx";
 import AddLeadForm from "../admin/AddLeadForm.jsx";
 import { FaWhatsapp } from "react-icons/fa";
+import EditableMoreBooking from "../admin/EditableMoreBooking.jsx";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
+  const [openBooking, setOpenBooking] = useState(false);
   const [sortStatus, setSortStatus] = useState("");
   const [maturedID, setMaturedID] = useState("");
   const [currentForm, setCurrentForm] = useState(null);
@@ -83,6 +85,8 @@ function EmployeePanel() {
   const [open, openchange] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [expandYear, setExpandYear] = useState(0);
+  const [bookingIndex, setBookingIndex] = useState(0);
+  const [editMoreOpen , setEditMoreOpen] = useState(false);
   const [openCSV, openchangeCSV] = useState(false);
   const [openRemarks, openchangeRemarks] = useState(false);
   const [openAnchor, setOpenAnchor] = useState(false);
@@ -303,9 +307,9 @@ function EmployeePanel() {
 
   const [cid, setcid] = useState("");
   const [cstat, setCstat] = useState("");
-  const [currentCompanyName , setCurrentCompanyName] = useState("")
-  
-  const functionopenpopupremarks = (companyID, companyStatus ,companyName) => {
+  const [currentCompanyName, setCurrentCompanyName] = useState("");
+
+  const functionopenpopupremarks = (companyID, companyStatus, companyName) => {
     openchangeRemarks(true);
     setFilteredRemarks(
       remarksHistory.filter((obj) => obj.companyID === companyID)
@@ -313,11 +317,9 @@ function EmployeePanel() {
     // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
     setcid(companyID);
     setCstat(companyStatus);
-    setCurrentCompanyName(companyName)
+    setCurrentCompanyName(companyName);
   };
-  console.log("currentcompanyname" , currentCompanyName)
-
-
+  console.log("currentcompanyname", currentCompanyName);
 
   const debouncedSetChangeRemarks = useCallback(
     debounce((value) => {
@@ -495,8 +497,6 @@ function EmployeePanel() {
     //console.log(selectedField);
   };
 
-  console.log(tempData);
-
   const handleDateChange = (e) => {
     const dateValue = e.target.value;
     setCurrentPage(0);
@@ -579,16 +579,18 @@ function EmployeePanel() {
       console.error("Error fetching remarks history:", error);
     }
   };
-  console.log(requestData);
+
   // const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
     fetchProjections();
   }, [data]);
+
   useEffect(() => {
     fetchRemarksHistory();
     fetchBookingDeleteRequests();
     fetchRequestDetails();
     fetchEditRequests();
+
     // let watchId;
     // const successCallback = (position) => {
     //   const userLatitude = position.coords.latitude;
@@ -685,14 +687,12 @@ function EmployeePanel() {
   const [companyId, setCompanyId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [editFormOpen, setEditFormOpen] = useState(false);
-  const [addFormOpen , setAddFormOpen] = useState(false);
+  const [addFormOpen, setAddFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   console.log(companyName, companyInco);
 
   const currentData = filteredData.slice(startIndex, endIndex);
-
-  console.log("currentData" , currentData)
 
   const handleStatusChange = async (
     employeeId,
@@ -1770,6 +1770,7 @@ function EmployeePanel() {
     return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
   };
 
+
   // ------------------------------------------------------payment-link-work-----------------------------------------
 
   const [paymentLink, setPaymentLink] = useState("");
@@ -1857,10 +1858,30 @@ function EmployeePanel() {
   // };
 
   // console.log(paymentLink)
-  const handleEditClick = async(company)=>{
-    console.log(totalBookings)
-    const currentBooking = totalBookings.find(obj => obj.company === company)
-    console.log("This is current Booking", currentBooking)
+
+  // ---------------------------------------------- For Editable Lead-form -----------------------------------------------------------
+  const handleEditClick = async (company) => {
+    try {
+      const response = await axios.get(
+        `${secretKey}/redesigned-final-leadData`
+      );
+      const data = response.data.find((obj) => obj.company === company);
+      setCurrentForm(data);
+      if(data.moreBookings.length!==0){
+        setOpenBooking(true);
+      }else {
+        setEditFormOpen(true)
+      }
+  
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  
+  };
+
+  const handleOpenEditForm = ()=>{   
+      setOpenBooking(false);
+      setEditMoreOpen(true);
   }
 
   return (
@@ -1869,10 +1890,9 @@ function EmployeePanel() {
       <EmpNav userId={userId} />
       {/* Dialog box for Request Data */}
 
-      {
-        !formOpen && !editFormOpen && !addFormOpen && (
-          <>
-          <div  className="page-wrapper">
+      {!formOpen && !editFormOpen && !addFormOpen && !editMoreOpen && (
+        <>
+          <div className="page-wrapper">
             <div className="page-header d-print-none">
               <div className="container-xl">
                 {requestData !== null && requestData !== undefined && (
@@ -1929,9 +1949,7 @@ function EmployeePanel() {
                           onChange={handleFieldChange}
                         >
                           <option value="Company Name">Company Name</option>
-                          <option value="Company Number">
-                            Company Number
-                          </option>
+                          <option value="Company Number">Company Number</option>
                           <option value="Company Email">Company Email</option>
                           <option value="Company Incorporation Date  ">
                             Company Incorporation Date
@@ -2133,8 +2151,7 @@ function EmployeePanel() {
                                     .sort((a, b) => {
                                       if (a.Status === selectedOption)
                                         return -1;
-                                      if (b.Status === selectedOption)
-                                        return 1;
+                                      if (b.Status === selectedOption) return 1;
                                       return 0;
                                     })
                                 );
@@ -2183,8 +2200,7 @@ function EmployeePanel() {
                                 setdataStatus("All");
                                 setEmployeeData(
                                   moreEmpData.sort((a, b) => {
-                                    if (a.Status === selectedOption)
-                                      return -1;
+                                    if (a.Status === selectedOption) return -1;
                                     if (b.Status === selectedOption) return 1;
                                     return 0;
                                   })
@@ -2201,9 +2217,7 @@ function EmployeePanel() {
                           <option value="Not Picked Up">Not Picked Up</option>
                           <option value="FollowUp">Follow Up</option>
                           <option value="Interested">Interested</option>
-                          <option value="Not Interested">
-                            Not Interested
-                          </option>
+                          <option value="Not Interested">Not Interested</option>
                         </select>
                       </div>
 
@@ -2319,10 +2333,7 @@ function EmployeePanel() {
                         </>
                       )}
 
-                      <div
-                        className="request"
-                        style={{ marginRight: "15px" }}
-                      >
+                      <div className="request" style={{ marginRight: "15px" }}>
                         <div className="btn-list">
                           <button
                             onClick={functionopenpopup}
@@ -2341,10 +2352,7 @@ function EmployeePanel() {
                           </a>
                         </div>
                       </div>
-                      <div
-                        className="request"
-                        style={{ marginRight: "15px" }}
-                      >
+                      <div className="request" style={{ marginRight: "15px" }}>
                         <div className="btn-list">
                           <button
                             onClick={functionopenpopupNew}
@@ -2642,9 +2650,7 @@ function EmployeePanel() {
                                     className="inco-subFilter"
                                     onClick={(e) => handleSort("oldest")}
                                   >
-                                    <SwapVertIcon
-                                      style={{ height: "16px" }}
-                                    />
+                                    <SwapVertIcon style={{ height: "16px" }} />
                                     Oldest
                                   </div>
 
@@ -2652,9 +2658,7 @@ function EmployeePanel() {
                                     className="inco-subFilter"
                                     onClick={(e) => handleSort("newest")}
                                   >
-                                    <SwapVertIcon
-                                      style={{ height: "16px" }}
-                                    />
+                                    <SwapVertIcon style={{ height: "16px" }} />
                                     Newest
                                   </div>
 
@@ -2766,9 +2770,7 @@ function EmployeePanel() {
                                     className="inco-subFilter"
                                     onClick={(e) => handleSort("none")}
                                   >
-                                    <SwapVertIcon
-                                      style={{ height: "16px" }}
-                                    />
+                                    <SwapVertIcon style={{ height: "16px" }} />
                                     None
                                   </div>
                                 </div>
@@ -2846,7 +2848,10 @@ function EmployeePanel() {
                                 <td>
                                   <div className="d-flex align-items-center justify-content-between wApp">
                                     <div>{company["Company Number"]}</div>
-                                    <a target="_blank" href={`https://wa.me/91${company["Company Number"]}`}>
+                                    <a
+                                      target="_blank"
+                                      href={`https://wa.me/91${company["Company Number"]}`}
+                                    >
                                       <FaWhatsapp />
                                     </a>
                                   </div>
@@ -3092,6 +3097,7 @@ function EmployeePanel() {
                                           style={{ marginRight: "5px" }}
                                           onClick={() => {
                                             setMaturedID(company._id);
+
                                             functionopenAnchor();
                                           }}
                                         >
@@ -3114,8 +3120,7 @@ function EmployeePanel() {
                                           }}
                                           disabled={requestDeletes.some(
                                             (item) =>
-                                              item.companyId ===
-                                                company._id &&
+                                              item.companyId === company._id &&
                                               item.request === undefined
                                           )}
                                         >
@@ -3129,9 +3134,9 @@ function EmployeePanel() {
                                           />
                                         </IconButton>
                                         <IconButton
-                                        onClick={()=>{
-                                          handleEditClick(company._id)
-                                        }}
+                                          onClick={() => {
+                                            handleEditClick(company._id)
+                                          }}
                                           // onClick={() => {
                                           //   setMaturedID(company._id);
                                           //   setTimeout(() => {
@@ -3153,14 +3158,22 @@ function EmployeePanel() {
                                             }}
                                           />
                                         </IconButton>
-                                        <IconButton onClick={()=>{setCompanyName(company["Company Name"])
-                                          setAddFormOpen(true)}} >
-                                          <AddCircleIcon style={{
+                                        <IconButton
+                                          onClick={() => {
+                                            setCompanyName(
+                                              company["Company Name"]
+                                            );
+                                            setAddFormOpen(true);
+                                          }}
+                                        >
+                                          <AddCircleIcon
+                                            style={{
                                               cursor: "pointer",
                                               color: "#4f5b74",
                                               width: "14px",
                                               height: "14px",
-                                            }}/>
+                                            }}
+                                          />
                                         </IconButton>
                                       </div>
                                     </td>
@@ -3303,9 +3316,8 @@ function EmployeePanel() {
                             setCurrentPage((prevPage) =>
                               Math.min(
                                 prevPage + 1,
-                                Math.ceil(
-                                  filteredData.length / itemsPerPage
-                                ) - 1
+                                Math.ceil(filteredData.length / itemsPerPage) -
+                                  1
                               )
                             )
                           }
@@ -3324,9 +3336,9 @@ function EmployeePanel() {
             </div>
           </div>
         </>
-        ) 
-      }
-      {formOpen && ( <>
+      )}
+      {formOpen && (
+        <>
           <RedesignedForm
             // matured={true}
             // companysId={companyId}
@@ -3340,33 +3352,109 @@ function EmployeePanel() {
             employeeName={data.ename}
             employeeEmail={data.email}
           />
-        </>) }
-        {
- editFormOpen && ( <>
-  <EditableLeadform
-    setFormOpen={setEditFormOpen}
-    companysName={currentForm["Company Name"]}
-    companysEmail={currentForm["Company Email"]}
-    companyNumber={currentForm["Company Number"]}
-    setNowToFetch={setNowToFetch}
-    companysInco={currentForm.incoDate}
-    employeeName={data.ename}
-    employeeEmail={data.email}
-    setDataStatus={setdataStatus}
-  />
-</>)
-        } 
-        {
-          addFormOpen && (
-            <> <AddLeadForm    setFormOpen={setAddFormOpen}
+        </>
+      )}
+      {editFormOpen &&  (
+        <>
+          <EditableLeadform
+            setFormOpen={setEditFormOpen}
+            companysName={currentForm["Company Name"]}
+            companysEmail={currentForm["Company Email"]}
+            companyNumber={currentForm["Company Number"]}
+            setNowToFetch={setNowToFetch}
+            companysInco={currentForm.incoDate}
+            employeeName={data.ename}
+            employeeEmail={data.email}
+            setDataStatus={setdataStatus}
+          />
+        </>
+      )}
+      {editMoreOpen && (
+        <>
+        <EditableMoreBooking  setFormOpen={setEditMoreOpen}
+            companyData = {bookingIndex !== 0 ? currentForm.moreBookings[bookingIndex-1] : currentForm}
+            companysName={currentForm["Company Name"]}
+            companysEmail={currentForm["Company Email"]}
+            companyNumber={currentForm["Company Number"]}
+            setNowToFetch={setNowToFetch}
+            companysInco={currentForm.incoDate}
+            employeeName={data.ename}
+            employeeEmail={data.email}
+            setDataStatus={setdataStatus}/>
+        </>
+      )}
+      {addFormOpen && (
+        <>
+          {" "}
+          <AddLeadForm
+            setFormOpen={setAddFormOpen}
             companysName={companyName}
             setNowToFetch={setNowToFetch}
-            setDataStatus={setdataStatus}/>
-            </>
-          )
-        }
-     
+            setDataStatus={setdataStatus}
+          />
+        </>
+      )}
 
+      {/* Pop up for confirming bookings  */}
+      <Dialog
+        open={openBooking}
+        onClose={() => { 
+        setOpenBooking(false) 
+        setCurrentForm(null)        
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Choose Booking{" "}
+          <IconButton
+            onClick={() => {
+              setOpenBooking(false) 
+              setCurrentForm(null)
+              }}
+            style={{ float: "right" }}
+          >
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+
+        <DialogContent>
+          <div className="bookings-content">
+          <div className="open-bookings d-flex align-items-center justify-content-around">
+            <div className="booking-1">
+              <label for="open-bookings "> Booking 1 </label>
+              <input
+                onChange={() => setBookingIndex(0)}
+                className="form-check-input ml-1"
+                type="radio"
+                name="open-bookings"
+                id="open-bookings-1"
+              />
+            </div>
+            {currentForm && currentForm.moreBookings.map((obj, index) => (
+              <div className="booking-2">
+                <label for="open-bookings"> Booking {index + 2} </label>
+                <input
+                  onChange={() => setBookingIndex(index+1)}
+                  className="form-check-input ml-1"
+                  type="radio"
+                  name="open-bookings"
+                  id={`open-booking-${index + 2}`}
+                />
+              </div>
+            ))}
+
+          </div>
+          
+          <div className = "open-bookings-footer mt-2 d-flex justify-content-center">
+            <button onClick={handleOpenEditForm} style={{textAlign:"center"}} className="btn btn-primary">
+              Confirm Booking
+            </button>
+          </div>
+          </div>
+       
+        </DialogContent>
+      </Dialog>
       {/* Request Data popup */}
       <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
         <DialogTitle>
@@ -3397,7 +3485,7 @@ function EmployeePanel() {
                   setSelectedOption("general");
                 }}
                 className="direct form-control col"
-              >
+               >
                 <input
                   type="radio"
                   id="general"
@@ -3601,7 +3689,9 @@ function EmployeePanel() {
         maxWidth="sm"
       >
         <DialogTitle>
-          <span style={{fontSize:"14px"}}>{currentCompanyName}'s Remarks</span>
+          <span style={{ fontSize: "14px" }}>
+            {currentCompanyName}'s Remarks
+          </span>
           <IconButton onClick={closepopupRemarks} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
           </IconButton>{" "}
@@ -3609,41 +3699,37 @@ function EmployeePanel() {
         <DialogContent>
           <div className="remarks-content">
             {filteredRemarks.length !== 0 ? (
-              filteredRemarks
-                .slice()
-                .map((historyItem) => (
-                  <div className="col-sm-12" key={historyItem._id}>
-                    <div className="card RemarkCard position-relative">
-                      <div className="d-flex justify-content-between">
-                        <div className="reamrk-card-innerText">
-                          <pre className="remark-text">
-                            {historyItem.remarks}
-                          </pre>
-                        </div>
-                        <div className="dlticon">
-                          <DeleteIcon
-                            style={{
-                              cursor: "pointer",
-                              color: "#f70000",
-                              width: "14px",
-                            }}
-                            onClick={() => {
-                              handleDeleteRemarks(
-                                historyItem._id,
-                                historyItem.remarks
-                              );
-                            }}
-                          />
-                        </div>
+              filteredRemarks.slice().map((historyItem) => (
+                <div className="col-sm-12" key={historyItem._id}>
+                  <div className="card RemarkCard position-relative">
+                    <div className="d-flex justify-content-between">
+                      <div className="reamrk-card-innerText">
+                        <pre className="remark-text">{historyItem.remarks}</pre>
                       </div>
-
-                      <div className="d-flex card-dateTime justify-content-between">
-                        <div className="date">{historyItem.date}</div>
-                        <div className="time">{historyItem.time}</div>
+                      <div className="dlticon">
+                        <DeleteIcon
+                          style={{
+                            cursor: "pointer",
+                            color: "#f70000",
+                            width: "14px",
+                          }}
+                          onClick={() => {
+                            handleDeleteRemarks(
+                              historyItem._id,
+                              historyItem.remarks
+                            );
+                          }}
+                        />
                       </div>
                     </div>
+
+                    <div className="d-flex card-dateTime justify-content-between">
+                      <div className="date">{historyItem.date}</div>
+                      <div className="time">{historyItem.time}</div>
+                    </div>
                   </div>
-                ))
+                </div>
+              ))
             ) : (
               <div className="text-center overflow-hidden">
                 No Remarks History
@@ -4203,7 +4289,9 @@ function EmployeePanel() {
             <div className="Container">
               <div className="d-flex justify-content-between align-items-center">
                 <div>
-                  <h2 className="title m-0 ml-1">{currentForm? currentForm["Company Name"] : "Company Name"}</h2>
+                  <h2 className="title m-0 ml-1">
+                    {currentForm ? currentForm["Company Name"] : "Company Name"}
+                  </h2>
                 </div>
                 <div>
                   <IconButton onClick={closeAnchor}>
@@ -4221,6 +4309,7 @@ function EmployeePanel() {
           </div>
         </div>
       </Drawer>
+
       {/* Drawer for Follow Up Projection  */}
       <div>
         <Drawer

@@ -121,12 +121,14 @@ export default function AdminBookingForm({
       };
     
     const fetchData = async () => {
+    
+;
         try {
             const response = await axios.get(
-                `${secretKey}/redesigned-leadData/${companyNewName}`
+                `${secretKey}/redesigned-leadData/${companyNewName.trim()}`
             );
             const data = response.data.find(
-                (item) => item["Company Name"] === companyNewName
+                (item) => item["Company Name"] === companyNewName.trim()
             );
             console.log("Fetched Data" , data);
             if (!data) {
@@ -349,7 +351,7 @@ export default function AdminBookingForm({
                     console.log("This is sending", dataToSend);
                     try {
                         const response = await axios.post(
-                            `${secretKey}/redesigned-leadData/${companysName}/step1`,
+                            `${secretKey}/redesigned-leadData/${companyNewName}/step1`,
                             dataToSend
                         );
                         // Handle response data as needed
@@ -701,7 +703,7 @@ export default function AdminBookingForm({
     const handleResetDraft = async () => {
         try {
             const response = await fetch(
-                `${secretKey}/redesigned-delete-model/${companysName}`,
+                `${secretKey}/redesigned-delete-model/${companyNewName.trim()}`,
                 {
                     method: "DELETE",
                     headers: {

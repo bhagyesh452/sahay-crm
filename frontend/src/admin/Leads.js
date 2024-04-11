@@ -117,7 +117,7 @@ function Leads() {
 
       // Set the retrieved data in the state
       setData(response.data.reverse());
-      setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
+      setmainData(response.data.filter((item) => item.ename !== "Not Alloted"));
 
       // Set isLoading back to false after data is fetched
       setIsLoading(false);
@@ -133,10 +133,10 @@ function Leads() {
 
   const fetchData = debounce(async () => {
     const data = await fetchDatadebounce();
-    if (data) {
-      setData(data.reverse());
-      setmainData(data.filter((item) => item.ename === 'Not Alloted'));
-    }
+    // if (data) {
+    //   setData(data.reverse());
+    //   setmainData(data.filter((item) => item.ename === 'Not Alloted'));
+    // }
   }, 300); // Adjust debounce delay as needed
 
   // Fetch data automatically when the component mounts
