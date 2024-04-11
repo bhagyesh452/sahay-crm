@@ -747,21 +747,43 @@ app.get("/api/einfo", async (req, res) => {
 
 // --------------------------api for teams----------------------------------------
 
+// app.post('/api/teaminfo', async (req, res) => {
+//   try {
+//       const teamData = req.body;
+//       console.log(teamData)
+//       const newTeam = await TeamModel.create(teamData);
+//       res.status(201).json(newTeam);
+//       console.log("newTeam" , newTeam)
+//   } catch (error) {
+//       console.error('Error creating team:', error.message);
+//       res.status(500).json({ message: "Duplicate Entries Found" });
+//   }
+// });
+
 app.post('/api/teaminfo', async (req, res) => {
   try {
-      const teamData = req.body;
-      console.log(teamData)
-      const newTeam = await TeamModel.create(teamData);
-      res.status(201).json(newTeam);
-      console.log("newTeam" , newTeam)
+    const teamData = req.body;
+    //console.log(teamData);
+    // Assuming `formatDate()` is a function that formats the current date
+    const newTeam = await TeamModel.create({ modifiedAt: formatDate(Date.now()),...teamData});
+    console.log("newTeam", newTeam);
+    res.status(201).json(newTeam);
   } catch (error) {
-      console.error('Error creating team:', error.message);
-      res.status(500).json({ message: "Duplicate Entries Found" });
+    console.error('Error creating team:', error.message);
+    res.status(500).json({ message: "Duplicate Entries Found" });
   }
 });
 
-
-
+app.get("/api/teaminfo", async (req, res) => {
+  try {
+    const data = await TeamModel.find();
+    console.log("teamdata" , data)
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 
@@ -965,6 +987,16 @@ function formatDate(timestamp) {
   const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
+}
+
+function formatDateNew(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const formattedDay = day < 10 ? '0' + day : day;
+  const formattedMonth = month < 10 ? '0' + month : month;
+  return `${formattedDay}/${formattedMonth}/${year}`;
 }
 
 app.post("/api/update-followup", async (req, res) => {

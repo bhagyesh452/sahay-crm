@@ -7,11 +7,13 @@ import "../../../dist/css/demo.min.css?1684106062";
 import myImage from '../../../static/mainLogo.png'
 import Avatar from '@mui/material/Avatar';
 import Notification from "../../Components/Notification/Notification.jsx";
+import {useParams} from 'react-router-dom'
 
 
-function Header(){
-    const name = localStorage.getItem("bdmName")
-    const secretKey = process.env.React_APP_SECRET_KEY;
+function Header({bdmName}){
+    // const name = localStorage.getItem("bdmName")
+     const secretKey = process.env.React_APP_SECRET_KEY;
+     console.log(bdmName)
 
 
     return(
@@ -49,7 +51,7 @@ function Header(){
                 data-bs-toggle="dropdown"
                 aria-label="Open user menu">
                 <div className="d-xl-block ps-2">
-                  <div style={{ textTransform: "capitalize" }}>{name ? name : "Name"}</div>
+                  <div style={{ textTransform: "capitalize" }}>{bdmName ? bdmName : "Name"}</div>
                   <div style={{ textAlign: "left" }} className="mt-1 small text-muted">
                     Sales Manager
                   </div>

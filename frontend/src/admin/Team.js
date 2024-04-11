@@ -14,6 +14,8 @@ import axios from "axios"
 import { MdDelete } from "react-icons/md";
 import { MdOutlineAddCircle } from "react-icons/md";
 import Swal from "sweetalert2";
+import { IconTrash } from "@tabler/icons-react";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
 
 
 
@@ -38,6 +40,9 @@ function Team() {
     const [openBdeField, setOpenBdeField] = useState(false);
     const [bdeFields, setBdeFields] = useState([]);
     const [selectedBdes, setSelectedBdes] = useState([]);
+    const [teamData, setTeamData] = useState([]);
+    const [teamDataFilter, setTeamDataFilter] = useState([])
+    const [openTeamDetails, setopenTeamDetails] = useState(false)
 
 
 
@@ -53,10 +58,22 @@ function Team() {
         }
     }
 
-    //console.log("data", employeeData)
+    const fecthTeamData = async () => {
+        try {
+            const response = await axios.get(`${secretKey}/teaminfo`)
+
+            console.log("teamdata", response.data)
+            setTeamData(response.data)
+            setTeamDataFilter(response.data)
+
+        } catch (error) {
+            console.log("error Fetching data", error.message)
+        }
+    }
 
     useEffect(() => {
-        fetchData()
+        fetchData();
+        fecthTeamData();
     }, [])
 
 
@@ -122,7 +139,9 @@ function Team() {
     //console.log(latestName)
 
     console.log(ename, branchOffice, designation)
-    const [errorMessage , setErrorMessage] = useState("")
+
+    const [errorMessage, setErrorMessage] = useState("")
+    //console.log(errorMessage)
 
     const handleSubmit = async () => {
         try {
@@ -153,24 +172,44 @@ function Team() {
             }
         } catch (error) {
             const errorfound = error.response.data.message
+            setErrorMessage(errorfound)
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 html: `${errorMessage}!`,
             });
-            setErrorMessage(errorfound)
             console.error('Error creating team:', error.response.data.message);
         }
     };
 
+    const closeTeamDetails=()=>{
+        setopenTeamDetails(false)
+    }
+
+    function formatDate(timestamp) {
+        const date = new Date(timestamp);
+        const day = date.getDate();
+        const month = date.getMonth() + 1; // Adding 1 because getMonth() returns zero-based index (0 for January)
+        const year = date.getFullYear();
+    
+        // Format day and month to ensure they have two digits
+        const formattedDay = day < 10 ? '0' + day : day;
+        const formattedMonth = month < 10 ? '0' + month : month;
+    
+        // Create the formatted date string in dd/mm/yyyy format
+        const formattedDate = `${formattedMonth}/${formattedDay}/${year}`;
+    
+        return formattedDate;
+    }
+    
+
 
     return (
         <div>
-            <Header />
-            <Navbar />
+            {/* <Header />
+            <Navbar /> */}
             <div className="page-wrapper">
                 <div className="page-header d-print-none">
-                    <div className="container-xl">
                         <div className="row g-2 align-items-center">
                             <div className="col">
                                 <h2 className="page-title">Teams</h2>
@@ -238,63 +277,100 @@ function Team() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                  
                 </div>
             </div>
             <div onCopy={(e) => {
                 e.preventDefault();
-            }} className="page-body">
-                <div style={{ maxWidth: "89vw", overflowX: "auto" }}
-                    className="container-xl">
-                    <div className="card">
-                        <div style={{ padding: "0px" }} className="card-body">
-                            <div id="table-default"
-                                style={{ overflow: "auto", maxHeight: "70vh" }}>
-                                <table style={{
-                                    width: "100%",
-                                    borderCollapse: "collapse",
-                                    border: "1px solid #ddd",
-                                }}
-                                    className="table-vcenter table-nowrap" >
-                                    <thead>
-                                        <tr className="tr-sticky">
-                                            <th>
-                                                Sr.No
-                                            </th>
-                                            <th>
-                                                Name
-                                            </th>
-                                            <th>
-                                                Phone No
-                                            </th>
-                                            <th>
-                                                Email
-                                            </th>
-                                            <th>
-                                                Joining Date
-                                            </th>
-                                            <th>
-                                                Designation
-                                            </th>
-                                            <th>
-                                                Branch Office
-                                            </th>
-                                            <th>
-                                                Added On
-                                            </th>
-                                            <th>
-                                                View Employees
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="table-tbody">
-                                    </tbody>
-                                </table>
-                            </div>
+            }} className="mt-2">
+                <div className="card">
+                    <div style={{ padding: "0px" }} className="card-body">
+                        <div id="table-default"
+                            style={{ overflow: "auto", maxHeight: "70vh" }}>
+                            <table style={{
+                                width: "100%",
+                                borderCollapse: "collapse",
+                                border: "1px solid #ddd",
+                            }}
+                                className="table-vcenter table-nowrap" >
+                                <thead>
+                                    <tr className="tr-sticky">
+                                        <th>
+                                            Sr.No
+                                        </th>
+                                        <th>
+                                            Team Name
+                                        </th>
+                                        <th>
+                                            BDM Name
+                                        </th>
+                                        <th>
+                                            Branch Office
+                                        </th>
+                                        <th>
+                                            Team Size
+                                        </th>
+                                        <th>
+                                            Created Date
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="table-tbody">
+                                    {teamDataFilter && (
+                                        teamDataFilter.map((item, index) => (
+                                            <tr key={index} style={{ border: "1px solid #ddd" }}>
+                                                <td className="td-sticky">{index + 1}</td>
+                                                <td>{item.teamName}</td>
+                                                <td>{item.bdmName}</td>
+                                                <td>{item.branchOffice}</td>
+                                                <td onClick={()=>setopenTeamDetails(true)}>{item.employees.length}</td>
+                                                <td>{item.modifiedAt}</td>
+                                                <td><div className="d-flex justify-content-center align-items-center">
+                                                    <div className="icons-btn">
+                                                        <IconButton 
+                                                        >
+                                                            <IconTrash
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    color: "red",
+                                                                    width: "14px",
+                                                                    height: "14px",
+                                                                }}
+
+                                                            />
+                                                        </IconButton>
+                                                    </div>
+                                                    <div className="icons-btn">
+                                                        <IconButton>
+                                                            <ModeEditIcon
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    color: "#a29d9d",
+                                                                    width: "14px",
+                                                                    height: "14px",
+                                                                }}
+
+                                                            />
+                                                        </IconButton>
+                                                    </div>
+                                                </div></td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
+
             </div>
+
+            {/* -----------------------------------------------dialog box for adding teams ------------------------------------------------------ */}
+
+
             <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
                 <DialogTitle>
                     Create Team
@@ -370,76 +446,6 @@ function Team() {
                                         </select>
                                     </div>
                                 </div>}
-
-
-                                {/* {openBdeField && <div className="mb-3">
-                                    <div className="d-flex align-items-center justify-content-between">
-                                        <label className="form-label">BDE Selection</label>
-                                    </div>
-                                    <div className="form-control">
-                                        <select
-                                            style={{
-                                                border: "none",
-                                                outline: "none",
-                                                width: "100%",
-                                            }}
-                                            value={selectBde}
-                                            required
-                                            onChange={(e) => {
-                                                setSelectedBde(e.target.value);
-                                            }}>
-                                            <option value="" disabled selected>
-                                                Select BDE Name
-                                            </option>
-                                            {
-                                                employeeData && Array.isArray(employeeData) && employeeData
-                                                    .filter((employee) => employee.designation === "Sales Executive")
-                                                    .map((employee) => (
-                                                        <option key={employee._id} value={employee.ename}>{employee.ename}</option>
-                                                    ))
-                                            }
-                                        </select>
-                                    </div>
-                                </div>} */}
-                                {/* {bdeFields.map((bdeField, index) => (
-                                    <div key={index} className="mb-3">
-                                        <div className="d-flex align-items-center justify-content-between">
-                                            <label className="form-label">BDE Selection</label>
-                                            <IconButton>
-                                                <MdDelete
-                                                    color="#bf2020"
-                                                    style={{ width: "14px", height: "14px" }}
-                                                    onClick={() => handleRemoveBdeField(index)}
-                                                />
-                                            </IconButton>
-                                        </div>
-                                        <div className="form-control">
-                                            <select
-                                                style={{
-                                                    border: "none",
-                                                    outline: "none",
-                                                    width: "100%",
-                                                }}
-                                                value={selectedBdes[index] || ''}
-                                                onChange={(event) => {
-                                                    handleBdeSelect(index, event.target.value)}
-
-                                                }
-                                                   
-                                                required
-                                            >
-                                                <option value="" disabled>Select BDE Name</option>
-                                                {employeeData
-                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice && !selectedBdes.includes(employee.ename))
-                                                    .map(employee => (
-                                                        <option key={employee.email} value={employee.ename}>
-                                                            {employee.ename}
-                                                        </option>
-                                                    ))}
-                                            </select>
-                                        </div>
-                                    </div>
-                                ))} */}
                                 {bdmNameSelected && (
                                     <div key={0} className="mb-3">
                                         <div className="d-flex align-items-center justify-content-between">
@@ -452,7 +458,7 @@ function Team() {
                                                     outline: "none",
                                                     width: "100%",
                                                 }}
-                                                value={selectedBdes[0] || " "}
+                                                value={selectedBdes.length > 0 ? selectedBdes[0] : ""}
                                                 onChange={(event) => handleBdeSelect(0, event.target.value)}
                                                 required
                                             >
@@ -508,143 +514,6 @@ function Team() {
                                         color="primary" style={{ float: "right", width: "14px", height: "14px" }}
                                         onClick={handleAddBdeField}></MdOutlineAddCircle>
                                 </IconButton>
-                                {/* <div className="mb-3">
-                                    <label className="form-label">Email Address</label>
-                                    <input
-                                        value={email}
-                                        type="email"
-                                        className="form-control"
-                                        name="example-text-input"
-                                        placeholder="Your report name"
-                                        onChange={(e) => {
-                                            setEmail(e.target.value);
-                                        }}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Password</label>
-                                    <div className="input-group">
-                                        <input
-                                            type={showPassword ? "text" : "password"}
-                                            value={password}
-                                            className="form-control"
-                                            name="example-text-input"
-                                            placeholder="Your report name"
-                                            required
-                                            onChange={(e) => {
-                                                setPassword(e.target.value);
-                                            }}
-                                        />
-                                        <button
-                                            className="btn btn-outline-secondary"
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                        >
-                                            {showPassword ? "Hide" : "Show"}
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-lg-6 mb-3">
-                                        <label className="form-label">Designation</label>
-                                        <div className="form-control">
-                                            <select
-                                                style={{
-                                                    border: "none",
-                                                    outline: "none",
-                                                    width: "fit-content",
-                                                }}
-                                                value={designation}
-                                                required
-                                                onChange={(e) => {
-                                                    setDesignation(e.target.value);
-                                                }}>
-                                                <option value="" disabled selected>
-                                                    Select Designation
-                                                </option>
-                                                <option value="Sales Executive">Sales Executive</option>
-                                                <option value="Sales Manager">Sales Manager</option>
-                                                <option value="Graphics Designer">
-                                                    Graphics Designer
-                                                </option>
-                                                <option value="Software Developer">
-                                                    Software Developer
-                                                </option>
-                                                <option value="Finance Analyst">Finance Analyst</option>
-                                                <option value="Content Writer">Content Writer</option>
-                                                <option value="Data Manager">Data Manager</option>
-                                                <option value="Admin Team">Admin Team</option>
-                                                <option value="Others">Others</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6 mb-3">
-                                        <label className="form-label">Branch Office</label>
-                                        <div className="form-control">
-                                            <select
-                                                style={{
-                                                    border: "none",
-                                                    outline: "none",
-                                                    width: "fit-content",
-                                                }}
-                                                value={branchOffice}
-                                                required
-                                                onChange={(e) => {
-                                                    setBranchOffice(e.target.value);
-                                                }}
-                                            >
-                                                <option value="" disabled selected>
-                                                    Select Branch Office
-                                                </option>
-                                                <option value="Gota">Gota</option>
-                                                <option value="Sindhu Bhawan">Sindhu Bhawan</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                {designation === "Others" && (
-                                    <div className="mb-3">
-                                        <input
-                                            value={otherdesignation}
-                                            type="email"
-                                            className="form-control"
-                                            name="example-text-input"
-                                            placeholder="Please enter your designation"
-                                            onChange={(e) => {
-                                                setotherDesignation(e.target.value);
-                                            }}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="row">
-                                <div className="col-lg-6">
-                                    <div className="mb-3">
-                                        <label className="form-label">Phone No.</label>
-                                        <input
-                                            value={number}
-                                            type="number"
-                                            className="form-control"
-                                            onChange={(e) => {
-                                                setNumber(e.target.value);
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="col-lg-6">
-                                    <div className="mb-3">
-                                        <label className="form-label">Joining Date</label>
-                                        <input
-                                            value={jdate}
-                                            type="date"
-                                            onChange={(e) => {
-                                                setJdate(e.target.value);
-                                            }}
-                                            className="form-control"
-                                        />
-                                    </div>
-                                </div> */}
                             </div>
                         </div>
                     </div>
@@ -653,12 +522,27 @@ function Team() {
                     Submit
                 </Button>
             </Dialog>
+
+{/* -------------------------------------------popup for team details----------------------------------------------------------- */}
+
+            <Dialog open={openTeamDetails} onClose={closeTeamDetails} fullWidth maxWidth="sm">
+                <DialogTitle>
+                    Team Details
+                    <IconButton onClick={closeTeamDetails} style={{ float: "right" }}>
+                        <CloseIcon color="primary"></CloseIcon>
+                    </IconButton>{" "}
+                </DialogTitle>
+                <DialogContent>
+                    
+                </DialogContent>
+                <Button variant="contained" style={{ backgroundColor: "#fbb900" }}>
+                 
+                </Button>
+            </Dialog>
+
+
+
         </div>
-
-
-
-
-
     )
 }
 
