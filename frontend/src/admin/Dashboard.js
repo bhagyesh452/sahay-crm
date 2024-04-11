@@ -540,8 +540,8 @@ function Dashboard() {
   //console.log(projectionEname)
 
   const [projectedDataToday, setprojectedDataToday] = useState([])
-  //console.log("Total totalPaymentSum:", totalTotalPaymentSum);
-  //console.log("Total offeredPaymentSum:", totalOfferedPaymentSum);
+
+
   const functionOpenProjectionTable = (ename) => {
     setProjectionEname(ename)
     //console.log("Ename:", ename)
@@ -562,6 +562,24 @@ function Dashboard() {
   const closeProjectionTable = () => {
     setopenProjectionTable(false);
   };
+
+  const [completeProjectionTable, setCompleteProjectionTable] = useState(false)
+
+  const functionCompleteProjectionTable = () => {
+    setCompleteProjectionTable(true)
+  }
+
+  const closeCompleteProjectionTable = () => {
+    setCompleteProjectionTable(false);
+  };
+
+
+
+
+
+
+
+
 
   function calculateSumPopup(data) {
     const initialValue = { totalPaymentSumPopup: 0, offeredPaymentSumPopup: 0, offeredServicesPopup: [] };
@@ -604,6 +622,7 @@ function Dashboard() {
   const handleViewHistoryProjection = (companyName) => {
 
     const companyHistoryName = companyName
+
     setviewHistoryCompanyName(companyHistoryName)
     setopenProjectionTable(false)
     const companyDataProjection = projectedDataToday.find(obj => obj.companyName === companyHistoryName);
@@ -2162,65 +2181,25 @@ function Dashboard() {
     return 0;
   });
 
-  // Function to get total offered price for a given ename
+  const exportData = async () => {
+    try {
+      const response = await axios.post(
+        `${secretKey}/followdataexport/`,
+        followDataToday
+      );
+      //console.log("response",response.data)
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "FollowDataToday.csv");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+    }
+  };
 
-
-  // const handleSortTotalCompanies = (newSortType) => {
-  //   console.log(newSortType)
-  //   setSortTypeProjection(newSortType);
-  // };
-
-
-  // const sortedData = uniqueEnames.slice().sort((a, b) => {
-  //   const totalCompaniesA = followDataToday.filter(
-  //     (partObj) => partObj.ename === a
-  //   ).length;
-  //   const totalCompaniesB = followDataToday.filter(
-  //     (partObj) => partObj.ename === b
-  //   ).length;
-
-  //   if (sortTypeProjection === "ascending") {
-  //     return totalCompaniesA - totalCompaniesB;
-  //   } else if (sortTypeProjection === "descending") {
-  //     return totalCompaniesB - totalCompaniesA;
-  //   }
-  //   // If sortTypeProjection is "none", return original order
-  //   return 0;
-  // });
-
-  // console.log(sortedData)
-  // console.log(uniqueEnames)
-
-  // const handleSortOfferedServices = (newSortType) => {
-  //   console.log(newSortType)
-  //   setSortTypeServices(newSortType);
-  // };
-  // const sortedServicesData = uniqueEnames.slice().sort((a, b) => {
-  //   // Count the number of offered services for ename a
-  //   const totalServicesA = followDataToday.reduce((total, partObj) => {
-  //     if (partObj.ename === a) {
-  //       total += partObj.offeredServices.length;
-  //     }
-  //     return total;
-  //   }, 0);
-
-  //   // Count the number of offered services for ename b
-  //   const totalServicesB = followDataToday.reduce((total, partObj) => {
-  //     if (partObj.ename === b) {
-  //       total += partObj.offeredServices.length;
-  //     }
-  //     return total;
-  //   }, 0);
-
-  //   if (sortTypeServices === "ascending") {
-  //     return totalServicesA - totalServicesB;
-  //   } else if (sortTypeServices === "descending") {
-  //     return totalServicesB - totalServicesA;
-  //   }
-  //   // If sortTypeServices is "none", return original order
-  //   return 0;
-  // });
-  // console.log(sortedServicesData)
+  console.log(followDataToday)
 
 
 
@@ -3995,12 +3974,12 @@ function Dashboard() {
                             {
                               followDataToday.filter((partObj) => partObj.ename).length
                             }
-                             <FcDatabase
-                                onClick={() => {
-                                  functionOpenProjectionTable(followData);
-                                }}
-                                style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "55px" }}
-                              />
+                            <FcDatabase
+                              onClick={() => {
+                                functionCompleteProjectionTable();
+                              }}
+                              style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "55px" }}
+                            />
                           </td>
                           <td>
                             {
@@ -4208,6 +4187,141 @@ function Dashboard() {
               </div>
             </DialogContent>
           </Dialog>
+
+
+
+          {/* -------------------------------------------------------------complete projection--------------------------------------- */}
+          <Dialog
+            open={completeProjectionTable}
+            onClose={closeCompleteProjectionTable}
+            fullWidth
+            maxWidth="lg">
+            <DialogTitle>
+              Today's Report {" "}
+              <IconButton onClick={closeCompleteProjectionTable} style={{ float: "right" }}>
+                <CloseIcon color="primary"></CloseIcon>
+              </IconButton>{" "}
+                <button style={{float:"right"}}
+                  className="btn btn-primary mr-1"
+                  onClick={exportData}
+                  >
+                  + Export CSV
+                </button>
+            </DialogTitle>
+            <DialogContent>
+              <div
+                id="table-default"
+                style={{
+                  overflowX: "auto",
+                  overflowY: "auto",
+                }}
+              >
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                    marginBottom: "10px",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
+                  <thead style={{
+                    position: "sticky", // Make the header sticky
+                    top: '-1px', // Stick it at the top
+                    backgroundColor: "#ffb900",
+                    color: "black",
+                    fontWeight: "bold",
+                    zIndex: 1, // Ensure it's above other content
+                  }}>
+                    <tr
+                      style={{
+                        backgroundColor: "#ffb900",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <th
+                        style={{
+                          lineHeight: "32px",
+                        }}
+                      >
+                        Sr. No
+                      </th>
+                      <th>BDE Name</th>
+                      <th>Company Name</th>
+                      <th>Offered Services</th>
+                      <th>Total Offered Price</th>
+                      <th>Expected Amount</th>
+                      <th>Estimated Payment Date</th>
+                      <th>Last Follow Up Date</th>
+                      <th>Remarks</th>
+                      {/* <th>View History</th> */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Map through uniqueEnames array to render rows */}
+
+                    {followDataToday && followDataToday.length > 0 ? (
+                      followDataToday.map((obj, Index) => (
+                        <tr key={`sub-row-${Index}`}>
+                          <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                          {/* Render other employee data */}
+                          <td>{obj.ename}</td>
+                          <td>{obj.companyName}</td>
+                          <td>{obj.offeredServices.join(",")}</td>
+                          <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                          <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                          <td>{obj.estPaymentDate}</td>
+                          <td>{obj.lastFollowUpdate}</td>
+                          <td>{obj.remarks}</td>
+                          {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection(obj.companyName)} /></td> */}
+                        </tr>
+                      ))
+                    ) : (null)
+                    }
+                  </tbody>
+                  {followDataToday && (
+                    <tfoot style={{
+                      position: "sticky", // Make the footer sticky
+                      bottom: -1, // Stick it at the bottom
+                      backgroundColor: "#f6f2e9",
+                      color: "black",
+                      fontWeight: 500,
+                      zIndex: 2
+                    }}>
+                      <tr style={{ fontWeight: 500 }}>
+                        <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                        <td>
+                          {(followDataToday.length)}
+                        </td>
+                        <td>
+                          {
+                            followDataToday.reduce((totalServices, partObj) => {
+                              totalServices += partObj.offeredServices.length;
+                              return totalServices;
+                            }, 0)
+                          }
+                        </td>
+                        <td>&#8377;{
+                          followDataToday.reduce((totalOfferedPrice, partObj) => {
+                            return totalOfferedPrice + partObj.offeredPrize;
+                          }, 0)}</td>
+                        <td>&#8377;{
+                          followDataToday.reduce((totalTotalPayment, partObj) => {
+                            return totalTotalPayment + partObj.totalPayment;
+                          }, 0)}</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        {/* <td>-</td> */}
+                      </tr>
+                    </tfoot>
+                  )}
+                </table>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           {/* ------------------------------------------------------projection history dialog------------------------------------------------------- */}
 
           <Dialog
@@ -4270,61 +4384,10 @@ function Dashboard() {
                       <th>Remarks</th>
                     </tr>
                   </thead>
-                  {/* <tbody>
-                    {
-                      projectedDataDateRange && projectedDataDateRange.length > 0 ? (
-                        historyDataCompany.map((obj, Index) => (
-                          <tr key={`sub-row-${Index}`}>
-                            <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                           
-                  <td>{obj.modifiedAt}</td>
-                  <td>{obj.data.companyName}</td>
-                  <td>{obj.data.offeredServices.join(",")}</td>
-                  <td>{obj.data.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                  <td>{obj.data.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                  <td>{obj.data.estPaymentDate}</td>
-                  <td>{obj.data.lastFollowUpdate}</td>
-                  <td>{obj.data.remarks}</td>
-                  {
-                </tr>
-                ))
-                ) : (
-                        historyDataCompany.map((obj, Index) => (
-                <tr key={`sub-row-${Index}`}>
-                  <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
 
-                  <td>{obj.modifiedAt}</td>
-                  <td>{obj.data.companyName}</td>
-                  <td>{obj.data.offeredServices.join(",")}</td>
-                  <td>{obj.data.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                  <td>{obj.data.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                  <td>{obj.data.estPaymentDate}</td>
-                  <td>{obj.data.lastFollowUpdate}</td>
-                  <td>{obj.data.remarks}</td>
-
-                </tr>
-                ))
-                )
-                    }
-              </tbody> */}
                   <tbody>
                     {
                       projectedDataToday && projectedDataToday.length > 0 ? (
-                        //   historyDataCompany.map((obj, Index) => (
-                        //     <tr key={`sub-row-${Index}`}>
-                        //       <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                        //       {/* Render other employee data */}
-                        //       <td>{obj.modifiedAt}</td>
-                        //       <td>{obj.data.companyName}</td>
-                        //       <td>{obj.data.offeredServices.join(",")}</td>
-                        //       <td>{obj.data.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                        //       <td>{obj.data.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                        //       <td>{obj.data.estPaymentDate}</td>
-                        //       <td>{obj.data.lastFollowUpdate}</td>
-                        //       <td>{obj.data.remarks}</td>
-                        //     </tr>
-                        //   ))
-                        // ) : (
                         historyDataCompany.map((obj, index) => (
                           <tr key={`sub-row-${index}`}>
                             <td style={{ lineHeight: "32px" }}>{index + 1}</td>
@@ -4361,37 +4424,6 @@ function Dashboard() {
                       ))
                     }
                   </tbody>
-
-                  {/* {projectedEmployee && (
-                    <tfoot style={{
-                      position: "sticky", // Make the footer sticky
-                      bottom: -1, // Stick it at the bottom
-                      backgroundColor: "#f6f2e9",
-                      color: "black",
-                      fontWeight: 500,
-                      zIndex: 2
-                    }}>
-                      <tr style={{ fontWeight: 500 }}>
-                        <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
-                        
-                        <td>
-                          {projectedDataDateRange && projectedDataDateRange.length > 0 ? (projectedDataDateRange.length) : (projectedDataToday.length)}
-                        </td>
-                        
-                        <td>{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredServicesPopupDateRange.length) : (offeredServicesPopupToday.length)}</td>
-                        
-                        <td>
-                          &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (totalPaymentSumPopupDateRange.toLocaleString()) : (totalPaymentSumPopupToday.toLocaleString())}
-                        </td>
-                       
-                        <td>   &#8377;{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredPaymentSumPopupDateRange.toLocaleString()) : (offeredPaymentSumPopupToday.toLocaleString())}</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                      </tr>
-                    </tfoot>
-                  )} */}
                 </table>
               </div>
             </DialogContent>

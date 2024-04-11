@@ -2360,8 +2360,7 @@ function Leads() {
                   <div>
                     <button
                       className="btn btn-primary mr-1"
-                      onClick={exportData}
-                    >
+                      onClick={exportData}>
                       + Export CSV
                     </button>
                   </div>

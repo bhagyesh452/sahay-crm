@@ -2886,6 +2886,64 @@ app.post("/api/exportLeads/", async (req, res) => {
   }
 });
 
+app.post("/api/followdataexport/", async (req, res) => {
+  try {
+    const followDataToday = req.body;
+
+    const leads = await FollowUpModel.find({
+    });
+
+    const csvData = [];
+    // Push the headers as the first row
+    csvData.push([
+      "SR. NO",
+      "Employee Name",
+      "Company Name",
+      "Offered Services",
+      "Offered Prize",
+      "Expected Amount",
+      "Estimated Payment Date",
+      "Last Follow Up Date",
+      "Remarks"
+    ]);
+
+    // Push each lead as a row into the csvData array
+    leads.forEach((lead, index) => {
+      const rowData = [
+        index + 1,
+        lead.ename,
+        lead.companyName,
+        `"${lead.offeredServices.join(",")}"`,
+        lead.offeredPrize,
+        lead.totalPayment,
+        lead.estPaymentDate,
+        lead. lastFollowUpdate,
+        lead.remarks,
+      ];
+      csvData.push(rowData);
+      // console.log("rowData:" , rowData)
+    });
+
+    // Use fast-csv to stringify the csvData array
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=FollowDataToday.csv"
+    );
+
+    const csvString = csvData.map((row) => row.join(",")).join("\n");
+    // Send response with CSV data
+    // Send response with CSV data
+    //console.log(csvString)
+    res.status(200).end(csvString);
+    // console.log(csvString)
+    // Here you're ending the response
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 
 
 app.post(
