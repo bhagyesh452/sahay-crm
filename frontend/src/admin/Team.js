@@ -209,7 +209,7 @@ function Team() {
             {/* <Header />
             <Navbar /> */}
             <div className="page-wrapper">
-                <div className="page-header d-print-none">
+                <div className="page-header m-0 d-print-none">
                         <div className="row g-2 align-items-center">
                             <div className="col">
                                 <h2 className="page-title">Teams</h2>
@@ -280,10 +280,6 @@ function Team() {
                   
                 </div>
             </div>
-<<<<<<< HEAD
-            <div className="page-body">
-                
-=======
             <div onCopy={(e) => {
                 e.preventDefault();
             }} className="mt-2">
@@ -370,7 +366,6 @@ function Team() {
                     </div>
                 </div>
 
->>>>>>> 3b9eb9cbfd099fe67243e468ad22f177a3371b6d
             </div>
 
             {/* -----------------------------------------------dialog box for adding teams ------------------------------------------------------ */}
