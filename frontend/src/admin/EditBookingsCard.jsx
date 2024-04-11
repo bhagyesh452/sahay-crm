@@ -75,6 +75,7 @@ console.log("Company data current:" , companyName)
   }
   const handleAcceptRequest = async () => {
     try {
+      
       // Make API call to move data from BookingsRequestModel to leadModel
       const response = await axios.post(`${secretKey}/accept-booking-request/${company.companyName}` , company);
   
@@ -148,7 +149,8 @@ console.log("Company data current:" , companyName)
                   },
                 }}
                 className="btn btn-primary d-none d-sm-inline-block"
-                onClick={()=>setCurrentCompany(companyName)}
+                onClick={()=>{setCurrentCompany(companyName) 
+                }}
               >
                 View
               </button>

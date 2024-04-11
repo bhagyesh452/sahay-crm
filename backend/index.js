@@ -4758,6 +4758,25 @@ app.post(
     }
   }
 );
+
+app.post('/api/edit-moreRequest/:companyName/:bookingIndex', async (req, res) => {
+  try {
+    const { companyName, bookingIndex } = req.params;
+    const newData = req.body;
+    const requestDate = new Date();
+    const createdData = await EditableDraftModel.create({
+      "Company Name":companyName,
+      bookingIndex,
+      requestDate,
+      ...newData,
+    });
+
+    res.status(201).json(createdData);
+  } catch (error) {
+    console.error('Error creating data:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 app.get('/api/editable-LeadData', async (req, res) => {
   try {
     const data = await EditableDraftModel.find(); // Fetch all data from the collection

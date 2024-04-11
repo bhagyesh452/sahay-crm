@@ -691,21 +691,7 @@ export default function AddLeadForm({
         }
       }
       if (activeStep === 3) {
-        console.log(
-          "I am in step 4",
-          leadData.paymentReceipt,
-          leadData.otherDocs
-        );
-        if (
-          leadData.paymentReceipt.length === 0 ||
-          leadData.otherDocs.length === 0
-        ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
-          return true;
-        } else {
+       
        
           const totalAmount = leadData.services.reduce(
             (acc, curr) => acc + curr.totalPaymentWGST,
@@ -747,7 +733,7 @@ export default function AddLeadForm({
             console.error("Error uploading data:", error);
             // Handle error
           }
-        }
+        
       }
 
       if (activeStep === 4) {
@@ -1325,19 +1311,28 @@ export default function AddLeadForm({
                                 Select Payment Date
                               </option>
                               <option value="After Application">
-                                After Application
+                                AFTER APPLICATION
+                              </option>
+                              <option value="AFTER CERTIFICATE">
+                                AFTER CERTIFICATE
+                              </option>
+                              <option value="AFTER APPROVAL">
+                                AFTER APPROVAL
+                              </option>
+                              <option value="AFTER SERVICE COMPLETION">
+                                AFTER SERVICE COMPLETION
                               </option>
                               <option value="At the time of Application">
-                                At the time of Application
+                               AT THE TIME OF APPLICATION
                               </option>
                               <option value="After Document">
-                                After Document
+                                AFTER DOCUMENT
                               </option>
                               <option value="Before Application">
-                                Before Application
+                                BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
-                                On Particular Date
+                                ON PARTICULAR DATE
                               </option>
                             </select>
                           </div>
@@ -1345,6 +1340,7 @@ export default function AddLeadForm({
                             "On Particular Date" && (
                             <div className="mt-2">
                               <input
+                              style={{textTransform:"uppercase"}}
                                 value={secondTempRemarks}
                                 onChange={(e) =>
                                   setSecondTempRemarks(e.target.value)
@@ -3012,7 +3008,7 @@ export default function AddLeadForm({
                                               </div>
                                             </div>
                                             <div className="col-sm-9 p-0">
-                                              <div className="form-label-data">
+                                              <div className="form-label-data" style={{textTransform:"uppercase"}}>
                                                 {Number(
                                                   obj.secondPayment
                                                 ).toFixed(2)}{" "}
@@ -3035,7 +3031,7 @@ export default function AddLeadForm({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data">
+                                                <div className="form-label-data"  style={{textTransform:"uppercase"}}>
                                                   {Number(
                                                     obj.thirdPayment
                                                   ).toFixed(2)}{" "}
@@ -3059,7 +3055,7 @@ export default function AddLeadForm({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data">
+                                                <div className="form-label-data" style={{textTransform:"uppercase"}}>
                                                   {Number(
                                                     obj.fourthPayment
                                                   ).toFixed(2)}{" "}
@@ -3165,17 +3161,21 @@ export default function AddLeadForm({
                                           <div className="form-label-data">
                                             ₹{" "}
                                             {leadData.services
-                                              .reduce((acc, curr) => {
-                                                return curr.paymentTerms ===
-                                                  "Full Advanced"
-                                                  ? acc + 0
-                                                  : acc +
-                                                      Number(
-                                                        curr.totalPaymentWOGST
-                                                      ) -
-                                                      Number(curr.firstPayment);
-                                              }, 0)
-                                              .toFixed(2)}
+                                            .reduce(
+                                              (total, service) =>
+                                                service.paymentTerms ===
+                                                "Full Advanced"
+                                                  ? total + 0
+                                                  : total +
+                                                    Number(
+                                                      service.totalPaymentWGST
+                                                    ) -
+                                                    Number(
+                                                      service.firstPayment
+                                                    ),
+                                              0
+                                            )
+                                            .toFixed(2)}
                                           </div>
                                         </div>
                                       </div>

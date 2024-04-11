@@ -31,7 +31,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
     return `${number}${suffix}`;
   };
 
-  console.log(requestedBooking, existingBooking);
+  console.log("Requested Booking",requestedBooking, "Existing Booking",  existingBooking);
   const handleRejectClick = async ()=>{
 
     try {
@@ -75,13 +75,18 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
           }
         }
       }
-      try {
-        const response = await axios.post(`${secretKey}/update-redesigned-final-form/${updatedBooking["Company Name"]}`, updatedBooking);
-       Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
-      } catch (error) {
-        console.log("Error updating data" ,error) ;
-        Swal.fire({title:"Error Updating Data" , icon:"error"})// Display error message
+      if(requestedBooking.bookingIndex === 0){
+        try {
+          const response = await axios.post(`${secretKey}/update-redesigned-final-form/${updatedBooking["Company Name"]}`, updatedBooking);
+         Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
+        } catch (error) {
+          console.log("Error updating data" ,error) ;
+          Swal.fire({title:"Error Updating Data" , icon:"error"})// Display error message
+        }
+      }else {
+        console.log("Editing this company" , updatedBooking)
       }
+    
       
 
     
@@ -118,7 +123,8 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
             </div>
           </div>
           <div className="steprForm-inner mt-2">
-            <div className="stepOnePreview">
+           {(!requestedBooking.bookingIndex
+            || requestedBooking.bookingIndex===0) && <div className="stepOnePreview">
               <div className="d-flex align-items-center">
                 <div className="services_No">1</div>
                 <div className="ml-1">
@@ -292,7 +298,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                   </div>
                 </div>
               </div>
-            </div>
+            </div>}
             {/* -------------------------------------------- Step 1 Ends Here ----------------------------------------- */}
             <div className="stepTWOPreview">
               <div className="d-flex align-items-center mt-3">
