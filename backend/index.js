@@ -5335,6 +5335,17 @@ app.get("/api/redesigned-final-leadData", async (req, res) => {
     res.status(500).send("Error fetching data");
   }
 });
+app.get("/api/redesigned-final-leadData/:companyName", async (req, res) => {
+  try {
+    const companyName = req.params.companyName;
+    const allData = await RedesignedLeadformModel.findOne({"Company Name":companyName});
+
+    res.status(200).json(allData);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).send("Error fetching data");
+  }
+});
 app.delete('/api/redesigned-delete-booking/:companyId', async (req, res) => {
   try {
     const companyId = req.params.companyId;

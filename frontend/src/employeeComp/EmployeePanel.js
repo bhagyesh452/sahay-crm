@@ -3372,7 +3372,7 @@ function EmployeePanel() {
       {editMoreOpen && (
         <>
         <EditableMoreBooking  setFormOpen={setEditMoreOpen}
-            companyData = {bookingIndex !== 0 ? currentForm.moreBookings[bookingIndex-1] : currentForm}
+           bookingIndex={bookingIndex}
             companysName={currentForm["Company Name"]}
             companysEmail={currentForm["Company Email"]}
             companyNumber={currentForm["Company Number"]}
