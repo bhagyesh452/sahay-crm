@@ -2536,6 +2536,7 @@ export default function AdminBookingForm({
                                           Razorpay
                                         </option>
                                         <option value="PayU">PayU</option>
+                                        <option value="Cashfree">Cashfree</option>
                                         <option value="Other">Other</option>
                                       </select>
                                     </div>

@@ -2608,7 +2608,7 @@ export default function EditableMoreBooking({
                                         <option value="Razorpay">
                                           Razorpay
                                         </option>
-                                        <option value="PayU">PayU</option>
+                                        <option value="PayU">PayU</option>   <option value="Cashfree">Cashfree</option>
                                         <option value="Other">Other</option>
                                       </select>
                                     </div>
