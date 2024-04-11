@@ -1857,6 +1857,11 @@ function EmployeePanel() {
   // };
 
   // console.log(paymentLink)
+  const handleEditClick = async(company)=>{
+    console.log(totalBookings)
+    const currentBooking = totalBookings.find(obj => obj.company === company)
+    console.log("This is current Booking", currentBooking)
+  }
 
   return (
     <div>
@@ -3124,17 +3129,20 @@ function EmployeePanel() {
                                           />
                                         </IconButton>
                                         <IconButton
-                                          onClick={() => {
-                                            setMaturedID(company._id);
-                                            setTimeout(() => {
-                                              setEditFormOpen(true);
-                                            }, 1000);
-                                          }}
-                                          disabled={totalBookings.some(
-                                            (obj) =>
-                                              obj["Company Name"] ===
-                                              company["Company Name"]
-                                          )}
+                                        onClick={()=>{
+                                          handleEditClick(company._id)
+                                        }}
+                                          // onClick={() => {
+                                          //   setMaturedID(company._id);
+                                          //   setTimeout(() => {
+                                          //     setEditFormOpen(true);
+                                          //   }, 1000);
+                                          // }}
+                                          // disabled={totalBookings.some(
+                                          //   (obj) =>
+                                          //     obj["Company Name"] ===
+                                          //     company["Company Name"]
+                                          // )}
                                         >
                                           <Edit
                                             style={{

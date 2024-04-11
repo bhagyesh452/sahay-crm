@@ -440,6 +440,10 @@ export default function AddLeadForm({
     fetchData();
     fetchDataEmp();
   }, []);
+  const handleTextAreaChange = (e) => {
+    e.target.style.height = '1px';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
   useEffect(() => {
     // Create new services array based on totalServices
     {
@@ -1620,6 +1624,7 @@ export default function AddLeadForm({
                           : service
                       ),
                     }));
+                    handleTextAreaChange(e)
                   }}
                   readOnly={completed[activeStep] === true}
                 ></textarea>
@@ -2526,11 +2531,7 @@ export default function AddLeadForm({
                                         for="Payment Receipt"
                                       >
                                         Upload Payment Reciept{" "}
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
+                                      
                                       </label>
                                       <input
                                         type="file"
@@ -2608,11 +2609,7 @@ export default function AddLeadForm({
                                         for="remarks"
                                       >
                                         Any Extra Remarks{" "}
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
+                                    
                                       </label>
                                       <textarea
                                         rows={1}
@@ -2625,6 +2622,7 @@ export default function AddLeadForm({
                                             e.target.value,
                                             "extraNotes"
                                           );
+                                          handleTextAreaChange(e)
                                         }}
                                         readOnly={
                                           completed[activeStep] === true
@@ -2636,11 +2634,7 @@ export default function AddLeadForm({
                                     <div className="form-group">
                                       <label className="form-label" for="docs">
                                         Upload Additional Docs{" "}
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
+                                       
                                       </label>
                                       <input
                                         type="file"
@@ -3187,7 +3181,7 @@ export default function AddLeadForm({
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0">
+                                  {leadData.paymentReceipt.length!==0 && <div className="row m-0">
                                     <div className="col-sm-3 align-self-stretc p-0">
                                       <div className="form-label-name h-100">
                                         <b>Upload Payment Receipt</b>
@@ -3269,7 +3263,7 @@ export default function AddLeadForm({
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
+                                  </div>}
                                   <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
@@ -3294,7 +3288,7 @@ export default function AddLeadForm({
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0">
+                                {leadData.otherDocs.length!==0 &&  <div className="row m-0">
                                     <div className="col-sm-3 align-self-stretc p-0">
                                       <div className="form-label-name h-100">
                                         <b>Additional Docs</b>
@@ -3398,7 +3392,7 @@ export default function AddLeadForm({
                                         </div> */}
                                       </div>
                                     </div>
-                                  </div>
+                                  </div>}
                                 </div>
                               </div>
                             </div>

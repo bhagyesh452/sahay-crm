@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react"
 import Header from './Header.js'
 import Navbar from './Navbar.js'
@@ -121,6 +122,7 @@ function Team() {
     //console.log(latestName)
 
     console.log(ename, branchOffice, designation)
+    const [errorMessage , setErrorMessage] = useState("")
 
     const handleSubmit = async () => {
         try {
@@ -145,25 +147,21 @@ function Team() {
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
-                    text: "Data can't be empty!",
+                    text: "Atleast One BDE is required!",
                 });
 
             }
         } catch (error) {
+            const errorfound = error.response.data.message
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "Something went wrong!",
+                html: `${errorMessage}!`,
             });
-            console.error('Error creating team:', error);
+            setErrorMessage(errorfound)
+            console.error('Error creating team:', error.response.data.message);
         }
     };
-
-
-
-
-
-
 
 
     return (
@@ -395,13 +393,6 @@ function Team() {
                                     <div key={0} className="mb-3">
                                         <div className="d-flex align-items-center justify-content-between">
                                             <label className="form-label">BDE Selection</label>
-                                            <IconButton>
-                                                <MdDelete
-                                                    color="#bf2020"
-                                                    style={{ width: "14px", height: "14px" }}
-                                                    onClick={() => handleRemoveBdeField(0)}
-                                                />
-                                            </IconButton>
                                         </div>
                                         <div className="form-control">
                                             <select
@@ -410,15 +401,15 @@ function Team() {
                                                     outline: "none",
                                                     width: "100%",
                                                 }}
-                                                value={selectedBdes[0] || ''}
+                                                value={selectedBdes[0] || " "}
                                                 onChange={(event) => handleBdeSelect(0, event.target.value)}
                                                 required
                                             >
                                                 <option value="" disabled>Select BDE Name</option>
                                                 {employeeData
-                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice && !selectedBdes.includes(employee.ename))
+                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice)
                                                     .map(employee => (
-                                                        <option key={employee.email} value={employee.ename}>
+                                                        <option key={employee._id} value={employee.ename} >
                                                             {employee.ename}
                                                         </option>
                                                     ))}
@@ -451,9 +442,9 @@ function Team() {
                                             >
                                                 <option value="" disabled>Select BDE Name</option>
                                                 {employeeData
-                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice && !selectedBdes.includes(employee.ename))
+                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice)
                                                     .map(employee => (
-                                                        <option key={employee.email} value={employee.ename}>
+                                                        <option key={employee._id} value={employee.ename} disabled={selectedBdes.includes(employee.ename)}>
                                                             {employee.ename}
                                                         </option>
                                                     ))}

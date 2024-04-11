@@ -209,6 +209,10 @@ export default function EditableLeadform({
       console.error("Error fetching data:", error);
     }
   };
+  const handleTextAreaChange = (e) => {
+    e.target.style.height = '1px';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
   // if (data.Step1Status === true && data.Step2Status === false) {
   //   setLeadData({
   //     ...leadData,
@@ -1604,6 +1608,8 @@ export default function EditableLeadform({
                           : service
                       ),
                     }));
+                    handleTextAreaChange(e)
+
                   }}
                   readOnly={completed[activeStep] === true}
                 ></textarea>
@@ -2448,11 +2454,7 @@ export default function EditableLeadform({
                                         for="Payment Receipt"
                                       >
                                         Upload Payment Reciept{" "}
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
+                                        
                                       </label>
                                       <input
                                         type="file"
@@ -2530,11 +2532,7 @@ export default function EditableLeadform({
                                         for="remarks"
                                       >
                                         Any Extra Remarks{" "}
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
+                                      
                                       </label>
                                       <textarea
                                         rows={1}
@@ -2547,6 +2545,7 @@ export default function EditableLeadform({
                                             e.target.value,
                                             "extraNotes"
                                           );
+                                          handleTextAreaChange(e)
                                         }}
                                         readOnly={
                                           completed[activeStep] === true
@@ -2558,11 +2557,7 @@ export default function EditableLeadform({
                                     <div className="form-group">
                                       <label className="form-label" for="docs">
                                         Upload Additional Docs{" "}
-                                        {
-                                          <span style={{ color: "red" }}>
-                                            *
-                                          </span>
-                                        }
+                                       
                                       </label>
                                       <input
                                         type="file"
@@ -3093,23 +3088,27 @@ export default function EditableLeadform({
                                           <div className="form-label-data">
                                             ₹{" "}
                                             {leadData.services
-                                              .reduce((acc, curr) => {
-                                                return curr.paymentTerms ===
-                                                  "Full Advanced"
-                                                  ? acc + 0
-                                                  : acc +
-                                                      Number(
-                                                        curr.totalPaymentWOGST
-                                                      ) -
-                                                      Number(curr.firstPayment);
-                                              }, 0)
-                                              .toFixed(2)}
+                                            .reduce(
+                                              (total, service) =>
+                                                service.paymentTerms ===
+                                                "Full Advanced"
+                                                  ? total + 0
+                                                  : total +
+                                                    Number(
+                                                      service.totalPaymentWGST
+                                                    ) -
+                                                    Number(
+                                                      service.firstPayment
+                                                    ),
+                                              0
+                                            )
+                                            .toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0">
+                                {leadData.paymentReceipt.length!==0 &&  <div className="row m-0">
                                     <div className="col-sm-3 align-self-stretc p-0">
                                       <div className="form-label-name h-100">
                                         <b>Upload Payment Receipt</b>
@@ -3191,7 +3190,7 @@ export default function EditableLeadform({
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
+                                  </div>}
                                   <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
@@ -3216,7 +3215,7 @@ export default function EditableLeadform({
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0">
+                                  {leadData.otherDocs.length!==0  && <div className="row m-0">
                                     <div className="col-sm-3 align-self-stretc p-0">
                                       <div className="form-label-name h-100">
                                         <b>Additional Docs</b>
@@ -3320,7 +3319,7 @@ export default function EditableLeadform({
                                         </div> */}
                                       </div>
                                     </div>
-                                  </div>
+                                  </div>}
                                 </div>
                               </div>
                             </div>

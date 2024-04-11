@@ -3,18 +3,20 @@ import Header from "./Header";
 import Navbar from "./Navbar";
 import AdminBookingForm from "./AdminBookingForm";
 import axios from "axios";
+import Swal from "sweetalert2";
 import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
-import { FcTreeStructure } from "react-icons/fc";
+import { TbBoxMultiple, TbMathPiDivide2 } from "react-icons/tb";
+import wordimg from "../static/my-images/word.png";
 import Nodata from "../components/Nodata";
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
-import  MulBookingImg  from "../static/my-images/multiple.png";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
   const [infiniteBooking, setInfiniteBooking] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [nowToFetch, setNowToFetch] = useState(false);
   const [leadFormData, setLeadFormData] = useState([]);
   const [currentLeadform, setCurrentLeadform] = useState(null);
   const [currentDataLoading, setCurrentDataLoading] = useState(false);
@@ -58,15 +60,19 @@ function BookingList() {
 
   const fetchRedesignedFormData = async () => {
     try {
-      const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
-      );
-      setInfiniteBooking(response.data);
-      setLeadFormData(response.data);
+      const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
+      const sortedData = response.data.reverse(); // Reverse the order of data
+  
+      setInfiniteBooking(sortedData);
+      setLeadFormData(sortedData); // Set both states with the sorted data
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
+  
+  useEffect(() => {
+    fetchRedesignedFormData();
+  }, [nowToFetch]);
 
   useEffect(() => {
     // if (data.companyName) {
@@ -139,6 +145,64 @@ function BookingList() {
     console.log(pathname);
     window.open(`${secretKey}/otherpdf/${pathname}`, "_blank");
   };
+
+  // ------------------------------------------------- Delete booking ----------------------------------------------
+
+  const handleDeleteBooking = async (company, id) => {
+    const confirmation = await Swal.fire({
+      title: "Are you sure?",
+      text: `Do you want to delete the booking?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true,
+    });
+
+    if (confirmation.isConfirmed) {
+      if (id) {
+        fetch(
+          `${secretKey}/redesigned-delete-particular-booking/${company}/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+          .then((response) => {
+            if (response.ok) {
+              Swal.fire("Success!", "Booking Deleted", "success");
+            } else {
+              Swal.fire("Error!", "Failed to Delete Booking", "error");
+            }
+          })
+          .catch((error) => {
+            console.error("Error during delete request:", error);
+          });
+      } else {
+        fetch(`${secretKey}/redesigned-delete-booking/${company}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (response.ok) {
+              Swal.fire("Success!", "Booking Deleted", "success");
+              fetchRedesignedFormData();
+            } else {
+              Swal.fire("Error!", "Failed to Delete Company", "error");
+            }
+          })
+          .catch((error) => {
+            console.error("Error during delete request:", error);
+          });
+      }
+    } else if (confirmation.dismiss === Swal.DismissReason.cancel) {
+      console.log("Cancellation or closed without confirming");
+    }
+  };
   return (
     <div>
       <Header />
@@ -186,8 +250,12 @@ function BookingList() {
                 </div>
                 <div className="col-6">
                   <div className="d-flex justify-content-end">
-                    <button className="btn btn-primary mr-1" disabled>Import CSV</button>
-                    <button className="btn btn-primary mr-1" disabled>Export CSV</button>
+                    <button className="btn btn-primary mr-1" disabled>
+                      Import CSV
+                    </button>
+                    <button className="btn btn-primary mr-1" disabled>
+                      Export CSV
+                    </button>
                     <button
                       className="btn btn-primary"
                       onClick={() => functionOpenBookingForm()}
@@ -249,39 +317,52 @@ function BookingList() {
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_name d-flex flex-wrap">
-                                {(obj.services.length !== 0 || (obj.moreBookings && obj.moreBookings.length !== 0)) &&
+                                {(obj.services.length !== 0 ||
+                                  (obj.moreBookings &&
+                                    obj.moreBookings.length !== 0)) &&
                                   [
                                     ...obj.services,
-                                    ...(obj.moreBookings || []).map((booking) => booking.services),
+                                    ...(obj.moreBookings || []).map(
+                                      (booking) => booking.services
+                                    ),
                                   ]
                                     .flat()
                                     .slice(0, 3) // Limit to first 3 services
                                     .map((service, index, array) => (
-                                      <> 
-                                      <div className="sname mb-1" key={service.serviceId}>
-                                        {service.serviceName}
-                                        
-                                      </div>
-                                    
-                                      {index === 2 && (
-                                        Math.max(obj.services.length + obj.moreBookings.length - 3, 0) !== 0 &&
-                                      <div className="sname mb-1">
-                                        {
-                                          `+${Math.max(obj.services.length + obj.moreBookings.length - 3, 0)}`
-                                        }
-                                      </div>
-                                    )}
+                                      <>
+                                        <div
+                                          className="sname mb-1"
+                                          key={service.serviceId}
+                                        >
+                                          {service.serviceName}
+                                        </div>
 
+                                        {index === 2 &&
+                                          Math.max(
+                                            obj.services.length +
+                                              obj.moreBookings.length -
+                                              3,
+                                            0
+                                          ) !== 0 && (
+                                            <div className="sname mb-1">
+                                              {`+${Math.max(
+                                                obj.services.length +
+                                                  obj.moreBookings.length -
+                                                  3,
+                                                0
+                                              )}`}
+                                            </div>
+                                          )}
                                       </>
-                                ))}
+                                    ))}
                               </div>
+
                               {obj.moreBookings.length !== 0 && (
                                 <div
                                   className="b_Services_multipal_services"
                                   title="Multipal Bookings"
                                 >
-                                  <FcTreeStructure />
-                                  {/* <img src={MulBookingImg}></img> */}
+                                  <TbBoxMultiple />
                                 </div>
                               )}
                             </div>
@@ -302,7 +383,10 @@ function BookingList() {
                           </div>
                         ))}
                       {leadFormData.length === 0 && (
-                        <div className="d-flex align-items-center justify-content-center" style={{height:'inherit'}}>
+                        <div
+                          className="d-flex align-items-center justify-content-center"
+                          style={{ height: "inherit" }}
+                        >
                           <Nodata />
                         </div>
                       )}
@@ -478,10 +562,15 @@ function BookingList() {
                         <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                           <b>Booking Details:</b>
                           <div className="Services_Preview_action d-flex">
-                            <div className="Services_Preview_action_edit mr-2">
+                            <div className="Services_Preview_action_edit mr-1">
                               <MdModeEdit />
                             </div>
-                            <div className="Services_Preview_action_delete">
+                            <div
+                              onClick={() =>
+                                handleDeleteBooking(currentLeadform.company)
+                              }
+                              className="Services_Preview_action_delete"
+                            >
                               <MdDelete />
                             </div>
                           </div>
@@ -528,7 +617,10 @@ function BookingList() {
                                   </div>
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    <span><i>Close By</i></span> {currentLeadform &&
+                                      <span>
+                                        <i>Close By</i>
+                                      </span>{" "}
+                                      {currentLeadform &&
                                         currentLeadform.bdmName}
                                     </div>
                                   </div>
@@ -627,7 +719,10 @@ function BookingList() {
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">
                                           {obj.serviceName}{" "}
-                                          {obj.withDSC && obj.serviceName === "Start Up Certificate" && "With DSC"}
+                                          {obj.withDSC &&
+                                            obj.serviceName ===
+                                              "Start Up Certificate" &&
+                                            "With DSC"}
                                         </div>
                                       </div>
                                     </div>
@@ -716,16 +811,17 @@ function BookingList() {
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹
                                             {Number(obj.secondPayment).toFixed(
-                                              2 
-                                            )} 
-                                             {"("}
+                                              2
+                                            )}
+                                            {"("}
                                             {isNaN(
                                               new Date(obj.secondPaymentRemarks)
                                             )
                                               ? obj.secondPaymentRemarks
                                               : "On " +
                                                 obj.secondPaymentRemarks +
-                                                ")"}{")"}
+                                                ")"}
+                                            {")"}
                                           </div>
                                         </div>
                                       </div>
@@ -798,46 +894,70 @@ function BookingList() {
                               <div className="col-lg-12 col-sm-6 p-0">
                                 <div class="row m-0">
                                   <div class="col-sm-2 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h h-100">CA Case</div>
+                                    <div class="booking_inner_dtl_h h-100">
+                                      CA Case
+                                    </div>
                                   </div>
                                   <div class="col-sm-10 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b h-100 bdr-left-eee">Yes</div>
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                      {currentLeadform &&
+                                        currentLeadform.caCase}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div className="row m-0 bdr-btm-eee">
-                              <div className="col-lg-3 col-sm-6 p-0">
-                                <div class="row m-0">
-                                  <div class="col-sm-5 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h h-100">CA's Number</div>
+                            {currentLeadform &&
+                              currentLeadform.caCase !== "No" && (
+                                <div className="row m-0 bdr-btm-eee">
+                                  <div className="col-lg-4 col-sm-6 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-6 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_h h-100">
+                                          CA's Number
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-6 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                          {currentLeadform &&
+                                            currentLeadform.caNumber}
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
-                                  <div class="col-sm-7 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">9924283530</div>
+                                  <div className="col-lg-4 col-sm-6 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-4 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                          CA's Email
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-8 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                          {currentLeadform &&
+                                            currentLeadform.caEmail}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="col-lg-4 col-sm-6 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-5 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                          CA's Commission
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-7 align-self-stretc p-0">
+                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                          ₹{" "}
+                                          {currentLeadform &&
+                                            currentLeadform.caCommission}
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                              <div className="col-lg-5 col-sm-6 p-0">
-                                <div class="row m-0">
-                                  <div class="col-sm-4 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Email</div>
-                                  </div>
-                                  <div class="col-sm-8 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">nirmesh@gmail.com</div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="col-lg-4 col-sm-6 p-0">
-                                <div class="row m-0">
-                                  <div class="col-sm-5 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Commission</div>
-                                  </div>
-                                  <div class="col-sm-7 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 22000</div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                              )}
                           </div>
                         </div>
 
@@ -937,83 +1057,103 @@ function BookingList() {
                             </div>
                           </div>
                         </div>
-                        <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                          <b>Payment Receipt and Additional Documents:</b>
-                        </div>
-                        <div className="row">
-                          <div className="col-sm-2 mb-1">
-                            <div className="booking-docs-preview">
-                              <div
-                                className="booking-docs-preview-img"
-                                onClick={() =>
-                                  handleViewPdfReciepts(
-                                    currentLeadform &&
-                                      currentLeadform.paymentReceipt[0].filename
-                                  )
-                                }
-                              >
-                                {currentLeadform &&
-                                currentLeadform.paymentReceipt[0].filename.endsWith(
-                                  ".pdf"
-                                ) ? (
-                                  <PdfImageViewerAdmin
-                                    type="pdf"
-                                    path={
-                                      currentLeadform &&
-                                      currentLeadform.paymentReceipt[0].filename
-                                    }
-                                  />
-                                ) : (
-                                  <img
-                                    src={`${secretKey}/recieptpdf/${
-                                      currentLeadform &&
-                                      currentLeadform.paymentReceipt[0].filename
-                                    }`}
-                                    alt={"MyImg"}
-                                  ></img>
+                        {currentLeadform &&
+                          (currentLeadform.paymentReceipt.length !== 0 ||
+                            currentLeadform.otherDocs !== 0) && (
+                            <>
+                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                                <b>Payment Receipt and Additional Documents:</b>
+                              </div>
+                              <div className="row">
+                                {currentLeadform.paymentReceipt.length !== 0 && (
+                                  <div className="col-sm-2 mb-1">
+                                    <div className="booking-docs-preview">
+                                      <div
+                                        className="booking-docs-preview-img"
+                                        onClick={() =>
+                                          handleViewPdfReciepts(
+                                            currentLeadform &&
+                                              currentLeadform.paymentReceipt[0]
+                                                .filename
+                                          )
+                                        }
+                                      >
+                                        {currentLeadform &&
+                                          currentLeadform.paymentReceipt[0] &&
+                                          (currentLeadform.paymentReceipt[0].filename.endsWith(
+                                            ".pdf"
+                                          ) ? (
+                                            <PdfImageViewerAdmin
+                                              type="paymentrecieptpdf"
+                                              path={
+                                                currentLeadform
+                                                  .paymentReceipt[0].filename
+                                              }
+                                            />
+                                          ) : currentLeadform.paymentReceipt[0].filename.endsWith(
+                                              ".png"
+                                            ) ||
+                                            currentLeadform.paymentReceipt[0].filename.endsWith(
+                                              ".jpg"
+                                            ) ||
+                                            currentLeadform.paymentReceipt[0].filename.endsWith(
+                                              ".jpeg"
+                                            ) ? (
+                                            <img
+                                              src={`${secretKey}/recieptpdf/${currentLeadform.paymentReceipt[0].filename}`}
+                                              alt="Receipt Image"
+                                            />
+                                          ) : (
+                                            <img
+                                              src={wordimg}
+                                              alt="Default Image"
+                                            />
+                                          ))}
+                                      </div>
+                                      <div className="booking-docs-preview-text">
+                                        <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                          Receipt
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
                                 )}
+                                {currentLeadform &&
+                                  currentLeadform.otherDocs.map((obj) => (
+                                    <div className="col-sm-2 mb-1">
+                                      <div className="booking-docs-preview">
+                                        <div
+                                          className="booking-docs-preview-img"
+                                          onClick={() =>
+                                            handleViewPdOtherDocs(obj.filename)
+                                          }
+                                        >
+                                          {obj.filename.endsWith(".pdf") ? (
+                                            <PdfImageViewerAdmin
+                                              type="pdf"
+                                              path={obj.filename}
+                                            />
+                                          ) : (
+                                            <img
+                                              src={`${secretKey}/otherpdf/${obj.filename}`}
+                                              alt={pdfimg}
+                                            ></img>
+                                          )}
+                                        </div>
+                                        <div className="booking-docs-preview-text">
+                                          <p
+                                            className="booking-img-name-txtwrap text-wrap m-auto m-0 text-wrap m-auto m-0"
+                                            title={obj.originalname}
+                                          >
+                                            {obj.originalname}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
                               </div>
-                              <div className="booking-docs-preview-text">
-                                <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                  Receipt.pdf
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          {currentLeadform &&
-                            currentLeadform.otherDocs.map((obj) => (
-                              <div className="col-sm-2 mb-1">
-                                <div className="booking-docs-preview">
-                                  <div
-                                    className="booking-docs-preview-img"
-                                    onClick={() =>
-                                      handleViewPdOtherDocs(obj.filename)
-                                    }
-                                  >
-                                    {obj.filename.endsWith(".pdf") ? (
-                                      <PdfImageViewerAdmin
-                                        type="pdf"
-                                        path={obj.filename}
-                                      />
-                                    ) : (
-                                      <img
-                                        src={`${secretKey}/otherpdf/${obj.filename}`}
-                                        alt={pdfimg}
-                                      ></img>
-                                    )}
-                                  </div>
-                                  <div className="booking-docs-preview-text">
-                                    <p
-                                      className="booking-img-name-txtwrap text-wrap m-auto m-0 text-wrap m-auto m-0"
-                                      title={obj.originalname}
-                                    >
-                                      {obj.originalname}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                        </div>
+                            </>
+                          )}
                       </div>
 
                       {/* ------------------------------------------ Multiple Booking Section Starts here ----------------------------- */}
@@ -1031,8 +1171,24 @@ function BookingList() {
                             </div>
                             <div className="mul-booking-card mt-2">
                               {/* -------- Step 2 ---------*/}
-                              <div className="mb-2 mul-booking-card-inner-head">
+                              <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                                 <b>Booking Details:</b>
+                                <div className="Services_Preview_action d-flex">
+                                  <div className="Services_Preview_action_edit mr-2">
+                                    <MdModeEdit />
+                                  </div>
+                                  <div
+                                    onClick={() =>
+                                      handleDeleteBooking(
+                                        currentLeadform.company,
+                                        objMain._id
+                                      )
+                                    }
+                                    className="Services_Preview_action_delete"
+                                  >
+                                    <MdDelete />
+                                  </div>
+                                </div>
                               </div>
                               <div className="my-card">
                                 <div className="my-card-body">
@@ -1074,7 +1230,10 @@ function BookingList() {
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                           <span><i>Support By</i></span> {objMain.bdmName}
+                                            <span>
+                                              <i>Support By</i>
+                                            </span>{" "}
+                                            {objMain.bdmName}
                                           </div>
                                         </div>
                                       </div>
@@ -1166,8 +1325,11 @@ function BookingList() {
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">
-                                            {obj.serviceName}{" "}
-                                          {obj.withDSC && obj.serviceName === "Start Up Certificate" && "With DSC"}
+                                              {obj.serviceName}{" "}
+                                              {obj.withDSC &&
+                                                obj.serviceName ===
+                                                  "Start Up Certificate" &&
+                                                "With DSC"}
                                             </div>
                                           </div>
                                         </div>
@@ -1346,46 +1508,64 @@ function BookingList() {
                                     <div className="col-lg-12 col-sm-6 p-0">
                                       <div class="row m-0">
                                         <div class="col-sm-2 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_h h-100">CA Case</div>
+                                          <div class="booking_inner_dtl_h h-100">
+                                            CA Case
+                                          </div>
                                         </div>
                                         <div class="col-sm-10 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">Yes</div>
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            {objMain.caCase}
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0 bdr-btm-eee">
-                                    <div className="col-lg-3 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-5 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_h h-100">CA's Number</div>
+                                  {objMain.caCase !== "No" && (
+                                    <div className="row m-0 bdr-btm-eee">
+                                      <div className="col-lg-4 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-5 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h h-100">
+                                              CA's Number
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-7 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              {objMain.caNumber}
+                                            </div>
+                                          </div>
                                         </div>
-                                        <div class="col-sm-7 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">9924283530</div>
+                                      </div>
+                                      <div className="col-lg-4 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                              CA's Email
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              {objMain.caEmail}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-4 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-5 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                              CA's Commission
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-7 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              ₹ {objMain.caCommission}
+                                            </div>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                    <div className="col-lg-5 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-4 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Email</div>
-                                        </div>
-                                        <div class="col-sm-8 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">nirmesh@gmail.com</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-lg-4 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-5 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">CA's Commission</div>
-                                        </div>
-                                        <div class="col-sm-7 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 22000</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
+                                  )}
                                 </div>
                               </div>
 
@@ -1483,11 +1663,13 @@ function BookingList() {
                                   </div>
                                 </div>
                               </div>
+                           {(objMain.paymentReceipt.length!==0 || objMain.otherDocs.length !==0) &&   <>
                               <div className="mb-2 mt-3 mul-booking-card-inner-head">
                                 <b>Payment Receipt and Additional Documents:</b>
                               </div>
+                                
                               <div className="row">
-                                <div className="col-sm-2 mb-1">
+                                {objMain.paymentReceipt && objMain.paymentReceipt.length!==0 && <div className="col-sm-2 mb-1">
                                   <div className="booking-docs-preview">
                                     <div
                                       className="booking-docs-preview-img"
@@ -1501,7 +1683,7 @@ function BookingList() {
                                         ".pdf"
                                       ) ? (
                                         <PdfImageViewerAdmin
-                                          type="pdf"
+                                          type="paymentrecieptpdf"
                                           path={
                                             objMain.paymentReceipt[0].filename
                                           }
@@ -1519,7 +1701,7 @@ function BookingList() {
                                       </p>
                                     </div>
                                   </div>
-                                </div>
+                                </div>}
                                 {objMain.otherDocs.map((obj) => (
                                   <div className="col-sm-2 mb-1">
                                     <div className="booking-docs-preview">
@@ -1553,6 +1735,9 @@ function BookingList() {
                                   </div>
                                 ))}
                               </div>
+
+                              </>}
+                            
                             </div>
                           </>
                         ))}
@@ -1573,7 +1758,7 @@ function BookingList() {
             //companysName={companyName}
             // companysEmail={companyEmail}
             // companyNumber={companyNumber}
-            // setNowToFetch={setNowToFetch}
+            setNowToFetch={setNowToFetch}
             // companysInco={companyInco}
             // employeeName={data.ename}
             // employeeEmail={data.email}

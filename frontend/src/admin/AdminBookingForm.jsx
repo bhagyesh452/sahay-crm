@@ -72,6 +72,7 @@ export default function AdminBookingForm({
         bdmName: "",
         otherBdmName: '',
         bdmEmail: "",
+        bdmType: "Close-by",
         bookingDate: "",
         bookingSource: "",
         otherBookingSource: "",
@@ -114,6 +115,10 @@ export default function AdminBookingForm({
         }
     };
     const [leadData, setLeadData] = useState(defaultLeadData);
+    const handleTextAreaChange = (e) => {
+        e.target.style.height = '1px';
+        e.target.style.height = `${e.target.scrollHeight}px`;
+      };
     
     const fetchData = async () => {
         try {
@@ -146,12 +151,12 @@ export default function AdminBookingForm({
                 setSelectedValues(newLeadData.bookingSource);
                 setLeadData((prevState) => ({
                     ...prevState,
-                    bdeName: employeeName ? employeeName : "",
-                    bdeEmail: employeeEmail ? employeeEmail : "",
+                    bookingDate : formatDate(new Date()),
                 }));
             } else if (Step2Status === true && Step3Status === false) {
                 setCompleted({ 0: true, 1: true });
                 setActiveStep(2);
+                setSelectedValues(newLeadData.bookingSource);
                 setLeadData((prevState) => ({
                     ...prevState,
                     services:
@@ -162,6 +167,7 @@ export default function AdminBookingForm({
                 setTotalServices(data.services.length !== 0 ? data.services.length : 1);
             } else if (Step3Status === true && Step4Status === false) {
                 console.log(data.services, "This is services");
+                setSelectedValues(newLeadData.bookingSource);
                 setfetchedService(true);
                 setCompleted({ 0: true, 1: true, 2: true });
                 setActiveStep(3);
@@ -189,6 +195,7 @@ export default function AdminBookingForm({
                 setTotalServices(data.services.length !== 0 ? data.services.length : 1);
             } else if (Step4Status === true && Step5Status === false) {
                 setCompleted({ 0: true, 1: true, 2: true, 3: true });
+                setSelectedValues(newLeadData.bookingSource);
                 setActiveStep(4);
                 setLeadData((prevState) => ({
                     ...prevState,
@@ -202,6 +209,7 @@ export default function AdminBookingForm({
                 }));
             } else if (Step5Status === true) {
                 setCompleted({ 0: true, 1: true, 2: true, 3: true, 4: true });
+             
                 setActiveStep(5);
             }
         } catch (error) {
@@ -303,7 +311,14 @@ export default function AdminBookingForm({
             const isEmptyOrNull = (value) => {
                 return value === "" || value === null || value === 0;
             };
-
+            if(!foundCompany){
+                Swal.fire({
+                    title: "Company Not Found!",
+                    text:"Please Add Lead to Continue",
+                    icon: "warning",
+                });
+                return true;
+            }
             // Prepare the data to send to the backend
             let dataToSend = {};
             if (activeStep === 0) {
@@ -312,13 +327,14 @@ export default function AdminBookingForm({
                     isEmptyOrNull(leadData["Company Name"]) ||
                     isEmptyOrNull(leadData["Company Number"]) ||
                     isEmptyOrNull(leadData.incoDate) ||
-                    isEmptyOrNull(leadData.panNumber)
+                    isEmptyOrNull(leadData.panNumber) 
                 ) {
                     Swal.fire({
                         title: "Please fill all the details",
                         icon: "warning",
                     });
-                } else {
+                }
+                 else {
                     dataToSend = {
                         "Company Email": leadData["Company Email"],
                         "Company Name": leadData["Company Name"],
@@ -326,6 +342,8 @@ export default function AdminBookingForm({
                         incoDate: leadData.incoDate,
                         panNumber: leadData.panNumber,
                         gstNumber: leadData.gstNumber,
+                        bdeName : foundCompany && foundCompany.ename !== "Not Alloted" ? foundCompany.ename : "",
+                        bdeEmail : foundCompany && foundCompany.ename !== "Not Alloted" ? unames.find((item) => item.ename === foundCompany.ename).email : ""
                     };
 
                     console.log("This is sending", dataToSend);
@@ -366,6 +384,7 @@ export default function AdminBookingForm({
                         bdmName: leadData.bdmName,
                         otherBdmName: leadData.otherBdmName,
                         bdmEmail: leadData.bdmEmail,
+                        bdmType: leadData.bdmType,
                         bookingDate: leadData.bookingDate,
                         bookingSource: selectedValues,
                         otherBookingSource: leadData.otherBookingSource,
@@ -456,16 +475,7 @@ export default function AdminBookingForm({
                     leadData.paymentReceipt,
                     leadData.otherDocs
                 );
-                if (
-                    leadData.paymentReceipt.length === 0 ||
-                    leadData.otherDocs.length === 0
-                ) {
-                    Swal.fire({
-                        title: "Please fill all the details",
-                        icon: "warning",
-                    });
-                    return true;
-                } else {
+                
                     console.log("Re work");
                     const totalAmount = leadData.services.reduce(
                         (acc, curr) => acc + curr.totalPaymentWGST,
@@ -507,7 +517,7 @@ export default function AdminBookingForm({
                         console.error("Error uploading data:", error);
                         // Handle error
                     }
-                }
+                
             }
 
             if (activeStep === 4) {
@@ -526,6 +536,7 @@ export default function AdminBookingForm({
                         title: "Form Submitted",
                         text: "Your form has been submitted successfully!",
                     });
+                    setNowToFetch(true);
                     // Handle response data as needed
                 } catch (error) {
                     console.error("Error uploading data:", error);
@@ -1386,7 +1397,9 @@ export default function AdminBookingForm({
                                                     : service
                                             ),
                                         }));
+                                        handleTextAreaChange(e)
                                     }}
+                                    
                                     readOnly={completed[activeStep] === true}
                                 ></textarea>
                             </div>
@@ -1414,15 +1427,33 @@ export default function AdminBookingForm({
     //   };
 
     const handleInputChange = (value, fieldName) => {
+        if (fieldName === "bdmName") {
+                  const foundUser = unames.find((item) => item.ename === value);
+                  setLeadData({
+                    ...leadData,
+                    bdmName: value,
+                    bdmEmail: foundUser ? foundUser.email : "", // Check if foundUser exists before accessing email
+                  });
+                }else if (fieldName === "bdeName"){
+                    const foundUser = unames.find((item) => item.ename === value);
+                  setLeadData({
+                    ...leadData,
+                    bdeName: value,
+                    bdeEmail: foundUser ? foundUser.email : "", // Check if foundUser exists before accessing email
+                  });
+                }
+                else{
+                    setLeadData(prevState => ({
+                        ...prevState,
+                        [fieldName]: value
+                    }));
+                }
         //setCompanyNewName(value)
-            setLeadData(prevState => ({
-                ...prevState,
-                [fieldName]: value
-            }));
+           
     };
 
     const [companyNewName, setCompanyNewName] = useState('');
-    const [foundCompany, setFoundCompany] = useState([]);
+    const [foundCompany, setFoundCompany] = useState(null);
 
     useEffect(() => {
         const fetchDataNew = async () => {
@@ -1430,7 +1461,8 @@ export default function AdminBookingForm({
             // console.log("gadbadyahin hain")
             try {
                 const response = await axios.get(`${secretKey}/leads/${companyName}`);
-                console.log(response.data)
+                console.log(response.data);
+                setFoundCompany(response.data);
                 setLeadData((prevLeadData)=>({
                     ...prevLeadData,
                     "Company Name" : response.data ? response.data["Company Name"]  : companyName,
@@ -1438,6 +1470,7 @@ export default function AdminBookingForm({
                     "Company Number" : response.data ? response.data["Company Number"]  : 0 ,
                     "incoDate" : response.data ? formatDate(response.data["Company Incorporation Date  "])  : " " ,
                 }));
+            
             } catch (error) {
                 console.error('Error fetching company data:', error);
             }
@@ -1452,6 +1485,15 @@ export default function AdminBookingForm({
         }
     }, [companyNewName]);
 
+    useEffect(() => {
+        if(foundCompany){setLeadData((prevLeadData)=>({
+            ...prevLeadData,
+           bdeName : foundCompany.ename !== "Not Alloted"? foundCompany.ename : "",
+           bdeEmail : foundCompany.ename !== "Not Alloted" ? (unames.find((item) => item.ename === foundCompany.ename).email) : '',
+        }))}
+    }, [foundCompany])
+    
+console.log("Found Company" , foundCompany)
     const handleInputCompanyName = (value) => {
         setCompanyNewName(value);
     };
@@ -1755,21 +1797,21 @@ export default function AdminBookingForm({
                                                         <div className="steprForm-inner">
                                                             <form>
                                                                 <div className="row">
-                                                                    <div className="col-sm-3">
+                                                                <div className="col-sm-3">
                                                                         <div className="form-group mt-2 mb-2">
-                                                                            <label for="bdeName">
-                                                                                BDE Name:
+                                                                            <label for="bdmName">
+                                                                                BDE Name:{" "}
                                                                                 {
                                                                                     <span style={{ color: "red" }}>
                                                                                         *
                                                                                     </span>
                                                                                 }
                                                                             </label>
-                                                                            <input
+
+                                                                            <select
                                                                                 type="text"
-                                                                                className="form-control mt-1"
-                                                                                placeholder="Enter BDE Name"
-                                                                                id="bdeName"
+                                                                                className="form-select mt-1"
+                                                                                id="select-users"
                                                                                 value={leadData.bdeName}
                                                                                 onChange={(e) => {
                                                                                     handleInputChange(
@@ -1777,8 +1819,22 @@ export default function AdminBookingForm({
                                                                                         "bdeName"
                                                                                     );
                                                                                 }}
-                                                                                
-                                                                            />
+                                                                                disabled={
+                                                                                    completed[activeStep] === true
+                                                                                }
+                                                                            >
+                                                                                <option value="" disabled selected>
+                                                                                    Please select BDE Name
+                                                                                </option>
+                                                                                {unames &&
+                                                                                    unames.map((names) => (
+                                                                                        <option value={names.ename}>
+                                                                                            {names.ename}
+                                                                                        </option>
+                                                                                    ))}
+
+                                                                               
+                                                                            </select>
                                                                         </div>
                                                                     </div>
                                                                     <div className="col-sm-3">
@@ -1931,6 +1987,69 @@ export default function AdminBookingForm({
                                                                             />
                                                                         </div>
                                                                     </div>}
+
+                                                                    <div className="row mt-1">
+                                    <div className="col-sm-2 mr-2">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label htmlFor="bdmType">
+                                          BDM Type :
+                                          {
+                                            <span style={{ color: "red" }}>
+                                              *
+                                            </span>
+                                          }
+                                        </label>
+                                        <div
+                                          style={{ minWidth: "16vw" }}
+                                          className="d-flex mt-2"
+                                        >
+                                          <label className="form-check form-check-inline">
+                                            <input
+                                              className="form-check-input"
+                                              type="radio"
+                                              name="bdm-type"
+                                              onChange={(e) => {
+                                                setLeadData((prevLeadData) => ({
+                                                  ...prevLeadData,
+                                                  bdmType: "Close-by", // Set the value based on the selected radio button
+                                                }));
+                                              }}
+                                              // Set the value attribute for "Yes"
+                                              checked={
+                                                leadData.bdmType === "Close-by"
+                                              } // Check condition based on state
+                                            />
+                                            <span className="form-check-label">
+                                              Close By
+                                            </span>
+                                          </label>
+                                          <label className="form-check form-check-inline">
+                                            <input
+                                              className="form-check-input"
+                                              type="radio"
+                                              name="bdmType"
+                                              onChange={(e) => {
+                                                setLeadData((prevLeadData) => ({
+                                                  ...prevLeadData,
+                                                  bdmType: "Supported-by", // Set the value based on the selected radio button
+                                                }));
+                                              }}
+                                              // Set the value attribute for "Yes"
+                                              checked={
+                                                leadData.bdmType ===
+                                                "Supported-by"
+                                              } // Check condition based on state
+                                            />
+                                            <span className="form-check-label">
+                                              Supported By
+                                            </span>
+                                          </label>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                                                    
                                                                     <div className="col-sm-4">
                                                                         <div className="form-group mt-2 mb-2">
                                                                             <label for="booking-date">
@@ -2337,11 +2456,7 @@ export default function AdminBookingForm({
                                                                                 for="Payment Receipt"
                                                                             >
                                                                                 Upload Payment Reciept{" "}
-                                                                                {
-                                                                                    <span style={{ color: "red" }}>
-                                                                                        *
-                                                                                    </span>
-                                                                                }
+                                                                               
                                                                             </label>
                                                                             <input
                                                                                 type="file"
@@ -2436,6 +2551,7 @@ export default function AdminBookingForm({
                                                                                         e.target.value,
                                                                                         "extraNotes"
                                                                                     );
+                                                                                    handleTextAreaChange(e)
                                                                                 }}
                                                                                 readOnly={
                                                                                     completed[activeStep] === true
@@ -2447,11 +2563,7 @@ export default function AdminBookingForm({
                                                                         <div className="form-group">
                                                                             <label className="form-label" for="docs">
                                                                                 Upload Additional Docs{" "}
-                                                                                {
-                                                                                    <span style={{ color: "red" }}>
-                                                                                        *
-                                                                                    </span>
-                                                                                }
+                                                                              
                                                                             </label>
                                                                             <input
                                                                                 type="file"
@@ -2998,7 +3110,7 @@ export default function AdminBookingForm({
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="row m-0">
+                                                                   {leadData.paymentReceipt.length!==0 && <div className="row m-0">
                                                                         <div className="col-sm-3 align-self-stretc p-0">
                                                                             <div className="form-label-name h-100">
                                                                                 <b>Upload Payment Receipt</b>
@@ -3080,7 +3192,7 @@ export default function AdminBookingForm({
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
+                                                                    </div>}
                                                                     <div className="row m-0">
                                                                         <div className="col-sm-3 p-0">
                                                                             <div className="form-label-name">
@@ -3105,7 +3217,7 @@ export default function AdminBookingForm({
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="row m-0">
+                                                                    {leadData.otherDocs.length!==0 && <div className="row m-0">
                                                                         <div className="col-sm-3 align-self-stretc p-0">
                                                                             <div className="form-label-name h-100">
                                                                                 <b>Additional Docs</b>
@@ -3209,7 +3321,7 @@ export default function AdminBookingForm({
                                         </div> */}
                                                                             </div>
                                                                         </div>
-                                                                    </div>
+                                                                    </div>}
                                                                 </div>
                                                             </div>
                                                         </div>
