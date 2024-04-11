@@ -2594,6 +2594,7 @@ export default function AddLeadForm({
                                           Razorpay
                                         </option>
                                         <option value="PayU">PayU</option>
+                                        <option value="Cashfree">Cashfree</option>
                                         <option value="Other">Other</option>
                                       </select>
                                     </div>
@@ -3409,7 +3410,7 @@ export default function AddLeadForm({
                         >
                           {activeStep !== 0 ? "Back" : "Back to Main"}
                         </Button>
-                        {/* <Button
+                        <Button
                           color="primary"
                           variant="contained"
                           disabled={activeStep === 0}
@@ -3417,7 +3418,7 @@ export default function AddLeadForm({
                           onClick={handleResetDraft}
                         >
                           Reset
-                        </Button> */}
+                        </Button>
                         <Box sx={{ flex: "1 1 auto" }} />
                         <Button
                           onClick={handleNext}
