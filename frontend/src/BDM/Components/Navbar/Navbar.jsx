@@ -14,11 +14,23 @@ import { BiBookContent } from "react-icons/bi";
 
 
 
-function Navbar() {
+function Navbar({userId}) {
 
     const location = useLocation();
 
-    const datamanagerUserId = localStorage.getItem("datamanagerUserId")
+    // const bdmName = localStorage.getItem("bdmName")
+
+    // console.log(bdmName)
+
+    // const handleDashboardClick = ()=>{
+    //     window.location.replace(`/bdmdashboard/${bdmName}`)
+    //   }
+
+    //   const handleConvertedLeadsClicksame = () => {
+    //     // Navigate to the /employee-data/:userId/converted-leads route
+    //     window.location.replace(`/bdm/bdmleads/${bdmName}/`);
+    //   };
+
 
 
 
@@ -29,15 +41,15 @@ function Navbar() {
                     <div className="navbar">
                         <div className="container-xl p-0">
                             <ul className="navbar-nav">
-                                <li className="nav-item"
+                                <li className="nav-item" 
                                     class={
-                                        location.pathname === `/datamanager-dashboard/${datamanagerUserId}` ? "nav-item active" : "nav-item"
+                                        location.pathname === `/bdmdashboard/${userId}` ? "nav-item active" : "nav-item"
                                     }>
                                     <Link
                                         style={{ textDecoration: "none", color: "black" }}
-                                        // to={{
-                                        //     pathname: `/datamanager-dashboard/${datamanagerUserId}`
-                                        // }}
+                                        to={{
+                                            pathname: `/bdmdashboard/${userId}`
+                                        }}
 
                                     >
                                         <a className="nav-link" href="./">
@@ -50,19 +62,19 @@ function Navbar() {
                                 </li>
                                 <li className="nav-item"
                                     class={
-                                        location.pathname === "/datamanager/manageleads/" ? "nav-item active" : "nav-item"
+                                        location.pathname === `/bdm/bdmleads/${userId}` ? "nav-item active" : "nav-item"
                                     }>
                                     <Link
                                         style={{ textDecoration: "none", color: "black" }}
-                                        // to={{
-                                        //     pathname: `/datamanager/manageleads/`,
-                                        // }}
+                                        to={{
+                                            pathname: `/bdm/bdmleads/${userId}`,
+                                        }}
                                     >
                                         <a className="nav-link" href="./">
                                             <span className="nav-link-icon d-md-none d-lg-inline-block">
                                                 <GrDocumentStore style={{ height: "22px", width: "15px" }} />
                                             </span>
-                                            <span className="nav-link-title">Manage Leads</span>
+                                            <span className="nav-link-title">Leads</span>
                                         </a>
                                     </Link>
                                 </li>
@@ -80,7 +92,7 @@ function Navbar() {
                                             <span className="nav-link-icon d-md-none d-lg-inline-block">
                                                 <BsFillPersonVcardFill style={{ width: "19px", height: "23px" }} />
                                             </span>
-                                            <span className="nav-link-title active"> Employees </span>
+                                            <span className="nav-link-title active">Team Leads</span>
                                         </a>
                                     </Link>
                                 </li>

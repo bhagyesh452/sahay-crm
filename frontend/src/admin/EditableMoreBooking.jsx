@@ -45,8 +45,9 @@ const defaultService = {
   paymentCount: 2,
 };
 
-export default function EditableLeadform({
+export default function EditableMoreBooking({
   setDataStatus,
+  bookingIndex,
   setFormOpen,
   companysName,
   companysEmail,
@@ -69,6 +70,7 @@ export default function EditableLeadform({
     bdeName: employeeName ? employeeName : "",
     bdeEmail: employeeEmail ? employeeEmail : "",
     bdmName: "",
+    bdmType: "Close-by",
     otherBdmName:'',
     bdmEmail: "",
     bookingDate: "",
@@ -114,11 +116,11 @@ export default function EditableLeadform({
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-leadData/${companysName}`
+        `${secretKey}/redesigned-final-leadData/${companysName}`
       );
-      const data = response.data.find(
-        (item) => item["Company Name"] === companysName
-      );
+      const data = bookingIndex !== 0 ? response.data.moreBookings[bookingIndex-1]: response.data;
+      console.log("Here is the data",data);
+      
       
       if (!data) {
         setCompleted({});
@@ -137,16 +139,10 @@ export default function EditableLeadform({
       } = data;
       console.log("Fetched Data" , newLeadData);
       setLeadData(newLeadData);
-      if (Step1Status === true && Step2Status === false) {
-        setCompleted({ 0: true });
-        setActiveStep(1);
-        setSelectedValues(newLeadData.bookingSource);
-        setLeadData((prevState) => ({
-          ...prevState,
-          bdeName: employeeName ? employeeName : "",
-          bdeEmail: employeeEmail ? employeeEmail : "",
-        }));
-      } else if (Step2Status === true && Step3Status === false) {
+      setActiveStep(4);
+      setCompleted({0:true , 1:true , 2 : true , 3 : true})
+      setSelectedValues(newLeadData.bookingSource)
+     if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
         setActiveStep(2);
         setLeadData((prevState) => ({
@@ -474,7 +470,7 @@ export default function EditableLeadform({
   const navigate = useNavigate();
 
   const handleBack = () => {
-    if (activeStep !== 0) {
+    if (activeStep !== 1) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
       setDataStatus("Matured");
@@ -516,393 +512,414 @@ export default function EditableLeadform({
   };
   
   const handleComplete = async () => {
-    try {
-      const formData = new FormData();
+  //   try {
+  //     const formData = new FormData();
 
-      const isEmptyOrNull = (value) => {
-        return value === "" || value === null || value === 0;
-      };
+  //     const isEmptyOrNull = (value) => {
+  //       return value === "" || value === null || value === 0;
+  //     };
 
-      // Prepare the data to send to the backend
-      let dataToSend = {};
-      if (activeStep === 0) {
-        if (
-          isEmptyOrNull(leadData["Company Email"]) ||
-          isEmptyOrNull(leadData["Company Name"]) ||
-          isEmptyOrNull(leadData["Company Number"]) ||
-          isEmptyOrNull(leadData.incoDate) ||
-          isEmptyOrNull(leadData.panNumber)
-        ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
-        } else {
-          dataToSend = {
-            "Company Email": leadData["Company Email"],
-            "Company Name": leadData["Company Name"],
-            "Company Number": leadData["Company Number"],
-            incoDate: leadData.incoDate,
-            panNumber: leadData.panNumber,
-            gstNumber: leadData.gstNumber,
-          };
+  //     // Prepare the data to send to the backend
+  //     let dataToSend = {};
+  //     if (activeStep === 0) {
+  //       if (
+  //         isEmptyOrNull(leadData["Company Email"]) ||
+  //         isEmptyOrNull(leadData["Company Name"]) ||
+  //         isEmptyOrNull(leadData["Company Number"]) ||
+  //         isEmptyOrNull(leadData.incoDate) ||
+  //         isEmptyOrNull(leadData.panNumber)
+  //       ) {
+  //         Swal.fire({
+  //           title: "Please fill all the details",
+  //           icon: "warning",
+  //         });
+  //       } else {
+  //         dataToSend = {
+  //           "Company Email": leadData["Company Email"],
+  //           "Company Name": leadData["Company Name"],
+  //           "Company Number": leadData["Company Number"],
+  //           incoDate: leadData.incoDate,
+  //           panNumber: leadData.panNumber,
+  //           gstNumber: leadData.gstNumber,
+  //         };
 
-          console.log("This is sending", dataToSend);
-          try {
-            const response = await axios.post(
-              `${secretKey}/redesigned-edit-leadData/${companysName}/step1`,
-              dataToSend
-            );
-            // Handle response data as needed
-          } catch (error) {
-            console.error("Error uploading data:", error);
-            // Handle error
-          }
+  //         console.log("This is sending", dataToSend);
+  //         try {
+  //           const response = await axios.post(
+  //             `${secretKey}/redesigned-edit-leadData/${companysName}/step1`,
+  //             dataToSend
+  //           );
+  //           // Handle response data as needed
+  //         } catch (error) {
+  //           console.error("Error uploading data:", error);
+  //           // Handle error
+  //         }
           
-          handleNext();
-          return true;
-        }
-      }
-      if (activeStep === 1) {
-        console.log(leadData.bookingDate);
-        if (
-          !leadData.bdeName ||
-          !leadData.bdmName ||
-          !leadData.bdmEmail ||
-          !leadData.bdmEmail ||
-          !leadData.bookingDate ||
-          !selectedValues
-        ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
-          return true;
-        } else {
-          dataToSend = {
-            bdeName: leadData.bdeName,
-            bdeEmail: leadData.bdeEmail,
-            bdmName: leadData.bdmName,
-            otherBdmName:leadData.otherBdmName,
-            bdmEmail: leadData.bdmEmail,
-            bookingDate: leadData.bookingDate,
-            bookingSource: selectedValues,
-            otherBookingSource: leadData.otherBookingSource,
-          };
-          console.log("This is sending", dataToSend);
-          try {
-            const response = await axios.post(
-              `${secretKey}/redesigned-edit-leadData/${companysName}/step2`,
-              dataToSend
-            );
-            // Handle response data as needed
-          } catch (error) {
-            console.error("Error uploading data:", error);
-            // Handle error
-          }
+  //         handleNext();
+  //         return true;
+  //       }
+  //     }
+  //     if (activeStep === 1) {
+  //       console.log(leadData.bookingDate);
+  //       if (
+  //         !leadData.bdeName ||
+  //         !leadData.bdmName ||
+  //         !leadData.bdmEmail ||
+  //         !leadData.bdmEmail ||
+  //         !leadData.bookingDate ||
+  //         !selectedValues
+  //       ) {
+  //         Swal.fire({
+  //           title: "Please fill all the details",
+  //           icon: "warning",
+  //         });
+  //         return true;
+  //       } else {
+  //         dataToSend = {
+  //           bdeName: leadData.bdeName,
+  //           bdeEmail: leadData.bdeEmail,
+  //           bdmName: leadData.bdmName,
+  //           otherBdmName:leadData.otherBdmName,
+  //           bdmEmail: leadData.bdmEmail,
+  //           bookingDate: leadData.bookingDate,
+  //           bookingSource: selectedValues,
+  //           otherBookingSource: leadData.otherBookingSource,
+  //         };
+  //         console.log("This is sending", dataToSend);
+  //         try {
+  //           const response = await axios.post(
+  //             `${secretKey}/redesigned-edit-leadData/${companysName}/step2`,
+  //             dataToSend
+  //           );
+  //           // Handle response data as needed
+  //         } catch (error) {
+  //           console.error("Error uploading data:", error);
+  //           // Handle error
+  //         }
          
-          handleNext();
-          return true;
-        }
-      }
-      if (activeStep === 2) {
-        if (
-          !leadData.services[0].serviceName ||
-          !leadData.services[0].totalPaymentWOGST
-        ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
-          return true;
-        } else {
-          const totalAmount = leadData.services.reduce(
-            (acc, curr) => acc + curr.totalPaymentWGST,
-            0
-          );
-          const receivedAmount = leadData.services.reduce((acc, curr) => {
-            return curr.paymentTerms === "Full Advanced"
-              ? acc + curr.totalPaymentWGST
-              : acc + curr.firstPayment;
-          }, 0);
-          const pendingAmount = totalAmount - receivedAmount;
-          const servicestoSend = leadData.services.map((service) => ({
-            ...service,
-            secondPaymentRemarks:
-              service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks
-                : service.secondPaymentRemarks,
-            thirdPaymentRemarks:
-              service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks
-                : service.thirdPaymentRemarks,
-            fourthPaymentRemarks:
-              service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks
-                : service.fourthPaymentRemarks,
-          }));
+  //         handleNext();
+  //         return true;
+  //       }
+  //     }
+  //     if (activeStep === 2) {
+  //       if (
+  //         !leadData.services[0].serviceName ||
+  //         !leadData.services[0].totalPaymentWOGST
+  //       ) {
+  //         Swal.fire({
+  //           title: "Please fill all the details",
+  //           icon: "warning",
+  //         });
+  //         return true;
+  //       } else {
+  //         const totalAmount = leadData.services.reduce(
+  //           (acc, curr) => acc + curr.totalPaymentWGST,
+  //           0
+  //         );
+  //         const receivedAmount = leadData.services.reduce((acc, curr) => {
+  //           return curr.paymentTerms === "Full Advanced"
+  //             ? acc + curr.totalPaymentWGST
+  //             : acc + curr.firstPayment;
+  //         }, 0);
+  //         const pendingAmount = totalAmount - receivedAmount;
+  //         const servicestoSend = leadData.services.map((service) => ({
+  //           ...service,
+  //           secondPaymentRemarks:
+  //             service.secondPaymentRemarks === "On Particular Date"
+  //               ? secondTempRemarks
+  //               : service.secondPaymentRemarks,
+  //           thirdPaymentRemarks:
+  //             service.thirdPaymentRemarks === "On Particular Date"
+  //               ? thirdTempRemarks
+  //               : service.thirdPaymentRemarks,
+  //           fourthPaymentRemarks:
+  //             service.fourthPaymentRemarks === "On Particular Date"
+  //               ? fourthTempRemarks
+  //               : service.fourthPaymentRemarks,
+  //         }));
 
-          dataToSend = {
-            services: servicestoSend,
-            numberOfServices: totalServices,
-            caCase: leadData.caCase,
-            caCommission: leadData.caCommission,
-            caNumber: leadData.caNumber,
-            caEmail: leadData.caEmail,
-            totalAmount: totalAmount,
-            receivedAmount: receivedAmount,
-            pendingAmount: pendingAmount,
-          };
-          console.log("This is sending", dataToSend);
-          try {
-            const response = await axios.post(
-              `${secretKey}/redesigned-edit-leadData/${companysName}/step3`,
-              dataToSend
-            );
-            // Handle response data as needed
-          } catch (error) {
-            console.error("Error uploading data:", error);
-            // Handle error
-          }
+  //         dataToSend = {
+  //           services: servicestoSend,
+  //           numberOfServices: totalServices,
+  //           caCase: leadData.caCase,
+  //           caCommission: leadData.caCommission,
+  //           caNumber: leadData.caNumber,
+  //           caEmail: leadData.caEmail,
+  //           totalAmount: totalAmount,
+  //           receivedAmount: receivedAmount,
+  //           pendingAmount: pendingAmount,
+  //         };
+  //         console.log("This is sending", dataToSend);
+  //         try {
+  //           const response = await axios.post(
+  //             `${secretKey}/redesigned-edit-leadData/${companysName}/step3`,
+  //             dataToSend
+  //           );
+  //           // Handle response data as needed
+  //         } catch (error) {
+  //           console.error("Error uploading data:", error);
+  //           // Handle error
+  //         }
        
-          handleNext();
-          return true;
-        }
-      }
-      if (activeStep === 3) {
-        console.log(
-          "I am in step 4",
-          leadData.paymentReceipt,
-          leadData.otherDocs
-        );
-        if (
-          leadData.paymentReceipt.length === 0 ||
-          leadData.otherDocs.length === 0
-        ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
-          return true;
-        } else {
+  //         handleNext();
+  //         return true;
+  //       }
+  //     }
+  //     if (activeStep === 3) {
+  //       console.log(
+  //         "I am in step 4",
+  //         leadData.paymentReceipt,
+  //         leadData.otherDocs
+  //       );
+  //       if (
+  //         leadData.paymentReceipt.length === 0 ||
+  //         leadData.otherDocs.length === 0
+  //       ) {
+  //         Swal.fire({
+  //           title: "Please fill all the details",
+  //           icon: "warning",
+  //         });
+  //         return true;
+  //       } else {
        
-          const totalAmount = leadData.services.reduce(
-            (acc, curr) => acc + curr.totalPaymentWGST,
-            0
-          );
-          const receivedAmount = leadData.services.reduce((acc, curr) => {
-            return curr.paymentTerms === "Full Advanced"
-              ? acc + curr.totalPaymentWGST
-              : acc + curr.firstPayment;
-          }, 0);
-          const pendingAmount = totalAmount - receivedAmount;
+  //         const totalAmount = leadData.services.reduce(
+  //           (acc, curr) => acc + curr.totalPaymentWGST,
+  //           0
+  //         );
+  //         const receivedAmount = leadData.services.reduce((acc, curr) => {
+  //           return curr.paymentTerms === "Full Advanced"
+  //             ? acc + curr.totalPaymentWGST
+  //             : acc + curr.firstPayment;
+  //         }, 0);
+  //         const pendingAmount = totalAmount - receivedAmount;
 
-          const formData = new FormData();
-          formData.append("totalAmount", totalAmount);
-          formData.append("receivedAmount", receivedAmount);
-          formData.append("pendingAmount", pendingAmount);
-          formData.append("paymentMethod", leadData.paymentMethod);
-          formData.append("extraNotes", leadData.extraNotes);
+  //         const formData = new FormData();
+  //         formData.append("totalAmount", totalAmount);
+  //         formData.append("receivedAmount", receivedAmount);
+  //         formData.append("pendingAmount", pendingAmount);
+  //         formData.append("paymentMethod", leadData.paymentMethod);
+  //         formData.append("extraNotes", leadData.extraNotes);
 
-          // Append payment receipt files to formData
+  //         // Append payment receipt files to formData
         
-            formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+  //           formData.append("paymentReceipt", leadData.paymentReceipt[0]);
           
-          // Append other documents files to formData
-          for (let i = 0; i < leadData.otherDocs.length; i++) {
-            formData.append("otherDocs", leadData.otherDocs[i]);
-          }
-          try {
-            console.log("Api is about to work")
-            const response = await axios.post(
-              `${secretKey}/redesigned-edit-leadData/${companysName}/step4`,
-              formData
-            );
-            // Handle successful upload
+  //         // Append other documents files to formData
+  //         for (let i = 0; i < leadData.otherDocs.length; i++) {
+  //           formData.append("otherDocs", leadData.otherDocs[i]);
+  //         }
+  //         try {
+  //           console.log("Api is about to work")
+  //           const response = await axios.post(
+  //             `${secretKey}/redesigned-edit-leadData/${companysName}/step4`,
+  //             formData
+  //           );
+  //           // Handle successful upload
            
-            handleNext();
-            return true;
-          } catch (error) {
-            console.error("Error uploading data:", error);
-            // Handle error
-          }
-        }
-      }
+  //           handleNext();
+  //           return true;
+  //         } catch (error) {
+  //           console.error("Error uploading data:", error);
+  //           // Handle error
+  //         }
+  //       }
+  //     }
 
-      if (activeStep === 4) {
-        try {
-        //   const response = await axios.post(
-        //     `${secretKey}/redesigned-final-leadData/${companysName}`,
-        //     leadData
-        //   );
+  //     if (activeStep === 4) {
+  //       try {
+  //       //   const response = await axios.post(
+  //       //     `${secretKey}/redesigned-final-leadData/${companysName}`,
+  //       //     leadData
+  //       //   );
         
 
-          const dataSending = {
-            requestBy:employeeName,
-            services:leadData.services
-          }
-          const response = await axios.post(
-            `${secretKey}/redesigned-edit-leadData/${companysName}/step5`, dataSending
-          );
-          console.log(response.data);
-          Swal.fire({
-            icon: "success",
-            title: "Request Sent",
-            text: "Your Request has been successfully sent to the Admin!",
-          });
-          // Handle response data as needed
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "There was an error submitting the form. Please try again later.",
-          });
-        }
+  //         const dataSending = {
+  //           requestBy:employeeName,
+  //           services:leadData.services
+  //         }
+  //         const response = await axios.post(
+  //           `${secretKey}/redesigned-edit-leadData/${companysName}/step5`, dataSending
+  //         );
+  //         console.log(response.data);
+  //         Swal.fire({
+  //           icon: "success",
+  //           title: "Request Sent",
+  //           text: "Your Request has been successfully sent to the Admin!",
+  //         });
+  //         // Handle response data as needed
+  //       } catch (error) {
+  //         console.error("Error uploading data:", error);
+  //         Swal.fire({
+  //           icon: "error",
+  //           title: "Error",
+  //           text: "There was an error submitting the form. Please try again later.",
+  //         });
+  //       }
 
       
-        handleNext();
-        setFormOpen(false);
-        return true;
-      }
-      // let dataToSend = {
-      //   ...leadData,
-      //   Step1Status: true,
-      // };
-    } catch (error) {
-      console.error("Error sending data to backend:", error);
-      // Handle error if needed
-    }
-  };
-  const handleEdit = async () => {
+  //       handleNext();
+  //       setFormOpen(false);
+  //       return true;
+  //     }
+  //     // let dataToSend = {
+  //     //   ...leadData,
+  //     //   Step1Status: true,
+  //     // };
+  //   } catch (error) {
+  //     console.error("Error sending data to backend:", error);
+  //     // Handle error if needed
+  //   }
+  // };
+  // const handleEdit = async () => {
+  //   try {
+  //     const formData = new FormData();
+
+  //     let dataToSend = {
+  //       ...dataToSend,
+  //       Step1Status: true,
+  //     };
+  //     if (activeStep === 3) {
+  //       dataToSend = {
+  //         ...leadData,
+  //       };
+  //       for (let i = 0; i < leadData.otherDocs.length; i++) {
+  //         formData.append("otherDocs", leadData.otherDocs[i]);
+  //       }
+  //       formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+  //       console.log(dataToSend, activeStep);
+  //     } else if (activeStep === 1) {
+  //       dataToSend = {
+  //         ...dataToSend,
+  //         bookingSource: selectedValues,
+  //       };
+  //       console.log("Step 1", dataToSend);
+  //     } else if (activeStep === 2) {
+  //       const totalAmount = leadData.services.reduce(
+  //         (acc, curr) => acc + curr.totalPaymentWOGST,
+  //         0
+  //       );
+  //       const receivedAmount = leadData.services.reduce((acc, curr) => {
+  //         return curr.paymentTerms === "Full Advanced"
+  //           ? acc + curr.totalPaymentWOGST
+  //           : acc + curr.firstPayment;
+  //       }, 0);
+  //       const pendingAmount = totalAmount - receivedAmount;
+  //       dataToSend = {
+  //         ...leadData,
+  //         totalAmount: totalAmount,
+  //         receivedAmount: receivedAmount,
+  //         pendingAmount: pendingAmount,
+  //       };
+  //     } else if (activeStep === 3) {
+  //       dataToSend = {
+  //         ...leadData,
+  //         Step3Status: true,
+  //         Step4Status: true,
+  //       };
+  //     } else if (activeStep === 4) {
+  //       dataToSend = {
+  //         ...leadData,
+  //         Step3Status: true,
+  //         Step4Status: true,
+  //         Step5Status: true,
+  //       };
+  //     }
+  //     // console.log(activeStep, dataToSend);
+  //     Object.keys(dataToSend).forEach((key) => {
+  //       if (key === "services") {
+  //         // Handle services separately as it's an array
+  //         dataToSend.services.forEach((service, index) => {
+  //           Object.keys(service).forEach((prop) => {
+  //             formData.append(`services[${index}][${prop}]`, service[prop]);
+  //           });
+  //         });
+  //       } else if (key === "otherDocs" && activeStep === 3) {
+  //         for (let i = 0; i < leadData.otherDocs.length; i++) {
+  //           formData.append("otherDocs", leadData.otherDocs[i]);
+  //         }
+  //       } else if (key === "paymentReceipt" && activeStep === 3) {
+  //         formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+  //       } else {
+  //         formData.append(key, dataToSend[key]);
+  //       }
+  //     });
+  //     if (activeStep === 4) {
+  //       dataToSend = {
+  //         ...leadData,
+  //         paymentReceipt: leadData.paymentReceipt
+  //           ? leadData.paymentReceipt
+  //           : null,
+  //       };
+  //       try {
+  //         const response = await axios.post(
+  //           `${secretKey}/redesigned-final-leadData/${companysName}`,
+  //           leadData
+  //         );
+  //         console.log(response.data);
+  //         Swal.fire({
+  //           icon: "success",
+  //           title: "Form Submitted",
+  //           text: "Your form has been submitted successfully!",
+  //         });
+  //         // Handle response data as needed
+  //       } catch (error) {
+  //         console.error("Error uploading data:", error);
+  //         Swal.fire({
+  //           icon: "error",
+  //           title: "Error",
+  //           text: "There was an error submitting the form. Please try again later.",
+  //         });
+  //         // Handle error
+  //       }
+  //     } else {
+  //       try {
+  //         const response = await axios.post(
+  //           `${secretKey}/redesigned-leadData/${companysName}`,
+  //           formData,
+  //           {
+  //             headers: {
+  //               "Content-Type": "multipart/form-data",
+  //             },
+  //           }
+  //         );
+
+  //         // Handle response data as needed
+  //       } catch (error) {
+  //         console.error("Error uploading data:", error);
+  //         // Handle error
+  //       }
+  //     }
+
+
+  //     // Log the response from the backend
+
+  //     handleNext();
+  //   } catch (error) {
+  //     console.error("Error sending data to backend:", error);
+  //     // Handle error if needed
+  //   }
+
+  if(activeStep===4){
+   console.log("Data sending to change:-", leadData);
+    const dataToSend = {...leadData, requestBy:employeeName , bookingSource:selectedValues}
     try {
-      const formData = new FormData();
-
-      let dataToSend = {
-        ...dataToSend,
-        Step1Status: true,
-      };
-      if (activeStep === 3) {
-        dataToSend = {
-          ...leadData,
-        };
-        for (let i = 0; i < leadData.otherDocs.length; i++) {
-          formData.append("otherDocs", leadData.otherDocs[i]);
-        }
-        formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-        console.log(dataToSend, activeStep);
-      } else if (activeStep === 1) {
-        dataToSend = {
-          ...dataToSend,
-          bookingSource: selectedValues,
-        };
-        console.log("Step 1", dataToSend);
-      } else if (activeStep === 2) {
-        const totalAmount = leadData.services.reduce(
-          (acc, curr) => acc + curr.totalPaymentWOGST,
-          0
-        );
-        const receivedAmount = leadData.services.reduce((acc, curr) => {
-          return curr.paymentTerms === "Full Advanced"
-            ? acc + curr.totalPaymentWOGST
-            : acc + curr.firstPayment;
-        }, 0);
-        const pendingAmount = totalAmount - receivedAmount;
-        dataToSend = {
-          ...leadData,
-          totalAmount: totalAmount,
-          receivedAmount: receivedAmount,
-          pendingAmount: pendingAmount,
-        };
-      } else if (activeStep === 3) {
-        dataToSend = {
-          ...leadData,
-          Step3Status: true,
-          Step4Status: true,
-        };
-      } else if (activeStep === 4) {
-        dataToSend = {
-          ...leadData,
-          Step3Status: true,
-          Step4Status: true,
-          Step5Status: true,
-        };
-      }
-      // console.log(activeStep, dataToSend);
-      Object.keys(dataToSend).forEach((key) => {
-        if (key === "services") {
-          // Handle services separately as it's an array
-          dataToSend.services.forEach((service, index) => {
-            Object.keys(service).forEach((prop) => {
-              formData.append(`services[${index}][${prop}]`, service[prop]);
-            });
-          });
-        } else if (key === "otherDocs" && activeStep === 3) {
-          for (let i = 0; i < leadData.otherDocs.length; i++) {
-            formData.append("otherDocs", leadData.otherDocs[i]);
-          }
-        } else if (key === "paymentReceipt" && activeStep === 3) {
-          formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-        } else {
-          formData.append(key, dataToSend[key]);
-        }
-      });
-      if (activeStep === 4) {
-        dataToSend = {
-          ...leadData,
-          paymentReceipt: leadData.paymentReceipt
-            ? leadData.paymentReceipt
-            : null,
-        };
-        try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-final-leadData/${companysName}`,
-            leadData
-          );
-          console.log(response.data);
-          Swal.fire({
-            icon: "success",
-            title: "Form Submitted",
-            text: "Your form has been submitted successfully!",
-          });
-          // Handle response data as needed
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "There was an error submitting the form. Please try again later.",
-          });
-          // Handle error
-        }
-      } else {
-        try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
-
-          // Handle response data as needed
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          // Handle error
-        }
-      }
-
-      fetchData();
-
-      // Log the response from the backend
-
-      handleNext();
+      const response = await axios.post(`${secretKey}/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
+      console.log('Data created:', response.data);
+      Swal.fire("Request Sent!","Request has been successfully sent to the Admin","success");
+    
     } catch (error) {
-      console.error("Error sending data to backend:", error);
-      // Handle error if needed
+      console.error('Error creating data:', error);
+      Swal.fire("Request Failed!","Failed to Request Admin","error");
     }
+  }else {
+    setCompleted((prevCompleted) => ({
+      ...prevCompleted,
+      [activeStep]: true,
+    }));
+    handleNext();
+  }
+
+
   };
 
   const handleReset = () => {
@@ -1305,7 +1322,7 @@ export default function EditableLeadform({
                               name="optional-remarks"
                               id="optional-remarks-2"
                             >
-                              <option value="" selected disabled>
+                               <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="After Application">
@@ -1676,6 +1693,7 @@ export default function EditableLeadform({
                       className={
                         activeStep === index ? "form-tab-active" : "No-active"
                       }
+                      disabled={index===0}
                     >
                       {label}
                     </StepButton>
@@ -2058,6 +2076,66 @@ export default function EditableLeadform({
                                       />
                                     </div>
                                   </div>}
+                                  <div className="row mt-1">
+                                    <div className="col-sm-2 mr-2">
+                                      <div className="form-group mt-2 mb-2">
+                                        <label htmlFor="bdmType">
+                                          BDM Type :
+                                          {
+                                            <span style={{ color: "red" }}>
+                                              *
+                                            </span>
+                                          }
+                                        </label>
+                                        <div
+                                          style={{ minWidth: "16vw" }}
+                                          className="d-flex mt-2"
+                                        >
+                                          <label className="form-check form-check-inline">
+                                            <input
+                                              className="form-check-input"
+                                              type="radio"
+                                              name="bdm-type"
+                                              onChange={(e) => {
+                                                setLeadData((prevLeadData) => ({
+                                                  ...prevLeadData,
+                                                  bdmType: "Close-by", // Set the value based on the selected radio button
+                                                }));
+                                              }}
+                                              // Set the value attribute for "Yes"
+                                              checked={
+                                                leadData.bdmType === "Close-by"
+                                              } // Check condition based on state
+                                            />
+                                            <span className="form-check-label">
+                                              Close By
+                                            </span>
+                                          </label>
+                                          <label className="form-check form-check-inline">
+                                            <input
+                                              className="form-check-input"
+                                              type="radio"
+                                              name="bdmType"
+                                              onChange={(e) => {
+                                                setLeadData((prevLeadData) => ({
+                                                  ...prevLeadData,
+                                                  bdmType: "Supported-by", // Set the value based on the selected radio button
+                                                }));
+                                              }}
+                                              // Set the value attribute for "Yes"
+                                              checked={
+                                                leadData.bdmType ===
+                                                "Supported-by"
+                                              } // Check condition based on state
+                                            />
+                                            <span className="form-check-label">
+                                              Supported By
+                                            </span>
+                                          </label>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="booking-date">
@@ -2530,8 +2608,7 @@ export default function EditableLeadform({
                                         <option value="Razorpay">
                                           Razorpay
                                         </option>
-                                        <option value="PayU">PayU</option>
-                                        <option value="Cashfree">Cashfree</option>
+                                        <option value="PayU">PayU</option>   <option value="Cashfree">Cashfree</option>
                                         <option value="Other">Other</option>
                                       </select>
                                     </div>
@@ -2655,7 +2732,7 @@ export default function EditableLeadform({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData["Company Name"]}
+                                        {companysName}
                                       </div>
                                     </div>
                                   </div>
@@ -2667,7 +2744,7 @@ export default function EditableLeadform({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData["Company Email"]}
+                                        {companysEmail}
                                       </div>
                                     </div>
                                   </div>
@@ -2679,7 +2756,7 @@ export default function EditableLeadform({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData["Company Number"]}
+                                        {companyNumber}
                                       </div>
                                     </div>
                                   </div>
@@ -2691,7 +2768,7 @@ export default function EditableLeadform({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {formatDate(leadData.incoDate)}
+                                        {formatDate(companysInco)}
                                       </div>
                                     </div>
                                   </div>
@@ -2801,9 +2878,7 @@ export default function EditableLeadform({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData.bookingSource !== ""
-                                          ? leadData.bookingSource
-                                          : "-"}
+                                        {selectedValues}
                                       </div>
                                     </div>
                                   </div>
@@ -2964,12 +3039,12 @@ export default function EditableLeadform({
                                           {obj.thirdPayment !== 0 && (
                                             <div className="row m-0">
                                               <div className="col-sm-3 p-0">
-                                                <div className="form-label-name">
+                                                <div className="form-label-name"  style={{textTransform:"uppercase"}}>
                                                   <b>Third Payment</b>
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data" style={{textTransform:"uppercase"}}>
+                                                <div className="form-label-data">
                                                   {Number(
                                                     obj.thirdPayment
                                                   ).toFixed(2)}{" "}
@@ -2993,7 +3068,7 @@ export default function EditableLeadform({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data" style={{textTransform:"uppercase"}}>
+                                                <div className="form-label-data"  style={{textTransform:"uppercase"}}>
                                                   {Number(
                                                     obj.fourthPayment
                                                   ).toFixed(2)}{" "}
@@ -3343,9 +3418,9 @@ export default function EditableLeadform({
                         <Button
                           variant="contained"
                           onClick={handleBack}
-                          sx={{ mr: 1, background: "#ffba00 " }}
+                          sx={{ mr: 1, background: "#ffba00 " }}                          
                         >
-                          {activeStep !== 0 ? "Back" : "Back to Main"}
+                          {activeStep !== 1 ? "Back" : "Back to Main"}
                         </Button>
                         {/* <Button
                           color="primary"
@@ -3361,7 +3436,6 @@ export default function EditableLeadform({
                           onClick={handleNext}
                           variant="contained"
                           sx={{ mr: 1 }}
-                         
                         >
                           Next
                         </Button>
@@ -3370,10 +3444,13 @@ export default function EditableLeadform({
                             <>
                               <Button
                                 onClick={() => {
-                                  setCompleted({ activeStep: false });
+                                  setCompleted((prevCompleted) => ({
+                                    ...prevCompleted,
+                                    [activeStep]: false,
+                                  }));
                                 }}
                                 variant="contained"
-                                sx={{ mr: 1, background: "#ffba00 " }}
+                                sx={{ mr: 1, background: "#ffba00" }}
                               >
                                 Edit
                               </Button>

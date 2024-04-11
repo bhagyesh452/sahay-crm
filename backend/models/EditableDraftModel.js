@@ -156,6 +156,10 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   },
  requestDate:{
     type:String
+ },
+ bookingIndex:{
+  type:Number,
+  default:0
  }
 });
 

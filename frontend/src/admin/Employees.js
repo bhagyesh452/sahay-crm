@@ -673,11 +673,11 @@ function Employees({ onEyeButtonClick }) {
         </Button>
       </Dialog>
 
-      <Header />
-      <Navbar number={1} />
+      {/* <Header />
+      <Navbar number={1} /> */}
       <div className="page-wrapper">
         <div className="page-header d-print-none">
-          <div className="container-xl">
+          <div className="">
             <div className="row g-2 align-items-center">
               <div className="col">
                 {/* <!-- Page pre-title --> */}
@@ -759,138 +759,106 @@ function Employees({ onEyeButtonClick }) {
       <div
         onCopy={(e) => {
           e.preventDefault();
-        }}
-        className="page-body">
-        <div
-          style={{ maxWidth: "89vw", overflowX: "auto" }}
-          className="container-xl">
-          <div className="card">
-            <div style={{ padding: "0px" }} className="card-body">
-              <div
-                id="table-default"
-                style={{ overflow: "auto", maxHeight: "70vh" }}
+        }} className="mt-2"
+        >
+      
+        <div className="card">
+          <div style={{ padding: "0px" }} className="card-body">
+            <div
+              id="table-default"
+              style={{ overflow: "auto", maxHeight: "70vh" }}
+            >
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  border: "1px solid #ddd",
+                }}
+                className="table-vcenter table-nowrap"
               >
-                <table
-                  style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    border: "1px solid #ddd",
-                  }}
-                  className="table-vcenter table-nowrap"
-                >
-                  <thead>
-                    <tr className="tr-sticky">
-                      <th>
-                        <button className="table-sort" data-sort="sort-name">
-                          Sr.No
-                        </button>
-                      </th>
-                      <th>
-                        <button onClick={sortDataByName} className="table-sort" data-sort="sort-city">
-                          Name
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-type">
-                          Phone No
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-score">
-                          Email
-                        </button>
-                      </th>
-                      <th>
-                        <button onClick={sortDataByJoiningDate} className="table-sort" data-sort="sort-date">
-                          Joining date
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          Designation
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          Branch Office
-                        </button>
-                      </th>
-                      <th>
-                        <button onClick={sortDateByAddedOn} className="table-sort" data-sort="sort-date">
-                          Added on
-                        </button>
-                      </th>
-                      <th>
-                        <button className="table-sort" data-sort="sort-date">
-                          Status
-                        </button>
-                      </th>
-                      <th>
-                        <button
-                          className="table-sort"
-                          data-sort="sort-quantity"
-                        >
-                          Action
-                        </button>
-                      </th>
+                <thead>
+                  <tr className="tr-sticky">
+                    <th>
+                      <button className="table-sort" data-sort="sort-name">
+                        Sr.No
+                      </button>
+                    </th>
+                    <th>
+                      <button onClick={sortDataByName} className="table-sort" data-sort="sort-city">
+                        Name
+                      </button>
+                    </th>
+                    <th>
+                      <button className="table-sort" data-sort="sort-type">
+                        Phone No
+                      </button>
+                    </th>
+                    <th>
+                      <button className="table-sort" data-sort="sort-score">
+                        Email
+                      </button>
+                    </th>
+                    <th>
+                      <button onClick={sortDataByJoiningDate} className="table-sort" data-sort="sort-date">
+                        Joining date
+                      </button>
+                    </th>
+                    <th>
+                      <button className="table-sort" data-sort="sort-date">
+                        Designation
+                      </button>
+                    </th>
+                    <th>
+                      <button className="table-sort" data-sort="sort-date">
+                        Branch Office
+                      </button>
+                    </th>
+                    <th>
+                      <button onClick={sortDateByAddedOn} className="table-sort" data-sort="sort-date">
+                        Added on
+                      </button>
+                    </th>
+                    <th>
+                      <button className="table-sort" data-sort="sort-date">
+                        Status
+                      </button>
+                    </th>
+                    <th>
+                      <button
+                        className="table-sort"
+                        data-sort="sort-quantity"
+                      >
+                        Action
+                      </button>
+                    </th>
+                  </tr>
+                </thead>
+                {filteredData.length == 0 ? (
+                  <tbody>
+                    <tr>
+                      <td
+                        className="particular"
+                        colSpan="10"
+                        style={{ textAlign: "center" }}
+                      >
+                        <Nodata />
+                      </td>
                     </tr>
-                  </thead>
-                  {filteredData.length == 0 ? (
-                    <tbody>
-                      <tr>
-                        <td
-                          className="particular"
-                          colSpan="10"
-                          style={{ textAlign: "center" }}
-                        >
-                          <Nodata />
-                        </td>
-                      </tr>
-                    </tbody>
-                  ) : (
-                    <tbody className="table-tbody">
-                      {filteredData.map((item, index) => (
-                        <tr key={index} style={{ border: "1px solid #ddd" }}>
-                          <td className="td-sticky">{index + 1}</td>
-                          <td>{item.ename}</td>
-                          <td>{item.number}</td>
-                          <td>{item.email}</td>
-                          <td>{formatDate(item.jdate)}</td>
-                          <td>{item.designation}</td>
-                          <td>{item.branchOffice}</td>
-                          <td>{formatDate(item.AddedOn) === "Invalid Date" ? "Feb 6, 2024" : formatDate(item.AddedOn)}</td>
-                          {item.designation !== "Admin Team" ? <td>
-                            {(item.Active && item.Active.includes("GMT")) ? (
-                              <div>
-                                <span
-                                  style={{ color: "red", marginRight: "5px" }}
-                                >
-                                  ●
-                                </span>
-                                <span
-                                  style={{
-                                    fontWeight: "bold",
-                                    color: "rgb(170 144 144)",
-                                  }}
-                                >
-                                  {formatDateWP(item.Active)}
-                                </span>
-                              </div>
-                            ) : (
-                              <div>
-                                <span
-                                  style={{ color: "green", marginRight: "5px" }}
-                                >
-                                  ●
-                                </span>
-                                <span
-                                  style={{ fontWeight: "bold", color: "green" }}
-                                >
-                                  Online
-                                </span>
-                              </div>
-                            )}
-                          </td> : <td>
+                  </tbody>
+                ) : (
+                  <tbody className="table-tbody">
+                    {filteredData.map((item, index) => (
+                      <tr key={index} style={{ border: "1px solid #ddd" }}>
+                        <td className="td-sticky">{index + 1}</td>
+                        <td>{item.ename}</td>
+                        <td>{item.number}</td>
+                        <td>{item.email}</td>
+                        <td>{formatDate(item.jdate)}</td>
+                        <td>{item.designation}</td>
+                        <td>{item.branchOffice}</td>
+                        <td>{formatDate(item.AddedOn) === "Invalid Date" ? "Feb 6, 2024" : formatDate(item.AddedOn)}</td>
+                        {item.designation !== "Admin Team" ? <td>
+                          {(item.Active && item.Active.includes("GMT")) ? (
                             <div>
                               <span
                                 style={{ color: "red", marginRight: "5px" }}
@@ -903,69 +871,99 @@ function Employees({ onEyeButtonClick }) {
                                   color: "rgb(170 144 144)",
                                 }}
                               >
-                                {formatDateWP("Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)")}
+                                {formatDateWP(item.Active)}
                               </span>
                             </div>
-                          </td>}
+                          ) : (
+                            <div>
+                              <span
+                                style={{ color: "green", marginRight: "5px" }}
+                              >
+                                ●
+                              </span>
+                              <span
+                                style={{ fontWeight: "bold", color: "green" }}
+                              >
+                                Online
+                              </span>
+                            </div>
+                          )}
+                        </td> : <td>
+                          <div>
+                            <span
+                              style={{ color: "red", marginRight: "5px" }}
+                            >
+                              ●
+                            </span>
+                            <span
+                              style={{
+                                fontWeight: "bold",
+                                color: "rgb(170 144 144)",
+                              }}
+                            >
+                              {formatDateWP("Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)")}
+                            </span>
+                          </div>
+                        </td>}
 
-                          <td >
-                            <div className="d-flex justify-content-center align-items-center">
-                              <div className="icons-btn">
-                                <IconButton onClick={() =>
-                                  handleDeleteClick(item._id, item.ename)
-                                }>
-                                  <IconTrash
-                                    style={{
-                                      cursor: "pointer",
-                                      color: "red",
-                                      width: "14px",
-                                      height: "14px",
-                                    }}
-
-                                  />
-                                </IconButton>
-                              </div>
-                              <div className="icons-btn">
-                                <IconButton onClick={() => {
-                                  functionopenpopup();
-                                  handleUpdateClick(item._id, item.ename);
-                                }}>
-                                  <ModeEditIcon
-                                    style={{
-                                      cursor: "pointer",
-                                      color: "#a29d9d",
-                                      width: "14px",
-                                      height: "14px",
-                                    }}
-
-                                  />
-                                </IconButton>
-                              </div>
-                              <div className="icons-btn">
-                                <Link
-                                  style={{ color: "black" }}
-                                  to={`/admin/employees/${item._id}`}
-                                ><IconButton >  <IconEye
+                        <td >
+                          <div className="d-flex justify-content-center align-items-center">
+                            <div className="icons-btn">
+                              <IconButton onClick={() =>
+                                handleDeleteClick(item._id, item.ename)
+                              }>
+                                <IconTrash
                                   style={{
+                                    cursor: "pointer",
+                                    color: "red",
                                     width: "14px",
                                     height: "14px",
-                                    color: "#d6a10c",
                                   }}
-                                /></IconButton>
-                                </Link>
-                              </div>
-                            </div>
 
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  )}
-                </table>
-              </div>
+                                />
+                              </IconButton>
+                            </div>
+                            <div className="icons-btn">
+                              <IconButton onClick={() => {
+                                functionopenpopup();
+                                handleUpdateClick(item._id, item.ename);
+                              }}>
+                                <ModeEditIcon
+                                  style={{
+                                    cursor: "pointer",
+                                    color: "#a29d9d",
+                                    width: "14px",
+                                    height: "14px",
+                                  }}
+
+                                />
+                              </IconButton>
+                            </div>
+                            <div className="icons-btn">
+                              <Link
+                                style={{ color: "black" }}
+                                to={`/admin/employees/${item._id}`}
+                              ><IconButton >  <IconEye
+                                style={{
+                                  width: "14px",
+                                  height: "14px",
+                                  color: "#d6a10c",
+                                }}
+                              /></IconButton>
+                              </Link>
+                            </div>
+                          </div>
+
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                )}
+              </table>
             </div>
           </div>
         </div>
+  
       </div>
     </div>
   );

@@ -747,21 +747,43 @@ app.get("/api/einfo", async (req, res) => {
 
 // --------------------------api for teams----------------------------------------
 
+// app.post('/api/teaminfo', async (req, res) => {
+//   try {
+//       const teamData = req.body;
+//       console.log(teamData)
+//       const newTeam = await TeamModel.create(teamData);
+//       res.status(201).json(newTeam);
+//       console.log("newTeam" , newTeam)
+//   } catch (error) {
+//       console.error('Error creating team:', error.message);
+//       res.status(500).json({ message: "Duplicate Entries Found" });
+//   }
+// });
+
 app.post('/api/teaminfo', async (req, res) => {
   try {
-      const teamData = req.body;
-      console.log(teamData)
-      const newTeam = await TeamModel.create(teamData);
-      res.status(201).json(newTeam);
-      console.log("newTeam" , newTeam)
+    const teamData = req.body;
+    //console.log(teamData);
+    // Assuming `formatDate()` is a function that formats the current date
+    const newTeam = await TeamModel.create({ modifiedAt: formatDate(Date.now()),...teamData});
+    console.log("newTeam", newTeam);
+    res.status(201).json(newTeam);
   } catch (error) {
-      console.error('Error creating team:', error.message);
-      res.status(500).json({ message: "Duplicate Entries Found" });
+    console.error('Error creating team:', error.message);
+    res.status(500).json({ message: "Duplicate Entries Found" });
   }
 });
 
-
-
+app.get("/api/teaminfo", async (req, res) => {
+  try {
+    const data = await TeamModel.find();
+    console.log("teamdata" , data)
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 
@@ -965,6 +987,16 @@ function formatDate(timestamp) {
   const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
+}
+
+function formatDateNew(timestamp) {
+  const date = new Date(timestamp);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const formattedDay = day < 10 ? '0' + day : day;
+  const formattedMonth = month < 10 ? '0' + month : month;
+  return `${formattedDay}/${formattedMonth}/${year}`;
 }
 
 app.post("/api/update-followup", async (req, res) => {
@@ -2854,6 +2886,64 @@ app.post("/api/exportLeads/", async (req, res) => {
   }
 });
 
+app.post("/api/followdataexport/", async (req, res) => {
+  try {
+    const followDataToday = req.body;
+
+    const leads = await FollowUpModel.find({
+    });
+
+    const csvData = [];
+    // Push the headers as the first row
+    csvData.push([
+      "SR. NO",
+      "Employee Name",
+      "Company Name",
+      "Offered Services",
+      "Offered Prize",
+      "Expected Amount",
+      "Estimated Payment Date",
+      "Last Follow Up Date",
+      "Remarks"
+    ]);
+
+    // Push each lead as a row into the csvData array
+    leads.forEach((lead, index) => {
+      const rowData = [
+        index + 1,
+        lead.ename,
+        lead.companyName,
+        `"${lead.offeredServices.join(",")}"`,
+        lead.offeredPrize,
+        lead.totalPayment,
+        lead.estPaymentDate,
+        lead. lastFollowUpdate,
+        lead.remarks,
+      ];
+      csvData.push(rowData);
+      // console.log("rowData:" , rowData)
+    });
+
+    // Use fast-csv to stringify the csvData array
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=FollowDataToday.csv"
+    );
+
+    const csvString = csvData.map((row) => row.join(",")).join("\n");
+    // Send response with CSV data
+    // Send response with CSV data
+    //console.log(csvString)
+    res.status(200).end(csvString);
+    // console.log(csvString)
+    // Here you're ending the response
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 
 
 app.post(
@@ -4466,7 +4556,7 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
       //               `./Document/${newData["Company Name"]}-Rebooking.pdf`
       //             );
       //             sendMail2(
-      //               ["aakashseth452@gmail.com","aakashseth452@gmail.com"],
+      //               ["nimesh@incscale.in","nimesh@incscale.in"],
       //               `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
       //               ``,
       //               `
@@ -4758,6 +4848,25 @@ app.post(
     }
   }
 );
+
+app.post('/api/edit-moreRequest/:companyName/:bookingIndex', async (req, res) => {
+  try {
+    const { companyName, bookingIndex } = req.params;
+    const newData = req.body;
+    const requestDate = new Date();
+    const createdData = await EditableDraftModel.create({
+      "Company Name":companyName,
+      bookingIndex,
+      requestDate,
+      ...newData,
+    });
+
+    res.status(201).json(createdData);
+  } catch (error) {
+    console.error('Error creating data:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 app.get('/api/editable-LeadData', async (req, res) => {
   try {
     const data = await EditableDraftModel.find(); // Fetch all data from the collection
@@ -5335,6 +5444,17 @@ app.get("/api/redesigned-final-leadData", async (req, res) => {
     res.status(500).send("Error fetching data");
   }
 });
+app.get("/api/redesigned-final-leadData/:companyName", async (req, res) => {
+  try {
+    const companyName = req.params.companyName;
+    const allData = await RedesignedLeadformModel.findOne({"Company Name":companyName});
+
+    res.status(200).json(allData);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).send("Error fetching data");
+  }
+});
 app.delete('/api/redesigned-delete-booking/:companyId', async (req, res) => {
   try {
     const companyId = req.params.companyId;
@@ -5641,7 +5761,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       // newData.bdeEmail,
       // newData.bdmEmail,
       // // "bookings@startupsahay.com",
-      "aakashseth452@gmail.com"
+      "nimesh@incscale.in"
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -6479,7 +6599,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     //               `./Document/${newData["Company Name"]}.pdf`
     //             );
     //             sendMail2(
-    //               ["aakashseth452@gmail.com"],
+    //               ["nimesh@incscale.in"],
     //               `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
     //               ``,
     //               `
@@ -6606,7 +6726,7 @@ app.post("/api/generate-pdf", async (req, res) => {
             setTimeout(() => {
               const mainBuffer = fs.readFileSync("./foo5.pdf");
               sendMail2(
-                ["aakashseth452@gmail.com"],
+                ["nimesh@incscale.in"],
                 `Mail Testing`,
                 ``,
                 `

@@ -1605,27 +1605,6 @@ function EmployeeLeads() {
                                                                             )}
                                                                         </td>
                                                                     )} */}
-
-                                                                    {dataStatus === "Matured" && <>
-                                                                        <td>
-                                                                            <div className="d-flex">
-                                                                                <div onClick={() => {
-                                                                                    setMaturedID(company._id)
-                                                                                    functionopenAnchor()
-                                                                                }} >
-                                                                                    <IconEye style={{ cursor: 'pointer' }} />
-                                                                                </div>
-                                                                                <div onClick={() => {
-                                                                                    handleDeleteBooking(company._id)
-                                                                                }} className="delete-booking" style={{ cursor: 'pointer' }}>
-                                                                                    <DeleteIcon />
-                                                                                </div>
-
-                                                                            </div>
-
-
-                                                                        </td>
-                                                                    </>}
                                                                 </tr>
                                                             ))}
                                                         </tbody>
