@@ -4556,7 +4556,7 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
       //               `./Document/${newData["Company Name"]}-Rebooking.pdf`
       //             );
       //             sendMail2(
-      //               ["aakashseth452@gmail.com","aakashseth452@gmail.com"],
+      //               ["nimesh@incscale.in","nimesh@incscale.in"],
       //               `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
       //               ``,
       //               `
@@ -4848,6 +4848,25 @@ app.post(
     }
   }
 );
+
+app.post('/api/edit-moreRequest/:companyName/:bookingIndex', async (req, res) => {
+  try {
+    const { companyName, bookingIndex } = req.params;
+    const newData = req.body;
+    const requestDate = new Date();
+    const createdData = await EditableDraftModel.create({
+      "Company Name":companyName,
+      bookingIndex,
+      requestDate,
+      ...newData,
+    });
+
+    res.status(201).json(createdData);
+  } catch (error) {
+    console.error('Error creating data:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 app.get('/api/editable-LeadData', async (req, res) => {
   try {
     const data = await EditableDraftModel.find(); // Fetch all data from the collection
@@ -5742,7 +5761,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       // newData.bdeEmail,
       // newData.bdmEmail,
       // // "bookings@startupsahay.com",
-      "aakashseth452@gmail.com"
+      "nimesh@incscale.in"
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -6580,7 +6599,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     //               `./Document/${newData["Company Name"]}.pdf`
     //             );
     //             sendMail2(
-    //               ["aakashseth452@gmail.com"],
+    //               ["nimesh@incscale.in"],
     //               `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
     //               ``,
     //               `
@@ -6707,7 +6726,7 @@ app.post("/api/generate-pdf", async (req, res) => {
             setTimeout(() => {
               const mainBuffer = fs.readFileSync("./foo5.pdf");
               sendMail2(
-                ["aakashseth452@gmail.com"],
+                ["nimesh@incscale.in"],
                 `Mail Testing`,
                 ``,
                 `

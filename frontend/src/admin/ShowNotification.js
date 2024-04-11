@@ -16,6 +16,8 @@ function ShowNotification() {
   const [currentBooking , setCurrentBooking] = useState(null);
   const [compareBooking, setCompareBooking] = useState(null);
   const [RequestGData, setRequestGData] = useState([]);
+  const [bookingIndex, setBookingIndex] = useState(0);
+  const [moreBookingCase, setMoreBookingCase] = useState(false);
   const [RequestApprovals, setRequestApprovals] = useState([]);
   const [currentCompany, setCurrentCompany] = useState("");
   const [openRequest, setOpenRequest] = useState(false);
@@ -37,7 +39,13 @@ function ShowNotification() {
   const fetchCompareBooking = async()=>{
     try{
       const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
-      setCompareBooking(response.data.find(obj=> obj["Company Name"] === currentCompany));
+      if(moreBookingCase){
+        const bookingObject = response.data.find(obj=> obj["Company Name"] === currentCompany);
+        setCompareBooking(bookingObject.moreBooking[bookingIndex-1]);
+      }else{
+        setCompareBooking(response.data.find(obj=> obj["Company Name"] === currentCompany));
+      }
+     
     }catch(error){
       console.error("Error fetching Current Booking" , error.message);
     }
@@ -290,12 +298,15 @@ function ShowNotification() {
                       date={company.date}
                       time={company.time}
                       name={company.ename}
+                      setBookingIndex = {setBookingIndex}
+                      moreBookingCase={setMoreBookingCase}
+                      bookingIndex={company.bookingIndex}
                       companyName={company.companyName}
                     />
                   ))}
                   {dataType === "editBookingRequests" &&
                   editData.length !== 0 && currentBooking && compareBooking &&
-                    <EditBookingPreview requestedBooking={currentBooking} existingBooking={compareBooking} setCurrentBooking={setCurrentBooking}  setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany}/>
+                    <EditBookingPreview requestedBooking={currentBooking} existingBooking={currentBooking.bookingIndex!==0 ? compareBooking.moreBookings[(currentBooking.bookingIndex-1)] : compareBooking} setCurrentBooking={setCurrentBooking}  setCompareBooking={setCompareBooking} setCurrentCompany={setCurrentCompany}/>
                   }
                 {mapArray.length !== 0 &&
                   dataType === "AddRequest" &&

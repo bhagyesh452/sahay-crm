@@ -2583,6 +2583,7 @@ export default function RedesignedForm({
                                           Razorpay
                                         </option>
                                         <option value="PayU">PayU</option>
+                                        <option value="Cashfree">Cashfree</option>
                                         <option value="Other">Other</option>
                                       </select>
                                     </div>

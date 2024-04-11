@@ -1309,19 +1309,28 @@ export default function EditableLeadform({
                                 Select Payment Date
                               </option>
                               <option value="After Application">
-                                After Application
+                                AFTER APPLICATION
+                              </option>
+                              <option value="AFTER CERTIFICATE">
+                                AFTER CERTIFICATE
+                              </option>
+                              <option value="AFTER APPROVAL">
+                                AFTER APPROVAL
+                              </option>
+                              <option value="AFTER SERVICE COMPLETION">
+                                AFTER SERVICE COMPLETION
                               </option>
                               <option value="At the time of Application">
-                                At the time of Application
+                               AT THE TIME OF APPLICATION
                               </option>
                               <option value="After Document">
-                                After Document
+                                AFTER DOCUMENT
                               </option>
                               <option value="Before Application">
-                                Before Application
+                                BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
-                                On Particular Date
+                                ON PARTICULAR DATE
                               </option>
                             </select>
                           </div>
@@ -1329,6 +1338,7 @@ export default function EditableLeadform({
                             "On Particular Date" && (
                             <div className="mt-2">
                               <input
+                              style={{textTransform:"uppercase"}}
                                 value={secondTempRemarks}
                                 onChange={(e) =>
                                   setSecondTempRemarks(e.target.value)
@@ -2521,6 +2531,7 @@ export default function EditableLeadform({
                                           Razorpay
                                         </option>
                                         <option value="PayU">PayU</option>
+                                        <option value="Cashfree">Cashfree</option>
                                         <option value="Other">Other</option>
                                       </select>
                                     </div>
@@ -2935,7 +2946,7 @@ export default function EditableLeadform({
                                               </div>
                                             </div>
                                             <div className="col-sm-9 p-0">
-                                              <div className="form-label-data">
+                                              <div className="form-label-data"  style={{textTransform:"uppercase"}}>
                                                 {Number(
                                                   obj.secondPayment
                                                 ).toFixed(2)}{" "}
@@ -2958,7 +2969,7 @@ export default function EditableLeadform({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data">
+                                                <div className="form-label-data" style={{textTransform:"uppercase"}}>
                                                   {Number(
                                                     obj.thirdPayment
                                                   ).toFixed(2)}{" "}
@@ -2982,7 +2993,7 @@ export default function EditableLeadform({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data">
+                                                <div className="form-label-data" style={{textTransform:"uppercase"}}>
                                                   {Number(
                                                     obj.fourthPayment
                                                   ).toFixed(2)}{" "}

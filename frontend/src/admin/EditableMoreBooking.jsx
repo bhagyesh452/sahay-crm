@@ -901,6 +901,16 @@ export default function EditableMoreBooking({
 
   if(activeStep===4){
    console.log("Data sending to change:-", leadData);
+    const dataToSend = {...leadData, requestBy:employeeName , bookingSource:selectedValues}
+    try {
+      const response = await axios.post(`${secretKey}/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
+      console.log('Data created:', response.data);
+      Swal.fire("Request Sent!","Request has been successfully sent to the Admin","success");
+    
+    } catch (error) {
+      console.error('Error creating data:', error);
+      Swal.fire("Request Failed!","Failed to Request Admin","error");
+    }
   }else {
     setCompleted((prevCompleted) => ({
       ...prevCompleted,
@@ -1312,23 +1322,32 @@ export default function EditableMoreBooking({
                               name="optional-remarks"
                               id="optional-remarks-2"
                             >
-                              <option value="" selected disabled>
+                               <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="After Application">
-                                After Application
+                                AFTER APPLICATION
+                              </option>
+                              <option value="AFTER CERTIFICATE">
+                                AFTER CERTIFICATE
+                              </option>
+                              <option value="AFTER APPROVAL">
+                                AFTER APPROVAL
+                              </option>
+                              <option value="AFTER SERVICE COMPLETION">
+                                AFTER SERVICE COMPLETION
                               </option>
                               <option value="At the time of Application">
-                                At the time of Application
+                               AT THE TIME OF APPLICATION
                               </option>
                               <option value="After Document">
-                                After Document
+                                AFTER DOCUMENT
                               </option>
                               <option value="Before Application">
-                                Before Application
+                                BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
-                                On Particular Date
+                                ON PARTICULAR DATE
                               </option>
                             </select>
                           </div>
@@ -1336,6 +1355,7 @@ export default function EditableMoreBooking({
                             "On Particular Date" && (
                             <div className="mt-2">
                               <input
+                              style={{textTransform:"uppercase"}}
                                 value={secondTempRemarks}
                                 onChange={(e) =>
                                   setSecondTempRemarks(e.target.value)
@@ -2588,7 +2608,7 @@ export default function EditableMoreBooking({
                                         <option value="Razorpay">
                                           Razorpay
                                         </option>
-                                        <option value="PayU">PayU</option>
+                                        <option value="PayU">PayU</option>   <option value="Cashfree">Cashfree</option>
                                         <option value="Other">Other</option>
                                       </select>
                                     </div>
@@ -3001,7 +3021,7 @@ export default function EditableMoreBooking({
                                               </div>
                                             </div>
                                             <div className="col-sm-9 p-0">
-                                              <div className="form-label-data">
+                                              <div className="form-label-data"  style={{textTransform:"uppercase"}}>
                                                 {Number(
                                                   obj.secondPayment
                                                 ).toFixed(2)}{" "}
@@ -3019,7 +3039,7 @@ export default function EditableMoreBooking({
                                           {obj.thirdPayment !== 0 && (
                                             <div className="row m-0">
                                               <div className="col-sm-3 p-0">
-                                                <div className="form-label-name">
+                                                <div className="form-label-name"  style={{textTransform:"uppercase"}}>
                                                   <b>Third Payment</b>
                                                 </div>
                                               </div>
@@ -3048,7 +3068,7 @@ export default function EditableMoreBooking({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data">
+                                                <div className="form-label-data"  style={{textTransform:"uppercase"}}>
                                                   {Number(
                                                     obj.fourthPayment
                                                   ).toFixed(2)}{" "}
