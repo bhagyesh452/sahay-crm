@@ -209,7 +209,7 @@ function Team() {
             {/* <Header />
             <Navbar /> */}
             <div className="page-wrapper">
-                <div className="page-header d-print-none">
+                <div className="page-header m-0 d-print-none">
                         <div className="row g-2 align-items-center">
                             <div className="col">
                                 <h2 className="page-title">Teams</h2>

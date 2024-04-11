@@ -50,6 +50,9 @@ import EditableLeadform from "../admin/EditableLeadform.jsx";
 import AddLeadForm from "../admin/AddLeadForm.jsx";
 import { FaWhatsapp } from "react-icons/fa";
 import EditableMoreBooking from "../admin/EditableMoreBooking.jsx";
+import { RiShareForwardBoxFill } from "react-icons/ri";
+import { RiShareForward2Fill } from "react-icons/ri";
+import { TiArrowBack } from "react-icons/ti";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -86,7 +89,7 @@ function EmployeePanel() {
   const [isEdit, setIsEdit] = useState(false);
   const [expandYear, setExpandYear] = useState(0);
   const [bookingIndex, setBookingIndex] = useState(0);
-  const [editMoreOpen , setEditMoreOpen] = useState(false);
+  const [editMoreOpen, setEditMoreOpen] = useState(false);
   const [openCSV, openchangeCSV] = useState(false);
   const [openRemarks, openchangeRemarks] = useState(false);
   const [openAnchor, setOpenAnchor] = useState(false);
@@ -94,6 +97,7 @@ function EmployeePanel() {
   const [data, setData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [emailData, setEmailData] = useState({ to: "", subject: "", body: "" });
+  
 
   const handleTogglePopup = () => {
     setIsOpen(false);
@@ -1110,7 +1114,7 @@ function EmployeePanel() {
     if (
       file &&
       file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ) {
       const reader = new FileReader();
 
@@ -1581,20 +1585,20 @@ function EmployeePanel() {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-              (obj) =>
-                obj.Status === "Untouched" ||
-                obj.Status === "Busy" ||
-                obj.Status === "Not Picked Up"
-            )
+            (obj) =>
+              obj.Status === "Untouched" ||
+              obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up"
+          )
           : dataStatus === "Interested"
-          ? moreEmpData.filter((obj) => obj.Status === "Interested")
-          : dataStatus === "Not Interested"
-          ? moreEmpData.filter(
-              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-            )
-          : dataStatus === "FollowUp"
-          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-          : [];
+            ? moreEmpData.filter((obj) => obj.Status === "Interested")
+            : dataStatus === "Not Interested"
+              ? moreEmpData.filter(
+                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+              )
+              : dataStatus === "FollowUp"
+                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                : [];
 
       setEmployeeData(newEmpData);
       setSelectedYears([
@@ -1622,20 +1626,20 @@ function EmployeePanel() {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-              (obj) =>
-                obj.Status === "Untouched" ||
-                obj.Status === "Busy" ||
-                obj.Status === "Not Picked Up"
-            )
+            (obj) =>
+              obj.Status === "Untouched" ||
+              obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up"
+          )
           : dataStatus === "Interested"
-          ? moreEmpData.filter((obj) => obj.Status === "Interested")
-          : dataStatus === "Not Interested"
-          ? moreEmpData.filter(
-              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-            )
-          : dataStatus === "FollowUp"
-          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-          : [];
+            ? moreEmpData.filter((obj) => obj.Status === "Interested")
+            : dataStatus === "Not Interested"
+              ? moreEmpData.filter(
+                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+              )
+              : dataStatus === "FollowUp"
+                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                : [];
       setSelectedYears([...selectedYears, selectedYear]); // Add selected year to the list
       const filteredData = newEmpData.filter(
         (data) =>
@@ -1663,20 +1667,20 @@ function EmployeePanel() {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-              (obj) =>
-                obj.Status === "Untouched" ||
-                obj.Status === "Busy" ||
-                obj.Status === "Not Picked Up"
-            )
+            (obj) =>
+              obj.Status === "Untouched" ||
+              obj.Status === "Busy" ||
+              obj.Status === "Not Picked Up"
+          )
           : dataStatus === "Interested"
-          ? moreEmpData.filter((obj) => obj.Status === "Interested")
-          : dataStatus === "Not Interested"
-          ? moreEmpData.filter(
-              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-            )
-          : dataStatus === "FollowUp"
-          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-          : [];
+            ? moreEmpData.filter((obj) => obj.Status === "Interested")
+            : dataStatus === "Not Interested"
+              ? moreEmpData.filter(
+                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+              )
+              : dataStatus === "FollowUp"
+                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                : [];
       const filteredData = newEmpData.filter((data) => {
         const year = new Date(data["Company Incorporation Date  "])
           .getFullYear()
@@ -1867,21 +1871,21 @@ function EmployeePanel() {
       );
       const data = response.data.find((obj) => obj.company === company);
       setCurrentForm(data);
-      if(data.moreBookings.length!==0){
+      if (data.moreBookings.length !== 0) {
         setOpenBooking(true);
-      }else {
+      } else {
         setEditFormOpen(true)
       }
-  
+
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
-  
+
   };
 
-  const handleOpenEditForm = ()=>{   
-      setOpenBooking(false);
-      setEditMoreOpen(true);
+  const handleOpenEditForm = () => {
+    setOpenBooking(false);
+    setEditMoreOpen(true);
   }
 
   return (
@@ -2487,7 +2491,8 @@ function EmployeePanel() {
                         }
                         data-bs-toggle="tab"
                       >
-                        Interested{" "}
+                        Interested
+
                         <span className="no_badge">
                           {
                             moreEmpData.filter(
@@ -2816,6 +2821,10 @@ function EmployeePanel() {
                               (dataStatus === "Interested" && (
                                 <th>Add Projection</th>
                               ))}
+
+                            {/* {(dataStatus === "Interested" || dataStatus === "FollowUp") && (
+                              <th>Forward to BDM</th>
+                            )} */}
                           </tr>
                         </thead>
                         {loading ? (
@@ -2877,7 +2886,7 @@ function EmployeePanel() {
                                           company["Company Name"],
                                           company["Company Email"],
                                           company[
-                                            "Company Incorporation Date  "
+                                          "Company Incorporation Date  "
                                           ],
                                           company["Company Number"],
                                           company["Status"]
@@ -3046,49 +3055,70 @@ function EmployeePanel() {
                                   </td>
                                 )} */}
                                 {(dataStatus === "FollowUp" ||
-                                  dataStatus === "Interested") && (
-                                  <td>
-                                    {company &&
-                                    projectionData &&
-                                    projectionData.some(
-                                      (item) =>
-                                        item.companyName ===
-                                        company["Company Name"]
-                                    ) ? (
-                                      <IconButton>
-                                        <RiEditCircleFill
-                                          onClick={() => {
-                                            functionopenprojection(
-                                              company["Company Name"]
-                                            );
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                          color="#fbb900"
+                                  dataStatus === "Interested") && (<>
+                                    <td>
+                                      {company &&
+                                        projectionData &&
+                                        projectionData.some(
+                                          (item) =>
+                                            item.companyName ===
+                                            company["Company Name"]
+                                        ) ? (
+                                        <IconButton>
+                                          <RiEditCircleFill
+                                            onClick={() => {
+                                              functionopenprojection(
+                                                company["Company Name"]
+                                              );
+                                            }}
+                                            style={{
+                                              cursor: "pointer",
+                                              width: "17px",
+                                              height: "17px",
+                                            }}
+                                            color="#fbb900"
+                                          />
+                                        </IconButton>
+                                      ) : (
+                                        <IconButton>
+                                          <RiEditCircleFill
+                                            onClick={() => {
+                                              functionopenprojection(
+                                                company["Company Name"]
+                                              );
+                                              setIsEditProjection(true);
+                                            }}
+                                            style={{
+                                              cursor: "pointer",
+                                              width: "17px",
+                                              height: "17px",
+                                            }}
+                                          />
+                                        </IconButton>
+                                      )}
+                                    </td>
+                                    {/* <td>
+                                    <TiArrowBack style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
+                                        color="lightgrey"
                                         />
-                                      </IconButton>
-                                    ) : (
-                                      <IconButton>
-                                        <RiEditCircleFill
-                                          onClick={() => {
-                                            functionopenprojection(
-                                              company["Company Name"]
-                                            );
-                                            setIsEditProjection(true);
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                        />
-                                      </IconButton>
-                                    )}
-                                  </td>
-                                )}
+                                      <RiShareForward2Fill  onClick={() => {
+                                        // functionopenprojection(
+                                        //   company["Company Name"]
+                                        // );
+                                      }}
+                                        style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
+                                        color="lightgrey" />
+                                        
+                                    </td> */}
+                                  </>)}
                                 {dataStatus === "Matured" && (
                                   <>
                                     <td>
@@ -3137,17 +3167,17 @@ function EmployeePanel() {
                                           onClick={() => {
                                             handleEditClick(company._id)
                                           }}
-                                          // onClick={() => {
-                                          //   setMaturedID(company._id);
-                                          //   setTimeout(() => {
-                                          //     setEditFormOpen(true);
-                                          //   }, 1000);
-                                          // }}
-                                          // disabled={totalBookings.some(
-                                          //   (obj) =>
-                                          //     obj["Company Name"] ===
-                                          //     company["Company Name"]
-                                          // )}
+                                        // onClick={() => {
+                                        //   setMaturedID(company._id);
+                                        //   setTimeout(() => {
+                                        //     setEditFormOpen(true);
+                                        //   }, 1000);
+                                        // }}
+                                        // disabled={totalBookings.some(
+                                        //   (obj) =>
+                                        //     obj["Company Name"] ===
+                                        //     company["Company Name"]
+                                        // )}
                                         >
                                           <Edit
                                             style={{
@@ -3317,7 +3347,7 @@ function EmployeePanel() {
                               Math.min(
                                 prevPage + 1,
                                 Math.ceil(filteredData.length / itemsPerPage) -
-                                  1
+                                1
                               )
                             )
                           }
@@ -3354,7 +3384,7 @@ function EmployeePanel() {
           />
         </>
       )}
-      {editFormOpen &&  (
+      {editFormOpen && (
         <>
           <EditableLeadform
             setFormOpen={setEditFormOpen}
@@ -3371,8 +3401,8 @@ function EmployeePanel() {
       )}
       {editMoreOpen && (
         <>
-        <EditableMoreBooking  setFormOpen={setEditMoreOpen}
-           bookingIndex={bookingIndex}
+          <EditableMoreBooking setFormOpen={setEditMoreOpen}
+            bookingIndex={bookingIndex}
             companysName={currentForm["Company Name"]}
             companysEmail={currentForm["Company Email"]}
             companyNumber={currentForm["Company Number"]}
@@ -3380,7 +3410,7 @@ function EmployeePanel() {
             companysInco={currentForm.incoDate}
             employeeName={data.ename}
             employeeEmail={data.email}
-            setDataStatus={setdataStatus}/>
+            setDataStatus={setdataStatus} />
         </>
       )}
       {addFormOpen && (
@@ -3398,9 +3428,9 @@ function EmployeePanel() {
       {/* Pop up for confirming bookings  */}
       <Dialog
         open={openBooking}
-        onClose={() => { 
-        setOpenBooking(false) 
-        setCurrentForm(null)        
+        onClose={() => {
+          setOpenBooking(false)
+          setCurrentForm(null)
         }}
         fullWidth
         maxWidth="sm"
@@ -3409,9 +3439,9 @@ function EmployeePanel() {
           Choose Booking{" "}
           <IconButton
             onClick={() => {
-              setOpenBooking(false) 
+              setOpenBooking(false)
               setCurrentForm(null)
-              }}
+            }}
             style={{ float: "right" }}
           >
             <CloseIcon color="primary"></CloseIcon>
@@ -3420,39 +3450,39 @@ function EmployeePanel() {
 
         <DialogContent>
           <div className="bookings-content">
-          <div className="open-bookings d-flex align-items-center justify-content-around">
-            <div className="booking-1">
-              <label for="open-bookings "> Booking 1 </label>
-              <input
-                onChange={() => setBookingIndex(0)}
-                className="form-check-input ml-1"
-                type="radio"
-                name="open-bookings"
-                id="open-bookings-1"
-              />
-            </div>
-            {currentForm && currentForm.moreBookings.map((obj, index) => (
-              <div className="booking-2">
-                <label for="open-bookings"> Booking {index + 2} </label>
+            <div className="open-bookings d-flex align-items-center justify-content-around">
+              <div className="booking-1">
+                <label for="open-bookings "> Booking 1 </label>
                 <input
-                  onChange={() => setBookingIndex(index+1)}
+                  onChange={() => setBookingIndex(0)}
                   className="form-check-input ml-1"
                   type="radio"
                   name="open-bookings"
-                  id={`open-booking-${index + 2}`}
+                  id="open-bookings-1"
                 />
               </div>
-            ))}
+              {currentForm && currentForm.moreBookings.map((obj, index) => (
+                <div className="booking-2">
+                  <label for="open-bookings"> Booking {index + 2} </label>
+                  <input
+                    onChange={() => setBookingIndex(index + 1)}
+                    className="form-check-input ml-1"
+                    type="radio"
+                    name="open-bookings"
+                    id={`open-booking-${index + 2}`}
+                  />
+                </div>
+              ))}
 
+            </div>
+
+            <div className="open-bookings-footer mt-2 d-flex justify-content-center">
+              <button onClick={handleOpenEditForm} style={{ textAlign: "center" }} className="btn btn-primary">
+                Confirm Booking
+              </button>
+            </div>
           </div>
-          
-          <div className = "open-bookings-footer mt-2 d-flex justify-content-center">
-            <button onClick={handleOpenEditForm} style={{textAlign:"center"}} className="btn btn-primary">
-              Confirm Booking
-            </button>
-          </div>
-          </div>
-       
+
         </DialogContent>
       </Dialog>
       {/* Request Data popup */}
@@ -3470,22 +3500,22 @@ function EmployeePanel() {
                 style={
                   selectedOption === "general"
                     ? {
-                        backgroundColor: "#ffb900",
-                        margin: "10px 10px 0px 0px",
-                        cursor: "pointer",
-                        color: "white",
-                      }
+                      backgroundColor: "#ffb900",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                      color: "white",
+                    }
                     : {
-                        backgroundColor: "white",
-                        margin: "10px 10px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "white",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                    }
                 }
                 onClick={() => {
                   setSelectedOption("general");
                 }}
                 className="direct form-control col"
-               >
+              >
                 <input
                   type="radio"
                   id="general"
@@ -3502,16 +3532,16 @@ function EmployeePanel() {
                 style={
                   selectedOption === "notgeneral"
                     ? {
-                        backgroundColor: "#ffb900",
-                        margin: "10px 0px 0px 0px",
-                        cursor: "pointer",
-                        color: "white",
-                      }
+                      backgroundColor: "#ffb900",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                      color: "white",
+                    }
                     : {
-                        backgroundColor: "white",
-                        margin: "10px 0px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "white",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                    }
                 }
                 className="notgeneral form-control col"
                 onClick={() => {
@@ -3965,7 +3995,7 @@ function EmployeePanel() {
                         }}
                         type="text"
                         className="form-control"
-                        //disabled={!isEditProjection}
+                      //disabled={!isEditProjection}
                       />
                     </div>
                   </div>
@@ -4331,10 +4361,10 @@ function EmployeePanel() {
               </h1>
               <div>
                 {projectingCompany &&
-                projectionData &&
-                projectionData.some(
-                  (item) => item.companyName === projectingCompany
-                ) ? (
+                  projectionData &&
+                  projectionData.some(
+                    (item) => item.companyName === projectingCompany
+                  ) ? (
                   <>
                     <IconButton
                       onClick={() => {
