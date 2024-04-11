@@ -39,6 +39,8 @@ import BdmDashboard from "./BDM/Dashboard/BdmDashboard.jsx";
 import CompanyParticular_Datamanager from "./DataManager/Dashboard/ManageLeads/CompanyParticular_Datamanager.jsx";
 //import CompanyDetails from "./Processing/CompanyDetails.jsx";
 import Team from './admin/Team.js'
+import NewEmployee from "./admin/NewEmployee.js";
+import BdmLeads from "./BDM/Dashboard/BdmLeads/BdmLeads.js";
 
 
 
@@ -60,8 +62,8 @@ function App() {
             element={<EmployeeLogin setnewToken={setnewToken} />}
           />
 
-          <Route path="/bdmlogin" element={<BDMLogin setBdmToken={setBdmToken}/>} />
-          <Route path="/datamanagerlogin" element={<DataManagerLogin setManagerToken={setManagerToken}/>} />
+          
+        
           
           <Route
             path="/employee-data/:userId/"
@@ -70,14 +72,28 @@ function App() {
 
           <Route
             path="/employee-dashboard/:userId/"
-            element={newtoken ? <EmployeeDashboard /> : <Navigate to="/" />}
-          ></Route>
+            element={newtoken ? <EmployeeDashboard /> : <Navigate to="/" />}></Route>
+
+
+
+
+
+{/* --------------------------------------------------bdm components---------------------------------------------------------- */}
+
+   
+          <Route path="/bdmlogin" element={<BDMLogin setBdmToken={setBdmToken}/>} />
           <Route path="/bdmdashboard/:userId/" element={<BdmDashboard/>}></Route>
+          <Route path="/bdm/bdmleads/:userId/" element={<BdmLeads/>}></Route>
+
+{/* --------------------------------------------------bdm components---------------------------------------------------------- */}
 
 
 
-{/* 
------------------------------------------datamanager components--------------------------------------- */}
+
+
+{/* -----------------------------------------datamanager components--------------------------------------- */}
+
+          <Route path="/datamanagerlogin" element={<DataManagerLogin setManagerToken={setManagerToken}/>} />  
           <Route path='/datamanager-dashboard/:userId/' element= {<DataManagerDashboard />} />
           <Route
             path="/datamanager/manageleads/"
@@ -88,6 +104,7 @@ function App() {
           <Route path="/datamanager/employeeLeads/:id" element={<EmployeeLeads/>}></Route>
           
           
+{/* -----------------------------------------datamanager components--------------------------------------- */}
           
           <Route
             path="/converted-leads/:userId/"
@@ -104,6 +121,7 @@ function App() {
             <>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/employees" element={<Employees />} />
+              <Route path="/admin/newemployee" element={<NewEmployee/>} />
               <Route path="/admin/new-leads" element={<NewLeads />} />
               <Route
                 path="/admin/employees/:id"

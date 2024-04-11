@@ -57,6 +57,25 @@ function Navbar() {
                 </li>
                 <li
                   className={
+                    location.pathname.startsWith("/admin/newemployee")
+                      ? "nav-item active"
+                      : "nav-item"
+                  }>
+                  <Link
+                    style={{ textDecoration: "none", color: "black" }}
+                    to="/admin/newemployee"
+                  >
+                    <a className="nav-link" href="./">
+                      <span className="nav-link-icon d-md-none d-lg-inline-block">
+                        <BsFillPersonVcardFill style={{ width: "19px", height: "23px" }} />
+                      </span>
+
+                      <span className="nav-link-title active"> Employees </span>
+                    </a>
+                  </Link>
+                </li>
+                {/* <li
+                  className={
                     location.pathname.startsWith("/admin/employees")
                       ? "nav-item active"
                       : "nav-item"
@@ -73,7 +92,7 @@ function Navbar() {
                       <span className="nav-link-title active"> Employees </span>
                     </a>
                   </Link>
-                </li>
+                </li> */}
                 <li
                   className={
                     location.pathname === "/admin/leads"

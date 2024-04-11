@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+ 
 const employee = new mongoose.Schema({
     ename: {
         type: String,
@@ -15,6 +15,7 @@ const employee = new mongoose.Schema({
 });
 
 const teamSchema = new mongoose.Schema({
+    modifiedAt: { type: String, default: Date.now()},
     teamName: {
         type: String,
         unique:true,

@@ -3995,6 +3995,12 @@ function Dashboard() {
                             {
                               followDataToday.filter((partObj) => partObj.ename).length
                             }
+                             <FcDatabase
+                                onClick={() => {
+                                  functionOpenProjectionTable(followData);
+                                }}
+                                style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "55px" }}
+                              />
                           </td>
                           <td>
                             {
