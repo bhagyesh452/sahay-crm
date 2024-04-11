@@ -3138,13 +3138,13 @@ app.post(
               $set: {
                 "Company Email":
                   newData["Company Email"] || existingData["Company Email"],
-                "Company Name":
-                  newData["Company Name"] || existingData["Company Name"],
                 "Company Number":
                   newData["Company Number"] || existingData["Company Number"],
                 incoDate: newData.incoDate || existingData.incoDate,
                 panNumber: newData.panNumber || existingData.panNumber,
                 gstNumber: newData.gstNumber || existingData.gstNumber,
+                bdeName : newData.bdeName || existingData.bdeName,
+                bdeEmail : newData.bdeEmail || existingData.bdeEmail
               },
             },
             { new: true }
@@ -3160,7 +3160,8 @@ app.post(
             incoDate: newData.incoDate,
             panNumber: newData.panNumber,
             gstNumber: newData.gstNumber,
-
+            bdeName : newData.bdeName ,
+            bdeEmail : newData.bdeEmail,
             Step1Status: true,
           });
           res.status(201).json(createdData); // Respond with created data
@@ -5360,6 +5361,17 @@ app.get('/api/editable-LeadData', async (req, res) => {
 app.get("/api/redesigned-final-leadData", async (req, res) => {
   try {
     const allData = await RedesignedLeadformModel.find();
+    res.status(200).json(allData);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).send("Error fetching data");
+  }
+});
+app.get("/api/redesigned-final-leadData/:companyName", async (req, res) => {
+  try {
+    const companyName = req.params.companyName;
+    const allData = await RedesignedLeadformModel.findOne({"Company Name":companyName});
+
     res.status(200).json(allData);
   } catch (error) {
     console.error("Error fetching data:", error);

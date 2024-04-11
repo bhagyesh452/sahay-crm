@@ -45,8 +45,9 @@ const defaultService = {
   paymentCount: 2,
 };
 
-export default function AdminBookingForm({
+export default function EditableMoreBooking({
   setDataStatus,
+  bookingIndex,
   setFormOpen,
   companysName,
   companysEmail,
@@ -59,7 +60,6 @@ export default function AdminBookingForm({
   const [totalServices, setTotalServices] = useState(1);
 
   const [fetchedService, setfetchedService] = useState(false);
-
   const defaultLeadData = {
     "Company Name": companysName ? companysName : "",
     "Company Number": companyNumber ? companyNumber : 0,
@@ -70,9 +70,9 @@ export default function AdminBookingForm({
     bdeName: employeeName ? employeeName : "",
     bdeEmail: employeeEmail ? employeeEmail : "",
     bdmName: "",
-    otherBdmName: "",
-    bdmEmail: "",
     bdmType: "Close-by",
+    otherBdmName:'',
+    bdmEmail: "",
     bookingDate: "",
     bookingSource: "",
     otherBookingSource: "",
@@ -98,8 +98,6 @@ export default function AdminBookingForm({
   const [fourthTempRemarks, setFourthTempRemarks] = useState("");
   const [selectedValues, setSelectedValues] = useState("");
   const [unames, setUnames] = useState([]);
-  const [data, setData] = useState([]);
-  const [currentDataLoading, setCurrentDataLoading] = useState(false);
 
   const fetchDataEmp = async () => {
     try {
@@ -113,21 +111,17 @@ export default function AdminBookingForm({
       console.error("Error fetching data:", error.message);
     }
   };
-  const [leadData, setLeadData] = useState(defaultLeadData);
-  const handleTextAreaChange = (e) => {
-    e.target.style.height = "1px";
-    e.target.style.height = `${e.target.scrollHeight}px`;
-  };
 
+  const [leadData, setLeadData] = useState(defaultLeadData);
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `${secretKey}/redesigned-leadData/${companyNewName.trim()}`
+        `${secretKey}/redesigned-final-leadData/${companysName}`
       );
-      const data = response.data.find(
-        (item) => item["Company Name"] === companyNewName.trim()
-      );
-      console.log("Fetched Data", data);
+      const data = bookingIndex !== 0 ? response.data.moreBookings[bookingIndex-1]: response.data;
+      console.log("Here is the data",data);
+      
+      
       if (!data) {
         setCompleted({});
         setActiveStep(0);
@@ -143,19 +137,14 @@ export default function AdminBookingForm({
         Step5Status,
         ...newLeadData
       } = data;
+      console.log("Fetched Data" , newLeadData);
       setLeadData(newLeadData);
-      if (Step1Status === true && Step2Status === false) {
-        setCompleted({ 0: true });
-        setActiveStep(1);
-        setSelectedValues(newLeadData.bookingSource);
-        setLeadData((prevState) => ({
-          ...prevState,
-          bookingDate: formatDate(new Date()),
-        }));
-      } else if (Step2Status === true && Step3Status === false) {
+      setActiveStep(4);
+      setCompleted({0:true , 1:true , 2 : true , 3 : true})
+      setSelectedValues(newLeadData.bookingSource)
+     if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
         setActiveStep(2);
-        setSelectedValues(newLeadData.bookingSource);
         setLeadData((prevState) => ({
           ...prevState,
           services:
@@ -166,7 +155,6 @@ export default function AdminBookingForm({
         setTotalServices(data.services.length !== 0 ? data.services.length : 1);
       } else if (Step3Status === true && Step4Status === false) {
         console.log(data.services, "This is services");
-        setSelectedValues(newLeadData.bookingSource);
         setfetchedService(true);
         setCompleted({ 0: true, 1: true, 2: true });
         setActiveStep(3);
@@ -194,7 +182,6 @@ export default function AdminBookingForm({
         setTotalServices(data.services.length !== 0 ? data.services.length : 1);
       } else if (Step4Status === true && Step5Status === false) {
         setCompleted({ 0: true, 1: true, 2: true, 3: true });
-        setSelectedValues(newLeadData.bookingSource);
         setActiveStep(4);
         setLeadData((prevState) => ({
           ...prevState,
@@ -207,16 +194,228 @@ export default function AdminBookingForm({
           extraNotes: data.extraNotes,
         }));
       } else if (Step5Status === true) {
-        setCompleted({ 0: true, 1: true, 2: true, 3: true, 4: true });
+        setCompleted({ 0: true, 1: true, 2: true, 3: true });
+        setSelectedValues(data.bookingSource);
 
-        setActiveStep(5);
+        setActiveStep(4);
+        setfetchedService(true);
+        setTotalServices(data.services.length !== 0 ? data.services.length : 1);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  console.log("Real time data: ", leadData);
+  const handleTextAreaChange = (e) => {
+    e.target.style.height = '1px';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
+  // if (data.Step1Status === true && data.Step2Status === false) {
+  //   setLeadData({
+  //     ...leadData,
+  //     "Company Name": data["Company Name"],
+  //     "Company Email": data["Company Email"],
+  //     "Company Number": data["Company Number"],
+  //     incoDate: data.incoDate,
+  //     panNumber: data.panNumber,
+  //     gstNumber: data.gstNumber,
+  //     Step1Status: data.Step1Status
+  //   });
+  //   setCompleted({ 0: true });
+  //   setActiveStep(1);
+  // } else if (data.Step2Status === true && data.Step3Status === false) {
+  //   setSelectedValues(data.bookingSource);
+  //   setLeadData({
+  //     ...leadData,
+  //     "Company Name": data["Company Name"],
+  //     "Company Email": data["Company Email"],
+  //     "Company Number": data["Company Number"],
+  //     incoDate: data.incoDate,
+  //     panNumber: data.panNumber,
+  //     gstNumber: data.gstNumber,
+  //     bdeName: data.bdeName,
+  //     bdeEmail: data.bdeEmail,
+  //     bdmName: data.bdmName,
+  //     bdmEmail: data.bdmEmail,
+  //     bookingDate: data.bookingDate,
+  //     bookingSource: data.bookingSource,
+  //     Step1Status: data.Step1Status,
+  //     Step2Status: data.Step2Status
+  //   });
+  //   setCompleted({ 0: true, 1: true });
+  //   setActiveStep(2);
+  // } else if (data.Step3Status === true && data.Step4Status === false) {
+  //   console.log(data.services)
+  //   setSelectedValues(data.bookingSource);
+  //   setLeadData({
+  //     ...leadData,
+  //     "Company Name": data["Company Name"],
+  //     "Company Email": data["Company Email"],
+  //     "Company Number": data["Company Number"],
+  //     incoDate: data.incoDate,
+  //     panNumber: data.panNumber,
+  //     gstNumber: data.gstNumber,
+  //     bdeName: data.bdeName,
+  //     bdeEmail: data.bdeEmail,
+  //     bdmName: data.bdmName,
+  //     bdmEmail: data.bdmEmail,
+  //     bookingDate: data.bookingDate,
+  //     bookingSource: data.bookingSource,
+  //     // services: data.services.map(service => ({
+  //     //   serviceName: service.serviceName,
+  //     //   withDSC: service.serviceName,
+  //     //   totalPaymentWOGST: service.totalPaymentWOGST,
+  //     //   totalPaymentWGST: service.totalPaymentWGST,
+  //     //   withGST: service.withGST,
+  //     //   paymentTerms: service.paymentTerms,
+  //     //   firstPayment: service.firstPayment,
+  //     //   secondPayment: service.secondPayment,
+  //     //   thirdPayment: service.thirdPayment,
+  //     //   fourthPayment: service.fourthPayment,
+  //     //   paymentRemarks: service.paymentRemarks,
+  //     //   paymentCount: service.paymentCount,
+  //     // })),
+  //     services:data.services,
 
+  //     totalAmount: data.services.reduce(
+  //       (total, service) => total + service.totalPaymentWGST,
+  //       0
+  //     ),
+  //     receivedAmount: data.services.reduce(
+  //       (total, service) =>
+  //         service.paymentTerms === "Full Advanced"
+  //           ? total + service.totalPaymentWGST
+  //           : total + service.firstPayment,
+  //       0
+  //     ),
+  //     pendingAmount: data.services.reduce(
+  //       (total, service) =>
+  //         service.paymentTerms === "Full Advanced"
+  //           ? total + 0
+  //           : total + service.totalPaymentWGST - service.firstPayment,
+  //       0
+  //     ),
+  //     caCase: data.caCase,
+  //     caName: data.caName,
+  //     caEmail: data.caEmail,
+  //     caNumber: data.caNumber,
+  //     Step1Status: data.Step1Status,
+  //     Step2Status: data.Step2Status,
+  //     Step3Status:data.Step3Status
+  //   });
+  //   setTotalServices(data.services.length);
+  //   setCompleted({ 0: true, 1: true, 2: true });
+  //   setActiveStep(3);
+
+  // } else if (data.Step4Status === true) {
+  //   setSelectedValues(data.bookingSource);
+  //   setLeadData({
+  //     ...leadData,
+  //     "Company Name": data["Company Name"],
+  //     "Company Email": data["Company Email"],
+  //     "Company Number": data["Company Number"],
+  //     incoDate: data.incoDate,
+  //     panNumber: data.panNumber,
+  //     gstNumber: data.gstNumber,
+  //     bdeName: data.bdeName,
+  //     bdeEmail: data.bdeEmail,
+  //     bdmName: data.bdmName,
+  //     bdmEmail: data.bdmEmail,
+  //     bookingDate: data.bookingDate,
+  //     bookingSource: data.bookingSource,
+  //     services: data.services,
+  //     totalAmount: data.services.reduce(
+  //       (total, service) => total + service.totalPaymentWGST,
+  //       0
+  //     ),
+  //     receivedAmount: data.services.reduce(
+  //       (total, service) =>
+  //         service.paymentTerms === "Full Advanced"
+  //           ? total + service.totalPaymentWGST
+  //           : total + service.firstPayment,
+  //       0
+  //     ),
+  //     pendingAmount: data.services.reduce(
+  //       (total, service) =>
+  //         service.paymentTerms === "Full Advanced"
+  //           ? total + 0
+  //           : total + service.totalPaymentWGST - service.firstPayment,
+  //       0
+  //     ),
+  //     caCase: data.caCase,
+  //     caName: data.caName,
+  //     caEmail: data.caEmail,
+  //     caNumber: data.caNumber,
+  //     paymentMethod: data.paymentMethod,
+  //     paymentReceipt: data.paymentReceipt,
+  //     extraNotes: data.extraNotes,
+  //     totalAmount: data.totalAmount,
+  //     receivedAmount: data.receivedAmount,
+  //     pendingAmount: data.pendingAmount,
+  //     otherDocs: data.otherDocs,
+  //     Step1Status: data.Step1Status,
+  //     Step2Status: data.Step2Status,
+  //     Step3Status:data.Step3Status,
+  //     Step4Status:data.Step4Status,
+  //   });
+  //   setTotalServices(data.services.length);
+  //   setCompleted({ 0: true, 1: true, 2: true, 3: true });
+  //   setActiveStep(4);
+  // }else if (data.Step5Status === true){
+  //   setSelectedValues(data.bookingSource);
+  //   setLeadData({
+  //     ...leadData,
+  //     "Company Name": data["Company Name"],
+  //     "Company Email": data["Company Email"],
+  //     "Company Number": data["Company Number"],
+  //     incoDate: data.incoDate,
+  //     panNumber: data.panNumber,
+  //     gstNumber: data.gstNumber,
+  //     bdeName: data.bdeName,
+  //     bdeEmail: data.bdeEmail,
+  //     bdmName: data.bdmName,
+  //     bdmEmail: data.bdmEmail,
+  //     bookingDate: data.bookingDate,
+  //     bookingSource: data.bookingSource,
+  //     services: data.services,
+  //     totalAmount: data.services.reduce(
+  //       (total, service) => total + service.totalPaymentWGST,
+  //       0
+  //     ),
+  //     receivedAmount: data.services.reduce(
+  //       (total, service) =>
+  //         service.paymentTerms === "Full Advanced"
+  //           ? total + service.totalPaymentWGST
+  //           : total + service.firstPayment,
+  //       0
+  //     ),
+  //     pendingAmount: data.services.reduce(
+  //       (total, service) =>
+  //         service.paymentTerms === "Full Advanced"
+  //           ? total + 0
+  //           : total + service.totalPaymentWGST - service.firstPayment,
+  //       0
+  //     ),
+  //     caCase: data.caCase,
+  //     caName: data.caName,
+  //     caEmail: data.caEmail,
+  //     caNumber: data.caNumber,
+  //     paymentMethod: data.paymentMethod,
+  //     paymentReceipt: data.paymentReceipt,
+  //     extraNotes: data.extraNotes,
+  //     totalAmount: data.totalAmount,
+  //     receivedAmount: data.receivedAmount,
+  //     pendingAmount: data.pendingAmount,
+  //     otherDocs: data.otherDocs,
+  //     Step1Status: data.Step1Status,
+  //     Step2Status: data.Step2Status,
+  //     Step3Status:data.Step3Status,
+  //     Step4Status:data.Step4Status,
+  //   });
+  //   setTotalServices(data.services.length);
+  //   setCompleted({ 0: true, 1: true, 2: true, 3: true , 4:true });
+  //   setActiveStep(5);
+  // }
+  console.log("Real time data: ", leadData);
   useEffect(() => {
     fetchData();
     fetchDataEmp();
@@ -235,6 +434,16 @@ export default function AdminBookingForm({
       console.log("Fetch After changing Services", leadData);
     }
   }, [totalServices, defaultService]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const newServices = Array.from({ length: totalServices }, () => ({
+  //       ...defaultService,
+  //     }));
+  //     setLeadData((prevState) => ({ ...prevState, services: newServices }));
+  //     fetchData();
+  //     console.log("Fetch After 1 second" , leadData)
+  //   }, 1000);
+  // }, []);
 
   const totalSteps = () => {
     return steps.length;
@@ -261,11 +470,11 @@ export default function AdminBookingForm({
   const navigate = useNavigate();
 
   const handleBack = () => {
-    if (activeStep !== 0) {
+    if (activeStep !== 1) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
-      //setDataStatus("Matured");
-      //setNowToFetch(true);
+      setDataStatus("Matured");
+      setNowToFetch(true);
       setFormOpen(false);
     }
   };
@@ -278,6 +487,8 @@ export default function AdminBookingForm({
 
     return `${year}-${month}-${day}`;
   }
+
+  console.log(activeStep);
 
   const getOrdinal = (number) => {
     const suffixes = ["th", "st", "nd", "rd"];
@@ -299,400 +510,406 @@ export default function AdminBookingForm({
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
-  console.log(completed, "this is completed");
-
+  
   const handleComplete = async () => {
-    try {
-      const formData = new FormData();
+  //   try {
+  //     const formData = new FormData();
 
-      const isEmptyOrNull = (value) => {
-        return value === "" || value === null || value === 0;
-      };
-      if (!foundCompany) {
-        Swal.fire({
-          title: "Company Not Found!",
-          text: "Please Add Lead to Continue",
-          icon: "warning",
-        });
-        return true;
-      }
-      // Prepare the data to send to the backend
-      let dataToSend = {};
-      if (activeStep === 0) {
-        if (
-          isEmptyOrNull(leadData["Company Email"]) ||
-          isEmptyOrNull(leadData["Company Name"]) ||
-          isEmptyOrNull(leadData["Company Number"]) ||
-          isEmptyOrNull(leadData.incoDate) ||
-          isEmptyOrNull(leadData.panNumber)
-        ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
-        } else {
-          dataToSend = {
-            "Company Email": leadData["Company Email"],
-            "Company Name": leadData["Company Name"],
-            "Company Number": leadData["Company Number"],
-            incoDate: leadData.incoDate,
-            panNumber: leadData.panNumber,
-            gstNumber: leadData.gstNumber,
-            bdeName:
-              foundCompany && foundCompany.ename !== "Not Alloted"
-                ? foundCompany.ename
-                : "",
-            bdeEmail:
-              foundCompany && foundCompany.ename !== "Not Alloted"
-                ? unames.find((item) => item.ename === foundCompany.ename).email
-                : "",
-          };
+  //     const isEmptyOrNull = (value) => {
+  //       return value === "" || value === null || value === 0;
+  //     };
 
-          console.log("This is sending", dataToSend);
-          try {
-            const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companyNewName}/step1`,
-              dataToSend
-            );
-            // Handle response data as needed
-          } catch (error) {
-            console.error("Error uploading data:", error);
-            // Handle error
-          }
-          fetchData();
-          handleNext();
-          return true;
-        }
-      }
-      if (activeStep === 1) {
-        console.log(leadData.bookingDate);
-        if (
-          !leadData.bdeName ||
-          !leadData.bdmName ||
-          !leadData.bdmEmail ||
-          !leadData.bdmEmail ||
-          !leadData.bookingDate ||
-          !selectedValues
-        ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
-          return true;
-        } else {
-          dataToSend = {
-            bdeName: leadData.bdeName,
-            bdeEmail: leadData.bdeEmail,
-            bdmName: leadData.bdmName,
-            otherBdmName: leadData.otherBdmName,
-            bdmEmail: leadData.bdmEmail,
-            bdmType: leadData.bdmType,
-            bookingDate: leadData.bookingDate,
-            bookingSource: selectedValues,
-            otherBookingSource: leadData.otherBookingSource,
-          };
-          console.log("This is sending", dataToSend);
-          try {
-            const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companyNewName}/step2`,
-              dataToSend
-            );
-            // Handle response data as needed
-          } catch (error) {
-            console.error("Error uploading data:", error);
-            // Handle error
-          }
-          fetchData();
-          handleNext();
-          return true;
-        }
-      }
-      if (activeStep === 2) {
-        if (
-          !leadData.services[0].serviceName ||
-          !leadData.services[0].totalPaymentWOGST
-        ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
-          return true;
-        } else {
-          const totalAmount = leadData.services.reduce(
-            (acc, curr) => acc + curr.totalPaymentWGST,
-            0
-          );
-          const receivedAmount = leadData.services.reduce((acc, curr) => {
-            return curr.paymentTerms === "Full Advanced"
-              ? acc + curr.totalPaymentWGST
-              : acc + curr.firstPayment;
-          }, 0);
-          const pendingAmount = totalAmount - receivedAmount;
-          const servicestoSend = leadData.services.map((service) => ({
-            ...service,
-            secondPaymentRemarks:
-              service.secondPaymentRemarks === "On Particular Date"
-                ? secondTempRemarks
-                : service.secondPaymentRemarks,
-            thirdPaymentRemarks:
-              service.thirdPaymentRemarks === "On Particular Date"
-                ? thirdTempRemarks
-                : service.thirdPaymentRemarks,
-            fourthPaymentRemarks:
-              service.fourthPaymentRemarks === "On Particular Date"
-                ? fourthTempRemarks
-                : service.fourthPaymentRemarks,
-          }));
+  //     // Prepare the data to send to the backend
+  //     let dataToSend = {};
+  //     if (activeStep === 0) {
+  //       if (
+  //         isEmptyOrNull(leadData["Company Email"]) ||
+  //         isEmptyOrNull(leadData["Company Name"]) ||
+  //         isEmptyOrNull(leadData["Company Number"]) ||
+  //         isEmptyOrNull(leadData.incoDate) ||
+  //         isEmptyOrNull(leadData.panNumber)
+  //       ) {
+  //         Swal.fire({
+  //           title: "Please fill all the details",
+  //           icon: "warning",
+  //         });
+  //       } else {
+  //         dataToSend = {
+  //           "Company Email": leadData["Company Email"],
+  //           "Company Name": leadData["Company Name"],
+  //           "Company Number": leadData["Company Number"],
+  //           incoDate: leadData.incoDate,
+  //           panNumber: leadData.panNumber,
+  //           gstNumber: leadData.gstNumber,
+  //         };
 
-          dataToSend = {
-            services: servicestoSend,
-            numberOfServices: totalServices,
-            caCase: leadData.caCase,
-            caCommission: leadData.caCommission,
-            caNumber: leadData.caNumber,
-            caEmail: leadData.caEmail,
-            totalAmount: totalAmount,
-            receivedAmount: receivedAmount,
-            pendingAmount: pendingAmount,
-          };
-          console.log("This is sending", dataToSend);
-          try {
-            const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companyNewName}/step3`,
-              dataToSend
-            );
-            // Handle response data as needed
-          } catch (error) {
-            console.error("Error uploading data:", error);
-            // Handle error
-          }
-          fetchData();
-          handleNext();
-          return true;
-        }
-      }
-      if (activeStep === 3) {
-        console.log(
-          "I am in step 4",
-          leadData.paymentReceipt,
-          leadData.otherDocs
-        );
+  //         console.log("This is sending", dataToSend);
+  //         try {
+  //           const response = await axios.post(
+  //             `${secretKey}/redesigned-edit-leadData/${companysName}/step1`,
+  //             dataToSend
+  //           );
+  //           // Handle response data as needed
+  //         } catch (error) {
+  //           console.error("Error uploading data:", error);
+  //           // Handle error
+  //         }
+          
+  //         handleNext();
+  //         return true;
+  //       }
+  //     }
+  //     if (activeStep === 1) {
+  //       console.log(leadData.bookingDate);
+  //       if (
+  //         !leadData.bdeName ||
+  //         !leadData.bdmName ||
+  //         !leadData.bdmEmail ||
+  //         !leadData.bdmEmail ||
+  //         !leadData.bookingDate ||
+  //         !selectedValues
+  //       ) {
+  //         Swal.fire({
+  //           title: "Please fill all the details",
+  //           icon: "warning",
+  //         });
+  //         return true;
+  //       } else {
+  //         dataToSend = {
+  //           bdeName: leadData.bdeName,
+  //           bdeEmail: leadData.bdeEmail,
+  //           bdmName: leadData.bdmName,
+  //           otherBdmName:leadData.otherBdmName,
+  //           bdmEmail: leadData.bdmEmail,
+  //           bookingDate: leadData.bookingDate,
+  //           bookingSource: selectedValues,
+  //           otherBookingSource: leadData.otherBookingSource,
+  //         };
+  //         console.log("This is sending", dataToSend);
+  //         try {
+  //           const response = await axios.post(
+  //             `${secretKey}/redesigned-edit-leadData/${companysName}/step2`,
+  //             dataToSend
+  //           );
+  //           // Handle response data as needed
+  //         } catch (error) {
+  //           console.error("Error uploading data:", error);
+  //           // Handle error
+  //         }
+         
+  //         handleNext();
+  //         return true;
+  //       }
+  //     }
+  //     if (activeStep === 2) {
+  //       if (
+  //         !leadData.services[0].serviceName ||
+  //         !leadData.services[0].totalPaymentWOGST
+  //       ) {
+  //         Swal.fire({
+  //           title: "Please fill all the details",
+  //           icon: "warning",
+  //         });
+  //         return true;
+  //       } else {
+  //         const totalAmount = leadData.services.reduce(
+  //           (acc, curr) => acc + curr.totalPaymentWGST,
+  //           0
+  //         );
+  //         const receivedAmount = leadData.services.reduce((acc, curr) => {
+  //           return curr.paymentTerms === "Full Advanced"
+  //             ? acc + curr.totalPaymentWGST
+  //             : acc + curr.firstPayment;
+  //         }, 0);
+  //         const pendingAmount = totalAmount - receivedAmount;
+  //         const servicestoSend = leadData.services.map((service) => ({
+  //           ...service,
+  //           secondPaymentRemarks:
+  //             service.secondPaymentRemarks === "On Particular Date"
+  //               ? secondTempRemarks
+  //               : service.secondPaymentRemarks,
+  //           thirdPaymentRemarks:
+  //             service.thirdPaymentRemarks === "On Particular Date"
+  //               ? thirdTempRemarks
+  //               : service.thirdPaymentRemarks,
+  //           fourthPaymentRemarks:
+  //             service.fourthPaymentRemarks === "On Particular Date"
+  //               ? fourthTempRemarks
+  //               : service.fourthPaymentRemarks,
+  //         }));
 
-        console.log("Re work");
-        const totalAmount = leadData.services.reduce(
-          (acc, curr) => acc + curr.totalPaymentWGST,
-          0
-        );
-        const receivedAmount = leadData.services.reduce((acc, curr) => {
-          return curr.paymentTerms === "Full Advanced"
-            ? acc + curr.totalPaymentWGST
-            : acc + curr.firstPayment;
-        }, 0);
-        const pendingAmount = totalAmount - receivedAmount;
+  //         dataToSend = {
+  //           services: servicestoSend,
+  //           numberOfServices: totalServices,
+  //           caCase: leadData.caCase,
+  //           caCommission: leadData.caCommission,
+  //           caNumber: leadData.caNumber,
+  //           caEmail: leadData.caEmail,
+  //           totalAmount: totalAmount,
+  //           receivedAmount: receivedAmount,
+  //           pendingAmount: pendingAmount,
+  //         };
+  //         console.log("This is sending", dataToSend);
+  //         try {
+  //           const response = await axios.post(
+  //             `${secretKey}/redesigned-edit-leadData/${companysName}/step3`,
+  //             dataToSend
+  //           );
+  //           // Handle response data as needed
+  //         } catch (error) {
+  //           console.error("Error uploading data:", error);
+  //           // Handle error
+  //         }
+       
+  //         handleNext();
+  //         return true;
+  //       }
+  //     }
+  //     if (activeStep === 3) {
+  //       console.log(
+  //         "I am in step 4",
+  //         leadData.paymentReceipt,
+  //         leadData.otherDocs
+  //       );
+  //       if (
+  //         leadData.paymentReceipt.length === 0 ||
+  //         leadData.otherDocs.length === 0
+  //       ) {
+  //         Swal.fire({
+  //           title: "Please fill all the details",
+  //           icon: "warning",
+  //         });
+  //         return true;
+  //       } else {
+       
+  //         const totalAmount = leadData.services.reduce(
+  //           (acc, curr) => acc + curr.totalPaymentWGST,
+  //           0
+  //         );
+  //         const receivedAmount = leadData.services.reduce((acc, curr) => {
+  //           return curr.paymentTerms === "Full Advanced"
+  //             ? acc + curr.totalPaymentWGST
+  //             : acc + curr.firstPayment;
+  //         }, 0);
+  //         const pendingAmount = totalAmount - receivedAmount;
 
-        const formData = new FormData();
-        formData.append("totalAmount", totalAmount);
-        formData.append("receivedAmount", receivedAmount);
-        formData.append("pendingAmount", pendingAmount);
-        formData.append("paymentMethod", leadData.paymentMethod);
-        formData.append("extraNotes", leadData.extraNotes);
+  //         const formData = new FormData();
+  //         formData.append("totalAmount", totalAmount);
+  //         formData.append("receivedAmount", receivedAmount);
+  //         formData.append("pendingAmount", pendingAmount);
+  //         formData.append("paymentMethod", leadData.paymentMethod);
+  //         formData.append("extraNotes", leadData.extraNotes);
 
-        // Append payment receipt files to formData
-        for (let i = 0; i < leadData.paymentReceipt.length; i++) {
-          formData.append("paymentReceipt", leadData.paymentReceipt[i]);
-        }
+  //         // Append payment receipt files to formData
+        
+  //           formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+          
+  //         // Append other documents files to formData
+  //         for (let i = 0; i < leadData.otherDocs.length; i++) {
+  //           formData.append("otherDocs", leadData.otherDocs[i]);
+  //         }
+  //         try {
+  //           console.log("Api is about to work")
+  //           const response = await axios.post(
+  //             `${secretKey}/redesigned-edit-leadData/${companysName}/step4`,
+  //             formData
+  //           );
+  //           // Handle successful upload
+           
+  //           handleNext();
+  //           return true;
+  //         } catch (error) {
+  //           console.error("Error uploading data:", error);
+  //           // Handle error
+  //         }
+  //       }
+  //     }
 
-        // Append other documents files to formData
-        for (let i = 0; i < leadData.otherDocs.length; i++) {
-          formData.append("otherDocs", leadData.otherDocs[i]);
-        }
-        try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-leadData/${companyNewName}/step4`,
-            formData
-          );
-          // Handle successful upload
-          fetchData();
-          handleNext();
-          return true;
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          // Handle error
-        }
-      }
+  //     if (activeStep === 4) {
+  //       try {
+  //       //   const response = await axios.post(
+  //       //     `${secretKey}/redesigned-final-leadData/${companysName}`,
+  //       //     leadData
+  //       //   );
+        
 
-      if (activeStep === 4) {
-        try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-final-leadData/${companyNewName}`,
-            leadData
-          );
-          const response2 = await axios.post(
-            `${secretKey}/redesigned-leadData/${companyNewName}/step5`
-          );
+  //         const dataSending = {
+  //           requestBy:employeeName,
+  //           services:leadData.services
+  //         }
+  //         const response = await axios.post(
+  //           `${secretKey}/redesigned-edit-leadData/${companysName}/step5`, dataSending
+  //         );
+  //         console.log(response.data);
+  //         Swal.fire({
+  //           icon: "success",
+  //           title: "Request Sent",
+  //           text: "Your Request has been successfully sent to the Admin!",
+  //         });
+  //         // Handle response data as needed
+  //       } catch (error) {
+  //         console.error("Error uploading data:", error);
+  //         Swal.fire({
+  //           icon: "error",
+  //           title: "Error",
+  //           text: "There was an error submitting the form. Please try again later.",
+  //         });
+  //       }
 
-          console.log(response.data);
-          Swal.fire({
-            icon: "success",
-            title: "Form Submitted",
-            text: "Your form has been submitted successfully!",
-          });
-          setNowToFetch(true);
-          // Handle response data as needed
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "There was an error submitting the form. Please try again later.",
-          });
-          // Handle error
-        }
+      
+  //       handleNext();
+  //       setFormOpen(false);
+  //       return true;
+  //     }
+  //     // let dataToSend = {
+  //     //   ...leadData,
+  //     //   Step1Status: true,
+  //     // };
+  //   } catch (error) {
+  //     console.error("Error sending data to backend:", error);
+  //     // Handle error if needed
+  //   }
+  // };
+  // const handleEdit = async () => {
+  //   try {
+  //     const formData = new FormData();
 
-        fetchData();
-        handleNext();
-        setFormOpen(false);
-        setDataStatus("Matured");
-        return true;
-      }
-      // let dataToSend = {
-      //   ...leadData,
-      //   Step1Status: true,
-      // };
-    } catch (error) {
-      console.error("Error sending data to backend:", error);
-      // Handle error if needed
-    }
-  };
-  const handleEdit = async () => {
-    try {
-      const formData = new FormData();
+  //     let dataToSend = {
+  //       ...dataToSend,
+  //       Step1Status: true,
+  //     };
+  //     if (activeStep === 3) {
+  //       dataToSend = {
+  //         ...leadData,
+  //       };
+  //       for (let i = 0; i < leadData.otherDocs.length; i++) {
+  //         formData.append("otherDocs", leadData.otherDocs[i]);
+  //       }
+  //       formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+  //       console.log(dataToSend, activeStep);
+  //     } else if (activeStep === 1) {
+  //       dataToSend = {
+  //         ...dataToSend,
+  //         bookingSource: selectedValues,
+  //       };
+  //       console.log("Step 1", dataToSend);
+  //     } else if (activeStep === 2) {
+  //       const totalAmount = leadData.services.reduce(
+  //         (acc, curr) => acc + curr.totalPaymentWOGST,
+  //         0
+  //       );
+  //       const receivedAmount = leadData.services.reduce((acc, curr) => {
+  //         return curr.paymentTerms === "Full Advanced"
+  //           ? acc + curr.totalPaymentWOGST
+  //           : acc + curr.firstPayment;
+  //       }, 0);
+  //       const pendingAmount = totalAmount - receivedAmount;
+  //       dataToSend = {
+  //         ...leadData,
+  //         totalAmount: totalAmount,
+  //         receivedAmount: receivedAmount,
+  //         pendingAmount: pendingAmount,
+  //       };
+  //     } else if (activeStep === 3) {
+  //       dataToSend = {
+  //         ...leadData,
+  //         Step3Status: true,
+  //         Step4Status: true,
+  //       };
+  //     } else if (activeStep === 4) {
+  //       dataToSend = {
+  //         ...leadData,
+  //         Step3Status: true,
+  //         Step4Status: true,
+  //         Step5Status: true,
+  //       };
+  //     }
+  //     // console.log(activeStep, dataToSend);
+  //     Object.keys(dataToSend).forEach((key) => {
+  //       if (key === "services") {
+  //         // Handle services separately as it's an array
+  //         dataToSend.services.forEach((service, index) => {
+  //           Object.keys(service).forEach((prop) => {
+  //             formData.append(`services[${index}][${prop}]`, service[prop]);
+  //           });
+  //         });
+  //       } else if (key === "otherDocs" && activeStep === 3) {
+  //         for (let i = 0; i < leadData.otherDocs.length; i++) {
+  //           formData.append("otherDocs", leadData.otherDocs[i]);
+  //         }
+  //       } else if (key === "paymentReceipt" && activeStep === 3) {
+  //         formData.append("paymentReceipt", leadData.paymentReceipt[0]);
+  //       } else {
+  //         formData.append(key, dataToSend[key]);
+  //       }
+  //     });
+  //     if (activeStep === 4) {
+  //       dataToSend = {
+  //         ...leadData,
+  //         paymentReceipt: leadData.paymentReceipt
+  //           ? leadData.paymentReceipt
+  //           : null,
+  //       };
+  //       try {
+  //         const response = await axios.post(
+  //           `${secretKey}/redesigned-final-leadData/${companysName}`,
+  //           leadData
+  //         );
+  //         console.log(response.data);
+  //         Swal.fire({
+  //           icon: "success",
+  //           title: "Form Submitted",
+  //           text: "Your form has been submitted successfully!",
+  //         });
+  //         // Handle response data as needed
+  //       } catch (error) {
+  //         console.error("Error uploading data:", error);
+  //         Swal.fire({
+  //           icon: "error",
+  //           title: "Error",
+  //           text: "There was an error submitting the form. Please try again later.",
+  //         });
+  //         // Handle error
+  //       }
+  //     } else {
+  //       try {
+  //         const response = await axios.post(
+  //           `${secretKey}/redesigned-leadData/${companysName}`,
+  //           formData,
+  //           {
+  //             headers: {
+  //               "Content-Type": "multipart/form-data",
+  //             },
+  //           }
+  //         );
 
-      let dataToSend = {
-        ...dataToSend,
-        Step1Status: true,
-      };
-      if (activeStep === 3) {
-        dataToSend = {
-          ...leadData,
-        };
-        for (let i = 0; i < leadData.otherDocs.length; i++) {
-          formData.append("otherDocs", leadData.otherDocs[i]);
-        }
-        formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-        console.log(dataToSend, activeStep);
-      } else if (activeStep === 1) {
-        dataToSend = {
-          ...dataToSend,
-          bookingSource: selectedValues,
-        };
-        console.log("Step 1", dataToSend);
-      } else if (activeStep === 2) {
-        const totalAmount = leadData.services.reduce(
-          (acc, curr) => acc + curr.totalPaymentWOGST,
-          0
-        );
-        const receivedAmount = leadData.services.reduce((acc, curr) => {
-          return curr.paymentTerms === "Full Advanced"
-            ? acc + curr.totalPaymentWOGST
-            : acc + curr.firstPayment;
-        }, 0);
-        const pendingAmount = totalAmount - receivedAmount;
-        dataToSend = {
-          ...leadData,
-          totalAmount: totalAmount,
-          receivedAmount: receivedAmount,
-          pendingAmount: pendingAmount,
-        };
-      } else if (activeStep === 3) {
-        dataToSend = {
-          ...leadData,
-          Step3Status: true,
-          Step4Status: true,
-        };
-      } else if (activeStep === 4) {
-        dataToSend = {
-          ...leadData,
-          Step3Status: true,
-          Step4Status: true,
-          Step5Status: true,
-        };
-      }
-      // console.log(activeStep, dataToSend);
-      Object.keys(dataToSend).forEach((key) => {
-        if (key === "services") {
-          // Handle services separately as it's an array
-          dataToSend.services.forEach((service, index) => {
-            Object.keys(service).forEach((prop) => {
-              formData.append(`services[${index}][${prop}]`, service[prop]);
-            });
-          });
-        } else if (key === "otherDocs" && activeStep === 3) {
-          for (let i = 0; i < leadData.otherDocs.length; i++) {
-            formData.append("otherDocs", leadData.otherDocs[i]);
-          }
-        } else if (key === "paymentReceipt" && activeStep === 3) {
-          formData.append("paymentReceipt", leadData.paymentReceipt[0]);
-        } else {
-          formData.append(key, dataToSend[key]);
-        }
-      });
-      if (activeStep === 4) {
-        dataToSend = {
-          ...leadData,
-          paymentReceipt: leadData.paymentReceipt
-            ? leadData.paymentReceipt
-            : null,
-        };
-        try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-final-leadData/${companysName}`,
-            leadData
-          );
-          console.log(response.data);
-          Swal.fire({
-            icon: "success",
-            title: "Form Submitted",
-            text: "Your form has been submitted successfully!",
-          });
-          // Handle response data as needed
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "There was an error submitting the form. Please try again later.",
-          });
-          // Handle error
-        }
-      } else {
-        try {
-          const response = await axios.post(
-            `${secretKey}/redesigned-leadData/${companysName}`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
+  //         // Handle response data as needed
+  //       } catch (error) {
+  //         console.error("Error uploading data:", error);
+  //         // Handle error
+  //       }
+  //     }
 
-          // Handle response data as needed
-        } catch (error) {
-          console.error("Error uploading data:", error);
-          // Handle error
-        }
-      }
 
-      fetchData();
+  //     // Log the response from the backend
 
-      // Log the response from the backend
+  //     handleNext();
+  //   } catch (error) {
+  //     console.error("Error sending data to backend:", error);
+  //     // Handle error if needed
+  //   }
 
-      handleNext();
-    } catch (error) {
-      console.error("Error sending data to backend:", error);
-      // Handle error if needed
-    }
+  if(activeStep===4){
+   console.log("Data sending to change:-", leadData);
+  }else {
+    setCompleted((prevCompleted) => ({
+      ...prevCompleted,
+      [activeStep]: true,
+    }));
+    handleNext();
+  }
+
+
   };
 
   const handleReset = () => {
@@ -702,7 +919,7 @@ export default function AdminBookingForm({
   const handleResetDraft = async () => {
     try {
       const response = await fetch(
-        `${secretKey}/redesigned-delete-model/${companyNewName.trim()}`,
+        `${secretKey}/redesigned-delete-model/${companysName}`,
         {
           method: "DELETE",
           headers: {
@@ -1099,28 +1316,19 @@ export default function AdminBookingForm({
                                 Select Payment Date
                               </option>
                               <option value="After Application">
-                                AFTER APPLICATION
-                              </option>
-                              <option value="AFTER CERTIFICATE">
-                                AFTER CERTIFICATE
-                              </option>
-                              <option value="AFTER APPROVAL">
-                                AFTER APPROVAL
-                              </option>
-                              <option value="AFTER SERVICE COMPLETION">
-                                AFTER SERVICE COMPLETION
+                                After Application
                               </option>
                               <option value="At the time of Application">
-                               AT THE TIME OF APPLICATION
+                                At the time of Application
                               </option>
                               <option value="After Document">
-                                AFTER DOCUMENT
+                                After Document
                               </option>
                               <option value="Before Application">
-                                BEFORE APPLICATION
+                                Before Application
                               </option>
                               <option value="On Particular Date">
-                                ON PARTICULAR DATE
+                                On Particular Date
                               </option>
                             </select>
                           </div>
@@ -1129,7 +1337,6 @@ export default function AdminBookingForm({
                             <div className="mt-2">
                               <input
                                 value={secondTempRemarks}
-                                style={{textTransform:"uppercase"}}
                                 onChange={(e) =>
                                   setSecondTempRemarks(e.target.value)
                                 }
@@ -1408,7 +1615,8 @@ export default function AdminBookingForm({
                           : service
                       ),
                     }));
-                    handleTextAreaChange(e);
+                    handleTextAreaChange(e)
+
                   }}
                   readOnly={completed[activeStep] === true}
                 ></textarea>
@@ -1423,96 +1631,19 @@ export default function AdminBookingForm({
 
   // console.log("Default Lead Data :", leadData);
 
-  //   const handleInputChange = (value, id) => {
-  //     if (id === "bdmName") {
-  //       const foundUser = unames.find((item) => item.ename === value);
-  //       setLeadData({
-  //         ...leadData,
-  //         bdmName: value,
-  //         bdmEmail: foundUser ? foundUser.email : "", // Check if foundUser exists before accessing email
-  //       });
-  //     } else {
-  //       setLeadData({ ...leadData, [id]: value });
-  //     }
-  //   };
-
-  const handleInputChange = (value, fieldName) => {
-    if (fieldName === "bdmName") {
+  const handleInputChange = (value, id) => {
+    if (id === "bdmName") {
       const foundUser = unames.find((item) => item.ename === value);
       setLeadData({
         ...leadData,
         bdmName: value,
         bdmEmail: foundUser ? foundUser.email : "", // Check if foundUser exists before accessing email
       });
-    } else if (fieldName === "bdeName") {
-      const foundUser = unames.find((item) => item.ename === value);
-      setLeadData({
-        ...leadData,
-        bdeName: value,
-        bdeEmail: foundUser ? foundUser.email : "", // Check if foundUser exists before accessing email
-      });
     } else {
-      setLeadData((prevState) => ({
-        ...prevState,
-        [fieldName]: value,
-      }));
+      setLeadData({ ...leadData, [id]: value });
     }
-    //setCompanyNewName(value)
   };
 
-  const [companyNewName, setCompanyNewName] = useState("");
-  const [foundCompany, setFoundCompany] = useState(null);
-
-  useEffect(() => {
-    const fetchDataNew = async () => {
-      const companyName = companyNewName;
-      // console.log("gadbadyahin hain")
-      try {
-        const response = await axios.get(`${secretKey}/leads/${companyName}`);
-        console.log(response.data);
-        setFoundCompany(response.data);
-        setLeadData((prevLeadData) => ({
-          ...prevLeadData,
-          "Company Name": response.data
-            ? response.data["Company Name"]
-            : companyName,
-          "Company Email": response.data ? response.data["Company Email"] : " ",
-          "Company Number": response.data ? response.data["Company Number"] : 0,
-          incoDate: response.data
-            ? formatDate(response.data["Company Incorporation Date  "])
-            : " ",
-        }));
-      } catch (error) {
-        console.error("Error fetching company data:", error);
-      }
-    };
-
-    if (companyNewName) {
-      fetchDataNew();
-    } else {
-      setLeadData((prevLeadData) => ({
-        ...prevLeadData,
-      }));
-    }
-  }, [companyNewName]);
-
-  useEffect(() => {
-    if (foundCompany) {
-      setLeadData((prevLeadData) => ({
-        ...prevLeadData,
-        bdeName: foundCompany.ename !== "Not Alloted" ? foundCompany.ename : "",
-        bdeEmail:
-          foundCompany.ename !== "Not Alloted"
-            ? unames.find((item) => item.ename === foundCompany.ename).email
-            : "",
-      }));
-    }
-  }, [foundCompany]);
-
-  console.log("Found Company", foundCompany);
-  const handleInputCompanyName = (value) => {
-    setCompanyNewName(value);
-  };
   const handleRemoveFile = () => {
     setLeadData({ ...leadData, paymentReceipt: null });
   };
@@ -1526,8 +1657,6 @@ export default function AdminBookingForm({
       };
     });
   };
-
-  console.log("lead", leadData);
 
   return (
     <div>
@@ -1544,7 +1673,7 @@ export default function AdminBookingForm({
                       className={
                         activeStep === index ? "form-tab-active" : "No-active"
                       }
-                      disabled={!completed[index]}
+                      disabled={index===0}
                     >
                       {label}
                     </StepButton>
@@ -1591,13 +1720,14 @@ export default function AdminBookingForm({
                                         className="form-control mt-1"
                                         placeholder="Enter Company Name"
                                         id="Company"
-                                        value={companyNewName}
+                                        value={leadData["Company Name"]}
                                         onChange={(e) => {
-                                          handleInputCompanyName(
+                                          handleInputChange(
                                             e.target.value,
                                             "Company Name"
                                           );
                                         }}
+                                        disabled
                                       />
                                     </div>
                                   </div>
@@ -1611,20 +1741,6 @@ export default function AdminBookingForm({
                                           </span>
                                         }
                                       </label>
-                                      {/* <input
-                                                                                type="email"
-                                                                                className="form-control mt-1"
-                                                                                placeholder="Enter email"
-                                                                                id="email"
-                                                                                value={leadData["Company Email"]}
-                                                                                onChange={(e) => {
-                                                                                    handleInputChange(
-                                                                                        e.target.value,
-                                                                                        "Company Email"
-                                                                                    );
-                                                                                }}
-                                                                                readOnly={completed[activeStep] === true}
-                                                                            /> */}
                                       <input
                                         type="email"
                                         className="form-control mt-1"
@@ -1653,20 +1769,6 @@ export default function AdminBookingForm({
                                           </span>
                                         }
                                       </label>
-                                      {/* <input
-                                                                                type="text" // Use type="text" instead of type="number"
-                                                                                className="form-control mt-1"
-                                                                                placeholder="Enter Number"
-                                                                                id="number"
-                                                                                value={leadData["Company Number"]}
-                                                                                onChange={(e) => {
-                                                                                    const inputValue = e.target.value;
-                                                                                    if (/^\d{0,10}$/.test(inputValue)) { // Check if input matches the pattern
-                                                                                        handleInputChange(inputValue, "Company Number");
-                                                                                    }
-                                                                                }}
-                                                                                readOnly={completed[activeStep] === true}
-                                                                            /> */}
                                       <input
                                         type="text" // Use type="text" instead of type="number"
                                         className="form-control mt-1"
@@ -1675,17 +1777,11 @@ export default function AdminBookingForm({
                                         value={leadData["Company Number"]}
                                         onChange={(e) => {
                                           const inputValue = e.target.value;
-                                          if (/^\d{0,10}$/.test(inputValue)) {
-                                            // Check if input matches the pattern
-                                            handleInputChange(
-                                              inputValue,
-                                              "Company Number"
-                                            );
+                                          if (/^\d{0,10}$/.test(inputValue)) { // Check if input matches the pattern
+                                            handleInputChange(inputValue, "Company Number");
                                           }
                                         }}
-                                        readOnly={
-                                          completed[activeStep] === true
-                                        }
+                                        readOnly={completed[activeStep] === true}
                                       />
                                     </div>
                                   </div>
@@ -1699,28 +1795,12 @@ export default function AdminBookingForm({
                                           </span>
                                         }
                                       </label>
-                                      {/* <input
-                                                                                type="date"
-                                                                                className="form-control mt-1"
-                                                                                placeholder="Incorporation Date"
-                                                                                id="inco-date"
-                                                                                value={formatDate(leadData.incoDate)}
-                                                                                onChange={(e) => {
-                                                                                    handleInputChange(
-                                                                                        e.target.value,
-                                                                                        "incoDate"
-                                                                                    );
-                                                                                }}
-                                                                                readOnly={
-                                                                                    completed[activeStep] === true
-                                                                                }
-                                                                            /> */}
                                       <input
                                         type="date"
                                         className="form-control mt-1"
                                         placeholder="Incorporation Date"
                                         id="inco-date"
-                                        value={leadData.incoDate}
+                                        value={formatDate(leadData.incoDate)}
                                         onChange={(e) => {
                                           handleInputChange(
                                             e.target.value,
@@ -1743,23 +1823,6 @@ export default function AdminBookingForm({
                                           </span>
                                         }
                                       </label>
-                                      {/* <input
-                                                                                type="text"
-                                                                                className="form-control mt-1"
-                                                                                placeholder="Enter Company's PAN"
-                                                                                id="pan"
-                                                                                value={leadData.panNumber}
-                                                                                onChange={(e) => {
-                                                                                    handleInputChange(
-                                                                                        e.target.value,
-                                                                                        "panNumber"
-                                                                                    );
-                                                                                }}
-                                                                                readOnly={
-                                                                                    completed[activeStep] === true
-                                                                                }
-                                                                                required
-                                                                            /> */}
                                       <input
                                         type="text"
                                         className="form-control mt-1"
@@ -1817,19 +1880,19 @@ export default function AdminBookingForm({
                                 <div className="row">
                                   <div className="col-sm-3">
                                     <div className="form-group mt-2 mb-2">
-                                      <label for="bdmName">
-                                        BDE Name:{" "}
+                                      <label for="bdeName">
+                                        BDE Name:
                                         {
                                           <span style={{ color: "red" }}>
                                             *
                                           </span>
                                         }
                                       </label>
-
-                                      <select
+                                      <input
                                         type="text"
-                                        className="form-select mt-1"
-                                        id="select-users"
+                                        className="form-control mt-1"
+                                        placeholder="Enter BDE Name"
+                                        id="bdeName"
                                         value={leadData.bdeName}
                                         onChange={(e) => {
                                           handleInputChange(
@@ -1837,20 +1900,8 @@ export default function AdminBookingForm({
                                             "bdeName"
                                           );
                                         }}
-                                        disabled={
-                                          completed[activeStep] === true
-                                        }
-                                      >
-                                        <option value="" disabled selected>
-                                          Please select BDE Name
-                                        </option>
-                                        {unames &&
-                                          unames.map((names) => (
-                                            <option value={names.ename}>
-                                              {names.ename}
-                                            </option>
-                                          ))}
-                                      </select>
+                                        disabled
+                                      />
                                     </div>
                                   </div>
                                   <div className="col-sm-3">
@@ -1875,6 +1926,7 @@ export default function AdminBookingForm({
                                             "bdeEmail"
                                           );
                                         }}
+                                        disabled
                                       />
                                     </div>
                                   </div>
@@ -1918,91 +1970,92 @@ export default function AdminBookingForm({
                                       </select>
                                     </div>
                                   </div>
-                                  {leadData.bdmName === "other" && (
-                                    <>
-                                      <div className="row">
-                                        <div className="col-sm-3">
-                                          <div className="form-group mt-2 mb-2">
-                                            <label for="otherBdmName">
-                                              Other BDM Name:
-                                              {
-                                                <span style={{ color: "red" }}>
-                                                  *
-                                                </span>
-                                              }
-                                            </label>
-                                            <input
-                                              type="text"
-                                              className="form-control mt-1"
-                                              placeholder="Enter Other BDM Name"
-                                              id="otherBdmName"
-                                              value={leadData.otherBdmName}
-                                              onChange={(e) => {
-                                                handleInputChange(
-                                                  e.target.value,
-                                                  "otherBdmName"
-                                                );
-                                              }}
-                                            />
-                                          </div>
-                                        </div>
-                                        <div className="col-sm-3">
-                                          <div className="form-group mt-2 mb-2">
-                                            <label for="otherEmail">
-                                              BDM Email:
-                                              {
-                                                <span style={{ color: "red" }}>
-                                                  *
-                                                </span>
-                                              }
-                                            </label>
-                                            <input
-                                              type="text"
-                                              className="form-control mt-1"
-                                              placeholder="Enter BDM Email"
-                                              id="otherBdmEmail"
-                                              value={leadData.bdmEmail}
-                                              onChange={(e) => {
-                                                handleInputChange(
-                                                  e.target.value,
-                                                  "bdmEmail"
-                                                );
-                                              }}
-                                            />
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </>
-                                  )}
-                                  {leadData.bdmName !== "other" && (
-                                    <div className="col-sm-3">
-                                      <div className="form-group mt-2 mb-2">
-                                        <label for="BDMemail">
-                                          BDM Email Address:{" "}
-                                          {
-                                            <span style={{ color: "red" }}>
-                                              *
-                                            </span>
-                                          }
-                                        </label>
-                                        <input
-                                          type="email"
-                                          className="form-control mt-1"
-                                          placeholder="Enter BDM email"
-                                          id="BDMemail"
-                                          value={leadData.bdmEmail}
-                                          onChange={(e) => {
-                                            handleInputChange(
-                                              e.target.value,
-                                              "bdmEmail"
-                                            );
-                                          }}
-                                          //disabled={leadData.bdmEmail}
-                                        />
-                                      </div>
+                                  {leadData.bdmName === "other" && 
+                                  <>
+                                  <div className="row">
+                                  <div className="col-sm-3">
+                                    <div className="form-group mt-2 mb-2">
+                                      <label for="otherBdmName">
+                                        Other BDM Name:
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
+                                      </label>
+                                      <input
+                                        type="text"
+                                        className="form-control mt-1"
+                                        placeholder="Enter Other BDM Name"
+                                        id="otherBdmName"
+                                        value={leadData.otherBdmName}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "otherBdmName"
+                                          );
+                                        }}
+                                      />
                                     </div>
-                                  )}
+                                  </div>
+                                  <div className="col-sm-3">
+                                    <div className="form-group mt-2 mb-2">
+                                      <label for="otherEmail">
+                                        BDM Email:
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
+                                      </label>
+                                      <input
+                                        type="text"
+                                        className="form-control mt-1"
+                                        placeholder="Enter BDM Email"
+                                        id="otherBdmEmail"
+                                        value={leadData.bdmEmail}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "bdmEmail"
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
 
+                                  </div>
+                                  
+
+                                  </>}
+
+                                  
+                                  {leadData.bdmName !== "other" && <div className="col-sm-3">
+                                    <div className="form-group mt-2 mb-2">
+                                      <label for="BDMemail">
+                                        BDM Email Address:{" "}
+                                        {
+                                          <span style={{ color: "red" }}>
+                                            *
+                                          </span>
+                                        }
+                                      </label>
+                                      <input
+                                        type="email"
+                                        className="form-control mt-1"
+                                        placeholder="Enter BDM email"
+                                        id="BDMemail"
+                                        value={leadData.bdmEmail}
+                                        onChange={(e) => {
+                                          handleInputChange(
+                                            e.target.value,
+                                            "bdmEmail"
+                                          );
+                                        }}
+                                        disabled={leadData.bdmEmail}
+                                      />
+                                    </div>
+                                  </div>}
                                   <div className="row mt-1">
                                     <div className="col-sm-2 mr-2">
                                       <div className="form-group mt-2 mb-2">
@@ -2063,7 +2116,6 @@ export default function AdminBookingForm({
                                       </div>
                                     </div>
                                   </div>
-
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="booking-date">
@@ -2470,6 +2522,7 @@ export default function AdminBookingForm({
                                         for="Payment Receipt"
                                       >
                                         Upload Payment Reciept{" "}
+                                        
                                       </label>
                                       <input
                                         type="file"
@@ -2547,7 +2600,7 @@ export default function AdminBookingForm({
                                         for="remarks"
                                       >
                                         Any Extra Remarks{" "}
-                                       
+                                      
                                       </label>
                                       <textarea
                                         rows={1}
@@ -2560,7 +2613,7 @@ export default function AdminBookingForm({
                                             e.target.value,
                                             "extraNotes"
                                           );
-                                          handleTextAreaChange(e);
+                                          handleTextAreaChange(e)
                                         }}
                                         readOnly={
                                           completed[activeStep] === true
@@ -2572,6 +2625,7 @@ export default function AdminBookingForm({
                                     <div className="form-group">
                                       <label className="form-label" for="docs">
                                         Upload Additional Docs{" "}
+                                       
                                       </label>
                                       <input
                                         type="file"
@@ -2658,7 +2712,7 @@ export default function AdminBookingForm({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData["Company Name"]}
+                                        {companysName}
                                       </div>
                                     </div>
                                   </div>
@@ -2670,7 +2724,7 @@ export default function AdminBookingForm({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData["Company Email"]}
+                                        {companysEmail}
                                       </div>
                                     </div>
                                   </div>
@@ -2682,7 +2736,7 @@ export default function AdminBookingForm({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData["Company Number"]}
+                                        {companyNumber}
                                       </div>
                                     </div>
                                   </div>
@@ -2694,7 +2748,7 @@ export default function AdminBookingForm({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {formatDate(leadData.incoDate)}
+                                        {formatDate(companysInco)}
                                       </div>
                                     </div>
                                   </div>
@@ -2804,9 +2858,7 @@ export default function AdminBookingForm({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData.bookingSource !== ""
-                                          ? leadData.bookingSource
-                                          : "-"}
+                                        {selectedValues}
                                       </div>
                                     </div>
                                   </div>
@@ -2892,10 +2944,10 @@ export default function AdminBookingForm({
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                          ₹{" "}{obj.totalPaymentWGST !== undefined
-                                              ? (parseInt(
+                                            {obj.totalPaymentWGST !== undefined
+                                              ? Number(
                                                   obj.totalPaymentWGST
-                                                )).toLocaleString()
+                                                ).toFixed(2)
                                               : "0"}
                                           </div>
                                         </div>
@@ -2936,9 +2988,9 @@ export default function AdminBookingForm({
                                             </div>
                                             <div className="col-sm-9 p-0">
                                               <div className="form-label-data">
-                                              ₹{" "}{parseInt(
+                                                {Number(
                                                   obj.firstPayment
-                                                )}
+                                                ).toFixed(2)}
                                               </div>
                                             </div>
                                           </div>
@@ -2949,10 +3001,10 @@ export default function AdminBookingForm({
                                               </div>
                                             </div>
                                             <div className="col-sm-9 p-0">
-                                              <div className="form-label-data" style={{textTransform:"uppercase"}}>
-                                              ₹{" "}{parseInt(
+                                              <div className="form-label-data">
+                                                {Number(
                                                   obj.secondPayment
-                                                ).toLocaleString()}{" "}
+                                                ).toFixed(2)}{" "}
                                                 -{" "}
                                                 {isNaN(
                                                   new Date(
@@ -2972,10 +3024,10 @@ export default function AdminBookingForm({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data" style={{textTransform:"uppercase"}}>
-                                                ₹{" "}{parseInt(
+                                                <div className="form-label-data">
+                                                  {Number(
                                                     obj.thirdPayment
-                                                  ).toLocaleString()}{" "}
+                                                  ).toFixed(2)}{" "}
                                                   -{" "}
                                                   {isNaN(
                                                     new Date(
@@ -2996,10 +3048,10 @@ export default function AdminBookingForm({
                                                 </div>
                                               </div>
                                               <div className="col-sm-9 p-0">
-                                                <div className="form-label-data" style={{textTransform:"uppercase"}}>
-                                                ₹{" "}{parseInt(
+                                                <div className="form-label-data">
+                                                  {Number(
                                                     obj.fourthPayment
-                                                  ).toLocaleString()}{" "}
+                                                  ).toFixed(2)}{" "}
                                                   -{" "}
                                                   {isNaN(
                                                     new Date(
@@ -3053,14 +3105,14 @@ export default function AdminBookingForm({
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
                                             ₹{" "}
-                                            {parseInt(
+                                            {Number(
                                               leadData.services.reduce(
                                                 (acc, curr) =>
                                                   acc +
                                                   Number(curr.totalPaymentWGST),
                                                 0
                                               )
-                                            ).toLocaleString()}
+                                            ).toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -3075,7 +3127,7 @@ export default function AdminBookingForm({
                                         <div className="col-sm-7 p-0">
                                           <div className="form-label-data">
                                             ₹{" "}
-                                            {(leadData.services
+                                            {leadData.services
                                               .reduce((acc, curr) => {
                                                 return curr.paymentTerms ===
                                                   "Full Advanced"
@@ -3085,8 +3137,8 @@ export default function AdminBookingForm({
                                                       )
                                                   : acc +
                                                       Number(curr.firstPayment);
-                                              }, 0)).toLocaleString()
-                                              }
+                                              }, 0)
+                                              .toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
@@ -3101,7 +3153,7 @@ export default function AdminBookingForm({
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
                                             ₹{" "}
-                                            {parseInt(leadData.services
+                                            {leadData.services
                                             .reduce(
                                               (total, service) =>
                                                 service.paymentTerms ===
@@ -3116,97 +3168,95 @@ export default function AdminBookingForm({
                                                     ),
                                               0
                                             )
-                                            ).toLocaleString()}
+                                            .toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                  {leadData.paymentReceipt.length !== 0 && (
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 align-self-stretc p-0">
-                                        <div className="form-label-name h-100">
-                                          <b>Upload Payment Receipt</b>
-                                        </div>
+                                {leadData.paymentReceipt.length!==0 &&  <div className="row m-0">
+                                    <div className="col-sm-3 align-self-stretc p-0">
+                                      <div className="form-label-name h-100">
+                                        <b>Upload Payment Receipt</b>
                                       </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data">
-                                          <div
-                                            className="UploadDocPreview"
-                                            onClick={() => {
-                                              handleViewPdfReciepts(
-                                                leadData.paymentReceipt[0]
-                                                  .filename
-                                                  ? leadData.paymentReceipt[0]
-                                                      .filename
-                                                  : leadData.paymentReceipt[0]
-                                                      .name
-                                              );
-                                            }}
-                                          >
-                                            {leadData.paymentReceipt[0]
-                                              .filename ? (
-                                              <>
-                                                <div className="docItemImg">
-                                                  <img
-                                                    src={
-                                                      leadData.paymentReceipt[0].filename.endsWith(
-                                                        ".pdf"
-                                                      )
-                                                        ? pdfimg
-                                                        : img
-                                                    }
-                                                  ></img>
-                                                </div>
-                                                <div
-                                                  className="docItemName wrap-MyText"
-                                                  title={
-                                                    leadData.paymentReceipt[0].filename.split(
-                                                      "-"
-                                                    )[1]
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data">
+                                        <div
+                                          className="UploadDocPreview"
+                                          onClick={() => {
+                                            handleViewPdfReciepts(
+                                              leadData.paymentReceipt[0]
+                                                .filename
+                                                ? leadData.paymentReceipt[0]
+                                                    .filename
+                                                : leadData.paymentReceipt[0]
+                                                    .name
+                                            );
+                                          }}
+                                        >
+                                          {leadData.paymentReceipt[0]
+                                            .filename ? (
+                                            <>
+                                              <div className="docItemImg">
+                                                <img
+                                                  src={
+                                                    leadData.paymentReceipt[0].filename.endsWith(
+                                                      ".pdf"
+                                                    )
+                                                      ? pdfimg
+                                                      : img
                                                   }
-                                                >
-                                                  {
-                                                    leadData.paymentReceipt[0].filename.split(
-                                                      "-"
-                                                    )[1]
+                                                ></img>
+                                              </div>
+                                              <div
+                                                className="docItemName wrap-MyText"
+                                                title={
+                                                  leadData.paymentReceipt[0].filename.split(
+                                                    "-"
+                                                  )[1]
+                                                }
+                                              >
+                                                {
+                                                  leadData.paymentReceipt[0].filename.split(
+                                                    "-"
+                                                  )[1]
+                                                }
+                                              </div>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <div className="docItemImg">
+                                                <img
+                                                  src={
+                                                    leadData.paymentReceipt[0].name.endsWith(
+                                                      ".pdf"
+                                                    )
+                                                      ? pdfimg
+                                                      : img
                                                   }
-                                                </div>
-                                              </>
-                                            ) : (
-                                              <>
-                                                <div className="docItemImg">
-                                                  <img
-                                                    src={
-                                                      leadData.paymentReceipt[0].name.endsWith(
-                                                        ".pdf"
-                                                      )
-                                                        ? pdfimg
-                                                        : img
-                                                    }
-                                                  ></img>
-                                                </div>
-                                                <div
-                                                  className="docItemName wrap-MyText"
-                                                  title={
-                                                    leadData.paymentReceipt[0].name.split(
-                                                      "-"
-                                                    )[1]
-                                                  }
-                                                >
-                                                  {
-                                                    leadData.paymentReceipt[0].name.split(
-                                                      "-"
-                                                    )[1]
-                                                  }
-                                                </div>
-                                              </>
-                                            )}
-                                          </div>
+                                                ></img>
+                                              </div>
+                                              <div
+                                                className="docItemName wrap-MyText"
+                                                title={
+                                                  leadData.paymentReceipt[0].name.split(
+                                                    "-"
+                                                  )[1]
+                                                }
+                                              >
+                                                {
+                                                  leadData.paymentReceipt[0].name.split(
+                                                    "-"
+                                                  )[1]
+                                                }
+                                              </div>
+                                            </>
+                                          )}
                                         </div>
                                       </div>
                                     </div>
-                                  )}
+                                  </div>}
                                   <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
@@ -3231,79 +3281,76 @@ export default function AdminBookingForm({
                                       </div>
                                     </div>
                                   </div>
-                                  {leadData.otherDocs.length !== 0 && (
-                                    <div className="row m-0">
-                                      <div className="col-sm-3 align-self-stretc p-0">
-                                        <div className="form-label-name h-100">
-                                          <b>Additional Docs</b>
-                                        </div>
+                                  {leadData.otherDocs.length!==0  && <div className="row m-0">
+                                    <div className="col-sm-3 align-self-stretc p-0">
+                                      <div className="form-label-name h-100">
+                                        <b>Additional Docs</b>
                                       </div>
-                                      <div className="col-sm-9 p-0">
-                                        <div className="form-label-data d-flex flex-wrap">
-                                          {leadData.otherDocs.map((val) =>
-                                            val.filename ? (
-                                              <>
-                                                <div
-                                                  className="UploadDocPreview"
-                                                  onClick={() => {
-                                                    handleViewPdOtherDocs(
-                                                      val.filename
-                                                    );
-                                                  }}
-                                                >
-                                                  <div className="docItemImg">
-                                                    <img
-                                                      src={
-                                                        val.filename.endsWith(
-                                                          ".pdf"
-                                                        )
-                                                          ? pdfimg
-                                                          : img
-                                                      }
-                                                    ></img>
-                                                  </div>
-
-                                                  <div
-                                                    className="docItemName wrap-MyText"
-                                                    title="logo.png"
-                                                  >
-                                                    {val.filename.split("-")[1]}
-                                                  </div>
+                                    </div>
+                                    <div className="col-sm-9 p-0">
+                                      <div className="form-label-data d-flex flex-wrap">
+                                        {leadData.otherDocs.map((val) =>
+                                          val.filename ? (
+                                            <>
+                                              <div
+                                                className="UploadDocPreview"
+                                                onClick={() => {
+                                                  handleViewPdOtherDocs(
+                                                    val.filename
+                                                  );
+                                                }}
+                                              >
+                                                <div className="docItemImg">
+                                                  <img
+                                                    src={
+                                                      val.filename.endsWith(
+                                                        ".pdf"
+                                                      )
+                                                        ? pdfimg
+                                                        : img
+                                                    }
+                                                  ></img>
                                                 </div>
-                                              </>
-                                            ) : (
-                                              <>
-                                                <div
-                                                  className="UploadDocPreview"
-                                                  onClick={() => {
-                                                    handleViewPdOtherDocs(
-                                                      val.name
-                                                    );
-                                                  }}
-                                                >
-                                                  <div className="docItemImg">
-                                                    <img
-                                                      src={
-                                                        val.name.endsWith(
-                                                          ".pdf"
-                                                        )
-                                                          ? pdfimg
-                                                          : img
-                                                      }
-                                                    ></img>
-                                                  </div>
-                                                  <div
-                                                    className="docItemName wrap-MyText"
-                                                    title="logo.png"
-                                                  >
-                                                    {val.name.split("-")[1]}
-                                                  </div>
-                                                </div>
-                                              </>
-                                            )
-                                          )}
 
-                                          {/* <div className="UploadDocPreview">
+                                                <div
+                                                  className="docItemName wrap-MyText"
+                                                  title="logo.png"
+                                                >
+                                                  {val.filename.split("-")[1]}
+                                                </div>
+                                              </div>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <div
+                                                className="UploadDocPreview"
+                                                onClick={() => {
+                                                  handleViewPdOtherDocs(
+                                                    val.name
+                                                  );
+                                                }}
+                                              >
+                                                <div className="docItemImg">
+                                                  <img
+                                                    src={
+                                                      val.name.endsWith(".pdf")
+                                                        ? pdfimg
+                                                        : img
+                                                    }
+                                                  ></img>
+                                                </div>
+                                                <div
+                                                  className="docItemName wrap-MyText"
+                                                  title="logo.png"
+                                                >
+                                                  {val.name.split("-")[1]}
+                                                </div>
+                                              </div>
+                                            </>
+                                          )
+                                        )}
+
+                                        {/* <div className="UploadDocPreview">
                                           <div className="docItemImg">
                                             <img src={img}></img>
                                           </div>
@@ -3336,10 +3383,9 @@ export default function AdminBookingForm({
                                             financials.csv
                                           </div>
                                         </div> */}
-                                        </div>
                                       </div>
                                     </div>
-                                  )}
+                                  </div>}
                                 </div>
                               </div>
                             </div>
@@ -3352,11 +3398,11 @@ export default function AdminBookingForm({
                         <Button
                           variant="contained"
                           onClick={handleBack}
-                          sx={{ mr: 1, background: "#ffba00 " }}
+                          sx={{ mr: 1, background: "#ffba00 " }}                          
                         >
-                          {activeStep !== 0 ? "Back" : "Back to Main"}
+                          {activeStep !== 1 ? "Back" : "Back to Main"}
                         </Button>
-                        <Button
+                        {/* <Button
                           color="primary"
                           variant="contained"
                           disabled={activeStep === 0}
@@ -3364,13 +3410,12 @@ export default function AdminBookingForm({
                           onClick={handleResetDraft}
                         >
                           Reset
-                        </Button>
+                        </Button> */}
                         <Box sx={{ flex: "1 1 auto" }} />
                         <Button
                           onClick={handleNext}
                           variant="contained"
                           sx={{ mr: 1 }}
-                          disabled={!completed[activeStep]}
                         >
                           Next
                         </Button>
@@ -3379,13 +3424,13 @@ export default function AdminBookingForm({
                             <>
                               <Button
                                 onClick={() => {
-                                    setCompleted((prevCompleted) => ({
-                                      ...prevCompleted,
-                                      [activeStep]: false,
-                                    }));
-                                  }}
+                                  setCompleted((prevCompleted) => ({
+                                    ...prevCompleted,
+                                    [activeStep]: false,
+                                  }));
+                                }}
                                 variant="contained"
-                                sx={{ mr: 1, background: "#ffba00 " }}
+                                sx={{ mr: 1, background: "#ffba00" }}
                               >
                                 Edit
                               </Button>
@@ -3396,8 +3441,8 @@ export default function AdminBookingForm({
                               variant="contained"
                               sx={{ mr: 1, background: "#ffba00 " }}
                             >
-                              {completedSteps() === totalSteps() - 1
-                                ? "Submit"
+                              {activeStep === 4
+                                ? "Request Changes"
                                 : "Save Draft"}
                             </Button>
                           ))}

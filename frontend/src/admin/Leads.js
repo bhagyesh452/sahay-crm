@@ -117,7 +117,7 @@ function Leads() {
 
       // Set the retrieved data in the state
       setData(response.data.reverse());
-      setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
+      setmainData(response.data.filter((item) => item.ename !== "Not Alloted"));
 
       // Set isLoading back to false after data is fetched
       setIsLoading(false);
@@ -133,10 +133,10 @@ function Leads() {
 
   const fetchData = debounce(async () => {
     const data = await fetchDatadebounce();
-    if (data) {
-      setData(data.reverse());
-      setmainData(data.filter((item) => item.ename === 'Not Alloted'));
-    }
+    // if (data) {
+    //   setData(data.reverse());
+    //   setmainData(data.filter((item) => item.ename === 'Not Alloted'));
+    // }
   }, 300); // Adjust debounce delay as needed
 
   // Fetch data automatically when the component mounts
@@ -314,13 +314,22 @@ function Leads() {
     }
   };
 
+  useEffect(() => {
+    if(filteredData.length===0 && dataStatus === "Assigned"){
+      setmainData(data.filter((item) => item.ename === "Not Alloted"));
+      setDataStatus("Unassigned")
+    }else if(filteredData.length===0 && dataStatus === "Unassigned") {
+      setmainData(data.filter((item) => item.ename !== "Not Alloted"));
+      setDataStatus("Assigned")
+    }
+  }, [searchText])
+  
+
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
   const filteredData = mainData.filter((company) => {
     const fieldValue = company[selectedField];
-
-
 
     if (selectedField === "State" && citySearch) {
       // Handle filtering by both State and City
@@ -365,6 +374,9 @@ function Leads() {
       return false;
     }
   });
+
+
+
 
   // const filteredData = mainData.filter((company) => {
   //   // Extract the values you want to search from the company object
@@ -1095,13 +1107,13 @@ function Leads() {
     // Filtering logic to set the mainData based on the status
     if (status === "Assigned") {
       setmainData(data.filter((item) => item.ename !== "Not Alloted"));
-      setmainData(
-        data.sort((a, b) => {
-            const dateA = a["AssignDate"] || "";
-            const dateB = b["AssignDate"] || "";
-            return dateB.localeCompare(dateA);
-        })
-    );
+    //   setmainData(
+    //     data.sort((a, b) => {
+    //         const dateA = a["AssignDate"] || "";
+    //         const dateB = b["AssignDate"] || "";
+    //         return dateB.localeCompare(dateA);
+    //     })
+    // );
     }
     else {
       setmainData(data.filter((item) => item.ename === "Not Alloted"));
