@@ -80,13 +80,14 @@ function NewEmployee() {
             <Header />
             <Navbar number={1} />
             <div className="page-wrapper">
-                   <Box sx={{ width: '100%' }}>
+                <div className="container-xl">
+                    <div className="card mt-3">
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                                 <Tab label={
                                     <div style={{ display: "flex", alignItems: "center" }}>
                                         <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                                        <span style={{fontSize:"12px"}}>User Details</span>
+                                        <span style={{fontSize:"12px"}}>Employee List</span>
                                     </div>
                                 } {...a11yProps(0)} />
                                 <Tab
@@ -101,20 +102,14 @@ function NewEmployee() {
                             </Tabs>
                         </Box>
                         <CustomTabPanel value={value} index={0}>
-
-                                <Employee />
-
+                            <Employee />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={1}>
                             <Team/>
                         </CustomTabPanel>
-                        <CustomTabPanel value={value} index={2}>
-                            Item Three
-                        </CustomTabPanel>
-                    </Box>
-
-
+                    </div>
                 </div>
+            </div>
          
 
         </div>

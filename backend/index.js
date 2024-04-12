@@ -6688,7 +6688,30 @@ app.post('/api/update-redesigned-final-form/:companyName', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+app.put('/api/update-more-booking/:companyName/:bookingIndex', async (req, res) => {
+  try {
+    const { companyName, bookingIndex } = req.params;
+    const newData = req.body;
 
+    // Find the document by companyName
+    const existingDocument = await RedesignedLeadformModel.findOne({"Company Name" : companyName });
+
+    if (!existingDocument) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    // Update the booking in moreBookings array at the specified index
+    existingDocument.moreBookings[bookingIndex-1] = newData;
+
+    // Save the updated document
+    const updatedDocument = await existingDocument.save();
+
+    res.status(200).json(updatedDocument);
+  } catch (error) {
+    console.error('Error updating more booking:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 app.delete("/api/delete-redesigned-booking-request/:CompanyName" , async(req, res)=>{
   try{
     const companyName = req.params.CompanyName; 

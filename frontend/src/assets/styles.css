@@ -372,8 +372,13 @@ pre
     font-size: 10px;
     border-radius: 100px;
 }
-th{
-    padding: 5px 10px !important;
+.page-title
+{
+  font-weight: 500;
+}
+th {
+    font-weight: 500 !important;
+    padding: 7px 10px !important;
 }
 .login-card
 {
@@ -407,13 +412,11 @@ span.input-group-text {
     color: #000 !important;
     border: 1px solid #dddddd !important;
 }
-th {
-    font-weight: 500 !important;
-}
-.page-wrapper .page-header
+
+/* .page-wrapper .page-header
 {
     margin: 10px 0px 0px 0px !important;
-}
+} */
 .page-body
 {
     margin: 10px 0px 0px 0px !important;
@@ -1134,6 +1137,7 @@ color: #4e884e;
   margin: 10px 0;
   border-radius: 5px;
   border: 1px solid #e5e5e5;
+  overflow: hidden;
 }
 .booking-list-card
 {
@@ -1435,6 +1439,28 @@ color: #4e884e;
 }
 .Services_Preview_action_delete:active{
   transform: scale(1.3);
+}
+.chooseBooking-particular{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #fdd974;
+  margin: 10px;
+  padding: 11px 18px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 19px;
+  background-color: #fff8e4;
+  color: #5e4400;
+  transition: transform .1s
+}
+.chooseBooking-particular:hover{
+  color: #000;
+  background-color: #fdd974;
+}
+.chooseBooking-particular-active{
+  color: #000;
+  background-color: #fdd974;
 }
 /************BookingList Page Css End*************/
 .wApp a
