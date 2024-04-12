@@ -1419,7 +1419,6 @@ color: #4e884e;
   font-size: 12px;
   color: #aeaeae;
   transition: transform .2s;
-  display: none;
 }
 .Services_Preview_action_delete{
   cursor: pointer;

@@ -691,6 +691,10 @@ export default function EditableLeadform({
         }
       }
       if (activeStep === 3) {
+            if(leadData.paymentMethod===""){
+          Swal.fire("Incorrect Details" , 'Please Enter Payment Method', 'warning');
+          return true;
+        }
         console.log(
           "I am in step 4",
           leadData.paymentReceipt,

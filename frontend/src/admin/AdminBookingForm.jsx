@@ -414,35 +414,34 @@ export default function AdminBookingForm({
       if (activeStep === 2) {
 
         let isValid = true;
-        // for (let service of leadData.services) {
+              for (let service of leadData.services) {
         
-        //   const firstPayment = Number(service.firstPayment);
-        //   const secondPayment = Number(service.secondPayment);
-        //   const thirdPayment = Number(service.thirdPayment);
-        //   const fourthPayment = Number(service.fourthPayment);
-        //   console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
-        //   if (
-        //     (service.paymentTerms !== "Full-Advanced" &&
-        //       (firstPayment < 0 ||
-        //         secondPayment < 0 ||
-        //         thirdPayment < 0 ||
-        //         fourthPayment < 0 ||
-        //         firstPayment + secondPayment + thirdPayment + fourthPayment !==
-        //           Number(service.totalPaymentWGST)) &&
-        //       !service.secondPaymentRemarks) ||
-        //     service.serviceName === "" ||
-        //     Number(service.totalPaymentWGST) === 0
-        //   ) {
-        //     isValid = false;
-        //     break;
-        //   }
-        // }
+                const firstPayment = Number(service.firstPayment);
+                const secondPayment = Number(service.secondPayment);
+                const thirdPayment = Number(service.thirdPayment);
+                const fourthPayment = Number(service.fourthPayment);
+                console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
+                if (
+                  (service.paymentTerms !== "Full-Advanced" &&
+                    (firstPayment < 0 ||
+                      secondPayment < 0 ||
+                      thirdPayment < 0 ||
+                      fourthPayment < 0 ||
+                      firstPayment + secondPayment + thirdPayment + fourthPayment !==
+                        Number(service.totalPaymentWGST))) ||
+                  service.serviceName === "" ||
+                  Number(service.totalPaymentWGST) === 0
+                ) {
+                  isValid = false;
+                  break;
+                }
+              }
                if (
                 !isValid
                 ) {
                   Swal.fire("Incorrect Details" , 'Please Enter the Details Properly', 'warning');
                   return true;
-        } else {
+                } else {
           const totalAmount = leadData.services.reduce(
             (acc, curr) => acc + curr.totalPaymentWGST,
             0
@@ -730,6 +729,7 @@ export default function AdminBookingForm({
   };
   const handleResetDraft = async () => {
     try {
+      console.log(companyNewName.trim())
       const response = await fetch(
         `${secretKey}/redesigned-delete-model/${companyNewName.trim()}`,
         {
@@ -742,7 +742,11 @@ export default function AdminBookingForm({
       if (response.ok) {
         console.log("Draft reset successfully");
         // Optionally, you can perform further actions upon successful deletion
-        fetchData();
+        
+        setActiveStep(0);
+        setLeadData({...defaultLeadData , bdeName:leadData.bdeName , "Company Email": leadData["Company Email"] , "Company Number":leadData['Company Number'], incoDate:leadData.incoDate})
+        setCompleted([]);
+
       } else {
         console.error("Error resetting draft:", response.statusText);
       }
@@ -1585,13 +1589,13 @@ export default function AdminBookingForm({
                   {allStepsCompleted() ? (
                     <React.Fragment>
                       <Typography sx={{ mt: 2, mb: 1 }}>
-                        All steps completed - you&apos;re finished
+                       Already you have a booking for this Company , Thank You
                       </Typography>
                       <Box
                         sx={{ display: "flex", flexDirection: "row", pt: 2 }}
                       >
                         <Box sx={{ flex: "1 1 auto" }} />
-                        <Button onClick={handleReset}>Reset</Button>
+                        <button className="btn btn-primary" onClick={()=>setFormOpen(false)}>Back</button>
                       </Box>
                     </React.Fragment>
                   ) : (

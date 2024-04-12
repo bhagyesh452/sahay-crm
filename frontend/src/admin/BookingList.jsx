@@ -11,10 +11,14 @@ import wordimg from "../static/my-images/word.png";
 import Nodata from "../components/Nodata";
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+import EditableMoreBooking from "./EditableMoreBooking";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
+  const [EditBookingOpen, setEditBookingOpen] = useState(false);
+  
   const [infiniteBooking, setInfiniteBooking] = useState([]);
+  const [bookingIndex, setbookingIndex] = useState(-1);
   const [searchText, setSearchText] = useState("");
   const [nowToFetch, setNowToFetch] = useState(false);
   const [leadFormData, setLeadFormData] = useState([]);
@@ -23,7 +27,7 @@ function BookingList() {
   const [data, setData] = useState([]);
   const [companyName, setCompanyName] = "";
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-
+  const isAdmin = true;
   const fetchDatadebounce = async () => {
     try {
       // Set isLoading to true while fetching data
@@ -207,7 +211,7 @@ function BookingList() {
     <div>
       <Header />
       <Navbar />
-      {!bookingFormOpen ? (
+      {!bookingFormOpen && !EditBookingOpen && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
             <div className="container-xl">
@@ -562,7 +566,10 @@ function BookingList() {
                         <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                           <b>Booking Details:</b>
                           <div className="Services_Preview_action d-flex">
-                            <div className="Services_Preview_action_edit mr-1">
+                            <div className="Services_Preview_action_edit mr-1" onClick={()=>{
+                              setbookingIndex(0)
+                              setEditBookingOpen(true)
+                              }} >
                               <MdModeEdit />
                             </div>
                             <div
@@ -736,7 +743,7 @@ function BookingList() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                          ₹ {obj.totalPaymentWGST} {"("}
+                                          ₹ {parseInt(obj.totalPaymentWGST).toLocaleString()} {"("}
                                           {obj.totalPaymentWGST !==
                                           obj.totalPaymentWOGST
                                             ? "With GST"
@@ -791,9 +798,7 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             ₹{" "}
-                                            {Number(obj.firstPayment).toFixed(
-                                              2
-                                            )}
+                                            {parseInt(obj.firstPayment).toLocaleString()}
                                           </div>
                                         </div>
                                       </div>
@@ -810,9 +815,7 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹
-                                            {Number(obj.secondPayment).toFixed(
-                                              2
-                                            )}
+                                            {parseInt(obj.secondPayment).toLocaleString()}
                                             {"("}
                                             {isNaN(
                                               new Date(obj.secondPaymentRemarks)
@@ -840,9 +843,7 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹{" "}
-                                            {Number(obj.thirdPayment).toFixed(
-                                              2
-                                            )}
+                                            {parseInt(obj.thirdPayment).toLocaleString()}
                                             {"("}
                                             {isNaN(
                                               new Date(obj.thirdPaymentRemarks)
@@ -867,9 +868,7 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹{" "}
-                                            {Number(obj.fourthPayment).toFixed(
-                                              2
-                                            )}{" "}
+                                            {parseInt(obj.fourthPayment).toLocaleString()}{" "}
                                             {"("}
                                             {isNaN(
                                               new Date(obj.fourthPaymentRemarks)
@@ -979,9 +978,9 @@ function BookingList() {
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                       ₹{" "}
                                       {currentLeadform &&
-                                        Number(
+                                        parseInt(
                                           currentLeadform.totalAmount
-                                        ).toFixed(2)}
+                                        ).toLocaleString()}
                                     </div>
                                   </div>
                                 </div>
@@ -997,9 +996,9 @@ function BookingList() {
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       ₹{" "}
                                       {currentLeadform &&
-                                        Number(
+                                        parseInt(
                                           currentLeadform.receivedAmount
-                                        ).toFixed(2)}
+                                        ).toLocaleString()}
                                     </div>
                                   </div>
                                 </div>
@@ -1015,9 +1014,9 @@ function BookingList() {
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       ₹{" "}
                                       {currentLeadform &&
-                                        Number(
+                                        parseInt(
                                           currentLeadform.pendingAmount
-                                        ).toFixed(2)}
+                                        ).toLocaleString()}
                                     </div>
                                   </div>
                                 </div>
@@ -1174,7 +1173,10 @@ function BookingList() {
                               <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                                 <b>Booking Details:</b>
                                 <div className="Services_Preview_action d-flex">
-                                  <div className="Services_Preview_action_edit mr-2">
+                                  <div className="Services_Preview_action_edit mr-2" onClick={()=>{
+                                    setbookingIndex(index+1)
+                                    setEditBookingOpen(true)
+                                  }}>
                                     <MdModeEdit />
                                   </div>
                                   <div
@@ -1343,7 +1345,7 @@ function BookingList() {
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                              ₹ {obj.totalPaymentWGST}/- {"("}
+                                              ₹ {parseInt(obj.totalPaymentWGST).toLocaleString()}{"("}
                                               {obj.totalPaymentWGST !==
                                               obj.totalPaymentWOGST
                                                 ? "With GST"
@@ -1398,9 +1400,9 @@ function BookingList() {
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                 ₹{" "}
-                                                {Number(
+                                                {parseInt(
                                                   obj.firstPayment
-                                                ).toFixed(2)}
+                                                ).toLocaleString()}
                                                 /-
                                               </div>
                                             </div>
@@ -1418,9 +1420,9 @@ function BookingList() {
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                 ₹
-                                                {Number(
+                                                {parseInt(
                                                   obj.secondPayment
-                                                ).toFixed(2)}
+                                                ).toLocaleString()}
                                                 /- {"("}
                                                 {isNaN(
                                                   new Date(
@@ -1449,9 +1451,9 @@ function BookingList() {
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                 ₹{" "}
-                                                {Number(
+                                                {parseInt(
                                                   obj.thirdPayment
-                                                ).toFixed(2)}
+                                                ).toLocaleString()}
                                                 /- {"("}
                                                 {isNaN(
                                                   new Date(
@@ -1478,9 +1480,9 @@ function BookingList() {
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                 ₹{" "}
-                                                {Number(
+                                                {parseInt(
                                                   obj.fourthPayment
-                                                ).toFixed(2)}{" "}
+                                                ).toLocaleString()}{" "}
                                                 /- {"("}
                                                 {isNaN(
                                                   new Date(
@@ -1586,10 +1588,10 @@ function BookingList() {
                                         <div class="col-sm-7 align-self-stretchh p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹{" "}
-                                            {Number(
+                                            {parseInt(
                                               objMain.totalAmount
-                                            ).toFixed(2)}
-                                            /-
+                                            ).toLocaleString()}
+                                            
                                           </div>
                                         </div>
                                       </div>
@@ -1604,10 +1606,10 @@ function BookingList() {
                                         <div class="col-sm-7 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             ₹{" "}
-                                            {Number(
+                                            {parseInt(
                                               objMain.receivedAmount
-                                            ).toFixed(2)}
-                                            /-
+                                            ).toLocaleString()}
+                                            
                                           </div>
                                         </div>
                                       </div>
@@ -1622,10 +1624,10 @@ function BookingList() {
                                         <div class="col-sm-7 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             ₹{" "}
-                                            {Number(
+                                            {parseInt(
                                               objMain.pendingAmount
-                                            ).toFixed(2)}
-                                            /-
+                                            ).toLocaleString()}
+                                            
                                           </div>
                                         </div>
                                       </div>
@@ -1735,9 +1737,7 @@ function BookingList() {
                                   </div>
                                 ))}
                               </div>
-
                               </>}
-                            
                             </div>
                           </>
                         ))}
@@ -1748,8 +1748,9 @@ function BookingList() {
             </div>
           </div>
         </div>
-      ) : (
-        <>
+      )} 
+      
+      {bookingFormOpen && <>
           <AdminBookingForm
             // matured={true}
             // companysId={companyId}
@@ -1763,8 +1764,26 @@ function BookingList() {
             // employeeName={data.ename}
             // employeeEmail={data.email}
           />
+        </>} 
+        {EditBookingOpen && bookingIndex!==-1 && (
+        <>
+          <EditableMoreBooking 
+            setFormOpen={setEditBookingOpen}
+            bookingIndex={bookingIndex}
+            isAdmin = {isAdmin}
+            setNowToFetch={setNowToFetch}
+            companysName={currentLeadform["Company Name"]}
+            companysEmail={currentLeadform["Company Email"]}
+            companyNumber={currentLeadform["Company Number"]}
+            companysInco={currentLeadform.incoDate}
+            employeeName={currentLeadform.bdeName}
+            employeeEmail={currentLeadform.bdeEmail}
+             />
         </>
       )}
+      
+        
+      
     </div>
   );
 }
