@@ -57,13 +57,13 @@ function Navbar() {
                 </li>
                 <li
                   className={
-                    location.pathname.startsWith("/admin/newemployee")
+                    location.pathname.startsWith("/admin/admin-user")
                       ? "nav-item active"
                       : "nav-item"
                   }>
                   <Link
                     style={{ textDecoration: "none", color: "black" }}
-                    to="/admin/newemployee"
+                    to="/admin/admin-user"
                   >
                     <a className="nav-link" href="./">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
