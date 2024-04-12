@@ -743,7 +743,7 @@ function EmployeeParticular() {
 
       if (currentIndex === 0) {
         // If it's the first page, navigate to the employees page
-        window.location.replace(`/admin/employees`);
+        window.location.replace(`/admin/newemployee`);
         //setBackButton(false)
       } else {
         // Get the previousId from the eData array
@@ -950,7 +950,7 @@ function EmployeeParticular() {
                   {backButton && (
                     <div>
                       {!AddForm ? <Link
-                        to={`/admin/employees`}
+                        to={`/admin/newemployee`}
                         style={{ marginLeft: "10px" }}
                       >
                         <button className="btn btn-primary d-none d-sm-inline-block">
@@ -1962,7 +1962,7 @@ function EmployeeParticular() {
 </>)
         } 
         {
-          AddForm && (
+          AddForm && companyName !== "" && (
             <> <AddLeadForm    setFormOpen={setAddForm}
             companysName={companyName}
             setDataStatus={setdataStatus}

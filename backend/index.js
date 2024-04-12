@@ -42,14 +42,13 @@ const DraftModel = require("./models/DraftLeadform");
 const { type } = require("os");
 const LeadModel_2 = require("./models/Leadform_2");
 const RedesignedLeadformModel = require("./models/RedesignedLeadform");
-const EditableDraftModel = require("./models/EditableDraftModel")
+const EditableDraftModel = require("./models/EditableDraftModel");
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
 //const axios = require('axios');
-const crypto = require('crypto');
-const TeamModel = require("./models/TeamModel.js")
+const crypto = require("crypto");
+const TeamModel = require("./models/TeamModel.js");
 // const { Cashfree } = require('cashfree-pg');
-
 
 // const http = require('http');
 // const socketIo = require('socket.io');
@@ -59,9 +58,11 @@ const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(cors());
 app.use(compression());
-app.use(express.urlencoded({
-  extended: true
-}));
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 // app.use(session({
 //   secret: 'boombadaboom', // Replace with a secret key for session encryption
@@ -99,13 +100,12 @@ app.get("/api", (req, res) => {
 app.post("/api/admin/login-admin", async (req, res) => {
   const { username, password } = req.body;
   console.log(username, password);
- 
 
   const user = await onlyAdminModel.findOne({
     admin_email: username,
     admin_password: password,
   });
-  console.log("user" , user)
+  console.log("user", user);
   //console.log(user);
   if (user) {
     // Generate a JWT token
@@ -114,11 +114,11 @@ app.post("/api/admin/login-admin", async (req, res) => {
     const token = jwt.sign({ userId: user._id }, secretKey, {
       expiresIn: "1h",
     });
-    console.log(adminName , token)
+    console.log(adminName, token);
     res.status(200).json({ token, adminName });
   } else {
-    res.status(401).json({ message: "Invalid credentials"});
-  }
+    res.status(401).json({ message: "Invalid credentials" });
+  }
 });
 
 // Login for employee
@@ -188,8 +188,6 @@ app.post("/api/admin/login-admin", async (req, res) => {
 // Cashfree.XClientSecret = process.env.CLIENT_SECRET;
 // Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
 
-
-
 // function generateOrderId() {
 //   const uniqueId = crypto.randomBytes(16).toString('hex');
 
@@ -200,7 +198,6 @@ app.post("/api/admin/login-admin", async (req, res) => {
 //   console.log(orderId)
 //   return orderId.substr(0, 12);
 // }
-
 
 // app.get('/api/payment', async (req, res) => {
 
@@ -230,7 +227,6 @@ app.post("/api/admin/login-admin", async (req, res) => {
 //     console.log(error);
 //   }
 
-
 // })
 
 // app.post('/api/verify', async (req, res) => {
@@ -244,7 +240,6 @@ app.post("/api/admin/login-admin", async (req, res) => {
 //     }).catch(error => {
 //       console.error(error.response.data.message);
 //     })
-
 
 //   } catch (error) {
 //     console.log(error);
@@ -291,32 +286,30 @@ app.post("/api/datamanagerlogin", async (req, res) => {
   //console.log(user)
 
   if (!user) {
-    
     //console.log("not user condition")
     return res.status(401).json({ message: "Invalid email or password" });
   } else if (user.designation !== "Data Manager") {
     // If designation is incorrect
-   
+
     return res.status(401).json({ message: "Designation is incorrect" });
   } else {
-    
     //console.log("user condition")
-      const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
+    const newtoken = jwt.sign({ employeeId: user._id }, secretKey, {
       expiresIn: "10h",
     });
     //console.log(newtoken)
     res.status(200).json({ newtoken });
-   // socketIO.emit("Employee-login");
+    // socketIO.emit("Employee-login");
   }
 });
 
-app.post("/api/bdmlogin" , async(req,res)=>{
-  const { email , password } = req.body
+app.post("/api/bdmlogin", async (req, res) => {
+  const { email, password } = req.body;
   //console.log(email,password)
   const user = await adminModel.findOne({
-    email : email,
-    password : password,
-  })
+    email: email,
+    password: password,
+  });
   //console.log(user)
   if (!user) {
     // If user is not found
@@ -330,7 +323,7 @@ app.post("/api/bdmlogin" , async(req,res)=>{
       expiresIn: "10h",
     });
     //console.log(bdmToken)
-    res.status(200).json({ bdmToken })
+    res.status(200).json({ bdmToken });
     //socketIO.emit("Employee-login");
   }
 });
@@ -478,8 +471,8 @@ app.post("/api/leads", async (req, res) => {
         //console.log("saved" , savedEmployee)
         successCounter++;
       } catch (error) {
-          duplicateEntries.push(employeeData);
-          //console.log("kuch h ye" , duplicateEntries);
+        duplicateEntries.push(employeeData);
+        //console.log("kuch h ye" , duplicateEntries);
         console.error("Error saving employee:", error.message);
         counter++;
       }
@@ -488,9 +481,12 @@ app.post("/api/leads", async (req, res) => {
       // If there are duplicate entries, create and send CSV
       const csvString = createCSVString(duplicateEntries);
       res.setHeader("Content-Type", "text/csv");
-      res.setHeader("Content-Disposition", "attachment; filename=DuplicateEntries.csv");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=DuplicateEntries.csv"
+      );
       res.status(200).end(csvString);
-      
+
       //console.log("csvString" , csvString)
     } else {
       res.status(200).json({
@@ -536,8 +532,6 @@ function createCSVString(data) {
   return csvData.map((row) => row.join(",")).join("\n");
 }
 
-
-
 app.post("/api/employee-history", async (req, res) => {
   const csvData = req.body;
 
@@ -578,7 +572,6 @@ app.get("/api/employee-history/:companyName", async (req, res) => {
   }
 });
 
-
 app.get("/api/specific-company/:companyId", async (req, res) => {
   try {
     const companyId = req.params.companyId;
@@ -595,7 +588,7 @@ app.get("/api/specific-company/:companyId", async (req, res) => {
 });
 app.post("/api/requestCompanyData", async (req, res) => {
   //const csvData = req.body;
-  console.log("csv" , csvData)
+  console.log("csv", csvData);
 
   try {
     for (const employeeData of csvData) {
@@ -760,16 +753,19 @@ app.get("/api/einfo", async (req, res) => {
 //   }
 // });
 
-app.post('/api/teaminfo', async (req, res) => {
+app.post("/api/teaminfo", async (req, res) => {
   try {
     const teamData = req.body;
     //console.log(teamData);
     // Assuming `formatDate()` is a function that formats the current date
-    const newTeam = await TeamModel.create({ modifiedAt: formatDate(Date.now()),...teamData});
+    const newTeam = await TeamModel.create({
+      modifiedAt: formatDate(Date.now()),
+      ...teamData,
+    });
     console.log("newTeam", newTeam);
     res.status(201).json(newTeam);
   } catch (error) {
-    console.error('Error creating team:', error.message);
+    console.error("Error creating team:", error.message);
     res.status(500).json({ message: "Duplicate Entries Found" });
   }
 });
@@ -777,15 +773,13 @@ app.post('/api/teaminfo', async (req, res) => {
 app.get("/api/teaminfo", async (req, res) => {
   try {
     const data = await TeamModel.find();
-    console.log("teamdata" , data)
+    console.log("teamdata", data);
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
 
 app.get("/api/leads", async (req, res) => {
   try {
@@ -994,8 +988,8 @@ function formatDateNew(timestamp) {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  const formattedDay = day < 10 ? '0' + day : day;
-  const formattedMonth = month < 10 ? '0' + month : month;
+  const formattedDay = day < 10 ? "0" + day : day;
+  const formattedMonth = month < 10 ? "0" + month : month;
   return `${formattedDay}/${formattedMonth}/${year}`;
 }
 
@@ -1351,7 +1345,7 @@ app.put("/api/neweinfo/:id", async (req, res) => {
           existing["Company Name"] === data["Company Name"] &&
           existing["Company Number"] === data["Company Number"] &&
           existing["Company Incorporation Date  "] ===
-          data["Company Incorporation Date  "] &&
+            data["Company Incorporation Date  "] &&
           existing["Company Email"] === data["Company Email"] &&
           existing.City === data.City &&
           existing.State === data.State
@@ -2340,13 +2334,11 @@ app.post("/api/upload/lead-form", async (req, res) => {
     }
 
     // Respond with success and error counters
-    res
-      .status(200)
-      .json({
-        message: "Data sent successfully",
-        successCounter,
-        errorCounter,
-      });
+    res.status(200).json({
+      message: "Data sent successfully",
+      successCounter,
+      errorCounter,
+    });
   } catch (error) {
     // If an error occurs at the outer try-catch block, handle it here
     console.error("Error saving employees:", error.message);
@@ -2561,7 +2553,7 @@ app.delete("/api/deleterequestbybde/:cname", async (req, res) => {
 
     // Find document by company name and delete it
     const updatedCompany = await RequestDeleteByBDE.findOneAndUpdate(
-      { companyName , request : undefined },
+      { companyName, request: undefined },
       { $set: { request: true } },
       { new: true }
     );
@@ -2890,8 +2882,7 @@ app.post("/api/followdataexport/", async (req, res) => {
   try {
     const followDataToday = req.body;
 
-    const leads = await FollowUpModel.find({
-    });
+    const leads = await FollowUpModel.find({});
 
     const csvData = [];
     // Push the headers as the first row
@@ -2904,7 +2895,7 @@ app.post("/api/followdataexport/", async (req, res) => {
       "Expected Amount",
       "Estimated Payment Date",
       "Last Follow Up Date",
-      "Remarks"
+      "Remarks",
     ]);
 
     // Push each lead as a row into the csvData array
@@ -2917,7 +2908,7 @@ app.post("/api/followdataexport/", async (req, res) => {
         lead.offeredPrize,
         lead.totalPayment,
         lead.estPaymentDate,
-        lead. lastFollowUpdate,
+        lead.lastFollowUpdate,
         lead.remarks,
       ];
       csvData.push(rowData);
@@ -2943,8 +2934,6 @@ app.post("/api/followdataexport/", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
-
 
 app.post(
   "/api/uploadotherdocsAttachment/:companyName",
@@ -3161,11 +3150,85 @@ app.post("/api/redesigned-leadform", async (req, res) => {
 
 app.get("/api/redesigned-leadData/:CompanyName", async (req, res) => {
   try {
-    const CompanyName = req.params.CompanyName;
-    const data = await RedesignedDraftModel.find({
-      "Company Name": CompanyName,
+    const companyName = req.params.CompanyName;
+
+    // Check if the company exists in RedesignedDraftModel
+    const existingData = await RedesignedDraftModel.findOne({
+      "Company Name": companyName,
     });
-    res.json(data);
+
+    if (existingData) {
+      // If company exists in RedesignedDraftModel, return the data
+      return res.json(existingData);
+    }
+
+    // If company not found in RedesignedDraftModel, search in RedesignedLeadformModel
+    const newData = await RedesignedLeadformModel.findOne({
+      "Company Name": companyName,
+    });
+
+    if (!newData) {
+      // If company not found in RedesignedLeadformModel, return 404
+      return res.status(404).json({ error: "Company not found" });
+    }
+    const TempDataObject = {
+      "Company Name": companyName,
+      Step1Status: true,
+      Step2Status: true,
+      Step3Status: true,
+      Step4Status: true,
+      Step5Status: true,
+      services: newData.services,
+      "Company Email": newData["Company Email"],
+      "Company Number": newData["Company Number"],
+      incoDate: newData.incoDate,
+      panNumber: newData.panNumber,
+      gstNumber: newData.gstNumber,
+      bdeName: newData.bdeName,
+      bdeEmail: newData.bdeEmail,
+      bdmType: newData.bdmType,
+      bookingDate: newData.bookingDate,
+      bookingSource: newData.bookingSource,
+      caCase: newData.caCase,
+      numberOfServices: newData.services.length,
+      receivedAmount: newData.receivedAmount,
+      totalAmount: newData.totalAmount,
+      extraNotes: newData.extraNotes,
+      paymentMethod: newData.paymentMethod,
+      pendingAmount: newData.pendingAmount,
+      paymentReceipt: newData.paymentReceipt,
+      otherDocs: newData.otherDocs,
+    };
+    // Create a new object with the same company name in RedesignedDraftModel
+    const createData = await RedesignedDraftModel.create({
+      "Company Name": companyName,
+      Step1Status: true,
+      Step2Status: true,
+      Step3Status: true,
+      Step4Status: true,
+      Step5Status: true,
+      services: newData.services,
+      "Company Email": newData["Company Email"],
+      "Company Number": newData["Company Number"],
+      incoDate: newData.incoDate,
+      panNumber: newData.panNumber,
+      gstNumber: newData.gstNumber,
+      bdeName: newData.bdeName,
+      bdeEmail: newData.bdeEmail,
+      bdmType: newData.bdmType,
+      bookingDate: newData.bookingDate,
+      bookingSource: newData.bookingSource,
+      caCase: newData.caCase,
+      numberOfServices: newData.services.length,
+      receivedAmount: newData.receivedAmount,
+      totalAmount: newData.totalAmount,
+      extraNotes: newData.extraNotes,
+      paymentMethod: newData.paymentMethod,
+      pendingAmount: newData.pendingAmount,
+      paymentReceipt: newData.paymentReceipt,
+      otherDocs: newData.otherDocs,
+    });
+    res.json(TempDataObject);
   } catch (err) {
     console.error("Error fetching data:", err);
     res.status(500).json({ error: "Error fetching data" });
@@ -3201,8 +3264,8 @@ app.post(
                 incoDate: newData.incoDate || existingData.incoDate,
                 panNumber: newData.panNumber || existingData.panNumber,
                 gstNumber: newData.gstNumber || existingData.gstNumber,
-                bdeName : newData.bdeName || existingData.bdeName,
-                bdeEmail : newData.bdeEmail || existingData.bdeEmail
+                bdeName: newData.bdeName || existingData.bdeName,
+                bdeEmail: newData.bdeEmail || existingData.bdeEmail,
               },
             },
             { new: true }
@@ -3218,8 +3281,8 @@ app.post(
             incoDate: newData.incoDate,
             panNumber: newData.panNumber,
             gstNumber: newData.gstNumber,
-            bdeName : newData.bdeName ,
-            bdeEmail : newData.bdeEmail,
+            bdeName: newData.bdeName,
+            bdeEmail: newData.bdeEmail,
             Step1Status: true,
           });
           res.status(201).json(createdData); // Respond with created data
@@ -3231,18 +3294,20 @@ app.post(
         });
         if (existingData) {
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-            {"Company Name": companyName },
+            { "Company Name": companyName },
             {
               $set: {
                 bdeName: newData.bdeName || existingData.bdeName,
                 bdeEmail: newData.bdeEmail || existingData.bdeEmail,
                 bdmName: newData.bdmName || existingData.bdmName,
-                otherBdmName : newData.otherBdmName || existingData.otherBdmName,
-                bdmType:newData.bdmType || existingData.bdmType,
+                otherBdmName: newData.otherBdmName || existingData.otherBdmName,
+                bdmType: newData.bdmType || existingData.bdmType,
                 bdmEmail: newData.bdmEmail || existingData.bdmEmail,
                 bookingDate: newData.bookingDate || existingData.bookingDate,
-                bookingSource: newData.bookingSource || existingData.bookingSource,
-                otherBookingSource:newData.otherBookingSource || existingData.otherBookingSource,
+                bookingSource:
+                  newData.bookingSource || existingData.bookingSource,
+                otherBookingSource:
+                  newData.otherBookingSource || existingData.otherBookingSource,
                 Step2Status: true,
               },
             },
@@ -3285,16 +3350,18 @@ app.post(
         const existingData = await RedesignedDraftModel.findOne({
           "Company Name": companyName,
         });
-      
+
         newData.otherDocs =
-          req.files["otherDocs"] === undefined || req.files["otherDocs"].length === 0
+          req.files["otherDocs"] === undefined ||
+          req.files["otherDocs"].length === 0
             ? []
             : req.files["otherDocs"].map((file) => file);
         newData.paymentReceipt =
-          req.files["paymentReceipt"] === undefined || req.files["paymentReceipt"].length === 0
+          req.files["paymentReceipt"] === undefined ||
+          req.files["paymentReceipt"].length === 0
             ? []
             : req.files["paymentReceipt"].map((file) => file);
-      
+
         if (existingData) {
           // Update existing data if found
           const updatedData = await RedesignedDraftModel.findOneAndUpdate(
@@ -3302,9 +3369,12 @@ app.post(
             {
               $set: {
                 totalAmount: newData.totalAmount || existingData.totalAmount,
-                pendingAmount: newData.pendingAmount || existingData.pendingAmount,
-                receivedAmount: newData.receivedAmount || existingData.receivedAmount,
-                paymentReceipt: newData.paymentReceipt || existingData.paymentReceipt,
+                pendingAmount:
+                  newData.pendingAmount || existingData.pendingAmount,
+                receivedAmount:
+                  newData.receivedAmount || existingData.receivedAmount,
+                paymentReceipt:
+                  newData.paymentReceipt || existingData.paymentReceipt,
                 otherDocs: newData.otherDocs || existingData.otherDocs,
                 paymentMethod: newData.paymentMethod || newData.paymentMethod,
                 extraNotes: newData.extraNotes || existingData.extraNotes,
@@ -3316,9 +3386,7 @@ app.post(
           res.status(200).json(updatedData);
           return true; // Respond with updated data
         }
-      }
-       else if (Step === "step5") {
-
+      } else if (Step === "step5") {
         const updatedData = await RedesignedDraftModel.findOneAndUpdate(
           { "Company Name": companyName },
           {
@@ -3370,161 +3438,176 @@ app.post(
   }
 );
 
-app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
-  { name : 'otherDocs' , maxCount :50},
-  { name : "paymentReceipt" , maxCount : 2}
-]) , async(req,res)=>{
-  try{
-    const companyName = req.params.CompanyName;
-    const newData = req.body;
-    const Step = req.params.step;
-    if(Step === "step2"){
-      const existingData = await RedesignedDraftModel.findOne({
-        "Company Name": companyName,
-      });
-      console.log("Second Step Working")
-      if (existingData) {
-        const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-          {"Company Name": companyName },
-          {
-            $set: {
-            
-                  "moreBookings.bdeName": newData.bdeName || "",
-                  "moreBookings.bdeEmail": newData.bdeEmail || "",
-                  "moreBookings.bdmName": newData.bdmName || "",
-                  "moreBookings.otherBdmName" : newData.otherBdmName || "",
-                  "moreBookings.bdmEmail": newData.bdmEmail || "",
-                  "moreBookings.bdmType":newData.bdmType || "",
-                  "moreBookings.bookingDate": newData.bookingDate || "",
-                  "moreBookings.bookingSource": newData.bookingSource || "",
-                  "moreBookings.otherBookingSource":newData.otherBookingSource || "",
-                  "moreBookings.Step2Status": true,
+app.post(
+  "/api/redesigned-addmore-booking/:CompanyName/:step",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 2 },
+  ]),
+  async (req, res) => {
+    try {
+      const companyName = req.params.CompanyName;
+      const newData = req.body;
+      const Step = req.params.step;
+      if (Step === "step2") {
+        const existingData = await RedesignedDraftModel.findOne({
+          "Company Name": companyName,
+        });
+        console.log("Second Step Working");
+        if (existingData) {
+          const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                "moreBookings.bdeName": newData.bdeName || "",
+                "moreBookings.bdeEmail": newData.bdeEmail || "",
+                "moreBookings.bdmName": newData.bdmName || "",
+                "moreBookings.otherBdmName": newData.otherBdmName || "",
+                "moreBookings.bdmEmail": newData.bdmEmail || "",
+                "moreBookings.bdmType": newData.bdmType || "",
+                "moreBookings.bookingDate": newData.bookingDate || "",
+                "moreBookings.bookingSource": newData.bookingSource || "",
+                "moreBookings.otherBookingSource":
+                  newData.otherBookingSource || "",
+                "moreBookings.Step2Status": true,
+              },
             },
-          },
-          { new: true }
-        );
-        res.status(200).json(updatedData);
-        return true; // Respond with updated data
-      }else{
-        res.status(404).json("Company Not found");
-        return true;
-      }
-    }else if(Step === "step3"){
-      const existingData = await RedesignedDraftModel.findOne({
-        "Company Name": companyName,
-      });
-      console.log("Third step Working")
-      if (existingData) {
-        const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-          { "Company Name": companyName },
-          {
-            $set: {
-              "moreBookings.services": newData.services || existingData.moreBookings.services,
-              "moreBookings.numberOfServices": newData.numberOfServices || existingData.moreBookings.numberOfServices,
-              "moreBookings.caCase": newData.caCase,
-              "moreBookings.caCommission": newData.caCommission,
-              "moreBookings.caNumber": newData.caNumber,
-              "moreBookings.caEmail": newData.caEmail,
-              "moreBookings.totalAmount": newData.totalAmount || existingData.moreBookings.totalAmount,
-              "moreBookings.pendingAmount": newData.pendingAmount || existingData.moreBookings.pendingAmount,
-              "moreBookings.receivedAmount": newData.receivedAmount || existingData.moreBookings.receivedAmount,
-              "moreBookings.Step3Status": true,
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        } else {
+          res.status(404).json("Company Not found");
+          return true;
+        }
+      } else if (Step === "step3") {
+        const existingData = await RedesignedDraftModel.findOne({
+          "Company Name": companyName,
+        });
+        console.log("Third step Working");
+        if (existingData) {
+          const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                "moreBookings.services":
+                  newData.services || existingData.moreBookings.services,
+                "moreBookings.numberOfServices":
+                  newData.numberOfServices ||
+                  existingData.moreBookings.numberOfServices,
+                "moreBookings.caCase": newData.caCase,
+                "moreBookings.caCommission": newData.caCommission,
+                "moreBookings.caNumber": newData.caNumber,
+                "moreBookings.caEmail": newData.caEmail,
+                "moreBookings.totalAmount":
+                  newData.totalAmount || existingData.moreBookings.totalAmount,
+                "moreBookings.pendingAmount":
+                  newData.pendingAmount ||
+                  existingData.moreBookings.pendingAmount,
+                "moreBookings.receivedAmount":
+                  newData.receivedAmount ||
+                  existingData.moreBookings.receivedAmount,
+                "moreBookings.Step3Status": true,
+              },
             },
-          },
-          { new: true }
-        );
-        res.status(200).json(updatedData);
-        return true; // Respond with updated data
-      }
-      
-      else {
-        res.status(404).json("Company Not found");
-        return true;
-      }
-      
-    }else if(Step === "step4"){
-      const existingData = await RedesignedDraftModel.findOne({
-        "Company Name": companyName,
-      });
-      newData.otherDocs =
-      req.files["otherDocs"] === undefined
-        ? []
-        : req.files["otherDocs"].map((file) => file);
-    newData.paymentReceipt =
-      req.files["paymentReceipt"] === undefined
-        ? []
-        : req.files["paymentReceipt"].map((file) => file);
-      if (existingData) {
-        const updatedData = await RedesignedDraftModel.findOneAndUpdate(
-          { "Company Name": companyName },
-          {
-            $set: {
-           
-              "moreBookings.totalAmount": newData.totalAmount || existingData.moreBookings.totalAmount,
-              "moreBookings.pendingAmount": newData.pendingAmount || existingData.moreBookings.pendingAmount,
-              "moreBookings.receivedAmount": newData.receivedAmount || existingData.moreBookings.receivedAmount,
-              "moreBookings.Step4Status":true ,
-              "moreBookings.paymentReceipt": newData.paymentReceipt || existingData.moreBookings.paymentReceipt,
-              "moreBookings.otherDocs": newData.otherDocs || existingData.moreBookings.otherDocs,
-              "moreBookings.paymentMethod": newData.paymentMethod || existingData.moreBookings.paymentMethod,
-              "moreBookings.extraNotes": newData.extraNotes || existingData.moreBookings.extraNotes,
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        } else {
+          res.status(404).json("Company Not found");
+          return true;
+        }
+      } else if (Step === "step4") {
+        const existingData = await RedesignedDraftModel.findOne({
+          "Company Name": companyName,
+        });
+        newData.otherDocs =
+          req.files["otherDocs"] === undefined
+            ? []
+            : req.files["otherDocs"].map((file) => file);
+        newData.paymentReceipt =
+          req.files["paymentReceipt"] === undefined
+            ? []
+            : req.files["paymentReceipt"].map((file) => file);
+        if (existingData) {
+          const updatedData = await RedesignedDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                "moreBookings.totalAmount":
+                  newData.totalAmount || existingData.moreBookings.totalAmount,
+                "moreBookings.pendingAmount":
+                  newData.pendingAmount ||
+                  existingData.moreBookings.pendingAmount,
+                "moreBookings.receivedAmount":
+                  newData.receivedAmount ||
+                  existingData.moreBookings.receivedAmount,
+                "moreBookings.Step4Status": true,
+                "moreBookings.paymentReceipt":
+                  newData.paymentReceipt ||
+                  existingData.moreBookings.paymentReceipt,
+                "moreBookings.otherDocs":
+                  newData.otherDocs || existingData.moreBookings.otherDocs,
+                "moreBookings.paymentMethod":
+                  newData.paymentMethod ||
+                  existingData.moreBookings.paymentMethod,
+                "moreBookings.extraNotes":
+                  newData.extraNotes || existingData.moreBookings.extraNotes,
+              },
             },
-          },
-          { new: true }
-        );
-        res.status(200).json(updatedData);
-        return true; // Respond with updated data
-      }
-      
-      else {
-        res.status(404).json("Company Not found");
-        return true;
-      }
-    
-    } else if(Step === "step5"){
-      const existingData = await RedesignedLeadformModel.findOne({
-        "Company Name": companyName,
-      });
-      if (existingData) {
-        const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
-          { "Company Name": companyName },
-          {
-            $set: {
-           
-             moreBookings:[...existingData.moreBookings , newData]
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        } else {
+          res.status(404).json("Company Not found");
+          return true;
+        }
+      } else if (Step === "step5") {
+        const existingData = await RedesignedLeadformModel.findOne({
+          "Company Name": companyName,
+        });
+        if (existingData) {
+          const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                moreBookings: [...existingData.moreBookings, newData],
+              },
             },
-          },
-          { new: true }
-        );
-        const removeDraft  = await RedesignedDraftModel.findOneAndUpdate({
-          "Company Name": companyName
-        },
-        {
-          $set: {
-           moreBookings:[]
-          },
-        },
-        { new: true }
-      )
-      const totalAmount = newData.services.reduce(
-        (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
-        0
-      );
-      const receivedAmount = newData.services.reduce((acc, curr) => {
-        return curr.paymentTerms === "Full Advanced"
-          ? acc + parseInt(curr.totalPaymentWGST)
-          : acc + parseInt(curr.firstPayment);
-      }, 0);
-      const pendingAmount = totalAmount - receivedAmount;
-      // Render services HTML
-      const renderServices = () => {
-        let servicesHtml = "";
-        for (let i = 0; i < newData.services.length; i++) {
-          const displayPaymentTerms =
-            newData.services[i].paymentTerms === "Full Advanced"
-              ? "none"
-              : "flex";
-          servicesHtml += `
+            { new: true }
+          );
+          const removeDraft = await RedesignedDraftModel.findOneAndUpdate(
+            {
+              "Company Name": companyName,
+            },
+            {
+              $set: {
+                moreBookings: [],
+              },
+            },
+            { new: true }
+          );
+          const totalAmount = newData.services.reduce(
+            (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
+            0
+          );
+          const receivedAmount = newData.services.reduce((acc, curr) => {
+            return curr.paymentTerms === "Full Advanced"
+              ? acc + parseInt(curr.totalPaymentWGST)
+              : acc + parseInt(curr.firstPayment);
+          }, 0);
+          const pendingAmount = totalAmount - receivedAmount;
+          // Render services HTML
+          const renderServices = () => {
+            let servicesHtml = "";
+            for (let i = 0; i < newData.services.length; i++) {
+              const displayPaymentTerms =
+                newData.services[i].paymentTerms === "Full Advanced"
+                  ? "none"
+                  : "flex";
+              servicesHtml += `
           <div>
           <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
           <div style="width: 25%">
@@ -3542,12 +3625,13 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-              ${newData.services[i].serviceName === "Start Up Certificate"
-              ? newData.services[i].withDSC
-                ? "Start Up Certificate With DSC"
-                : "Start Up Certificate"
-              : newData.services[i].serviceName
-            }
+              ${
+                newData.services[i].serviceName === "Start Up Certificate"
+                  ? newData.services[i].withDSC
+                    ? "Start Up Certificate With DSC"
+                    : "Start Up Certificate"
+                  : newData.services[i].serviceName
+              }
             </div>
           </div>
         </div>
@@ -3648,11 +3732,17 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ${Number(newData.services[i].secondPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].secondPaymentRemarks)) ? newData.services[i].secondPaymentRemarks : `Payment On ${newData.services[i].secondPaymentRemarks}`}
+                ${Number(newData.services[i].secondPayment).toFixed(2)} - ${
+                isNaN(new Date(newData.services[i].secondPaymentRemarks))
+                  ? newData.services[i].secondPaymentRemarks
+                  : `Payment On ${newData.services[i].secondPaymentRemarks}`
+              }
             </div>
           </div>
         </div>
-        <div style="display: ${newData.services[i].thirdPayment === 0 ? "none" : "flex"}; flex-wrap: wrap">
+        <div style="display: ${
+          newData.services[i].thirdPayment === 0 ? "none" : "flex"
+        }; flex-wrap: wrap">
           <div style="width: 25%">
             <div style="
                   border: 1px solid #ccc;
@@ -3668,11 +3758,17 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].thirdPaymentRemarks)) ? newData.services[i].thirdPaymentRemarks : `Payment On ${newData.services[i].thirdPaymentRemarks}`}
+                ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${
+                isNaN(new Date(newData.services[i].thirdPaymentRemarks))
+                  ? newData.services[i].thirdPaymentRemarks
+                  : `Payment On ${newData.services[i].thirdPaymentRemarks}`
+              }
             </div>
           </div>
         </div>
-        <div style="display: ${newData.services[i].fourthPayment === 0 ? "none" : "flex"}; flex-wrap: wrap">
+        <div style="display: ${
+          newData.services[i].fourthPayment === 0 ? "none" : "flex"
+        }; flex-wrap: wrap">
           <div style="width: 25%">
             <div style="
                   border: 1px solid #ccc;
@@ -3688,7 +3784,11 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ${Number(newData.services[i].fourthPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].fourthPaymentRemarks)) ? newData.services[i].fourthPaymentRemarks : `Payment On ${newData.services[i].fourthPaymentRemarks}`}
+                ${Number(newData.services[i].fourthPayment).toFixed(2)} - ${
+                isNaN(new Date(newData.services[i].fourthPaymentRemarks))
+                  ? newData.services[i].fourthPaymentRemarks
+                  : `Payment On ${newData.services[i].fourthPaymentRemarks}`
+              }
             </div>
           </div>
         </div>
@@ -3714,21 +3814,21 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
         </div>
         </div>
           `;
-        }
-        return servicesHtml;
-      };
-      const serviceNames = newData.services
-      .map((service, index) => `${service.serviceName}`)
-      .join(" , ");
-      const visibility = newData.bookingSource !== "Other" && "none";
-      const servicesHtmlContent = renderServices();
-      const recipients = [newData.bdeEmail , newData.bdmEmail];
+            }
+            return servicesHtml;
+          };
+          const serviceNames = newData.services
+            .map((service, index) => `${service.serviceName}`)
+            .join(" , ");
+          const visibility = newData.bookingSource !== "Other" && "none";
+          const servicesHtmlContent = renderServices();
+          const recipients = [newData.bdeEmail, newData.bdmEmail];
 
-      sendMail(
-        recipients,
-        `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
-        ``,
-        ` <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
+          sendMail(
+            recipients,
+            `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
+            ``,
+            ` <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
         <h3 style="text-align: center">Booking Form Deatils</h3>
         <div style="
               width: 95%;
@@ -4255,43 +4355,43 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
         
   
         `,
-        newData.otherDocs,
-        newData.paymentReceipt
-      );
-      const renderServiceList = () => {
-        let servicesHtml = "";
-        for (let i = 0; i < newData.services.length; i++) {
-          servicesHtml += `
+            newData.otherDocs,
+            newData.paymentReceipt
+          );
+          const renderServiceList = () => {
+            let servicesHtml = "";
+            for (let i = 0; i < newData.services.length; i++) {
+              servicesHtml += `
           <span>Service ${i + 1}: ${newData.services[i].serviceName}</span>,  
           `;
-        }
-        return servicesHtml;
-      };
-      const renderPaymentDetails = () => {
-        let servicesHtml = "";
-        let paymentServices = "";
-        for (let i = 0; i < newData.services.length; i++) {
-          const Amount =
-            newData.services[i].paymentTerms === "Full Advanced"
-              ? newData.services[i].totalPaymentWGST
-              : newData.services[i].firstPayment;
-          let rowSpan;
-  
-          if (newData.services[i].paymentTerms === "two-part") {
-            if (
-              newData.services[i].thirdPayment !== 0 &&
-              newData.services[i].fourthPayment === 0
-            ) {
-              rowSpan = 2;
-            } else if (newData.services[i].fourthPayment !== 0) {
-              rowSpan = 3;
             }
-          } else {
-            rowSpan = 1;
-          }
-  
-          if (rowSpan === 3) {
-            paymentServices = `
+            return servicesHtml;
+          };
+          const renderPaymentDetails = () => {
+            let servicesHtml = "";
+            let paymentServices = "";
+            for (let i = 0; i < newData.services.length; i++) {
+              const Amount =
+                newData.services[i].paymentTerms === "Full Advanced"
+                  ? newData.services[i].totalPaymentWGST
+                  : newData.services[i].firstPayment;
+              let rowSpan;
+
+              if (newData.services[i].paymentTerms === "two-part") {
+                if (
+                  newData.services[i].thirdPayment !== 0 &&
+                  newData.services[i].fourthPayment === 0
+                ) {
+                  rowSpan = 2;
+                } else if (newData.services[i].fourthPayment !== 0) {
+                  rowSpan = 3;
+                }
+              } else {
+                rowSpan = 1;
+              }
+
+              if (rowSpan === 3) {
+                paymentServices = `
           <tr>
             <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
             <td>${newData.services[i].secondPaymentRemarks}</td>
@@ -4305,8 +4405,8 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
            <td>${newData.services[i].fourthPaymentRemarks}</td>
            </tr>
           `;
-          } else if (rowSpan === 2) {
-            paymentServices = `
+              } else if (rowSpan === 2) {
+                paymentServices = `
           <tr>
             <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
             <td>${newData.services[i].secondPaymentRemarks}</td>
@@ -4316,18 +4416,24 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
             <td>${newData.services[i].thirdPaymentRemarks}</td>
           </tr>
           `;
-          } else {
-            paymentServices = `
+              } else {
+                paymentServices = `
           <tr>
             <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
-            <td>${newData.services[i].paymentTerms !== "Full Advanced" ? newData.services[i].secondPaymentRemarks : "100% Advance Payment"}</td>
+            <td>${
+              newData.services[i].paymentTerms !== "Full Advanced"
+                ? newData.services[i].secondPaymentRemarks
+                : "100% Advance Payment"
+            }</td>
           </tr>
           `;
-          }
-          servicesHtml += `
+              }
+              servicesHtml += `
           <table style="margin-top:20px">
               <thead>
-                <td colspan="4">Service Name : ${newData.services[i].serviceName}</td>
+                <td colspan="4">Service Name : ${
+                  newData.services[i].serviceName
+                }</td>
               </thead>
               <tbody>
                 <tr>
@@ -4337,68 +4443,91 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
                   <td>Remarks</td>
                 </tr>
                 <tr>
-                      <th style="vertical-align: top;" rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
-            } /-</th>
-                      <th style="vertical-align: top;" rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
-              ? Number(newData.services[i].totalPaymentWGST).toFixed(2)
-              : Number(newData.services[i].firstPayment).toFixed(2)
-            }/-</th>
+                      <th style="vertical-align: top;" rowspan='4'>₹ ${
+                        newData.services[i].totalPaymentWGST
+                      } /-</th>
+                      <th style="vertical-align: top;" rowspan='4'>₹ ${
+                        newData.services[i].paymentTerms === "Full Advanced"
+                          ? Number(
+                              newData.services[i].totalPaymentWGST
+                            ).toFixed(2)
+                          : Number(newData.services[i].firstPayment).toFixed(2)
+                      }/-</th>
                 </tr>
                 ${paymentServices}
               </tbody>
           </table>
           `;
-        }
-        return servicesHtml;
-      };
-      const allowedServiceNames = [
-        "Seed Funding Support",
-        "Angel Funding Support",
-        "VC Funding Support",
-        "Crowd Funding Support",
-        "I-Create",
-        "Nidhi Seed Support Scheme",
-        "Nidhi Prayash Yojna",
-        "NAIF",
-        "Raftaar",
-        "CSR Funding",
-        "Stand-Up India",
-        "PMEGP",
-        "USAID",
-        "UP Grant",
-        "DBS Grant",
-        "MSME Innovation",
-        "MSME Hackathon",
-        "Gujarat Grant",
-        "CGTMSC",
-        "Mudra Loan",
-        "SIDBI Loan",
-        "Incubation Support"
-      ];
-      const AuthorizedName = newData.services.some(service => {
-        const tempServices = [...allowedServiceNames, "Income Tax Excemption"];
-        return tempServices.includes(service);
-      }) ? "Shubhi Banthiya" : "Dhruvi Gohel";
-  
-      console.log(newData.services);
-      const newPageDisplay = newData.services.some(service => {
-        const tempServices = [...allowedServiceNames, "Income Tax Excemption" , "Start-Up India Certificate"];
-        return tempServices.includes(service.serviceName);
-      }) ? 'style="display:block' : 'style="display:none';
-  
-      console.log(newPageDisplay);
-      const AuthorizedNumber = AuthorizedName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-      const AuthorizedEmail = AuthorizedName === "Dhruvi Gohel" ? "dhruvi@startupsahay.com" : "rm@startupsahay.com";
-      
-      const renderServiceKawali = ()=>{
-        let servicesHtml = "";
-        let fundingServices = "";
-        let fundingServicesArray = "";
-        let incomeTaxServices = ""
-      
-        for(let i = 0; i < newData.services.length; i++){
-          if(newData.services[i].serviceName === "Start-Up India Certificate"){
-              servicesHtml = `
+            }
+            return servicesHtml;
+          };
+          const allowedServiceNames = [
+            "Seed Funding Support",
+            "Angel Funding Support",
+            "VC Funding Support",
+            "Crowd Funding Support",
+            "I-Create",
+            "Nidhi Seed Support Scheme",
+            "Nidhi Prayash Yojna",
+            "NAIF",
+            "Raftaar",
+            "CSR Funding",
+            "Stand-Up India",
+            "PMEGP",
+            "USAID",
+            "UP Grant",
+            "DBS Grant",
+            "MSME Innovation",
+            "MSME Hackathon",
+            "Gujarat Grant",
+            "CGTMSC",
+            "Mudra Loan",
+            "SIDBI Loan",
+            "Incubation Support",
+          ];
+          const AuthorizedName = newData.services.some((service) => {
+            const tempServices = [
+              ...allowedServiceNames,
+              "Income Tax Excemption",
+            ];
+            return tempServices.includes(service);
+          })
+            ? "Shubhi Banthiya"
+            : "Dhruvi Gohel";
+
+          console.log(newData.services);
+          const newPageDisplay = newData.services.some((service) => {
+            const tempServices = [
+              ...allowedServiceNames,
+              "Income Tax Excemption",
+              "Start-Up India Certificate",
+            ];
+            return tempServices.includes(service.serviceName);
+          })
+            ? 'style="display:block'
+            : 'style="display:none';
+
+          console.log(newPageDisplay);
+          const AuthorizedNumber =
+            AuthorizedName === "Dhruvi Gohel"
+              ? "+919016928702"
+              : "+919998992601";
+          const AuthorizedEmail =
+            AuthorizedName === "Dhruvi Gohel"
+              ? "dhruvi@startupsahay.com"
+              : "rm@startupsahay.com";
+
+          const renderServiceKawali = () => {
+            let servicesHtml = "";
+            let fundingServices = "";
+            let fundingServicesArray = "";
+            let incomeTaxServices = "";
+
+            for (let i = 0; i < newData.services.length; i++) {
+              if (
+                newData.services[i].serviceName === "Start-Up India Certificate"
+              ) {
+                servicesHtml = `
               <p>
                 <b>Start-Up India Certification Support Service Acknowledgement:</b>
               </p>
@@ -4406,10 +4535,12 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
                 I, Director of <b> ${newData["Company Name"]} </b>, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing consultancy services. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-up India certificate is issued free of charge by the government, and I have not been charged for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
               </p>
               <br>
-              `
-          }else if(allowedServiceNames.includes(newData.services[i].serviceName)){
-              fundingServicesArray += `${newData.services[i].serviceName},`
-              fundingServices = `
+              `;
+              } else if (
+                allowedServiceNames.includes(newData.services[i].serviceName)
+              ) {
+                fundingServicesArray += `${newData.services[i].serviceName},`;
+                fundingServices = `
               <p>
               <b>
                 ${newData.services[i].serviceName} Support Services Acknowledgement:   
@@ -4419,9 +4550,11 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
               I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
             </p>
             <br>
-              `
-          }else if(newData.services[i].serviceName === "Income Tax Excemption"){
-            incomeTaxServices = `
+              `;
+              } else if (
+                newData.services[i].serviceName === "Income Tax Excemption"
+              ) {
+                incomeTaxServices = `
             <p>
                 <p>
                   <b>
@@ -4433,18 +4566,16 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
                 </p>
               </p>
               <br>
-            `
-          }else{
-            servicesHtml += `
+            `;
+              } else {
+                servicesHtml += `
             <br>
-            `
-          }
-  
-  
-        }
-  
-        if(fundingServicesArray !== ""){
-          servicesHtml += `
+            `;
+              }
+            }
+
+            if (fundingServicesArray !== "") {
+              servicesHtml += `
           <p>
           <b>
             ${fundingServicesArray} Support Services Acknowledgement:   
@@ -4454,9 +4585,9 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
           I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
         </p>
         <br>
-          `
-        }else if(incomeTaxServices!==""){
-          servicesHtml += `
+          `;
+            } else if (incomeTaxServices !== "") {
+              servicesHtml += `
           <p>
           <p>
             <b>
@@ -4468,15 +4599,14 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
           </p>
         </p>
         <br>
-        `
-        }
-        return servicesHtml
-      }
-  
-  
-      const serviceKawali = renderServiceKawali();
-      const todaysDate = new Date().toLocaleDateString();
-      const mainPageHtml = `
+        `;
+            }
+            return servicesHtml;
+          };
+
+          const serviceKawali = renderServiceKawali();
+          const todaysDate = new Date().toLocaleDateString();
+          const mainPageHtml = `
       <div class="page">
         <div class="container position-relative">
           <div class="front-page">
@@ -4513,101 +4643,97 @@ app.post("/api/redesigned-addmore-booking/:CompanyName/:step", upload.fields([
           </div>
         </div>
       </div>
-      `
-  
-      // const mainPage = newPageDisplay === 'style="display:block' ? mainPageHtml : "";
-      // const bdNames = newData.bdeName == newData.bdmName ? newData.bdeName : `${newData.bdeName} & ${newData.bdmName}`;
-      // const pagination = newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
-      // // Render services HTML content
-      // const serviceList = renderServiceList();
-      // const paymentDetails = renderPaymentDetails();
-      // const pdfIndex = (!existingData.moreBookings || existingData.moreBookings.length === 0) ? 1 :( existingData.moreBookings.length +1);
-     
-      // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
-      // const filledHtml = htmlTemplate
-      //   .replace("{{Company Name}}", newData["Company Name"])
-      //   .replace("{{Company Name}}", newData["Company Name"])
-      //   .replace("{{Company Name}}", newData["Company Name"])
-      //   .replace("{{Company Name}}", newData["Company Name"])
-      //   .replace("{{Services}}", serviceList)
-      //   .replace("{{page-display}}", newPageDisplay)
-      //   .replace("{{pagination}}", pagination)
-      //   .replace("{{Authorized-Person}}", AuthorizedName)
-      //   .replace("{{Authorized-Number}}", AuthorizedNumber)
-      //   .replace("{{Authorized-Email}}", AuthorizedEmail)
-      //   .replace("{{Main-page}}",mainPage)
-      //   .replace("{{TotalAmount}}", totalAmount.toFixed(2))
-      //   .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
-      //   .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
-      //   .replace("{{Service-Details}}", paymentDetails)
-      //   .replace("{{Company Number}}", newData["Company Number"]);
-      // pdf
-      //   .create(filledHtml, { format: "Letter" })
-      //   .toFile(
-      //     path.join(__dirname, "./Document", `${newData["Company Name"]}-Rebooking.pdf`),
-      //     async (err, response) => {
-      //       if (err) {
-      //         console.error("Error generating PDF:", err);
-      //         res.status(500).send("Error generating PDF");
-      //       } else {
-      //         try {
-      //           setTimeout(() => {
-      //             const mainBuffer = fs.readFileSync(
-      //               `./Document/${newData["Company Name"]}-Rebooking.pdf`
-      //             );
-      //             sendMail2(
-      //               ["nimesh@incscale.in","nimesh@incscale.in"],
-      //               `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
-      //               ``,
-      //               `
-      //               <div class="container">
-         
-      //               <p>Dear ${newData["Company Name"]},</p>
-      //               <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
-      //               <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
-      //               <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
-      //               <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
-      //               <p style="display:${serviceNames == "Start-Up India Certificate" ? "none" : "block"}">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
-      //               <p style="display:${serviceNames == "Start-Up India Certificate" ? "none" : "block"}">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
-      //               <p >Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
-      //               <div class="signature">
-      //                   <div>Best regards,</div>
-      //                   <div>${AuthorizedName} - Relationship Manager</div>
-      //                   <div>${AuthorizedNumber}</div>
-      //                   <div>Start-Up Sahay Private Limited</div>
-      //               </div>
-      //           </div>
-      //         `,
-      //               mainBuffer
-      //             );
-      //           }, 4000);
-      //         } catch (emailError) {
-      //           console.error("Error sending email:", emailError);
-      //           res.status(500).send("Error sending email with PDF attachment");
-      //         }
-      //       }
-      //     }
-      //   );
+      `;
 
-      
-        res.status(200).json(updatedData);
-        return true; // Respond with updated data
-      }
-      
-      else {
-        res.status(404).json("Company Not found");
-        return true;
-      }
+          // const mainPage = newPageDisplay === 'style="display:block' ? mainPageHtml : "";
+          // const bdNames = newData.bdeName == newData.bdmName ? newData.bdeName : `${newData.bdeName} & ${newData.bdmName}`;
+          // const pagination = newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
+          // // Render services HTML content
+          // const serviceList = renderServiceList();
+          // const paymentDetails = renderPaymentDetails();
+          // const pdfIndex = (!existingData.moreBookings || existingData.moreBookings.length === 0) ? 1 :( existingData.moreBookings.length +1);
 
+          // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
+          // const filledHtml = htmlTemplate
+          //   .replace("{{Company Name}}", newData["Company Name"])
+          //   .replace("{{Company Name}}", newData["Company Name"])
+          //   .replace("{{Company Name}}", newData["Company Name"])
+          //   .replace("{{Company Name}}", newData["Company Name"])
+          //   .replace("{{Services}}", serviceList)
+          //   .replace("{{page-display}}", newPageDisplay)
+          //   .replace("{{pagination}}", pagination)
+          //   .replace("{{Authorized-Person}}", AuthorizedName)
+          //   .replace("{{Authorized-Number}}", AuthorizedNumber)
+          //   .replace("{{Authorized-Email}}", AuthorizedEmail)
+          //   .replace("{{Main-page}}",mainPage)
+          //   .replace("{{TotalAmount}}", totalAmount.toFixed(2))
+          //   .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
+          //   .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
+          //   .replace("{{Service-Details}}", paymentDetails)
+          //   .replace("{{Company Number}}", newData["Company Number"]);
+          // pdf
+          //   .create(filledHtml, { format: "Letter" })
+          //   .toFile(
+          //     path.join(__dirname, "./Document", `${newData["Company Name"]}-Rebooking.pdf`),
+          //     async (err, response) => {
+          //       if (err) {
+          //         console.error("Error generating PDF:", err);
+          //         res.status(500).send("Error generating PDF");
+          //       } else {
+          //         try {
+          //           setTimeout(() => {
+          //             const mainBuffer = fs.readFileSync(
+          //               `./Document/${newData["Company Name"]}-Rebooking.pdf`
+          //             );
+          //             sendMail2(
+          //               ["nimesh@incscale.in","nimesh@incscale.in"],
+          //               `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
+          //               ``,
+          //               `
+          //               <div class="container">
+
+          //               <p>Dear ${newData["Company Name"]},</p>
+          //               <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
+          //               <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
+          //               <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
+          //               <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+          //               <p style="display:${serviceNames == "Start-Up India Certificate" ? "none" : "block"}">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+          //               <p style="display:${serviceNames == "Start-Up India Certificate" ? "none" : "block"}">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
+          //               <p >Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
+          //               <div class="signature">
+          //                   <div>Best regards,</div>
+          //                   <div>${AuthorizedName} - Relationship Manager</div>
+          //                   <div>${AuthorizedNumber}</div>
+          //                   <div>Start-Up Sahay Private Limited</div>
+          //               </div>
+          //           </div>
+          //         `,
+          //               mainBuffer
+          //             );
+          //           }, 4000);
+          //         } catch (emailError) {
+          //           console.error("Error sending email:", emailError);
+          //           res.status(500).send("Error sending email with PDF attachment");
+          //         }
+          //       }
+          //     }
+          //   );
+
+          res.status(200).json(updatedData);
+          return true; // Respond with updated data
+        } else {
+          res.status(404).json("Company Not found");
+          return true;
+        }
+      } else {
+        res.status(200).json("No Action Done");
+      }
+    } catch (error) {
+      console.error("Error creating/updating data:", error);
+      res.status(500).send("Error creating/updating data"); // Send an error response
     }
-    else{
-      res.status(200).json("No Action Done")
-    }
-  }catch (error) {
-    console.error("Error creating/updating data:", error);
-    res.status(500).send("Error creating/updating data"); // Send an error response
   }
-})
+);
 app.post(
   "/api/redesigned-edit-leadData/:CompanyName/:step",
   upload.fields([
@@ -4619,7 +4745,7 @@ app.post(
       const companyName = req.params.CompanyName;
       const newData = req.body;
       const Step = req.params.step;
-      console.log(Step , newData);
+      console.log(Step, newData);
       if (Step === "step1") {
         const existingData = await EditableDraftModel.findOne({
           "Company Name": companyName,
@@ -4664,20 +4790,20 @@ app.post(
         const existingData = await EditableDraftModel.findOne({
           "Company Name": companyName,
         });
-        console.log("Second Step Working")
+        console.log("Second Step Working");
         if (existingData) {
           const updatedData = await EditableDraftModel.findOneAndUpdate(
-            {"Company Name": companyName },
+            { "Company Name": companyName },
             {
               $set: {
                 bdeName: newData.bdeName || "",
                 bdeEmail: newData.bdeEmail || "",
                 bdmName: newData.bdmName || "",
-                otherBdmName : newData.otherBdmName || "",
+                otherBdmName: newData.otherBdmName || "",
                 bdmEmail: newData.bdmEmail || "",
                 bookingDate: newData.bookingDate || "",
                 bookingSource: newData.bookingSource || "",
-                otherBookingSource:newData.otherBookingSource || "",
+                otherBookingSource: newData.otherBookingSource || "",
                 Step2Status: true,
               },
             },
@@ -4685,20 +4811,18 @@ app.post(
           );
           res.status(200).json(updatedData);
           return true; // Respond with updated data
-        }else{
+        } else {
           const createdData = await EditableDraftModel.create({
-            "Company Name":
-            companyName || existingData["Company Name"],
+            "Company Name": companyName || existingData["Company Name"],
             bdeName: newData.bdeName || "",
             bdeEmail: newData.bdeEmail || "",
             bdmName: newData.bdmName || "",
-            otherBdmName : newData.otherBdmName || "",
+            otherBdmName: newData.otherBdmName || "",
             bdmEmail: newData.bdmEmail || "",
             bookingDate: newData.bookingDate || "",
             bookingSource: newData.bookingSource || "",
-            otherBookingSource:newData.otherBookingSource || "",
+            otherBookingSource: newData.otherBookingSource || "",
             Step2Status: true,
-           
           });
           res.status(200).json(createdData);
           return true;
@@ -4733,10 +4857,9 @@ app.post(
           );
           res.status(200).json(updatedData);
           return true; // Respond with updated data
-        }else{
+        } else {
           const createdData = await EditableDraftModel.create({
-            "Company Name":
-            companyName || existingData["Company Name"],
+            "Company Name": companyName || existingData["Company Name"],
             services: newData.services || existingData.services,
             numberOfServices:
               newData.numberOfServices || existingData.numberOfServices,
@@ -4745,8 +4868,7 @@ app.post(
             caNumber: newData.caNumber,
             caEmail: newData.caEmail,
             totalAmount: newData.totalAmount || existingData.totalAmount,
-            pendingAmount:
-              newData.pendingAmount || existingData.pendingAmount,
+            pendingAmount: newData.pendingAmount || existingData.pendingAmount,
             receivedAmount:
               newData.receivedAmount || existingData.receivedAmount,
             Step3Status: true,
@@ -4790,22 +4912,19 @@ app.post(
           );
           res.status(200).json(updatedData);
           return true; // Respond with updated data
-        }else{
-     
+        } else {
           const createdData = await EditableDraftModel.create({
-            "Company Name":
-            companyName || existingData["Company Name"],
+            "Company Name": companyName || existingData["Company Name"],
             totalAmount: newData.totalAmount || existingData.totalAmount,
-                pendingAmount:
-                  newData.pendingAmount || existingData.pendingAmount,
-                receivedAmount:
-                  newData.receivedAmount || existingData.receivedAmount,
-                paymentReceipt:
-                  newData.paymentReceipt || existingData.paymentReceipt,
-                otherDocs: newData.otherDocs || existingData.otherDocs,
-                paymentMethod: newData.paymentMethod || newData.paymentMethod,
-                extraNotes: newData.extraNotes || newData.extraNotes,
-                Step4Status: true,
+            pendingAmount: newData.pendingAmount || existingData.pendingAmount,
+            receivedAmount:
+              newData.receivedAmount || existingData.receivedAmount,
+            paymentReceipt:
+              newData.paymentReceipt || existingData.paymentReceipt,
+            otherDocs: newData.otherDocs || existingData.otherDocs,
+            paymentMethod: newData.paymentMethod || newData.paymentMethod,
+            extraNotes: newData.extraNotes || newData.extraNotes,
+            Step4Status: true,
           });
           res.status(200).json(createdData);
           return true;
@@ -4814,34 +4933,33 @@ app.post(
         const existingData = await EditableDraftModel.findOne({
           "Company Name": companyName,
         });
-     if(existingData){
+        if (existingData) {
+          const date = new Date();
+          console.log(newData.requestBy);
 
-      const date = new Date();
-      console.log(newData.requestBy);
-      
-       
-      const updatedData = await EditableDraftModel.findOneAndUpdate(
-        { "Company Name": companyName },
-        {
-          $set: {
-            Step5Status: true,
-            requestBy: newData.requestBy,
-            requestDate: date,
-            services: existingData.services.length!==0 ? existingData.services : newData.services
-          },
-        },
-        { new: true }
-      );
-      res.status(200).json(updatedData);
-      return true; 
-     }else{
-      res.status(200).json({message:"No Changes made"});
-      return true;
-     }
-       
+          const updatedData = await EditableDraftModel.findOneAndUpdate(
+            { "Company Name": companyName },
+            {
+              $set: {
+                Step5Status: true,
+                requestBy: newData.requestBy,
+                requestDate: date,
+                services:
+                  existingData.services.length !== 0
+                    ? existingData.services
+                    : newData.services,
+              },
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedData);
+          return true;
+        } else {
+          res.status(200).json({ message: "No Changes made" });
+          return true;
+        }
       }
       // Add uploaded files information to newData
-
     } catch (error) {
       console.error("Error creating/updating data:", error);
       res.status(500).send("Error creating/updating data"); // Send an error response
@@ -4849,31 +4967,34 @@ app.post(
   }
 );
 
-app.post('/api/edit-moreRequest/:companyName/:bookingIndex', async (req, res) => {
-  try {
-    const { companyName, bookingIndex } = req.params;
-    const newData = req.body;
-    const requestDate = new Date();
-    const createdData = await EditableDraftModel.create({
-      "Company Name":companyName,
-      bookingIndex,
-      requestDate,
-      ...newData,
-    });
+app.post(
+  "/api/edit-moreRequest/:companyName/:bookingIndex",
+  async (req, res) => {
+    try {
+      const { companyName, bookingIndex } = req.params;
+      const newData = req.body;
+      const requestDate = new Date();
+      const createdData = await EditableDraftModel.create({
+        "Company Name": companyName,
+        bookingIndex,
+        requestDate,
+        ...newData,
+      });
 
-    res.status(201).json(createdData);
-  } catch (error) {
-    console.error('Error creating data:', error);
-    res.status(500).send('Internal Server Error');
+      res.status(201).json(createdData);
+    } catch (error) {
+      console.error("Error creating data:", error);
+      res.status(500).send("Internal Server Error");
+    }
   }
-});
-app.get('/api/editable-LeadData', async (req, res) => {
+);
+app.get("/api/editable-LeadData", async (req, res) => {
   try {
     const data = await EditableDraftModel.find(); // Fetch all data from the collection
     res.json(data); // Send the data as JSON response
   } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -5447,7 +5568,9 @@ app.get("/api/redesigned-final-leadData", async (req, res) => {
 app.get("/api/redesigned-final-leadData/:companyName", async (req, res) => {
   try {
     const companyName = req.params.companyName;
-    const allData = await RedesignedLeadformModel.findOne({"Company Name":companyName});
+    const allData = await RedesignedLeadformModel.findOne({
+      "Company Name": companyName,
+    });
 
     res.status(200).json(allData);
   } catch (error) {
@@ -5455,52 +5578,57 @@ app.get("/api/redesigned-final-leadData/:companyName", async (req, res) => {
     res.status(500).send("Error fetching data");
   }
 });
-app.delete('/api/redesigned-delete-booking/:companyId', async (req, res) => {
+app.delete("/api/redesigned-delete-booking/:companyId", async (req, res) => {
   try {
     const companyId = req.params.companyId;
     // Find and delete the booking with the given companyId
-    const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({ company: companyId });
+    const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
+      company: companyId,
+    });
     const updateMainBooking = await CompanyModel.findByIdAndUpdate(
       companyId,
-      { $set: { "Status": "Interested" } },
+      { $set: { Status: "Interested" } },
       { new: true }
     );
-    if(deletedBooking){
-
-      const deleteDraft = await RedesignedDraftModel.findOneAndDelete({"Company Name" : deletedBooking["Company Name"]});
+    if (deletedBooking) {
+      const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
+        "Company Name": deletedBooking["Company Name"],
+      });
+    } else {
+      return res.status(404).send("Booking not found");
     }
-    else  {
-      return res.status(404).send('Booking not found');
-    }
-    res.status(200).send('Booking deleted successfully');
+    res.status(200).send("Booking deleted successfully");
   } catch (error) {
-    console.error('Error deleting booking:', error);
-    res.status(500).send('Internal Server Error');
+    console.error("Error deleting booking:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
 
-// Deleting booking for particular id 
-app.delete('/api/redesigned-delete-particular-booking/:company/:companyId', async (req, res) => {
-  try {
-    const company = req.params.company;
-    const companyId = req.params.companyId;
+// Deleting booking for particular id
+app.delete(
+  "/api/redesigned-delete-particular-booking/:company/:companyId",
+  async (req, res) => {
+    try {
+      const company = req.params.company;
+      const companyId = req.params.companyId;
 
-    const updatedLeadForm = await RedesignedLeadformModel.findOneAndUpdate(
-      { company: company },
-      { $pull: { "moreBookings": { "_id": companyId } } },
-      { new: true }
-    );
+      const updatedLeadForm = await RedesignedLeadformModel.findOneAndUpdate(
+        { company: company },
+        { $pull: { moreBookings: { _id: companyId } } },
+        { new: true }
+      );
 
-    if (!updatedLeadForm) {
-      return res.status(404).send('Booking not found');
+      if (!updatedLeadForm) {
+        return res.status(404).send("Booking not found");
+      }
+
+      res.status(200).send("Booking deleted successfully");
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      res.status(500).send("Internal Server Error");
     }
-    
-    res.status(200).send('Booking deleted successfully');
-  } catch (error) {
-    console.error('Error deleting booking:', error);
-    res.status(500).send('Internal Server Error');
   }
-});
+);
 // Backend: API endpoint for deleting a draft
 app.delete("/api/redesigned-delete-model/:companyName", async (req, res) => {
   try {
@@ -5529,7 +5657,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "Company Name": newData["Company Name"],
     });
     if (companyData) {
-      newData.company = companyData._id; 
+      newData.company = companyData._id;
     }
     // Create a new entry in the database
     const createdData = await RedesignedLeadformModel.create(newData);
@@ -5538,6 +5666,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       await CompanyModel.findByIdAndUpdate(companyData._id, {
         Status: "Matured",
         lastActionDate: date,
+        ename:newData.bdeName
       });
     }
 
@@ -5577,12 +5706,13 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].serviceName === "Start Up Certificate"
-            ? newData.services[i].withDSC
-              ? "Start Up Certificate With DSC"
-              : "Start Up Certificate"
-            : newData.services[i].serviceName
-          }
+            ${
+              newData.services[i].serviceName === "Start Up Certificate"
+                ? newData.services[i].withDSC
+                  ? "Start Up Certificate With DSC"
+                  : "Start Up Certificate"
+                : newData.services[i].serviceName
+            }
           </div>
         </div>
       </div>
@@ -5683,11 +5813,17 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ${Number(newData.services[i].secondPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].secondPaymentRemarks)) ? newData.services[i].secondPaymentRemarks : `Payment On ${newData.services[i].secondPaymentRemarks}`}
+              ${Number(newData.services[i].secondPayment).toFixed(2)} - ${
+          isNaN(new Date(newData.services[i].secondPaymentRemarks))
+            ? newData.services[i].secondPaymentRemarks
+            : `Payment On ${newData.services[i].secondPaymentRemarks}`
+        }
           </div>
         </div>
       </div>
-      <div style="display: ${newData.services[i].thirdPayment === 0 ? "none" : "flex"}; flex-wrap: wrap">
+      <div style="display: ${
+        newData.services[i].thirdPayment === 0 ? "none" : "flex"
+      }; flex-wrap: wrap">
         <div style="width: 25%">
           <div style="
                 border: 1px solid #ccc;
@@ -5703,11 +5839,17 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].thirdPaymentRemarks)) ? newData.services[i].thirdPaymentRemarks : `Payment On ${newData.services[i].thirdPaymentRemarks}`}
+              ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${
+          isNaN(new Date(newData.services[i].thirdPaymentRemarks))
+            ? newData.services[i].thirdPaymentRemarks
+            : `Payment On ${newData.services[i].thirdPaymentRemarks}`
+        }
           </div>
         </div>
       </div>
-      <div style="display: ${newData.services[i].fourthPayment === 0 ? "none" : "flex"}; flex-wrap: wrap">
+      <div style="display: ${
+        newData.services[i].fourthPayment === 0 ? "none" : "flex"
+      }; flex-wrap: wrap">
         <div style="width: 25%">
           <div style="
                 border: 1px solid #ccc;
@@ -5723,7 +5865,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ${Number(newData.services[i].fourthPayment).toFixed(2)} - ${ isNaN(new Date(newData.services[i].fourthPaymentRemarks)) ? newData.services[i].fourthPaymentRemarks : `Payment On ${newData.services[i].fourthPaymentRemarks}`}
+              ${Number(newData.services[i].fourthPayment).toFixed(2)} - ${
+          isNaN(new Date(newData.services[i].fourthPaymentRemarks))
+            ? newData.services[i].fourthPaymentRemarks
+            : `Payment On ${newData.services[i].fourthPaymentRemarks}`
+        }
           </div>
         </div>
       </div>
@@ -5761,7 +5907,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       // newData.bdeEmail,
       // newData.bdmEmail,
       // // "bookings@startupsahay.com",
-      "nimesh@incscale.in"
+      "nimesh@incscale.in",
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -6364,14 +6510,20 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           paymentServices = `
         <tr>
           <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
-          <td>${newData.services[i].paymentTerms !== "Full Advanced" ? newData.services[i].secondPaymentRemarks : "100% Advance Payment"}</td>
+          <td>${
+            newData.services[i].paymentTerms !== "Full Advanced"
+              ? newData.services[i].secondPaymentRemarks
+              : "100% Advance Payment"
+          }</td>
         </tr>
         `;
         }
         servicesHtml += `
         <table style="margin-top:20px">
             <thead>
-              <td colspan="4">Service Name : ${newData.services[i].serviceName}</td>
+              <td colspan="4">Service Name : ${
+                newData.services[i].serviceName
+              }</td>
             </thead>
             <tbody>
               <tr>
@@ -6381,12 +6533,16 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th style="vertical-align: top;" rowspan='4'>₹ ${newData.services[i].totalPaymentWGST
-          } /-</th>
-                    <th style="vertical-align: top;" rowspan='4'>₹ ${newData.services[i].paymentTerms === "Full Advanced"
-            ? Number(newData.services[i].totalPaymentWGST).toFixed(2)
-            : Number(newData.services[i].firstPayment).toFixed(2)
-          }/-</th>
+                    <th style="vertical-align: top;" rowspan='4'>₹ ${
+                      newData.services[i].totalPaymentWGST
+                    } /-</th>
+                    <th style="vertical-align: top;" rowspan='4'>₹ ${
+                      newData.services[i].paymentTerms === "Full Advanced"
+                        ? Number(newData.services[i].totalPaymentWGST).toFixed(
+                            2
+                          )
+                        : Number(newData.services[i].firstPayment).toFixed(2)
+                    }/-</th>
               </tr>
               ${paymentServices}
             </tbody>
@@ -6417,32 +6573,44 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "CGTMSC",
       "Mudra Loan",
       "SIDBI Loan",
-      "Incubation Support"
+      "Incubation Support",
     ];
-    const AuthorizedName = newData.services.some(service => {
+    const AuthorizedName = newData.services.some((service) => {
       const tempServices = [...allowedServiceNames, "Income Tax Excemption"];
       return tempServices.includes(service);
-    }) ? "Shubhi Banthiya" : "Dhruvi Gohel";
+    })
+      ? "Shubhi Banthiya"
+      : "Dhruvi Gohel";
 
     console.log(newData.services);
-    const newPageDisplay = newData.services.some(service => {
-      const tempServices = [...allowedServiceNames, "Income Tax Excemption" , "Start-Up India Certificate"];
+    const newPageDisplay = newData.services.some((service) => {
+      const tempServices = [
+        ...allowedServiceNames,
+        "Income Tax Excemption",
+        "Start-Up India Certificate",
+      ];
       return tempServices.includes(service.serviceName);
-    }) ? 'style="display:block' : 'style="display:none';
+    })
+      ? 'style="display:block'
+      : 'style="display:none';
 
     console.log(newPageDisplay);
-    const AuthorizedNumber = AuthorizedName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
-    const AuthorizedEmail = AuthorizedName === "Dhruvi Gohel" ? "dhruvi@startupsahay.com" : "rm@startupsahay.com";
-    
-    const renderServiceKawali = ()=>{
+    const AuthorizedNumber =
+      AuthorizedName === "Dhruvi Gohel" ? "+919016928702" : "+919998992601";
+    const AuthorizedEmail =
+      AuthorizedName === "Dhruvi Gohel"
+        ? "dhruvi@startupsahay.com"
+        : "rm@startupsahay.com";
+
+    const renderServiceKawali = () => {
       let servicesHtml = "";
       let fundingServices = "";
       let fundingServicesArray = "";
-      let incomeTaxServices = ""
-    
-      for(let i = 0; i < newData.services.length; i++){
-        if(newData.services[i].serviceName === "Start-Up India Certificate"){
-            servicesHtml = `
+      let incomeTaxServices = "";
+
+      for (let i = 0; i < newData.services.length; i++) {
+        if (newData.services[i].serviceName === "Start-Up India Certificate") {
+          servicesHtml = `
             <p>
               <b>Start-Up India Certification Support Service Acknowledgement:</b>
             </p>
@@ -6450,10 +6618,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
               I, Director of <b> ${newData["Company Name"]} </b>, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing consultancy services. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-up India certificate is issued free of charge by the government, and I have not been charged for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
             </p>
             <br>
-            `
-        }else if(allowedServiceNames.includes(newData.services[i].serviceName)){
-            fundingServicesArray += `${newData.services[i].serviceName},`
-            fundingServices = `
+            `;
+        } else if (
+          allowedServiceNames.includes(newData.services[i].serviceName)
+        ) {
+          fundingServicesArray += `${newData.services[i].serviceName},`;
+          fundingServices = `
             <p>
             <b>
               ${newData.services[i].serviceName} Support Services Acknowledgement:   
@@ -6463,8 +6633,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
             I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
           </p>
           <br>
-            `
-        }else if(newData.services[i].serviceName === "Income Tax Excemption"){
+            `;
+        } else if (
+          newData.services[i].serviceName === "Income Tax Excemption"
+        ) {
           incomeTaxServices = `
           <p>
               <p>
@@ -6477,17 +6649,15 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
               </p>
             </p>
             <br>
-          `
-        }else{
+          `;
+        } else {
           servicesHtml += `
           <br>
-          `
+          `;
         }
-
-
       }
 
-      if(fundingServicesArray !== ""){
+      if (fundingServicesArray !== "") {
         servicesHtml += `
         <p>
         <b>
@@ -6498,8 +6668,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
       <br>
-        `
-      }else if(incomeTaxServices!==""){
+        `;
+      } else if (incomeTaxServices !== "") {
         servicesHtml += `
         <p>
         <p>
@@ -6512,11 +6682,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </p>
       </p>
       <br>
-      `
+      `;
       }
-      return servicesHtml
-    }
-
+      return servicesHtml;
+    };
 
     const serviceKawali = renderServiceKawali();
     const todaysDate = new Date().toLocaleDateString();
@@ -6557,7 +6726,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </div>
       </div>
     </div>
-    `
+    `;
 
     // const mainPage = newPageDisplay === 'style="display:block' ? mainPageHtml : "";
     // const bdNames = newData.bdeName == newData.bdmName ? newData.bdeName : `${newData.bdeName} & ${newData.bdmName}`;
@@ -6565,7 +6734,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     // // Render services HTML content
     // const serviceList = renderServiceList();
     // const paymentDetails = renderPaymentDetails();
-   
+
     // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     // const filledHtml = htmlTemplate
     //   .replace("{{Company Name}}", newData["Company Name"])
@@ -6604,7 +6773,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     //               ``,
     //               `
     //               <div class="container">
-       
+
     //               <p>Dear ${newData["Company Name"]},</p>
     //               <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
     //               <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
@@ -6660,73 +6829,84 @@ function generatePdf(htmlContent) {
       });
   }
 }
-app.post('/api/update-redesigned-final-form/:companyName', async (req, res) => {
- // Assuming updatedBooking contains the updated data
+app.post("/api/update-redesigned-final-form/:companyName", async (req, res) => {
+  // Assuming updatedBooking contains the updated data
   const companyName = req.params.companyName; // Get the _id from the request parameters
   console.log("Api run");
   const { _id, ...updatedDocWithoutId } = req.body;
   try {
     // Find the document by _id and update it with the updatedBooking data
-    const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate({
-      "Company Name":companyName,
-    },
- 
+    const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
+      {
+        "Company Name": companyName,
+      },
+
       { $set: updatedDocWithoutId },
       { new: true } // Return the updated document
     );
 
     if (!updatedDocument) {
-      return res.status(404).json({ error: 'Document not found' });
+      return res.status(404).json({ error: "Document not found" });
     }
     const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-      "Company Name":companyName
-    })
-    
-    res.status(200).json({ message: 'Document updated successfully', updatedDocument });
+      "Company Name": companyName,
+    });
+
+    res
+      .status(200)
+      .json({ message: "Document updated successfully", updatedDocument });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.put('/api/update-more-booking/:companyName/:bookingIndex', async (req, res) => {
-  try {
-    const { companyName, bookingIndex } = req.params;
-    const newData = req.body;
+app.put(
+  "/api/update-more-booking/:companyName/:bookingIndex",
+  async (req, res) => {
+    try {
+      const { companyName, bookingIndex } = req.params;
+      const newData = req.body;
 
-    // Find the document by companyName
-    const existingDocument = await RedesignedLeadformModel.findOne({"Company Name" : companyName });
+      // Find the document by companyName
+      const existingDocument = await RedesignedLeadformModel.findOne({
+        "Company Name": companyName,
+      });
 
-    if (!existingDocument) {
-      return res.status(404).json({ error: 'Document not found' });
+      if (!existingDocument) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+
+      // Update the booking in moreBookings array at the specified index
+      existingDocument.moreBookings[bookingIndex - 1] = newData;
+
+      // Save the updated document
+      const updatedDocument = await existingDocument.save();
+      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
+        "Company Name": companyName,
+      });
+
+      res.status(200).json(updatedDocument);
+    } catch (error) {
+      console.error("Error updating more booking:", error);
+      res.status(500).send("Internal Server Error");
     }
-
-    // Update the booking in moreBookings array at the specified index
-    existingDocument.moreBookings[bookingIndex-1] = newData;
-
-    // Save the updated document
-    const updatedDocument = await existingDocument.save();
-
-    res.status(200).json(updatedDocument);
-  } catch (error) {
-    console.error('Error updating more booking:', error);
-    res.status(500).send('Internal Server Error');
   }
-});
-app.delete("/api/delete-redesigned-booking-request/:CompanyName" , async(req, res)=>{
-  try{
-    const companyName = req.params.CompanyName; 
-    const deleteFormRequest = await Edit.findOneAndDelete({
-      "Company Name":companyName
-    })
-    res.status(200).json({ message: 'Document updated successfully' });
-
-  }catch{
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+);
+app.delete(
+  "/api/delete-redesigned-booking-request/:CompanyName",
+  async (req, res) => {
+    try {
+      const companyName = req.params.CompanyName;
+      const deleteFormRequest = await Edit.findOneAndDelete({
+        "Company Name": companyName,
+      });
+      res.status(200).json({ message: "Document updated successfully" });
+    } catch {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   }
-
-
-})
+);
 app.post("/api/generate-pdf", async (req, res) => {
   const clientName = "Miya bhai";
   const clientAddress = "Ohio";

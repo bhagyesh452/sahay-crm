@@ -1154,7 +1154,7 @@ function BookingList() {
                               </div>
                             </>
                           )}
-                      </div>
+                     </div>
 
                       {/* ------------------------------------------ Multiple Booking Section Starts here ----------------------------- */}
                       {currentLeadform &&

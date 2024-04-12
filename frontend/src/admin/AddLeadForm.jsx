@@ -127,7 +127,7 @@ export default function AddLeadForm({
       const response = await axios.get(
         `${secretKey}/redesigned-leadData/${companysName}`
       );
-      const data = response.data[0];
+      const data = response.data[0] ? response.data[0] : response.data
       console.log("Fetched Data:", response.data);
   
       let updatedLeadData = { ...leadData }; // Create a copy of existing leadData
@@ -497,8 +497,6 @@ export default function AddLeadForm({
     if (activeStep !== 0) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
-      setDataStatus("Matured");
-      setNowToFetch(true);
       setFormOpen(false);
     }
   };
@@ -627,14 +625,35 @@ export default function AddLeadForm({
         }
       }
       if (activeStep === 2) {
-        if (
-          !leadData.services[0].serviceName ||
-          !leadData.services[0].totalPaymentWOGST
+
+let isValid = true;
+for (let service of leadData.services) {
+
+  const firstPayment = Number(service.firstPayment);
+  const secondPayment = Number(service.secondPayment);
+  const thirdPayment = Number(service.thirdPayment);
+  const fourthPayment = Number(service.fourthPayment);
+  console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
+  if (
+    (service.paymentTerms !== "Full-Advanced" &&
+      (firstPayment < 0 ||
+        secondPayment < 0 ||
+        thirdPayment < 0 ||
+        fourthPayment < 0 ||
+        firstPayment + secondPayment + thirdPayment + fourthPayment !==
+          Number(service.totalPaymentWGST)) &&
+      !service.secondPaymentRemarks) ||
+    service.serviceName === "" ||
+    Number(service.totalPaymentWGST) === 0
+  ) {
+    isValid = false;
+    break;
+  }
+}
+       if (
+        !isValid
         ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
+          Swal.fire("Incorrect Details" , 'Please Enter the Details Properly', 'warning');
           return true;
         } else {
           const totalAmount = leadData.services.reduce(
@@ -691,8 +710,10 @@ export default function AddLeadForm({
         }
       }
       if (activeStep === 3) {
-       
-       
+        if(leadData.paymentMethod===""){
+          Swal.fire("Incorrect Details" , 'Please Enter Payment Method', 'warning');
+          return true;
+        }            
           const totalAmount = leadData.services.reduce(
             (acc, curr) => acc + curr.totalPaymentWGST,
             0
@@ -764,7 +785,9 @@ export default function AddLeadForm({
           });
         }
         handleNext();
+        setNowToFetch(true)
         setFormOpen(false);
+      
         return true;
       }
       // let dataToSend = {
@@ -1215,7 +1238,7 @@ export default function AddLeadForm({
                   <div className="row">
                     <div className="col-sm-3">
                       <div className="form-group">
-                        <label class="form-label">First Payment</label>
+                        <label class="form-label">First Payment {<span style={{ color: "red" }}>*</span>}</label>
                         <div class="input-group mb-2">
                           <input
                             type="number"
@@ -1252,7 +1275,7 @@ export default function AddLeadForm({
                     {leadData.services[i].paymentCount > 1 && (
                       <div className="col-sm-3">
                         <div className="form-group">
-                          <label class="form-label">Second Payment</label>
+                          <label class="form-label">Second Payment {<span style={{ color: "red" }}>*</span>}</label>
                           <div class="input-group mb-2">
                             <input
                               type="text"
@@ -1357,7 +1380,7 @@ export default function AddLeadForm({
                     {leadData.services[i].paymentCount > 2 && (
                       <div className="col-sm-3">
                         <div className="form-group">
-                          <label class="form-label">Third Payment</label>
+                          <label class="form-label">Third Payment {<span style={{ color: "red" }}>*</span>}</label>
                           <div class="input-group mb-2">
                             <input
                               type="text"
@@ -1452,7 +1475,7 @@ export default function AddLeadForm({
                     {leadData.services[i].paymentCount > 3 && (
                       <div className="col-sm-3">
                         <div className="form-group">
-                          <label class="form-label">Fourth Payment</label>
+                          <label class="form-label">Fourth Payment {<span style={{ color: "red" }}>*</span>}</label>
                           <div class="input-group mb-2">
                             <input
                               type="text"
@@ -3084,7 +3107,7 @@ export default function AddLeadForm({
                                           <div className="form-label-data">
                                             {obj.paymentRemarks !== ""
                                               ? obj.paymentRemarks
-                                              : "-"}
+                                              : "N/A"}
                                           </div>
                                         </div>
                                       </div>
@@ -3285,7 +3308,7 @@ export default function AddLeadForm({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData.extraNotes}
+                                        {leadData.extraNotes ? leadData.extraNotes : "N/A"}
                                       </div>
                                     </div>
                                   </div>
