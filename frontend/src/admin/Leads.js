@@ -1,6 +1,6 @@
 import React from "react";
 import Papa from "papaparse";
-import Header from "./Header";
+import Header from "./Header";  
 import Navbar from "./Navbar";
 import axios from "axios";
 import { IconChevronLeft } from "@tabler/icons-react";

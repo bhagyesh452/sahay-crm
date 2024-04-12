@@ -53,6 +53,7 @@ import EditableMoreBooking from "../admin/EditableMoreBooking.jsx";
 import { RiShareForwardBoxFill } from "react-icons/ri";
 import { RiShareForward2Fill } from "react-icons/ri";
 import { TiArrowBack } from "react-icons/ti";
+import { TiArrowForward } from "react-icons/ti";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -1899,6 +1900,19 @@ function EmployeePanel() {
     setEditMoreOpen(true);
   }
 
+
+
+  // --------------------------------------forward to bdm function---------------------------------------------\
+
+  console.log("currentData" , currentData)
+
+
+  const handleConfirmAssign = (companyName) => {
+    console.log(companyName)
+    
+    console.log("kuch bhi");
+};
+
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
@@ -3109,25 +3123,26 @@ function EmployeePanel() {
                                       )}
                                     </td>
                                     {/* <td>
-                                    <TiArrowBack style={{
+                                      <div className="d-flex align-items-center justify-content-center" style={{gap:"20px"}}>
+                                      <TiArrowBack style={{
                                           cursor: "pointer",
                                           width: "17px",
                                           height: "17px",
                                         }}
-                                        color="lightgrey"
-                                        />
-                                      <RiShareForward2Fill  onClick={() => {
-                                        // functionopenprojection(
-                                        //   company["Company Name"]
-                                        // );
+                                        color="grey"/>
+                                      <TiArrowForward 
+                                      onClick={() => {
+                                        handleConfirmAssign(
+                                          company["Company Name"]
+                                        );
                                       }}
                                         style={{
                                           cursor: "pointer",
                                           width: "17px",
                                           height: "17px",
                                         }}
-                                        color="lightgrey" />
-                                        
+                                        color="grey" />
+                                      </div>
                                     </td> */}
                                   </>)}
                                 {dataStatus === "Matured" && (
