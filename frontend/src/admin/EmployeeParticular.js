@@ -747,7 +747,6 @@ function EmployeeParticular() {
         //setBackButton(false)
       } else {
         // Get the previousId from the eData array
-
         const prevId = eData[prevIndex];
         window.location.replace(`/admin/employees/${prevId}`);
       }

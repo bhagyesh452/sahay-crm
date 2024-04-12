@@ -627,29 +627,29 @@ export default function AddLeadForm({
       if (activeStep === 2) {
 
 let isValid = true;
-for (let service of leadData.services) {
+// for (let service of leadData.services) {
 
-  const firstPayment = Number(service.firstPayment);
-  const secondPayment = Number(service.secondPayment);
-  const thirdPayment = Number(service.thirdPayment);
-  const fourthPayment = Number(service.fourthPayment);
-  console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
-  if (
-    (service.paymentTerms !== "Full-Advanced" &&
-      (firstPayment < 0 ||
-        secondPayment < 0 ||
-        thirdPayment < 0 ||
-        fourthPayment < 0 ||
-        firstPayment + secondPayment + thirdPayment + fourthPayment !==
-          Number(service.totalPaymentWGST)) &&
-      !service.secondPaymentRemarks) ||
-    service.serviceName === "" ||
-    Number(service.totalPaymentWGST) === 0
-  ) {
-    isValid = false;
-    break;
-  }
-}
+//   const firstPayment = Number(service.firstPayment);
+//   const secondPayment = Number(service.secondPayment);
+//   const thirdPayment = Number(service.thirdPayment);
+//   const fourthPayment = Number(service.fourthPayment);
+//   console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
+//   if (
+//     (service.paymentTerms !== "Full-Advanced" &&
+//       (firstPayment < 0 ||
+//         secondPayment < 0 ||
+//         thirdPayment < 0 ||
+//         fourthPayment < 0 ||
+//         firstPayment + secondPayment + thirdPayment + fourthPayment !==
+//           Number(service.totalPaymentWGST)) &&
+//       !service.secondPaymentRemarks) ||
+//     service.serviceName === "" ||
+//     Number(service.totalPaymentWGST) === 0
+//   ) {
+//     isValid = false;
+//     break;
+//   }
+// }
        if (
         !isValid
         ) {

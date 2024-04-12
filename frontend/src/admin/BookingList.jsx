@@ -53,7 +53,7 @@ function BookingList() {
   useEffect(() => {
     setLeadFormData(
       infiniteBooking.filter((obj) =>
-        obj["Company Name"].toLowerCase().includes(searchText)
+        obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())
       )
     );
   }, [searchText]);

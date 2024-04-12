@@ -124,9 +124,13 @@ export default function AdminBookingForm({
       const response = await axios.get(
         `${secretKey}/redesigned-leadData/${companyNewName.trim()}`
       );
-      const data = response.data.find(
-        (item) => item["Company Name"] === companyNewName.trim()
-      );
+      console.log(response.data , "This it it now")
+      let data = response.data;
+
+      if (Array.isArray(response.data)) {
+        data = response.data.find((item) => item["Company Name"] === companyNewName.trim());
+      }
+      
       console.log("Fetched Data", data);
       if (!data) {
         setCompleted({});
@@ -410,29 +414,29 @@ export default function AdminBookingForm({
       if (activeStep === 2) {
 
         let isValid = true;
-        for (let service of leadData.services) {
+        // for (let service of leadData.services) {
         
-          const firstPayment = Number(service.firstPayment);
-          const secondPayment = Number(service.secondPayment);
-          const thirdPayment = Number(service.thirdPayment);
-          const fourthPayment = Number(service.fourthPayment);
-          console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
-          if (
-            (service.paymentTerms !== "Full-Advanced" &&
-              (firstPayment < 0 ||
-                secondPayment < 0 ||
-                thirdPayment < 0 ||
-                fourthPayment < 0 ||
-                firstPayment + secondPayment + thirdPayment + fourthPayment !==
-                  Number(service.totalPaymentWGST)) &&
-              !service.secondPaymentRemarks) ||
-            service.serviceName === "" ||
-            Number(service.totalPaymentWGST) === 0
-          ) {
-            isValid = false;
-            break;
-          }
-        }
+        //   const firstPayment = Number(service.firstPayment);
+        //   const secondPayment = Number(service.secondPayment);
+        //   const thirdPayment = Number(service.thirdPayment);
+        //   const fourthPayment = Number(service.fourthPayment);
+        //   console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
+        //   if (
+        //     (service.paymentTerms !== "Full-Advanced" &&
+        //       (firstPayment < 0 ||
+        //         secondPayment < 0 ||
+        //         thirdPayment < 0 ||
+        //         fourthPayment < 0 ||
+        //         firstPayment + secondPayment + thirdPayment + fourthPayment !==
+        //           Number(service.totalPaymentWGST)) &&
+        //       !service.secondPaymentRemarks) ||
+        //     service.serviceName === "" ||
+        //     Number(service.totalPaymentWGST) === 0
+        //   ) {
+        //     isValid = false;
+        //     break;
+        //   }
+        // }
                if (
                 !isValid
                 ) {
