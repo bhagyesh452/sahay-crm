@@ -41,6 +41,7 @@ import CompanyParticular_Datamanager from "./DataManager/Dashboard/ManageLeads/C
 import Team from './admin/Team.js'
 import NewEmployee from "./admin/NewEmployee.js";
 import BdmLeads from "./BDM/Dashboard/BdmLeads/BdmLeads.js";
+import BdmTeamLeads from "./BDM/Dashboard/BdmTeamLeads/BdmTeamLeads";
 
 
 
@@ -84,6 +85,8 @@ function App() {
           <Route path="/bdmlogin" element={<BDMLogin setBdmToken={setBdmToken}/>} />
           <Route path="/bdmdashboard/:userId/" element={<BdmDashboard/>}></Route>
           <Route path="/bdm/bdmleads/:userId/" element={<BdmLeads/>}></Route>
+          <Route path="/bdm/bdmteamleads/:userId/" element={<BdmTeamLeads/>}></Route>
+         
 
 {/* --------------------------------------------------bdm components---------------------------------------------------------- */}
 

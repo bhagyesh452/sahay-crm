@@ -46,8 +46,9 @@ const EditableDraftModel = require("./models/EditableDraftModel");
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
 //const axios = require('axios');
-const crypto = require("crypto");
+const crypto = require('crypto');
 const TeamModel = require("./models/TeamModel.js");
+const TeamLeadsModel = require("./models/TeamLeads.js");
 // const { Cashfree } = require('cashfree-pg');
 
 // const http = require('http');
@@ -753,33 +754,192 @@ app.get("/api/einfo", async (req, res) => {
 //   }
 // });
 
-app.post("/api/teaminfo", async (req, res) => {
-  try {
-    const teamData = req.body;
-    //console.log(teamData);
+// app.post('/api/teaminfo', async (req, res) => {
+//   try {
+//     const teamData = req.body;
+//     //console.log(teamData);
+//     // Assuming `formatDate()` is a function that formats the current date
+//     const newTeam = await TeamModel.create({ modifiedAt: formatDate(Date.now()),...teamData});
+//     console.log("newTeam", newTeam);
+//     res.status(201).json(newTeam);
+//   } catch (error) {
+//     console.error('Error creating team:', error.message);
+//     res.status(500).json({ message: "Duplicate Entries Found" });
+//   }
+// });
+
+
+app.post('/api/teaminfo', async (req, res) => {
+  const teamData = req.body;
     // Assuming `formatDate()` is a function that formats the current date
-    const newTeam = await TeamModel.create({
-      modifiedAt: formatDate(Date.now()),
-      ...teamData,
-    });
-    console.log("newTeam", newTeam);
+   
+  try {
+    const newTeam = await TeamModel.create({ modifiedAt: formatDate(Date.now()), ...teamData });
+    //console.log("newTeam", newTeam);
     res.status(201).json(newTeam);
   } catch (error) {
-    console.error("Error creating team:", error.message);
-    res.status(500).json({ message: "Duplicate Entries Found" });
+    console.error('Error creating team:', error.message);
+    if (teamData.teamName === "") {
+      return res.status(500).json({ message: "Please Enter Team Name" });
+    } else {
+      return res.status(500).json({ message: "Duplicate Entries Found" });
+    }
   }
 });
+
 
 app.get("/api/teaminfo", async (req, res) => {
   try {
     const data = await TeamModel.find();
-    console.log("teamdata", data);
+    //console.log("teamdata" , data)
     res.json(data);
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+app.get("/api/teaminfo/:ename", async (req, res) => {
+  const ename = req.params.ename;
+  //console.log(ename)
+  //console.log(ename)
+  try {
+    // Fetch data using lean queries to retrieve plain JavaScript objects
+    const data = await TeamModel.findOne({
+      "employees.ename": ename, // Using dot notation to query field inside array of objects
+    }).lean();
+
+    res.send(data);
+    //console.log("ename wala data" ,data)
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// app.post("/api/forwardtobdmdata", async (req, res) => {
+//   const selectedData = req.body;
+//   console.log("selectedData" , selectedData)
+
+//   try {
+//     // Assuming TeamLeadsModel has a schema similar to the selectedData structure
+//     const newLead = await TeamLeadsModel.create(selectedData);
+//     console.log("newLead" , newLead)
+//     res.status(201).json(newLead);
+//   } catch (error) {
+//     console.error('Error creating new lead:', error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+
+app.post("/api/forwardtobdmdata", async (req, res) => {
+  const { selectedData, bdmName , companyId , bdmAcceptStatus} = req.body;
+  console.log("selectedData", selectedData);
+
+  try {
+    // Assuming TeamLeadsModel has a schema similar to the selectedData structure
+    const newLeads = await Promise.all(selectedData.map(async (data) => {
+      
+      const newData = { ...data, bdmName }; // Add bdmName to each data object
+      return await TeamLeadsModel.create(newData);
+    }));
+
+    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus})
+    
+    
+    console.log("newLeads", newLeads);
+    res.status(201).json(newLeads);
+  } catch (error) {
+    console.error('Error creating new leads:', error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/api/forwardedbybdedata/:bdmName", async (req, res) => {
+  const bdmName = req.params.bdmName;
+  //console.log(bdmName)
+  try {
+    // Fetch data using lean queries to retrieve plain JavaScript objects
+    const data = await TeamLeadsModel.find({
+      "bdmName": bdmName,
+    }).lean();
+
+    res.send(data);
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/api/update-bdm-status/:id", async (req, res) => {
+  const { id } = req.params;
+  const { newBdmStatus, companyId , oldStatus , bdmAcceptStatus} = req.body; // Destructure the required properties from req.body
+
+  try {
+    // Update the status field in the database based on the employee id
+    await TeamLeadsModel.findByIdAndUpdate(id, { bdmStatus : oldStatus });
+    
+    await CompanyModel.findByIdAndUpdate(id , {bdmAcceptStatus:bdmAcceptStatus})
+
+    res.status(200).json({ message: "Status updated successfully" });
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/bdm-status-change/:id", async (req, res) => {
+  const { id } = req.params;
+  const { bdeStatus , bdmnewstatus, title, date, time} = req.body; // Destructure the required properties from req.body
+
+  try {
+    // Update the status field in the database based on the employee id
+    await TeamLeadsModel.findByIdAndUpdate(id, { bdmStatus : bdmnewstatus });
+    
+    await CompanyModel.findByIdAndUpdate(id , {Status : bdmnewstatus})
+
+    res.status(200).json({ message: "Status updated successfully" });
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
+  const id = req.params.id; // Corrected params extraction
+  const { companyName, bdmAcceptStatus } = req.body;
+  try {
+    // Assuming TeamLeadsModel and CompanyModel are Mongoose models
+    await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
+
+    await CompanyModel.findByIdAndUpdate(id, { bdmAcceptStatus: bdmAcceptStatus }); // Corrected update
+
+    res.status(200).json({ message: "Status updated successfully" });
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
+  const id = req.params.id; // Corrected params extraction
+  const { bdmAcceptStatus } = req.body;
+  try {
+    // Assuming TeamLeadsModel and CompanyModel are Mongoose models
+    await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
+
+    await CompanyModel.findByIdAndUpdate(id, { bdmAcceptStatus: bdmAcceptStatus }); // Corrected update
+
+    res.status(200).json({ message: "Status updated successfully" });
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+// ------------------------------------------------------team api end----------------------------------
 
 app.get("/api/leads", async (req, res) => {
   try {
@@ -2880,9 +3040,10 @@ app.post("/api/exportLeads/", async (req, res) => {
 
 app.post("/api/followdataexport/", async (req, res) => {
   try {
-    const followDataToday = req.body;
+    const leads = req.body;
 
-    const leads = await FollowUpModel.find({});
+    // const leads = await FollowUpModel.find({ 
+    // });
 
     const csvData = [];
     // Push the headers as the first row
@@ -2936,7 +3097,7 @@ app.post("/api/followdataexport/", async (req, res) => {
 });
 
 app.post(
-  "/api/uploadotherdocsAttachment/:companyName",
+  "/api/uploadotherdocsAttachment/:companyName/:bookingIndex",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },
@@ -2944,6 +3105,7 @@ app.post(
   async (req, res) => {
     try {
       const companyName = req.params.companyName;
+      const bookingIndex = parseInt(req.params.bookingIndex); // Convert to integer
 
       // Check if company name is provided
       if (!companyName) {
@@ -2951,35 +3113,41 @@ app.post(
       }
 
       // Find the company by its name
-      const company = await LeadModel.findOne({ companyName });
-      // console.log(company)
+      const company = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+
       // Check if company exists
       if (!company) {
         return res.status(404).send("Company not found");
       }
 
-      // const paymentDoc = req.files["paymentReceipt"];
+      // Get the uploaded files
+      const newOtherDocs = req.files["otherDocs"] || []; // Default to empty array
+      
+      // Check if bookingIndex is valid
+      if (bookingIndex === 0) {
+        // Update the main company's otherDocs directly
+        company.otherDocs = company.otherDocs.concat(newOtherDocs);
+      } else if (bookingIndex > 0 && bookingIndex <= company.moreBookings.length) {
+        // Update the otherDocs in the appropriate moreBookings object
+        company.moreBookings[bookingIndex - 1].otherDocs = company.moreBookings[bookingIndex - 1].otherDocs.concat(newOtherDocs);
+      } else {
+        return res.status(400).send("Invalid booking index");
+      }
 
-      // Update the payment receipt field of the company document
-      const newOtherDocs =
-        req.files["otherDocs"] && req.files["otherDocs"].length > 0
-          ? req.files["otherDocs"].map((file) => file.filename)
-          : [];
-
-      // Append new filenames to the existing otherDocs array
-      company.otherDocs = company.otherDocs.concat(newOtherDocs);
-
+      // Save the updated company document
       await company.save();
 
+      // Emit socket event
       socketIO.emit("veiwotherdocs", company);
 
-      res.status(200).send("Documents uploaded updated successfully!");
+      res.status(200).send("Documents uploaded and updated successfully!");
     } catch (error) {
-      console.error("Error updating payment receipt:", error);
-      res.status(500).send("Error updating payment receipt.");
+      console.error("Error updating otherDocs:", error);
+      res.status(500).send("Error updating otherDocs.");
     }
   }
 );
+
 
 app.post("/api/redesigned-leadform", async (req, res) => {
   try {

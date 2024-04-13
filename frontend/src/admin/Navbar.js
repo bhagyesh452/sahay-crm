@@ -108,7 +108,7 @@ function Navbar() {
                     <span className="nav-link-icon d-md-none d-lg-inline-block">
                        <GrDocumentStore style={{ height: "22px", width: "15px" }}/>
                        </span>
-                      <span className="nav-link-title">Leads</span>
+                      <span className="nav-link-title"> My Leads</span>
                     </a>
                   </Link>
                 </li>

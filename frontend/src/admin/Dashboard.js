@@ -558,7 +558,7 @@ function Dashboard() {
   //console.log(projectedEmployee)
   // console.log("Date Range", projectedDataDateRange)
 
-  //console.log(projectedDataToday)
+  console.log(projectedDataToday)
   const closeProjectionTable = () => {
     setopenProjectionTable(false);
   };
@@ -2181,11 +2181,19 @@ function Dashboard() {
     return 0;
   });
 
+  //console.log("followDataToday" , followDataToday)
+
   const exportData = async () => {
+    const sendingData = followData.filter((company) => {
+      // Assuming you want to filter companies with an estimated payment date for today
+      const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+      return company.estPaymentDate === today;
+    })
+   // console.log("kuchbhi" , sendingData)
     try {
       const response = await axios.post(
         `${secretKey}/followdataexport/`,
-        followDataToday
+        sendingData
       );
       //console.log("response",response.data)
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -2199,7 +2207,7 @@ function Dashboard() {
     }
   };
 
-  console.log(followDataToday)
+  //console.log(followDataToday)
 
 
 

@@ -74,19 +74,21 @@ function Navbar({userId}) {
                                             <span className="nav-link-icon d-md-none d-lg-inline-block">
                                                 <GrDocumentStore style={{ height: "22px", width: "15px" }} />
                                             </span>
-                                            <span className="nav-link-title">Leads</span>
+                                            <span className="nav-link-title">My Leads</span>
                                         </a>
                                     </Link>
                                 </li>
                                 <li
                                     className={
-                                        location.pathname.startsWith("/datamanager/employees/")
+                                        location.pathname === `/bdm/bdmteamleads/${userId}`
                                             ? "nav-item active"
                                             : "nav-item"
                                     }>
                                     <Link
                                         style={{ textDecoration: "none", color: "black" }}
-                                        // to="/datamanager/employees/"
+                                        to={{
+                                            pathname:`/bdm/bdmteamleads/${userId}`
+                                        }}
                                     >
                                         <a className="nav-link" href="./">
                                             <span className="nav-link-icon d-md-none d-lg-inline-block">
