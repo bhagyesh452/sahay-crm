@@ -124,9 +124,13 @@ export default function AdminBookingForm({
       const response = await axios.get(
         `${secretKey}/redesigned-leadData/${companyNewName.trim()}`
       );
-      const data = response.data.find(
-        (item) => item["Company Name"] === companyNewName.trim()
-      );
+      console.log(response.data , "This it it now")
+      let data = response.data;
+
+      if (Array.isArray(response.data)) {
+        data = response.data.find((item) => item["Company Name"] === companyNewName.trim());
+      }
+      
       console.log("Fetched Data", data);
       if (!data) {
         setCompleted({});
@@ -408,16 +412,35 @@ export default function AdminBookingForm({
         }
       }
       if (activeStep === 2) {
-        if (
-          !leadData.services[0].serviceName ||
-          !leadData.services[0].totalPaymentWOGST
-        ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
-          return true;
-        } else {
+
+        let isValid = true;
+              for (let service of leadData.services) {
+        
+                const firstPayment = Number(service.firstPayment);
+                const secondPayment = Number(service.secondPayment);
+                const thirdPayment = Number(service.thirdPayment);
+                const fourthPayment = Number(service.fourthPayment);
+                // console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
+                if (
+                  (service.paymentTerms !== "Full Advanced" &&
+                    (firstPayment < 0 ||
+                      secondPayment < 0 ||
+                      thirdPayment < 0 ||
+                      fourthPayment < 0 ||
+                      firstPayment + secondPayment + thirdPayment + fourthPayment !==
+                        Number(service.totalPaymentWGST))) ||
+                  service.serviceName === "" 
+                ) {
+                  isValid = false;
+                  break;
+                }
+              }
+               if (
+                !isValid
+                ) {
+                  Swal.fire("Incorrect Details" , 'Please Enter the Details Properly', 'warning');
+                  return true;
+                } else {
           const totalAmount = leadData.services.reduce(
             (acc, curr) => acc + curr.totalPaymentWGST,
             0
@@ -472,6 +495,10 @@ export default function AdminBookingForm({
         }
       }
       if (activeStep === 3) {
+        if(!leadData.paymentMethod){
+          Swal.fire("Incorrect Details" , 'Please Enter Payment Method', 'warning');
+          return true;
+        }
         console.log(
           "I am in step 4",
           leadData.paymentReceipt,
@@ -701,6 +728,7 @@ export default function AdminBookingForm({
   };
   const handleResetDraft = async () => {
     try {
+      console.log(companyNewName.trim())
       const response = await fetch(
         `${secretKey}/redesigned-delete-model/${companyNewName.trim()}`,
         {
@@ -713,7 +741,11 @@ export default function AdminBookingForm({
       if (response.ok) {
         console.log("Draft reset successfully");
         // Optionally, you can perform further actions upon successful deletion
-        fetchData();
+        
+        setActiveStep(0);
+        setLeadData({...defaultLeadData , bdeName:leadData.bdeName , "Company Email": leadData["Company Email"] , "Company Number":leadData['Company Number'], incoDate:leadData.incoDate})
+        setCompleted([]);
+
       } else {
         console.error("Error resetting draft:", response.statusText);
       }
@@ -786,7 +818,7 @@ export default function AdminBookingForm({
                           ),
                         }));
                       }}
-                      readOnly={completed[activeStep] === true}
+                      disabled={completed[activeStep] === true}
                     />
                     <label class="form-check-label" for="dsc">
                       WITH DSC
@@ -828,7 +860,7 @@ export default function AdminBookingForm({
                           ),
                         }));
                       }}
-                      readOnly={completed[activeStep] === true}
+                      disabled={completed[activeStep] === true}
                     />
 
                     <button class="btn" type="button">
@@ -898,7 +930,7 @@ export default function AdminBookingForm({
                           ),
                         }));
                       }}
-                      readOnly={completed[activeStep] === true}
+                      disabled={completed[activeStep] === true}
                     />
                     <label class="form-check-label" for="GST">
                       WITH GST (18%)
@@ -1003,7 +1035,7 @@ export default function AdminBookingForm({
                   <div className="row">
                     <div className="col-sm-3">
                       <div className="form-group">
-                        <label class="form-label">First Payment</label>
+                        <label class="form-label">First Payment {<span style={{ color: "red" }}>*</span>}</label>
                         <div class="input-group mb-2">
                           <input
                             type="number"
@@ -1029,7 +1061,7 @@ export default function AdminBookingForm({
                                 ),
                               }));
                             }}
-                            readOnly={completed[activeStep] === true}
+                            disabled={completed[activeStep] === true}
                           />
                           <button class="btn" type="button">
                             ₹
@@ -1040,7 +1072,7 @@ export default function AdminBookingForm({
                     {leadData.services[i].paymentCount > 1 && (
                       <div className="col-sm-3">
                         <div className="form-group">
-                          <label class="form-label">Second Payment</label>
+                          <label class="form-label">Second Payment {<span style={{ color: "red" }}>*</span>}</label>
                           <div class="input-group mb-2">
                             <input
                               type="text"
@@ -1067,7 +1099,7 @@ export default function AdminBookingForm({
                                   ),
                                 }));
                               }}
-                              readOnly={leadData.services[i].paymentCount === 2}
+                              disabled={leadData.services[i].paymentCount === 2}
                             />
                             <button class="btn" type="button">
                               ₹
@@ -1094,6 +1126,9 @@ export default function AdminBookingForm({
                               className="form-select"
                               name="optional-remarks"
                               id="optional-remarks-2"
+                              disabled={
+                                completed[activeStep] === true
+                              }
                             >
                               <option value="" selected disabled>
                                 Select Payment Date
@@ -1136,6 +1171,9 @@ export default function AdminBookingForm({
                                 className="form-control"
                                 type="date"
                                 placeholder="dd/mm/yyyy"
+                                disabled={
+                                  completed[activeStep] === true
+                                }
                               />
                             </div>
                           )}
@@ -1145,7 +1183,7 @@ export default function AdminBookingForm({
                     {leadData.services[i].paymentCount > 2 && (
                       <div className="col-sm-3">
                         <div className="form-group">
-                          <label class="form-label">Third Payment</label>
+                          <label class="form-label">Third Payment {<span style={{ color: "red" }}>*</span>}</label>
                           <div class="input-group mb-2">
                             <input
                               type="text"
@@ -1173,7 +1211,7 @@ export default function AdminBookingForm({
                                   ),
                                 }));
                               }}
-                              readOnly={leadData.services[i].paymentCount === 3}
+                              disabled={leadData.services[i].paymentCount === 3}
                             />
                             <button class="btn" type="button">
                               ₹
@@ -1199,24 +1237,36 @@ export default function AdminBookingForm({
                               className="form-select"
                               name="optional-remarks"
                               id="optional-remarks-3"
+                              disabled={
+                                completed[activeStep] === true
+                              }
                             >
-                              <option value="" selected disabled>
+                               <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="After Application">
-                                After Application
+                                AFTER APPLICATION
+                              </option>
+                              <option value="AFTER CERTIFICATE">
+                                AFTER CERTIFICATE
+                              </option>
+                              <option value="AFTER APPROVAL">
+                                AFTER APPROVAL
+                              </option>
+                              <option value="AFTER SERVICE COMPLETION">
+                                AFTER SERVICE COMPLETION
                               </option>
                               <option value="At the time of Application">
-                                At the time of Application
+                               AT THE TIME OF APPLICATION
                               </option>
                               <option value="After Document">
-                                After Document
+                                AFTER DOCUMENT
                               </option>
                               <option value="Before Application">
-                                Before Application
+                                BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
-                                On Particular Date
+                                ON PARTICULAR DATE
                               </option>
                             </select>
                           </div>
@@ -1231,6 +1281,9 @@ export default function AdminBookingForm({
                                 className="form-control"
                                 type="date"
                                 placeholder="dd/mm/yyyy"
+                                disabled={
+                                  completed[activeStep] === true
+                                }
                               />
                             </div>
                           )}
@@ -1240,7 +1293,7 @@ export default function AdminBookingForm({
                     {leadData.services[i].paymentCount > 3 && (
                       <div className="col-sm-3">
                         <div className="form-group">
-                          <label class="form-label">Fourth Payment</label>
+                          <label class="form-label">Fourth Payment {<span style={{ color: "red" }}>*</span>}</label>
                           <div class="input-group mb-2">
                             <input
                               type="text"
@@ -1261,7 +1314,7 @@ export default function AdminBookingForm({
                                   ),
                                 }));
                               }}
-                              readOnly={leadData.services[i].paymentCount === 4}
+                              disabled={leadData.services[i].paymentCount === 4}
                             />
                             <button class="btn" type="button">
                               ₹
@@ -1288,24 +1341,36 @@ export default function AdminBookingForm({
                               className="form-select"
                               name="optional-remarks-4"
                               id="optional-remarks-4"
+                              disabled={
+                                completed[activeStep] === true
+                              }
                             >
-                              <option value="" selected disabled>
+                               <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="After Application">
-                                After Application
+                                AFTER APPLICATION
+                              </option>
+                              <option value="AFTER CERTIFICATE">
+                                AFTER CERTIFICATE
+                              </option>
+                              <option value="AFTER APPROVAL">
+                                AFTER APPROVAL
+                              </option>
+                              <option value="AFTER SERVICE COMPLETION">
+                                AFTER SERVICE COMPLETION
                               </option>
                               <option value="At the time of Application">
-                                At the time of Application
+                               AT THE TIME OF APPLICATION
                               </option>
                               <option value="After Document">
-                                After Document
+                                AFTER DOCUMENT
                               </option>
                               <option value="Before Application">
-                                Before Application
+                                BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
-                                On Particular Date
+                                ON PARTICULAR DATE
                               </option>
                             </select>
                           </div>
@@ -1320,7 +1385,11 @@ export default function AdminBookingForm({
                                 className="form-control"
                                 type="date"
                                 placeholder="dd/mm/yyyy"
+                                disabled={
+                                  completed[activeStep] === true
+                                }
                               />
+                              
                             </div>
                           )}
                         </div>
@@ -1331,7 +1400,9 @@ export default function AdminBookingForm({
                 <div className="part-payment-plus-minus">
                   <div className="d-flex align-items-end justify-content-between">
                     <button
-                      disabled={leadData.services[i].paymentCount === 4}
+                      disabled={leadData.services[i].paymentCount === 4 ||  
+                        completed[activeStep] === true
+                      }
                       onClick={(e) => {
                         e.preventDefault(); // Prevent the default form submission behavior
                         setLeadData((prevState) => ({
@@ -1352,11 +1423,14 @@ export default function AdminBookingForm({
                       }}
                       style={{ marginLeft: "5px" }}
                       className="btn btn-primary"
+                     
                     >
                       +
                     </button>
                     <button
-                      disabled={leadData.services[i].paymentCount === 2}
+                      disabled={leadData.services[i].paymentCount === 2 ||
+                        completed[activeStep] === true
+                      }
                       onClick={(e) => {
                         e.preventDefault();
                         setLeadData((prevState) => ({
@@ -1410,7 +1484,7 @@ export default function AdminBookingForm({
                     }));
                     handleTextAreaChange(e);
                   }}
-                  readOnly={completed[activeStep] === true}
+                  disabled={completed[activeStep] === true}
                 ></textarea>
               </div>
             </div>
@@ -1556,13 +1630,13 @@ export default function AdminBookingForm({
                   {allStepsCompleted() ? (
                     <React.Fragment>
                       <Typography sx={{ mt: 2, mb: 1 }}>
-                        All steps completed - you&apos;re finished
+                       Already you have a booking for this Company , Thank You
                       </Typography>
                       <Box
                         sx={{ display: "flex", flexDirection: "row", pt: 2 }}
                       >
                         <Box sx={{ flex: "1 1 auto" }} />
-                        <Button onClick={handleReset}>Reset</Button>
+                        <button className="btn btn-primary" onClick={()=>setFormOpen(false)}>Back</button>
                       </Box>
                     </React.Fragment>
                   ) : (
@@ -1598,6 +1672,9 @@ export default function AdminBookingForm({
                                             "Company Name"
                                           );
                                         }}
+                                        disabled={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -1623,7 +1700,7 @@ export default function AdminBookingForm({
                                                                                         "Company Email"
                                                                                     );
                                                                                 }}
-                                                                                readOnly={completed[activeStep] === true}
+                                                                                disabled={completed[activeStep] === true}
                                                                             /> */}
                                       <input
                                         type="email"
@@ -1637,7 +1714,7 @@ export default function AdminBookingForm({
                                             "Company Email"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -1665,7 +1742,7 @@ export default function AdminBookingForm({
                                                                                         handleInputChange(inputValue, "Company Number");
                                                                                     }
                                                                                 }}
-                                                                                readOnly={completed[activeStep] === true}
+                                                                                disabled={completed[activeStep] === true}
                                                                             /> */}
                                       <input
                                         type="text" // Use type="text" instead of type="number"
@@ -1683,7 +1760,7 @@ export default function AdminBookingForm({
                                             );
                                           }
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -1711,7 +1788,7 @@ export default function AdminBookingForm({
                                                                                         "incoDate"
                                                                                     );
                                                                                 }}
-                                                                                readOnly={
+                                                                                disabled={
                                                                                     completed[activeStep] === true
                                                                                 }
                                                                             /> */}
@@ -1727,7 +1804,7 @@ export default function AdminBookingForm({
                                             "incoDate"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -1755,7 +1832,7 @@ export default function AdminBookingForm({
                                                                                         "panNumber"
                                                                                     );
                                                                                 }}
-                                                                                readOnly={
+                                                                                disabled={
                                                                                     completed[activeStep] === true
                                                                                 }
                                                                                 required
@@ -1772,7 +1849,7 @@ export default function AdminBookingForm({
                                             "panNumber"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                         required
@@ -1794,7 +1871,7 @@ export default function AdminBookingForm({
                                             "gstNumber"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -1875,6 +1952,9 @@ export default function AdminBookingForm({
                                             "bdeEmail"
                                           );
                                         }}
+                                        disabled={
+                                          completed[activeStep] === true
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -1943,6 +2023,9 @@ export default function AdminBookingForm({
                                                   "otherBdmName"
                                                 );
                                               }}
+                                              disabled={
+                                                completed[activeStep] === true
+                                              }
                                             />
                                           </div>
                                         </div>
@@ -1968,6 +2051,9 @@ export default function AdminBookingForm({
                                                   "bdmEmail"
                                                 );
                                               }}
+                                              disabled={
+                                                completed[activeStep] === true
+                                              }
                                             />
                                           </div>
                                         </div>
@@ -1997,6 +2083,9 @@ export default function AdminBookingForm({
                                               "bdmEmail"
                                             );
                                           }}
+                                          disabled={
+                                            completed[activeStep] === true
+                                          }
                                           //disabled={leadData.bdmEmail}
                                         />
                                       </div>
@@ -2033,6 +2122,9 @@ export default function AdminBookingForm({
                                               checked={
                                                 leadData.bdmType === "Close-by"
                                               } // Check condition based on state
+                                              disabled={
+                                                completed[activeStep] === true
+                                              }
                                             />
                                             <span className="form-check-label">
                                               Close By
@@ -2043,6 +2135,9 @@ export default function AdminBookingForm({
                                               className="form-check-input"
                                               type="radio"
                                               name="bdmType"
+                                              disabled={
+                                                completed[activeStep] === true
+                                              }
                                               onChange={(e) => {
                                                 setLeadData((prevLeadData) => ({
                                                   ...prevLeadData,
@@ -2086,7 +2181,7 @@ export default function AdminBookingForm({
                                             "bookingDate"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -2280,7 +2375,7 @@ export default function AdminBookingForm({
                                               caNumber: e.target.value, // Set the value based on the selected radio button
                                             }));
                                           }}
-                                          readOnly={
+                                          disabled={
                                             completed[activeStep] === true
                                           }
                                           value={leadData.caNumber}
@@ -2309,7 +2404,7 @@ export default function AdminBookingForm({
                                                 caEmail: e.target.value, // Set the value based on the selected radio button
                                               }));
                                             }}
-                                            readOnly={
+                                            disabled={
                                               completed[activeStep] === true
                                             }
                                           />
@@ -2338,7 +2433,7 @@ export default function AdminBookingForm({
                                             }));
                                           }}
                                           value={leadData.caCommission}
-                                          readOnly={
+                                          disabled={
                                             completed[activeStep] === true
                                           }
                                         />
@@ -2386,7 +2481,7 @@ export default function AdminBookingForm({
                                               0
                                             )
                                             .toFixed(2)}
-                                          readOnly
+                                          disabled
                                         />
                                         <button class="btn" type="button">
                                           ₹
@@ -2420,7 +2515,7 @@ export default function AdminBookingForm({
                                               0
                                             )
                                             .toFixed(2)}
-                                          readOnly
+                                          disabled
                                         />
                                         <button class="btn" type="button">
                                           ₹
@@ -2454,7 +2549,7 @@ export default function AdminBookingForm({
                                               0
                                             )
                                             .toFixed(2)}
-                                          readOnly
+                                          disabled
                                         />
                                         <button class="btn" type="button">
                                           ₹
@@ -2563,7 +2658,7 @@ export default function AdminBookingForm({
                                           );
                                           handleTextAreaChange(e);
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       ></textarea>

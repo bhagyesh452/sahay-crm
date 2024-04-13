@@ -504,7 +504,18 @@ function EmployeePanel() {
   };
 
   useEffect(() => {
-    fetchNewData("Matured");
+    fetchNewData();
+    setdataStatus("Matured");
+    setEmployeeData(
+      moreEmpData
+        .filter((obj) => obj.Status === "Matured")
+        .sort(
+          (a, b) =>
+            new Date(b.lastActionDate) -
+            new Date(a.lastActionDate)
+        )
+    );
+
   }, [nowToFetch]);
 
   const handleFieldChange = (event) => {

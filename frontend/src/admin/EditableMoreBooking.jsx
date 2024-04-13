@@ -49,6 +49,7 @@ export default function EditableMoreBooking({
   setDataStatus,
   bookingIndex,
   setFormOpen,
+  isAdmin,
   companysName,
   companysEmail,
   companyNumber,
@@ -139,7 +140,7 @@ export default function EditableMoreBooking({
       } = data;
       console.log("Fetched Data" , newLeadData);
       setLeadData(newLeadData);
-      setActiveStep(4);
+      setActiveStep(1);
       setCompleted({0:true , 1:true , 2 : true , 3 : true})
       setSelectedValues(newLeadData.bookingSource)
      if (Step2Status === true && Step3Status === false) {
@@ -473,8 +474,8 @@ export default function EditableMoreBooking({
     if (activeStep !== 1) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
-      setDataStatus("Matured");
-      setNowToFetch(true);
+      // setDataStatus("Matured");
+      // setNowToFetch(true);
       setFormOpen(false);
     }
   };
@@ -899,19 +900,46 @@ export default function EditableMoreBooking({
   //     // Handle error if needed
   //   }
 
-  if(activeStep===4){
+  if(activeStep===4 && !isAdmin){
+
    console.log("Data sending to change:-", leadData);
     const dataToSend = {...leadData, requestBy:employeeName , bookingSource:selectedValues}
     try {
       const response = await axios.post(`${secretKey}/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
       console.log('Data created:', response.data);
       Swal.fire("Request Sent!","Request has been successfully sent to the Admin","success");
+      setFormOpen(false)
     
     } catch (error) {
       console.error('Error creating data:', error);
       Swal.fire("Request Failed!","Failed to Request Admin","error");
     }
-  }else {
+  }else if(activeStep === 4 && isAdmin){
+    const dataToSend = {...leadData,  bookingSource:selectedValues}
+  
+    if(bookingIndex === 0){
+      try {
+        const response = await axios.post(`${secretKey}/update-redesigned-final-form/${companysName}`, dataToSend);
+       Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
+       setFormOpen(false)
+       setNowToFetch(true)
+      } catch (error) {
+        console.log("Error updating data" ,error) ;
+        Swal.fire({title:"Error Updating Data" , icon:"error"})// Display error message
+      }
+    }else {
+      try {
+        const response = await axios.put(`${secretKey}/update-more-booking/${companysName}/${bookingIndex}`, leadData);
+        setFormOpen(false)
+        setNowToFetch(true)
+       Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
+      } catch (error) {
+        console.log("Error updating data" ,error) ;
+        Swal.fire({title:"Error Updating Data" , icon:"error"})// Display error message
+      }
+    }
+  }
+  else {
     setCompleted((prevCompleted) => ({
       ...prevCompleted,
       [activeStep]: true,
@@ -3461,8 +3489,8 @@ export default function EditableMoreBooking({
                               variant="contained"
                               sx={{ mr: 1, background: "#ffba00 " }}
                             >
-                              {activeStep === 4
-                                ? "Request Changes"
+                                  {activeStep === 4 
+                                ?  !isAdmin ? "Request Changes" : "Confirm Edit"
                                 : "Save Draft"}
                             </Button>
                           ))}

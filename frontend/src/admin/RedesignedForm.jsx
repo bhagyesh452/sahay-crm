@@ -516,7 +516,7 @@ export default function RedesignedForm({
     setActiveStep(step);
   };
   const handleTextAreaChange = (e) => {
-    e.target.style.height = '1px';
+    e.target.style.height = "1px";
     e.target.style.height = `${e.target.scrollHeight}px`;
   };
   console.log(completed, "this is completed");
@@ -612,14 +612,39 @@ export default function RedesignedForm({
         }
       }
       if (activeStep === 2) {
-        if (
-          !leadData.services[0].serviceName ||
-          !leadData.services[0].totalPaymentWOGST
-        ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
+        let isValid = true;
+        for (let service of leadData.services) {
+          const firstPayment = Number(service.firstPayment);
+          const secondPayment = Number(service.secondPayment);
+          const thirdPayment = Number(service.thirdPayment);
+          const fourthPayment = Number(service.fourthPayment);
+          console.log(
+            firstPayment + secondPayment + thirdPayment + fourthPayment,
+            Number(service.totalPaymentWGST),
+            "This is it"
+          );
+          if (
+            (service.paymentTerms !== "Full-Advanced" &&
+              (firstPayment < 0 ||
+                secondPayment < 0 ||
+                thirdPayment < 0 ||
+                fourthPayment < 0 ||
+                firstPayment + secondPayment + thirdPayment + fourthPayment !==
+                  Number(service.totalPaymentWGST)) &&
+              !service.secondPaymentRemarks) ||
+            service.serviceName === "" ||
+            Number(service.totalPaymentWGST) === 0
+          ) {
+            isValid = false;
+            break;
+          }
+        }
+        if (!isValid) {
+          Swal.fire(
+            "Incorrect Details",
+            "Please Enter the Details Properly",
+            "warning"
+          );
           return true;
         } else {
           const totalAmount = leadData.services.reduce(
@@ -676,54 +701,61 @@ export default function RedesignedForm({
         }
       }
       if (activeStep === 3) {
+        if (leadData.paymentMethod === "") {
+          Swal.fire(
+            "Incorrect Details",
+            "Please Enter Payment Method",
+            "warning"
+          );
+          return true;
+        }
         console.log(
           "I am in step 4",
           leadData.paymentReceipt,
           leadData.otherDocs
         );
-        
-          console.log("Re work");
-          const totalAmount = leadData.services.reduce(
-            (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
-            0
+
+        console.log("Re work");
+        const totalAmount = leadData.services.reduce(
+          (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
+          0
+        );
+        const receivedAmount = leadData.services.reduce((acc, curr) => {
+          return curr.paymentTerms === "Full Advanced"
+            ? acc + parseInt(curr.totalPaymentWGST)
+            : acc + parseInt(curr.firstPayment);
+        }, 0);
+        const pendingAmount = totalAmount - receivedAmount;
+
+        const formData = new FormData();
+        formData.append("totalAmount", totalAmount);
+        formData.append("receivedAmount", receivedAmount);
+        formData.append("pendingAmount", pendingAmount);
+        formData.append("paymentMethod", leadData.paymentMethod);
+        formData.append("extraNotes", leadData.extraNotes);
+
+        // Append payment receipt files to formData
+        for (let i = 0; i < leadData.paymentReceipt.length; i++) {
+          formData.append("paymentReceipt", leadData.paymentReceipt[i]);
+        }
+
+        // Append other documents files to formData
+        for (let i = 0; i < leadData.otherDocs.length; i++) {
+          formData.append("otherDocs", leadData.otherDocs[i]);
+        }
+        try {
+          const response = await axios.post(
+            `${secretKey}/redesigned-leadData/${companysName}/step4`,
+            formData
           );
-          const receivedAmount = leadData.services.reduce((acc, curr) => {
-            return curr.paymentTerms === "Full Advanced"
-              ? acc + parseInt(curr.totalPaymentWGST)
-              : acc + parseInt(curr.firstPayment);
-          }, 0);
-          const pendingAmount = totalAmount - receivedAmount;
-
-          const formData = new FormData();
-          formData.append("totalAmount", totalAmount);
-          formData.append("receivedAmount", receivedAmount);
-          formData.append("pendingAmount", pendingAmount);
-          formData.append("paymentMethod", leadData.paymentMethod);
-          formData.append("extraNotes", leadData.extraNotes);
-
-          // Append payment receipt files to formData
-          for (let i = 0; i < leadData.paymentReceipt.length; i++) {
-            formData.append("paymentReceipt", leadData.paymentReceipt[i]);
-          }
-
-          // Append other documents files to formData
-          for (let i = 0; i < leadData.otherDocs.length; i++) {
-            formData.append("otherDocs", leadData.otherDocs[i]);
-          }
-          try {
-            const response = await axios.post(
-              `${secretKey}/redesigned-leadData/${companysName}/step4`,
-              formData
-            );
-            // Handle successful upload
-            fetchData();
-            handleNext();
-            return true;
-          } catch (error) {
-            console.error("Error uploading data:", error);
-            // Handle error
-          }
-        
+          // Handle successful upload
+          fetchData();
+          handleNext();
+          return true;
+        } catch (error) {
+          console.error("Error uploading data:", error);
+          // Handle error
+        }
       }
 
       if (activeStep === 4) {
@@ -758,8 +790,8 @@ export default function RedesignedForm({
         setFormOpen(false);
         setDataStatus("Matured");
         return true;
-      }else{
-        Swal.fire("Form Submitted")
+      } else {
+        Swal.fire("Form Submitted");
       }
       // let dataToSend = {
       //   ...leadData,
@@ -1604,7 +1636,7 @@ export default function RedesignedForm({
                           : service
                       ),
                     }));
-                    handleTextAreaChange(e)
+                    handleTextAreaChange(e);
                   }}
                   disabled={completed[activeStep] === true}
                 ></textarea>
@@ -2516,7 +2548,6 @@ export default function RedesignedForm({
                                         for="Payment Receipt"
                                       >
                                         Upload Payment Reciept{" "}
-                                      
                                       </label>
                                       <input
                                         type="file"
@@ -2583,7 +2614,9 @@ export default function RedesignedForm({
                                           Razorpay
                                         </option>
                                         <option value="PayU">PayU</option>
-                                        <option value="Cashfree">Cashfree</option>
+                                        <option value="Cashfree">
+                                          Cashfree
+                                        </option>
                                         <option value="Other">Other</option>
                                       </select>
                                     </div>
@@ -2595,7 +2628,6 @@ export default function RedesignedForm({
                                         for="remarks"
                                       >
                                         Any Extra Remarks{" "}
-                                     
                                       </label>
                                       <textarea
                                         rows={1}
@@ -2608,7 +2640,7 @@ export default function RedesignedForm({
                                             e.target.value,
                                             "extraNotes"
                                           );
-                                          handleTextAreaChange(e)
+                                          handleTextAreaChange(e);
                                         }}
                                         disabled={
                                           completed[activeStep] === true
@@ -2616,11 +2648,10 @@ export default function RedesignedForm({
                                       ></textarea>
                                     </div>
                                   </div>
-                                 <div className="col-sm-6 mt-2">
+                                  <div className="col-sm-6 mt-2">
                                     <div className="form-group">
                                       <label className="form-label" for="docs">
                                         Upload Additional Docs{" "}
-                                       
                                       </label>
                                       <input
                                         type="file"
@@ -3151,109 +3182,111 @@ export default function RedesignedForm({
                                           <div className="form-label-data">
                                             ₹{" "}
                                             {leadData.services
-                                            .reduce(
-                                              (total, service) =>
-                                                service.paymentTerms ===
-                                                "Full Advanced"
-                                                  ? total + 0
-                                                  : total +
-                                                    Number(
-                                                      service.totalPaymentWGST
-                                                    ) -
-                                                    Number(
-                                                      service.firstPayment
-                                                    ),
-                                              0
-                                            )
-                                            .toFixed(2)}
+                                              .reduce(
+                                                (total, service) =>
+                                                  service.paymentTerms ===
+                                                  "Full Advanced"
+                                                    ? total + 0
+                                                    : total +
+                                                      Number(
+                                                        service.totalPaymentWGST
+                                                      ) -
+                                                      Number(
+                                                        service.firstPayment
+                                                      ),
+                                                0
+                                              )
+                                              .toFixed(2)}
                                           </div>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                 {leadData.paymentReceipt.length!==0 && <div className="row m-0">
-                                    <div className="col-sm-3 align-self-stretc p-0">
-                                      <div className="form-label-name h-100">
-                                        <b>Upload Payment Receipt</b>
+                                  {leadData.paymentReceipt.length !== 0 && (
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 align-self-stretc p-0">
+                                        <div className="form-label-name h-100">
+                                          <b>Upload Payment Receipt</b>
+                                        </div>
                                       </div>
-                                    </div>
-                                    <div className="col-sm-9 p-0">
-                                      <div className="form-label-data">
-                                        <div
-                                          className="UploadDocPreview"
-                                          onClick={() => {
-                                            handleViewPdfReciepts(
-                                              leadData.paymentReceipt[0]
-                                                .filename
-                                                ? leadData.paymentReceipt[0]
-                                                    .filename
-                                                : leadData.paymentReceipt[0]
-                                                    .name
-                                            );
-                                          }}
-                                        >
-                                          {leadData.paymentReceipt[0]
-                                            .filename ? (
-                                            <>
-                                              <div className="docItemImg">
-                                                <img
-                                                  src={
-                                                    leadData.paymentReceipt[0].filename.endsWith(
-                                                      ".pdf"
-                                                    )
-                                                      ? pdfimg
-                                                      : img
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data">
+                                          <div
+                                            className="UploadDocPreview"
+                                            onClick={() => {
+                                              handleViewPdfReciepts(
+                                                leadData.paymentReceipt[0]
+                                                  .filename
+                                                  ? leadData.paymentReceipt[0]
+                                                      .filename
+                                                  : leadData.paymentReceipt[0]
+                                                      .name
+                                              );
+                                            }}
+                                          >
+                                            {leadData.paymentReceipt[0]
+                                              .filename ? (
+                                              <>
+                                                <div className="docItemImg">
+                                                  <img
+                                                    src={
+                                                      leadData.paymentReceipt[0].filename.endsWith(
+                                                        ".pdf"
+                                                      )
+                                                        ? pdfimg
+                                                        : img
+                                                    }
+                                                  ></img>
+                                                </div>
+                                                <div
+                                                  className="docItemName wrap-MyText"
+                                                  title={
+                                                    leadData.paymentReceipt[0].filename.split(
+                                                      "-"
+                                                    )[1]
                                                   }
-                                                ></img>
-                                              </div>
-                                              <div
-                                                className="docItemName wrap-MyText"
-                                                title={
-                                                  leadData.paymentReceipt[0].filename.split(
-                                                    "-"
-                                                  )[1]
-                                                }
-                                              >
-                                                {
-                                                  leadData.paymentReceipt[0].filename.split(
-                                                    "-"
-                                                  )[1]
-                                                }
-                                              </div>
-                                            </>
-                                          ) : (
-                                            <>
-                                              <div className="docItemImg">
-                                                <img
-                                                  src={
-                                                    leadData.paymentReceipt[0].name.endsWith(
-                                                      ".pdf"
-                                                    )
-                                                      ? pdfimg
-                                                      : img
+                                                >
+                                                  {
+                                                    leadData.paymentReceipt[0].filename.split(
+                                                      "-"
+                                                    )[1]
                                                   }
-                                                ></img>
-                                              </div>
-                                              <div
-                                                className="docItemName wrap-MyText"
-                                                title={
-                                                  leadData.paymentReceipt[0].name.split(
-                                                    "-"
-                                                  )[1]
-                                                }
-                                              >
-                                                {
-                                                  leadData.paymentReceipt[0].name.split(
-                                                    "-"
-                                                  )[1]
-                                                }
-                                              </div>
-                                            </>
-                                          )}
+                                                </div>
+                                              </>
+                                            ) : (
+                                              <>
+                                                <div className="docItemImg">
+                                                  <img
+                                                    src={
+                                                      leadData.paymentReceipt[0].name.endsWith(
+                                                        ".pdf"
+                                                      )
+                                                        ? pdfimg
+                                                        : img
+                                                    }
+                                                  ></img>
+                                                </div>
+                                                <div
+                                                  className="docItemName wrap-MyText"
+                                                  title={
+                                                    leadData.paymentReceipt[0].name.split(
+                                                      "-"
+                                                    )[1]
+                                                  }
+                                                >
+                                                  {
+                                                    leadData.paymentReceipt[0].name.split(
+                                                      "-"
+                                                    )[1]
+                                                  }
+                                                </div>
+                                              </>
+                                            )}
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>}
+                                  )}
                                   <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
@@ -3278,76 +3311,79 @@ export default function RedesignedForm({
                                       </div>
                                     </div>
                                   </div>
-                                  {leadData.otherDocs.length!==0 && <div className="row m-0">
-                                    <div className="col-sm-3 align-self-stretc p-0">
-                                      <div className="form-label-name h-100">
-                                        <b>Additional Docs</b>
+                                  {leadData.otherDocs.length !== 0 && (
+                                    <div className="row m-0">
+                                      <div className="col-sm-3 align-self-stretc p-0">
+                                        <div className="form-label-name h-100">
+                                          <b>Additional Docs</b>
+                                        </div>
                                       </div>
-                                    </div>
-                                    <div className="col-sm-9 p-0">
-                                      <div className="form-label-data d-flex flex-wrap">
-                                        {leadData.otherDocs.map((val) =>
-                                          val.filename ? (
-                                            <>
-                                              <div
-                                                className="UploadDocPreview"
-                                                onClick={() => {
-                                                  handleViewPdOtherDocs(
-                                                    val.filename
-                                                  );
-                                                }}
-                                              >
-                                                <div className="docItemImg">
-                                                  <img
-                                                    src={
-                                                      val.filename.endsWith(
-                                                        ".pdf"
-                                                      )
-                                                        ? pdfimg
-                                                        : img
-                                                    }
-                                                  ></img>
-                                                </div>
-
+                                      <div className="col-sm-9 p-0">
+                                        <div className="form-label-data d-flex flex-wrap">
+                                          {leadData.otherDocs.map((val) =>
+                                            val.filename ? (
+                                              <>
                                                 <div
-                                                  className="docItemName wrap-MyText"
-                                                  title="logo.png"
+                                                  className="UploadDocPreview"
+                                                  onClick={() => {
+                                                    handleViewPdOtherDocs(
+                                                      val.filename
+                                                    );
+                                                  }}
                                                 >
-                                                  {val.filename.split("-")[1]}
-                                                </div>
-                                              </div>
-                                            </>
-                                          ) : (
-                                            <>
-                                              <div
-                                                className="UploadDocPreview"
-                                                onClick={() => {
-                                                  handleViewPdOtherDocs(
-                                                    val.name
-                                                  );
-                                                }}
-                                              >
-                                                <div className="docItemImg">
-                                                  <img
-                                                    src={
-                                                      val.name.endsWith(".pdf")
-                                                        ? pdfimg
-                                                        : img
-                                                    }
-                                                  ></img>
-                                                </div>
-                                                <div
-                                                  className="docItemName wrap-MyText"
-                                                  title="logo.png"
-                                                >
-                                                  {val.name.split("-")[1]}
-                                                </div>
-                                              </div>
-                                            </>
-                                          )
-                                        )}
+                                                  <div className="docItemImg">
+                                                    <img
+                                                      src={
+                                                        val.filename.endsWith(
+                                                          ".pdf"
+                                                        )
+                                                          ? pdfimg
+                                                          : img
+                                                      }
+                                                    ></img>
+                                                  </div>
 
-                                        {/* <div className="UploadDocPreview">
+                                                  <div
+                                                    className="docItemName wrap-MyText"
+                                                    title="logo.png"
+                                                  >
+                                                    {val.filename.split("-")[1]}
+                                                  </div>
+                                                </div>
+                                              </>
+                                            ) : (
+                                              <>
+                                                <div
+                                                  className="UploadDocPreview"
+                                                  onClick={() => {
+                                                    handleViewPdOtherDocs(
+                                                      val.name
+                                                    );
+                                                  }}
+                                                >
+                                                  <div className="docItemImg">
+                                                    <img
+                                                      src={
+                                                        val.name.endsWith(
+                                                          ".pdf"
+                                                        )
+                                                          ? pdfimg
+                                                          : img
+                                                      }
+                                                    ></img>
+                                                  </div>
+                                                  <div
+                                                    className="docItemName wrap-MyText"
+                                                    title="logo.png"
+                                                  >
+                                                    {val.name.split("-")[1]}
+                                                  </div>
+                                                </div>
+                                              </>
+                                            )
+                                          )}
+
+                                          {/* <div className="UploadDocPreview">
                                           <div className="docItemImg">
                                             <img src={img}></img>
                                           </div>
@@ -3380,9 +3416,10 @@ export default function RedesignedForm({
                                             financials.csv
                                           </div>
                                         </div> */}
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>}
+                                  )}
                                 </div>
                               </div>
                             </div>

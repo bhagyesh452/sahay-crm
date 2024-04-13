@@ -1585,22 +1585,6 @@ function Leads() {
                   </div>
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Company Address</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="example@gmail.com"
-                        onChange={(e) => {
-                          setCompanyAddress(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
-                    <div className="mb-3">
                       <label className="form-label">Company Number</label>
                       <input
                         type="number"
@@ -1608,6 +1592,22 @@ function Leads() {
                           setCnumber(e.target.value);
                         }}
                         className="form-control"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className="mb-3">
+                      <label className="form-label">Company Address</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Enter Your Address"
+                        onChange={(e) => {
+                          setCompanyAddress(e.target.value);
+                        }}
                       />
                     </div>
                   </div>
@@ -1676,7 +1676,7 @@ function Leads() {
                         type="email"
                         className="form-control"
                         name="example-text-input"
-                        placeholder="example@gmail.com"
+                        placeholder="Enter Phone No."
                         onChange={(e) => {
                           setDirectorNumberFirst(e.target.value);
                         }}
@@ -1749,7 +1749,7 @@ function Leads() {
                           type="email"
                           className="form-control"
                           name="example-text-input"
-                          placeholder="example@gmail.com"
+                          placeholder="Enter Phone No."
                           onChange={(e) => {
                             setDirectorNumberSecond(e.target.value);
                           }}
@@ -1821,7 +1821,7 @@ function Leads() {
                         type="email"
                         className="form-control"
                         name="example-text-input"
-                        placeholder="example@gmail.com"
+                        placeholder="Enter Phone No"
                         onChange={(e) => {
                           setDirectorNumberThird(e.target.value);
                         }}

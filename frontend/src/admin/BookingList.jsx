@@ -6,24 +6,50 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
-import { TbBoxMultiple, TbMathPiDivide2 } from "react-icons/tb";
+import { FcList } from "react-icons/fc";
 import wordimg from "../static/my-images/word.png";
 import Nodata from "../components/Nodata";
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+import EditableMoreBooking from "./EditableMoreBooking";
+import AddLeadForm from "../admin/AddLeadForm.jsx";
+import { FaPlus } from "react-icons/fa6";
+import { IoAdd } from "react-icons/io5";
+import CloseIcon from "@mui/icons-material/Close";
+import { IconX } from "@tabler/icons-react";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
+  const [sendingIndex, setSendingIndex] = useState(0);
+  const [EditBookingOpen, setEditBookingOpen] = useState(false);
+  const [addFormOpen, setAddFormOpen] = useState(false);
   const [infiniteBooking, setInfiniteBooking] = useState([]);
+  const [bookingIndex, setbookingIndex] = useState(-1);
+  const [currentCompanyName , setCurrentCompanyName] = useState("");
   const [searchText, setSearchText] = useState("");
   const [nowToFetch, setNowToFetch] = useState(false);
   const [leadFormData, setLeadFormData] = useState([]);
   const [currentLeadform, setCurrentLeadform] = useState(null);
   const [currentDataLoading, setCurrentDataLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState();
+  const [selectedDocuments, setSelectedDocuments] = useState([]);
+  const [openPaymentReceipt, setOpenPaymentReceipt] = useState(false);
+  const [openOtherDocs, setOpenOtherDocs] = useState(false);
   const [data, setData] = useState([]);
   const [companyName, setCompanyName] = "";
   const secretKey = process.env.REACT_APP_SECRET_KEY;
-
+  const isAdmin = true;
   const fetchDatadebounce = async () => {
     try {
       // Set isLoading to true while fetching data
@@ -47,29 +73,38 @@ function BookingList() {
     }
   };
   useEffect(() => {
-    setCurrentLeadform(leadFormData[0]);
+    if(currentCompanyName === ""){
+      setCurrentLeadform(leadFormData[0]);
+    }else {
+      setCurrentLeadform(leadFormData.find(obj => obj["Company Name"] === currentCompanyName));
+    }
+
+     
+
   }, [leadFormData]);
 
   useEffect(() => {
     setLeadFormData(
       infiniteBooking.filter((obj) =>
-        obj["Company Name"].toLowerCase().includes(searchText)
+        obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())
       )
     );
   }, [searchText]);
 
   const fetchRedesignedFormData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
+      const response = await axios.get(
+        `${secretKey}/redesigned-final-leadData`
+      );
       const sortedData = response.data.reverse(); // Reverse the order of data
-  
+
       setInfiniteBooking(sortedData);
       setLeadFormData(sortedData); // Set both states with the sorted data
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
-  
+
   useEffect(() => {
     fetchRedesignedFormData();
   }, [nowToFetch]);
@@ -203,11 +238,85 @@ function BookingList() {
       console.log("Cancellation or closed without confirming");
     }
   };
+
+  // ----------------------------------------- Upload documents Section -----------------------------------------------------
+
+  const handleOtherDocsUpload = (updatedFiles) => {
+    setSelectedDocuments((prevSelectedDocuments) => {
+      return [...prevSelectedDocuments, ...updatedFiles];
+    });
+  };
+
+  const handleRemoveFile = (index) => {
+    setSelectedDocuments((prevSelectedDocuments) => {
+      // Create a copy of the array of selected documents
+      const updatedDocuments = [...prevSelectedDocuments];
+      // Remove the document at the specified index
+      updatedDocuments.splice(index, 1);
+      // Return the updated array of selected documents
+      return updatedDocuments;
+    });
+  };
+
+  const closeOtherDocsPopup = () => {
+    setOpenOtherDocs(false);
+  };
+  const handleotherdocsAttachment = async () => {
+    try {
+      const files = selectedDocuments;
+      console.log(files);
+
+      if (files.length === 0) {
+        // No files selected
+        return;
+      }
+
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append("otherDocs", files[i]);
+      }
+      console.log(formData);
+      setCurrentCompanyName(currentLeadform["Company Name"])
+      const response = await fetch(
+        `${secretKey}/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      if (response.ok) {
+        Swal.fire({
+          title: "Success!",
+          html: `<small> File Uploaded successfully </small>
+        `,
+          icon: "success",
+        });
+        setSelectedDocuments([]);
+        setOpenOtherDocs(false);
+        fetchRedesignedFormData();
+        
+        
+      } else {
+        Swal.fire({
+          title: "Error uploading file",
+
+          icon: "error",
+        });
+        console.error("Error uploading file");
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error uploading file",
+        icon: "error",
+      });
+      console.error("Error uploading file:", error);
+    }
+  };
   return (
     <div>
       <Header />
       <Navbar />
-      {!bookingFormOpen ? (
+      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
             <div className="container-xl">
@@ -290,6 +399,7 @@ function BookingList() {
                                 : "bookings_Company_Name"
                             }
                             onClick={() =>
+
                               setCurrentLeadform(
                                 leadFormData.find(
                                   (data) =>
@@ -362,7 +472,7 @@ function BookingList() {
                                   className="b_Services_multipal_services"
                                   title="Multipal Bookings"
                                 >
-                                  <TbBoxMultiple />
+                                  <FcList />
                                 </div>
                               )}
                             </div>
@@ -397,7 +507,7 @@ function BookingList() {
                 <div className="col-8 p-0">
                   <div className="booking-deatils-card">
                     <div className="booking-deatils-heading">
-                      <div className="d-flex justify-content-between">
+                      <div className="d-flex justify-content-between align-items-center">
                         <div className="b_dtl_C_name">
                           {currentLeadform &&
                           Object.keys(currentLeadform).length !== 0
@@ -405,6 +515,13 @@ function BookingList() {
                             : leadFormData && leadFormData.length !== 0
                             ? leadFormData[0]["Company Name"]
                             : "-"}
+                        </div>
+                        <div
+                          className="bookings_add_more"
+                          title="Add More Booking"
+                          onClick={() => setAddFormOpen(true)}
+                        >
+                          <FaPlus />
                         </div>
                       </div>
                     </div>
@@ -562,7 +679,13 @@ function BookingList() {
                         <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                           <b>Booking Details:</b>
                           <div className="Services_Preview_action d-flex">
-                            <div className="Services_Preview_action_edit mr-1">
+                            <div
+                              className="Services_Preview_action_edit mr-1"
+                              onClick={() => {
+                                setbookingIndex(0);
+                                setEditBookingOpen(true);
+                              }}
+                            >
                               <MdModeEdit />
                             </div>
                             <div
@@ -736,7 +859,11 @@ function BookingList() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                          ₹ {obj.totalPaymentWGST} {"("}
+                                          ₹{" "}
+                                          {parseInt(
+                                            obj.totalPaymentWGST
+                                          ).toLocaleString()}{" "}
+                                          {"("}
                                           {obj.totalPaymentWGST !==
                                           obj.totalPaymentWOGST
                                             ? "With GST"
@@ -791,9 +918,9 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             ₹{" "}
-                                            {Number(obj.firstPayment).toFixed(
-                                              2
-                                            )}
+                                            {parseInt(
+                                              obj.firstPayment
+                                            ).toLocaleString()}
                                           </div>
                                         </div>
                                       </div>
@@ -810,9 +937,9 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹
-                                            {Number(obj.secondPayment).toFixed(
-                                              2
-                                            )}
+                                            {parseInt(
+                                              obj.secondPayment
+                                            ).toLocaleString()}
                                             {"("}
                                             {isNaN(
                                               new Date(obj.secondPaymentRemarks)
@@ -840,9 +967,9 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹{" "}
-                                            {Number(obj.thirdPayment).toFixed(
-                                              2
-                                            )}
+                                            {parseInt(
+                                              obj.thirdPayment
+                                            ).toLocaleString()}
                                             {"("}
                                             {isNaN(
                                               new Date(obj.thirdPaymentRemarks)
@@ -867,9 +994,9 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹{" "}
-                                            {Number(obj.fourthPayment).toFixed(
-                                              2
-                                            )}{" "}
+                                            {parseInt(
+                                              obj.fourthPayment
+                                            ).toLocaleString()}{" "}
                                             {"("}
                                             {isNaN(
                                               new Date(obj.fourthPaymentRemarks)
@@ -979,9 +1106,9 @@ function BookingList() {
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                       ₹{" "}
                                       {currentLeadform &&
-                                        Number(
+                                        parseInt(
                                           currentLeadform.totalAmount
-                                        ).toFixed(2)}
+                                        ).toLocaleString()}
                                     </div>
                                   </div>
                                 </div>
@@ -997,9 +1124,9 @@ function BookingList() {
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       ₹{" "}
                                       {currentLeadform &&
-                                        Number(
+                                        parseInt(
                                           currentLeadform.receivedAmount
-                                        ).toFixed(2)}
+                                        ).toLocaleString()}
                                     </div>
                                   </div>
                                 </div>
@@ -1015,9 +1142,9 @@ function BookingList() {
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       ₹{" "}
                                       {currentLeadform &&
-                                        Number(
+                                        parseInt(
                                           currentLeadform.pendingAmount
-                                        ).toFixed(2)}
+                                        ).toLocaleString()}
                                     </div>
                                   </div>
                                 </div>
@@ -1065,7 +1192,8 @@ function BookingList() {
                                 <b>Payment Receipt and Additional Documents:</b>
                               </div>
                               <div className="row">
-                                {currentLeadform.paymentReceipt.length !== 0 && (
+                                {currentLeadform.paymentReceipt.length !==
+                                  0 && (
                                   <div className="col-sm-2 mb-1">
                                     <div className="booking-docs-preview">
                                       <div
@@ -1151,6 +1279,112 @@ function BookingList() {
                                       </div>
                                     </div>
                                   ))}
+                                {/* ---------- Upload Documents From Preview -----------*/}
+                                <div className="col-sm-2 mb-1">
+                                  <div
+                                    className="booking-docs-preview"
+                                    title="Upload More Documents"
+                                  >
+                                    <div
+                                      className="upload-Docs-BTN"
+                                      onClick={() => {
+                                        setOpenOtherDocs(true);
+                                        setSendingIndex(0);
+                                      }}
+                                    >
+                                      <IoAdd />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <Dialog
+                                  open={openOtherDocs}
+                                  onClose={closeOtherDocsPopup}
+                                  fullWidth
+                                  maxWidth="sm"
+                                >
+                                  <DialogTitle>
+                                    Upload Your Attachments
+                                    <IconButton
+                                      onClick={closeOtherDocsPopup}
+                                      style={{ float: "right" }}
+                                    >
+                                      <CloseIcon color="primary"></CloseIcon>
+                                    </IconButton>{" "}
+                                  </DialogTitle>
+                                  <DialogContent>
+                                    <div className="maincon">
+                                      {/* Single file input for multiple documents */}
+                                      <div
+                                        style={{
+                                          justifyContent: "space-between",
+                                        }}
+                                        className="con1 d-flex"
+                                      >
+                                        <div
+                                          style={{ paddingTop: "9px" }}
+                                          className="uploadcsv"
+                                        >
+                                          <label
+                                            style={{
+                                              margin: "0px 0px 6px 0px",
+                                            }}
+                                            htmlFor="attachmentfile"
+                                          >
+                                            Upload Files
+                                          </label>
+                                        </div>
+                                      </div>
+                                      <div
+                                        style={{ margin: "5px 0px 0px 0px" }}
+                                        className="form-control"
+                                      >
+                                        <input
+                                          type="file"
+                                          name="attachmentfile"
+                                          id="attachmentfile"
+                                          onChange={(e) => {
+                                            handleOtherDocsUpload(
+                                              e.target.files
+                                            );
+                                          }}
+                                          multiple // Allow multiple files selection
+                                        />
+                                        {selectedDocuments &&
+                                          selectedDocuments.length > 0 && (
+                                            <div className="uploaded-filename-main d-flex flex-wrap">
+                                              {selectedDocuments.map(
+                                                (file, index) => (
+                                                  <div
+                                                    className="uploaded-fileItem d-flex align-items-center"
+                                                    key={index}
+                                                  >
+                                                    <p className="m-0">
+                                                      {file.name}
+                                                    </p>
+                                                    <button
+                                                      className="fileItem-dlt-btn"
+                                                      onClick={() =>
+                                                        handleRemoveFile(index)
+                                                      }
+                                                    >
+                                                      <IconX className="close-icon" />
+                                                    </button>
+                                                  </div>
+                                                )
+                                              )}
+                                            </div>
+                                          )}
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                  <button
+                                    className="btn btn-primary"
+                                    onClick={handleotherdocsAttachment}
+                                  >
+                                    Submit
+                                  </button>
+                                </Dialog>
                               </div>
                             </>
                           )}
@@ -1174,7 +1408,13 @@ function BookingList() {
                               <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                                 <b>Booking Details:</b>
                                 <div className="Services_Preview_action d-flex">
-                                  <div className="Services_Preview_action_edit mr-2">
+                                  <div
+                                    className="Services_Preview_action_edit mr-2"
+                                    onClick={() => {
+                                      setbookingIndex(index + 1);
+                                      setEditBookingOpen(true);
+                                    }}
+                                  >
                                     <MdModeEdit />
                                   </div>
                                   <div
@@ -1343,7 +1583,11 @@ function BookingList() {
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                              ₹ {obj.totalPaymentWGST}/- {"("}
+                                              ₹{" "}
+                                              {parseInt(
+                                                obj.totalPaymentWGST
+                                              ).toLocaleString()}
+                                              {"("}
                                               {obj.totalPaymentWGST !==
                                               obj.totalPaymentWOGST
                                                 ? "With GST"
@@ -1398,9 +1642,9 @@ function BookingList() {
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                 ₹{" "}
-                                                {Number(
+                                                {parseInt(
                                                   obj.firstPayment
-                                                ).toFixed(2)}
+                                                ).toLocaleString()}
                                                 /-
                                               </div>
                                             </div>
@@ -1418,9 +1662,9 @@ function BookingList() {
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                 ₹
-                                                {Number(
+                                                {parseInt(
                                                   obj.secondPayment
-                                                ).toFixed(2)}
+                                                ).toLocaleString()}
                                                 /- {"("}
                                                 {isNaN(
                                                   new Date(
@@ -1449,9 +1693,9 @@ function BookingList() {
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                 ₹{" "}
-                                                {Number(
+                                                {parseInt(
                                                   obj.thirdPayment
-                                                ).toFixed(2)}
+                                                ).toLocaleString()}
                                                 /- {"("}
                                                 {isNaN(
                                                   new Date(
@@ -1478,9 +1722,9 @@ function BookingList() {
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                 ₹{" "}
-                                                {Number(
+                                                {parseInt(
                                                   obj.fourthPayment
-                                                ).toFixed(2)}{" "}
+                                                ).toLocaleString()}{" "}
                                                 /- {"("}
                                                 {isNaN(
                                                   new Date(
@@ -1586,10 +1830,9 @@ function BookingList() {
                                         <div class="col-sm-7 align-self-stretchh p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹{" "}
-                                            {Number(
+                                            {parseInt(
                                               objMain.totalAmount
-                                            ).toFixed(2)}
-                                            /-
+                                            ).toLocaleString()}
                                           </div>
                                         </div>
                                       </div>
@@ -1604,10 +1847,9 @@ function BookingList() {
                                         <div class="col-sm-7 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             ₹{" "}
-                                            {Number(
+                                            {parseInt(
                                               objMain.receivedAmount
-                                            ).toFixed(2)}
-                                            /-
+                                            ).toLocaleString()}
                                           </div>
                                         </div>
                                       </div>
@@ -1622,10 +1864,9 @@ function BookingList() {
                                         <div class="col-sm-7 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             ₹{" "}
-                                            {Number(
+                                            {parseInt(
                                               objMain.pendingAmount
-                                            ).toFixed(2)}
-                                            /-
+                                            ).toLocaleString()}
                                           </div>
                                         </div>
                                       </div>
@@ -1663,81 +1904,194 @@ function BookingList() {
                                   </div>
                                 </div>
                               </div>
-                           {(objMain.paymentReceipt.length!==0 || objMain.otherDocs.length !==0) &&   <>
-                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                                <b>Payment Receipt and Additional Documents:</b>
-                              </div>
-                                
-                              <div className="row">
-                                {objMain.paymentReceipt && objMain.paymentReceipt.length!==0 && <div className="col-sm-2 mb-1">
-                                  <div className="booking-docs-preview">
-                                    <div
-                                      className="booking-docs-preview-img"
-                                      onClick={() =>
-                                        handleViewPdfReciepts(
-                                          objMain.paymentReceipt[0].filename
-                                        )
-                                      }
-                                    >
-                                      {objMain.paymentReceipt[0].filename.endsWith(
-                                        ".pdf"
-                                      ) ? (
-                                        <PdfImageViewerAdmin
-                                          type="paymentrecieptpdf"
-                                          path={
-                                            objMain.paymentReceipt[0].filename
-                                          }
-                                        />
-                                      ) : (
-                                        <img
-                                          src={`${secretKey}/recieptpdf/${objMain.paymentReceipt[0].filename}`}
-                                          alt={"MyImg"}
-                                        ></img>
-                                      )}
-                                    </div>
-                                    <div className="booking-docs-preview-text">
-                                      <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                        Receipt.pdf
-                                      </p>
-                                    </div>
+                          
+                                  <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                                    <b>
+                                      Payment Receipt and Additional Documents:
+                                    </b>
                                   </div>
-                                </div>}
-                                {objMain.otherDocs.map((obj) => (
-                                  <div className="col-sm-2 mb-1">
-                                    <div className="booking-docs-preview">
-                                      <div
-                                        className="booking-docs-preview-img"
-                                        onClick={() =>
-                                          handleViewPdOtherDocs(obj.filename)
-                                        }
-                                      >
-                                        {obj.filename.endsWith(".pdf") ? (
-                                          <PdfImageViewerAdmin
-                                            type="pdf"
-                                            path={obj.filename}
-                                          />
-                                        ) : (
-                                          <img
-                                            src={`${secretKey}/otherpdf/${obj.filename}`}
-                                            alt={pdfimg}
-                                          ></img>
-                                        )}
-                                      </div>
-                                      <div className="booking-docs-preview-text">
-                                        <p
-                                          className="booking-img-name-txtwrap text-wrap m-auto m-0"
-                                          title={obj.originalname}
-                                        >
-                                          {obj.originalname}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
 
-                              </>}
-                            
+                                  <div className="row">
+                                    {objMain.paymentReceipt &&
+                                      objMain.paymentReceipt.length !== 0 && (
+                                        <div className="col-sm-2 mb-1">
+                                          <div className="booking-docs-preview">
+                                            <div
+                                              className="booking-docs-preview-img"
+                                              onClick={() =>
+                                                handleViewPdfReciepts(
+                                                  objMain.paymentReceipt[0]
+                                                    .filename
+                                                )
+                                              }
+                                            >
+                                              {objMain.paymentReceipt[0].filename.endsWith(
+                                                ".pdf"
+                                              ) ? (
+                                                <PdfImageViewerAdmin
+                                                  type="paymentrecieptpdf"
+                                                  path={
+                                                    objMain.paymentReceipt[0]
+                                                      .filename
+                                                  }
+                                                />
+                                              ) : (
+                                                <img
+                                                  src={`${secretKey}/recieptpdf/${objMain.paymentReceipt[0].filename}`}
+                                                  alt={"MyImg"}
+                                                ></img>
+                                              )}
+                                            </div>
+                                            <div className="booking-docs-preview-text">
+                                              <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                                Receipt.pdf
+                                              </p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    {objMain.otherDocs.map((obj) => (
+                                      <div className="col-sm-2 mb-1">
+                                        <div className="booking-docs-preview">
+                                          <div
+                                            className="booking-docs-preview-img"
+                                            onClick={() =>
+                                              handleViewPdOtherDocs(
+                                                obj.filename
+                                              )
+                                            }
+                                          >
+                                            {obj.filename.endsWith(".pdf") ? (
+                                              <PdfImageViewerAdmin
+                                                type="pdf"
+                                                path={obj.filename}
+                                              />
+                                            ) : (
+                                              <img
+                                                src={`${secretKey}/otherpdf/${obj.filename}`}
+                                                alt={pdfimg}
+                                              ></img>
+                                            )}
+                                          </div>
+                                          <div className="booking-docs-preview-text">
+                                            <p
+                                              className="booking-img-name-txtwrap text-wrap m-auto m-0"
+                                              title={obj.originalname}
+                                            >
+                                              {obj.originalname}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+
+<div className="col-sm-2 mb-1">
+                                  <div
+                                    className="booking-docs-preview"
+                                    title="Upload More Documents"
+                                  >
+                                    <div
+                                      className="upload-Docs-BTN"
+                                      onClick={() => {
+                                        setOpenOtherDocs(true);
+                                        setSendingIndex(index+1);
+                                      }}
+                                    >
+                                      <IoAdd />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <Dialog
+                                  open={openOtherDocs}
+                                  onClose={closeOtherDocsPopup}
+                                  fullWidth
+                                  maxWidth="sm"
+                                >
+                                  <DialogTitle>
+                                    Upload Your Attachments
+                                    <IconButton
+                                      onClick={closeOtherDocsPopup}
+                                      style={{ float: "right" }}
+                                    >
+                                      <CloseIcon color="primary"></CloseIcon>
+                                    </IconButton>{" "}
+                                  </DialogTitle>
+                                  <DialogContent>
+                                    <div className="maincon">
+                                      {/* Single file input for multiple documents */}
+                                      <div
+                                        style={{
+                                          justifyContent: "space-between",
+                                        }}
+                                        className="con1 d-flex"
+                                      >
+                                        <div
+                                          style={{ paddingTop: "9px" }}
+                                          className="uploadcsv"
+                                        >
+                                          <label
+                                            style={{
+                                              margin: "0px 0px 6px 0px",
+                                            }}
+                                            htmlFor="attachmentfile"
+                                          >
+                                            Upload Files
+                                          </label>
+                                        </div>
+                                      </div>
+                                      <div
+                                        style={{ margin: "5px 0px 0px 0px" }}
+                                        className="form-control"
+                                      >
+                                        <input
+                                          type="file"
+                                          name="attachmentfile"
+                                          id="attachmentfile"
+                                          onChange={(e) => {
+                                            handleOtherDocsUpload(
+                                              e.target.files
+                                            );
+                                          }}
+                                          multiple // Allow multiple files selection
+                                        />
+                                        {selectedDocuments &&
+                                          selectedDocuments.length > 0 && (
+                                            <div className="uploaded-filename-main d-flex flex-wrap">
+                                              {selectedDocuments.map(
+                                                (file, index) => (
+                                                  <div
+                                                    className="uploaded-fileItem d-flex align-items-center"
+                                                    key={index}
+                                                  >
+                                                    <p className="m-0">
+                                                      {file.name}
+                                                    </p>
+                                                    <button
+                                                      className="fileItem-dlt-btn"
+                                                      onClick={() =>
+                                                        handleRemoveFile(index)
+                                                      }
+                                                    >
+                                                      <IconX className="close-icon" />
+                                                    </button>
+                                                  </div>
+                                                )
+                                              )}
+                                            </div>
+                                          )}
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                  <button
+                                    className="btn btn-primary"
+                                    onClick={handleotherdocsAttachment}
+                                  >
+                                    Submit
+                                  </button>
+                                </Dialog>
+                                  </div>
+                             
                             </div>
                           </>
                         ))}
@@ -1748,7 +2102,9 @@ function BookingList() {
             </div>
           </div>
         </div>
-      ) : (
+      )}
+
+      {bookingFormOpen && (
         <>
           <AdminBookingForm
             // matured={true}
@@ -1762,6 +2118,32 @@ function BookingList() {
             // companysInco={companyInco}
             // employeeName={data.ename}
             // employeeEmail={data.email}
+          />
+        </>
+      )}
+      {EditBookingOpen && bookingIndex !== -1 && (
+        <>
+          <EditableMoreBooking
+            setFormOpen={setEditBookingOpen}
+            bookingIndex={bookingIndex}
+            isAdmin={isAdmin}
+            setNowToFetch={setNowToFetch}
+            companysName={currentLeadform["Company Name"]}
+            companysEmail={currentLeadform["Company Email"]}
+            companyNumber={currentLeadform["Company Number"]}
+            companysInco={currentLeadform.incoDate}
+            employeeName={currentLeadform.bdeName}
+            employeeEmail={currentLeadform.bdeEmail}
+          />
+        </>
+      )}
+      {addFormOpen && (
+        <>
+          {" "}
+          <AddLeadForm
+            setFormOpen={setAddFormOpen}
+            companysName={currentLeadform["Company Name"]}
+            setNowToFetch={setNowToFetch}
           />
         </>
       )}

@@ -474,11 +474,11 @@ export default function EditableLeadform({
   const navigate = useNavigate();
 
   const handleBack = () => {
-    if (activeStep !== 0) {
+    if (activeStep !== 1) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
-      setDataStatus("Matured");
-      setNowToFetch(true);
+      // setDataStatus("Matured");
+      // setNowToFetch(true);
       setFormOpen(false);
     }
   };
@@ -606,15 +606,36 @@ export default function EditableLeadform({
         }
       }
       if (activeStep === 2) {
-        if (
-          !leadData.services[0].serviceName ||
-          !leadData.services[0].totalPaymentWOGST
-        ) {
-          Swal.fire({
-            title: "Please fill all the details",
-            icon: "warning",
-          });
-          return true;
+
+        let isValid = true;
+        for (let service of leadData.services) {
+        
+          const firstPayment = Number(service.firstPayment);
+          const secondPayment = Number(service.secondPayment);
+          const thirdPayment = Number(service.thirdPayment);
+          const fourthPayment = Number(service.fourthPayment);
+          console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
+          if (
+            (service.paymentTerms !== "Full-Advanced" &&
+              (firstPayment < 0 ||
+                secondPayment < 0 ||
+                thirdPayment < 0 ||
+                fourthPayment < 0 ||
+                firstPayment + secondPayment + thirdPayment + fourthPayment !==
+                  Number(service.totalPaymentWGST)) &&
+              !service.secondPaymentRemarks) ||
+            service.serviceName === "" ||
+            Number(service.totalPaymentWGST) === 0
+          ) {
+            isValid = false;
+            break;
+          }
+        }
+               if (
+                !isValid
+                ) {
+                  Swal.fire("Incorrect Details" , 'Please Enter the Details Properly', 'warning');
+                  return true;
         } else {
           const totalAmount = leadData.services.reduce(
             (acc, curr) => acc + curr.totalPaymentWGST,
@@ -670,6 +691,10 @@ export default function EditableLeadform({
         }
       }
       if (activeStep === 3) {
+            if(leadData.paymentMethod===""){
+          Swal.fire("Incorrect Details" , 'Please Enter Payment Method', 'warning');
+          return true;
+        }
         console.log(
           "I am in step 4",
           leadData.paymentReceipt,

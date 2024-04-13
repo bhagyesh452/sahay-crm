@@ -205,8 +205,6 @@ function BookingsForm({
   }, []);
   const [selectedValues, setSelectedValues] = useState([]);
 
-  // Add other fields as needed
-
 
   const handleSubmitForm = async () => {
     const currentTime = new Date();
