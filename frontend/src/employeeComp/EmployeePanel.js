@@ -1937,7 +1937,7 @@ function EmployeePanel() {
   // --------------------------------------forward to bdm function---------------------------------------------\
 
   console.log("currentData", currentData)
-  const [forwardedCompany, setForwardedCompany] = useState([])
+  const [forwardedCompany, setForwardedCompany] = useState("")
   const [bdmNewAcceptStatus, setBdmNewAcceptStatus] = useState("")
   const [forwardCompanyId, setforwardCompanyId] = useState("")
 
@@ -1960,7 +1960,7 @@ function EmployeePanel() {
           setForwardedCompany(companyName)
           setBdmNewAcceptStatus("Pending")
           setforwardCompanyId(companyId)
-          handleForwardBdm();
+          //handleForwardBdm();
           // Perform the action here
         }
       });
@@ -1987,25 +1987,54 @@ function EmployeePanel() {
   //     }
   // };
 
-  const handleForwardBdm = async () => {
+  console.log(forwardedCompany, 'hayhsjshshsh')
+  
+  useEffect(() => {
+    console.log("selectedData", currentData, forwardedCompany);
     const selectedDataWithBdm = currentData.filter((company) => company["Company Name"] === forwardedCompany);
-    console.log("selectedData", selectedDataWithBdm);
-    try {
-      const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
-        selectedData: selectedDataWithBdm,
-        bdmName: bdmName,
-        companyId: forwardCompanyId,
-        bdmAcceptStatus: bdmNewAcceptStatus // Assuming bdmName is defined elsewhere in your component
-      });
-      console.log("response", response.data);
-      Swal.fire("Data Forwarded");
-      fetchNewData();
-    } catch (error) {
-      console.log(error);
-      Swal.fire("Error Assigning Data");
-      fetchNewData();
-    }
-  };
+  
+    const fetchData = async () => {
+      try {
+        const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
+          selectedData: selectedDataWithBdm,
+          bdmName: bdmName,
+          companyId: forwardCompanyId,
+          bdmAcceptStatus: bdmNewAcceptStatus // Assuming bdmName is defined elsewhere in your component
+        });
+        console.log("response", response.data);
+        Swal.fire("Data Forwarded");
+        //fetchNewData();
+      } catch (error) {
+        console.error(error);
+        Swal.fire("Error Assigning Data");
+        //fetchNewData();
+      }
+    };
+  
+    fetchData(); // Call the async function to fetch data
+  
+  }, [forwardedCompany]);
+  
+
+  // const handleForwardBdm = async () => {
+ 
+    
+  //   // try {
+  //   //   const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
+  //   //     selectedData: selectedDataWithBdm,
+  //   //     bdmName: bdmName,
+  //   //     companyId: forwardCompanyId,
+  //   //     bdmAcceptStatus: bdmNewAcceptStatus // Assuming bdmName is defined elsewhere in your component
+  //   //   });
+  //   //   console.log("response", response.data);
+  //   //   Swal.fire("Data Forwarded");
+  //   //   fetchNewData();
+  //   // } catch (error) {
+  //   //   console.log(error);
+  //   //   Swal.fire("Error Assigning Data");
+  //   //   fetchNewData();
+  //   // }
+  // };
 
   const handleReverseAssign = async (companyId, companyName, bdmAcceptStatus) => {
     if (bdmAcceptStatus === "Pending") {
