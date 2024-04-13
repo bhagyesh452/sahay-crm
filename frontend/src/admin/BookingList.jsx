@@ -871,7 +871,7 @@ function BookingList() {
                                             {"("}
                                             {isNaN(
                                               new Date(obj.thirdPaymentRemarks)
-                                            )
+                                            ) 
                                               ? obj.thirdPaymentRemarks
                                               : "On " +
                                                 obj.thirdPaymentRemarks +
