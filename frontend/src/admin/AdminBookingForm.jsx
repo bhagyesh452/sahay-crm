@@ -420,17 +420,16 @@ export default function AdminBookingForm({
                 const secondPayment = Number(service.secondPayment);
                 const thirdPayment = Number(service.thirdPayment);
                 const fourthPayment = Number(service.fourthPayment);
-                console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
+                // console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
                 if (
-                  (service.paymentTerms !== "Full-Advanced" &&
+                  (service.paymentTerms !== "Full Advanced" &&
                     (firstPayment < 0 ||
                       secondPayment < 0 ||
                       thirdPayment < 0 ||
                       fourthPayment < 0 ||
                       firstPayment + secondPayment + thirdPayment + fourthPayment !==
                         Number(service.totalPaymentWGST))) ||
-                  service.serviceName === "" ||
-                  Number(service.totalPaymentWGST) === 0
+                  service.serviceName === "" 
                 ) {
                   isValid = false;
                   break;
@@ -496,7 +495,7 @@ export default function AdminBookingForm({
         }
       }
       if (activeStep === 3) {
-        if(leadData.paymentMethod===""){
+        if(!leadData.paymentMethod){
           Swal.fire("Incorrect Details" , 'Please Enter Payment Method', 'warning');
           return true;
         }
@@ -1036,7 +1035,7 @@ export default function AdminBookingForm({
                   <div className="row">
                     <div className="col-sm-3">
                       <div className="form-group">
-                        <label class="form-label">First Payment{<span style={{ color: "red" }}>*</span>}</label>
+                        <label class="form-label">First Payment {<span style={{ color: "red" }}>*</span>}</label>
                         <div class="input-group mb-2">
                           <input
                             type="number"
@@ -1073,7 +1072,7 @@ export default function AdminBookingForm({
                     {leadData.services[i].paymentCount > 1 && (
                       <div className="col-sm-3">
                         <div className="form-group">
-                          <label class="form-label">Second Payment{<span style={{ color: "red" }}>*</span>}</label>
+                          <label class="form-label">Second Payment {<span style={{ color: "red" }}>*</span>}</label>
                           <div class="input-group mb-2">
                             <input
                               type="text"
@@ -1178,7 +1177,7 @@ export default function AdminBookingForm({
                     {leadData.services[i].paymentCount > 2 && (
                       <div className="col-sm-3">
                         <div className="form-group">
-                          <label class="form-label">Third Payment{<span style={{ color: "red" }}>*</span>}</label>
+                          <label class="form-label">Third Payment {<span style={{ color: "red" }}>*</span>}</label>
                           <div class="input-group mb-2">
                             <input
                               type="text"
@@ -1273,7 +1272,7 @@ export default function AdminBookingForm({
                     {leadData.services[i].paymentCount > 3 && (
                       <div className="col-sm-3">
                         <div className="form-group">
-                          <label class="form-label">Fourth Payment{<span style={{ color: "red" }}>*</span>}</label>
+                          <label class="form-label">Fourth Payment {<span style={{ color: "red" }}>*</span>}</label>
                           <div class="input-group mb-2">
                             <input
                               type="text"
