@@ -12,11 +12,13 @@ import Nodata from "../components/Nodata";
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import EditableMoreBooking from "./EditableMoreBooking";
+import AddLeadForm from "../admin/AddLeadForm.jsx";
+import { GrAddCircle } from "react-icons/gr";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
   const [EditBookingOpen, setEditBookingOpen] = useState(false);
-  
+  const [addFormOpen, setAddFormOpen] = useState(false);
   const [infiniteBooking, setInfiniteBooking] = useState([]);
   const [bookingIndex, setbookingIndex] = useState(-1);
   const [searchText, setSearchText] = useState("");
@@ -64,16 +66,18 @@ function BookingList() {
 
   const fetchRedesignedFormData = async () => {
     try {
-      const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
+      const response = await axios.get(
+        `${secretKey}/redesigned-final-leadData`
+      );
       const sortedData = response.data.reverse(); // Reverse the order of data
-  
+
       setInfiniteBooking(sortedData);
       setLeadFormData(sortedData); // Set both states with the sorted data
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
-  
+
   useEffect(() => {
     fetchRedesignedFormData();
   }, [nowToFetch]);
@@ -211,7 +215,7 @@ function BookingList() {
     <div>
       <Header />
       <Navbar />
-      {!bookingFormOpen && !EditBookingOpen && (
+      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
             <div className="container-xl">
@@ -410,6 +414,13 @@ function BookingList() {
                             ? leadFormData[0]["Company Name"]
                             : "-"}
                         </div>
+                        <div
+                          className="add-projection"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => setAddFormOpen(true)}
+                        >
+                          <GrAddCircle />
+                        </div>
                       </div>
                     </div>
                     <div className="booking-deatils-body">
@@ -566,10 +577,13 @@ function BookingList() {
                         <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                           <b>Booking Details:</b>
                           <div className="Services_Preview_action d-flex">
-                            <div className="Services_Preview_action_edit mr-1" onClick={()=>{
-                              setbookingIndex(0)
-                              setEditBookingOpen(true)
-                              }} >
+                            <div
+                              className="Services_Preview_action_edit mr-1"
+                              onClick={() => {
+                                setbookingIndex(0);
+                                setEditBookingOpen(true);
+                              }}
+                            >
                               <MdModeEdit />
                             </div>
                             <div
@@ -743,7 +757,11 @@ function BookingList() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                          ₹ {parseInt(obj.totalPaymentWGST).toLocaleString()} {"("}
+                                          ₹{" "}
+                                          {parseInt(
+                                            obj.totalPaymentWGST
+                                          ).toLocaleString()}{" "}
+                                          {"("}
                                           {obj.totalPaymentWGST !==
                                           obj.totalPaymentWOGST
                                             ? "With GST"
@@ -798,7 +816,9 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             ₹{" "}
-                                            {parseInt(obj.firstPayment).toLocaleString()}
+                                            {parseInt(
+                                              obj.firstPayment
+                                            ).toLocaleString()}
                                           </div>
                                         </div>
                                       </div>
@@ -815,7 +835,9 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹
-                                            {parseInt(obj.secondPayment).toLocaleString()}
+                                            {parseInt(
+                                              obj.secondPayment
+                                            ).toLocaleString()}
                                             {"("}
                                             {isNaN(
                                               new Date(obj.secondPaymentRemarks)
@@ -843,7 +865,9 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹{" "}
-                                            {parseInt(obj.thirdPayment).toLocaleString()}
+                                            {parseInt(
+                                              obj.thirdPayment
+                                            ).toLocaleString()}
                                             {"("}
                                             {isNaN(
                                               new Date(obj.thirdPaymentRemarks)
@@ -868,7 +892,9 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹{" "}
-                                            {parseInt(obj.fourthPayment).toLocaleString()}{" "}
+                                            {parseInt(
+                                              obj.fourthPayment
+                                            ).toLocaleString()}{" "}
                                             {"("}
                                             {isNaN(
                                               new Date(obj.fourthPaymentRemarks)
@@ -1064,7 +1090,8 @@ function BookingList() {
                                 <b>Payment Receipt and Additional Documents:</b>
                               </div>
                               <div className="row">
-                                {currentLeadform.paymentReceipt.length !== 0 && (
+                                {currentLeadform.paymentReceipt.length !==
+                                  0 && (
                                   <div className="col-sm-2 mb-1">
                                     <div className="booking-docs-preview">
                                       <div
@@ -1153,7 +1180,7 @@ function BookingList() {
                               </div>
                             </>
                           )}
-                     </div>
+                      </div>
 
                       {/* ------------------------------------------ Multiple Booking Section Starts here ----------------------------- */}
                       {currentLeadform &&
@@ -1173,10 +1200,13 @@ function BookingList() {
                               <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
                                 <b>Booking Details:</b>
                                 <div className="Services_Preview_action d-flex">
-                                  <div className="Services_Preview_action_edit mr-2" onClick={()=>{
-                                    setbookingIndex(index+1)
-                                    setEditBookingOpen(true)
-                                  }}>
+                                  <div
+                                    className="Services_Preview_action_edit mr-2"
+                                    onClick={() => {
+                                      setbookingIndex(index + 1);
+                                      setEditBookingOpen(true);
+                                    }}
+                                  >
                                     <MdModeEdit />
                                   </div>
                                   <div
@@ -1345,7 +1375,11 @@ function BookingList() {
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                              ₹ {parseInt(obj.totalPaymentWGST).toLocaleString()}{"("}
+                                              ₹{" "}
+                                              {parseInt(
+                                                obj.totalPaymentWGST
+                                              ).toLocaleString()}
+                                              {"("}
                                               {obj.totalPaymentWGST !==
                                               obj.totalPaymentWOGST
                                                 ? "With GST"
@@ -1591,7 +1625,6 @@ function BookingList() {
                                             {parseInt(
                                               objMain.totalAmount
                                             ).toLocaleString()}
-                                            
                                           </div>
                                         </div>
                                       </div>
@@ -1609,7 +1642,6 @@ function BookingList() {
                                             {parseInt(
                                               objMain.receivedAmount
                                             ).toLocaleString()}
-                                            
                                           </div>
                                         </div>
                                       </div>
@@ -1627,7 +1659,6 @@ function BookingList() {
                                             {parseInt(
                                               objMain.pendingAmount
                                             ).toLocaleString()}
-                                            
                                           </div>
                                         </div>
                                       </div>
@@ -1665,79 +1696,91 @@ function BookingList() {
                                   </div>
                                 </div>
                               </div>
-                           {(objMain.paymentReceipt.length!==0 || objMain.otherDocs.length !==0) &&   <>
-                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                                <b>Payment Receipt and Additional Documents:</b>
-                              </div>
-                                
-                              <div className="row">
-                                {objMain.paymentReceipt && objMain.paymentReceipt.length!==0 && <div className="col-sm-2 mb-1">
-                                  <div className="booking-docs-preview">
-                                    <div
-                                      className="booking-docs-preview-img"
-                                      onClick={() =>
-                                        handleViewPdfReciepts(
-                                          objMain.paymentReceipt[0].filename
-                                        )
-                                      }
-                                    >
-                                      {objMain.paymentReceipt[0].filename.endsWith(
-                                        ".pdf"
-                                      ) ? (
-                                        <PdfImageViewerAdmin
-                                          type="paymentrecieptpdf"
-                                          path={
-                                            objMain.paymentReceipt[0].filename
-                                          }
-                                        />
-                                      ) : (
-                                        <img
-                                          src={`${secretKey}/recieptpdf/${objMain.paymentReceipt[0].filename}`}
-                                          alt={"MyImg"}
-                                        ></img>
+                              {(objMain.paymentReceipt.length !== 0 ||
+                                objMain.otherDocs.length !== 0) && (
+                                <>
+                                  <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                                    <b>
+                                      Payment Receipt and Additional Documents:
+                                    </b>
+                                  </div>
+
+                                  <div className="row">
+                                    {objMain.paymentReceipt &&
+                                      objMain.paymentReceipt.length !== 0 && (
+                                        <div className="col-sm-2 mb-1">
+                                          <div className="booking-docs-preview">
+                                            <div
+                                              className="booking-docs-preview-img"
+                                              onClick={() =>
+                                                handleViewPdfReciepts(
+                                                  objMain.paymentReceipt[0]
+                                                    .filename
+                                                )
+                                              }
+                                            >
+                                              {objMain.paymentReceipt[0].filename.endsWith(
+                                                ".pdf"
+                                              ) ? (
+                                                <PdfImageViewerAdmin
+                                                  type="paymentrecieptpdf"
+                                                  path={
+                                                    objMain.paymentReceipt[0]
+                                                      .filename
+                                                  }
+                                                />
+                                              ) : (
+                                                <img
+                                                  src={`${secretKey}/recieptpdf/${objMain.paymentReceipt[0].filename}`}
+                                                  alt={"MyImg"}
+                                                ></img>
+                                              )}
+                                            </div>
+                                            <div className="booking-docs-preview-text">
+                                              <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                                Receipt.pdf
+                                              </p>
+                                            </div>
+                                          </div>
+                                        </div>
                                       )}
-                                    </div>
-                                    <div className="booking-docs-preview-text">
-                                      <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                        Receipt.pdf
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>}
-                                {objMain.otherDocs.map((obj) => (
-                                  <div className="col-sm-2 mb-1">
-                                    <div className="booking-docs-preview">
-                                      <div
-                                        className="booking-docs-preview-img"
-                                        onClick={() =>
-                                          handleViewPdOtherDocs(obj.filename)
-                                        }
-                                      >
-                                        {obj.filename.endsWith(".pdf") ? (
-                                          <PdfImageViewerAdmin
-                                            type="pdf"
-                                            path={obj.filename}
-                                          />
-                                        ) : (
-                                          <img
-                                            src={`${secretKey}/otherpdf/${obj.filename}`}
-                                            alt={pdfimg}
-                                          ></img>
-                                        )}
+                                    {objMain.otherDocs.map((obj) => (
+                                      <div className="col-sm-2 mb-1">
+                                        <div className="booking-docs-preview">
+                                          <div
+                                            className="booking-docs-preview-img"
+                                            onClick={() =>
+                                              handleViewPdOtherDocs(
+                                                obj.filename
+                                              )
+                                            }
+                                          >
+                                            {obj.filename.endsWith(".pdf") ? (
+                                              <PdfImageViewerAdmin
+                                                type="pdf"
+                                                path={obj.filename}
+                                              />
+                                            ) : (
+                                              <img
+                                                src={`${secretKey}/otherpdf/${obj.filename}`}
+                                                alt={pdfimg}
+                                              ></img>
+                                            )}
+                                          </div>
+                                          <div className="booking-docs-preview-text">
+                                            <p
+                                              className="booking-img-name-txtwrap text-wrap m-auto m-0"
+                                              title={obj.originalname}
+                                            >
+                                              {obj.originalname}
+                                            </p>
+                                          </div>
+                                        </div>
                                       </div>
-                                      <div className="booking-docs-preview-text">
-                                        <p
-                                          className="booking-img-name-txtwrap text-wrap m-auto m-0"
-                                          title={obj.originalname}
-                                        >
-                                          {obj.originalname}
-                                        </p>
-                                      </div>
-                                    </div>
+                                    ))}
                                   </div>
-                                ))}
-                              </div>
-                              </>}
+                                </>
+                              )}
                             </div>
                           </>
                         ))}
@@ -1748,9 +1791,10 @@ function BookingList() {
             </div>
           </div>
         </div>
-      )} 
-      
-      {bookingFormOpen && <>
+      )}
+
+      {bookingFormOpen && (
+        <>
           <AdminBookingForm
             // matured={true}
             // companysId={companyId}
@@ -1764,13 +1808,14 @@ function BookingList() {
             // employeeName={data.ename}
             // employeeEmail={data.email}
           />
-        </>} 
-        {EditBookingOpen && bookingIndex!==-1 && (
+        </>
+      )}
+      {EditBookingOpen && bookingIndex !== -1 && (
         <>
-          <EditableMoreBooking 
+          <EditableMoreBooking
             setFormOpen={setEditBookingOpen}
             bookingIndex={bookingIndex}
-            isAdmin = {isAdmin}
+            isAdmin={isAdmin}
             setNowToFetch={setNowToFetch}
             companysName={currentLeadform["Company Name"]}
             companysEmail={currentLeadform["Company Email"]}
@@ -1778,12 +1823,19 @@ function BookingList() {
             companysInco={currentLeadform.incoDate}
             employeeName={currentLeadform.bdeName}
             employeeEmail={currentLeadform.bdeEmail}
-             />
+          />
         </>
       )}
-      
-        
-      
+      {addFormOpen && (
+        <>
+          {" "}
+          <AddLeadForm
+            setFormOpen={setAddFormOpen}
+            companysName={currentLeadform["Company Name"]}
+            setNowToFetch={setNowToFetch}
+          />
+        </>
+      )}
     </div>
   );
 }

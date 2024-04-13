@@ -635,15 +635,14 @@ let isValid = true;
         const fourthPayment = Number(service.fourthPayment);
         console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
         if (
-          (service.paymentTerms !== "Full-Advanced" &&
+          (service.paymentTerms !== "Full Advanced" &&
             (firstPayment < 0 ||
               secondPayment < 0 ||
               thirdPayment < 0 ||
               fourthPayment < 0 ||
               firstPayment + secondPayment + thirdPayment + fourthPayment !==
                 Number(service.totalPaymentWGST))) ||
-          service.serviceName === "" ||
-          Number(service.totalPaymentWGST) === 0
+          service.serviceName === "" 
         ) {
           isValid = false;
           break;
