@@ -860,6 +860,7 @@ function Leads() {
       selectedRows.includes(row._id)
     );
 
+    console.log("selectedObjecyt" , selectedObjects)
     // Check if no data is selected
     if (selectedObjects.length === 0) {
       Swal.fire("Empty Data!");

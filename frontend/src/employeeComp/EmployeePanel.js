@@ -54,6 +54,7 @@ import { RiShareForwardBoxFill } from "react-icons/ri";
 import { RiShareForward2Fill } from "react-icons/ri";
 import { TiArrowBack } from "react-icons/ti";
 import { TiArrowForward } from "react-icons/ti";
+import { MdNotInterested } from "react-icons/md";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -98,7 +99,10 @@ function EmployeePanel() {
   const [data, setData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [emailData, setEmailData] = useState({ to: "", subject: "", body: "" });
-  
+  const [forwardEname, setForrwardEname] = useState("")
+  const [forwardStatus, setForrwardStatus] = useState("")
+  const [teamInfo, setTeamInfo] = useState([])
+  const [bdmName, setBdmName] = useState("")
 
   const handleTogglePopup = () => {
     setIsOpen(false);
@@ -360,6 +364,7 @@ function EmployeePanel() {
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/einfo`);
@@ -374,6 +379,33 @@ function EmployeePanel() {
       console.error("Error fetching data:", error.message);
     }
   };
+
+  const fecthTeamData = async () => {
+    const ename = data.ename
+    console.log("ename", ename)
+    try {
+      const response = await axios.get(`${secretKey}/teaminfo/${ename}`)
+
+      console.log("teamdata", response.data)
+      setTeamInfo(response.data)
+      setBdmName(response.data.bdmName)
+      //setTeamDataFilter(response.data)
+
+    } catch (error) {
+      console.log("error Fetching data", error.message)
+    }
+  }
+
+  console.log("teaminfo", teamInfo)
+  console.log("bdmName", bdmName)
+
+  useEffect(() => {
+    fecthTeamData();
+  }, [data.ename])
+
+
+
+
 
   const fetchProjections = async () => {
     try {
@@ -695,7 +727,7 @@ function EmployeePanel() {
   const [addFormOpen, setAddFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  console.log(companyName, companyInco);
+  //console.log(companyName, companyInco);
 
   const currentData = filteredData.slice(startIndex, endIndex);
 
@@ -1893,14 +1925,101 @@ function EmployeePanel() {
 
   // --------------------------------------forward to bdm function---------------------------------------------\
 
-  console.log("currentData" , currentData)
+  console.log("currentData", currentData)
+  const [forwardedCompany, setForwardedCompany] = useState([])
+  const [bdmNewAcceptStatus, setBdmNewAcceptStatus] = useState("")
+  const [forwardCompanyId, setforwardCompanyId] = useState("")
+
+  const handleConfirmAssign = (companyId, companyName, companyStatus, ename, bdmAcceptStatus) => {
+    console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
+    if (companyStatus === "Interested" || companyStatus === "FollowUp") {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `Do You Want to Forward this to ${bdmName}`, // Assuming `bdmName` is defined somewhere
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, proceed!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log("Confirmed");
+          setForrwardEname(ename)
+          setForrwardStatus(companyStatus)
+          setForwardedCompany(companyName)
+          setBdmNewAcceptStatus("Pending")
+          setforwardCompanyId(companyId)
+          handleForwardBdm();
+          // Perform the action here
+        }
+      });
+    } else {
+      alert("there is a error")
+    }
+  };
 
 
-  const handleConfirmAssign = (companyName) => {
-    console.log(companyName)
-    
-    console.log("kuch bhi");
-};
+  // const handleForwardBdm = async() => {
+  //   const selectedData = currentData.filter((company) => company["Company Name"] === forwardedCompany);
+  //   console.log("selectedData", selectedData);
+  //     try {
+  //       const response = await axios.post(`${secretKey}/forwardtobdmdata`, selectedData);
+  //         console.log("response" , response.data)
+  //         Swal.fire("Data Assigned");
+  //       //openchangeEmp(false);
+  //       fetchNewData();
+
+  //     } catch(error){
+  //       console.log(error)
+  //       Swal.fire("Error Assigning Data");
+  //       fetchNewData()
+  //     }
+  // };
+
+  const handleForwardBdm = async () => {
+    const selectedDataWithBdm = currentData.filter((company) => company["Company Name"] === forwardedCompany);
+    console.log("selectedData", selectedDataWithBdm);
+    try {
+      const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
+        selectedData: selectedDataWithBdm,
+        bdmName: bdmName,
+        companyId: forwardCompanyId,
+        bdmAcceptStatus: bdmNewAcceptStatus // Assuming bdmName is defined elsewhere in your component
+      });
+      console.log("response", response.data);
+      Swal.fire("Data Forwarded");
+      fetchNewData();
+    } catch (error) {
+      console.log(error);
+      Swal.fire("Error Assigning Data");
+      fetchNewData();
+    }
+  };
+
+  const handleReverseAssign = async (companyId, companyName, bdmAcceptStatus) => {
+    if (bdmAcceptStatus === "Pending") {
+      try {
+        const response = await axios.post(`${secretKey}/teamleads-reversedata/${companyId}`, {
+          companyName,
+          bdmAcceptStatus: "NotForwarded", // Corrected parameter name
+        });
+        console.log("response", response.data);
+        Swal.fire("Data Reversed");
+      } catch (error) {
+        console.log("error reversing bdm forwarded data", error.message);
+      }
+    }else if(bdmAcceptStatus === "NotForwarded"){
+      Swal.fire("Cannot Reforward Data")
+    }else if(bdmAcceptStatus === "Accept"){
+      Swal.fire("BDM already accepted this data!")
+    }
+  };
+  
+
+
+
+
+
 
   return (
     <div>
@@ -2516,7 +2635,6 @@ function EmployeePanel() {
                         </span>
                       </a>
                     </li>
-
                     <li class="nav-item">
                       <a
                         href="#tabs-activity-5"
@@ -2836,9 +2954,9 @@ function EmployeePanel() {
                                 <th>Add Projection</th>
                               ))}
 
-                            {/* {(dataStatus === "Interested" || dataStatus === "FollowUp") && (
+                            {(dataStatus === "Interested" || dataStatus === "FollowUp") && (
                               <th>Forward to BDM</th>
-                            )} */}
+                            )}
                           </tr>
                         </thead>
                         {loading ? (
@@ -2976,12 +3094,12 @@ function EmployeePanel() {
                                       onClick={() => {
                                         functionopenpopupremarks(
                                           company._id,
-                                          company.Status
+                                          company.Status,
+                                          company["Company Name"]
                                         );
                                         setCurrentRemarks(company.Remarks);
                                         setCompanyId(company._id);
-                                      }}
-                                    >
+                                      }}>
                                       <EditIcon
                                         style={{
                                           width: "12px",
@@ -3111,28 +3229,67 @@ function EmployeePanel() {
                                         </IconButton>
                                       )}
                                     </td>
-                                    {/* <td>
-                                      <div className="d-flex align-items-center justify-content-center" style={{gap:"20px"}}>
-                                      <TiArrowBack style={{
+                                    <td>
+                                      {company.bdmAcceptStatus === "NotForwarded" ? (
+                                        <TiArrowForward
+                                          onClick={() => {
+                                            handleConfirmAssign(
+                                              company._id,
+                                              company["Company Name"],
+                                              company.Status, // Corrected parameter name
+                                              company.ename,
+                                              company.bdmAcceptStatus
+                                            );
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="grey"
+                                        />
+                                      ) : company.bdmAcceptStatus === "Pending" ? (
+                                        <TiArrowBack
+                                        onClick={()=>{
+                                          handleReverseAssign(
+                                            company._id,
+                                            company["Company Name"],
+                                            company.bdmAcceptStatus,
+                                          )
+                                        }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="#fbb900"
+                                        />
+                                      ) : company.bdmAcceptStatus === "Accept" ? (
+                                        <MdNotInterested style={{
                                           cursor: "pointer",
                                           width: "17px",
                                           height: "17px",
                                         }}
-                                        color="grey"/>
-                                      <TiArrowForward 
+                                        color="red" />
+                                      ) : <TiArrowForward
                                       onClick={() => {
                                         handleConfirmAssign(
-                                          company["Company Name"]
+                                          company._id,
+                                          company["Company Name"],
+                                          company.Status, // Corrected parameter name
+                                          company.ename,
+                                          company.bdmAcceptStatus
                                         );
                                       }}
-                                        style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                        color="grey" />
-                                      </div>
-                                    </td> */}
+                                      style={{
+                                        cursor: "pointer",
+                                        width: "17px",
+                                        height: "17px",
+                                      }}
+                                      color="grey"
+                                    />}
+                                    </td>
+
                                   </>)}
                                 {dataStatus === "Matured" && (
                                   <>
@@ -3731,8 +3888,7 @@ function EmployeePanel() {
         open={openRemarks}
         onClose={closepopupRemarks}
         fullWidth
-        maxWidth="sm"
-      >
+        maxWidth="sm">
         <DialogTitle>
           <span style={{ fontSize: "14px" }}>
             {currentCompanyName}'s Remarks

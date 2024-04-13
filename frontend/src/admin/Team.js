@@ -94,6 +94,7 @@ function Team() {
         setBdeFields([])
         setSelectedBdes([])
         setBdmNameSelected(false)
+        fecthTeamData()
     }
     const [bdmNameSelected, setBdmNameSelected] = useState(false);
 
@@ -176,7 +177,7 @@ function Team() {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                html: `${errorMessage}!`,
+                html: `${errorfound}!`,
             });
             console.error('Error creating team:', error.response.data.message);
         }
@@ -393,6 +394,7 @@ function Team() {
                                         onChange={(e) => {
                                             setEname(e.target.value);
                                         }}
+                                        required
                                     />
                                 </div>
                                 <div className="mb-3">
