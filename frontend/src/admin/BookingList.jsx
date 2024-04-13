@@ -14,6 +14,7 @@ import { MdDelete } from "react-icons/md";
 import EditableMoreBooking from "./EditableMoreBooking";
 import AddLeadForm from "../admin/AddLeadForm.jsx";
 import { FaPlus } from "react-icons/fa6";
+import { IoAdd } from "react-icons/io5";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -1176,6 +1177,15 @@ function BookingList() {
                                       </div>
                                     </div>
                                   ))}
+                                {/* ---------- Upload Documents From Preview -----------*/}
+                                <div className="col-sm-2 mb-1">
+                                  <div className="booking-docs-preview" title="Upload More Documents">
+                                    <div className="upload-Docs-BTN">
+                                      <IoAdd />
+                                    </div>
+                                  </div>
+                                </div>
+
                               </div>
                             </>
                           )}
