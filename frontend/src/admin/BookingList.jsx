@@ -6,14 +6,14 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
-import { TbBoxMultiple, TbMathPiDivide2 } from "react-icons/tb";
+import { FcList } from "react-icons/fc";
 import wordimg from "../static/my-images/word.png";
 import Nodata from "../components/Nodata";
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import EditableMoreBooking from "./EditableMoreBooking";
 import AddLeadForm from "../admin/AddLeadForm.jsx";
-import { GrAddCircle } from "react-icons/gr";
+import { FaPlus } from "react-icons/fa6";
 
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
@@ -370,7 +370,7 @@ function BookingList() {
                                   className="b_Services_multipal_services"
                                   title="Multipal Bookings"
                                 >
-                                  <TbBoxMultiple />
+                                  <FcList />
                                 </div>
                               )}
                             </div>
@@ -405,7 +405,7 @@ function BookingList() {
                 <div className="col-8 p-0">
                   <div className="booking-deatils-card">
                     <div className="booking-deatils-heading">
-                      <div className="d-flex justify-content-between">
+                      <div className="d-flex justify-content-between align-items-center">
                         <div className="b_dtl_C_name">
                           {currentLeadform &&
                           Object.keys(currentLeadform).length !== 0
@@ -415,11 +415,10 @@ function BookingList() {
                             : "-"}
                         </div>
                         <div
-                          className="add-projection"
-                          style={{ cursor: "pointer" }}
+                          className="bookings_add_more" title="Add More Booking"
                           onClick={() => setAddFormOpen(true)}
                         >
-                          <GrAddCircle />
+                          <FaPlus />
                         </div>
                       </div>
                     </div>
