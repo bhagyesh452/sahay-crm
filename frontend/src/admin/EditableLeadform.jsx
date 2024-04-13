@@ -474,11 +474,11 @@ export default function EditableLeadform({
   const navigate = useNavigate();
 
   const handleBack = () => {
-    if (activeStep !== 0) {
+    if (activeStep !== 1) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
-      setDataStatus("Matured");
-      setNowToFetch(true);
+      // setDataStatus("Matured");
+      // setNowToFetch(true);
       setFormOpen(false);
     }
   };

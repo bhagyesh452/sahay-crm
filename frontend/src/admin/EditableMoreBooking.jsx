@@ -140,7 +140,7 @@ export default function EditableMoreBooking({
       } = data;
       console.log("Fetched Data" , newLeadData);
       setLeadData(newLeadData);
-      setActiveStep(4);
+      setActiveStep(1);
       setCompleted({0:true , 1:true , 2 : true , 3 : true})
       setSelectedValues(newLeadData.bookingSource)
      if (Step2Status === true && Step3Status === false) {
@@ -474,8 +474,8 @@ export default function EditableMoreBooking({
     if (activeStep !== 1) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
-      setDataStatus("Matured");
-      setNowToFetch(true);
+      // setDataStatus("Matured");
+      // setNowToFetch(true);
       setFormOpen(false);
     }
   };
