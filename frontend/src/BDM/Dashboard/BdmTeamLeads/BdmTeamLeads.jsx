@@ -233,7 +233,9 @@ function BdmTeamLeads() {
       <Header bdmName={data.ename} />
       <Navbar userId={userId} />
       <div className="page-wrapper">
-        <div className="page-header d-print-none"></div>
+        <div className="page-header d-print-none">
+          
+        </div>
         <div className="page-body" onCopy={(e) => {
           e.preventDefault();
         }}>
