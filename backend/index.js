@@ -2936,7 +2936,7 @@ app.post("/api/followdataexport/", async (req, res) => {
 });
 
 app.post(
-  "/api/uploadotherdocsAttachment/:companyName",
+  "/api/uploadotherdocsAttachment/:companyName/:bookingIndex",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },
@@ -2944,6 +2944,7 @@ app.post(
   async (req, res) => {
     try {
       const companyName = req.params.companyName;
+      const bookingIndex = parseInt(req.params.bookingIndex); // Convert to integer
 
       // Check if company name is provided
       if (!companyName) {
@@ -2951,35 +2952,41 @@ app.post(
       }
 
       // Find the company by its name
-      const company = await LeadModel.findOne({ companyName });
-      // console.log(company)
+      const company = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+
       // Check if company exists
       if (!company) {
         return res.status(404).send("Company not found");
       }
 
-      // const paymentDoc = req.files["paymentReceipt"];
+      // Get the uploaded files
+      const newOtherDocs = req.files["otherDocs"] || []; // Default to empty array
+      
+      // Check if bookingIndex is valid
+      if (bookingIndex === 0) {
+        // Update the main company's otherDocs directly
+        company.otherDocs = company.otherDocs.concat(newOtherDocs);
+      } else if (bookingIndex > 0 && bookingIndex <= company.moreBookings.length) {
+        // Update the otherDocs in the appropriate moreBookings object
+        company.moreBookings[bookingIndex - 1].otherDocs = company.moreBookings[bookingIndex - 1].otherDocs.concat(newOtherDocs);
+      } else {
+        return res.status(400).send("Invalid booking index");
+      }
 
-      // Update the payment receipt field of the company document
-      const newOtherDocs =
-        req.files["otherDocs"] && req.files["otherDocs"].length > 0
-          ? req.files["otherDocs"].map((file) => file.filename)
-          : [];
-
-      // Append new filenames to the existing otherDocs array
-      company.otherDocs = company.otherDocs.concat(newOtherDocs);
-
+      // Save the updated company document
       await company.save();
 
+      // Emit socket event
       socketIO.emit("veiwotherdocs", company);
 
-      res.status(200).send("Documents uploaded updated successfully!");
+      res.status(200).send("Documents uploaded and updated successfully!");
     } catch (error) {
-      console.error("Error updating payment receipt:", error);
-      res.status(500).send("Error updating payment receipt.");
+      console.error("Error updating otherDocs:", error);
+      res.status(500).send("Error updating otherDocs.");
     }
   }
 );
+
 
 app.post("/api/redesigned-leadform", async (req, res) => {
   try {
