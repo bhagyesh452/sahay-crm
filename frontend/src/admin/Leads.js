@@ -2850,8 +2850,6 @@ function Leads() {
                             <div style={{width:"100px"}} className="d-flex align-items-center justify-content-between">
                                 <p className="rematkText text-wrap m-0">
                                 {company["Remarks"]}{" "}
-                                
-
                                 </p>
                                 <IconEye
                                   onClick={() => {
