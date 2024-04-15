@@ -127,9 +127,7 @@ export default function RedesignedForm({
       const response = await axios.get(
         `${secretKey}/redesigned-leadData/${companysName}`
       );
-      const data = response.data.find(
-        (item) => item["Company Name"] === companysName
-      );
+      const data = response.data[0] ? response.data[0] : response.data
       console.log("Fetched Data");
       if (!data) {
         setCompleted({});
@@ -501,16 +499,16 @@ export default function RedesignedForm({
     const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
     return `${number}${suffix}`;
   };
-  const handleViewPdfReciepts = (paymentreciept) => {
+  const handleViewPdfReciepts = (paymentreciept , companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${pathname}`, "_blank");
+    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
-  const handleViewPdOtherDocs = (pdfurl) => {
+  const handleViewPdOtherDocs = (pdfurl , companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${pathname}`, "_blank");
+    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
   };
   const handleStep = (step) => () => {
     setActiveStep(step);
@@ -612,41 +610,35 @@ export default function RedesignedForm({
         }
       }
       if (activeStep === 2) {
+
         let isValid = true;
-        for (let service of leadData.services) {
-          const firstPayment = Number(service.firstPayment);
-          const secondPayment = Number(service.secondPayment);
-          const thirdPayment = Number(service.thirdPayment);
-          const fourthPayment = Number(service.fourthPayment);
-          console.log(
-            firstPayment + secondPayment + thirdPayment + fourthPayment,
-            Number(service.totalPaymentWGST),
-            "This is it"
-          );
-          if (
-            (service.paymentTerms !== "Full-Advanced" &&
-              (firstPayment < 0 ||
-                secondPayment < 0 ||
-                thirdPayment < 0 ||
-                fourthPayment < 0 ||
-                firstPayment + secondPayment + thirdPayment + fourthPayment !==
-                  Number(service.totalPaymentWGST)) &&
-              !service.secondPaymentRemarks) ||
-            service.serviceName === "" ||
-            Number(service.totalPaymentWGST) === 0
-          ) {
-            isValid = false;
-            break;
-          }
-        }
-        if (!isValid) {
-          Swal.fire(
-            "Incorrect Details",
-            "Please Enter the Details Properly",
-            "warning"
-          );
-          return true;
-        } else {
+              for (let service of leadData.services) {
+        
+                const firstPayment = Number(service.firstPayment);
+                const secondPayment = Number(service.secondPayment);
+                const thirdPayment = Number(service.thirdPayment);
+                const fourthPayment = Number(service.fourthPayment);
+                console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
+                if (
+                  (service.paymentTerms !== "Full Advanced" &&
+                    (firstPayment < 0 ||
+                      secondPayment < 0 ||
+                      thirdPayment < 0 ||
+                      fourthPayment < 0 ||
+                      firstPayment + secondPayment + thirdPayment + fourthPayment !==
+                        Number(service.totalPaymentWGST))) ||
+                  service.serviceName === "" 
+                ) {
+                  isValid = false;
+                  break;
+                }
+              }
+               if (
+                !isValid
+                ) {
+                  Swal.fire("Incorrect Details" , 'Please Enter the Details Properly', 'warning');
+                  return true;
+                } else {
           const totalAmount = leadData.services.reduce(
             (acc, curr) => acc + parseInt(curr.totalPaymentWGST),
             0
@@ -3215,12 +3207,12 @@ export default function RedesignedForm({
                                             className="UploadDocPreview"
                                             onClick={() => {
                                               handleViewPdfReciepts(
-                                                leadData.paymentReceipt[0]
+                                               ( leadData.paymentReceipt[0]
                                                   .filename
                                                   ? leadData.paymentReceipt[0]
                                                       .filename
                                                   : leadData.paymentReceipt[0]
-                                                      .name
+                                                      .name) , leadData["Company Name"]
                                               );
                                             }}
                                           >
@@ -3327,7 +3319,7 @@ export default function RedesignedForm({
                                                   className="UploadDocPreview"
                                                   onClick={() => {
                                                     handleViewPdOtherDocs(
-                                                      val.filename
+                                                      val.filename , leadData["Company Name"]
                                                     );
                                                   }}
                                                 >

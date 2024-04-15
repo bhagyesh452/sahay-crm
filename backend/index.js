@@ -1775,11 +1775,48 @@ app.delete("/api/remarks-history/:id", async (req, res) => {
   }
 });
 
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     // Determine the destination path based on the fieldname and company name
+//     const companyName = req.params.companyName;
+//     let destinationPath = "";
+    
+//     if (file.fieldname === "otherDocs") {
+//       destinationPath = `./${companyName}/ExtraDocs`;
+//     } else if (file.fieldname === "paymentReceipt") {
+//       destinationPath = `./${companyName}/PaymentReceipts`;
+//     }
+
+//     // Create the directory if it doesn't exist
+//     if (!fs.existsSync(destinationPath)) {
+//       fs.mkdirSync(destinationPath, { recursive: true });
+//     }
+
+//     cb(null, destinationPath);
+//   },
+//   filename: function (req, file, cb) {
+//     const uniqueSuffix = Date.now();
+//     cb(null, uniqueSuffix + "-" + file.originalname);
+//   },
+// });
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Determine the destination path based on the fieldname
-    const destinationPath =
-      file.fieldname === "otherDocs" ? "./ExtraDocs" : "./PaymentReceipts";
+    // Determine the destination path based on the fieldname and company name
+    const companyName = req.params.CompanyName;
+    let destinationPath = "";
+    
+    if (file.fieldname === "otherDocs") {
+      destinationPath = `BookingsDocument/${companyName}/ExtraDocs`;
+    } else if (file.fieldname === "paymentReceipt") {
+      destinationPath = `BookingsDocument/${companyName}/PaymentReceipts`;
+    }
+
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync(destinationPath)) {
+      fs.mkdirSync(destinationPath, { recursive: true });
+    }
+
     cb(null, destinationPath);
   },
   filename: function (req, file, cb) {
@@ -2757,9 +2794,10 @@ app.get("/api/loginDetails", (req, res) => {
 
 // ------------------------------------pdf files reader-------------------------------------
 
-app.get("/api/pdf/:filename", (req, res) => {
+app.get("/api/pdf/:CompanyName/:filename", (req, res) => {
   const filepath = req.params.filename;
-  const pdfPath = path.join(__dirname, "ExtraDocs", filepath);
+  const companyName = req.params.CompanyName;
+  const pdfPath = path.join(__dirname, `BookingsDocument/${companyName}/ExtraDocs`, filepath);
 
   // Read the PDF file
   fs.readFile(pdfPath, (err, data) => {
@@ -2781,9 +2819,10 @@ app.get("/api/pdf/:filename", (req, res) => {
   });
 });
 
-app.get("/api/paymentrecieptpdf/:filename", (req, res) => {
+app.get("/api/paymentrecieptpdf/:CompanyName/:filename", (req, res) => {
   const filepath = req.params.filename;
-  const pdfPath = path.join(__dirname, "PaymentReceipts", filepath);
+  const companyName = req.params.CompanyName
+  const pdfPath = path.join(__dirname, `BookingsDocument/${companyName}/PaymentReceipts`, filepath);
   console.log(pdfPath);
   // Read the PDF file
   fs.readFile(pdfPath, (err, data) => {
@@ -2804,9 +2843,10 @@ app.get("/api/paymentrecieptpdf/:filename", (req, res) => {
   });
 });
 
-app.get("/api/recieptpdf/:filename", (req, res) => {
+app.get("/api/recieptpdf/:CompanyName/:filename", (req, res) => {
   const filepath = req.params.filename;
-  const pdfPath = path.join(__dirname, "PaymentReceipts", filepath);
+  const companyName = req.params.CompanyName
+  const pdfPath = path.join(__dirname, `BookingsDocument/${companyName}/PaymentReceipts`, filepath);
 
   // Check if the file exists
   fs.access(pdfPath, fs.constants.F_OK, (err) => {
@@ -2820,9 +2860,10 @@ app.get("/api/recieptpdf/:filename", (req, res) => {
   });
 });
 
-app.get("/api/otherpdf/:filename", (req, res) => {
+app.get("/api/otherpdf/:CompanyName/:filename", (req, res) => {
   const filepath = req.params.filename;
-  const pdfPath = path.join(__dirname, "ExtraDocs", filepath);
+  const companyName = req.params.CompanyName
+  const pdfPath = path.join(__dirname, `BookingsDocument/${companyName}/ExtraDocs`, filepath);
 
   // Check if the file exists
   fs.access(pdfPath, fs.constants.F_OK, (err) => {
@@ -3097,14 +3138,14 @@ app.post("/api/followdataexport/", async (req, res) => {
 });
 
 app.post(
-  "/api/uploadotherdocsAttachment/:companyName/:bookingIndex",
+  "/api/uploadotherdocsAttachment/:CompanyName/:bookingIndex",
   upload.fields([
     { name: "otherDocs", maxCount: 50 },
     { name: "paymentReceipt", maxCount: 1 },
   ]),
   async (req, res) => {
     try {
-      const companyName = req.params.companyName;
+      const companyName = req.params.CompanyName;
       const bookingIndex = parseInt(req.params.bookingIndex); // Convert to integer
 
       // Check if company name is provided
@@ -3354,18 +3395,7 @@ app.get("/api/redesigned-leadData/:CompanyName", async (req, res) => {
       gstNumber: newData.gstNumber,
       bdeName: newData.bdeName,
       bdeEmail: newData.bdeEmail,
-      bdmType: newData.bdmType,
-      bookingDate: newData.bookingDate,
-      bookingSource: newData.bookingSource,
-      caCase: newData.caCase,
-      numberOfServices: newData.services.length,
-      receivedAmount: newData.receivedAmount,
-      totalAmount: newData.totalAmount,
-      extraNotes: newData.extraNotes,
-      paymentMethod: newData.paymentMethod,
-      pendingAmount: newData.pendingAmount,
-      paymentReceipt: newData.paymentReceipt,
-      otherDocs: newData.otherDocs,
+
     };
     // Create a new object with the same company name in RedesignedDraftModel
     const createData = await RedesignedDraftModel.create({
@@ -3383,18 +3413,8 @@ app.get("/api/redesigned-leadData/:CompanyName", async (req, res) => {
       gstNumber: newData.gstNumber,
       bdeName: newData.bdeName,
       bdeEmail: newData.bdeEmail,
-      bdmType: newData.bdmType,
-      bookingDate: newData.bookingDate,
-      bookingSource: newData.bookingSource,
-      caCase: newData.caCase,
-      numberOfServices: newData.services.length,
-      receivedAmount: newData.receivedAmount,
-      totalAmount: newData.totalAmount,
-      extraNotes: newData.extraNotes,
-      paymentMethod: newData.paymentMethod,
-      pendingAmount: newData.pendingAmount,
-      paymentReceipt: newData.paymentReceipt,
-      otherDocs: newData.otherDocs,
+ 
+
     });
     res.json(TempDataObject);
   } catch (err) {

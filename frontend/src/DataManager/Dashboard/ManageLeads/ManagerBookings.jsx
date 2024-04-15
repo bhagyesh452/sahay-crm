@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
-import Header from "./Header";
-import Navbar from "./Navbar";
-import AdminBookingForm from "./AdminBookingForm";
+import Header from "../../Components/Header/Header.jsx";
+import Navbar from "../../Components/Navbar/Navbar.jsx";
+import AdminBookingForm from "../../../admin/AdminBookingForm.jsx";
 import axios from "axios";
 import Swal from "sweetalert2";
-import PdfImageViewerAdmin from "./PdfViewerAdmin";
-import pdfimg from "../static/my-images/pdf.png";
+import PdfImageViewerAdmin from "../../../admin/PdfViewerAdmin.jsx";
+import pdfimg from "../../../static/my-images/pdf.png";
 import { FcList } from "react-icons/fc";
-import wordimg from "../static/my-images/word.png";
-import Nodata from "../components/Nodata";
+import wordimg from "../../../static/my-images/word.png";
+import Nodata from "../../../components/Nodata.jsx";
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
-import EditableMoreBooking from "./EditableMoreBooking";
-import AddLeadForm from "../admin/AddLeadForm.jsx";
+import EditableMoreBooking from "../../../admin/EditableMoreBooking.jsx";
+import AddLeadForm from "../../../admin/AddLeadForm.jsx";
 import { FaPlus } from "react-icons/fa6";
 import { IoAdd } from "react-icons/io5";
 import CloseIcon from "@mui/icons-material/Close";
@@ -29,7 +29,7 @@ import {
   FormControl,
 } from "@mui/material";
 
-function BookingList() {
+function ManagerBookings() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
   const [sendingIndex, setSendingIndex] = useState(0);
   const [EditBookingOpen, setEditBookingOpen] = useState(false);
@@ -180,7 +180,7 @@ function BookingList() {
     console.log(pathname);
     window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
   };
-
+  const dataManagerName = localStorage.getItem("dataManagerName")
   // ------------------------------------------------- Delete booking ----------------------------------------------
 
   const handleDeleteBooking = async (company, id) => {
@@ -193,7 +193,7 @@ function BookingList() {
       cancelButtonText: "No, cancel!",
       reverseButtons: true,
     });
-
+   
     if (confirmation.isConfirmed) {
       if (id) {
         fetch(
@@ -314,8 +314,8 @@ function BookingList() {
   };
   return (
     <div>
-      <Header />
-      <Navbar />
+      <Header name={dataManagerName} />
+      <Navbar name={dataManagerName} />
       {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
         <div className="booking-list-main">
           <div className="booking_list_Filter">
@@ -973,7 +973,7 @@ function BookingList() {
                                             {"("}
                                             {isNaN(
                                               new Date(obj.thirdPaymentRemarks)
-                                            ) 
+                                            )
                                               ? obj.thirdPaymentRemarks
                                               : "On " +
                                                 obj.thirdPaymentRemarks +
@@ -2155,4 +2155,4 @@ function BookingList() {
   );
 }
 
-export default BookingList;
+export default ManagerBookings;
