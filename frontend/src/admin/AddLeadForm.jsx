@@ -2718,7 +2718,7 @@ let isValid = true;
                         <>
                           <div className="step-3">
                             <h2 className="text-center">
-                              Step:5 - Booking Preview
+                              Step:5 - Booking Preview 
                             </h2>
                             <div className="steprForm-inner">
                               <div className="stepOnePreview">
@@ -2973,10 +2973,10 @@ let isValid = true;
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.totalPaymentWGST !== undefined
-                                              ? Number(
+                                          ₹{" "}{obj.totalPaymentWGST !== undefined
+                                              ? parseInt(
                                                   obj.totalPaymentWGST
-                                                ).toFixed(2)
+                                                ).toLocaleString()
                                               : "0"}
                                           </div>
                                         </div>
@@ -3017,9 +3017,9 @@ let isValid = true;
                                             </div>
                                             <div className="col-sm-9 p-0">
                                               <div className="form-label-data">
-                                                {Number(
+                                              ₹{" "}{parseInt(
                                                   obj.firstPayment
-                                                ).toFixed(2)}
+                                                ).toLocaleString()}
                                               </div>
                                             </div>
                                           </div>
@@ -3031,9 +3031,9 @@ let isValid = true;
                                             </div>
                                             <div className="col-sm-9 p-0">
                                               <div className="form-label-data" style={{textTransform:"uppercase"}}>
-                                                {Number(
+                                              ₹{" "}{parseInt(
                                                   obj.secondPayment
-                                                ).toFixed(2)}{" "}
+                                                ).toLocaleString()}{" "}
                                                 -{" "}
                                                 {isNaN(
                                                   new Date(
@@ -3054,9 +3054,9 @@ let isValid = true;
                                               </div>
                                               <div className="col-sm-9 p-0">
                                                 <div className="form-label-data"  style={{textTransform:"uppercase"}}>
-                                                  {Number(
+                                                  {parseInt(
                                                     obj.thirdPayment
-                                                  ).toFixed(2)}{" "}
+                                                  ).toLocaleString()}{" "}
                                                   -{" "}
                                                   {isNaN(
                                                     new Date(
@@ -3078,9 +3078,9 @@ let isValid = true;
                                               </div>
                                               <div className="col-sm-9 p-0">
                                                 <div className="form-label-data" style={{textTransform:"uppercase"}}>
-                                                  {Number(
+                                                ₹{" "}{parseInt(
                                                     obj.fourthPayment
-                                                  ).toFixed(2)}{" "}
+                                                  ).toLocaleString()}{" "}
                                                   -{" "}
                                                   {isNaN(
                                                     new Date(

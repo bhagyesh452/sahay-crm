@@ -620,25 +620,72 @@ function Leads() {
         Swal.fire("Please upload data");
       }
     } else {
-
       if (csvdata.length !== 0) {
         setLoading(true); // Move setLoading outside of the loop
-        try {
-          await axios.post(`${secretKey}/leads`, csvdata);
-          Swal.fire({
-            title: "Data Send!",
-            text: "Data successfully sent to the Employee",
-            icon: "success",
-          });
 
+        try {
+          const response = await axios.post(
+            `${secretKey}/leads`,
+            csvdata
+          );
+        
+          // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
+
+          const counter = response.data.counter;
+         // console.log("counter", counter)
+          const successCounter = response.data.sucessCounter;
+          //console.log(successCounter)
+
+          if (counter === 0) {
+            //console.log(response.data)
+            Swal.fire({
+              title: "Data Added!",
+              text: "Data Successfully added to the Leads",
+              icon: "success",
+            });
+          } else {
+            const lines = response.data.split('\n');
+
+            // Count the number of lines (entries)
+            const numberOfDuplicateEntries = lines.length - 1;
+            const noofSuccessEntries = csvdata.length - numberOfDuplicateEntries
+            Swal.fire({
+              title: 'Do you want download duplicate entries report?',
+              html: `Successful Entries: ${noofSuccessEntries}<br>Duplicate Entries: ${numberOfDuplicateEntries}<br>Click Yes to download report?`,
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: 'Yes',
+              cancelButtonText: 'No'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                //console.log(response.data)
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute("download", "DuplicateEntriesLeads.csv");
+                document.body.appendChild(link);
+                link.click();
+                // User clicked "Yes", perform action
+                // Call your function or execute your code here
+              } else if (result.dismiss === Swal.DismissReason.cancel) {
+                return true;
+              }
+            });
+          }
           fetchData();
           closepopup();
+          setnewEmployeeSelection("Not Alloted");
         } catch (error) {
+          if (error.response.status !== 500) {
+            setErrorMessage(error.response.data.error);
+            Swal.fire("Some of the data are not unique");
+          } else {
+            setErrorMessage("An error occurred. Please try again.");
+            Swal.fire("Please upload unique data");
+          }
           console.log("Error:", error);
         }
-
         setLoading(false); // Move setLoading outside of the loop
-
         setCsvData([]);
       } else {
         Swal.fire("Please upload data");
@@ -899,7 +946,7 @@ function Leads() {
     const DT = new Date();
     const date = DT.toLocaleDateString();
     const time = DT.toLocaleTimeString();
-
+    const currentDataStatus = dataStatus;
     try {
       const response = await axios.post(`${secretKey}/postData`, {
         employeeSelection,
@@ -911,7 +958,8 @@ function Leads() {
       Swal.fire("Data Assigned");
       openchangeEmp(false);
       fetchData();
-
+      setSelectedRows([]);
+      setDataStatus(currentDataStatus);
     } catch (err) {
       console.log("Internal server Error", err);
       Swal.fire("Error Assigning Data");

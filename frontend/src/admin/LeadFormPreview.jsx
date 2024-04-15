@@ -29,18 +29,17 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
     const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
     return `${number}${suffix}`;
   };
-  const handleViewPdfReciepts = (paymentreciept) => {
+  const handleViewPdfReciepts = (paymentreciept , companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${pathname}`, "_blank");
+    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
-  const handleViewPdOtherDocs = (pdfurl) => {
+  const handleViewPdOtherDocs = (pdfurl , companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${pathname}`, "_blank");
+    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
   };
-
   return (
     <>
       <div className="booking-deatils-body-preview">
@@ -317,7 +316,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                       </div>
                       <div class="col-sm-8 align-self-stretc p-0">
                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                          {obj.paymentTerms}
+                          {obj.paymentTerms === "two-part" ? "Part-Payment" : "Full Advanced"}
                         </div>
                       </div>
                     </div>
@@ -556,7 +555,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                   className="booking-docs-preview-img"
                   onClick={() =>
                     handleViewPdfReciepts(
-                      currentLeadForm.paymentReceipt[0].filename
+                      currentLeadForm.paymentReceipt[0].filename , currentLeadForm["Company Name"]
                     )
                   }
                 >
@@ -564,12 +563,13 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     ".pdf"
                   ) ? (
                     <PdfImageViewerAdmin
-                      type="pdf"
+                      type="paymentrecieptpdf"
+                      companyName={currentLeadForm["Company Name"]}
                       path={currentLeadForm.paymentReceipt[0].filename}
                     />
                   ) : (
                     <img
-                      src={`${secretKey}/recieptpdf/${currentLeadForm.paymentReceipt[0].filename}`}
+                      src={`${secretKey}/recieptpdf/${currentLeadForm["Company Name"]}/${currentLeadForm.paymentReceipt[0].filename}`}
                       alt={pdfimg}
                     ></img>
                   )}
@@ -584,13 +584,13 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                 <div className="booking-docs-preview">
                   <div
                     className="booking-docs-preview-img"
-                    onClick={() => handleViewPdOtherDocs(obj.filename)}
+                    onClick={() => handleViewPdOtherDocs(obj.filename , currentLeadForm["Company Name"])}
                   >
                     {obj.filename.endsWith(".pdf") ? (
-                      <PdfImageViewerAdmin type="pdf" path={obj.filename} />
+                      <PdfImageViewerAdmin  type="pdf" path={obj.filename} companyName = {currentLeadForm["Company Name"]} />
                     ) : (
                       <img
-                        src={`${secretKey}/otherpdf/${obj.filename}`}
+                        src={`${secretKey}/otherpdf/${currentLeadForm["Company Name"]}/${obj.filename}`}
                         alt={pdfimg}
                       ></img>
                     )}
@@ -787,7 +787,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                             </div>
                             <div class="col-sm-8 align-self-stretc p-0">
                               <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                {obj.paymentTerms}
+                                {obj.paymentTerms === "two-part" ? "Part-Payment" : "Full Advanced"}
                               </div>
                             </div>
                           </div>
@@ -1034,18 +1034,19 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                         className="booking-docs-preview-img"
                         onClick={() =>
                           handleViewPdfReciepts(
-                            objMain.paymentReceipt[0].filename
+                            objMain.paymentReceipt[0].filename , currentLeadForm["Company Name"]
                           )
                         }
                       >
                         {objMain.paymentReceipt[0].filename.endsWith(".pdf") ? (
                           <PdfImageViewerAdmin
-                            type="pdf"
+                            type="paymentrecieptpdf"
                             path={objMain.paymentReceipt[0].filename}
+                            companyName={currentLeadForm["Company Name"]}
                           />
                         ) : (
                           <img
-                            src={`${secretKey}/recieptpdf/${objMain.paymentReceipt[0].filename}`}
+                            src={`${secretKey}/recieptpdf/${currentLeadForm["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
                             alt={pdfimg}
                           ></img>
                         )}
@@ -1062,16 +1063,17 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                       <div className="booking-docs-preview">
                         <div
                           className="booking-docs-preview-img"
-                          onClick={() => handleViewPdOtherDocs(obj.filename)}
+                          onClick={() => handleViewPdOtherDocs(obj.filename , currentLeadForm["Company Name"])}
                         >
                           {obj.filename.endsWith(".pdf") ? (
                             <PdfImageViewerAdmin
                               type="pdf"
+                              companyName = {currentLeadForm["Company Name"]}
                               path={obj.filename}
                             />
                           ) : (
                             <img
-                              src={`${secretKey}/otherpdf/${obj.filename}`}
+                              src={`${secretKey}/otherpdf/${currentLeadForm["Company Name"]}/${obj.filename}`}
                               alt={pdfimg}
                             ></img>
                           )}

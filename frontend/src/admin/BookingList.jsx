@@ -884,7 +884,7 @@ function BookingList() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                          {obj.paymentTerms}
+                                          {obj.paymentTerms === "two-part" ? "Part Payment" : "Full Advanced"}
                                         </div>
                                       </div>
                                     </div>
