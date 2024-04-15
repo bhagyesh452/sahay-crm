@@ -2858,18 +2858,20 @@ function Leads() {
                                 <p className="rematkText text-wrap m-0">
                                 {company["Remarks"]}{" "}
                                 </p>
-                                <IconEye
-                                  onClick={() => {
-                                    functionopenpopupremarks(company._id, company.Status);
-                                  }}
-                                  style={{
-                                    width: "16px",
-                                    height: "16px",
-                                    color: "#d6a10c",
-                                    cursor: "pointer",
-                                    marginLeft: "4px",
-                                  }}
-                                />
+                                <div  onClick={() => {
+                                      functionopenpopupremarks(company._id, company.Status);
+                                    }} style={{cursor:"pointer"}}>
+                                  <IconEye
+                                   
+                                    style={{
+                                      width: "14px",
+                                      height: "14px",
+                                      color: "#d6a10c",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                  />
+                                </div>
                             </div>
                            
                             
