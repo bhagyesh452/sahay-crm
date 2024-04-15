@@ -13,6 +13,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
+import { useCallback } from "react";
+import debounce from "lodash/debounce";
+import { CiSearch } from "react-icons/ci";
 
 
 
@@ -40,8 +43,11 @@ function BdmTeamLeads() {
   const [cstat, setCstat] = useState("");
   const [currentCompanyName, setCurrentCompanyName] = useState("");
   const [currentRemarks, setCurrentRemarks] = useState("");
+  const [currentRemarksBdm, setCurrentRemarksBdm] = useState("");
   const [companyId, setCompanyId] = useState("");
   const [bdmNewStatus, setBdmNewStatus] = useState("Untouched");
+  const [changeRemarks, setChangeRemarks] = useState("");
+  const [updateData, setUpdateData] = useState({});
 
 
   const fetchData = async () => {
@@ -117,6 +123,18 @@ function BdmTeamLeads() {
 
   };
 
+  const functionopenpopupremarksEdit = (companyID, companyStatus, companyName) => {
+    setOpenRemarks(true);
+    setFilteredRemarks(
+      remarksHistory.filter((obj) => obj.companyID === companyID)
+    );
+    // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+    setcid(companyID);
+    setCstat(companyStatus);
+    setCurrentCompanyName(companyName);
+
+  };
+
   console.log("currentcompanyname", currentCompanyName);
 
   const fetchRemarksHistory = async () => {
@@ -135,6 +153,63 @@ function BdmTeamLeads() {
   useEffect(() => {
     fetchRemarksHistory();
   }, []);
+
+  const debouncedSetChangeRemarks = useCallback(
+    debounce((value) => {
+      setChangeRemarks(value);
+    }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
+    [] // Empty dependency array to ensure the function is memoized
+  );
+
+  const handleUpdate = async () => {
+    // Now you have the updated Status and Remarks, perform the update logic
+    console.log(cid, cstat, changeRemarks);
+    const Remarks = changeRemarks;
+    if (Remarks === "") {
+      Swal.fire({ title: "Empty Remarks!", icon: "warning" });
+      return true;
+    }
+    try {
+      // Make an API call to update the employee status in the database
+      const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+        Remarks,
+      });
+      const response2 = await axios.post(
+        `${secretKey}/remarks-history/${cid}`,
+        {
+          Remarks,
+        }
+      );
+
+      // Check if the API call was successful
+      if (response.status === 200) {
+        Swal.fire("Remarks updated!");
+        setChangeRemarks("");
+        // If successful, update the employeeData state or fetch data again to reflect changes
+        //fetchNewData(cstat);
+        fetchRemarksHistory();
+        // setCstat("");
+        closePopUpRemarks(); // Assuming fetchData is a function to fetch updated employee data
+      } else {
+        // Handle the case where the API call was not successful
+        console.error("Failed to update status:", response.data.message);
+      }
+    } catch (error) {
+      // Handle any errors that occur during the API call
+      console.error("Error updating status:", error.message);
+    }
+
+    setUpdateData((prevData) => ({
+      ...prevData,
+      [companyId]: {
+        ...prevData[companyId],
+        isButtonEnabled: false,
+      },
+    }));
+
+    // After updating, you can disable the button
+  };
+
 
   const handleAcceptClick = async (
     companyId,
@@ -167,7 +242,7 @@ function BdmTeamLeads() {
 
   console.log("bdmNewStatus", bdmNewStatus)
 
-  
+
 
   const handleRejectData = async (companyId) => {
 
@@ -184,7 +259,7 @@ function BdmTeamLeads() {
     }
   }
 
-  const handlebdmStatusChange =async(
+  const handlebdmStatusChange = async (
     companyId,
     bdmnewstatus,
     cname,
@@ -193,7 +268,7 @@ function BdmTeamLeads() {
     cnum,
     bdeStatus,
     bdmOldStatus
-  )=>{
+  ) => {
     const title = `${data.ename} changed ${cname} status from ${bdmOldStatus} to ${bdmnewstatus}`;
     const DT = new Date();
     const date = DT.toLocaleDateString();
@@ -234,7 +309,18 @@ function BdmTeamLeads() {
       <Navbar userId={userId} />
       <div className="page-wrapper">
         <div className="page-header d-print-none">
-            
+          <div className="container-xl">
+              <div className="row">
+                  <div className="col-sm-3">
+                    <div class="input-icon">
+                      <span class="input-icon-addon">
+                        <CiSearch />
+                      </span>
+                      <input type="text" value="" class="form-control" placeholder="Search…" aria-label="Search in website" />
+                    </div>
+                  </div>
+              </div>
+          </div>
         </div>
         <div className="page-body" onCopy={(e) => {
           e.preventDefault();
@@ -599,6 +685,7 @@ function BdmTeamLeads() {
                                     company["Company Name"]
                                   );
                                   setCurrentRemarks(company.Remarks);
+                                  setCurrentRemarksBdm(company.bdmRemarks)
                                   setCompanyId(company._id);
                                 }}
                               >
@@ -615,70 +702,109 @@ function BdmTeamLeads() {
                           {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "Not Interested") && (
                             <>
                               <td>
-                                  {company.bdmStatus === "Matured" ? (
-                                    <span>{company.bdmStatus}</span>
-                                  ) : (
-                                    <select
-                                      style={{
-                                        background: "none",
-                                        padding: ".4375rem .75rem",
-                                        border:
-                                          "1px solid var(--tblr-border-color)",
-                                        borderRadius:
-                                          "var(--tblr-border-radius)",
-                                      }}
-                                      value={company.bdmStatus}
-                                      onChange={(e) =>
-                                        handlebdmStatusChange(
-                                          company._id,
-                                          e.target.value,
-                                          company["Company Name"],
-                                          company["Company Email"],
-                                          company[
-                                          "Company Incorporation Date  "
-                                          ],
-                                          company["Company Number"],
-                                          company["Status"],
-                                          company.bdmStatus
-                                        )
-                                      }
-                                    >
-                                      <option value="Not Picked Up">
-                                        Not Picked Up
-                                      </option>
-                                      <option value="Busy">Busy </option>
-                                      <option value="Junk">Junk</option>
-                                      <option value="Not Interested">
-                                        Not Interested
-                                      </option>
-                                      {bdmNewStatus === "Interested" && (
-                                        <>
-                                          <option value="Interested">
-                                            Interested
-                                          </option>
-                                          <option value="FollowUp">
-                                            Follow Up{" "}
-                                          </option>
-                                          <option value="Matured">
-                                            Matured
-                                          </option>
-                                        </>
-                                      )}
+                                {company.bdmStatus === "Matured" ? (
+                                  <span>{company.bdmStatus}</span>
+                                ) : (
+                                  <select
+                                    style={{
+                                      background: "none",
+                                      padding: ".4375rem .75rem",
+                                      border:
+                                        "1px solid var(--tblr-border-color)",
+                                      borderRadius:
+                                        "var(--tblr-border-radius)",
+                                    }}
+                                    value={company.bdmStatus}
+                                    onChange={(e) =>
+                                      handlebdmStatusChange(
+                                        company._id,
+                                        e.target.value,
+                                        company["Company Name"],
+                                        company["Company Email"],
+                                        company[
+                                        "Company Incorporation Date  "
+                                        ],
+                                        company["Company Number"],
+                                        company["Status"],
+                                        company.bdmStatus
+                                      )
+                                    }
+                                  >
+                                    <option value="Not Picked Up">
+                                      Not Picked Up
+                                    </option>
+                                    <option value="Busy">Busy </option>
+                                    <option value="Junk">Junk</option>
+                                    <option value="Not Interested">
+                                      Not Interested
+                                    </option>
+                                    {bdmNewStatus === "Interested" && (
+                                      <>
+                                        <option value="Interested">
+                                          Interested
+                                        </option>
+                                        <option value="FollowUp">
+                                          Follow Up{" "}
+                                        </option>
+                                        <option value="Matured">
+                                          Matured
+                                        </option>
+                                      </>
+                                    )}
 
-                                      {bdmNewStatus === "FollowUp" && (
-                                        <>
-                                          <option value="FollowUp">
-                                            Follow Up{" "}
-                                          </option>
-                                          <option value="Matured">
-                                            Matured
-                                          </option>
-                                        </>
-                                      )}
-                                    </select>
-                                  )}
-                                </td>
-                              <td>{company.bdmRemarks}</td>
+                                    {bdmNewStatus === "FollowUp" && (
+                                      <>
+                                        <option value="FollowUp">
+                                          Follow Up{" "}
+                                        </option>
+                                        <option value="Matured">
+                                          Matured
+                                        </option>
+                                      </>
+                                    )}
+                                  </select>
+                                )}
+                              </td>
+                              <td>
+                                <div
+                                  key={company._id}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    width: "100px",
+                                  }}
+                                >
+                                  <p
+                                    className="rematkText text-wrap m-0"
+                                    title={company.Remarks}
+                                  >
+                                    {!company.bdmRemarks
+                                      ? "No Remarks"
+                                      : company.bdmRemarks}
+                                  </p>
+
+                                  <IconButton
+                                    onClick={() => {
+                                      functionopenpopupremarksEdit(
+                                        company._id,
+                                        company.Status,
+                                        company["Company Name"]
+                                      );
+                                      setCurrentRemarks(company.Remarks);
+                                      setCurrentRemarksBdm(company.Remarks)
+                                      setCompanyId(company._id);
+                                    }}>
+                                    <EditIcon
+                                      style={{
+                                        width: "12px",
+                                        height: "12px",
+                                      }}
+                                    />
+                                  </IconButton>
+
+                                </div>
+                              </td>
                             </>
                           )}
                           <td>
@@ -712,7 +838,8 @@ function BdmTeamLeads() {
                                   handleRejectData(
                                     company._id
                                   )
-                                }}> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>
+                                }}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>
                               </td>
 
                             )
@@ -1011,6 +1138,90 @@ function BdmTeamLeads() {
           </div> */}
         </DialogContent>
       </Dialog>
+      {/* ----------------------------------------------------dialog for editing popup--------------------------------------------- */}
+
+      <Dialog
+        open={openRemarks}
+        onClose={closePopUpRemarks}
+        fullWidth
+        maxWidth="sm">
+        <DialogTitle>
+          <span style={{ fontSize: "14px" }}>
+            {currentCompanyName}'s Remarks
+          </span>
+          <IconButton onClick={closePopUpRemarks} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="remarks-content">
+            {filteredRemarks.length !== 0 ? (
+              filteredRemarks.slice().map((historyItem) => (
+                <div className="col-sm-12" key={historyItem._id}>
+                  <div className="card RemarkCard position-relative">
+                    <div className="d-flex justify-content-between">
+                      <div className="reamrk-card-innerText">
+                        <pre className="remark-text">{historyItem.remarks}</pre>
+                      </div>
+                      {/* <div className="dlticon">
+                        <DeleteIcon
+                          style={{
+                            cursor: "pointer",
+                            color: "#f70000",
+                            width: "14px",
+                          }}
+                          onClick={() => {
+                            handleDeleteRemarks(
+                              historyItem._id,
+                              historyItem.remarks
+                            );
+                          }}
+                        />
+                      </div> */}
+                    </div>
+
+                    <div className="d-flex card-dateTime justify-content-between">
+                      <div className="date">{historyItem.date}</div>
+                      <div className="time">{historyItem.time}</div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center overflow-hidden">
+                No Remarks History
+              </div>
+            )}
+          </div>
+
+          <div class="card-footer">
+            <div class="mb-3 remarks-input">
+              <textarea
+                placeholder="Add Remarks Here...  "
+                className="form-control"
+                id="remarks-input"
+                rows="3"
+                onChange={(e) => {
+                  debouncedSetChangeRemarks(e.target.value);
+                }}
+              ></textarea>
+            </div>
+            <button
+              onClick={handleUpdate}
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: "100%" }}
+            >
+              Submit
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+
+
+
+
     </div>
 
   );

@@ -743,7 +743,7 @@ function EmployeeParticular() {
 
       if (currentIndex === 0) {
         // If it's the first page, navigate to the employees page
-        window.location.replace(`/admin/newemployee`);
+        window.location.replace(`/admin/admin-user`);
         //setBackButton(false)
       } else {
         // Get the previousId from the eData array
@@ -949,7 +949,7 @@ function EmployeeParticular() {
                   {backButton && (
                     <div>
                       {!AddForm ? <Link
-                        to={`/admin/newemployee`}
+                        to={`/admin/admin-user`}
                         style={{ marginLeft: "10px" }}
                       >
                         <button className="btn btn-primary d-none d-sm-inline-block">

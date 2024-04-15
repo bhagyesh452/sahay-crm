@@ -956,9 +956,9 @@ export default function AdminBookingForm({
                       }
                       placeholder="Search for…"
                       id={`Amount-${i}`}
-                      value={Number(
+                      value={parseInt(
                         leadData.services[i].totalPaymentWGST
-                      ).toFixed(2)}
+                      ).toLocaleString()}
                       disabled
                     />
                     <button class="btn" type="button">
@@ -3034,7 +3034,7 @@ export default function AdminBookingForm({
                                               <div className="form-label-data">
                                               ₹{" "}{parseInt(
                                                   obj.firstPayment
-                                                )}
+                                                ).toLocaleString()}
                                               </div>
                                             </div>
                                           </div>

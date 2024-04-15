@@ -14,15 +14,16 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
     );
     return formattedDate;
   }
-  const handleViewPdOtherDocs = (pdfurl) => {
-    const pathname = pdfurl;
-    console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${pathname}`, "_blank");
-  };
-  const handleViewPdfReciepts = (paymentreciept) => {
+  const handleViewPdfReciepts = (paymentreciept , companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${pathname}`, "_blank");
+    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
+  };
+
+  const handleViewPdOtherDocs = (pdfurl , companyName) => {
+    const pathname = pdfurl;
+    console.log(pathname);
+    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
   };
   const getOrdinal = (number) => {
     const suffixes = ["th", "st", "nd", "rd"];
@@ -877,7 +878,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                           handleViewPdfReciepts(
                             requestedBooking.paymentReceipt.length !== 0
                               ? requestedBooking.paymentReceipt[0].filename
-                              : existingBooking.paymentReceipt[0].filename
+                              : existingBooking.paymentReceipt[0].filename , requestedBooking["Company Name"]
                           );
                         }}
                       >
@@ -1001,7 +1002,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                               <div
                                 className="UploadDocPreview"
                                 onClick={() => {
-                                  handleViewPdOtherDocs(val.filename);
+                                  handleViewPdOtherDocs(val.filename , requestedBooking["Company Name"]);
                                 }}
                               >
                                 <div className="docItemImg">
@@ -1028,7 +1029,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                               <div
                                 className="UploadDocPreview"
                                 onClick={() => {
-                                  handleViewPdOtherDocs(val.filename);
+                                  handleViewPdOtherDocs(val.filename , requestedBooking["Company Name"]);
                                 }}
                               >
                                 <div className="docItemImg">

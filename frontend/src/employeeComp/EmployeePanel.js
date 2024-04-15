@@ -338,7 +338,7 @@ function EmployeePanel() {
   );
 
   const [openNew, openchangeNew] = useState(false);
-  
+
   const functionopenpopupNew = () => {
     openchangeNew(true);
   };
@@ -3202,7 +3202,7 @@ function EmployeePanel() {
                                       />
                                     </IconButton>)}
                                     {company.bdmAcceptStatus === "Accept" && (
-                                    <IconButton
+                                      <IconButton
                                       // onClick={() => {
                                       //   functionopenpopupremarks(
                                       //     company._id,
@@ -3213,15 +3213,15 @@ function EmployeePanel() {
                                       //   setCompanyId(company._id);
                                       // }}
                                       >
-                                      <IconEye
-                                        style={{
-                                          width: "14px",
-                                          height: "14px",
-                                          color: "#d6a10c",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    </IconButton>
+                                        <IconEye
+                                          style={{
+                                            width: "14px",
+                                            height: "14px",
+                                            color: "#d6a10c",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                      </IconButton>
                                     )}
                                   </div>
                                 </td>
