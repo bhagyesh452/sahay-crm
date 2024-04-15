@@ -625,7 +625,7 @@ export default function RedesignedForm({
                 const secondPayment = Number(service.secondPayment);
                 const thirdPayment = Number(service.thirdPayment);
                 const fourthPayment = Number(service.fourthPayment);
-                console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
+                // console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
                 if (
                   (service.paymentTerms !== "Full Advanced" &&
                     (firstPayment < 0 ||
