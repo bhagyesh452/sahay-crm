@@ -504,16 +504,15 @@ app.post("/api/leads", async (req, res) => {
 
 function createCSVString(data) {
   const csvData = [];
-  //console.log('data' , data)
   // Push the headers as the first row
   csvData.push([
       "Company Name",
       "Company Number",
       "Company Email",
-      "Company Incorporation Date  ",
+      "Company Incorporation Date",
       "City",
       "State",
-      "Company Address",
+      `"${lead["Company Address"]}"`,
       "Director Name(First)",
       "Director Number(First)",
       "Director Email(First)",
@@ -526,7 +525,7 @@ function createCSVString(data) {
       "ename",
       "AssignDate",
       "Status",
-      "Remarks",
+      `"${lead["Remarks"]}"`,
   ]);
 
   // Push each duplicate entry as a row into the csvData array
@@ -535,10 +534,10 @@ function createCSVString(data) {
       lead["Company Name"],
       lead["Company Number"],
       lead["Company Email"],
-      lead["Company Incorporation Date  "],
+      lead["Company Incorporation Date"],
       lead["City"],
       lead["State"],
-      lead["Company Address"],
+      `"${lead["Company Address"]}"`, // Enclose Company Address in double quotes
       lead["Director Name(First)"],
       lead["Director Number(First)"],
       lead["Director Email(First)"],
@@ -548,9 +547,10 @@ function createCSVString(data) {
       lead["Director Name(Third)"],
       lead["Director Number(Third)"],
       lead["Director Email(Third)"],
+      lead["ename"],
       lead["AssignDate"],
       lead["Status"],
-      lead["Remarks"],
+      `"${lead["Remarks"]}"`, // Enclose Remarks in double quotes
     ];
     csvData.push(rowData);
   });
@@ -3085,7 +3085,7 @@ app.post("/api/exportLeads/", async (req, res) => {
         lead["Company Incorporation Date  "],
         lead["City"],
         lead["State"],
-        lead["Company Address"],
+        `"${lead["Company Address"]}"`,
         lead["Director Name(First)"],
         lead["Director Number(First)"],
         lead["Director Email(First)"],
@@ -3097,7 +3097,7 @@ app.post("/api/exportLeads/", async (req, res) => {
         lead["Director Email(Third)"],
         lead["AssignDate"],
         lead["Status"],
-        lead["Remarks"],
+        `"${lead["Remarks"]}"`
       ];
       csvData.push(rowData);
       // console.log("rowData:" , rowData)

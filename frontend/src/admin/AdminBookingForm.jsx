@@ -3018,7 +3018,7 @@ export default function AdminBookingForm({
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.paymentTerms}
+                                            {obj.paymentTerms === "two-part" ? "Part Payment" : "Full Advanced"}
                                           </div>
                                         </div>
                                       </div>
