@@ -7,7 +7,6 @@ const CompanySchema = new mongoose.Schema({
   },
   "Company Number": {
     type: Number,
-   
 
   },
   "Company Email": {
@@ -18,13 +17,9 @@ const CompanySchema = new mongoose.Schema({
   },
   City: {
     type: String,
-    
-
   },
   State: {
     type: String,
-    
-
   },
   ename:{
     type:String,
@@ -39,7 +34,6 @@ const CompanySchema = new mongoose.Schema({
   },
   Remarks:{
     type:String,
-    default:"No Remarks Added"
   },
   lastActionDate:{
     type:String
@@ -74,13 +68,23 @@ const CompanySchema = new mongoose.Schema({
   'Director Email(Third)':{
     type:String
   },
-  bdmAcceptStatus:{
+  bdmName:{
     type:String,
-    default:"NotForwarded"
+
+  },
+  bdmStatus:{
+    type:String,
+    default:"Untouched"
+  },
+  bdmRemarks:{
+    type:String,
+    default:"No Remarks Added"
   }
 
 });
 
-const CompanyModel = mongoose.model('newCdata', CompanySchema);
+const TeamLeadsModel = mongoose.model('teamleadsmodel', CompanySchema);
 
-module.exports = CompanyModel;
+module.exports = TeamLeadsModel;
+
+    
