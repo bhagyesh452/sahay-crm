@@ -3117,7 +3117,7 @@ function EmployeePanel() {
                                               e.target.value,
                                               company["Company Name"],
                                               company["Company Email"],
-                                              company["Company Incorporation Date"],
+                                              company["Company Incorporation Date  "],
                                               company["Company Number"],
                                               company["Status"]
                                             )
