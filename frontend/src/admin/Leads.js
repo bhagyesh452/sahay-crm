@@ -2773,7 +2773,8 @@ function Leads() {
                       {dataStatus!=="Unassigned" &&  <th>Assigned to</th>}
 
                       <th>
-                        Uploaded On
+                        {dataStatus!=="Unassigned" ? "Assigned On" : "Uploaded On"}
+                      
                         <FilterListIcon
                           style={{
                             height: "14px",

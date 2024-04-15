@@ -42,6 +42,7 @@ import Team from './admin/Team.js'
 import NewEmployee from "./admin/NewEmployee.js";
 import BdmLeads from "./BDM/Dashboard/BdmLeads/BdmLeads.js";
 import BdmTeamLeads from "./BDM/Dashboard/BdmTeamLeads/BdmTeamLeads";
+import ManagerBookings from "./DataManager/Dashboard/ManageLeads/ManagerBookings.jsx";
 
 
 
