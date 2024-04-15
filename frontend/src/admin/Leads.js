@@ -531,12 +531,16 @@ function Leads() {
     // newArray now contains objects with updated properties
 
     if (selectedOption === "someoneElse") {
+      const properDate = new Date();
       const updatedCsvdata = csvdata.map((data) => ({
         ...data,
         ename: newemployeeSelection,
+        AssignDate: properDate
       }));
+  
       const currentDate = new Date().toLocaleDateString();
       const currentTime = new Date().toLocaleTimeString();
+  
       //console.log(updatedCsvdata)
       // Create a new array of objects with desired properties
       const newArray = updatedCsvdata.map((data) => ({
@@ -2766,10 +2770,11 @@ function Leads() {
                       <th>Company Email</th>
                       <th>Status</th>
                       <th>Remarks</th>
-                      <th>Assigned to</th>
+                      {dataStatus!=="Unassigned" &&  <th>Assigned to</th>}
 
                       <th>
-                        Assigned on
+                        {dataStatus!=="Unassigned" ? "Assigned On" : "Uploaded On"}
+                      
                         <FilterListIcon
                           style={{
                             height: "14px",
@@ -2843,22 +2848,29 @@ function Leads() {
                           <td>{company["State"]}</td>
                           <td>{company["Company Email"]}</td>
                           <td>{company["Status"]}</td>
-                          <td>
-                            {company["Remarks"]}{" "}
-                            <IconEye
-                              onClick={() => {
-                                functionopenpopupremarks(company._id, company.Status);
-                              }}
-                              style={{
-                                width: "14px",
-                                height: "14px",
-                                color: "#d6a10c",
-                                cursor: "pointer",
-                                marginLeft: "4px",
-                              }}
-                            />
+                          <td >
+                            <div style={{width:"100px"}} className="d-flex align-items-center justify-content-between">
+                                <p className="rematkText text-wrap m-0">
+                                {company["Remarks"]}{" "}
+                                </p>
+                                <IconEye
+                                  onClick={() => {
+                                    functionopenpopupremarks(company._id, company.Status);
+                                  }}
+                                  style={{
+                                    width: "16px",
+                                    height: "16px",
+                                    color: "#d6a10c",
+                                    cursor: "pointer",
+                                    marginLeft: "4px",
+                                  }}
+                                />
+                            </div>
+                           
+                            
+                           
                           </td>
-                          <td>{company["ename"]}</td>
+                         {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                           <td>{formatDate(company["AssignDate"])}</td>
                           <td>
                             <IconButton onClick={() => handleDeleteClick(company._id)}>

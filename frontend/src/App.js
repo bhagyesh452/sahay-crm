@@ -42,6 +42,7 @@ import Team from './admin/Team.js'
 import NewEmployee from "./admin/NewEmployee.js";
 import BdmLeads from "./BDM/Dashboard/BdmLeads/BdmLeads.js";
 import BdmTeamLeads from "./BDM/Dashboard/BdmTeamLeads/BdmTeamLeads";
+import ManagerBookings from "./DataManager/Dashboard/ManageLeads/ManagerBookings.jsx";
 
 
 
@@ -105,6 +106,8 @@ function App() {
            <Route path="/datamanager/leads/:companyId" element={<CompanyParticular_Datamanager/>}/>
           <Route path="/datamanager/employees" element={<DataManager_Employees/>}></Route>
           <Route path="/datamanager/employeeLeads/:id" element={<EmployeeLeads/>}></Route>
+          <Route path="/datamanager/bookings" element={<ManagerBookings/>}></Route>
+
           
           
 {/* -----------------------------------------datamanager components--------------------------------------- */}

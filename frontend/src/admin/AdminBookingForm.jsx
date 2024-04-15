@@ -289,16 +289,16 @@ export default function AdminBookingForm({
     const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
     return `${number}${suffix}`;
   };
-  const handleViewPdfReciepts = (paymentreciept) => {
+  const handleViewPdfReciepts = (paymentreciept , companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
-    window.open(`${secretKey}/recieptpdf/${pathname}`, "_blank");
+    window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
-  const handleViewPdOtherDocs = (pdfurl) => {
+  const handleViewPdOtherDocs = (pdfurl , companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
-    window.open(`${secretKey}/otherpdf/${pathname}`, "_blank");
+    window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
   };
   const handleStep = (step) => () => {
     setActiveStep(step);
@@ -3231,12 +3231,12 @@ export default function AdminBookingForm({
                                             className="UploadDocPreview"
                                             onClick={() => {
                                               handleViewPdfReciepts(
-                                                leadData.paymentReceipt[0]
+                                               ( leadData.paymentReceipt[0]
                                                   .filename
                                                   ? leadData.paymentReceipt[0]
                                                       .filename
                                                   : leadData.paymentReceipt[0]
-                                                      .name
+                                                      .name) , leadData["Company Name"]
                                               );
                                             }}
                                           >
@@ -3343,7 +3343,7 @@ export default function AdminBookingForm({
                                                   className="UploadDocPreview"
                                                   onClick={() => {
                                                     handleViewPdOtherDocs(
-                                                      val.filename
+                                                      val.filename , leadData["Company Name"]
                                                     );
                                                   }}
                                                 >
@@ -3373,7 +3373,7 @@ export default function AdminBookingForm({
                                                   className="UploadDocPreview"
                                                   onClick={() => {
                                                     handleViewPdOtherDocs(
-                                                      val.name
+                                                      val.name , leadData["Company Name"]
                                                     );
                                                   }}
                                                 >
