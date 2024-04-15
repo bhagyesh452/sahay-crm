@@ -39,6 +39,7 @@ import Modal from "react-modal";
 import { Link, json } from "react-router-dom";
 import Nodata from "../components/Nodata";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { red } from "@mui/material/colors";
 
 function Leads() {
   const [open, openchange] = useState(false);
@@ -1556,7 +1557,7 @@ function Leads() {
                 <div className="row">
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Company Name</label>
+                      <label className="form-label">Company Name <span style={{color:"red"}}>*</span></label>
                       <input
                         type="text"
                         className="form-control"
@@ -1567,11 +1568,23 @@ function Leads() {
                         }}
                       />
                     </div>
-
                   </div>
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Company Email</label>
+                      <label className="form-label">Company Number <span style={{color:"red"}}>*</span></label>
+                      <input
+                        type="number"
+                        placeholder="Enter Company's Phone No."
+                        onChange={(e) => {
+                          setCnumber(e.target.value);
+                        }}
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Email <span style={{color:"red"}}>*</span></label>
                       <input
                         type="email"
                         className="form-control"
@@ -1583,35 +1596,10 @@ function Leads() {
                       />
                     </div>
                   </div>
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Company Number</label>
-                      <input
-                        type="number"
-                        onChange={(e) => {
-                          setCnumber(e.target.value);
-                        }}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
+                
                 </div>
                 <div className="row">
-                  <div className="col-lg-6">
-                    <div className="mb-3">
-                      <label className="form-label">Company Address</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="Enter Your Address"
-                        onChange={(e) => {
-                          setCompanyAddress(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
                     <div className="mb-3">
                       <label className="form-label">
                         Company Incorporation Date
@@ -1625,9 +1613,7 @@ function Leads() {
                       />
                     </div>
                   </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
                     <div className="mb-3">
                       <label className="form-label">City</label>
                       <input
@@ -1636,11 +1622,11 @@ function Leads() {
                         }}
                         type="text"
                         className="form-control"
-
+                        placeholder="Enter Your City"
                       />
                     </div>
                   </div>
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
                     <div className="mb-3">
                       <label className="form-label">State</label>
                       <input
@@ -1649,7 +1635,26 @@ function Leads() {
                         }}
                         type="text"
                         className="form-control"
+                        placeholder="Enter Your State"
                       //disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+
+                </div>
+                <div className="row">
+
+                  <div className="col-lg-12">
+                    <div className="mb-3">
+                      <label className="form-label">Company Address</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Enter Your Address"
+                        onChange={(e) => {
+                          setCompanyAddress(e.target.value);
+                        }}
                       />
                     </div>
                   </div>
