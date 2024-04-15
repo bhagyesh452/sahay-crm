@@ -79,6 +79,24 @@ function Navbar() {
                     </a>
                   </Link>
                 </li>
+                <li
+                  className={
+                    location.pathname.startsWith("/datamanager/bookings/")
+                      ? "nav-item active"
+                      : "nav-item"
+                  }>
+                  <Link
+                    style={{ textDecoration: "none", color: "black" }}
+                    to="/datamanager/bookings/"
+                  >
+                    <a className="nav-link" href="./">
+                      <span className="nav-link-icon d-md-none d-lg-inline-block">
+                        <BsFillPersonVcardFill style={{width:"19px" , height:"23px"}} />
+                      </span>
+                      <span className="nav-link-title active"> Bookings </span>
+                    </a>
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>

@@ -19,8 +19,9 @@ function PdfImageViewerAdmin(props) {
   const fetchPdf = async () => {
    const path = props.path
    const specificpath = props.type
+   const companyName = props.companyName
     try {
-      const response = await axios.get(`${secretKey}/${specificpath}/${path}`, {
+      const response = await axios.get(`${secretKey}/${specificpath}/${companyName}/${path}`, {
         responseType: "blob"
       });
       const blob = response.data;
