@@ -285,7 +285,7 @@ function EmployeeDashboard() {
 
 
   useEffect(() => {
-    const socket = io('startupsahay.in/socket.io');
+    const socket = io('/socket.io');
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
