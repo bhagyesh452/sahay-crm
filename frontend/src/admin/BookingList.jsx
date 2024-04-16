@@ -3,6 +3,8 @@ import Header from "./Header";
 import Navbar from "./Navbar";
 import AdminBookingForm from "./AdminBookingForm";
 import axios from "axios";
+import Papa from "papaparse";
+import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
 import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
@@ -32,8 +34,10 @@ import {
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
   const [sendingIndex, setSendingIndex] = useState(0);
+  const [open, openchange] = useState(false);
   const [EditBookingOpen, setEditBookingOpen] = useState(false);
   const [addFormOpen, setAddFormOpen] = useState(false);
+  const [excelData, setExcelData] = useState([]);
   const [infiniteBooking, setInfiniteBooking] = useState([]);
   const [bookingIndex, setbookingIndex] = useState(-1);
   const [currentCompanyName , setCurrentCompanyName] = useState("");
@@ -122,6 +126,16 @@ function BookingList() {
   const functionOpenBookingForm = () => {
     setBookingFormOpen(true);
     //setCompanyName(data.companyName)
+  };
+  const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
+  const functionopenpopup = () => {
+    openchange(true);
+  };
+
+  const closepopup = () => {
+    openchange(false);
+
+    
   };
   const calculateTotalAmount = (obj) => {
     let total = Number(obj.totalAmount);
@@ -261,6 +275,173 @@ function BookingList() {
   const closeOtherDocsPopup = () => {
     setOpenOtherDocs(false);
   };
+
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0];
+
+    if (
+      file &&
+      file.type ===
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+
+        // Assuming there's only one sheet in the XLSX file
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        const formattedJsonData = jsonData
+          .slice(1) // Exclude the first row (header)
+          .map((row) => ({
+            "Sr. No": row[0],
+            "Company Name": row[1],
+            "Company Email" : row[2],
+            "Company Number": row[3],
+            "incoDate": formatDateFromExcel(row[4]),
+            "panNumber": row[5],
+            "gstNumber":row[6],
+            "bdeName": row[7],
+            "bdeEmail": row[8],
+            "bdmName": row[9],
+            "bdmEmail": row[10], // Assuming the date is in column 'E' (0-based)
+            "bdmType": row[11],
+            "bookingDate": formatDateFromExcel(row[12]),
+            "leadSource":row[13],
+            "otherLeadSource":row[14],
+            "1serviceName":row[15],
+            "1TotalAmount":row[16],
+            "1GST":row[17],
+            "1PaymentTerms":row[18],
+            "1FirstPayment":row[19],
+            "1SecondPayment":row[20],
+            "1ThirdPayment":row[21],
+            "1FourthPayment":row[22],
+            "1PaymentRemarks":row[23],
+            // -------------- 2nd Service --------------------------------
+            "2serviceName":row[24],
+            "2TotalAmount":row[25],
+            "2GST":row[26],
+            "2PaymentTerms":row[27],
+            "2FirstPayment":row[28],
+            "2SecondPayment":row[29],
+            "2ThirdPayment":row[30],
+            "2FourthPayment":row[31],
+            "2PaymentRemarks":row[32],
+            // ----------------------- 3rd Service ---------------------------------
+            "3serviceName":row[33],
+            "3TotalAmount":row[34],
+            "3GST":row[35],
+            "3PaymentTerms":row[36],
+            "3FirstPayment":row[37],
+            "3SecondPayment":row[38],
+            "3ThirdPayment":row[39],
+            "3FourthPayment":row[40],
+            "3PaymentRemarks":row[41],
+            // ----------------------- 4th Service --------------------------------------
+            "4serviceName":row[42],
+            "4TotalAmount":row[43],
+            "4GST":row[44],
+            "4PaymentTerms":row[45],
+            "4FirstPayment":row[46],
+            "4SecondPayment":row[47],
+            "4ThirdPayment":row[48],
+            "4FourthPayment":row[49],
+            "4PaymentRemarks":row[50],
+          // ----------------------   5th Service  --------------------------------------
+          "5serviceName":row[51],
+          "5TotalAmount":row[52],
+          "5GST":row[53],
+          "5PaymentTerms":row[54],
+          "5FirstPayment":row[55],
+          "5SecondPayment":row[56],
+          "5ThirdPayment":row[57],
+          "5FourthPayment":row[58],
+          "5PaymentRemarks":row[59],
+            "caCase": row[60],
+            "caNumber": row[61],
+            "caEmail": row[62],
+            "caCommission": row[63],
+            "totalPayment": row[64],
+            "receivedPayment": row[65],
+            "pendingPayment": row[66],
+            "paymentMethod": row[67],
+            "extraRemarks": row[68],
+          }));
+        const newFormattedData = formattedJsonData.filter((obj) => {
+          return obj["Company Name"] !== "" && obj["Company Name"] !== null && obj["Company Name"] !== undefined;
+        });
+        setExcelData(newFormattedData); 
+        
+      };
+
+      reader.readAsArrayBuffer(file);
+    } else if (file.type === "text/csv") {
+      // CSV file
+      const parsedCsvData = parseCsv(file);
+      console.log("everything is good")
+
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+        footer: '<a href="#">Why do I have this issue?</a>',
+      });
+
+      console.error("Please upload a valid XLSX file.");
+    }
+  };
+  const handleSubmitImport = async () => {
+    if(excelData.length!==0){
+      try {
+        const response = await axios.post(`${secretKey}/redesigned-importData`, excelData);
+        Swal.fire("Success", "Bookings Uploaded Successfully", "success");
+        fetchRedesignedFormData();
+        closepopup();
+        
+      } catch (error) {
+        console.error("Error importing data:", error);
+        Swal.fire("Error", "Failed to Upload Data" , "error");
+      }
+    }else{
+      Swal.fire('Upload Data First','','warning')
+    }
+  
+  };
+
+
+  const parseCsv = (data) => {
+    // Use a CSV parsing library (e.g., Papaparse) to parse CSV data
+    // Example using Papaparse:
+    const parsedData = Papa.parse(data, { header: true });
+    return parsedData.data;
+  };
+
+  function formatDateFromExcel(serialNumber) {
+    // Excel uses a different date origin (January 1, 1900)
+    const excelDateOrigin = new Date(Date.UTC(1900, 0, 0));
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+    // Adjust for Excel leap year bug (1900 is not a leap year)
+    const daysAdjustment = serialNumber > 59 ? 1 : 0;
+
+    // Calculate the date in milliseconds
+    const dateMilliseconds =
+      excelDateOrigin.getTime() +
+      (serialNumber - daysAdjustment) * millisecondsPerDay;
+
+    // Create a Date object using the calculated milliseconds
+    const formattedDate = new Date(dateMilliseconds);
+
+
+    return formattedDate;
+  }
   const handleotherdocsAttachment = async () => {
     try {
       const files = selectedDocuments;
@@ -359,9 +540,52 @@ function BookingList() {
                 </div>
                 <div className="col-6">
                   <div className="d-flex justify-content-end">
-                    <button className="btn btn-primary mr-1" disabled>
+                    <button className="btn btn-primary mr-1" onClick={functionopenpopup} >
                       Import CSV
                     </button>
+                    <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
+                <DialogTitle>
+                  Import CSV DATA{" "}
+                  <IconButton onClick={closepopup} style={{ float: "right" }}>
+                    <CloseIcon color="primary"></CloseIcon>
+                  </IconButton>{" "}
+                </DialogTitle>
+                <DialogContent>
+                  <div className="maincon">
+                    <div
+                      style={{ justifyContent: "space-between" }}
+                      className="con1 d-flex"
+                    >
+                      <div style={{ paddingTop: "9px" }} className="uploadcsv">
+                        <label
+                          style={{ margin: "0px 0px 6px 0px" }}
+                          htmlFor="upload"
+                        >
+                          Upload CSV File
+                        </label>
+                      </div>
+                      <a href={frontendKey + "/BookingExample.xlsx"} download>
+                        Download Sample
+                      </a>
+                    </div>
+                    <div
+                      style={{ margin: "5px 0px 0px 0px" }}
+                      className="form-control"
+                    >
+                      <input
+                        type="file"
+                        name="csvfile
+                          "
+                        id="csvfile"
+                        onChange={handleFileInputChange}
+                      />
+                    </div>
+                  </div>
+                </DialogContent>
+                <button onClick={handleSubmitImport} className="btn btn-primary">
+                  Submit
+                </button>
+              </Dialog>
                     <button className="btn btn-primary mr-1" disabled>
                       Export CSV
                     </button>
@@ -741,7 +965,8 @@ function BookingList() {
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       <span>
-                                        <i>Close By</i>
+                                        <i>  {currentLeadform &&
+                                        currentLeadform.bdmType}</i>
                                       </span>{" "}
                                       {currentLeadform &&
                                         currentLeadform.bdmName}
@@ -884,7 +1109,7 @@ function BookingList() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                          {obj.paymentTerms}
+                                          {obj.paymentTerms === "two-part" ? "Part Payment" : "Full Advanced"}
                                         </div>
                                       </div>
                                     </div>
@@ -973,7 +1198,7 @@ function BookingList() {
                                             {"("}
                                             {isNaN(
                                               new Date(obj.thirdPaymentRemarks)
-                                            )
+                                            ) 
                                               ? obj.thirdPaymentRemarks
                                               : "On " +
                                                 obj.thirdPaymentRemarks +

@@ -584,7 +584,18 @@ useEffect(() => {
       <Navbar userId={userId} />
       <div className="page-wrapper">
         <div className="page-header d-print-none">
-
+          <div className="container-xl">
+              <div className="row">
+                  <div className="col-sm-3">
+                    <div class="input-icon">
+                      <span class="input-icon-addon">
+                        <CiSearch />
+                      </span>
+                      <input type="text" value="" class="form-control" placeholder="Search…" aria-label="Search in website" />
+                    </div>
+                  </div>
+              </div>
+          </div>
         </div>
         <div className="page-body" onCopy={(e) => {
           e.preventDefault();

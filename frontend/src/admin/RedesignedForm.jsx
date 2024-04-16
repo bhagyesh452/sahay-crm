@@ -128,7 +128,7 @@ export default function RedesignedForm({
         `${secretKey}/redesigned-leadData/${companysName}`
       );
       const data = response.data[0] ? response.data[0] : response.data
-      console.log("Fetched Data");
+      console.log("Fetched Data", data);
       if (!data) {
         setCompleted({});
         setActiveStep(0);
@@ -421,6 +421,7 @@ export default function RedesignedForm({
   //   setActiveStep(5);
   // }
   console.log("Real time data: ", leadData);
+  console.log("Active Step:" , activeStep);
   useEffect(() => {
     fetchData();
     fetchDataEmp();
@@ -485,11 +486,13 @@ export default function RedesignedForm({
   };
 
   function formatDate(inputDate) {
+    console.log("here is the gadbad" , inputDate)
     const date = new Date(inputDate);
+  
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Adding 1 to month because it's zero-based
     const day = String(date.getUTCDate()).padStart(2, "0");
-
+    console.log(`${year}-${month}-${day}`);
     return `${year}-${month}-${day}`;
   }
 
@@ -521,6 +524,7 @@ export default function RedesignedForm({
   const handleComplete = async () => {
     try {
       const formData = new FormData();
+    
 
       const isEmptyOrNull = (value) => {
         return value === "" || value === null || value === 0;
@@ -528,7 +532,9 @@ export default function RedesignedForm({
 
       // Prepare the data to send to the backend
       let dataToSend = {};
+   
       if (activeStep === 0) {
+        console.log("Active step here:" , activeStep)
         if (
           isEmptyOrNull(leadData["Company Email"]) ||
           isEmptyOrNull(leadData["Company Name"]) ||
@@ -541,6 +547,7 @@ export default function RedesignedForm({
             icon: "warning",
           });
         } else {
+          console.log("Active step here:" , activeStep)
           dataToSend = {
             "Company Email": leadData["Company Email"],
             "Company Name": leadData["Company Name"],
@@ -618,7 +625,7 @@ export default function RedesignedForm({
                 const secondPayment = Number(service.secondPayment);
                 const thirdPayment = Number(service.thirdPayment);
                 const fourthPayment = Number(service.fourthPayment);
-                console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
+                // console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
                 if (
                   (service.paymentTerms !== "Full Advanced" &&
                     (firstPayment < 0 ||
@@ -782,9 +789,7 @@ export default function RedesignedForm({
         setFormOpen(false);
         setDataStatus("Matured");
         return true;
-      } else {
-        Swal.fire("Form Submitted");
-      }
+      } 
       // let dataToSend = {
       //   ...leadData,
       //   Step1Status: true,
@@ -942,8 +947,12 @@ export default function RedesignedForm({
       );
       if (response.ok) {
         console.log("Draft reset successfully");
+        setCompleted({});
+        setActiveStep(0);
+        setSelectedValues("");
+        setLeadData(defaultLeadData);
         // Optionally, you can perform further actions upon successful deletion
-        fetchData();
+       
       } else {
         console.error("Error resetting draft:", response.statusText);
       }
@@ -2994,7 +3003,7 @@ export default function RedesignedForm({
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.paymentTerms}
+                                            {obj.paymentTerms === "two-part" ? "Part-Payment" : "Full Advanced"}
                                           </div>
                                         </div>
                                       </div>

@@ -39,6 +39,7 @@ import Modal from "react-modal";
 import { Link, json } from "react-router-dom";
 import Nodata from "../components/Nodata";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { red } from "@mui/material/colors";
 
 function Leads() {
   const [open, openchange] = useState(false);
@@ -620,25 +621,72 @@ function Leads() {
         Swal.fire("Please upload data");
       }
     } else {
-
       if (csvdata.length !== 0) {
         setLoading(true); // Move setLoading outside of the loop
-        try {
-          await axios.post(`${secretKey}/leads`, csvdata);
-          Swal.fire({
-            title: "Data Send!",
-            text: "Data successfully sent to the Employee",
-            icon: "success",
-          });
 
+        try {
+          const response = await axios.post(
+            `${secretKey}/leads`,
+            csvdata
+          );
+        
+          // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
+
+          const counter = response.data.counter;
+         // console.log("counter", counter)
+          const successCounter = response.data.sucessCounter;
+          //console.log(successCounter)
+
+          if (counter === 0) {
+            //console.log(response.data)
+            Swal.fire({
+              title: "Data Added!",
+              text: "Data Successfully added to the Leads",
+              icon: "success",
+            });
+          } else {
+            const lines = response.data.split('\n');
+
+            // Count the number of lines (entries)
+            const numberOfDuplicateEntries = lines.length - 1;
+            const noofSuccessEntries = csvdata.length - numberOfDuplicateEntries
+            Swal.fire({
+              title: 'Do you want download duplicate entries report?',
+              html: `Successful Entries: ${noofSuccessEntries}<br>Duplicate Entries: ${numberOfDuplicateEntries}<br>Click Yes to download report?`,
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: 'Yes',
+              cancelButtonText: 'No'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                //console.log(response.data)
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute("download", "DuplicateEntriesLeads.csv");
+                document.body.appendChild(link);
+                link.click();
+                // User clicked "Yes", perform action
+                // Call your function or execute your code here
+              } else if (result.dismiss === Swal.DismissReason.cancel) {
+                return true;
+              }
+            });
+          }
           fetchData();
           closepopup();
+          setnewEmployeeSelection("Not Alloted");
         } catch (error) {
+          if (error.response.status !== 500) {
+            setErrorMessage(error.response.data.error);
+            Swal.fire("Some of the data are not unique");
+          } else {
+            setErrorMessage("An error occurred. Please try again.");
+            Swal.fire("Please upload unique data");
+          }
           console.log("Error:", error);
         }
-
         setLoading(false); // Move setLoading outside of the loop
-
         setCsvData([]);
       } else {
         Swal.fire("Please upload data");
@@ -915,7 +963,7 @@ function Leads() {
     const DT = new Date();
     const date = DT.toLocaleDateString();
     const time = DT.toLocaleTimeString();
-
+    const currentDataStatus = dataStatus;
     try {
       const response = await axios.post(`${secretKey}/postData`, {
         employeeSelection,
@@ -927,7 +975,8 @@ function Leads() {
       Swal.fire("Data Assigned");
       openchangeEmp(false);
       fetchData();
-
+      setSelectedRows([]);
+      setDataStatus(currentDataStatus);
     } catch (err) {
       console.log("Internal server Error", err);
       Swal.fire("Error Assigning Data");
@@ -1576,7 +1625,7 @@ function Leads() {
                 <div className="row">
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Company Name</label>
+                      <label className="form-label">Company Name <span style={{color:"red"}}>*</span></label>
                       <input
                         type="text"
                         className="form-control"
@@ -1587,11 +1636,23 @@ function Leads() {
                         }}
                       />
                     </div>
-
                   </div>
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Company Email</label>
+                      <label className="form-label">Company Number <span style={{color:"red"}}>*</span></label>
+                      <input
+                        type="number"
+                        placeholder="Enter Company's Phone No."
+                        onChange={(e) => {
+                          setCnumber(e.target.value);
+                        }}
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Email <span style={{color:"red"}}>*</span></label>
                       <input
                         type="email"
                         className="form-control"
@@ -1603,35 +1664,10 @@ function Leads() {
                       />
                     </div>
                   </div>
-                  <div className="col-4">
-                    <div className="mb-3">
-                      <label className="form-label">Company Number</label>
-                      <input
-                        type="number"
-                        onChange={(e) => {
-                          setCnumber(e.target.value);
-                        }}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
+                
                 </div>
                 <div className="row">
-                  <div className="col-lg-6">
-                    <div className="mb-3">
-                      <label className="form-label">Company Address</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="Enter Your Address"
-                        onChange={(e) => {
-                          setCompanyAddress(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
                     <div className="mb-3">
                       <label className="form-label">
                         Company Incorporation Date
@@ -1645,9 +1681,7 @@ function Leads() {
                       />
                     </div>
                   </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
                     <div className="mb-3">
                       <label className="form-label">City</label>
                       <input
@@ -1656,11 +1690,11 @@ function Leads() {
                         }}
                         type="text"
                         className="form-control"
-
+                        placeholder="Enter Your City"
                       />
                     </div>
                   </div>
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
                     <div className="mb-3">
                       <label className="form-label">State</label>
                       <input
@@ -1669,7 +1703,26 @@ function Leads() {
                         }}
                         type="text"
                         className="form-control"
+                        placeholder="Enter Your State"
                       //disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+
+                </div>
+                <div className="row">
+
+                  <div className="col-lg-12">
+                    <div className="mb-3">
+                      <label className="form-label">Company Address</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Enter Your Address"
+                        onChange={(e) => {
+                          setCompanyAddress(e.target.value);
+                        }}
                       />
                     </div>
                   </div>
@@ -2869,18 +2922,20 @@ function Leads() {
                                 <p className="rematkText text-wrap m-0">
                                 {company["Remarks"]}{" "}
                                 </p>
-                                <IconEye
-                                  onClick={() => {
-                                    functionopenpopupremarks(company._id, company.Status);
-                                  }}
-                                  style={{
-                                    width: "16px",
-                                    height: "16px",
-                                    color: "#d6a10c",
-                                    cursor: "pointer",
-                                    marginLeft: "4px",
-                                  }}
-                                />
+                                <div  onClick={() => {
+                                      functionopenpopupremarks(company._id, company.Status);
+                                    }} style={{cursor:"pointer"}}>
+                                  <IconEye
+                                   
+                                    style={{
+                                      width: "14px",
+                                      height: "14px",
+                                      color: "#d6a10c",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                  />
+                                </div>
                             </div>
                            
                             
