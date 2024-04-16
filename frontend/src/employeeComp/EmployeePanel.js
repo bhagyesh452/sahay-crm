@@ -3145,7 +3145,7 @@ function EmployeePanel() {
                                 <th>Add Projection</th>
                               ))}
 
-                            {(dataStatus === "Forwarded") && (
+                            {(dataStatus === "Forwarded" || dataStatus === "Interested" || dataStatus === "FollowUp") && (
                               <th>Forward to BDM</th>
                             )}
                           </tr>
@@ -3393,11 +3393,31 @@ function EmployeePanel() {
                                         </IconButton>
                                       </td>
                                     )}
+                                    <td>
+                                    <TiArrowForward
+                                          onClick={() => {
+                                            handleConfirmAssign(
+                                              company._id,
+                                              company["Company Name"],
+                                              company.Status, // Corrected parameter name
+                                              company.ename,
+                                              company.bdmAcceptStatus
+                                            );
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="grey"
+                                        />
+
+                                    </td>
                                   </>)}
                                 {
                                   dataStatus === "Forwarded" && (
                                     <td>
-                                      {company.bdmAcceptStatus === "NotForwarded" ? (
+                                      {company.bdmAcceptStatus === "NotForwarded"  ? (
                                         <TiArrowForward
                                           onClick={() => {
                                             handleConfirmAssign(
