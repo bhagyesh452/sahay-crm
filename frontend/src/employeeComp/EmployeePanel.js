@@ -329,7 +329,7 @@ function EmployeePanel() {
     setCstat(companyStatus);
     setCurrentCompanyName(companyName);
   };
- // console.log("currentcompanyname", currentCompanyName);
+  // console.log("currentcompanyname", currentCompanyName);
 
   const [opeRemarksEdit, setOpenRemarksEdit] = useState(false)
 
@@ -419,7 +419,7 @@ function EmployeePanel() {
     }
   }
 
- // console.log("teaminfo", teamInfo)
+  // console.log("teaminfo", teamInfo)
   //console.log("bdmName", bdmName)
 
   useEffect(() => {
@@ -869,7 +869,7 @@ function EmployeePanel() {
     }));
   };
 
- 
+
 
   const handleDeleteRemarks = async (remarks_id, remarks_value) => {
     const mainRemarks = remarks_value === currentRemarks ? true : false;
@@ -1056,7 +1056,7 @@ function EmployeePanel() {
 
   const handleSubmitData = (e) => {
     e.preventDefault();
-    
+
     if (cname === "") {
       Swal.fire("Please Enter Company Name");
     } else if (!cnumber) {
@@ -1106,7 +1106,7 @@ function EmployeePanel() {
         });
     }
   };
-  
+
   const [openSecondDirector, setOpenSecondDirector] = useState(false);
   const [openFirstDirector, setOpenFirstDirector] = useState(true);
   const [openThirdDirector, setOpenThirdDirector] = useState(false);
@@ -1798,7 +1798,7 @@ function EmployeePanel() {
   };
 
 
-  console.log("filtetredremarks" , filteredRemarks)
+  console.log("filtetredremarks", filteredRemarks)
 
   // -----------------------------------------------------delete-projection-data-------------------------------
 
@@ -2109,7 +2109,7 @@ function EmployeePanel() {
 
   const handleConfirmAssign = (companyId, companyName, companyStatus, ename, bdmAcceptStatus) => {
     console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
-  
+
     if (companyStatus === "Interested" || companyStatus === "FollowUp" && bdmName) {
       // Assuming `bdmName` is defined somewhere
       setForrwardEname(ename);
@@ -2122,7 +2122,7 @@ function EmployeePanel() {
       Swal.fire("Your are not assigned to any bdm!");
     }
   };
-  
+
 
   useEffect(() => {
     if (confirmationPending) {
@@ -2160,7 +2160,7 @@ function EmployeePanel() {
           companyName,
           bdmAcceptStatus: "NotForwarded", // Corrected parameter name
         });
-       // console.log("response", response.data);
+        // console.log("response", response.data);
         Swal.fire("Data Reversed");
       } catch (error) {
         console.log("error reversing bdm forwarded data", error.message);
@@ -2770,7 +2770,7 @@ function EmployeePanel() {
                           setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData.filter(
-                              (obj) => obj.Status === "Interested"
+                              (obj) => obj.Status === "Interested" && obj.bdmAcceptStatus === "NotForwarded"
                             )
                           );
                         }}
@@ -2786,7 +2786,7 @@ function EmployeePanel() {
                         <span className="no_badge">
                           {
                             moreEmpData.filter(
-                              (obj) => obj.Status === "Interested"
+                              (obj) => obj.Status === "Interested" && obj.bdmAcceptStatus === "NotForwarded"
                             ).length
                           }
                         </span>
@@ -2800,7 +2800,7 @@ function EmployeePanel() {
                           setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData.filter(
-                              (obj) => obj.Status === "FollowUp"
+                              (obj) => obj.Status === "FollowUp" && obj.bdmAcceptStatus === "NotForwarded"
                             )
                           );
                         }}
@@ -2815,7 +2815,7 @@ function EmployeePanel() {
                         <span className="no_badge">
                           {
                             moreEmpData.filter(
-                              (obj) => obj.Status === "FollowUp"
+                              (obj) => obj.Status === "FollowUp" && obj.bdmAcceptStatus === "NotForwarded"
                             ).length
                           }
                         </span>
@@ -2830,7 +2830,7 @@ function EmployeePanel() {
                           setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData
-                              .filter((obj) => obj.Status === "Matured")
+                              .filter((obj) => obj.Status === "Matured" && obj.bdmAcceptStatus === "NotForwarded")
                               .sort(
                                 (a, b) =>
                                   new Date(b.lastActionDate) -
@@ -2850,7 +2850,43 @@ function EmployeePanel() {
                           {" "}
                           {
                             moreEmpData.filter(
-                              (obj) => obj.Status === "Matured"
+                              (obj) => obj.Status === "Matured" && obj.bdmAcceptStatus === "NotForwarded"
+                            ).length
+                          }
+                        </span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        href="#tabs-activity-5"
+                        onClick={() => {
+                          setdataStatus("Forwarded")
+                          setCurrentPage(0);
+                          setEmployeeData(
+                            moreEmpData
+                              .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded")
+                              .sort(
+                                (a, b) =>
+                                  new Date(b.lastActionDate) -
+                                  new Date(a.lastActionDate)
+                              )
+
+                          );
+                          //setdataStatus(obj.bdmAcceptStatus);
+                        }}
+                        className={
+                          dataStatus === "Forwarded"
+                            ? "nav-link active item-act"
+                            : "nav-link"
+                        }
+                        data-bs-toggle="tab"
+                      >
+                        Bdm Forwarded{" "}
+                        <span className="no_badge">
+                          {" "}
+                          {
+                            moreEmpData.filter(
+                              (obj) => obj.bdmAcceptStatus !== "NotForwarded"
                             ).length
                           }
                         </span>
@@ -2882,8 +2918,8 @@ function EmployeePanel() {
                           {
                             moreEmpData.filter(
                               (obj) =>
-                                obj.Status === "Not Interested" ||
-                                obj.Status === "Junk"
+                                (obj.Status === "Not Interested" ||
+                                  obj.Status === "Junk") && (obj.bdmAcceptStatus === "NotForwarded")
                             ).length
                           }
                         </span>
@@ -3111,7 +3147,7 @@ function EmployeePanel() {
                                 <th>Add Projection</th>
                               ))}
 
-                            {(dataStatus === "Interested" || dataStatus === "FollowUp") && (
+                            {(dataStatus === "Forwarded" || dataStatus === "Interested" || dataStatus === "FollowUp") && (
                               <th>Forward to BDM</th>
                             )}
                           </tr>
@@ -3269,15 +3305,15 @@ function EmployeePanel() {
                                     </IconButton>)}
                                     {company.bdmAcceptStatus === "Accept" && (
                                       <IconButton
-                                      onClick={() => {
-                                        functionopenpopupremarksEdit(
-                                          company._id,
-                                          company.Status,
-                                          company["Company Name"]
-                                        );
-                                        setCurrentRemarks(company.Remarks);
-                                        setCompanyId(company._id);
-                                      }}
+                                        onClick={() => {
+                                          functionopenpopupremarksEdit(
+                                            company._id,
+                                            company.Status,
+                                            company["Company Name"]
+                                          );
+                                          setCurrentRemarks(company.Remarks);
+                                          setCompanyId(company._id);
+                                        }}
                                       >
                                         <IconEye
                                           style={{
@@ -3360,7 +3396,30 @@ function EmployeePanel() {
                                       </td>
                                     )}
                                     <td>
-                                      {company.bdmAcceptStatus === "NotForwarded" ? (
+                                    <TiArrowForward
+                                          onClick={() => {
+                                            handleConfirmAssign(
+                                              company._id,
+                                              company["Company Name"],
+                                              company.Status, // Corrected parameter name
+                                              company.ename,
+                                              company.bdmAcceptStatus
+                                            );
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="grey"
+                                        />
+
+                                    </td>
+                                  </>)}
+                                {
+                                  dataStatus === "Forwarded" && (
+                                    <td>
+                                      {company.bdmAcceptStatus === "NotForwarded"  ? (
                                         <TiArrowForward
                                           onClick={() => {
                                             handleConfirmAssign(
@@ -3420,7 +3479,9 @@ function EmployeePanel() {
                                       />}
                                     </td>
 
-                                  </>)}
+                                  )
+                                }
+
                                 {dataStatus === "Matured" && (
                                   <>
                                     <td>

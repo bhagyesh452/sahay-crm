@@ -339,15 +339,30 @@ function Team() {
     }
 
     const handleDeleteTeam = async (teamId) => {
-        try {
-            const response = await axios.delete(`${secretKey}/delete-bdmTeam/${teamId}`);
-            if (response.status === 200) {
-                Swal.fire("Team Deleted Successfully");
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await axios.delete(`${secretKey}/delete-bdmTeam/${teamId}`);
+                    if (response.status === 200) {
+                        Swal.fire("Team Deleted Successfully", "", "success");
+                        fetchData();
+                        fecthTeamData();
+                    }
+                } catch (error) {
+                    Swal.fire("Error", error.message, "error");
+                }
             }
-        } catch (error) {
-            Swal.fire("Error", error.message, "error");
-        }
-    }
+        });
+    };
+    
 
 
 
