@@ -3,6 +3,8 @@ import Header from "./Header";
 import Navbar from "./Navbar";
 import AdminBookingForm from "./AdminBookingForm";
 import axios from "axios";
+import Papa from "papaparse";
+import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
 import PdfImageViewerAdmin from "./PdfViewerAdmin";
 import pdfimg from "../static/my-images/pdf.png";
@@ -32,8 +34,10 @@ import {
 function BookingList() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
   const [sendingIndex, setSendingIndex] = useState(0);
+  const [open, openchange] = useState(false);
   const [EditBookingOpen, setEditBookingOpen] = useState(false);
   const [addFormOpen, setAddFormOpen] = useState(false);
+  const [excelData, setExcelData] = useState([]);
   const [infiniteBooking, setInfiniteBooking] = useState([]);
   const [bookingIndex, setbookingIndex] = useState(-1);
   const [currentCompanyName , setCurrentCompanyName] = useState("");
@@ -122,6 +126,16 @@ function BookingList() {
   const functionOpenBookingForm = () => {
     setBookingFormOpen(true);
     //setCompanyName(data.companyName)
+  };
+  const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
+  const functionopenpopup = () => {
+    openchange(true);
+  };
+
+  const closepopup = () => {
+    openchange(false);
+
+    
   };
   const calculateTotalAmount = (obj) => {
     let total = Number(obj.totalAmount);
@@ -261,6 +275,166 @@ function BookingList() {
   const closeOtherDocsPopup = () => {
     setOpenOtherDocs(false);
   };
+
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0];
+
+    if (
+      file &&
+      file.type ===
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+
+        // Assuming there's only one sheet in the XLSX file
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        const formattedJsonData = jsonData
+          .slice(1) // Exclude the first row (header)
+          .map((row) => ({
+            "Sr. No": row[0],
+            "Company Name": row[1],
+            "Company Email" : row[2],
+            "Company Number": row[3],
+            "Company Incorporation Date": row[4],
+            "panNumber": row[5],
+            "gstNumber":row[6],
+            "bdeName": row[7],
+            "bdeEmail": row[8],
+            "bdmName": row[9],
+            "bdmEmail": row[10], // Assuming the date is in column 'E' (0-based)
+            "bdmType": row[11],
+            "bookingDate": formatDateFromExcel(row[12]),
+            "leadSource":row[13],
+            "otherLeadSource":row[14],
+            "1stserviceName":row[15],
+            "1stTotalAmount":row[16],
+            "1stGST":row[17],
+            "1stPaymentTerms":row[18],
+            "1stFirstPayment":row[19],
+            "1stSecondPayment":row[20],
+            "1stThirdPayment":row[21],
+            "1stFourthPayment":row[22],
+            "1stPaymentRemarks":row[23],
+            // -------------- 2nd Service --------------------------------
+            "2ndserviceName":row[22],
+            "2ndTotalAmount":row[23],
+            "2ndGST":row[24],
+            "2ndPaymentTerms":row[25],
+            "2ndFirstPayment":row[26],
+            "2ndSecondPayment":row[27],
+            "2ndThirdPayment":row[28],
+            "2ndFourthPayment":row[29],
+            "2ndPaymentRemarks":row[30],
+            // ----------------------- 3rd Service ---------------------------------
+            "3rdserviceName":row[31],
+            "3rdTotalAmount":row[32],
+            "3rdGST":row[33],
+            "3rdPaymentTerms":row[34],
+            "3rdFirstPayment":row[35],
+            "3rdSecondPayment":row[36],
+            "3rdThirdPayment":row[37],
+            "3rdFourthPayment":row[38],
+            "3rdPaymentRemarks":row[39],
+            // ----------------------- 4th Service --------------------------------------
+            "4thserviceName":row[40],
+            "4thTotalAmount":row[41],
+            "4thGST":row[42],
+            "4thPaymentTerms":row[43],
+            "4thFirstPayment":row[44],
+            "4thSecondPayment":row[45],
+            "4thThirdPayment":row[46],
+            "4thFourthPayment":row[47],
+            "4thPaymentRemarks":row[48],
+          // ----------------------   5th Service  --------------------------------------
+          "5thserviceName":row[49],
+          "5thTotalAmount":row[50],
+          "5thGST":row[51],
+          "5thPaymentTerms":row[52],
+          "5thFirstPayment":row[53],
+          "5thSecondPayment":row[54],
+          "5thThirdPayment":row[55],
+          "5thFourthPayment":row[56],
+          "5thPaymentRemarks":row[57],
+            "caCase": row[58],
+            "caNumber": row[59],
+            "caEmail": row[60],
+            "caCommission": row[61],
+            "totalPayment": row[62],
+            "receivedPayment": row[63],
+            "pendingPayment": row[64],
+            "paymentMethod": row[65],
+            "extraRemarks": row[66],
+           
+          }));
+        const newFormattedData = formattedJsonData.filter((obj) => {
+          return obj["Company Name"] !== "" && obj["Company Name"] !== null && obj["Company Name"] !== undefined;
+        });
+        setExcelData(newFormattedData); 
+        console.log("This is elon musk",newFormattedData)
+      };
+
+      reader.readAsArrayBuffer(file);
+    } else if (file.type === "text/csv") {
+      // CSV file
+      const parsedCsvData = parseCsv(file);
+      console.log("everything is good")
+
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+        footer: '<a href="#">Why do I have this issue?</a>',
+      });
+
+      console.error("Please upload a valid XLSX file.");
+    }
+  };
+  const parseCsv = (data) => {
+    // Use a CSV parsing library (e.g., Papaparse) to parse CSV data
+    // Example using Papaparse:
+    const parsedData = Papa.parse(data, { header: true });
+    return parsedData.data;
+  };
+  function formatTimeFromExcel(serialNumber) {
+    // Excel uses a fractional representation for time
+    const totalSeconds = Math.round(serialNumber * 24 * 60 * 60); // Convert days to seconds
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    // Format the time
+    const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+    return formattedTime;
+  }
+  function formatDateFromExcel(serialNumber) {
+    // Excel uses a different date origin (January 1, 1900)
+    const excelDateOrigin = new Date(Date.UTC(1900, 0, 0));
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+    // Adjust for Excel leap year bug (1900 is not a leap year)
+    const daysAdjustment = serialNumber > 59 ? 1 : 0;
+
+    // Calculate the date in milliseconds
+    const dateMilliseconds =
+      excelDateOrigin.getTime() +
+      (serialNumber - daysAdjustment) * millisecondsPerDay;
+
+    // Create a Date object using the calculated milliseconds
+    const formattedDate = new Date(dateMilliseconds);
+
+
+    return formattedDate;
+  }
   const handleotherdocsAttachment = async () => {
     try {
       const files = selectedDocuments;
@@ -359,9 +533,52 @@ function BookingList() {
                 </div>
                 <div className="col-6">
                   <div className="d-flex justify-content-end">
-                    <button className="btn btn-primary mr-1" disabled>
+                    <button className="btn btn-primary mr-1" onClick={functionopenpopup} disabled>
                       Import CSV
                     </button>
+                    <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
+                <DialogTitle>
+                  Import CSV DATA{" "}
+                  <IconButton onClick={closepopup} style={{ float: "right" }}>
+                    <CloseIcon color="primary"></CloseIcon>
+                  </IconButton>{" "}
+                </DialogTitle>
+                <DialogContent>
+                  <div className="maincon">
+                    <div
+                      style={{ justifyContent: "space-between" }}
+                      className="con1 d-flex"
+                    >
+                      <div style={{ paddingTop: "9px" }} className="uploadcsv">
+                        <label
+                          style={{ margin: "0px 0px 6px 0px" }}
+                          htmlFor="upload"
+                        >
+                          Upload CSV File
+                        </label>
+                      </div>
+                      <a href={frontendKey + "/AddBookingFormat.xlsx"} download>
+                        Download Sample
+                      </a>
+                    </div>
+                    <div
+                      style={{ margin: "5px 0px 0px 0px" }}
+                      className="form-control"
+                    >
+                      <input
+                        type="file"
+                        name="csvfile
+                          "
+                        id="csvfile"
+                        onChange={handleFileInputChange}
+                      />
+                    </div>
+                  </div>
+                </DialogContent>
+                <button className="btn btn-primary">
+                  Submit
+                </button>
+              </Dialog>
                     <button className="btn btn-primary mr-1" disabled>
                       Export CSV
                     </button>

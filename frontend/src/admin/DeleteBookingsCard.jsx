@@ -48,7 +48,7 @@ function DeleteBookingsCard({
         throw new Error("Network response was not ok");
       }
       const response2 = await axios.delete(
-        `${secretKey}/deleterequestbybde/${companyName}`
+        `${secretKey}/deleterequestbybde/${companyName}`,
       );
       Swal.fire({
         title: "Booking Deleted Successfully",
