@@ -136,7 +136,7 @@ function Employees({ onEyeButtonClick }) {
     jdate: "ascending",
     addedOn: 'ascending'
   })
-  
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/einfo`);
@@ -466,6 +466,23 @@ function Employees({ onEyeButtonClick }) {
 
   };
 
+  const [teamData, setTeamData] = useState([])
+
+  const fetchTeamData = async () => {
+    const response = await axios.get(`${secretKey}/teaminfo`)
+
+    console.log(response.data)
+    setTeamData(response.data)
+
+  }
+
+  useEffect(() => {
+    fetchTeamData()
+
+  }, [])
+
+
+
   return (
     <div>
       <Modal
@@ -751,7 +768,7 @@ function Employees({ onEyeButtonClick }) {
               </div>
             </div>
           </div>
-          
+
         </div>
       </div>
 
@@ -760,8 +777,8 @@ function Employees({ onEyeButtonClick }) {
         onCopy={(e) => {
           e.preventDefault();
         }} className="mt-2"
-        >
-      
+      >
+
         <div className="card">
           <div style={{ padding: "0px" }} className="card-body">
             <div
@@ -818,10 +835,13 @@ function Employees({ onEyeButtonClick }) {
                         Added on
                       </button>
                     </th>
-                    <th>
+                    {/* <th>
                       <button className="table-sort" data-sort="sort-date">
                         Status
                       </button>
+                    </th> */}
+                    <th>
+                      Team Name
                     </th>
                     <th>
                       <button
@@ -857,7 +877,7 @@ function Employees({ onEyeButtonClick }) {
                         <td>{item.designation}</td>
                         <td>{item.branchOffice}</td>
                         <td>{formatDate(item.AddedOn) === "Invalid Date" ? "Feb 6, 2024" : formatDate(item.AddedOn)}</td>
-                        {item.designation !== "Admin Team" ? <td>
+                        {/* {item.designation !== "Admin Team" ? <td>
                           {(item.Active && item.Active.includes("GMT")) ? (
                             <div>
                               <span
@@ -904,8 +924,15 @@ function Employees({ onEyeButtonClick }) {
                               {formatDateWP("Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)")}
                             </span>
                           </div>
-                        </td>}
+                        </td>} */}
 
+                        <td>
+                          {teamData
+                            .filter((obj) => obj.employees.some(emp => emp.ename === item.ename && emp.branchOffice === item.branchOffice))
+                            .map(obj => obj.teamName)
+                            .join(', ') || <span style={{color:"lightgrey"}}>No team allotted</span>
+                          }
+                        </td>
                         <td >
                           <div className="d-flex justify-content-center align-items-center">
                             <div className="icons-btn">
@@ -963,7 +990,7 @@ function Employees({ onEyeButtonClick }) {
             </div>
           </div>
         </div>
-  
+
       </div>
     </div>
   );

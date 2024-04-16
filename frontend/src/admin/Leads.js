@@ -682,39 +682,55 @@ function Leads() {
 
   const handleSubmitData = (e) => {
     e.preventDefault();
-    axios
-      .post(`${secretKey}/manual`, {
-        "Company Name": cname,
-        "Company Number": cnumber,
-        "Company Email": cemail,
-        "Company Incorporation Date  ": cidate,
-        City: city,
-        State: state,
-        AssignDate: new Date(),
-        "Company Address": companyAddress,
-        "Director Name(First)": directorNameFirst,
-        "Director Number(First)": directorNumberFirst,
-        "Director Email(First)": directorEmailFirst,
-        "Director Name(Second)": directorNameSecond,
-        "Director Number(Second)": directorNumberSecond,
-        "Director Email(Second)": directorEmailSecond,
-        "Director Name(Third)": directorNameThird,
-        "Director Number(Third)": directorNumberThird,
-        "Director Email(Third)": directorEmailThird
-      })
-      .then((response) => {
-        //console.log("response" , response)
-        Swal.fire({
-          title: "Data Added!",
-          text: "Successfully added new Data!",
-          icon: "success",
+    
+    if (cname === "") {
+      Swal.fire("Please Enter Company Name");
+    } else if (!cnumber) {
+      Swal.fire("Company Number is required");
+    } else if (cemail === "") {
+      Swal.fire("Company Email is required");
+    } else if (city === "") {
+      Swal.fire("City is required");
+    } else if (state === "") {
+      Swal.fire("State is required");
+    } else {
+      axios
+        .post(`${secretKey}/manual`, {
+          "Company Name": cname,
+          "Company Number": cnumber,
+          "Company Email": cemail,
+          "Company Incorporation Date": cidate, // Assuming the correct key is "Company Incorporation Date"
+          City: city,
+          State: state,
+          ename: data.ename,
+          AssignDate: new Date(),
+          "Company Address": companyAddress,
+          "Director Name(First)": directorNameFirst,
+          "Director Number(First)": directorNumberFirst,
+          "Director Email(First)": directorEmailFirst,
+          "Director Name(Second)": directorNameSecond,
+          "Director Number(Second)": directorNumberSecond,
+          "Director Email(Second)": directorEmailSecond,
+          "Director Name(Third)": directorNameThird,
+          "Director Number(Third)": directorNumberThird,
+          "Director Email(Third)": directorEmailThird,
+        })
+        .then((response) => {
+          console.log("response", response);
+          console.log("Data sent Successfully");
+          Swal.fire({
+            title: "Data Added!",
+            text: "Successfully added new Data!",
+            icon: "success",
+          });
+          fetchData();
+          closepopupNew();
+        })
+        .catch((error) => {
+          console.error("Error sending data:", error);
+          Swal.fire("An error occurred. Please try again later.");
         });
-        fetchData();
-        closepopupNew();
-      })
-      .catch((error) => {
-        Swal.fire("Please Enter Unique data!");
-      });
+    }
   };
 
   const [openSecondDirector, setOpenSecondDirector] = useState(false)

@@ -79,8 +79,11 @@ const CompanySchema = new mongoose.Schema({
   bdmRemarks:{
     type:String,
     default:"No Remarks Added"
-  }
-
+  },
+  bdeForwardDate:{
+    type: String, 
+    default: Date.now(),
+  },
 });
 
 const TeamLeadsModel = mongoose.model('teamleadsmodel', CompanySchema);

@@ -667,6 +667,8 @@ app.post("/api/update-remarks/:id", async (req, res) => {
     // Update remarks and fetch updated data in a single operation
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
 
+    await TeamLeadsModel.findByIdAndUpdate(id,{ bdmRemarks : Remarks});
+
     // Fetch updated data and remarks history
     const updatedCompany = await CompanyModel.findById(id);
     const remarksHistory = await RemarksHistory.find({ companyId: id });
@@ -834,14 +836,14 @@ app.get("/api/teaminfo/:ename", async (req, res) => {
 
 
 app.post("/api/forwardtobdmdata", async (req, res) => {
-  const { selectedData, bdmName , companyId , bdmAcceptStatus} = req.body;
+  const { selectedData, bdmName , companyId , bdmAcceptStatus , bdeForwardDate} = req.body;
   console.log("selectedData", selectedData);
 
   try {
     // Assuming TeamLeadsModel has a schema similar to the selectedData structure
     const newLeads = await Promise.all(selectedData.map(async (data) => {
       
-      const newData = { ...data, bdmName }; // Add bdmName to each data object
+      const newData = { ...data, bdmName , bdeForwardDate : formatDate(bdeForwardDate)}; // Add bdmName to each data object
       return await TeamLeadsModel.create(newData);
     }));
 
@@ -937,6 +939,74 @@ app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// app.delete("/api/delete-followup/:companyName", async (req, res) => {
+//   try {
+//     // Extract the company name from the request parameters
+//     const { companyName } = req.params;
+
+//     // Check if a document with the given company name exists
+//     const existingData = await FollowUpModel.findOne({ companyName });
+
+//     if (existingData) {
+//       // If the document exists, delete it
+//       await FollowUpModel.findOneAndDelete({ companyName });
+//       res.status(200).json({ message: "Data deleted successfully" });
+//     } else {
+//       // If no document with the given company name exists, return a 404 Not Found response
+//       res.status(404).json({ error: "Company not found" });
+//     }
+//   } catch (error) {
+//     // If there's an error during the deletion process, send a 500 Internal Server Error response
+//     console.error("Error deleting data:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
+  const teamId = req.params.teamId; // Correctly access teamId from req.params
+  
+  try {
+    const existingData = await TeamModel.findById(teamId);
+    console.log(existingData);
+   
+    if (existingData) {
+      await TeamModel.findByIdAndDelete(teamId); // Use findByIdAndDelete to delete by ID
+      res.status(200).json({ message: "Deleted Successfully" });
+    } else {
+      res.status(400).json({ error: "Team Does Not Exist" }); // Correct typo in error message
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.put("/api/teaminfo/:teamId" , async(req , res)=>{
+  const teamId = req.params.teamId
+
+  const dataToUpdated = req.body
+
+  console.log("Update" , dataToUpdated)
+
+  try{
+    const updatedData = await TeamModel.findByIdAndUpdate(teamId , dataToUpdated , {
+      new : true,
+    })
+    if (!updatedData) {
+      return res.status(404).json({ error: "Data not found" });
+    }else{
+
+      res.json({ message: "Data updated successfully", updatedData });
+    }
+
+ 
+  }catch(error){
+    console.error("Error updating data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+
+  }
+})
+
 
 
 // ------------------------------------------------------team api end----------------------------------

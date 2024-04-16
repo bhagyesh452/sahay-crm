@@ -15,6 +15,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 import { useCallback } from "react";
 import debounce from "lodash/debounce";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { RiEditCircleFill } from "react-icons/ri";
+import { IoClose } from "react-icons/io5";
+import Select from "react-select";
+import { options } from "../../../components/Options.js";
 
 
 
@@ -47,6 +52,8 @@ function BdmTeamLeads() {
   const [bdmNewStatus, setBdmNewStatus] = useState("Untouched");
   const [changeRemarks, setChangeRemarks] = useState("");
   const [updateData, setUpdateData] = useState({});
+  const [projectionData, setProjectionData] = useState([]);
+  
 
 
   const fetchData = async () => {
@@ -73,7 +80,7 @@ function BdmTeamLeads() {
 
 
       setTeamData(response.data)
-      setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === "Untouched"))
+      setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched"))
       setBdmNewStatus("Untouched")
       console.log("response", response.data)
     } catch (error) {
@@ -109,7 +116,10 @@ function BdmTeamLeads() {
     setOpenRemarks(false)
 
   }
+  const closePopUpRemarksEdit = () => {
+    setOpenRemarksEdit(false)
 
+  }
   const functionopenpopupremarks = (companyID, companyStatus, companyName) => {
     setOpenRemarks(true);
     setFilteredRemarks(
@@ -122,8 +132,13 @@ function BdmTeamLeads() {
 
   };
 
-  const functionopenpopupremarksEdit = (companyID, companyStatus, companyName) => {
-    setOpenRemarks(true);
+
+
+
+  const [openRemarksEdit, setOpenRemarksEdit] = useState(false)
+
+  const functionopenpopupremarksEdit = (companyID, companyStatus, companyName, bdmName) => {
+    setOpenRemarksEdit(true);
     setFilteredRemarks(
       remarksHistory.filter((obj) => obj.companyID === companyID)
     );
@@ -131,10 +146,11 @@ function BdmTeamLeads() {
     setcid(companyID);
     setCstat(companyStatus);
     setCurrentCompanyName(companyName);
-
   };
 
-  console.log("currentcompanyname", currentCompanyName);
+  console.log("filteredRemarks", filteredRemarks)
+
+  //console.log("currentcompanyname", currentCompanyName);
 
   const fetchRemarksHistory = async () => {
     try {
@@ -173,12 +189,9 @@ function BdmTeamLeads() {
       const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
         Remarks,
       });
-      const response2 = await axios.post(
-        `${secretKey}/remarks-history/${cid}`,
-        {
-          Remarks,
-        }
-      );
+
+      console.log("remarks", Remarks)
+
 
       // Check if the API call was successful
       if (response.status === 200) {
@@ -188,7 +201,7 @@ function BdmTeamLeads() {
         //fetchNewData(cstat);
         fetchRemarksHistory();
         // setCstat("");
-        closePopUpRemarks(); // Assuming fetchData is a function to fetch updated employee data
+        closePopUpRemarksEdit(); // Assuming fetchData is a function to fetch updated employee data
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);
@@ -206,8 +219,62 @@ function BdmTeamLeads() {
       },
     }));
 
-    // After updating, you can disable the button
+    //   // After updating, you can disable the button
   };
+
+  // const handleUpdate = async () => {
+  //   // Now you have the updated Status and Remarks, perform the update logic
+  //   console.log(cid, cstat, changeRemarks);
+  //   const Remarks = changeRemarks;
+  //   if (Remarks === "") {
+  //     Swal.fire({ title: "Empty Remarks!", icon: "warning" });
+  //     return true;
+  //   }
+  //   try {
+  //     // Make an API call to update the remarks in the database
+  //     const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+  //       Remarks,
+  //     });
+
+  //     console.log("remarks", Remarks);
+
+  //     // Check if the API call to update remarks was successful
+  //     if (response.status === 200) {
+  //       // If successful, proceed with rejecting the data
+  //       Swal.fire("updated")
+  //       const response2 = await axios.post(`${secretKey}/teamleads-rejectdata/${cid}`, {
+  //         bdmAcceptStatus: "NotForwarded",
+  //       });
+
+  //       // Check if the API call to reject data was successful
+  //       if (response2.status === 200) {
+  //         // If both API calls were successful, fetch updated team leads data
+  //         fetchTeamLeadsData();
+  //         Swal.fire("Remarks updated and data rejected!");
+  //         closePopUpRemarks(); // Close the remarks dialog
+  //       } else {
+  //         console.error("Failed to reject data:", response2.data.message);
+  //       }
+  //     } else {
+  //       console.error("Failed to update remarks:", response.data.message);
+  //     }
+  //   } catch (error) {
+  //     // Handle any errors that occur during the API calls
+  //     console.error("Error updating remarks or rejecting data:", error.message);
+  //   }
+
+  //   setUpdateData((prevData) => ({
+  //     ...prevData,
+  //     [companyId]: {
+  //       ...prevData[companyId],
+  //       isButtonEnabled: false,
+  //     },
+  //   }));
+  // };
+
+
+
+
 
 
   const handleAcceptClick = async (
@@ -244,6 +311,7 @@ function BdmTeamLeads() {
 
 
   const handleRejectData = async (companyId) => {
+
 
     try {
       const response = await axios.post(`${secretKey}/teamleads-rejectdata/${companyId}`, {
@@ -300,6 +368,214 @@ function BdmTeamLeads() {
     }
 
   }
+
+  const handleDeleteRemarks = async (remarks_id, remarks_value) => {
+    const mainRemarks = remarks_value === currentRemarks ? true : false;
+    console.log(mainRemarks);
+    const companyId = cid;
+    console.log("Deleting Remarks with", remarks_id);
+    try {
+      // Send a delete request to the backend to delete the item with the specified ID
+      await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
+      if (mainRemarks) {
+        await axios.delete(`${secretKey}/remarks-delete/${companyId}`);
+      }
+      // Set the deletedItemId state to trigger re-fetching of remarks history
+      Swal.fire("Remarks Deleted");
+      fetchRemarksHistory();
+      //fetchNewData(cstat);
+    } catch (error) {
+      console.error("Error deleting remarks:", error);
+    }
+  };
+
+
+// -----------------------------projection------------------------------
+const [projectingCompany, setProjectingCompany] = useState("");
+const [openProjection, setOpenProjection] = useState(false);
+const [currentProjection, setCurrentProjection] = useState({
+  companyName: "",
+  ename: "",
+  offeredPrize: 0,
+  offeredServices: [],
+  lastFollowUpdate: "",
+  totalPayment: 0,
+  estPaymentDate: "",
+  remarks: "",
+  date: "",
+  time: "",
+  editCount: -1,
+  totalPaymentError: "",
+});
+const [selectedValues, setSelectedValues] = useState([]);
+const [isEditProjection, setIsEditProjection] = useState(false);
+const [openAnchor, setOpenAnchor] = useState(false);
+
+
+const functionopenprojection = (comName) => {
+  setProjectingCompany(comName);
+  setOpenProjection(true);
+  const findOneprojection =
+    projectionData.length !== 0 &&
+    projectionData.find((item) => item.companyName === comName);
+  if (findOneprojection) {
+    setCurrentProjection({
+      companyName: findOneprojection.companyName,
+      ename: findOneprojection.ename,
+      offeredPrize: findOneprojection.offeredPrize,
+      offeredServices: findOneprojection.offeredServices,
+      lastFollowUpdate: findOneprojection.lastFollowUpdate,
+      estPaymentDate: findOneprojection.estPaymentDate,
+      remarks: findOneprojection.remarks,
+      totalPayment: findOneprojection.totalPayment,
+      date: "",
+      time: "",
+      editCount: findOneprojection.editCount,
+    });
+    setSelectedValues(findOneprojection.offeredServices);
+  }
+};
+
+const closeProjection = () => {
+  setOpenProjection(false);
+  setProjectingCompany("");
+  setCurrentProjection({
+    companyName: "",
+    ename: "",
+    offeredPrize: "",
+    offeredServices: "",
+    totalPayment: 0,
+    lastFollowUpdate: "",
+    remarks: "",
+    date: "",
+    time: "",
+  });
+  setIsEditProjection(false);
+  setSelectedValues([]);
+};
+const functionopenAnchor = () => {
+  setTimeout(() => {
+    setOpenAnchor(true);
+  }, 1000);
+};
+
+const handleDelete = async (company) => {
+  const companyName = company;
+  console.log(companyName);
+
+  try {
+    // Send a DELETE request to the backend API endpoint
+    const response = await axios.delete(
+      `${secretKey}/delete-followup/${companyName}`
+    );
+    console.log(response.data.message); // Log the response message
+    // Show a success message after successful deletion
+    console.log("Deleted!", "Your data has been deleted.", "success");
+    setCurrentProjection({
+      companyName: "",
+      ename: "",
+      offeredPrize: 0,
+      offeredServices: [],
+      lastFollowUpdate: "",
+      totalPayment: 0,
+      estPaymentDate: "",
+      remarks: "",
+      date: "",
+      time: "",
+    });
+    setSelectedValues([]);
+    fetchProjections();
+  } catch (error) {
+    console.error("Error deleting data:", error);
+    // Show an error message if deletion fails
+    console.log("Error!", "Follow Up Not Found.", "error");
+  }
+};
+
+const handleProjectionSubmit = async () => {
+  try {
+    const newEditCount =
+      currentProjection.editCount === -1
+        ? 0
+        : currentProjection.editCount + 1;
+
+    const finalData = {
+      ...currentProjection,
+      companyName: projectingCompany,
+      ename: data.ename,
+      offeredServices: selectedValues,
+      editCount: currentProjection.editCount + 1, // Increment editCount
+    };
+
+    if (finalData.offeredServices.length === 0) {
+      Swal.fire({ title: "Services is required!", icon: "warning" });
+    } else if (finalData.remarks === "") {
+      Swal.fire({ title: "Remarks is required!", icon: "warning" });
+    } else if (Number(finalData.totalPayment) === 0) {
+      Swal.fire({ title: "Total Payment Can't be 0!", icon: "warning" });
+    } else if (finalData.totalPayment === "") {
+      Swal.fire({ title: "Total Payment Can't be 0", icon: "warning" });
+    } else if (Number(finalData.offeredPrize) === 0) {
+      Swal.fire({ title: "Offered Prize is required!", icon: "warning" });
+    } else if (
+      Number(finalData.totalPayment) > Number(finalData.offeredPrize)
+    ) {
+      Swal.fire({
+        title: "Total Payment cannot be greater than Offered Prize!",
+        icon: "warning",
+      });
+    } else if (finalData.lastFollowUpdate === null) {
+      Swal.fire({
+        title: "Last FollowUp Date is required!",
+        icon: "warning",
+      });
+    } else if (finalData.estPaymentDate === 0) {
+      Swal.fire({
+        title: "Estimated Payment Date is required!",
+        icon: "warning",
+      });
+    } else {
+      // Send data to backend API
+      const response = await axios.post(
+        `${secretKey}/update-followup`,
+        finalData
+      );
+      Swal.fire({ title: "Projection Submitted!", icon: "success" });
+      setOpenProjection(false);
+      setCurrentProjection({
+        companyName: "",
+        ename: "",
+        offeredPrize: 0,
+        offeredServices: [],
+        lastFollowUpdate: "",
+        remarks: "",
+        date: "",
+        time: "",
+        editCount: newEditCount,
+        totalPaymentError: "", // Increment editCount
+      });
+      fetchProjections();
+      setSelectedValues([]);
+    }
+  } catch (error) {
+    console.error("Error updating or adding data:", error.message);
+  }
+};
+
+const fetchProjections = async () => {
+  try {
+    const response = await axios.get(
+      `${secretKey}/projection-data/${data.ename}`
+    );
+    setProjectionData(response.data);
+  } catch (error) {
+    console.error("Error fetching Projection Data:", error.message);
+  }
+};
+
+useEffect(() => {
+  fetchProjections();
+}, [data]);
 
   return (
     <div>
@@ -527,6 +803,7 @@ function BdmTeamLeads() {
                     <thead>
                       <tr className="tr-sticky">
                         <th className="th-sticky">Sr.No</th>
+                        <th>Bde Name</th>
                         <th className="th-sticky1">Company Name</th>
                         <th>Company Number</th>
                         <th>Bde Status</th>
@@ -547,6 +824,8 @@ function BdmTeamLeads() {
                           Assigned Date
                         </th>
                         {bdmNewStatus === "Untouched" && <th>Action</th>}
+                        {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && <th>Add Projection</th>}
+
 
                       </tr>
                     </thead>
@@ -559,6 +838,7 @@ function BdmTeamLeads() {
                           <td className="td-sticky">
                             {startIndex + index + 1}
                           </td>
+                          <td>{company.ename}</td>
                           <td className="td-sticky1">
                             {company["Company Name"]}
                           </td>
@@ -673,7 +953,7 @@ function BdmTeamLeads() {
                                     company["Company Name"]
                                   );
                                   setCurrentRemarks(company.Remarks);
-                                  setCurrentRemarksBdm(company.bdmRemarks)
+                                  //setCurrentRemarksBdm(company.bdmRemarks)
                                   setCompanyId(company._id);
                                 }}
                               >
@@ -770,6 +1050,7 @@ function BdmTeamLeads() {
                                     {!company.bdmRemarks
                                       ? "No Remarks"
                                       : company.bdmRemarks}
+
                                   </p>
 
                                   <IconButton
@@ -777,10 +1058,11 @@ function BdmTeamLeads() {
                                       functionopenpopupremarksEdit(
                                         company._id,
                                         company.Status,
-                                        company["Company Name"]
+                                        company["Company Name"],
+                                        company.bdmName
                                       );
                                       setCurrentRemarks(company.Remarks);
-                                      setCurrentRemarksBdm(company.Remarks)
+                                      //setCurrentRemarksBdm(company.Remarks)
                                       setCompanyId(company._id);
                                     }}>
                                     <EditIcon
@@ -803,7 +1085,7 @@ function BdmTeamLeads() {
                           <td>{company["City"]}</td>
                           <td>{company["State"]}</td>
                           <td>{company["Company Email"]}</td>
-                          <td>{formatDate(company["AssignDate"])}</td>
+                          <td>{company.bdeForwardDate}</td>
                           {
                             company.bdmStatus === "Untouched" && (
                               <td>
@@ -823,84 +1105,55 @@ function BdmTeamLeads() {
                                   <GrStatusGood />
                                 </IconButton>
                                 <IconButton onClick={() => {
-                                  handleRejectData(
-                                    company._id
-                                  )
+                                  handleRejectData(company._id)
                                 }}>
                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>
                               </td>
-
                             )
                           }
-
-                          {/* {(dataStatus === "FollowUp" ||
-                            dataStatus === "Interested") && (<>
-                              <td>
-                                {company &&
-                                  projectionData &&
-                                  projectionData.some(
-                                    (item) =>
-                                      item.companyName ===
+                          {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (
+                            <td>
+                              {company &&
+                                projectionData &&
+                                projectionData.some(
+                                  (item) => item.companyName === company["Company Name"]
+                                ) ? (
+                                <IconButton>
+                                  <RiEditCircleFill
+                                   onClick={() => {
+                                    functionopenprojection(
                                       company["Company Name"]
-                                  ) ? (
-                                  <IconButton>
-                                    <RiEditCircleFill
-                                      onClick={() => {
-                                        functionopenprojection(
-                                          company["Company Name"]
-                                        );
-                                      }}
-                                      style={{
-                                        cursor: "pointer",
-                                        width: "17px",
-                                        height: "17px",
-                                      }}
-                                      color="#fbb900"
-                                    />
-                                  </IconButton>
-                                ) : (
-                                  <IconButton>
-                                    <RiEditCircleFill
-                                      onClick={() => {
-                                        functionopenprojection(
-                                          company["Company Name"]
-                                        );
-                                        setIsEditProjection(true);
-                                      }}
-                                      style={{
-                                        cursor: "pointer",
-                                        width: "17px",
-                                        height: "17px",
-                                      }}
-                                    />
-                                  </IconButton>
-                                )}
-                              </td>
-                              <td>
-                                <div className="d-flex align-items-center justify-content-center" style={{ gap: "20px" }}>
-                                  <TiArrowBack style={{
-                                    cursor: "pointer",
-                                    width: "17px",
-                                    height: "17px",
+                                    );
                                   }}
-                                    color="grey" />
-                                  <TiArrowForward
-                                    onClick={() => {
-                                      handleConfirmAssign(
-                                        company["Company Name"],
-                                        company.Status,
-                                        company.ename
-                                      );
+                                    style={{
+                                      cursor: "pointer",
+                                      width: "17px",
+                                      height: "17px",
+                                      color: "#fbb900", // Set color to yellow
                                     }}
+                                  />
+                                </IconButton>
+                              ) : (
+                                <IconButton>
+                                  <RiEditCircleFill
+                                  onClick={() => {
+                                    functionopenprojection(
+                                      company["Company Name"]
+                                    );
+                                    setIsEditProjection(true);
+                                  }}
+                                 
                                     style={{
                                       cursor: "pointer",
                                       width: "17px",
                                       height: "17px",
                                     }}
-                                    color="grey" />
-                                </div>
-                              </td>
-                            </>)} */}
+                                  />
+                                </IconButton>
+                              )}
+                            </td>
+                          )}
+
                           {/* {dataStatus === "Matured" && (
                             <>
                               <td>
@@ -1035,13 +1288,9 @@ function BdmTeamLeads() {
                         </IconButton> */}
                       </div>
                     )}
-
                   </table>
-
                 </div>
-
               </div>
-
             </div>
           </div>
 
@@ -1129,15 +1378,15 @@ function BdmTeamLeads() {
       {/* ----------------------------------------------------dialog for editing popup--------------------------------------------- */}
 
       <Dialog
-        open={openRemarks}
-        onClose={closePopUpRemarks}
+        open={openRemarksEdit}
+        onClose={closePopUpRemarksEdit}
         fullWidth
         maxWidth="sm">
         <DialogTitle>
           <span style={{ fontSize: "14px" }}>
             {currentCompanyName}'s Remarks
           </span>
-          <IconButton onClick={closePopUpRemarks} style={{ float: "right" }}>
+          <IconButton onClick={closePopUpRemarksEdit} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
           </IconButton>{" "}
         </DialogTitle>
@@ -1151,7 +1400,7 @@ function BdmTeamLeads() {
                       <div className="reamrk-card-innerText">
                         <pre className="remark-text">{historyItem.remarks}</pre>
                       </div>
-                      {/* <div className="dlticon">
+                      <div className="dlticon">
                         <DeleteIcon
                           style={{
                             cursor: "pointer",
@@ -1165,7 +1414,7 @@ function BdmTeamLeads() {
                             );
                           }}
                         />
-                      </div> */}
+                      </div>
                     </div>
 
                     <div className="d-flex card-dateTime justify-content-between">
@@ -1205,7 +1454,279 @@ function BdmTeamLeads() {
           </div>
         </DialogContent>
       </Dialog>
+      <div>
+        <Drawer
+          style={{ top: "50px" }}
+          anchor="right"
+          open={openProjection}
+          onClose={closeProjection}>
+          <div style={{ width: "31em" }} className="container-xl">
+            <div
+              className="header d-flex justify-content-between align-items-center"
+              style={{ margin: "10px 0px" }}
+            >
+              <h1
+                style={{ marginBottom: "0px", fontSize: "23px" }}
+                className="title"
+              >
+                Projection Form
+              </h1>
+              <div>
+                {projectingCompany &&
+                  projectionData &&
+                  projectionData.some(
+                    (item) => item.companyName === projectingCompany
+                  ) ? (
+                  <>
+                    <IconButton
+                      onClick={() => {
+                        setIsEditProjection(true);
+                      }}
+                    >
+                      <EditIcon color="grey"></EditIcon>
+                    </IconButton>
+                  </>
+                ) : null}
+                {/* <IconButton
+                  onClick={() => {
+                    setIsEditProjection(true);
+                  }}>
+                  <EditIcon color="grey"></EditIcon>
+                </IconButton> */}
+                {/* <IconButton onClick={() => handleDelete(projectingCompany)}>
+                  <DeleteIcon
+                    style={{
+                      width: "16px",
+                      height: "16px",
+                      color: "#bf0b0b",
+                    }}
+                  >
+                    Delete
+                  </DeleteIcon>
+                </IconButton> */}
+                <IconButton>
+                  <IoClose onClick={closeProjection} />
+                </IconButton>
+              </div>
+            </div>
+            <hr style={{ margin: "0px" }} />
+            <div className="body-projection">
+              <div className="header d-flex align-items-center justify-content-between">
+                <div>
+                  <h1
+                    title={projectingCompany}
+                    style={{
+                      fontSize: "14px",
+                      textShadow: "none",
+                      fontFamily: "sans-serif",
+                      fontWeight: "400",
+                      fontFamily: "Poppins, sans-serif",
+                      margin: "10px 0px",
+                      width: "200px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {projectingCompany}
+                  </h1>
+                </div>
+                <div>
+                  <button
+                    onClick={() => handleDelete(projectingCompany)}
+                    className="btn btn-link"
+                    style={{ color: "grey" }}
+                  >
+                    Clear Form
+                  </button>
+                </div>
+              </div>
+              <div className="label">
+                <strong>
+                  Offered Services{" "}
+                  {selectedValues.length === 0 && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}{" "}
+                  :
+                </strong>
+                <div className="services mb-3">
+                  <Select
+                    isMulti
+                    options={options}
+                    onChange={(selectedOptions) => {
+                      setSelectedValues(
+                        selectedOptions.map((option) => option.value)
+                      );
+                    }}
+                    value={selectedValues.map((value) => ({
+                      value,
+                      label: value,
+                    }))}
+                    placeholder="Select Services..."
+                    isDisabled={!isEditProjection}
+                  />
+                </div>
+              </div>
+              <div className="label">
+                <strong>
+                  Offered Prices(With GST){" "}
+                  {!currentProjection.offeredPrize && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}{" "}
+                  :
+                </strong>
+                <div className="services mb-3">
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Please enter offered Prize"
+                    value={currentProjection.offeredPrize}
+                    onChange={(e) => {
+                      setCurrentProjection((prevLeadData) => ({
+                        ...prevLeadData,
+                        offeredPrize: e.target.value,
+                      }));
+                    }}
+                    disabled={!isEditProjection}
+                  />
+                </div>
+              </div>
+              <div className="label">
+                <strong>
+                  Expected Price (With GST)
+                  {currentProjection.totalPayment === 0 && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}{" "}
+                  :
+                </strong>
+                <div className="services mb-3">
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Please enter total Payment"
+                    value={currentProjection.totalPayment}
+                    onChange={(e) => {
+                      const newTotalPayment = e.target.value;
+                      if (
+                        Number(newTotalPayment) <=
+                        Number(currentProjection.offeredPrize)
+                      ) {
+                        setCurrentProjection((prevLeadData) => ({
+                          ...prevLeadData,
+                          totalPayment: newTotalPayment,
+                          totalPaymentError: "",
+                        }));
+                      } else {
+                        setCurrentProjection((prevLeadData) => ({
+                          ...prevLeadData,
+                          totalPayment: newTotalPayment,
+                          totalPaymentError:
+                            "Expected Price should be less than or equal to Offered Price.",
+                        }));
+                      }
+                    }}
+                    disabled={!isEditProjection}
+                  />
 
+                  <div style={{ color: "lightred" }}>
+                    {currentProjection.totalPaymentError}
+                  </div>
+                </div>
+              </div>
+
+              <div className="label">
+                <strong>
+                  Last Follow Up Date{" "}
+                  {!currentProjection.lastFollowUpdate && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}
+                  :{" "}
+                </strong>
+                <div className="services mb-3">
+                  <input
+                    type="date"
+                    className="form-control"
+                    placeholder="Please enter offered Prize"
+                    value={currentProjection.lastFollowUpdate}
+                    onChange={(e) => {
+                      setCurrentProjection((prevLeadData) => ({
+                        ...prevLeadData,
+                        lastFollowUpdate: e.target.value,
+                      }));
+                    }}
+                    disabled={!isEditProjection}
+                  />
+                </div>
+              </div>
+              <div className="label">
+                <strong>
+                  Payment Expected on{" "}
+                  {!currentProjection.estPaymentDate && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}
+                  :
+                </strong>
+                <div className="services mb-3">
+                  <input
+                    type="date"
+                    className="form-control"
+                    placeholder="Please enter Estimated Payment Date"
+                    value={currentProjection.estPaymentDate}
+                    onChange={(e) => {
+                      setCurrentProjection((prevLeadData) => ({
+                        ...prevLeadData,
+                        estPaymentDate: e.target.value,
+                      }));
+                    }}
+                    disabled={!isEditProjection}
+                  />
+                </div>
+              </div>
+              <div className="label">
+                <strong>
+                  Remarks{" "}
+                  {currentProjection.remarks === "" && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}
+                  :
+                </strong>
+                <div className="remarks mb-3">
+                  <textarea
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter any Remarks"
+                    value={currentProjection.remarks}
+                    onChange={(e) => {
+                      setCurrentProjection((prevLeadData) => ({
+                        ...prevLeadData,
+                        remarks: e.target.value,
+                      }));
+                    }}
+                    disabled={!isEditProjection}
+                  />
+                </div>
+              </div>
+              <div className="submitBtn">
+                <button
+                  disabled={!isEditProjection}
+                  onClick={handleProjectionSubmit}
+                  style={{ width: "100%" }}
+                  type="submit"
+                  class="btn btn-primary mb-3"
+                >
+                  Submit
+                </button>
+              </div>
+              <div>
+                <button>Pay now</button>
+                {/* <button onClick={generatePaymentLink}>Generate Payment Link</button>
+                {paymentLink && <a href={paymentLink} target="_blank" rel="noopener noreferrer">Proceed to Payment</a>}
+                {error && <p>{error}</p>} */}
+              </div>
+            </div>
+          </div>
+        </Drawer>
+      </div>
 
 
 

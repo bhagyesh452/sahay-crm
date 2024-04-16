@@ -120,7 +120,7 @@ function EmployeePanel() {
     });
 
     const data = await response.json();
-    console.log(data);
+    //console.log(data);
     navigate(data.url);
   }
   // const handleGoogleLogin = async () => {
@@ -139,7 +139,7 @@ function EmployeePanel() {
   const handleSubmitMail = (e) => {
     e.preventDefault();
     // Perform email sending logic here (e.g., using an API or backend)
-    console.log("Email Data:", emailData);
+    //console.log("Email Data:", emailData);
     // Close the compose popup after sending
     setIsOpen(false);
   };
@@ -187,7 +187,7 @@ function EmployeePanel() {
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const { userId } = useParams();
-  console.log(userId);
+  //console.log(userId);
 
   const playNotificationSound = () => {
     const audio = new Audio(notificationSound);
@@ -230,7 +230,7 @@ function EmployeePanel() {
     }
   };
 
-  console.log(totalBookings, "This is elon musk");
+  //console.log(totalBookings, "This is elon musk");
 
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
@@ -328,7 +328,28 @@ function EmployeePanel() {
     setCstat(companyStatus);
     setCurrentCompanyName(companyName);
   };
-  console.log("currentcompanyname", currentCompanyName);
+ // console.log("currentcompanyname", currentCompanyName);
+
+  const [opeRemarksEdit, setOpenRemarksEdit] = useState(false)
+
+  const functionopenpopupremarksEdit = (companyID, companyStatus, companyName) => {
+    setOpenRemarksEdit(true);
+    setFilteredRemarks(
+      remarksHistory.filter((obj) => obj.companyID === companyID)
+    );
+    // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+    setcid(companyID);
+    setCstat(companyStatus);
+    setCurrentCompanyName(companyName);
+  };
+
+  const closePopUpRemarksEdit = () => {
+    setOpenRemarksEdit(false)
+
+  }
+
+
+
 
   const debouncedSetChangeRemarks = useCallback(
     debounce((value) => {
@@ -373,7 +394,7 @@ function EmployeePanel() {
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
-      console.log(tempData);
+      //console.log(tempData);
       setData(userData);
       setmoreFilteredData(userData);
     } catch (error) {
@@ -383,11 +404,11 @@ function EmployeePanel() {
 
   const fecthTeamData = async () => {
     const ename = data.ename
-    console.log("ename", ename)
+    //console.log("ename", ename)
     try {
       const response = await axios.get(`${secretKey}/teaminfo/${ename}`)
 
-      console.log("teamdata", response.data)
+      //console.log("teamdata", response.data)
       setTeamInfo(response.data)
       setBdmName(response.data.bdmName)
       //setTeamDataFilter(response.data)
@@ -397,8 +418,8 @@ function EmployeePanel() {
     }
   }
 
-  console.log("teaminfo", teamInfo)
-  console.log("bdmName", bdmName)
+ // console.log("teaminfo", teamInfo)
+  //console.log("bdmName", bdmName)
 
   useEffect(() => {
     fecthTeamData();
@@ -846,7 +867,7 @@ function EmployeePanel() {
     }));
   };
 
-  console.log(employeeData);
+ 
 
   const handleDeleteRemarks = async (remarks_id, remarks_value) => {
     const mainRemarks = remarks_value === currentRemarks ? true : false;
@@ -1033,43 +1054,57 @@ function EmployeePanel() {
 
   const handleSubmitData = (e) => {
     e.preventDefault();
-    axios
-      .post(`${secretKey}/manual`, {
-        "Company Name": cname,
-        "Company Number": cnumber,
-        "Company Email": cemail,
-        "Company Incorporation Date  ": cidate,
-        City: city,
-        State: state,
-        ename: data.ename,
-        AssignDate: new Date(),
-        "Company Address": companyAddress,
-        "Director Name(First)": directorNameFirst,
-        "Director Number(First)": directorNumberFirst,
-        "Director Email(First)": directorEmailFirst,
-        "Director Name(Second)": directorNameSecond,
-        "Director Number(Second)": directorNumberSecond,
-        "Director Email(Second)": directorEmailSecond,
-        "Director Name(Third)": directorNameThird,
-        "Director Number(Third)": directorNumberThird,
-        "Director Email(Third)": directorEmailThird,
-      })
-      .then((response) => {
-        console.log("response", response);
-        console.log("Data sent Successfully");
-        Swal.fire({
-          title: "Data Added!",
-          text: "Successfully added new Data!",
-          icon: "success",
+    
+    if (cname === "") {
+      Swal.fire("Please Enter Company Name");
+    } else if (!cnumber) {
+      Swal.fire("Company Number is required");
+    } else if (cemail === "") {
+      Swal.fire("Company Email is required");
+    } else if (city === "") {
+      Swal.fire("City is required");
+    } else if (state === "") {
+      Swal.fire("State is required");
+    } else {
+      axios
+        .post(`${secretKey}/manual`, {
+          "Company Name": cname,
+          "Company Number": cnumber,
+          "Company Email": cemail,
+          "Company Incorporation Date": cidate, // Assuming the correct key is "Company Incorporation Date"
+          City: city,
+          State: state,
+          ename: data.ename,
+          AssignDate: new Date(),
+          "Company Address": companyAddress,
+          "Director Name(First)": directorNameFirst,
+          "Director Number(First)": directorNumberFirst,
+          "Director Email(First)": directorEmailFirst,
+          "Director Name(Second)": directorNameSecond,
+          "Director Number(Second)": directorNumberSecond,
+          "Director Email(Second)": directorEmailSecond,
+          "Director Name(Third)": directorNameThird,
+          "Director Number(Third)": directorNumberThird,
+          "Director Email(Third)": directorEmailThird,
+        })
+        .then((response) => {
+          console.log("response", response);
+          console.log("Data sent Successfully");
+          Swal.fire({
+            title: "Data Added!",
+            text: "Successfully added new Data!",
+            icon: "success",
+          });
+          fetchNewData();
+          closepopupNew();
+        })
+        .catch((error) => {
+          console.error("Error sending data:", error);
+          Swal.fire("An error occurred. Please try again later.");
         });
-        fetchNewData();
-        closepopupNew();
-      })
-      .catch((error) => {
-        Swal.fire("Please Enter Unique data!");
-      });
+    }
   };
-
+  
   const [openSecondDirector, setOpenSecondDirector] = useState(false);
   const [openFirstDirector, setOpenFirstDirector] = useState(true);
   const [openThirdDirector, setOpenThirdDirector] = useState(false);
@@ -1760,6 +1795,9 @@ function EmployeePanel() {
     }
   };
 
+
+  console.log("filtetredremarks" , filteredRemarks)
+
   // -----------------------------------------------------delete-projection-data-------------------------------
 
   const handleDelete = async (company) => {
@@ -1937,7 +1975,6 @@ function EmployeePanel() {
 
   // --------------------------------------forward to bdm function---------------------------------------------\
 
-  console.log("currentData", currentData)
   const [forwardedCompany, setForwardedCompany] = useState("")
   const [bdmNewAcceptStatus, setBdmNewAcceptStatus] = useState("")
   const [forwardCompanyId, setforwardCompanyId] = useState("")
@@ -2040,33 +2077,50 @@ function EmployeePanel() {
 
   const [confirmationPending, setConfirmationPending] = useState(false);
 
+  // const handleConfirmAssign = (companyId, companyName, companyStatus, ename, bdmAcceptStatus) => {
+  //   console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
+
+  //   if (companyStatus === "Interested" || companyStatus === "FollowUp" && bdmName) {
+  //     Swal.fire({
+  //       title: 'Are you sure?',
+  //       text: `Do You Want to Forward this to ${bdmName}`, // Assuming `bdmName` is defined somewhere
+  //       icon: 'warning',
+  //       showCancelButton: true,
+  //       confirmButtonColor: '#3085d6',
+  //       cancelButtonColor: '#d33',
+  //       confirmButtonText: 'Yes, proceed!'
+  //     }).then((result) => {
+  //       if (result.isConfirmed) {
+  //         console.log("Confirmed");
+  //         setForrwardEname(ename)
+  //         setForrwardStatus(companyStatus)
+  //         setBdmNewAcceptStatus("Pending")
+  //         setforwardCompanyId(companyId)
+  //         setForwardedCompany(companyName)
+  //         setConfirmationPending(true); // Set confirmation pending
+  //       }
+  //     });
+  //   } else {
+  //     Swal.fire("Your are not assigned to any bdm!")
+  //   }
+  // };
+
   const handleConfirmAssign = (companyId, companyName, companyStatus, ename, bdmAcceptStatus) => {
     console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
-
-    if (companyStatus === "Interested" || companyStatus === "FollowUp") {
-      Swal.fire({
-        title: 'Are you sure?',
-        text: `Do You Want to Forward this to ${bdmName}`, // Assuming `bdmName` is defined somewhere
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, proceed!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          console.log("Confirmed");
-          setForrwardEname(ename)
-          setForrwardStatus(companyStatus)
-          setBdmNewAcceptStatus("Pending")
-          setforwardCompanyId(companyId)
-          setForwardedCompany(companyName)
-          setConfirmationPending(true); // Set confirmation pending
-        }
-      });
+  
+    if (companyStatus === "Interested" || companyStatus === "FollowUp" && bdmName) {
+      // Assuming `bdmName` is defined somewhere
+      setForrwardEname(ename);
+      setForrwardStatus(companyStatus);
+      setBdmNewAcceptStatus("Pending");
+      setforwardCompanyId(companyId);
+      setForwardedCompany(companyName);
+      setConfirmationPending(true); // Set confirmation pending
     } else {
-      alert("there is a error")
+      Swal.fire("Your are not assigned to any bdm!");
     }
   };
+  
 
   useEffect(() => {
     if (confirmationPending) {
@@ -2076,22 +2130,23 @@ function EmployeePanel() {
   }, [confirmationPending]);
 
   const handleForwardBdm = async () => {
-    console.log("selectedData", currentData, forwardedCompany);
+    //console.log("selectedData", currentData, forwardedCompany);
     const selectedDataWithBdm = currentData.filter((company) => company["Company Name"] === forwardedCompany);
     try {
       const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
         selectedData: selectedDataWithBdm,
         bdmName: bdmName,
         companyId: forwardCompanyId,
-        bdmAcceptStatus: bdmNewAcceptStatus // Assuming bdmName is defined elsewhere in your component
+        bdmAcceptStatus: bdmNewAcceptStatus,
+        bdeForwardDate: Date.now() // Assuming bdmName is defined elsewhere in your component
       });
-      console.log("response", response.data);
+      //console.log("response", response.data);
       Swal.fire("Data Forwarded");
-      fetchNewData();
+
     } catch (error) {
       console.log(error);
       Swal.fire("Error Assigning Data");
-      fetchNewData();
+
     }
   };
 
@@ -2103,7 +2158,7 @@ function EmployeePanel() {
           companyName,
           bdmAcceptStatus: "NotForwarded", // Corrected parameter name
         });
-        console.log("response", response.data);
+       // console.log("response", response.data);
         Swal.fire("Data Reversed");
       } catch (error) {
         console.log("error reversing bdm forwarded data", error.message);
@@ -3195,6 +3250,15 @@ function EmployeePanel() {
                                         setCompanyId(company._id);
                                       }}>
                                       <EditIcon
+                                        onClick={() => {
+                                          functionopenpopupremarks(
+                                            company._id,
+                                            company.Status,
+                                            company["Company Name"]
+                                          );
+                                          setCurrentRemarks(company.Remarks);
+                                          setCompanyId(company._id);
+                                        }}
                                         style={{
                                           width: "12px",
                                           height: "12px",
@@ -3203,15 +3267,15 @@ function EmployeePanel() {
                                     </IconButton>)}
                                     {company.bdmAcceptStatus === "Accept" && (
                                       <IconButton
-                                      // onClick={() => {
-                                      //   functionopenpopupremarks(
-                                      //     company._id,
-                                      //     company.Status,
-                                      //     company["Company Name"]
-                                      //   );
-                                      //   setCurrentRemarks(company.Remarks);
-                                      //   setCompanyId(company._id);
-                                      // }}
+                                      onClick={() => {
+                                        functionopenpopupremarksEdit(
+                                          company._id,
+                                          company.Status,
+                                          company["Company Name"]
+                                        );
+                                        setCurrentRemarks(company.Remarks);
+                                        setCompanyId(company._id);
+                                      }}
                                       >
                                         <IconEye
                                           style={{
@@ -3235,116 +3299,64 @@ function EmployeePanel() {
                                 <td>{company["State"]}</td>
                                 <td>{company["Company Email"]}</td>
                                 <td>{formatDate(company["AssignDate"])}</td>
-
-                                {/* {(dataStatus === "FollowUp" ||
-                                dataStatus === "Interested") && (
-                                  <td>
-                                    {company &&
-                                      projectionData &&
-                                      projectionData.some(
-                                        (item) =>
-                                          item.companyName ===
-                                          company["Company Name"]
-                                      ) ? (
-                                      <>
-                                        <IconButton>
-                                          <RiEditCircleFill
-                                            onClick={() => {
-                                              functionopenprojection(
-                                                company["Company Name"]
-                                              );
-                                            }}
-                                            //onClick={()=>handleIconButtonClick(company["Company Name"])}
-                                            style={{
-                                              cursor: "pointer",
-                                              width: "17px",
-                                              height: "17px",
-                                            }}
-                                            color="#fbb900"
-                                          />
-                                        </IconButton>
-
-                                      </>
-                                    ) : (<>
-                                      <IconButton>
-                                        <RiEditCircleFill
-                                          onClick={() => {
-                                            functionopenprojection(
-                                              company["Company Name"]
-                                            );
-                                            setIsEditProjection(true);
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                        />
-                                      </IconButton>
-
-                                    </>
-                                    ) : (
-                                    <IconButton>
-                                      <RiEditCircleFill
-                                        onClick={() => {
-                                          functionopenprojection(
-                                            company["Company Name"]
-                                          );
-                                          setIsEditProjection(true);
-                                        }}
-                                        style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                      />
-                                    </IconButton>
-                                  )}
-                                  </td>
-                                )} */}
                                 {(dataStatus === "FollowUp" ||
                                   dataStatus === "Interested") && (<>
-                                    <td>
-                                      {company &&
-                                        projectionData &&
-                                        projectionData.some(
-                                          (item) =>
-                                            item.companyName ===
-                                            company["Company Name"]
-                                        ) ? (
+                                    {company.bdmAcceptStatus === "NotForwarded" ? (
+                                      <td>
+                                        {company &&
+                                          projectionData &&
+                                          projectionData.some(
+                                            (item) =>
+                                              item.companyName ===
+                                              company["Company Name"]
+                                          ) ? (
+                                          <IconButton>
+                                            <RiEditCircleFill
+                                              onClick={() => {
+                                                functionopenprojection(
+                                                  company["Company Name"]
+                                                );
+                                              }}
+                                              style={{
+                                                cursor: "pointer",
+                                                width: "17px",
+                                                height: "17px",
+                                              }}
+                                              color="#fbb900"
+                                            />
+                                          </IconButton>
+                                        ) : (
+                                          <IconButton>
+                                            <RiEditCircleFill
+                                              onClick={() => {
+                                                functionopenprojection(
+                                                  company["Company Name"]
+                                                );
+                                                setIsEditProjection(true);
+                                              }}
+                                              style={{
+                                                cursor: "pointer",
+                                                width: "17px",
+                                                height: "17px",
+                                              }}
+                                            />
+                                          </IconButton>
+                                        )}
+                                      </td>) : (
+                                      <td>
                                         <IconButton>
                                           <RiEditCircleFill
-                                            onClick={() => {
-                                              functionopenprojection(
-                                                company["Company Name"]
-                                              );
-                                            }}
                                             style={{
                                               cursor: "pointer",
                                               width: "17px",
                                               height: "17px",
-                                            }}
-                                            color="#fbb900"
-                                          />
-                                        </IconButton>
-                                      ) : (
-                                        <IconButton>
-                                          <RiEditCircleFill
-                                            onClick={() => {
-                                              functionopenprojection(
-                                                company["Company Name"]
-                                              );
-                                              setIsEditProjection(true);
-                                            }}
-                                            style={{
-                                              cursor: "pointer",
-                                              width: "17px",
-                                              height: "17px",
+                                              alignItems: "center",
+                                              color: "black"
                                             }}
                                           />
                                         </IconButton>
-                                      )}
-                                    </td>
+                                      </td>
+                                    )}
                                     <td>
                                       {company.bdmAcceptStatus === "NotForwarded" ? (
                                         <TiArrowForward
@@ -4078,6 +4090,87 @@ function EmployeePanel() {
         </DialogContent>
       </Dialog>
 
+
+      {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
+
+      <Dialog
+        open={opeRemarksEdit}
+        onClose={closePopUpRemarksEdit}
+        fullWidth
+        maxWidth="sm">
+        <DialogTitle>
+          <span style={{ fontSize: "14px" }}>
+            {currentCompanyName}'s Remarks
+          </span>
+          <IconButton onClick={closePopUpRemarksEdit} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="remarks-content">
+            {filteredRemarks.length !== 0 ? (
+              filteredRemarks.slice().map((historyItem) => (
+                <div className="col-sm-12" key={historyItem._id}>
+                  <div className="card RemarkCard position-relative">
+                    <div className="d-flex justify-content-between">
+                      <div className="reamrk-card-innerText">
+                        <pre className="remark-text">{historyItem.remarks}</pre>
+                      </div>
+                      {/* <div className="dlticon">
+                        <DeleteIcon
+                          style={{
+                            cursor: "pointer",
+                            color: "#f70000",
+                            width: "14px",
+                          }}
+                          onClick={() => {
+                            handleDeleteRemarks(
+                              historyItem._id,
+                              historyItem.remarks
+                            );
+                          }}
+                        />
+                      </div> */}
+                    </div>
+
+                    <div className="d-flex card-dateTime justify-content-between">
+                      <div className="date">{historyItem.date}</div>
+                      <div className="time">{historyItem.time}</div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center overflow-hidden">
+                No Remarks History
+              </div>
+            )}
+          </div>
+
+          {/* <div class="card-footer">
+            <div class="mb-3 remarks-input">
+              <textarea
+                placeholder="Add Remarks Here...  "
+                className="form-control"
+                id="remarks-input"
+                rows="3"
+                onChange={(e) => {
+                  debouncedSetChangeRemarks(e.target.value);
+                }}
+              ></textarea>
+            </div>
+            <button
+              onClick={handleUpdate}
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: "100%" }}
+            >
+              Submit
+            </button>
+          </div> */}
+        </DialogContent>
+      </Dialog>
+
       {/* ADD Leads starts here */}
 
       {/* <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="sm">
@@ -4200,6 +4293,7 @@ function EmployeePanel() {
                         onChange={(e) => {
                           setCname(e.target.value);
                         }}
+                        required
                       />
                     </div>
                   </div>
@@ -4633,8 +4727,7 @@ function EmployeePanel() {
           style={{ top: "50px" }}
           anchor="right"
           open={openProjection}
-          onClose={closeProjection}
-        >
+          onClose={closeProjection}>
           <div style={{ width: "31em" }} className="container-xl">
             <div
               className="header d-flex justify-content-between align-items-center"

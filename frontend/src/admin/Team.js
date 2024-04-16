@@ -16,6 +16,7 @@ import { MdOutlineAddCircle } from "react-icons/md";
 import Swal from "sweetalert2";
 import { IconTrash } from "@tabler/icons-react";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import { IconEye } from "@tabler/icons-react";
 
 
 
@@ -97,6 +98,29 @@ function Team() {
         fecthTeamData()
     }
     const [bdmNameSelected, setBdmNameSelected] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false)
+    const [teamId, setTeamId] = useState("")
+
+    const handleUpdateTeam = (teamId) => {
+        const selectedData = teamData.find((item) => item._id === teamId);
+
+        // Extract ename values from the employees array
+        const enames = selectedData.employees.map((employee) => employee.ename);
+
+        console.log(selectedData);
+
+        setIsEditMode(true);
+        setTeamId(teamId);
+        setEname(selectedData.teamName);
+        setDesignation(selectedData.bdmName);
+        setBranchOffice(selectedData.branchOffice);
+        setOpenBdeField(true);
+        setOpenBdmField(true);
+        setBdmNameSelected(true);
+        setBdeFields(enames);
+        setSelectedBdes(enames)// Update bdeFields with enames
+    };
+
 
     const handleSelectBdm = (value) => {
         const branch = value;
@@ -110,6 +134,8 @@ function Team() {
             setEmployeeData(employeeDataFilter.filter((employee) => employee.branchOffice === "Sindhu Bhawan"))
         }
     }
+
+
     const handleAddBdeField = () => {
         const newBdeFields = [...bdeFields];
         newBdeFields.push('');
@@ -125,7 +151,6 @@ function Team() {
         setSelectedBdes(newSelectedBdes);
     };
 
-    const [latestName, setLatestName] = useState()
 
     const handleBdeSelect = (index, value) => {
         console.log(index)
@@ -152,7 +177,34 @@ function Team() {
                 bdmName: designation,
                 employees: selectedBdes.map(ename => ({ ename, branchOffice }))
             };
-            if (teamData && selectedBdes.length !== 0) {
+
+            let updatedTeamData = {
+                teamName: ename,
+                bdmName: designation,
+                branchOffice: branchOffice,
+                employees: selectedBdes.map(ename => ({ ename, branchOffice }))
+            }
+
+            // if (teamData && selectedBdes.length !== 0) {
+            //     const response = await axios.post(`${secretKey}/teaminfo`, teamData);
+            //     Swal.fire({
+            //         title: "Data Added!",
+            //         text: "You have successfully created a team!",
+            //         icon: "success",
+            //     });
+            //     console.log('Team created:', response.data);
+            //     closepopup()
+            //     // Optionally, you can reset the form state here
+
+            if (isEditMode) {
+                await axios.put(`{secretKey}/teaminfo/${teamId}`, updatedTeamData);
+                Swal.fire({
+                    title: "Data Updated Succesfully!",
+                    text: "You have successfully updated the name!",
+                    icon: "success",
+                });
+                console.log("updatedData" , updatedTeamData)
+            } else {
                 const response = await axios.post(`${secretKey}/teaminfo`, teamData);
                 Swal.fire({
                     title: "Data Added!",
@@ -160,17 +212,19 @@ function Team() {
                     icon: "success",
                 });
                 console.log('Team created:', response.data);
-                closepopup()
-                // Optionally, you can reset the form state here
-
-            } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Atleast One BDE is required!",
-                });
-
             }
+            closepopup()
+            setIsEditMode(false);
+            setTeamId("");
+            setEname("");
+            setDesignation("");
+            setBranchOffice("");
+            setOpenBdeField(false);
+            setOpenBdmField(false);
+            setBdmNameSelected(false);
+            setBdeFields([]);
+            setSelectedBdes([])// Update bdeFields with enames
+
         } catch (error) {
             const errorfound = error.response.data.message
             setErrorMessage(errorfound)
@@ -183,7 +237,7 @@ function Team() {
         }
     };
 
-    const closeTeamDetails=()=>{
+    const closeTeamDetails = () => {
         setopenTeamDetails(false)
     }
 
@@ -192,17 +246,44 @@ function Team() {
         const day = date.getDate();
         const month = date.getMonth() + 1; // Adding 1 because getMonth() returns zero-based index (0 for January)
         const year = date.getFullYear();
-    
+
         // Format day and month to ensure they have two digits
         const formattedDay = day < 10 ? '0' + day : day;
         const formattedMonth = month < 10 ? '0' + month : month;
-    
+
         // Create the formatted date string in dd/mm/yyyy format
         const formattedDate = `${formattedMonth}/${formattedDay}/${year}`;
-    
+
         return formattedDate;
     }
-    
+
+    const [teamName, setTeamName] = useState("")
+    const [teambdmName, setTeamBdmName] = useState("")
+    const [teamBranckOffice, setteamBranchOffice] = useState("")
+    const [teamemployees, setTeamEmployees] = useState([])
+
+    const functionOpenTeamDeatils = (teamName, bdmName, branchOffice, employees) => {
+        setopenTeamDetails(true)
+        setTeamName(teamName);
+        setTeamBdmName(bdmName);
+        setteamBranchOffice(branchOffice)
+        setTeamEmployees(employees)
+    }
+
+    const handleDeleteTeam = async (teamId) => {
+        try {
+            const response = await axios.delete(`${secretKey}/delete-bdmTeam/${teamId}`);
+            if (response.status === 200) {
+                Swal.fire("Team Deleted Successfully");
+            }
+        } catch (error) {
+            Swal.fire("Error", error.message, "error");
+        }
+    }
+
+
+
+
 
 
     return (
@@ -211,17 +292,49 @@ function Team() {
             <Navbar /> */}
             <div className="page-wrapper">
                 <div className="page-header m-0 d-print-none">
-                        <div className="row g-2 align-items-center">
-                            <div className="col">
-                                <h2 className="page-title">Teams</h2>
-                            </div>
-                            <div style={{ width: "20vw" }} className="input-icon">
-                                <span className="input-icon-addon">
-                                    {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                    <div className="row g-2 align-items-center">
+                        <div className="col">
+                            <h2 className="page-title">Teams</h2>
+                        </div>
+                        <div style={{ width: "20vw" }} className="input-icon">
+                            <span className="input-icon-addon">
+                                {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="icon"
+                                    width="20"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="2"
+                                    stroke="currentColor"
+                                    fill="none"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                                    <path d="M21 21l-6 -6" />
+                                </svg>
+                            </span>
+                            <input
+                                type="text"
+                                //value={searchQuery}
+                                className="form-control"
+                                placeholder="Search…"
+                                aria-label="Search in website"
+                            // onChange={handleSearch}
+                            />
+                        </div>
+                        <div className="col-auto ms-auto d-print-none">
+                            <div className="btn-list">
+                                <button
+                                    className="btn btn-primary d-none d-sm-inline-block"
+                                    onClick={functionopenpopup}>
+                                    {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         className="icon"
-                                        width="20"
+                                        width="24"
                                         height="24"
                                         viewBox="0 0 24 24"
                                         stroke-width="2"
@@ -231,54 +344,22 @@ function Team() {
                                         stroke-linejoin="round"
                                     >
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                                        <path d="M21 21l-6 -6" />
+                                        <path d="M12 5l0 14" />
+                                        <path d="M5 12l14 0" />
                                     </svg>
-                                </span>
-                                <input
-                                    type="text"
-                                    //value={searchQuery}
-                                    className="form-control"
-                                    placeholder="Search…"
-                                    aria-label="Search in website"
-                                // onChange={handleSearch}
-                                />
-                            </div>
-                            <div className="col-auto ms-auto d-print-none">
-                                <div className="btn-list">
-                                    <button
-                                        className="btn btn-primary d-none d-sm-inline-block"
-                                        onClick={functionopenpopup}>
-                                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="icon"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="2"
-                                            stroke="currentColor"
-                                            fill="none"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        >
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <path d="M12 5l0 14" />
-                                            <path d="M5 12l14 0" />
-                                        </svg>
-                                        Add Teams
-                                    </button>
-                                    <a
-                                        href="#"
-                                        className="btn btn-primary d-sm-none btn-icon"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-report"
-                                        aria-label="Create new report">
-                                    </a>
-                                </div>
+                                    Add Teams
+                                </button>
+                                <a
+                                    href="#"
+                                    className="btn btn-primary d-sm-none btn-icon"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-report"
+                                    aria-label="Create new report">
+                                </a>
                             </div>
                         </div>
-                  
+                    </div>
+
                 </div>
             </div>
             <div onCopy={(e) => {
@@ -327,11 +408,24 @@ function Team() {
                                                 <td>{item.teamName}</td>
                                                 <td>{item.bdmName}</td>
                                                 <td>{item.branchOffice}</td>
-                                                <td onClick={()=>setopenTeamDetails(true)}>{item.employees.length}</td>
+                                                <td onClick={() => functionOpenTeamDeatils(
+                                                    item.teamName,
+                                                    item.bdmName,
+                                                    item.branchOffice,
+                                                    item.employees
+                                                )}>{item.employees.length}
+                                                    <IconButton >  <IconEye
+                                                        style={{
+                                                            width: "14px",
+                                                            height: "14px",
+                                                            color: "#d6a10c",
+                                                        }}
+                                                    /></IconButton>
+                                                </td>
                                                 <td>{item.modifiedAt}</td>
                                                 <td><div className="d-flex justify-content-center align-items-center">
                                                     <div className="icons-btn">
-                                                        <IconButton 
+                                                        <IconButton onClick={() => { handleDeleteTeam(item._id) }}
                                                         >
                                                             <IconTrash
                                                                 style={{
@@ -345,7 +439,10 @@ function Team() {
                                                         </IconButton>
                                                     </div>
                                                     <div className="icons-btn">
-                                                        <IconButton>
+                                                        <IconButton onClick={() => {
+                                                            functionopenpopup()
+                                                            handleUpdateTeam(item._id, item.teamName)
+                                                        }}>
                                                             <ModeEditIcon
                                                                 style={{
                                                                     cursor: "pointer",
@@ -525,20 +622,41 @@ function Team() {
                 </Button>
             </Dialog>
 
-{/* -------------------------------------------popup for team details----------------------------------------------------------- */}
+            {/* -------------------------------------------popup for team details----------------------------------------------------------- */}
 
             <Dialog open={openTeamDetails} onClose={closeTeamDetails} fullWidth maxWidth="sm">
                 <DialogTitle>
-                    Team Details
+                    {teamName}
                     <IconButton onClick={closeTeamDetails} style={{ float: "right" }}>
                         <CloseIcon color="primary"></CloseIcon>
                     </IconButton>{" "}
                 </DialogTitle>
+                <DialogTitle>
+                    <div className="d-flex align-items-center justify-content-between">
+                        <h4 style={{ color: "grey" }}>{teambdmName}</h4>
+                        <h4 style={{ color: "grey" }}>{teamBranckOffice}</h4>
+                    </div>
+                </DialogTitle>
                 <DialogContent>
-                    
+                    <table style={{ width: "100%" }}>
+                        <thead>
+                            <tr>
+                                <th>S.no</th>
+                                <th>Bde Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {teamemployees && teamemployees.map((obj, index) =>
+                                <tr key={index}>
+                                    <td>{index + 1}</td>
+                                    <td>{obj.ename}</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </DialogContent>
                 <Button variant="contained" style={{ backgroundColor: "#fbb900" }}>
-                 
+
                 </Button>
             </Dialog>
 
