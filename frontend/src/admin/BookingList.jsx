@@ -965,7 +965,8 @@ function BookingList() {
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       <span>
-                                        <i>Close By</i>
+                                        <i>  {currentLeadform &&
+                                        currentLeadform.bdmType}</i>
                                       </span>{" "}
                                       {currentLeadform &&
                                         currentLeadform.bdmName}
@@ -1197,7 +1198,7 @@ function BookingList() {
                                             {"("}
                                             {isNaN(
                                               new Date(obj.thirdPaymentRemarks)
-                                            )
+                                            ) 
                                               ? obj.thirdPaymentRemarks
                                               : "On " +
                                                 obj.thirdPaymentRemarks +
