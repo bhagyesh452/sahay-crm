@@ -589,7 +589,7 @@ useEffect(() => {
                   <div className="col-sm-3">
                     <div class="input-icon">
                       <span class="input-icon-addon">
-                        <CiSearch />
+                        {/* <CiSearch /> */}
                       </span>
                       <input type="text" value="" class="form-control" placeholder="Search…" aria-label="Search in website" />
                     </div>

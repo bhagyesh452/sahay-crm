@@ -169,41 +169,108 @@ function Team() {
     const [errorMessage, setErrorMessage] = useState("")
     //console.log(errorMessage)
 
+    // const handleSubmit = async () => {
+    //     try {
+    //         const teamData = {
+    //             teamName: ename,
+    //             branchOffice: branchOffice,
+    //             bdmName: designation,
+    //             employees: selectedBdes.map(ename => ({ ename, branchOffice }))
+    //         };
+
+    //         let updatedTeamData = {
+    //             teamName: ename,
+    //             bdmName: designation,
+    //             branchOffice: branchOffice,
+    //             employees: selectedBdes.map(ename => ({ ename, branchOffice }))
+    //         }
+
+    //         // if (teamData && selectedBdes.length !== 0) {
+    //         //     const response = await axios.post(`${secretKey}/teaminfo`, teamData);
+    //         //     Swal.fire({
+    //         //         title: "Data Added!",
+    //         //         text: "You have successfully created a team!",
+    //         //         icon: "success",
+    //         //     });
+    //         //     console.log('Team created:', response.data);
+    //         //     closepopup()
+    //         //     // Optionally, you can reset the form state here
+
+    //         if (isEditMode) {
+    //             await axios.put(`${secretKey}/teaminfo/${teamId}`, updatedTeamData);
+    //             Swal.fire({
+    //                 title: "Data Updated Succesfully!",
+    //                 text: "You have successfully updated the name!",
+    //                 icon: "success",
+    //             });
+    //             console.log("updatedData" , updatedTeamData)
+    //         } else {
+    //             const response = await axios.post(`${secretKey}/teaminfo`, teamData);
+    //             Swal.fire({
+    //                 title: "Data Added!",
+    //                 text: "You have successfully created a team!",
+    //                 icon: "success",
+    //             });
+    //             console.log('Team created:', response.data);
+    //         }
+    //         closepopup()
+    //         setIsEditMode(false);
+    //         setTeamId("");
+    //         setEname("");
+    //         setDesignation("");
+    //         setBranchOffice("");
+    //         setOpenBdeField(false);
+    //         setOpenBdmField(false);
+    //         setBdmNameSelected(false);
+    //         setBdeFields([]);
+    //         setSelectedBdes([])// Update bdeFields with enames
+
+    //     } catch (error) {
+    //         const errorfound = error.response.data.message
+    //         setErrorMessage(errorfound)
+    //         Swal.fire({
+    //             icon: "error",
+    //             title: "Oops...",
+    //             html: `${errorfound}!`,
+    //         });
+    //         console.error('Error creating team:', error.response.data.message);
+    //     }
+    // };
+
     const handleSubmit = async () => {
         try {
+            // Check if teamName, bdmName, and selectedBdes array have values
+            if (!ename || !designation || selectedBdes.length === 0) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Team name, BDM name, and at least one BD ename are required!",
+                });
+                return; // Exit function if any required field is missing
+            }
+    
             const teamData = {
                 teamName: ename,
                 branchOffice: branchOffice,
                 bdmName: designation,
                 employees: selectedBdes.map(ename => ({ ename, branchOffice }))
             };
-
+    
             let updatedTeamData = {
                 teamName: ename,
                 bdmName: designation,
                 branchOffice: branchOffice,
                 employees: selectedBdes.map(ename => ({ ename, branchOffice }))
             }
-
-            // if (teamData && selectedBdes.length !== 0) {
-            //     const response = await axios.post(`${secretKey}/teaminfo`, teamData);
-            //     Swal.fire({
-            //         title: "Data Added!",
-            //         text: "You have successfully created a team!",
-            //         icon: "success",
-            //     });
-            //     console.log('Team created:', response.data);
-            //     closepopup()
-            //     // Optionally, you can reset the form state here
-
-            if (isEditMode) {
-                await axios.put(`{secretKey}/teaminfo/${teamId}`, updatedTeamData);
+    
+            if (isEditMode && updatedTeamData) {
+                await axios.put(`${secretKey}/teaminfo/${teamId}`, updatedTeamData);
                 Swal.fire({
                     title: "Data Updated Succesfully!",
                     text: "You have successfully updated the name!",
                     icon: "success",
                 });
-                console.log("updatedData" , updatedTeamData)
+                console.log("updatedData", updatedTeamData)
             } else {
                 const response = await axios.post(`${secretKey}/teaminfo`, teamData);
                 Swal.fire({
@@ -213,7 +280,7 @@ function Team() {
                 });
                 console.log('Team created:', response.data);
             }
-            closepopup()
+            closepopup();
             setIsEditMode(false);
             setTeamId("");
             setEname("");
@@ -224,7 +291,7 @@ function Team() {
             setBdmNameSelected(false);
             setBdeFields([]);
             setSelectedBdes([])// Update bdeFields with enames
-
+    
         } catch (error) {
             const errorfound = error.response.data.message
             setErrorMessage(errorfound)
@@ -236,6 +303,7 @@ function Team() {
             console.error('Error creating team:', error.response.data.message);
         }
     };
+    
 
     const closeTeamDetails = () => {
         setopenTeamDetails(false)
