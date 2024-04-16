@@ -3467,6 +3467,173 @@ app.get("/api/redesigned-leadData/:CompanyName", async (req, res) => {
   }
 });
 
+app.post("/api/redesigned-importData", async (req, res) => {
+  try {
+    const data = req.body;
+    let leadData = [];
+
+    // Loop through each data object in the array
+    for (const item of data) {
+      const companyName = item["Company Name"];
+      let companyID = "";
+      // Find the object with the given company name in RedesignedLeadformModel
+      let existingData = await RedesignedLeadformModel.findOne({
+        "Company Name": companyName,
+      });
+      const companyExists = await CompanyModel.findOne({
+        "Company Name": companyName
+      })
+      if(companyExists){
+        companyExists.Status = "Matured";
+        const updatedData = await companyExists.save();
+        companyID = updatedData._id;
+      }else {
+        const basicData = new CompanyModel({
+          "Company Name":item["Company Name"],
+          "Company Email":item["Company Email"],
+          "Company Number":item["Company Number"],
+          ename:item.bdeName,
+          "Company Incorporation Date  ":item.incoDate,
+          AssignDate: new Date(),
+          Status: "Matured",
+          Remarks:item.extraRemarks
+        })
+        const storedData =  await basicData.save();
+        companyID = storedData._id;
+      }
+     
+      
+    
+
+      // Create an array to store services data
+      const services = [];
+
+      // Loop through each service index (1 to 5)
+      for (let i = 1; i <= 5; i++) {
+        // Check if the serviceName exists for the current index
+        if (item[`${i}serviceName`]) {
+          const service = {
+            serviceName: item[`${i}serviceName`],
+            totalPaymentWOGST: item[`${i}TotalAmount`],
+            totalPaymentWGST: item[`${i}GST`] === "YES"
+              ? item[`${i}TotalAmount`] + item[`${i}TotalAmount`] * 0.18
+              : item[`${i}TotalAmount`],
+            withGST: item[`${i}GST`] === "YES",
+            withDSC: item[`${i}serviceName`] === "Start-Up India Certificate With DSC",
+            paymentTerms: item[`${i}PaymentTerms`] === "PART-PAYMENT" ? "two-part" : "Full Advanced",
+            firstPayment: item[`${i}FirstPayment`],
+            secondPayment: item[`${i}SecondPayment`],
+            thirdPayment: item[`${i}ThirdPayment`],
+            fourthPayment: item[`${i}FourthPayment`],
+            paymentRemarks: item[`${i}PaymentRemarks`],
+          };
+          services.push(service);
+        }
+      }
+
+      // Save other data with same property names
+      // const otherData = {
+      //   "Company Name": item["Company Name"],
+      //   "Company Email": item["Company Email"],
+      //   "Company Number": item["Company Number"],
+      //   incoDate: item.incoDate,
+      //   panNumber: item.panNumber,
+      //   gstNumber: item.gstNumber,
+      //   bdeName: item.bdeName,
+      //   bdeEmail: item.bdeEmail,
+      //   bdmType: item.bdmType,
+      //   bdmEmail: item.bdmEmail,
+      //   bookingDate: item.bookingDate,
+      //   bookingSource: item.bookingSource,
+      //   otherBookingSource: item.otherBookingSource,
+      //   services: services,
+      //   numberOfServices: services.length,
+      //   caCase: item.caCase,
+      //   caCommission: item.caCommission,
+      //   caNumber: item.caNumber,
+      //   caEmail: item.caEmail,
+      //   totalAmount: item.totalPayment,
+      //   pendingAmount: item.pendingPayment,
+      //   receivedAmount: item.receivedPayment,
+      //   paymentMethod: item.receivedAmount,
+      //   extraRemarks: item.extraRemarks,
+      // };
+      
+      if (!existingData) {
+    
+        // Create a new object if it doesn't exist
+        console.log(item)
+        const lmao = new RedesignedLeadformModel({
+          company : companyID,
+          "Company Name": item["Company Name"],
+          "Company Email": item["Company Email"],
+          "Company Number": item["Company Number"],
+          incoDate: item.incoDate,
+          panNumber: item.panNumber,
+          gstNumber: item.gstNumber,
+          bdeName: item.bdeName,
+          bdeEmail: item.bdeEmail,
+          bdmType: item.bdmType,
+          bdmName:item.bdmName,
+          bdmEmail: item.bdmEmail,
+          bookingDate: item.bookingDate,
+          bookingSource: item.leadSource,
+          otherBookingSource: item.otherBookingSource,
+          services: services,
+          numberOfServices: services.length,
+          caCase: item.caCase,
+          caCommission: item.caCommission,
+          caNumber: item.caNumber,
+          caEmail: item.caEmail,
+          totalAmount: item.totalPayment,
+          pendingAmount: item.pendingPayment,
+          receivedAmount: item.receivedPayment,
+          paymentMethod: item.receivedAmount,
+          extraRemarks: item.extraRemarks,
+        });
+        await lmao.save();
+      }else {
+        existingData.moreBookings.push({
+        "Company Name": item["Company Name"],
+        "Company Email": item["Company Email"],
+        "Company Number": item["Company Number"],
+        incoDate: item.incoDate,
+        panNumber: item.panNumber,
+        gstNumber: item.gstNumber,
+        bdeName: item.bdeName,
+        bdeEmail: item.bdeEmail,
+        bdmType: item.bdmType,
+        bdmEmail: item.bdmEmail,
+        bookingDate: item.bookingDate,
+        bookingSource: item.bookingSource,
+        otherBookingSource: item.otherBookingSource,
+        services: services,
+        numberOfServices: services.length,
+        caCase: item.caCase,
+        caCommission: item.caCommission,
+        caNumber: item.caNumber,
+        caEmail: item.caEmail,
+        totalAmount: item.totalPayment,
+        pendingAmount: item.pendingPayment,
+        receivedAmount: item.receivedPayment,
+        paymentMethod: item.receivedAmount,
+        extraRemarks: item.extraRemarks,
+        });
+        await existingData.save();
+      }
+      // Update existing data or add to moreBookings
+   
+      // Save the updated data
+    }
+    res.status(200).send("Data imported and updated successfully!");
+  } catch (error) {
+    console.error("Error importing data:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
+
 app.post(
   "/api/redesigned-leadData/:CompanyName/:step",
   upload.fields([
