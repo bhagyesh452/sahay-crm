@@ -64,7 +64,7 @@ function Employees({ onEyeButtonClick }) {
     console.log(id);
   };
   useEffect(() => {
-    const socket = io('/api/socket.io');
+    const socket = io('/socket.io');
     socket.on("employee-entered", () => {
       console.log("One user Entered");
       setTimeout(() => {
@@ -835,11 +835,11 @@ function Employees({ onEyeButtonClick }) {
                         Added on
                       </button>
                     </th>
-                    {/* <th>
+                    <th>
                       <button className="table-sort" data-sort="sort-date">
                         Status
                       </button>
-                    </th> */}
+                    </th>
                     <th>
                       Team Name
                     </th>
@@ -877,7 +877,7 @@ function Employees({ onEyeButtonClick }) {
                         <td>{item.designation}</td>
                         <td>{item.branchOffice}</td>
                         <td>{formatDate(item.AddedOn) === "Invalid Date" ? "Feb 6, 2024" : formatDate(item.AddedOn)}</td>
-                        {/* {item.designation !== "Admin Team" ? <td>
+                        {item.designation !== "Admin Team" ? <td>
                           {(item.Active && item.Active.includes("GMT")) ? (
                             <div>
                               <span
@@ -924,7 +924,7 @@ function Employees({ onEyeButtonClick }) {
                               {formatDateWP("Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)")}
                             </span>
                           </div>
-                        </td>} */}
+                        </td>}
 
                         <td>
                           {teamData

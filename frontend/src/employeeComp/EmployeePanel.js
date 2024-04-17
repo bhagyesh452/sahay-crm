@@ -194,9 +194,10 @@ function EmployeePanel() {
     audio.play();
   };
   useEffect(() => {
-    const socket = io("/api/socket.io"); // Connects to the same host and port as the client
+    const socket = io("/socket.io"); // Connects to the same host and port as the client
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
+      setSocketID(socket.id);
     });
 
     socket.on("request-seen", () => {
@@ -597,6 +598,7 @@ function EmployeePanel() {
   const activeStatus = async () => {
     if (data._id && socketID) {
       try {
+      
         const id = data._id;
         const response = await axios.put(
           `${secretKey}/online-status/${id}/${socketID}`

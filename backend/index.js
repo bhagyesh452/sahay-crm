@@ -355,7 +355,7 @@ app.post("/api/bdmlogin", async (req, res) => {
 app.put("/api/online-status/:id/:socketID", async (req, res) => {
   const { id } = req.params;
   const { socketID } = req.params;
-  console.log(socketID);
+  console.log('kuhi',socketID);
   try {
     const admin = await adminModel.findByIdAndUpdate(
       id,
