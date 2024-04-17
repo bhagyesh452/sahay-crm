@@ -465,6 +465,7 @@ app.post("/api/leads", async (req, res) => {
         const employeeWithAssignData = {
           ...employeeData,
           AssignDate: new Date(),
+          "Company Name": employeeData["Company Name"].toUpperCase()
         };
         const employee = new CompanyModel(employeeWithAssignData);
         //console.log("newemployee" , employee)
