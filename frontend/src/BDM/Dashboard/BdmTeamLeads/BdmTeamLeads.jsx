@@ -53,7 +53,7 @@ function BdmTeamLeads() {
   const [changeRemarks, setChangeRemarks] = useState("");
   const [updateData, setUpdateData] = useState({});
   const [projectionData, setProjectionData] = useState([]);
-  
+
 
 
   const fetchData = async () => {
@@ -80,28 +80,28 @@ function BdmTeamLeads() {
 
 
       setTeamData(response.data)
-      if(bdmNewStatus === "Untouched"){
+      if (bdmNewStatus === "Untouched") {
         setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched"))
         setBdmNewStatus("Untouched")
       }
-      if(status === "Interested"){
-        setTeamLeadsData(response.data.filter((obj)=>obj.bdmStatus === "Interested"))
+      if (status === "Interested") {
+        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Interested"))
         setBdmNewStatus("Interested")
       }
-      if(status === "FollowUp"){
-        setTeamLeadsData(response.data.filter((obj)=>obj.bdmStatus === "FollowUp"))
+      if (status === "FollowUp") {
+        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "FollowUp"))
         setBdmNewStatus("FollowUp")
       }
-      if(status === "Matured"){
-        setTeamLeadsData(response.data.filter((obj)=>obj.bdmStatus === "Matured"))
+      if (status === "Matured") {
+        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Matured"))
         setBdmNewStatus("Matured")
       }
-      if(status === "Not Interested"){
-        setTeamLeadsData(response.data.filter((obj)=>obj.bdmStatus === "Not Interested"))
+      if (status === "Not Interested") {
+        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Not Interested"))
         setBdmNewStatus("Not Interested")
       }
-      
-  
+
+
       console.log("response", response.data)
     } catch (error) {
       console.log(error)
@@ -156,7 +156,7 @@ function BdmTeamLeads() {
 
 
   const [openRemarksEdit, setOpenRemarksEdit] = useState(false)
-  const [remarksBdmName , setRemarksBdmName] = useState("")
+  const [remarksBdmName, setRemarksBdmName] = useState("")
 
   const functionopenpopupremarksEdit = (companyID, companyStatus, companyName, bdmName) => {
     setOpenRemarksEdit(true);
@@ -200,7 +200,7 @@ function BdmTeamLeads() {
 
   const handleUpdate = async () => {
     // Now you have the updated Status and Remarks, perform the update logic
-    console.log(cid, cstat, changeRemarks,remarksBdmName);
+    console.log(cid, cstat, changeRemarks, remarksBdmName);
     const Remarks = changeRemarks;
     if (Remarks === "") {
       Swal.fire({ title: "Empty Remarks!", icon: "warning" });
@@ -370,31 +370,45 @@ function BdmTeamLeads() {
     const date = DT.toLocaleDateString();
     const time = DT.toLocaleTimeString();
     try {
-      // Make an API call to update the employee status in the database
-      const response = await axios.post(
-        `${secretKey}/bdm-status-change/${companyId}`,
-        {
-          bdeStatus,
-          bdmnewstatus,
-          title,
-          date,
-          time,
+
+      if (bdmnewstatus !== "Matured") {
+        const response = await axios.post(
+          `${secretKey}/bdm-status-change/${companyId}`,
+          {
+            bdeStatus,
+            bdmnewstatus,
+            title,
+            date,
+            time,
+          }
+        );
+        console.log(bdmnewstatus)
+        // Check if the API call was successful
+        if (response.status === 200) {
+          // Assuming fetchData is a function to fetch updated employee data
+
+          fetchTeamLeadsData(bdmnewstatus);
+          setBdmNewStatus(bdmnewstatus)
+          setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmnewstatus))
+
+
+        } else {
+          // Handle the case where the API call was not successful
+          console.error("Failed to update status:", response.data.message);
         }
-      );
-      console.log(bdmnewstatus)
-      // Check if the API call was successful
-      if (response.status === 200) {
-        // Assuming fetchData is a function to fetch updated employee data
 
-        fetchTeamLeadsData(bdmnewstatus);
-        setBdmNewStatus(bdmnewstatus)
-        setTeamLeadsData(teamData.filter((obj)=>obj.bdmStatus === bdmnewstatus))
+      }else{
+        console.log("Matured Status here")
+          setMaturedCompany(cname);
+          setMaturedEmail(cemail);
+          setMaturedInco(cindate);
+          setMaturedId(companyId);
+          setMaturedNumber(cnum);
+          setMaturedOpen(true);
+          return true;
+      }
+      // Make an API call to update the employee status in the database
 
-
-      } else {
-        // Handle the case where the API call was not successful
-        console.error("Failed to update status:", response.data.message);
-      }
     } catch (error) {
       // Handle any errors that occur during the API call
       console.error("Error updating status:", error.message);
@@ -423,192 +437,192 @@ function BdmTeamLeads() {
   };
 
 
-// -----------------------------projection------------------------------
-const [projectingCompany, setProjectingCompany] = useState("");
-const [openProjection, setOpenProjection] = useState(false);
-const [currentProjection, setCurrentProjection] = useState({
-  companyName: "",
-  ename: "",
-  offeredPrize: 0,
-  offeredServices: [],
-  lastFollowUpdate: "",
-  totalPayment: 0,
-  estPaymentDate: "",
-  remarks: "",
-  date: "",
-  time: "",
-  editCount: -1,
-  totalPaymentError: "",
-});
-const [selectedValues, setSelectedValues] = useState([]);
-const [isEditProjection, setIsEditProjection] = useState(false);
-const [openAnchor, setOpenAnchor] = useState(false);
-
-
-const functionopenprojection = (comName) => {
-  setProjectingCompany(comName);
-  setOpenProjection(true);
-  const findOneprojection =
-    projectionData.length !== 0 &&
-    projectionData.find((item) => item.companyName === comName);
-  if (findOneprojection) {
-    setCurrentProjection({
-      companyName: findOneprojection.companyName,
-      ename: findOneprojection.ename,
-      offeredPrize: findOneprojection.offeredPrize,
-      offeredServices: findOneprojection.offeredServices,
-      lastFollowUpdate: findOneprojection.lastFollowUpdate,
-      estPaymentDate: findOneprojection.estPaymentDate,
-      remarks: findOneprojection.remarks,
-      totalPayment: findOneprojection.totalPayment,
-      date: "",
-      time: "",
-      editCount: findOneprojection.editCount,
-    });
-    setSelectedValues(findOneprojection.offeredServices);
-  }
-};
-
-const closeProjection = () => {
-  setOpenProjection(false);
-  setProjectingCompany("");
-  setCurrentProjection({
+  // -----------------------------projection------------------------------
+  const [projectingCompany, setProjectingCompany] = useState("");
+  const [openProjection, setOpenProjection] = useState(false);
+  const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
     ename: "",
-    offeredPrize: "",
-    offeredServices: "",
-    totalPayment: 0,
+    offeredPrize: 0,
+    offeredServices: [],
     lastFollowUpdate: "",
+    totalPayment: 0,
+    estPaymentDate: "",
     remarks: "",
     date: "",
     time: "",
+    editCount: -1,
+    totalPaymentError: "",
   });
-  setIsEditProjection(false);
-  setSelectedValues([]);
-};
-const functionopenAnchor = () => {
-  setTimeout(() => {
-    setOpenAnchor(true);
-  }, 1000);
-};
+  const [selectedValues, setSelectedValues] = useState([]);
+  const [isEditProjection, setIsEditProjection] = useState(false);
+  const [openAnchor, setOpenAnchor] = useState(false);
 
-const handleDelete = async (company) => {
-  const companyName = company;
-  console.log(companyName);
 
-  try {
-    // Send a DELETE request to the backend API endpoint
-    const response = await axios.delete(
-      `${secretKey}/delete-followup/${companyName}`
-    );
-    console.log(response.data.message); // Log the response message
-    // Show a success message after successful deletion
-    console.log("Deleted!", "Your data has been deleted.", "success");
+  const functionopenprojection = (comName) => {
+    setProjectingCompany(comName);
+    setOpenProjection(true);
+    const findOneprojection =
+      projectionData.length !== 0 &&
+      projectionData.find((item) => item.companyName === comName);
+    if (findOneprojection) {
+      setCurrentProjection({
+        companyName: findOneprojection.companyName,
+        ename: findOneprojection.ename,
+        offeredPrize: findOneprojection.offeredPrize,
+        offeredServices: findOneprojection.offeredServices,
+        lastFollowUpdate: findOneprojection.lastFollowUpdate,
+        estPaymentDate: findOneprojection.estPaymentDate,
+        remarks: findOneprojection.remarks,
+        totalPayment: findOneprojection.totalPayment,
+        date: "",
+        time: "",
+        editCount: findOneprojection.editCount,
+      });
+      setSelectedValues(findOneprojection.offeredServices);
+    }
+  };
+
+  const closeProjection = () => {
+    setOpenProjection(false);
+    setProjectingCompany("");
     setCurrentProjection({
       companyName: "",
       ename: "",
-      offeredPrize: 0,
-      offeredServices: [],
-      lastFollowUpdate: "",
+      offeredPrize: "",
+      offeredServices: "",
       totalPayment: 0,
-      estPaymentDate: "",
+      lastFollowUpdate: "",
       remarks: "",
       date: "",
       time: "",
     });
+    setIsEditProjection(false);
     setSelectedValues([]);
-    fetchProjections();
-  } catch (error) {
-    console.error("Error deleting data:", error);
-    // Show an error message if deletion fails
-    console.log("Error!", "Follow Up Not Found.", "error");
-  }
-};
+  };
+  const functionopenAnchor = () => {
+    setTimeout(() => {
+      setOpenAnchor(true);
+    }, 1000);
+  };
 
-const handleProjectionSubmit = async () => {
-  try {
-    const newEditCount =
-      currentProjection.editCount === -1
-        ? 0
-        : currentProjection.editCount + 1;
+  const handleDelete = async (company) => {
+    const companyName = company;
+    console.log(companyName);
 
-    const finalData = {
-      ...currentProjection,
-      companyName: projectingCompany,
-      ename: data.ename,
-      offeredServices: selectedValues,
-      editCount: currentProjection.editCount + 1, // Increment editCount
-    };
-
-    if (finalData.offeredServices.length === 0) {
-      Swal.fire({ title: "Services is required!", icon: "warning" });
-    } else if (finalData.remarks === "") {
-      Swal.fire({ title: "Remarks is required!", icon: "warning" });
-    } else if (Number(finalData.totalPayment) === 0) {
-      Swal.fire({ title: "Total Payment Can't be 0!", icon: "warning" });
-    } else if (finalData.totalPayment === "") {
-      Swal.fire({ title: "Total Payment Can't be 0", icon: "warning" });
-    } else if (Number(finalData.offeredPrize) === 0) {
-      Swal.fire({ title: "Offered Prize is required!", icon: "warning" });
-    } else if (
-      Number(finalData.totalPayment) > Number(finalData.offeredPrize)
-    ) {
-      Swal.fire({
-        title: "Total Payment cannot be greater than Offered Prize!",
-        icon: "warning",
-      });
-    } else if (finalData.lastFollowUpdate === null) {
-      Swal.fire({
-        title: "Last FollowUp Date is required!",
-        icon: "warning",
-      });
-    } else if (finalData.estPaymentDate === 0) {
-      Swal.fire({
-        title: "Estimated Payment Date is required!",
-        icon: "warning",
-      });
-    } else {
-      // Send data to backend API
-      const response = await axios.post(
-        `${secretKey}/update-followup`,
-        finalData
+    try {
+      // Send a DELETE request to the backend API endpoint
+      const response = await axios.delete(
+        `${secretKey}/delete-followup/${companyName}`
       );
-      Swal.fire({ title: "Projection Submitted!", icon: "success" });
-      setOpenProjection(false);
+      console.log(response.data.message); // Log the response message
+      // Show a success message after successful deletion
+      console.log("Deleted!", "Your data has been deleted.", "success");
       setCurrentProjection({
         companyName: "",
         ename: "",
         offeredPrize: 0,
         offeredServices: [],
         lastFollowUpdate: "",
+        totalPayment: 0,
+        estPaymentDate: "",
         remarks: "",
         date: "",
         time: "",
-        editCount: newEditCount,
-        totalPaymentError: "", // Increment editCount
       });
-      fetchProjections();
       setSelectedValues([]);
+      fetchProjections();
+    } catch (error) {
+      console.error("Error deleting data:", error);
+      // Show an error message if deletion fails
+      console.log("Error!", "Follow Up Not Found.", "error");
     }
-  } catch (error) {
-    console.error("Error updating or adding data:", error.message);
-  }
-};
+  };
 
-const fetchProjections = async () => {
-  try {
-    const response = await axios.get(
-      `${secretKey}/projection-data/${data.ename}`
-    );
-    setProjectionData(response.data);
-  } catch (error) {
-    console.error("Error fetching Projection Data:", error.message);
-  }
-};
+  const handleProjectionSubmit = async () => {
+    try {
+      const newEditCount =
+        currentProjection.editCount === -1
+          ? 0
+          : currentProjection.editCount + 1;
 
-useEffect(() => {
-  fetchProjections();
-}, [data]);
+      const finalData = {
+        ...currentProjection,
+        companyName: projectingCompany,
+        ename: data.ename,
+        offeredServices: selectedValues,
+        editCount: currentProjection.editCount + 1, // Increment editCount
+      };
+
+      if (finalData.offeredServices.length === 0) {
+        Swal.fire({ title: "Services is required!", icon: "warning" });
+      } else if (finalData.remarks === "") {
+        Swal.fire({ title: "Remarks is required!", icon: "warning" });
+      } else if (Number(finalData.totalPayment) === 0) {
+        Swal.fire({ title: "Total Payment Can't be 0!", icon: "warning" });
+      } else if (finalData.totalPayment === "") {
+        Swal.fire({ title: "Total Payment Can't be 0", icon: "warning" });
+      } else if (Number(finalData.offeredPrize) === 0) {
+        Swal.fire({ title: "Offered Prize is required!", icon: "warning" });
+      } else if (
+        Number(finalData.totalPayment) > Number(finalData.offeredPrize)
+      ) {
+        Swal.fire({
+          title: "Total Payment cannot be greater than Offered Prize!",
+          icon: "warning",
+        });
+      } else if (finalData.lastFollowUpdate === null) {
+        Swal.fire({
+          title: "Last FollowUp Date is required!",
+          icon: "warning",
+        });
+      } else if (finalData.estPaymentDate === 0) {
+        Swal.fire({
+          title: "Estimated Payment Date is required!",
+          icon: "warning",
+        });
+      } else {
+        // Send data to backend API
+        const response = await axios.post(
+          `${secretKey}/update-followup`,
+          finalData
+        );
+        Swal.fire({ title: "Projection Submitted!", icon: "success" });
+        setOpenProjection(false);
+        setCurrentProjection({
+          companyName: "",
+          ename: "",
+          offeredPrize: 0,
+          offeredServices: [],
+          lastFollowUpdate: "",
+          remarks: "",
+          date: "",
+          time: "",
+          editCount: newEditCount,
+          totalPaymentError: "", // Increment editCount
+        });
+        fetchProjections();
+        setSelectedValues([]);
+      }
+    } catch (error) {
+      console.error("Error updating or adding data:", error.message);
+    }
+  };
+
+  const fetchProjections = async () => {
+    try {
+      const response = await axios.get(
+        `${secretKey}/projection-data/${data.ename}`
+      );
+      setProjectionData(response.data);
+    } catch (error) {
+      console.error("Error fetching Projection Data:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjections();
+  }, [data]);
 
   return (
     <div>
@@ -618,16 +632,16 @@ useEffect(() => {
       <div className="page-wrapper">
         <div className="page-header d-print-none">
           <div className="container-xl">
-              <div className="row">
-                  <div className="col-sm-3">
-                    <div class="input-icon">
-                      <span class="input-icon-addon">
-                        {/* <CiSearch /> */}
-                      </span>
-                      <input type="text" value="" class="form-control" placeholder="Search…" aria-label="Search in website" />
-                    </div>
-                  </div>
+            <div className="row">
+              <div className="col-sm-3">
+                <div class="input-icon">
+                  <span class="input-icon-addon">
+                    {/* <CiSearch /> */}
+                  </span>
+                  <input type="text" value="" class="form-control" placeholder="Search…" aria-label="Search in website" />
+                </div>
               </div>
+            </div>
           </div>
         </div>
         <div className="page-body" onCopy={(e) => {
@@ -1092,11 +1106,11 @@ useEffect(() => {
                                 ) ? (
                                 <IconButton>
                                   <RiEditCircleFill
-                                   onClick={() => {
-                                    functionopenprojection(
-                                      company["Company Name"]
-                                    );
-                                  }}
+                                    onClick={() => {
+                                      functionopenprojection(
+                                        company["Company Name"]
+                                      );
+                                    }}
                                     style={{
                                       cursor: "pointer",
                                       width: "17px",
@@ -1108,13 +1122,13 @@ useEffect(() => {
                               ) : (
                                 <IconButton>
                                   <RiEditCircleFill
-                                  onClick={() => {
-                                    functionopenprojection(
-                                      company["Company Name"]
-                                    );
-                                    setIsEditProjection(true);
-                                  }}
-                                 
+                                    onClick={() => {
+                                      functionopenprojection(
+                                        company["Company Name"]
+                                      );
+                                      setIsEditProjection(true);
+                                    }}
+
                                     style={{
                                       cursor: "pointer",
                                       width: "17px",

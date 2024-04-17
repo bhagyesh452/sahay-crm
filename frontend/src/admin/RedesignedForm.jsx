@@ -480,7 +480,6 @@ export default function RedesignedForm({
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
       setDataStatus("Matured");
-      setNowToFetch(true);
       setFormOpen(false);
     }
   };
