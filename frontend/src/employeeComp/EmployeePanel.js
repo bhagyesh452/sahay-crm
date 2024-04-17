@@ -348,10 +348,6 @@ function EmployeePanel() {
     setOpenRemarksEdit(false)
 
   }
-
-
-
-
   const debouncedSetChangeRemarks = useCallback(
     debounce((value) => {
       setChangeRemarks(value);
@@ -598,7 +594,7 @@ function EmployeePanel() {
   const activeStatus = async () => {
     if (data._id && socketID) {
       try {
-      
+
         const id = data._id;
         const response = await axios.put(
           `${secretKey}/online-status/${id}/${socketID}`
@@ -664,6 +660,8 @@ function EmployeePanel() {
       console.error("Error fetching remarks history:", error);
     }
   };
+
+  console.log(remarksHistory)
 
   // const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
@@ -2154,7 +2152,7 @@ function EmployeePanel() {
   console.log("datastatus", dataStatus)
 
 
-  const handleReverseAssign = async (companyId, companyName, bdmAcceptStatus , empStatus) => {
+  const handleReverseAssign = async (companyId, companyName, bdmAcceptStatus, empStatus) => {
     if (bdmAcceptStatus === "Pending") {
       try {
         const response = await axios.post(`${secretKey}/teamleads-reversedata/${companyId}`, {
@@ -3263,7 +3261,11 @@ function EmployeePanel() {
                                             borderRadius: "var(--tblr-border-radius)",
                                           }}
                                         >
-                                          <option value="">Company Forwarded to BDM</option>
+                                          {company.Status === "Interested" && (<option value="Interested">Interested</option>)}
+                                          {company.Status === "FollowUp" && (<option value="FollowUp">FollowUp</option>)}
+                                          {company.Status === "Not Interested" && (<option value="Not Interested">Not Interested</option>)}
+                                          {company.Status === "Junk" && (<option value="Junk">Junk</option>)}
+                                          {company.Status === "Busy" && (<option value="Busy">Busy</option>)}
                                         </select>
                                       )}
                                     </>
@@ -4191,6 +4193,9 @@ function EmployeePanel() {
                     <div className="d-flex justify-content-between">
                       <div className="reamrk-card-innerText">
                         <pre className="remark-text">{historyItem.remarks}</pre>
+                        {historyItem.bdmName !== undefined && (
+                        <pre className="remark-text">By BDM</pre>
+                      )}
                       </div>
                       {/* <div className="dlticon">
                         <DeleteIcon

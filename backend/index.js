@@ -922,7 +922,7 @@ app.post("/api/bdm-status-change/:id", async (req, res) => {
 
   try {
     // Update the status field in the database based on the employee id
-    await TeamLeadsModel.findByIdAndUpdate(id, { bdmStatus : bdmnewstatus });
+    await TeamLeadsModel.findByIdAndUpdate(id, { bdmStatus : bdmnewstatus , Status : bdmnewstatus });
     
     await CompanyModel.findByIdAndUpdate(id , {Status : bdmnewstatus})
 
@@ -1825,7 +1825,7 @@ app.delete("/api/newcompanynamedelete/:id", async (req, res) => {
 });
 app.post("/api/remarks-history/:companyId", async (req, res) => {
   const { companyId } = req.params;
-  const { Remarks } = req.body;
+  const { Remarks , remarksBdmName } = req.body;
 
   // Get the current date and time
   const currentDate = new Date();
@@ -1839,7 +1839,10 @@ app.post("/api/remarks-history/:companyId", async (req, res) => {
       date,
       companyID: companyId,
       remarks: Remarks,
+      bdmName:remarksBdmName,
     });
+
+    await TeamLeadsModel.findByIdAndUpdate(companyId , {bdmRemarks : Remarks})
 
     // Save the new entry to MongoDB
     await newRemarksHistory.save();

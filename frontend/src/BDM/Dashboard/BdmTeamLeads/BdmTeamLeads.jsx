@@ -80,8 +80,28 @@ function BdmTeamLeads() {
 
 
       setTeamData(response.data)
-      setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched"))
-      setBdmNewStatus("Untouched")
+      if(bdmNewStatus === "Untouched"){
+        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched"))
+        setBdmNewStatus("Untouched")
+      }
+      if(status === "Interested"){
+        setTeamLeadsData(response.data.filter((obj)=>obj.bdmStatus === "Interested"))
+        setBdmNewStatus("Interested")
+      }
+      if(status === "FollowUp"){
+        setTeamLeadsData(response.data.filter((obj)=>obj.bdmStatus === "FollowUp"))
+        setBdmNewStatus("FollowUp")
+      }
+      if(status === "Matured"){
+        setTeamLeadsData(response.data.filter((obj)=>obj.bdmStatus === "Matured"))
+        setBdmNewStatus("Matured")
+      }
+      if(status === "Not Interested"){
+        setTeamLeadsData(response.data.filter((obj)=>obj.bdmStatus === "Not Interested"))
+        setBdmNewStatus("Not Interested")
+      }
+      
+  
       console.log("response", response.data)
     } catch (error) {
       console.log(error)
@@ -136,6 +156,7 @@ function BdmTeamLeads() {
 
 
   const [openRemarksEdit, setOpenRemarksEdit] = useState(false)
+  const [remarksBdmName , setRemarksBdmName] = useState("")
 
   const functionopenpopupremarksEdit = (companyID, companyStatus, companyName, bdmName) => {
     setOpenRemarksEdit(true);
@@ -146,6 +167,7 @@ function BdmTeamLeads() {
     setcid(companyID);
     setCstat(companyStatus);
     setCurrentCompanyName(companyName);
+    setRemarksBdmName(bdmName)
   };
 
   console.log("filteredRemarks", filteredRemarks)
@@ -178,7 +200,7 @@ function BdmTeamLeads() {
 
   const handleUpdate = async () => {
     // Now you have the updated Status and Remarks, perform the update logic
-    console.log(cid, cstat, changeRemarks);
+    console.log(cid, cstat, changeRemarks,remarksBdmName);
     const Remarks = changeRemarks;
     if (Remarks === "") {
       Swal.fire({ title: "Empty Remarks!", icon: "warning" });
@@ -193,6 +215,8 @@ function BdmTeamLeads() {
         `${secretKey}/remarks-history/${cid}`,
         {
           Remarks,
+          remarksBdmName,
+
         }
       );
       console.log("remarks", Remarks)
@@ -357,12 +381,16 @@ function BdmTeamLeads() {
           time,
         }
       );
-
+      console.log(bdmnewstatus)
       // Check if the API call was successful
       if (response.status === 200) {
         // Assuming fetchData is a function to fetch updated employee data
 
-        fetchTeamLeadsData(bdmOldStatus);
+        fetchTeamLeadsData(bdmnewstatus);
+        setBdmNewStatus(bdmnewstatus)
+        setTeamLeadsData(teamData.filter((obj)=>obj.bdmStatus === bdmnewstatus))
+
+
       } else {
         // Handle the case where the API call was not successful
         console.error("Failed to update status:", response.data.message);
@@ -871,78 +899,6 @@ useEffect(() => {
                           </td>
                           <td>
                             {company.Status}
-                            {/* {company["Status"] === "Matured" ? (
-                              <span>{company["Status"]}</span>
-                            ) : (
-                              <select
-                                style={{
-                                  background: "none",
-                                  padding: ".4375rem .75rem",
-                                  border:
-                                    "1px solid var(--tblr-border-color)",
-                                  borderRadius:
-                                    "var(--tblr-border-radius)",
-                                }}
-                                value={company["Status"]}
-                              onChange={(e) =>
-                                handleStatusChange(
-                                  company._id,
-                                  e.target.value,
-                                  company["Company Name"],
-                                  company["Company Email"],
-                                  company[
-                                  "Company Incorporation Date  "
-                                  ],
-                                  company["Company Number"],
-                                  company["Status"]
-                                )
-                              }
-                              >
-                                <option value="Not Picked Up">
-                                  Not Picked Up
-                                </option>
-                                <option value="Busy">Busy </option>
-                                <option value="Junk">Junk</option>
-                                <option value="Not Interested">
-                                  Not Interested
-                                </option>
-                                {dataStatus === "All" && (
-                                  <>
-                                    <option value="Untouched">
-                                      Untouched{" "}
-                                    </option>
-                                    <option value="Interested">
-                                      Interested
-                                    </option>
-                                  </>
-                                )}
-
-                                {dataStatus === "Interested" && (
-                                  <>
-                                    <option value="Interested">
-                                      Interested
-                                    </option>
-                                    <option value="FollowUp">
-                                      Follow Up{" "}
-                                    </option>
-                                    <option value="Matured">
-                                      Matured
-                                    </option>
-                                  </>
-                                )}
-
-                                {dataStatus === "FollowUp" && (
-                                  <>
-                                    <option value="FollowUp">
-                                      Follow Up{" "}
-                                    </option>
-                                    <option value="Matured">
-                                      Matured
-                                    </option>
-                                  </>
-                                )}
-                              </select>
-                            )} */}
                           </td>
                           <td>
                             <div
