@@ -20,6 +20,8 @@ import { RiEditCircleFill } from "react-icons/ri";
 import { IoClose } from "react-icons/io5";
 import Select from "react-select";
 import { options } from "../../../components/Options.js";
+import { IoAddCircle } from "react-icons/io5";
+import Slider from '@mui/material/Slider';
 
 
 
@@ -692,6 +694,27 @@ function BdmTeamLeads() {
     fetchProjections();
   }, [data]);
 
+
+  const [openFeedback, setOpenFeedback] = useState(false)
+  const [feedbackCompanyName, setFeedbackCompanyName] = useState("")
+  const[valueSlider , setValueSlider]=useState(0)
+
+  const handleOpenFeedback = (companyName) => {
+    setOpenFeedback(true)
+    setFeedbackCompanyName(companyName)
+  }
+
+  const handleCloseFeedback = () => {
+    setOpenFeedback(false)
+  }
+
+  const handleSliderChange=(valueSlider)=>{
+    setValueSlider(valueSlider)
+
+  }
+
+  console.log("valueSlider" , valueSlider)
+
   return (
     <div>
 
@@ -950,9 +973,11 @@ function BdmTeamLeads() {
                           Assigned Date
                         </th>
                         {bdmNewStatus === "Untouched" && <th>Action</th>}
-                        {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && <th>Add Projection</th>}
-
-
+                        {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
+                          <th>Add Projection</th>
+                          <th>Add Feedback</th>
+                        </>)
+                        }
                       </tr>
                     </thead>
                     <tbody>
@@ -1126,9 +1151,9 @@ function BdmTeamLeads() {
                                       }}
                                     />
                                   </IconButton>
-
                                 </div>
                               </td>
+
                             </>
                           )}
                           <td>
@@ -1169,7 +1194,7 @@ function BdmTeamLeads() {
                               </td>
                             )
                           }
-                          {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (
+                          {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                             <td>
                               {company &&
                                 projectionData &&
@@ -1210,7 +1235,20 @@ function BdmTeamLeads() {
                                 </IconButton>
                               )}
                             </td>
-                          )}
+                            <td>
+                              <IconButton>
+                                <IoAddCircle
+                                  onClick={() => {
+                                    handleOpenFeedback(company["Company Name"])
+                                  }}
+                                  style={{
+                                    cursor: "pointer",
+                                    width: "17px",
+                                    height: "17px",
+                                  }} />
+                              </IconButton>
+                            </td>
+                          </>)}
 
                           {/* {dataStatus === "Matured" && (
                             <>
@@ -1512,6 +1550,69 @@ function BdmTeamLeads() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* --------------------------------------------------------- dialog for feedback----------------------------------------- */}
+
+      <Dialog
+        open={openFeedback}
+        onClose={handleCloseFeedback}
+        fullWidth
+        maxWidth="xs">
+        <DialogTitle>
+          <span style={{ fontSize: "14px" }}>
+          BDM Feedback for {feedbackCompanyName}
+          </span>
+          <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+        
+            <div className="card-body mt-5">
+              <div className="feedback-slider">
+                 <Slider 
+                 defaultValue={0}  
+                 //getAriaValueText={valuetext} 
+                 value= {valueSlider}
+                 onChange={(e)=>{handleSliderChange(e.target.value)}}
+                 sx={{zIndex:"99999999", color:"#ffb900"}} 
+                 min={0} 
+                 max={10} 
+                 aria-label="Default" 
+                 valueLabelDisplay="auto" />
+              </div>
+            
+            </div>
+
+            <div class="card-footer mt-4">
+              <div class="mb-3 remarks-input">
+                <textarea
+                  placeholder="Add Remarks Here...  "
+                  className="form-control"
+                  id="remarks-input"
+                  rows="3"
+                // onChange={(e) => {
+                //   debouncedSetChangeRemarks(e.target.value);
+                // }}
+                ></textarea>
+              </div>
+              <button
+                //onClick={handleUpdate}
+                type="submit"
+                className="btn btn-primary"
+                style={{ width: "100%" }}
+              >
+                Submit
+              </button>
+            </div>
+         
+        </DialogContent>
+      </Dialog>
+
+
+
+
+      {/* ---------------------------------projection drawer--------------------------------------------------------- */}
+
       <div>
         <Drawer
           style={{ top: "50px" }}
