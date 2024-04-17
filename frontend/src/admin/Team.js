@@ -17,6 +17,7 @@ import Swal from "sweetalert2";
 import { IconTrash } from "@tabler/icons-react";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { IconEye } from "@tabler/icons-react";
+import Nodata from "../components/Nodata.jsx";
 
 
 
@@ -248,21 +249,21 @@ function Team() {
                 });
                 return; // Exit function if any required field is missing
             }
-    
+
             const teamData = {
                 teamName: ename,
                 branchOffice: branchOffice,
                 bdmName: designation,
                 employees: selectedBdes.map(ename => ({ ename, branchOffice }))
             };
-    
+
             let updatedTeamData = {
                 teamName: ename,
                 bdmName: designation,
                 branchOffice: branchOffice,
                 employees: selectedBdes.map(ename => ({ ename, branchOffice }))
             }
-    
+
             if (isEditMode && updatedTeamData) {
                 await axios.put(`${secretKey}/teaminfo/${teamId}`, updatedTeamData);
                 Swal.fire({
@@ -291,7 +292,7 @@ function Team() {
             setBdmNameSelected(false);
             setBdeFields([]);
             setSelectedBdes([])// Update bdeFields with enames
-    
+
         } catch (error) {
             const errorfound = error.response.data.message
             setErrorMessage(errorfound)
@@ -303,7 +304,8 @@ function Team() {
             console.error('Error creating team:', error.response.data.message);
         }
     };
-    
+
+    console.log("bdeFields" , bdeFields.length)
 
     const closeTeamDetails = () => {
         setopenTeamDetails(false)
@@ -362,7 +364,7 @@ function Team() {
             }
         });
     };
-    
+
 
 
 
@@ -542,6 +544,16 @@ function Team() {
                                         ))
                                     )}
                                 </tbody>
+                                {teamDataFilter.length === 0 && (
+                                   <tbody>
+                                   <tr>
+                                     <td colSpan="11" className="p-2 particular">
+                                       <Nodata />
+                                     </td>
+                                   </tr>
+                                 </tbody>
+
+                                )}
                             </table>
                         </div>
                     </div>
@@ -632,6 +644,18 @@ function Team() {
                                     <div key={0} className="mb-3">
                                         <div className="d-flex align-items-center justify-content-between">
                                             <label className="form-label">BDE Selection</label>
+                                           {
+                                            bdeFields.length > 1 && (
+                                                <IconButton>
+                                                <MdDelete
+                                                    color="#bf2020"
+                                                    style={{ width: "14px", height: "14px" }}
+                                                    onClick={() => handleRemoveBdeField(0)}
+                                                />
+                                            </IconButton>
+
+                                            )
+                                           } 
                                         </div>
                                         <div className="form-control">
                                             <select
