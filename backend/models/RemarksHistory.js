@@ -18,6 +18,9 @@ const remarksHistorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  bdmName:{
+    type:String,
+  }
 });
 
 // Create the "RemarksHistory" model using the schema

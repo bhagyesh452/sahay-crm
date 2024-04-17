@@ -45,6 +45,7 @@ function Team() {
     const [teamData, setTeamData] = useState([]);
     const [teamDataFilter, setTeamDataFilter] = useState([])
     const [openTeamDetails, setopenTeamDetails] = useState(false)
+    const [allEnames, setAllEnames] = useState([])
 
 
 
@@ -60,13 +61,18 @@ function Team() {
         }
     }
 
+
     const fecthTeamData = async () => {
         try {
             const response = await axios.get(`${secretKey}/teaminfo`)
 
             console.log("teamdata", response.data)
+            const allEnames = response.data.flatMap(team => team.employees.map(employee => employee.ename));
             setTeamData(response.data)
             setTeamDataFilter(response.data)
+            setAllEnames(allEnames)
+
+            console.log("allenames", allEnames)
 
         } catch (error) {
             console.log("error Fetching data", error.message)
@@ -305,7 +311,7 @@ function Team() {
         }
     };
 
-    console.log("bdeFields" , bdeFields.length)
+    console.log("bdeFields", bdeFields.length)
 
     const closeTeamDetails = () => {
         setopenTeamDetails(false)
@@ -545,13 +551,13 @@ function Team() {
                                     )}
                                 </tbody>
                                 {teamDataFilter.length === 0 && (
-                                   <tbody>
-                                   <tr>
-                                     <td colSpan="11" className="p-2 particular">
-                                       <Nodata />
-                                     </td>
-                                   </tr>
-                                 </tbody>
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="11" className="p-2 particular">
+                                                <Nodata />
+                                            </td>
+                                        </tr>
+                                    </tbody>
 
                                 )}
                             </table>
@@ -644,18 +650,18 @@ function Team() {
                                     <div key={0} className="mb-3">
                                         <div className="d-flex align-items-center justify-content-between">
                                             <label className="form-label">BDE Selection</label>
-                                           {
-                                            bdeFields.length > 1 && (
-                                                <IconButton>
-                                                <MdDelete
-                                                    color="#bf2020"
-                                                    style={{ width: "14px", height: "14px" }}
-                                                    onClick={() => handleRemoveBdeField(0)}
-                                                />
-                                            </IconButton>
+                                            {
+                                                bdeFields.length > 1 && (
+                                                    <IconButton>
+                                                        <MdDelete
+                                                            color="#bf2020"
+                                                            style={{ width: "14px", height: "14px" }}
+                                                            onClick={() => handleRemoveBdeField(0)}
+                                                        />
+                                                    </IconButton>
 
-                                            )
-                                           } 
+                                                )
+                                            }
                                         </div>
                                         <div className="form-control">
                                             <select
@@ -704,13 +710,29 @@ function Team() {
                                                 required
                                             >
                                                 <option value="" disabled>Select BDE Name</option>
-                                                {employeeData
+                                                {/* {employeeData
                                                     .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice)
                                                     .map(employee => (
-                                                        <option key={employee._id} value={employee.ename} disabled={selectedBdes.includes(employee.ename)}>
+                                                        <option key={employee._id} value={employee.ename} disabled={selectedBdes.includes(employee.ename) && allEnames.includes(employee.ename)}>
                                                             {employee.ename}
                                                         </option>
-                                                    ))}
+                                                    ))} */}
+                                                {employeeData
+                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice)
+                                                    .map(employee => {
+                                                        console.log('allEnames:', allEnames);
+                                                        console.log('employee.ename:', employee.ename);
+                                                        console.log('Is in allEnames:', allEnames.includes(employee.ename));
+
+                                                        return (
+                                                            <option
+                                                                key={employee._id}
+                                                                value={employee.ename}
+                                                                disabled={selectedBdes.includes(employee.ename) && allEnames.includes(employee.ename)}>
+                                                                {employee.ename}
+                                                            </option>
+                                                        );
+                                                    })}
                                             </select>
                                         </div>
                                     </div>
