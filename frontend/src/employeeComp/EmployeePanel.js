@@ -291,7 +291,7 @@ function EmployeePanel() {
   //     setEditIconColor(color); // assuming you have a state variable to manage icon color
   //   }
   // };
-
+console.log(socketID, 'If this shows then boom');
   const closeProjection = () => {
     setOpenProjection(false);
     setProjectingCompany("");
