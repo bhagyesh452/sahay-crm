@@ -4112,6 +4112,7 @@ console.log(socketID, 'If this shows then boom');
                     <div className="d-flex justify-content-between">
                       <div className="reamrk-card-innerText">
                         <pre className="remark-text">{historyItem.remarks}</pre>
+                        {historyItem.bdmName !== undefined && (<pre className="remark-text">By BDM</pre>)}
                       </div>
                       <div className="dlticon">
                         <DeleteIcon

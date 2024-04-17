@@ -198,6 +198,18 @@ function BdmTeamLeads() {
     [] // Empty dependency array to ensure the function is memoized
   );
 
+  const [isDeleted, setIsDeleted] = useState(false)
+  const [maturedCompany, setMaturedCompany] = useState("")
+  const [maturedEmail, setMaturedEmail] = useState("")
+  const [maturedInco, setMaturedInco] = useState("")
+  const [maturedId, setMaturedId] = useState("")
+  const [maturedNumber, setMaturedNumber] = useState("")
+  const [maturedOpen, setMaturedOpen] = useState(false)
+
+  const handleRejectData = async (companyId) => {
+    setIsDeleted(true)
+  }
+
   const handleUpdate = async () => {
     // Now you have the updated Status and Remarks, perform the update logic
     console.log(cid, cstat, changeRemarks, remarksBdmName);
@@ -207,33 +219,66 @@ function BdmTeamLeads() {
       return true;
     }
     try {
-      // Make an API call to update the employee status in the database
-      const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
-        Remarks,
-      });
-      const response2 = await axios.post(
-        `${secretKey}/remarks-history/${cid}`,
-        {
+      if (isDeleted) {
+        const response = await axios.post(`${secretKey}/teamleads-rejectdata/${cid}`, {
+          bdmAcceptStatus: "NotForwarded",
+        })
+        const response2 = await axios.post(`${secretKey}/update-remarks/${cid}`, {
           Remarks,
-          remarksBdmName,
+        });
+        const response3 = await axios.post(
+          `${secretKey}/remarks-history/${cid}`,
+          {
+            Remarks,
+            remarksBdmName,
 
+          }
+        );
+        console.log("remarks", Remarks)
+        if (response.status === 200) {
+          Swal.fire("Remarks updated!");
+          setChangeRemarks("");
+          // If successful, update the employeeData state or fetch data again to reflect changes
+          //fetchNewData(cstat);
+          fetchRemarksHistory();
+          // setCstat("");
+          closePopUpRemarksEdit(); // Assuming fetchData is a function to fetch updated employee data
+        } else {
+          // Handle the case where the API call was not successful
+          console.error("Failed to update status:", response.data.message);
         }
-      );
-      console.log("remarks", Remarks)
 
+        console.log("response", response.data);
+        fetchTeamLeadsData();
+        Swal.fire("Data Rejected");
+        setIsDeleted(false)
 
-      // Check if the API call was successful
-      if (response.status === 200) {
-        Swal.fire("Remarks updated!");
-        setChangeRemarks("");
-        // If successful, update the employeeData state or fetch data again to reflect changes
-        //fetchNewData(cstat);
-        fetchRemarksHistory();
-        // setCstat("");
-        closePopUpRemarksEdit(); // Assuming fetchData is a function to fetch updated employee data
       } else {
-        // Handle the case where the API call was not successful
-        console.error("Failed to update status:", response.data.message);
+        const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+          Remarks,
+        });
+        const response2 = await axios.post(
+          `${secretKey}/remarks-history/${cid}`,
+          {
+            Remarks,
+            remarksBdmName,
+
+          }
+        );
+        console.log("remarks", Remarks)
+        if (response.status === 200) {
+          Swal.fire("Remarks updated!");
+          setChangeRemarks("");
+          // If successful, update the employeeData state or fetch data again to reflect changes
+          //fetchNewData(cstat);
+          fetchRemarksHistory();
+          // setCstat("");
+          closePopUpRemarksEdit(); // Assuming fetchData is a function to fetch updated employee data
+        } else {
+          // Handle the case where the API call was not successful
+          console.error("Failed to update status:", response.data.message);
+        }
+
       }
     } catch (error) {
       // Handle any errors that occur during the API call
@@ -339,21 +384,37 @@ function BdmTeamLeads() {
 
 
 
-  const handleRejectData = async (companyId) => {
+  // const handleRejectData = async (companyId) => {
+  //   setIsDeleted(true)
 
 
-    try {
-      const response = await axios.post(`${secretKey}/teamleads-rejectdata/${companyId}`, {
-        bdmAcceptStatus: "NotForwarded",
-      })
-      console.log("response", response.data);
-      fetchTeamLeadsData();
-      Swal.fire("Data Rejected");
-    } catch (error) {
-      console.log("error reversing bdm forwarded data", error.message);
-      Swal.fire("Error rekecting data")
-    }
-  }
+  //   try {
+  //     const response = await axios.post(`${secretKey}/teamleads-rejectdata/${companyId}`, {
+  //       bdmAcceptStatus: "NotForwarded",
+  //     })
+  //     console.log("response", response.data);
+  //     fetchTeamLeadsData();
+  //     Swal.fire("Data Rejected");
+  //   } catch (error) {
+  //     console.log("error reversing bdm forwarded data", error.message);
+  //     Swal.fire("Error rekecting data")
+  //   }
+  // }
+
+
+
+  // try {
+  //   const response = await axios.post(`${secretKey}/teamleads-rejectdata/${companyId}`, {
+  //     bdmAcceptStatus: "NotForwarded",
+  //   })
+  //   console.log("response", response.data);
+  //   fetchTeamLeadsData();
+  //   Swal.fire("Data Rejected");
+  // } catch (error) {
+  //   console.log("error reversing bdm forwarded data", error.message);
+  //   Swal.fire("Error rekecting data")
+  // }
+
 
   const handlebdmStatusChange = async (
     companyId,
@@ -397,16 +458,16 @@ function BdmTeamLeads() {
           console.error("Failed to update status:", response.data.message);
         }
 
-      }else{
+      } else {
         console.log("Matured Status here")
-          setMaturedCompany(cname);
-          setMaturedEmail(cemail);
-          setMaturedInco(cindate);
-          setMaturedId(companyId);
-          setMaturedNumber(cnum);
-          setMaturedOpen(true);
-          return true;
-      }
+        setMaturedCompany(cname);
+        setMaturedEmail(cemail);
+        setMaturedInco(cindate);
+        setMaturedId(companyId);
+        setMaturedNumber(cnum);
+        setMaturedOpen(true);
+        return true;
+      }
       // Make an API call to update the employee status in the database
 
     } catch (error) {
@@ -1091,6 +1152,10 @@ function BdmTeamLeads() {
                                   <GrStatusGood />
                                 </IconButton>
                                 <IconButton onClick={() => {
+                                  functionopenpopupremarksEdit(company._id,
+                                    company.Status,
+                                    company["Company Name"],
+                                    company.bdmName)
                                   handleRejectData(company._id)
                                 }}>
                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>
