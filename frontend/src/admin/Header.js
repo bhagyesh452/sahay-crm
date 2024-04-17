@@ -22,7 +22,7 @@ function Header({ name, designation}) {
   //console.log(name)
   //console.log(designation)
   useEffect(() => {
-    const socket = io('wss://127.0.0.1:3001/socket.io');
+    const socket = io('/socket.io');
 
     // Listen for the 'welcome' event from the server
     socket.on('welcome', (message) => {
@@ -46,8 +46,6 @@ function Header({ name, designation}) {
   }, []);
  
   const adminName = localStorage.getItem("adminName")
-
- 
   const [requestData, setRequestData] = useState([]);
   const [requestGData, setRequestGData] = useState([]);
   const [requestAppData, setRequestAppData] = useState([]);
