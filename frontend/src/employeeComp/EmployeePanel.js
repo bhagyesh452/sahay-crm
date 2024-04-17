@@ -514,6 +514,19 @@ function EmployeePanel() {
         setEmployeeData(tempData.filter((obj) => obj.Status === "Interested"));
         setdataStatus("Interested");
       }
+      if (status === "Forwarded") {
+        setdataStatus("Forwarded")
+        setEmployeeData(
+          moreEmpData
+            .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded")
+            .sort(
+              (a, b) =>
+                new Date(b.lastActionDate) -
+                new Date(a.lastActionDate)
+            )
+        );
+
+      }
       // setEmployeeData(tempData.filter(obj => obj.Status === "Busy" || obj.Status === "Not Picked Up" || obj.Status === "Untouched"))
     } catch (error) {
       console.error("Error fetching new data:", error);
@@ -2028,32 +2041,6 @@ function EmployeePanel() {
 
   // console.log(forwardedCompany, 'hayhsjshshsh')
 
-  // // useEffect(() => {
-  // //   console.log("selectedData", currentData, forwardedCompany);
-  // //   const selectedDataWithBdm = currentData.filter((company) => company["Company Name"] === forwardedCompany);
-
-  // //   const fetchData = async () => {
-  // //     try {
-  // //       const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
-  // //         selectedData: selectedDataWithBdm,
-  // //         bdmName: bdmName,
-  // //         companyId: forwardCompanyId,
-  // //         bdmAcceptStatus: bdmNewAcceptStatus // Assuming bdmName is defined elsewhere in your component
-  // //       });
-  // //       console.log("response", response.data);
-  // //       Swal.fire("Data Forwarded");
-  // //       //fetchNewData();
-  // //     } catch (error) {
-  // //       console.error(error);
-  // //       Swal.fire("Error Assigning Data");
-  // //       //fetchNewData();
-  // //     }
-  // //   };
-
-  // //   fetchData(); // Call the async function to fetch data
-
-  // // }, [forwardedCompany]);
-
 
   // const handleForwardBdm = async () => {
   //   console.log("selectedData", currentData, forwardedCompany);
@@ -2074,9 +2061,6 @@ function EmployeePanel() {
   //     fetchNewData();
   //   }
   // };
-
-  const [confirmationPending, setConfirmationPending] = useState(false);
-
   // const handleConfirmAssign = (companyId, companyName, companyStatus, ename, bdmAcceptStatus) => {
   //   console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
 
@@ -2104,6 +2088,9 @@ function EmployeePanel() {
   //     Swal.fire("Your are not assigned to any bdm!")
   //   }
   // };
+
+
+  const [confirmationPending, setConfirmationPending] = useState(false);
 
   const handleConfirmAssign = (companyId, companyName, companyStatus, ename, bdmAcceptStatus) => {
     console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
@@ -2140,8 +2127,20 @@ function EmployeePanel() {
         bdmAcceptStatus: bdmNewAcceptStatus,
         bdeForwardDate: Date.now() // Assuming bdmName is defined elsewhere in your component
       });
+
       //console.log("response", response.data);
       Swal.fire("Data Forwarded");
+      fetchNewData("Forwarded");
+      setdataStatus("Forwarded")
+      setEmployeeData(
+        moreEmpData
+          .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded")
+          .sort(
+            (a, b) =>
+              new Date(b.lastActionDate) -
+              new Date(a.lastActionDate)
+          )
+      );
 
     } catch (error) {
       console.log(error);
@@ -2150,8 +2149,10 @@ function EmployeePanel() {
     }
   };
 
+  console.log("datastatus", dataStatus)
 
-  const handleReverseAssign = async (companyId, companyName, bdmAcceptStatus) => {
+
+  const handleReverseAssign = async (companyId, companyName, bdmAcceptStatus , empStatus) => {
     if (bdmAcceptStatus === "Pending") {
       try {
         const response = await axios.post(`${secretKey}/teamleads-reversedata/${companyId}`, {
@@ -2160,6 +2161,17 @@ function EmployeePanel() {
         });
         // console.log("response", response.data);
         Swal.fire("Data Reversed");
+        fetchNewData(empStatus);
+        setdataStatus(empStatus)
+        setEmployeeData(
+          moreEmpData
+            .filter((obj) => obj.Status !== empStatus)
+            .sort(
+              (a, b) =>
+                new Date(b.lastActionDate) -
+                new Date(a.lastActionDate)
+            )
+        );
       } catch (error) {
         console.log("error reversing bdm forwarded data", error.message);
       }
@@ -3394,30 +3406,30 @@ function EmployeePanel() {
                                       </td>
                                     )}
                                     <td>
-                                    <TiArrowForward
-                                          onClick={() => {
-                                            handleConfirmAssign(
-                                              company._id,
-                                              company["Company Name"],
-                                              company.Status, // Corrected parameter name
-                                              company.ename,
-                                              company.bdmAcceptStatus
-                                            );
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                          color="grey"
-                                        />
+                                      <TiArrowForward
+                                        onClick={() => {
+                                          handleConfirmAssign(
+                                            company._id,
+                                            company["Company Name"],
+                                            company.Status, // Corrected parameter name
+                                            company.ename,
+                                            company.bdmAcceptStatus
+                                          );
+                                        }}
+                                        style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
+                                        color="grey"
+                                      />
 
                                     </td>
                                   </>)}
                                 {
                                   dataStatus === "Forwarded" && (
                                     <td>
-                                      {company.bdmAcceptStatus === "NotForwarded"  ? (
+                                      {company.bdmAcceptStatus === "NotForwarded" ? (
                                         <TiArrowForward
                                           onClick={() => {
                                             handleConfirmAssign(
@@ -3442,6 +3454,7 @@ function EmployeePanel() {
                                               company._id,
                                               company["Company Name"],
                                               company.bdmAcceptStatus,
+                                              company.Status,
                                             )
                                           }}
                                           style={{

@@ -189,7 +189,12 @@ function BdmTeamLeads() {
       const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
         Remarks,
       });
-
+      const response2 = await axios.post(
+        `${secretKey}/remarks-history/${cid}`,
+        {
+          Remarks,
+        }
+      );
       console.log("remarks", Remarks)
 
 
@@ -814,8 +819,8 @@ useEffect(() => {
                     <thead>
                       <tr className="tr-sticky">
                         <th className="th-sticky">Sr.No</th>
-                        <th>Bde Name</th>
                         <th className="th-sticky1">Company Name</th>
+                        <th>Bde Name</th>
                         <th>Company Number</th>
                         <th>Bde Status</th>
                         <th>Bde Remarks</th>
@@ -849,10 +854,10 @@ useEffect(() => {
                           <td className="td-sticky">
                             {startIndex + index + 1}
                           </td>
-                          <td>{company.ename}</td>
                           <td className="td-sticky1">
                             {company["Company Name"]}
                           </td>
+                          <td>{company.ename}</td>
                           <td>
                             <div className="d-flex align-items-center justify-content-between wApp">
                               <div>{company["Company Number"]}</div>
