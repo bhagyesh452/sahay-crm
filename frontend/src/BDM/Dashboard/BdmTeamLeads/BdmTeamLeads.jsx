@@ -20,6 +20,8 @@ import { RiEditCircleFill } from "react-icons/ri";
 import { IoClose } from "react-icons/io5";
 import Select from "react-select";
 import { options } from "../../../components/Options.js";
+import { IoAddCircle } from "react-icons/io5";
+import Slider from '@mui/material/Slider';
 
 function BdmTeamLeads() {
   const { userId } = useParams();
@@ -696,6 +698,27 @@ function BdmTeamLeads() {
     fetchProjections();
   }, [data]);
 
+
+  const [openFeedback, setOpenFeedback] = useState(false)
+  const [feedbackCompanyName, setFeedbackCompanyName] = useState("")
+  const[valueSlider , setValueSlider]=useState(0)
+
+  const handleOpenFeedback = (companyName) => {
+    setOpenFeedback(true)
+    setFeedbackCompanyName(companyName)
+  }
+
+  const handleCloseFeedback = () => {
+    setOpenFeedback(false)
+  }
+
+  const handleSliderChange=(valueSlider)=>{
+    setValueSlider(valueSlider)
+
+  }
+
+  console.log("valueSlider" , valueSlider)
+
   return (
     <div>
       <Header bdmName={data.ename} />
@@ -958,10 +981,11 @@ function BdmTeamLeads() {
                         <th>Company Email</th>
                         <th>Assigned Date</th>
                         {bdmNewStatus === "Untouched" && <th>Action</th>}
-                        {(bdmNewStatus === "FollowUp" ||
-                          bdmNewStatus === "Interested") && (
+                        {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                           <th>Add Projection</th>
-                        )}
+                          <th>Add Feedback</th>
+                        </>)
+                        }
                       </tr>
                     </thead>
                     <tbody>
@@ -1130,6 +1154,7 @@ function BdmTeamLeads() {
                                   </IconButton>
                                 </div>
                               </td>
+
                             </>
                           )}
                           <td>
@@ -1171,28 +1196,14 @@ function BdmTeamLeads() {
                                     company._id,
                                     company.Status,
                                     company["Company Name"],
-                                    company.bdmName
-                                  );
-                                  handleRejectData(company._id);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 512 512"
-                                  fill="red"
-                                  style={{
-                                    width: "12px",
-                                    height: "12px",
-                                    color: "red",
-                                  }}
-                                >
-                                  <path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" />
-                                </svg>
-                              </IconButton>
-                            </td>
-                          )}
-                          {(bdmNewStatus === "FollowUp" ||
-                            bdmNewStatus === "Interested") && (
+                                    company.bdmName)
+                                  handleRejectData(company._id)
+                                }}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>
+                              </td>
+                            )
+                          }
+                          {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                             <td>
                               {company &&
                               projectionData &&
@@ -1233,7 +1244,20 @@ function BdmTeamLeads() {
                                 </IconButton>
                               )}
                             </td>
-                          )}
+                            <td>
+                              <IconButton>
+                                <IoAddCircle
+                                  onClick={() => {
+                                    handleOpenFeedback(company["Company Name"])
+                                  }}
+                                  style={{
+                                    cursor: "pointer",
+                                    width: "17px",
+                                    height: "17px",
+                                  }} />
+                              </IconButton>
+                            </td>
+                          </>)}
 
                           {/* {dataStatus === "Matured" && (
                             <>
@@ -1539,6 +1563,69 @@ function BdmTeamLeads() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* --------------------------------------------------------- dialog for feedback----------------------------------------- */}
+
+      <Dialog
+        open={openFeedback}
+        onClose={handleCloseFeedback}
+        fullWidth
+        maxWidth="xs">
+        <DialogTitle>
+          <span style={{ fontSize: "14px" }}>
+          BDM Feedback for {feedbackCompanyName}
+          </span>
+          <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+        
+            <div className="card-body mt-5">
+              <div className="feedback-slider">
+                 <Slider 
+                 defaultValue={0}  
+                 //getAriaValueText={valuetext} 
+                 value= {valueSlider}
+                 onChange={(e)=>{handleSliderChange(e.target.value)}}
+                 sx={{zIndex:"99999999", color:"#ffb900"}} 
+                 min={0} 
+                 max={10} 
+                 aria-label="Default" 
+                 valueLabelDisplay="auto" />
+              </div>
+            
+            </div>
+
+            <div class="card-footer mt-4">
+              <div class="mb-3 remarks-input">
+                <textarea
+                  placeholder="Add Remarks Here...  "
+                  className="form-control"
+                  id="remarks-input"
+                  rows="3"
+                // onChange={(e) => {
+                //   debouncedSetChangeRemarks(e.target.value);
+                // }}
+                ></textarea>
+              </div>
+              <button
+                //onClick={handleUpdate}
+                type="submit"
+                className="btn btn-primary"
+                style={{ width: "100%" }}
+              >
+                Submit
+              </button>
+            </div>
+         
+        </DialogContent>
+      </Dialog>
+
+
+
+
+      {/* ---------------------------------projection drawer--------------------------------------------------------- */}
+
       <div>
         <Drawer
           style={{ top: "50px" }}
