@@ -5231,6 +5231,26 @@ app.post('/api/matured-case-request', async (req, res) => {
     res.status(500).json({ success: false, message: 'Error saving request' });
   }
 });
+
+app.get("/api/matured-get-requests", async(req,res)=>{
+  try{
+    const request = await RequestMaturedModel.find();
+    res.status(200).json(request);
+
+  }catch(error){
+    res.status(400).json({success:false, message:"Error fetching the data"})
+  }
+});
+app.get("/api/matured-get-requests/:bdeName", async(req,res)=>{
+  try{
+    const bdeName = req.params.bdeName
+    const request = await RequestMaturedModel.find({bdeName});
+    res.status(200).json(request);
+
+  }catch(error){
+    res.status(400).json({success:false, message:"Error fetching the data"})
+  }
+});
 app.post(
   "/api/redesigned-edit-leadData/:CompanyName/:step",
   upload.fields([

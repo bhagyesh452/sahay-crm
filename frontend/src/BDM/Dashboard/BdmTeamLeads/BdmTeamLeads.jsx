@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../Components/Header/Header.jsx";
-import Navbar from '../../Components/Navbar/Navbar.jsx'
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import Navbar from "../../Components/Navbar/Navbar.jsx";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 import { FaWhatsapp } from "react-icons/fa";
-import NoData from '../../Components/NoData/NoData.jsx';
+import NoData from "../../Components/NoData/NoData.jsx";
 import { Drawer, Icon, IconButton } from "@mui/material";
 import { IconChevronLeft, IconEye } from "@tabler/icons-react";
 import { IconChevronRight } from "@tabler/icons-react";
@@ -21,26 +21,20 @@ import { IoClose } from "react-icons/io5";
 import Select from "react-select";
 import { options } from "../../../components/Options.js";
 
-
-
-
-
-
-
 function BdmTeamLeads() {
   const { userId } = useParams();
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
   const [dataStatus, setdataStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(0);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
   const itemsPerPage = 500;
-  const [currentData, setCurrentData] = useState([])
+  const [currentData, setCurrentData] = useState([]);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const [teamleadsData, setTeamLeadsData] = useState([]);
-  const [teamData, setTeamData] = useState([])
-  const [openRemarks, setOpenRemarks] = useState(false)
+  const [teamData, setTeamData] = useState([]);
+  const [openRemarks, setOpenRemarks] = useState(false);
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
   const [cid, setcid] = useState("");
@@ -53,8 +47,6 @@ function BdmTeamLeads() {
   const [changeRemarks, setChangeRemarks] = useState("");
   const [updateData, setUpdateData] = useState({});
   const [projectionData, setProjectionData] = useState([]);
-
-
 
   const fetchData = async () => {
     try {
@@ -72,55 +64,61 @@ function BdmTeamLeads() {
   };
 
   const fetchTeamLeadsData = async (status) => {
-    const bdmName = data.ename
+    const bdmName = data.ename;
     try {
-      const response = await axios.get(`${secretKey}/forwardedbybdedata/${bdmName}`)
+      const response = await axios.get(
+        `${secretKey}/forwardedbybdedata/${bdmName}`
+      );
 
-
-
-
-      setTeamData(response.data)
+      setTeamData(response.data);
       if (bdmNewStatus === "Untouched") {
-        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched"))
-        setBdmNewStatus("Untouched")
+        setTeamLeadsData(
+          response.data.filter((obj) => obj.bdmStatus === "Untouched")
+        );
+        setBdmNewStatus("Untouched");
       }
       if (status === "Interested") {
-        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Interested"))
-        setBdmNewStatus("Interested")
+        setTeamLeadsData(
+          response.data.filter((obj) => obj.bdmStatus === "Interested")
+        );
+        setBdmNewStatus("Interested");
       }
       if (status === "FollowUp") {
-        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "FollowUp"))
-        setBdmNewStatus("FollowUp")
+        setTeamLeadsData(
+          response.data.filter((obj) => obj.bdmStatus === "FollowUp")
+        );
+        setBdmNewStatus("FollowUp");
       }
       if (status === "Matured") {
-        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Matured"))
-        setBdmNewStatus("Matured")
+        setTeamLeadsData(
+          response.data.filter((obj) => obj.bdmStatus === "Matured")
+        );
+        setBdmNewStatus("Matured");
       }
       if (status === "Not Interested") {
-        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Not Interested"))
-        setBdmNewStatus("Not Interested")
+        setTeamLeadsData(
+          response.data.filter((obj) => obj.bdmStatus === "Not Interested")
+        );
+        setBdmNewStatus("Not Interested");
       }
 
-
-      console.log("response", response.data)
+      console.log("response", response.data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
-  console.log("teamdata", teamleadsData)
-
-  useEffect(() => {
-    fetchData()
-  }, [])
+  console.log("teamdata", teamleadsData);
 
   useEffect(() => {
-    fetchTeamLeadsData()
+    fetchData();
+  }, []);
 
-  }, [data.ename])
+  useEffect(() => {
+    fetchTeamLeadsData();
+  }, [data.ename]);
 
   //console.log("ename" , data.ename)
-
 
   function formatDate(inputDate) {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -130,23 +128,13 @@ function BdmTeamLeads() {
     );
     return formattedDate;
   }
-  function formatDateNew(timestamp) {
-    const date = new Date(timestamp);
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  }
-
 
   const closePopUpRemarks = () => {
-    setOpenRemarks(false)
-
-  }
+    setOpenRemarks(false);
+  };
   const closePopUpRemarksEdit = () => {
-    setOpenRemarksEdit(false)
-
-  }
+    setOpenRemarksEdit(false);
+  };
   const functionopenpopupremarks = (companyID, companyStatus, companyName) => {
     setOpenRemarks(true);
     setFilteredRemarks(
@@ -156,16 +144,17 @@ function BdmTeamLeads() {
     setcid(companyID);
     setCstat(companyStatus);
     setCurrentCompanyName(companyName);
-
   };
 
+  const [openRemarksEdit, setOpenRemarksEdit] = useState(false);
+  const [remarksBdmName, setRemarksBdmName] = useState("");
 
-
-
-  const [openRemarksEdit, setOpenRemarksEdit] = useState(false)
-  const [remarksBdmName, setRemarksBdmName] = useState("")
-
-  const functionopenpopupremarksEdit = (companyID, companyStatus, companyName, bdmName) => {
+  const functionopenpopupremarksEdit = (
+    companyID,
+    companyStatus,
+    companyName,
+    bdmName
+  ) => {
     setOpenRemarksEdit(true);
     setFilteredRemarks(
       remarksHistory.filter((obj) => obj.companyID === companyID)
@@ -174,17 +163,17 @@ function BdmTeamLeads() {
     setcid(companyID);
     setCstat(companyStatus);
     setCurrentCompanyName(companyName);
-    setRemarksBdmName(bdmName)
+    setRemarksBdmName(bdmName);
   };
 
-  console.log("filteredRemarks", filteredRemarks)
+  console.log("filteredRemarks", filteredRemarks);
 
   //console.log("currentcompanyname", currentCompanyName);
 
   const fetchRemarksHistory = async () => {
     try {
       const response = await axios.get(`${secretKey}/remarks-history`);
-      setRemarksHistory(response.data.reverse());
+      setRemarksHistory(response.data);
       setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
       console.log(response.data);
@@ -192,7 +181,6 @@ function BdmTeamLeads() {
       console.error("Error fetching remarks history:", error);
     }
   };
-
 
   useEffect(() => {
     fetchRemarksHistory();
@@ -205,17 +193,17 @@ function BdmTeamLeads() {
     [] // Empty dependency array to ensure the function is memoized
   );
 
-  const [isDeleted, setIsDeleted] = useState(false)
-  const [maturedCompany, setMaturedCompany] = useState("")
-  const [maturedEmail, setMaturedEmail] = useState("")
-  const [maturedInco, setMaturedInco] = useState("")
-  const [maturedId, setMaturedId] = useState("")
-  const [maturedNumber, setMaturedNumber] = useState("")
-  const [maturedOpen, setMaturedOpen] = useState(false)
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [maturedCompany, setMaturedCompany] = useState("");
+  const [maturedEmail, setMaturedEmail] = useState("");
+  const [maturedInco, setMaturedInco] = useState("");
+  const [maturedId, setMaturedId] = useState("");
+  const [maturedNumber, setMaturedNumber] = useState("");
+  const [maturedOpen, setMaturedOpen] = useState(false);
 
   const handleRejectData = async (companyId) => {
-    setIsDeleted(true)
-  }
+    setIsDeleted(true);
+  };
 
   const handleUpdate = async () => {
     // Now you have the updated Status and Remarks, perform the update logic
@@ -227,21 +215,26 @@ function BdmTeamLeads() {
     }
     try {
       if (isDeleted) {
-        const response = await axios.post(`${secretKey}/teamleads-rejectdata/${cid}`, {
-          bdmAcceptStatus: "NotForwarded",
-        })
-        const response2 = await axios.post(`${secretKey}/update-remarks/${cid}`, {
-          Remarks,
-        });
+        const response = await axios.post(
+          `${secretKey}/teamleads-rejectdata/${cid}`,
+          {
+            bdmAcceptStatus: "NotForwarded",
+          }
+        );
+        const response2 = await axios.post(
+          `${secretKey}/update-remarks/${cid}`,
+          {
+            Remarks,
+          }
+        );
         const response3 = await axios.post(
           `${secretKey}/remarks-history/${cid}`,
           {
             Remarks,
             remarksBdmName,
-
           }
         );
-        console.log("remarks", Remarks)
+        console.log("remarks", Remarks);
         if (response.status === 200) {
           Swal.fire("Remarks updated!");
           setChangeRemarks("");
@@ -258,21 +251,22 @@ function BdmTeamLeads() {
         console.log("response", response.data);
         fetchTeamLeadsData();
         Swal.fire("Data Rejected");
-        setIsDeleted(false)
-
+        setIsDeleted(false);
       } else {
-        const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
-          Remarks,
-        });
+        const response = await axios.post(
+          `${secretKey}/update-remarks/${cid}`,
+          {
+            Remarks,
+          }
+        );
         const response2 = await axios.post(
           `${secretKey}/remarks-history/${cid}`,
           {
             Remarks,
             remarksBdmName,
-
           }
         );
-        console.log("remarks", Remarks)
+        console.log("remarks", Remarks);
         if (response.status === 200) {
           Swal.fire("Remarks updated!");
           setChangeRemarks("");
@@ -285,7 +279,6 @@ function BdmTeamLeads() {
           // Handle the case where the API call was not successful
           console.error("Failed to update status:", response.data.message);
         }
-
       }
     } catch (error) {
       // Handle any errors that occur during the API call
@@ -353,11 +346,6 @@ function BdmTeamLeads() {
   //   }));
   // };
 
-
-
-
-
-
   const handleAcceptClick = async (
     companyId,
     cName,
@@ -368,12 +356,15 @@ function BdmTeamLeads() {
     newBdmStatus
   ) => {
     try {
-      const response = await axios.post(`${secretKey}/update-bdm-status/${companyId}`, {
-        newBdmStatus,
-        companyId,
-        oldStatus,
-        bdmAcceptStatus: "Accept",
-      })
+      const response = await axios.post(
+        `${secretKey}/update-bdm-status/${companyId}`,
+        {
+          newBdmStatus,
+          companyId,
+          oldStatus,
+          bdmAcceptStatus: "Accept",
+        }
+      );
 
       if (response.status === 200) {
         Swal.fire("Accepted");
@@ -383,17 +374,14 @@ function BdmTeamLeads() {
         console.error("Failed to update status:", response.data.message);
       }
     } catch (error) {
-      console.log("Error updating status", error.message)
+      console.log("Error updating status", error.message);
     }
-  }
+  };
 
-  console.log("bdmNewStatus", bdmNewStatus)
-
-
+  console.log("bdmNewStatus", bdmNewStatus);
 
   // const handleRejectData = async (companyId) => {
   //   setIsDeleted(true)
-
 
   //   try {
   //     const response = await axios.post(`${secretKey}/teamleads-rejectdata/${companyId}`, {
@@ -408,8 +396,6 @@ function BdmTeamLeads() {
   //   }
   // }
 
-
-
   // try {
   //   const response = await axios.post(`${secretKey}/teamleads-rejectdata/${companyId}`, {
   //     bdmAcceptStatus: "NotForwarded",
@@ -422,7 +408,6 @@ function BdmTeamLeads() {
   //   Swal.fire("Error rekecting data")
   // }
 
-
   const handlebdmStatusChange = async (
     companyId,
     bdmnewstatus,
@@ -431,14 +416,15 @@ function BdmTeamLeads() {
     cindate,
     cnum,
     bdeStatus,
-    bdmOldStatus
+    bdmOldStatus,
+    bdeName
   ) => {
     const title = `${data.ename} changed ${cname} status from ${bdmOldStatus} to ${bdmnewstatus}`;
     const DT = new Date();
     const date = DT.toLocaleDateString();
     const time = DT.toLocaleTimeString();
-    try {
 
+    try {
       if (bdmnewstatus !== "Matured") {
         const response = await axios.post(
           `${secretKey}/bdm-status-change/${companyId}`,
@@ -450,40 +436,60 @@ function BdmTeamLeads() {
             time,
           }
         );
-        console.log(bdmnewstatus)
+
         // Check if the API call was successful
         if (response.status === 200) {
           // Assuming fetchData is a function to fetch updated employee data
-
           fetchTeamLeadsData(bdmnewstatus);
-          setBdmNewStatus(bdmnewstatus)
-          setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmnewstatus))
-
-
+          setBdmNewStatus(bdmnewstatus);
+          setTeamLeadsData(
+            teamData.filter((obj) => obj.bdmStatus === bdmnewstatus)
+          );
         } else {
           // Handle the case where the API call was not successful
           console.error("Failed to update status:", response.data.message);
         }
-
       } else {
-        console.log("Matured Status here")
-        setMaturedCompany(cname);
-        setMaturedEmail(cemail);
-        setMaturedInco(cindate);
-        setMaturedId(companyId);
-        setMaturedNumber(cnum);
-        setMaturedOpen(true);
-        return true;
-      }
-      // Make an API call to update the employee status in the database
+        // Use SweetAlert to confirm the "Matured" status
+        const requestData = {
+          companyName: cname,
+          requestStatus: "Pending",
+          bdeName: bdeName,
+          bdmName: data.ename,
+          date: new Date(),
+          time: new Date().toLocaleTimeString(), // Assuming you want the current time
+        };
 
+        // Make API call to send the request
+        axios
+          .post(`${secretKey}/matured-case-request`, requestData)
+          .then((response) => {
+            if (response.status === 200) {
+              // Assuming fetchData is a function to fetch updated employee data
+              fetchTeamLeadsData(bdmnewstatus);
+              setBdmNewStatus(bdmnewstatus);
+              setTeamLeadsData(
+                teamData.filter((obj) => obj.bdmStatus === bdmnewstatus)
+              );
+              Swal.fire(
+                "Request Sent",
+                "Request has been successfully sent to the BDE",
+                "success"
+              );
+            } else {
+              Swal.fire("Error", "Failed to sent Request", "error");
+              console.error("Failed to update status:", response.data.message);
+            }
+          })
+          .catch((error) => {
+            console.error("Error sending request to backend:", error);
+          });
+      }
     } catch (error) {
-      // Handle any errors that occur during the API call
+      // Handle any errors that occur during the API calls
       console.error("Error updating status:", error.message);
     }
-
-  }
-
+  };
   const handleDeleteRemarks = async (remarks_id, remarks_value) => {
     const mainRemarks = remarks_value === currentRemarks ? true : false;
     console.log(mainRemarks);
@@ -503,7 +509,6 @@ function BdmTeamLeads() {
       console.error("Error deleting remarks:", error);
     }
   };
-
 
   // -----------------------------projection------------------------------
   const [projectingCompany, setProjectingCompany] = useState("");
@@ -525,7 +530,6 @@ function BdmTeamLeads() {
   const [selectedValues, setSelectedValues] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [openAnchor, setOpenAnchor] = useState(false);
-
 
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
@@ -694,31 +698,40 @@ function BdmTeamLeads() {
 
   return (
     <div>
-
       <Header bdmName={data.ename} />
       <Navbar userId={userId} />
       <div className="page-wrapper">
+    
         <div className="page-header d-print-none">
           <div className="container-xl">
             <div className="row">
               <div className="col-sm-3">
                 <div class="input-icon">
-                  <span class="input-icon-addon">
-                    {/* <CiSearch /> */}
-                  </span>
-                  <input type="text" value="" class="form-control" placeholder="Search…" aria-label="Search in website" />
+                  <span class="input-icon-addon">{/* <CiSearch /> */}</span>
+                  <input
+                    type="text"
+                    value=""
+                    class="form-control"
+                    placeholder="Search…"
+                    aria-label="Search in website"
+                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="page-body" onCopy={(e) => {
-          e.preventDefault();
-        }}>
+        <div
+          className="page-body"
+          onCopy={(e) => {
+            e.preventDefault();
+          }}
+        >
           <div className="container-xl">
             <div class="card-header my-tab">
-              <ul class="nav nav-tabs card-header-tabs nav-fill p-0"
-                data-bs-toggle="tabs">
+              <ul
+                class="nav nav-tabs card-header-tabs nav-fill p-0"
+                data-bs-toggle="tabs"
+              >
                 <li class="nav-item data-heading">
                   <a
                     href="#tabs-home-5"
@@ -761,9 +774,7 @@ function BdmTeamLeads() {
                       setBdmNewStatus("Interested");
                       //setCurrentPage(0);
                       setTeamLeadsData(
-                        teamData.filter(
-                          (obj) => obj.bdmStatus === "Interested"
-                        )
+                        teamData.filter((obj) => obj.bdmStatus === "Interested")
                       );
                     }}
                     className={
@@ -776,12 +787,10 @@ function BdmTeamLeads() {
                     Interested
                     <span className="no_badge">
                       {
-                        teamData.filter(
-                          (obj) => obj.bdmStatus === "Interested"
-                        ).length
+                        teamData.filter((obj) => obj.bdmStatus === "Interested")
+                          .length
                       }
                     </span>
-
                     {/* <span className="no_badge">
                       <li class="nav-item">
                         <a
@@ -822,9 +831,7 @@ function BdmTeamLeads() {
                       setBdmNewStatus("FollowUp");
                       //setCurrentPage(0);
                       setTeamLeadsData(
-                        teamData.filter(
-                          (obj) => obj.bdmStatus === "FollowUp"
-                        )
+                        teamData.filter((obj) => obj.bdmStatus === "FollowUp")
                       );
                     }}
                     className={
@@ -837,9 +844,8 @@ function BdmTeamLeads() {
                     Follow Up{" "}
                     <span className="no_badge">
                       {
-                        teamData.filter(
-                          (obj) => obj.bdmStatus === "FollowUp"
-                        ).length
+                        teamData.filter((obj) => obj.bdmStatus === "FollowUp")
+                          .length
                       }
                     </span>
                   </a>
@@ -871,9 +877,8 @@ function BdmTeamLeads() {
                     <span className="no_badge">
                       {" "}
                       {
-                        teamData.filter(
-                          (obj) => obj.bdmStatus === "Matured"
-                        ).length
+                        teamData.filter((obj) => obj.bdmStatus === "Matured")
+                          .length
                       }
                     </span>
                   </a>
@@ -914,18 +919,22 @@ function BdmTeamLeads() {
               </ul>
             </div>
             <div className="card">
-              <div className="card-body p-0" >
-                <div style={{
-                  overflowX: "auto",
-                  overflowY: "auto",
-                  maxHeight: "66vh",
-                }}>
-                  <table style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    border: "1px solid #ddd",
+              <div className="card-body p-0">
+                <div
+                  style={{
+                    overflowX: "auto",
+                    overflowY: "auto",
+                    maxHeight: "66vh",
                   }}
-                    className="table-vcenter table-nowrap">
+                >
+                  <table
+                    style={{
+                      width: "100%",
+                      borderCollapse: "collapse",
+                      border: "1px solid #ddd",
+                    }}
+                    className="table-vcenter table-nowrap"
+                  >
                     <thead>
                       <tr className="tr-sticky">
                         <th className="th-sticky">Sr.No</th>
@@ -934,33 +943,30 @@ function BdmTeamLeads() {
                         <th>Company Number</th>
                         <th>Bde Status</th>
                         <th>Bde Remarks</th>
-                        {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "Not Interested") && (
+                        {(bdmNewStatus === "Interested" ||
+                          bdmNewStatus === "FollowUp" ||
+                          bdmNewStatus === "Matured" ||
+                          bdmNewStatus === "Not Interested") && (
                           <>
                             <th>Bdm Status</th>
                             <th>Bdm Remarks</th>
                           </>
                         )}
-                        <th>
-                          Incorporation Date
-                        </th>
+                        <th>Incorporation Date</th>
                         <th>City</th>
                         <th>State</th>
                         <th>Company Email</th>
-                        <th>
-                          Assigned Date
-                        </th>
+                        <th>Assigned Date</th>
                         {bdmNewStatus === "Untouched" && <th>Action</th>}
-                        {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && <th>Add Projection</th>}
-
-
+                        {(bdmNewStatus === "FollowUp" ||
+                          bdmNewStatus === "Interested") && (
+                          <th>Add Projection</th>
+                        )}
                       </tr>
                     </thead>
                     <tbody>
                       {teamleadsData.map((company, index) => (
-                        <tr
-                          key={index}
-                          style={{ border: "1px solid #ddd" }}
-                        >
+                        <tr key={index} style={{ border: "1px solid #ddd" }}>
                           <td className="td-sticky">
                             {startIndex + index + 1}
                           </td>
@@ -979,9 +985,7 @@ function BdmTeamLeads() {
                               </a>
                             </div>
                           </td>
-                          <td>
-                            {company.Status}
-                          </td>
+                          <td>{company.Status}</td>
                           <td>
                             <div
                               key={company._id}
@@ -990,7 +994,8 @@ function BdmTeamLeads() {
                                 alignItems: "center",
                                 justifyContent: "space-between",
                                 width: "100px",
-                              }}>
+                              }}
+                            >
                               <p
                                 className="rematkText text-wrap m-0"
                                 title={company.Remarks}
@@ -1015,13 +1020,16 @@ function BdmTeamLeads() {
                                   style={{
                                     width: "12px",
                                     height: "12px",
-                                    color: "#fbb900"
+                                    color: "#fbb900",
                                   }}
                                 />
                               </IconButton>
                             </div>
                           </td>
-                          {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "Not Interested") && (
+                          {(bdmNewStatus === "Interested" ||
+                            bdmNewStatus === "FollowUp" ||
+                            bdmNewStatus === "Matured" ||
+                            bdmNewStatus === "Not Interested") && (
                             <>
                               <td>
                                 {company.bdmStatus === "Matured" ? (
@@ -1033,8 +1041,7 @@ function BdmTeamLeads() {
                                       padding: ".4375rem .75rem",
                                       border:
                                         "1px solid var(--tblr-border-color)",
-                                      borderRadius:
-                                        "var(--tblr-border-radius)",
+                                      borderRadius: "var(--tblr-border-radius)",
                                     }}
                                     value={company.bdmStatus}
                                     onChange={(e) =>
@@ -1043,12 +1050,11 @@ function BdmTeamLeads() {
                                         e.target.value,
                                         company["Company Name"],
                                         company["Company Email"],
-                                        company[
-                                        "Company Incorporation Date  "
-                                        ],
+                                        company["Company Incorporation Date  "],
                                         company["Company Number"],
                                         company["Status"],
-                                        company.bdmStatus
+                                        company.bdmStatus,
+                                        company.ename
                                       )
                                     }
                                   >
@@ -1068,9 +1074,7 @@ function BdmTeamLeads() {
                                         <option value="FollowUp">
                                           Follow Up{" "}
                                         </option>
-                                        <option value="Matured">
-                                          Matured
-                                        </option>
+                                        <option value="Matured">Matured</option>
                                       </>
                                     )}
 
@@ -1079,9 +1083,7 @@ function BdmTeamLeads() {
                                         <option value="FollowUp">
                                           Follow Up{" "}
                                         </option>
-                                        <option value="Matured">
-                                          Matured
-                                        </option>
+                                        <option value="Matured">Matured</option>
                                       </>
                                     )}
                                   </select>
@@ -1104,7 +1106,6 @@ function BdmTeamLeads() {
                                     {!company.bdmRemarks
                                       ? "No Remarks"
                                       : company.bdmRemarks}
-
                                   </p>
 
                                   <IconButton
@@ -1118,7 +1119,8 @@ function BdmTeamLeads() {
                                       setCurrentRemarks(company.Remarks);
                                       //setCurrentRemarksBdm(company.Remarks)
                                       setCompanyId(company._id);
-                                    }}>
+                                    }}
+                                  >
                                     <EditIcon
                                       style={{
                                         width: "12px",
@@ -1126,13 +1128,12 @@ function BdmTeamLeads() {
                                       }}
                                     />
                                   </IconButton>
-
                                 </div>
                               </td>
                             </>
                           )}
                           <td>
-                            {formatDateNew(
+                            {formatDate(
                               company["Company Incorporation Date  "]
                             )}
                           </td>
@@ -1140,42 +1141,65 @@ function BdmTeamLeads() {
                           <td>{company["State"]}</td>
                           <td>{company["Company Email"]}</td>
                           <td>{company.bdeForwardDate}</td>
-                          {
-                            company.bdmStatus === "Untouched" && (
-                              <td>
-                                <IconButton style={{ color: "green", marginRight: "5px", height: "25px", width: "25px" }}
-                                  onClick={(e) => handleAcceptClick(
+                          {company.bdmStatus === "Untouched" && (
+                            <td>
+                              <IconButton
+                                style={{
+                                  color: "green",
+                                  marginRight: "5px",
+                                  height: "25px",
+                                  width: "25px",
+                                }}
+                                onClick={(e) =>
+                                  handleAcceptClick(
                                     company._id,
                                     //e.target.value,
                                     company["Company Name"],
                                     company["Company Email"],
-                                    company[
-                                    "Company Incorporation Date  "
-                                    ],
+                                    company["Company Incorporation Date  "],
                                     company["Company Number"],
                                     company["Status"],
                                     company.bdmStatus
-                                  )}>
-                                  <GrStatusGood />
-                                </IconButton>
-                                <IconButton onClick={() => {
-                                  functionopenpopupremarksEdit(company._id,
+                                  )
+                                }
+                              >
+                                <GrStatusGood />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => {
+                                  functionopenpopupremarksEdit(
+                                    company._id,
                                     company.Status,
                                     company["Company Name"],
-                                    company.bdmName)
-                                  handleRejectData(company._id)
-                                }}>
-                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>
-                              </td>
-                            )
-                          }
-                          {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (
+                                    company.bdmName
+                                  );
+                                  handleRejectData(company._id);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 512 512"
+                                  fill="red"
+                                  style={{
+                                    width: "12px",
+                                    height: "12px",
+                                    color: "red",
+                                  }}
+                                >
+                                  <path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" />
+                                </svg>
+                              </IconButton>
+                            </td>
+                          )}
+                          {(bdmNewStatus === "FollowUp" ||
+                            bdmNewStatus === "Interested") && (
                             <td>
                               {company &&
-                                projectionData &&
-                                projectionData.some(
-                                  (item) => item.companyName === company["Company Name"]
-                                ) ? (
+                              projectionData &&
+                              projectionData.some(
+                                (item) =>
+                                  item.companyName === company["Company Name"]
+                              ) ? (
                                 <IconButton>
                                   <RiEditCircleFill
                                     onClick={() => {
@@ -1200,7 +1224,6 @@ function BdmTeamLeads() {
                                       );
                                       setIsEditProjection(true);
                                     }}
-
                                     style={{
                                       cursor: "pointer",
                                       width: "17px",
@@ -1351,7 +1374,6 @@ function BdmTeamLeads() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
       {/* // -------------------------------------------------------------------Dialog for bde Remarks--------------------------------------------------------- */}
@@ -1360,7 +1382,8 @@ function BdmTeamLeads() {
         open={openRemarks}
         onClose={closePopUpRemarks}
         fullWidth
-        maxWidth="sm">
+        maxWidth="sm"
+      >
         <DialogTitle>
           <span style={{ fontSize: "14px" }}>
             {currentCompanyName}'s Remarks
@@ -1439,12 +1462,16 @@ function BdmTeamLeads() {
         open={openRemarksEdit}
         onClose={closePopUpRemarksEdit}
         fullWidth
-        maxWidth="sm">
+        maxWidth="sm"
+      >
         <DialogTitle>
           <span style={{ fontSize: "14px" }}>
             {currentCompanyName}'s Remarks
           </span>
-          <IconButton onClick={closePopUpRemarksEdit} style={{ float: "right" }}>
+          <IconButton
+            onClick={closePopUpRemarksEdit}
+            style={{ float: "right" }}
+          >
             <CloseIcon color="primary"></CloseIcon>
           </IconButton>{" "}
         </DialogTitle>
@@ -1517,7 +1544,8 @@ function BdmTeamLeads() {
           style={{ top: "50px" }}
           anchor="right"
           open={openProjection}
-          onClose={closeProjection}>
+          onClose={closeProjection}
+        >
           <div style={{ width: "31em" }} className="container-xl">
             <div
               className="header d-flex justify-content-between align-items-center"
@@ -1531,10 +1559,10 @@ function BdmTeamLeads() {
               </h1>
               <div>
                 {projectingCompany &&
-                  projectionData &&
-                  projectionData.some(
-                    (item) => item.companyName === projectingCompany
-                  ) ? (
+                projectionData &&
+                projectionData.some(
+                  (item) => item.companyName === projectingCompany
+                ) ? (
                   <>
                     <IconButton
                       onClick={() => {
@@ -1785,12 +1813,7 @@ function BdmTeamLeads() {
           </div>
         </Drawer>
       </div>
-
-
-
-
     </div>
-
   );
 }
 
