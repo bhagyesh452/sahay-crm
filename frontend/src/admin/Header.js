@@ -22,7 +22,7 @@ function Header({ name, designation}) {
   //console.log(name)
   //console.log(designation)
   useEffect(() => {
-    const socket = io('wss://startupsahay.in/socket.io');
+    const socket = io('wss://127.0.0.1:3001/socket.io');
 
     // Listen for the 'welcome' event from the server
     socket.on('welcome', (message) => {

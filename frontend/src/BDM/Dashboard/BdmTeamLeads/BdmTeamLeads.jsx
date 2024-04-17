@@ -20,6 +20,7 @@ import { RiEditCircleFill } from "react-icons/ri";
 import { IoClose } from "react-icons/io5";
 import Select from "react-select";
 import { options } from "../../../components/Options.js";
+import RedesignedForm from "../../../admin/RedesignedForm.jsx";
 
 
 
@@ -54,7 +55,12 @@ function BdmTeamLeads() {
   const [updateData, setUpdateData] = useState({});
   const [projectionData, setProjectionData] = useState([]);
   
-
+  const [maturedCompany, setMaturedCompany] = useState("")
+  const [maturedEmail, setMaturedEmail] = useState("")
+  const [maturedInco, setMaturedInco] = useState("")
+  const [maturedId, setMaturedId] = useState("")
+  const [maturedNumber, setMaturedNumber] = useState("")
+  const [maturedOpen, setMaturedOpen] = useState(false)
 
   const fetchData = async () => {
     try {
@@ -347,26 +353,38 @@ function BdmTeamLeads() {
     const time = DT.toLocaleTimeString();
     try {
       // Make an API call to update the employee status in the database
-      const response = await axios.post(
-        `${secretKey}/bdm-status-change/${companyId}`,
-        {
-          bdeStatus,
-          bdmnewstatus,
-          title,
-          date,
-          time,
+      if(bdmnewstatus!=="Matured"){
+        const response = await axios.post(
+          `${secretKey}/bdm-status-change/${companyId}`,
+          {
+            bdeStatus,
+            bdmnewstatus,
+            title,
+            date,
+            time,
+          }
+        );
+  
+        // Check if the API call was successful
+        if (response.status === 200) {
+          // Assuming fetchData is a function to fetch updated employee data
+  
+          fetchTeamLeadsData(bdmOldStatus);
+        } else {
+          // Handle the case where the API call was not successful
+          console.error("Failed to update status:", response.data.message);
         }
-      );
-
-      // Check if the API call was successful
-      if (response.status === 200) {
-        // Assuming fetchData is a function to fetch updated employee data
-
-        fetchTeamLeadsData(bdmOldStatus);
-      } else {
-        // Handle the case where the API call was not successful
-        console.error("Failed to update status:", response.data.message);
+      }else{
+        console.log("Matured Status here")
+          setMaturedCompany(cname);
+          setMaturedEmail(cemail);
+          setMaturedInco(cindate);
+          setMaturedId(companyId);
+          setMaturedNumber(cnum);
+          setMaturedOpen(true);
+          return true;
       }
+     
     } catch (error) {
       // Handle any errors that occur during the API call
       console.error("Error updating status:", error.message);
@@ -587,7 +605,7 @@ useEffect(() => {
 
       <Header bdmName={data.ename} />
       <Navbar userId={userId} />
-      <div className="page-wrapper">
+      {!maturedOpen && <div className="page-wrapper">
         <div className="page-header d-print-none">
           <div className="container-xl">
               <div className="row">
@@ -1311,7 +1329,7 @@ useEffect(() => {
           </div>
 
         </div>
-      </div>
+      </div>}
       {/* // -------------------------------------------------------------------Dialog for bde Remarks--------------------------------------------------------- */}
 
       <Dialog
@@ -1742,9 +1760,25 @@ useEffect(() => {
             </div>
           </div>
         </Drawer>
+
+        {/* -----------------------------   Booking Form from here  ------------------------------------ */}
+
+        
       </div>
 
-
+      {
+          maturedOpen && <RedesignedForm
+          setDataStatus={setdataStatus}
+          setFormOpen={setMaturedOpen}
+          companysName={maturedCompany}
+          companysEmail={maturedEmail}
+          companyNumber={maturedNumber}
+          // setNowToFetch={setNowToFetch}
+          companysInco={maturedInco}
+          // employeeName={data.ename}
+          // employeeEmail={data.email}
+          />
+        }
 
 
     </div>
