@@ -130,6 +130,13 @@ function BdmTeamLeads() {
     );
     return formattedDate;
   }
+  function formatDateNew(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
 
 
   const closePopUpRemarks = () => {
@@ -177,7 +184,7 @@ function BdmTeamLeads() {
   const fetchRemarksHistory = async () => {
     try {
       const response = await axios.get(`${secretKey}/remarks-history`);
-      setRemarksHistory(response.data);
+      setRemarksHistory(response.data.reverse());
       setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
       console.log(response.data);
@@ -1125,7 +1132,7 @@ function BdmTeamLeads() {
                             </>
                           )}
                           <td>
-                            {formatDate(
+                            {formatDateNew(
                               company["Company Incorporation Date  "]
                             )}
                           </td>
