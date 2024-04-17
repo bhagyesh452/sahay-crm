@@ -862,7 +862,7 @@ app.get("/api/teaminfo/:ename", async (req, res) => {
 
 
 app.post("/api/forwardtobdmdata", async (req, res) => {
-  const { selectedData, bdmName , companyId , bdmAcceptStatus , bdeForwardDate} = req.body;
+  const { selectedData, bdmName , companyId , bdmAcceptStatus , bdeForwardDate , bdeOldStatus} = req.body;
   console.log("selectedData", selectedData);
 
   try {
@@ -873,7 +873,7 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
       return await TeamLeadsModel.create(newData);
     }));
 
-    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus})
+    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus , bdeForwardDate:formatDate(bdeForwardDate) , bdeOldStatus : bdeOldStatus})
     
     
     console.log("newLeads", newLeads);

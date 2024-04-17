@@ -291,7 +291,7 @@ function EmployeePanel() {
   //     setEditIconColor(color); // assuming you have a state variable to manage icon color
   //   }
   // };
-console.log(socketID, 'If this shows then boom');
+  console.log(socketID, 'If this shows then boom');
   const closeProjection = () => {
     setOpenProjection(false);
     setProjectingCompany("");
@@ -647,13 +647,15 @@ console.log(socketID, 'If this shows then boom');
   useEffect(() => {
     fetchData();
   }, [userId]);
+
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
   const fetchRemarksHistory = async () => {
     try {
       const response = await axios.get(`${secretKey}/remarks-history`);
-      setRemarksHistory(response.data);
-      setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
+      setRemarksHistory(response.data.reverse());
+      setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid).reverse());
+
 
       console.log(response.data);
     } catch (error) {
@@ -980,6 +982,14 @@ console.log(socketID, 'If this shows then boom');
       options
     );
     return formattedDate;
+  }
+
+  function formatDateNew(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 
   // Request form for Employees
@@ -2091,12 +2101,15 @@ console.log(socketID, 'If this shows then boom');
 
 
   const [confirmationPending, setConfirmationPending] = useState(false);
+  const [bdeOldStatus, setBdeOldStatus] = useState("");
 
   const handleConfirmAssign = (companyId, companyName, companyStatus, ename, bdmAcceptStatus) => {
     console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
 
+
     if (companyStatus === "Interested" || companyStatus === "FollowUp" && bdmName) {
       // Assuming `bdmName` is defined somewhere
+      setBdeOldStatus(companyStatus)
       setForrwardEname(ename);
       setForrwardStatus(companyStatus);
       setBdmNewAcceptStatus("Pending");
@@ -2107,6 +2120,8 @@ console.log(socketID, 'If this shows then boom');
       Swal.fire("Your are not assigned to any bdm!");
     }
   };
+
+  console.log("companyprevstatus", bdeOldStatus)
 
 
   useEffect(() => {
@@ -2125,7 +2140,8 @@ console.log(socketID, 'If this shows then boom');
         bdmName: bdmName,
         companyId: forwardCompanyId,
         bdmAcceptStatus: bdmNewAcceptStatus,
-        bdeForwardDate: Date.now() // Assuming bdmName is defined elsewhere in your component
+        bdeForwardDate: Date.now(),
+        bdeOldStatus: bdeOldStatus, // Assuming bdmName is defined elsewhere in your component
       });
 
       //console.log("response", response.data);
@@ -2874,7 +2890,7 @@ console.log(socketID, 'If this shows then boom');
                           setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData
-                              .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded")
+                              .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status !== "Not Interested")
                               .sort(
                                 (a, b) =>
                                   new Date(b.lastActionDate) -
@@ -2896,7 +2912,7 @@ console.log(socketID, 'If this shows then boom');
                           {" "}
                           {
                             moreEmpData.filter(
-                              (obj) => obj.bdmAcceptStatus !== "NotForwarded"
+                              (obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status !== "Not Interested"
                             ).length
                           }
                         </span>
@@ -2960,6 +2976,9 @@ console.log(socketID, 'If this shows then boom');
                             <th className="th-sticky1">Company Name</th>
                             <th>Company Number</th>
                             <th>Status</th>
+                            {(dataStatus === "Forwarded") && (
+                              <th>Bdm Status</th>
+                            )}
                             <th>Remarks</th>
 
                             <th>
@@ -3157,9 +3176,14 @@ console.log(socketID, 'If this shows then boom');
                                 <th>Add Projection</th>
                               ))}
 
+                            {dataStatus === "Forwarded" && (
+                              <th>Forwarded Date</th>
+                            )}
+
                             {(dataStatus === "Forwarded" || dataStatus === "Interested" || dataStatus === "FollowUp") && (
                               <th>Forward to BDM</th>
                             )}
+
                           </tr>
                         </thead>
                         {loading ? (
@@ -3205,7 +3229,7 @@ console.log(socketID, 'If this shows then boom');
                                     <span>{company["Status"]}</span>
                                   ) : (
                                     <>
-                                      {company.bdmAcceptStatus === "NotForwarded" && (
+                                      {(company.bdmAcceptStatus === "NotForwarded") && (
                                         <select
                                           style={{
                                             background: "none",
@@ -3251,27 +3275,64 @@ console.log(socketID, 'If this shows then boom');
                                           )}
                                         </select>
                                       )}
-                                      {company.bdmAcceptStatus !== "NotForwarded" && (
+                                      {/* {(company.bdmAcceptStatus !== "NotForwarded" && company.Status !== "Not Interested") && (
+                                        // <select
+                                        //   disabled
+                                        //   style={{
+                                        //     background: "none",
+                                        //     padding: ".4375rem .75rem",
+                                        //     border: "1px solid var(--tblr-border-color)",
+                                        //     borderRadius: "var(--tblr-border-radius)",
+                                        //   }}
+                                        // >
+                                        //   {company.Status === "Interested" && (<option value="Interested">Interested</option>)}
+                                        //   {company.Status === "FollowUp" && (<option value="FollowUp">FollowUp</option>)}
+                                        //   {company.Status === "Not Interested" && (<option value="Not Interested">Not Interested</option>)}
+                                        //   {company.Status === "Junk" && (<option value="Junk">Junk</option>)}
+                                        //   {company.Status === "Busy" && (<option value="Busy">Busy</option>)}
+                                        // </select>
+                                        <span>{company.bdeOldStatus}</span>
+                                      )} */}
+                                      {(company.bdmAcceptStatus !== "NotForwarded" && (company.Status === "Interested" || company.Status === "FollowUp") ) && (
+                                        <span>{company.bdeOldStatus}</span>
+                                      )}
+                                      {(company.bdmAcceptStatus !== "NotForwarded" && company.Status === "Not Interested") && (
                                         <select
-                                          disabled
                                           style={{
                                             background: "none",
                                             padding: ".4375rem .75rem",
                                             border: "1px solid var(--tblr-border-color)",
                                             borderRadius: "var(--tblr-border-radius)",
                                           }}
+                                          value={company["Status"]}
+                                          onChange={(e) =>
+                                            handleStatusChange(
+                                              company._id,
+                                              e.target.value,
+                                              company["Company Name"],
+                                              company["Company Email"],
+                                              company["Company Incorporation Date  "],
+                                              company["Company Number"],
+                                              company["Status"]
+                                            )
+                                          }
                                         >
-                                          {company.Status === "Interested" && (<option value="Interested">Interested</option>)}
-                                          {company.Status === "FollowUp" && (<option value="FollowUp">FollowUp</option>)}
-                                          {company.Status === "Not Interested" && (<option value="Not Interested">Not Interested</option>)}
-                                          {company.Status === "Junk" && (<option value="Junk">Junk</option>)}
-                                          {company.Status === "Busy" && (<option value="Busy">Busy</option>)}
-                                        </select>
-                                      )}
+                                          <option value="Not Picked Up">Not Picked Up</option>
+                                          <option value="Busy">Busy</option>
+                                          <option value="Junk">Junk</option>
+                                          <option value="Not Interested">Not Interested</option>
+                                    
+                                        </select>  )}
                                     </>
                                   )}
 
                                 </td>
+                                {dataStatus === "Forwarded" && (<td>
+                                  {company.Status === "Interested" && <span>Interested</span>}
+                                  {company.Status === "FollowUp" && <span>FollowUp</span>}
+                                  {company.Status === "Matured" && <span>Matured</span>}
+                                  {(company.Status === "Not Interested" || company.Status === "Junk" || company.Status === "Busy") && <span></span>}
+                                </td>)}
                                 <td>
                                   <div
                                     key={company._id}
@@ -3343,14 +3404,14 @@ console.log(socketID, 'If this shows then boom');
                                 </td>
 
                                 <td>
-                                  {formatDate(
-                                    company["Company Incorporation Date  "]
-                                  )}
+                                  {formatDateNew(company["Company Incorporation Date  "])
+
+                                  }
                                 </td>
                                 <td>{company["City"]}</td>
                                 <td>{company["State"]}</td>
                                 <td>{company["Company Email"]}</td>
-                                <td>{formatDate(company["AssignDate"])}</td>
+                                <td>{formatDateNew(company["AssignDate"])}</td>
                                 {(dataStatus === "FollowUp" ||
                                   dataStatus === "Interested") && (<>
                                     {company.bdmAcceptStatus === "NotForwarded" ? (
@@ -3430,6 +3491,9 @@ console.log(socketID, 'If this shows then boom');
 
                                     </td>
                                   </>)}
+                                {dataStatus === "Forwarded" && (
+                                  <td>{company.bdeForwardDate}</td>
+                                )}
                                 {
                                   dataStatus === "Forwarded" && (
                                     <td>
@@ -3469,12 +3533,12 @@ console.log(socketID, 'If this shows then boom');
                                           color="#fbb900"
                                         />
                                       ) : company.bdmAcceptStatus === "Accept" ? (
-                                        <MdNotInterested style={{
+                                        <TiArrowBack style={{
                                           cursor: "pointer",
                                           width: "17px",
                                           height: "17px",
                                         }}
-                                          color="red" />
+                                          color="lightgrey" />
                                       ) : <TiArrowForward
                                         onClick={() => {
                                           handleConfirmAssign(
@@ -4195,8 +4259,8 @@ console.log(socketID, 'If this shows then boom');
                       <div className="reamrk-card-innerText">
                         <pre className="remark-text">{historyItem.remarks}</pre>
                         {historyItem.bdmName !== undefined && (
-                        <pre className="remark-text">By BDM</pre>
-                      )}
+                          <pre className="remark-text">By BDM</pre>
+                        )}
                       </div>
                       {/* <div className="dlticon">
                         <DeleteIcon

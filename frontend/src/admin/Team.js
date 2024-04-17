@@ -676,9 +676,9 @@ function Team() {
                                             >
                                                 <option value="" disabled>Select BDE Name</option>
                                                 {employeeData
-                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice && !allEnames.includes(employee.ename)) 
+                                                    .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice) 
                                                     .map(employee => (
-                                                        <option key={employee._id} value={employee.ename} >
+                                                        <option key={employee._id} value={employee.ename} disabled={allEnames.includes(employee.ename)} >
                                                             {employee.ename}
                                                         </option>
                                                     ))}
@@ -710,14 +710,14 @@ function Team() {
                                                 required
                                             >
                                                 <option value="" disabled>Select BDE Name</option>
-                                                {/* {employeeData
+                                                {employeeData
                                                     .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice)
                                                     .map(employee => (
-                                                        <option key={employee._id} value={employee.ename} disabled={selectedBdes.includes(employee.ename) && allEnames.includes(employee.ename)}>
+                                                        <option key={employee._id} value={employee.ename} disabled={selectedBdes.includes(employee.ename) || allEnames.includes(employee.ename)}>
                                                             {employee.ename}
                                                         </option>
-                                                    ))} */}
-                                                {employeeData
+                                                    ))}
+                                                {/* {employeeData
                                                     .filter(employee => employee.designation === 'Sales Executive' && employee.branchOffice === branchOffice && !allEnames.includes(employee.ename))
                                                     .map(employee => {
                                                         console.log('allEnames:', allEnames);
@@ -732,7 +732,7 @@ function Team() {
                                                                 {employee.ename}
                                                             </option>
                                                         );
-                                                    })}
+                                                    })} */}
                                             </select>
                                         </div>
                                     </div>
