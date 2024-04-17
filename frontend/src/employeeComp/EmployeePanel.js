@@ -103,7 +103,8 @@ function EmployeePanel() {
   const [forwardStatus, setForrwardStatus] = useState("")
   const [teamInfo, setTeamInfo] = useState([])
   const [bdmName, setBdmName] = useState("")
-
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
   const handleTogglePopup = () => {
     setIsOpen(false);
   };
@@ -193,8 +194,9 @@ function EmployeePanel() {
     const audio = new Audio(notificationSound);
     audio.play();
   };
+const connectionString = secretKey === 'http://localhost:3001/api' ? 'http://localhost:3001' : '/socket.io';
   useEffect(() => {
-    const socket = io('/socket.io'); // Connects to the same host and port as the client
+    const socket = io(secretKey); // Connects to the same host and port as the client
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
@@ -381,8 +383,7 @@ console.log(socketID, 'If this shows then boom');
     setFilteredRemarks([]);
   };
 
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
+
 
   const fetchData = async () => {
     try {
