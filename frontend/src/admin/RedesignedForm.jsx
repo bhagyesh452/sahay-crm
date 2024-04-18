@@ -153,7 +153,7 @@ export default function RedesignedForm({
         setLeadData((prevState) => ({
           ...prevState,
           bdeName: employeeName ? employeeName : "",
-          bdeEmail: employeeEmail ? employeeEmail : "",
+          bdeEmail: leadData.bdeEmail ? leadData.bdeEmail ? employeeEmail : employeeEmail : "",
           bookingDate: formatInputDate(new Date()),
         }));
       } else if (Step2Status === true && Step3Status === false) {
