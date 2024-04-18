@@ -1033,6 +1033,25 @@ app.put("/api/teaminfo/:teamId" , async(req , res)=>{
   }
 })
 
+app.post("/api/post-feedback-remarks/:companyId" , async (req,res)=>{
+  const companyId = req.params.companyId;
+  const {feedbackPoints , feedbackRemarks} = req.body
+
+
+  try{
+
+    await TeamLeadsModel.findByIdAndUpdate(companyId , {feedbackPoints : feedbackPoints , feedbackRemarks : feedbackRemarks })
+
+    await CompanyModel.findByIdAndUpdate(companyId , {feedbackPoints : feedbackPoints , feedbackRemarks : feedbackRemarks})
+
+    res.status(200).json({ message: "Feedback updated successfully" });
+
+  }catch(error){
+    console.error("Error updating data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
+
 
 
 // ------------------------------------------------------team api end----------------------------------

@@ -84,6 +84,12 @@ const CompanySchema = new mongoose.Schema({
     type: String, 
     default: Date.now(),
   },
+  feedbackPoints:{
+    type:Number
+  },
+  feedbackRemarks:{
+    type:String
+  }
 });
 
 const TeamLeadsModel = mongoose.model('teamleadsmodel', CompanySchema);

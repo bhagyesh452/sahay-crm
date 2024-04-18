@@ -55,6 +55,13 @@ import { RiShareForward2Fill } from "react-icons/ri";
 import { TiArrowBack } from "react-icons/ti";
 import { TiArrowForward } from "react-icons/ti";
 import { MdNotInterested } from "react-icons/md";
+import { RiInformationLine } from "react-icons/ri";
+import PropTypes from 'prop-types';
+import Slider, { SliderThumb } from '@mui/material/Slider';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -2198,11 +2205,85 @@ function EmployeePanel() {
     }
   };
 
+  const [feedbakPoints, setFeedbackPoints] = useState("")
+  const [feedbackRemarks, setFeedbackRemarks] = useState("")
+  const [feedbackPopupOpen, setFeedbackPopupOpen] = useState(false)
+  const [feedbackCompany, setFeedbackCompany] = useState("")
 
+  const handleViewFeedback = (companyId, companyName, companyFeedbackRemarks, companyFeedbackPoints) => {
+    setFeedbackPopupOpen(true)
+    setFeedbackPoints(companyFeedbackPoints)
+    setFeedbackRemarks(companyFeedbackRemarks)
+    setFeedbackCompany(companyName)
+  }
 
+  const closeFeedbackPopup = () => {
+    setFeedbackPopupOpen(false)
+  }
 
-
-
+  function ValueLabelComponent(props) {
+    const { children, value } = props;
+  
+    return (
+      <Tooltip enterTouchDelay={0} placement="top" title={value}>
+        {children}
+      </Tooltip>
+    );
+  }
+  
+  ValueLabelComponent.propTypes = {
+    children: PropTypes.element.isRequired,
+    value: PropTypes.number.isRequired,
+  };
+  
+  const iOSBoxShadow =
+    '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
+  
+  const IOSSlider = styled(Slider)(({ theme }) => ({
+    color: theme.palette.mode === 'dark' ? '#0a84ff' : '#007bff',
+    height: 5,
+    padding: '15px 0',
+    '& .MuiSlider-thumb': {
+      height: 20,
+      width: 20,
+      backgroundColor: '#fff',
+      boxShadow: '0 0 2px 0px rgba(0, 0, 0, 0.1)',
+      '&:focus, &:hover, &.Mui-active': {
+        boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.1)',
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          boxShadow: iOSBoxShadow,
+        },
+      },
+      '&:before': {
+        boxShadow:
+          '0px 0px 1px 0px rgba(0,0,0,0.2), 0px 0px 0px 0px rgba(0,0,0,0.14), 0px 0px 1px 0px rgba(0,0,0,0.12)',
+      },
+    },
+    '& .MuiSlider-valueLabel': {
+      fontSize: 12,
+      fontWeight: 'normal',
+      top: -6,
+      backgroundColor: 'unset',
+      color: theme.palette.text.primary,
+      '&::before': {
+        display: 'none',
+      },
+      '& *': {
+        background: 'transparent',
+        color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+      },
+    },
+    '& .MuiSlider-track': {
+      border: 'none',
+      height: 5,
+    },
+    '& .MuiSlider-rail': {
+      opacity: 0.5,
+      boxShadow: 'inset 0px 0px 4px -2px #000',
+      backgroundColor: '#d0d0d0',
+    },
+  }));
 
   return (
     <div>
@@ -3183,6 +3264,10 @@ function EmployeePanel() {
                             {(dataStatus === "Forwarded" || dataStatus === "Interested" || dataStatus === "FollowUp") && (
                               <th>Forward to BDM</th>
                             )}
+                            {(dataStatus === "Forwarded" && (dataStatus !== "Interested" || dataStatus !== "FollowUp" || dataStatus !== "Untouched" || dataStatus !== "Matured" || dataStatus !== "Not Interested"))
+                              && (
+                                <th>Feedback</th>
+                              )}
 
                           </tr>
                         </thead>
@@ -3293,7 +3378,7 @@ function EmployeePanel() {
                                         // </select>
                                         <span>{company.bdeOldStatus}</span>
                                       )} */}
-                                      {(company.bdmAcceptStatus !== "NotForwarded" && (company.Status === "Interested" || company.Status === "FollowUp") ) && (
+                                      {(company.bdmAcceptStatus !== "NotForwarded" && (company.Status === "Interested" || company.Status === "FollowUp")) && (
                                         <span>{company.bdeOldStatus}</span>
                                       )}
                                       {(company.bdmAcceptStatus !== "NotForwarded" && company.Status === "Not Interested") && (
@@ -3321,8 +3406,8 @@ function EmployeePanel() {
                                           <option value="Busy">Busy</option>
                                           <option value="Junk">Junk</option>
                                           <option value="Not Interested">Not Interested</option>
-                                    
-                                        </select>  )}
+
+                                        </select>)}
                                     </>
                                   )}
 
@@ -3560,6 +3645,24 @@ function EmployeePanel() {
 
                                   )
                                 }
+                                {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints || company.feedbackRemarks) && (
+                                  <td>
+                                    <IconButton onClick={() => {
+                                      handleViewFeedback(
+                                        company._id,
+                                        company["Company Name"],
+                                        company.feedbackRemarks,
+                                        company.feedbackPoints
+                                      )
+                                    }}>
+                                      <RiInformationLine style={{
+                                        cursor: "pointer",
+                                        width: "17px",
+                                        height: "17px",
+                                      }}
+                                        color="grey" /></IconButton>
+                                  </td>
+                                )}
 
                                 {dataStatus === "Matured" && (
                                   <>
@@ -4837,6 +4940,64 @@ function EmployeePanel() {
         <button onClick={handleUploadData} className="btn btn-primary">
           Submit
         </button>
+      </Dialog>
+      {/* -------------------------------------------------------------------------dialog for feedback remarks-------------------------------------- */}
+
+
+      <Dialog
+        open={feedbackPopupOpen}
+        onClose={closeFeedbackPopup}
+        fullWidth
+        maxWidth="xs">
+        <DialogTitle>
+          <span style={{ fontSize: "14px" }}>
+            {feedbackCompany}
+          </span>
+          <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="remarks-content">
+            {feedbackRemarks || feedbakPoints ? (
+              <div className="col-sm-12">
+                <div className="card RemarkCard position-relative">
+                  <div className="d-flex justify-content-between">
+                    <div className="reamrk-card-innerText">
+                      <pre className="mt-5 pt-4" >
+                        {/* <Slider
+                        defaultValue={feedbakPoints}
+                        //getAriaValueText={feedbakPoints} 
+                        //value={valueSlider}
+                        //onChange={(e) => { handleSliderChange(e.target.value) }}
+                        sx={{ zIndex: "99999999", color: "#ffb900" }}
+                        min={0}
+                        max={10}
+                        disabled
+                        aria-label="Disabled slider"
+                        valueLabelDisplay="on" 
+                        valueLabelFormat={feedbakPoints}
+                        /> */}
+                        <IOSSlider aria-label="ios slider" disabled defaultValue={feedbakPoints} min={0} max={10} valueLabelDisplay="on" />
+                        </pre>
+                      <pre className="remark-text">{feedbackRemarks}</pre>
+                    </div>
+                  </div>
+
+                  {/* <div className="d-flex card-dateTime justify-content-between">
+                      <div className="date">{historyItem.date}</div>
+                      <div className="time">{historyItem.time}</div>
+                    </div> */}
+                </div>
+              </div>
+
+            ) : (
+              <div className="text-center overflow-hidden">
+                No Remarks History
+              </div>
+            )}
+          </div>
+        </DialogContent>
       </Dialog>
 
       {/* Side Drawer for Edit Booking Requests */}
