@@ -22,6 +22,7 @@ import Select from "react-select";
 import { options } from "../../../components/Options.js";
 import { IoAddCircle } from "react-icons/io5";
 import Slider from '@mui/material/Slider';
+import RedesignedForm from "../../../admin/RedesignedForm.jsx";
 
 
 
@@ -34,14 +35,17 @@ function BdmTeamLeads() {
   const [data, setData] = useState([])
   const [dataStatus, setdataStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(0);
+  const [formOpen, setFormOpen] = useState(false);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
   const itemsPerPage = 500;
   const [currentData, setCurrentData] = useState([])
+  const [BDMrequests, setBDMrequests] = useState(null);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const [teamleadsData, setTeamLeadsData] = useState([]);
   const [teamData, setTeamData] = useState([])
+  const [openbdmRequest, setOpenbdmRequest] = useState(false);
   const [openRemarks, setOpenRemarks] = useState(false)
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
@@ -72,6 +76,26 @@ function BdmTeamLeads() {
       console.error("Error fetching data:", error.message);
     }
   };
+  const [maturedBooking, setMaturedBooking] = useState(null);
+  
+  const fetchBDMbookingRequests = async () => {
+    const bdmName = data.ename;
+    console.log("This is bdm",bdmName);
+    try {
+      const response = await axios.get(
+        `${secretKey}/matured-get-requests-byBDM/${bdmName}`
+      );
+      const mainData = response.data[0]
+      setBDMrequests(mainData);
+      
+      if (response.data.length !== 0) {
+        setOpenbdmRequest(true);
+        const companyName = mainData["Company Name"];
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const fetchTeamLeadsData = async (status) => {
     const bdmName = data.ename
@@ -100,7 +124,7 @@ function BdmTeamLeads() {
       }
       if (status === "Not Interested") {
         setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Not Interested"))
-        setBdmNewStatus("Not Interested")
+        setBdmNewStatus("NotInterested")
       }
 
 
@@ -110,6 +134,16 @@ function BdmTeamLeads() {
     }
   }
 
+   useEffect(() => {
+    if (teamData.length !== 0 && BDMrequests) {
+      const companyName = BDMrequests["Company Name"];
+      const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
+      setMaturedBooking(currentObject);
+      console.log("Current Booking:", currentObject);
+    }
+  }, [teamData, BDMrequests]);
+  
+  
   console.log("teamdata", teamleadsData)
 
   useEffect(() => {
@@ -118,7 +152,7 @@ function BdmTeamLeads() {
 
   useEffect(() => {
     fetchTeamLeadsData()
-
+    fetchBDMbookingRequests()
   }, [data.ename])
 
   //console.log("ename" , data.ename)
@@ -353,6 +387,7 @@ function BdmTeamLeads() {
   //       isButtonEnabled: false,
   //     },
   //   }));
+  //   }));
   // };
 
 
@@ -433,7 +468,8 @@ function BdmTeamLeads() {
     cindate,
     cnum,
     bdeStatus,
-    bdmOldStatus
+    bdmOldStatus,
+    bdeName
   ) => {
     const title = `${data.ename} changed ${cname} status from ${bdmOldStatus} to ${bdmnewstatus}`;
     const DT = new Date();
@@ -468,14 +504,40 @@ function BdmTeamLeads() {
         }
 
       } else {
-        console.log("Matured Status here")
-        setMaturedCompany(cname);
-        setMaturedEmail(cemail);
-        setMaturedInco(cindate);
-        setMaturedId(companyId);
-        setMaturedNumber(cnum);
-        setMaturedOpen(true);
-        return true;
+        // Use SweetAlert to confirm the "Matured" status
+        const requestData = {
+          companyName: cname,
+          requestStatus: "Pending",
+          bdeName: bdeName,
+          bdmName: data.ename,
+          date: new Date(),
+          time: new Date().toLocaleTimeString(), // Assuming you want the current time
+        };
+
+        // Make API call to send the request
+        axios
+          .post(`${secretKey}/matured-case-request`, requestData)
+          .then((response) => {
+            if (response.status === 200) {
+              // Assuming fetchData is a function to fetch updated employee data
+              fetchTeamLeadsData(bdmnewstatus);
+              setBdmNewStatus(bdmnewstatus);
+              setTeamLeadsData(
+                teamData.filter((obj) => obj.bdmStatus === bdmnewstatus)
+              );
+              Swal.fire(
+                "Request Sent",
+                "Request has been successfully sent to the BDE",
+                "success"
+              );
+            } else {
+              Swal.fire("Error", "Failed to sent Request", "error");
+              console.error("Failed to update status:", response.data.message);
+            }
+          })
+          .catch((error) => {
+            console.error("Error sending request to backend:", error);
+          });
       }
       // Make an API call to update the employee status in the database
 
@@ -702,15 +764,18 @@ function BdmTeamLeads() {
   const [companyFeedbackId, setCompanyFeedbackId] = useState("")
   const [isEditFeedback , setIsEditFeedback] = useState(false)
 
-  const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackRemarks) => {
+  const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackRemarks ,bdmStatus) => {
     setOpenFeedback(true)
     setFeedbackCompanyName(companyName)
     setCompanyFeedbackId(companyId)
-    setFeedbackRemarks(companyFeedbackRemarks)
+    //setFeedbackRemarks(companyFeedbackRemarks)
+    debouncedFeedbackRemarks(companyFeedbackRemarks)
     setValueSlider(companyFeedbackPoints)
+    setBdmNewStatus(bdmStatus)
     //setIsEditFeedback(true)
-
   }
+
+
 
   const handleCloseFeedback = () => {
     setOpenFeedback(false)
@@ -726,7 +791,7 @@ function BdmTeamLeads() {
 
   }
 
-  console.log("valueSlider", valueSlider, feedbackRemarks)
+  //console.log("valueSlider", valueSlider, feedbackRemarks)
 
 
 
@@ -734,7 +799,7 @@ function BdmTeamLeads() {
   const debouncedFeedbackRemarks = useCallback(
     debounce((value) => {
       setFeedbackRemarks(value);
-    }, 300), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
+    }, 10), // Adjust the debounce delay as needed (e.g., 300 milliseconds)
     [] // Empty dependency array to ensure the function is memoized
   );
 
@@ -747,7 +812,10 @@ function BdmTeamLeads() {
     try {
       if (response.status === 200) {
         Swal.fire("Feedback Updated")
+        fetchTeamLeadsData(bdmNewStatus);
+        setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmNewStatus))
         handleCloseFeedback()
+        //setdataStatus(bdmNewStatus)
       }
 
     } catch (error) {
@@ -774,7 +842,38 @@ function BdmTeamLeads() {
 
       <Header bdmName={data.ename} />
       <Navbar userId={userId} />
-      <div className="page-wrapper">
+      {!formOpen && <div className="page-wrapper">
+      {BDMrequests && (
+              <Dialog open={openbdmRequest}>
+                <DialogContent>
+                  <div className="request-bdm-card">
+                    <div className="request-title m-2 d-flex justify-content-between">
+                      <div className="request-content mr-2">
+                         Your Request to book form of{" "}
+                        <b>{BDMrequests["Company Name"]}</b> has been accepted by <b>{BDMrequests.bdeName}</b>
+                      </div>
+                      <div className="request-time">
+                        <IconButton onClick={()=>setOpenbdmRequest(false)}>
+                          <CloseIcon style={{height:"15px" , width:"15px"}}/>
+                        </IconButton>
+                        </div>
+                     
+                    </div>
+                    <div className="request-reply">
+                     
+                      <button
+                        onClick={()=>{setFormOpen(true) 
+                        setOpenbdmRequest(false)
+                        }}
+                        className="request-display"
+                      >
+                        Open Form
+                      </button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
         <div className="page-header d-print-none">
           <div className="container-xl">
             <div className="row">
@@ -1011,7 +1110,7 @@ function BdmTeamLeads() {
                         <th>Company Number</th>
                         <th>Bde Status</th>
                         <th>Bde Remarks</th>
-                        {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "Not Interested") && (
+                        {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "NotInterested") && (
                           <>
                             <th>Bdm Status</th>
                             <th>Bdm Remarks</th>
@@ -1100,11 +1199,14 @@ function BdmTeamLeads() {
                               </IconButton>
                             </div>
                           </td>
-                          {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "Not Interested") && (
+                          {(bdmNewStatus === "Interested" || 
+                          bdmNewStatus === "FollowUp" || 
+                          bdmNewStatus === "Matured" || 
+                          bdmNewStatus === "NotInterested") && (
                             <>
                               <td>
-                                {company.bdmStatus === "Matured" ? (
-                                  <span>{company.bdmStatus}</span>
+                              {company.bdmStatus === "Matured" || company.bdmOnRequest  ? (
+                                  <span>{company.bdmStatus} {"("}{company.bdmOnRequest && "Requested"}{")"}</span>
                                 ) : (
                                   <select
                                     style={{
@@ -1127,7 +1229,8 @@ function BdmTeamLeads() {
                                         ],
                                         company["Company Number"],
                                         company["Status"],
-                                        company.bdmStatus
+                                        company.bdmStatus,
+                                        company.ename
                                       )
                                     }
                                   >
@@ -1297,7 +1400,8 @@ function BdmTeamLeads() {
                                       company["Company Name"],
                                       company._id,
                                       company.feedbackPoints,
-                                      company.feedbackRemarks
+                                      company.feedbackRemarks,
+                                      company.bdmStatus
                                     )
                                   }}
                                   style={{
@@ -1312,7 +1416,10 @@ function BdmTeamLeads() {
                                     onClick={() => {
                                       handleOpenFeedback(
                                         company["Company Name"],
-                                        company._id
+                                        company._id,
+                                        company.feedbackPoints,
+                                        company.feedbackRemarks,
+                                        company.bdmStatus
                                       )
                                       setIsEditFeedback(true)
                                     }}
@@ -1468,7 +1575,25 @@ function BdmTeamLeads() {
           </div>
 
         </div>
-      </div>
+      </div>}
+      {formOpen && maturedBooking && (
+        <>
+          <RedesignedForm
+            // matured={true}
+            // companysId={companyId}
+            // setDataStatus={setdataStatus}
+            setFormOpen={setFormOpen}
+            companysName={maturedBooking["Company Name"]}
+            companysEmail={maturedBooking["Company Email"]}
+            companyNumber={maturedBooking["Company Number"]}
+            // setNowToFetch={setNowToFetch}
+            companysInco={maturedBooking["Company Incorporation Date  "]}
+            employeeName={maturedBooking.ename}
+        
+            bdmName={maturedBooking.bdmName}
+          />
+        </>
+      )}
       {/* // -------------------------------------------------------------------Dialog for bde Remarks--------------------------------------------------------- */}
 
       <Dialog

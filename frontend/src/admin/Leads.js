@@ -1325,9 +1325,15 @@ function Leads() {
       console.error("Invalid Company Incorporation Date string:", dateString);
     }
 
-
-
   };
+
+  function formatDateFinal(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
 
 
   return (
@@ -2912,7 +2918,7 @@ function Leads() {
                           <td>{startIndex + index + 1}</td>
                           <td>{company["Company Name"]}</td>
                           <td>{company["Company Number"]}</td>
-                          <td>{formatDate(company["Company Incorporation Date  "])}</td>
+                          <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                           <td>{company["City"]}</td>
                           <td>{company["State"]}</td>
                           <td>{company["Company Email"]}</td>
@@ -2922,7 +2928,7 @@ function Leads() {
                                 <p className="rematkText text-wrap m-0">
                                 {company["Remarks"]}{" "}
                                 </p>
-                                <div  onClick={() => {
+                                <div onClick={() => {
                                       functionopenpopupremarks(company._id, company.Status);
                                     }} style={{cursor:"pointer"}}>
                                   <IconEye
@@ -2937,12 +2943,9 @@ function Leads() {
                                   />
                                 </div>
                             </div>
-                           
-                            
-                           
                           </td>
                          {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
-                          <td>{formatDate(company["AssignDate"])}</td>
+                          <td>{formatDateFinal(company["AssignDate"])}</td>
                           <td>
                             <IconButton onClick={() => handleDeleteClick(company._id)}>
                               <DeleteIcon

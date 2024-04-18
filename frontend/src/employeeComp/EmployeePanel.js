@@ -3744,7 +3744,7 @@ function EmployeePanel() {
                                 {dataStatus === "Forwarded" && (
                                   <td>{company.bdeForwardDate}</td>
                                 )}
-                                {dataStatus === "Forwarded" && (
+                                {/* {dataStatus === "Forwarded" && (
                                   <td>
                                     {company.bdmAcceptStatus ===
                                       "NotForwarded" && (
@@ -3767,25 +3767,21 @@ function EmployeePanel() {
                                       />
                                     )}
                                   </td>
-                                )}
-
-                                {dataStatus === "Forwarded" &&
-                                  company.bdmAcceptStatus !== "NotForwarded" &&
-                                  (company.feedbackPoints ||
-                                    company.feedbackRemarks) && (
+                                )} */}
+                                {
+                                  dataStatus === "Forwarded" && (
                                     <td>
-                                      <IconButton
-                                        onClick={() => {
-
-                                          handleViewFeedback(
-                                            company._id,
-                                            company["Company Name"],
-                                            company.feedbackRemarks,
-                                            company.feedbackPoints
-                                          );
-                                        }}
-                                      >
-                                        <RiInformationLine
+                                      {company.bdmAcceptStatus === "NotForwarded" ? (
+                                        <TiArrowForward
+                                          onClick={() => {
+                                            handleConfirmAssign(
+                                              company._id,
+                                              company["Company Name"],
+                                              company.Status, // Corrected parameter name
+                                              company.ename,
+                                              company.bdmAcceptStatus
+                                            );
+                                          }}
                                           style={{
                                             cursor: "pointer",
                                             width: "17px",
@@ -3793,10 +3789,69 @@ function EmployeePanel() {
                                           }}
                                           color="grey"
                                         />
-                                      </IconButton>
+                                      ) : company.bdmAcceptStatus === "Pending" ? (
+                                        <TiArrowBack
+                                          onClick={() => {
+                                            handleReverseAssign(
+                                              company._id,
+                                              company["Company Name"],
+                                              company.bdmAcceptStatus,
+                                              company.Status,
+                                            )
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="#fbb900"
+                                        />
+                                      ) : company.bdmAcceptStatus === "Accept" ? (
+                                        <TiArrowBack style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
+                                          color="lightgrey" />
+                                      ) : <TiArrowForward
+                                        onClick={() => {
+                                          handleConfirmAssign(
+                                            company._id,
+                                            company["Company Name"],
+                                            company.Status, // Corrected parameter name
+                                            company.ename,
+                                            company.bdmAcceptStatus
+                                          );
+                                        }}
+                                        style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
+                                        color="grey"
+                                      />}
                                     </td>
-                                  )}
 
+                                  )
+                                }
+                                {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints || company.feedbackRemarks) && (
+                                  <td>
+                                    <IconButton onClick={() => {
+                                      handleViewFeedback(
+                                        company._id,
+                                        company["Company Name"],
+                                        company.feedbackRemarks,
+                                        company.feedbackPoints
+                                      )
+                                    }}>
+                                      <RiInformationLine style={{
+                                        cursor: "pointer",
+                                        width: "17px",
+                                        height: "17px",
+                                      }}
+                                        color="grey" /></IconButton>
+                                  </td>
+                                )}
                                 {dataStatus === "Matured" && (
                                   <>
                                     <td>

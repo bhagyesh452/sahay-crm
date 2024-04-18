@@ -383,6 +383,14 @@ function Dashboard() {
 
   }
 
+  function formatDateFinal(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
   //console.log("companyData", companyData)
   //console.log("employeeData", employeeData)
 
@@ -3053,7 +3061,7 @@ function Dashboard() {
                                         </Link>
                                       </td>
                                       <td key={`row-${index}-12`}>
-                                        {formatDate(
+                                        {formatDateFinal(
                                           companyData
                                             .filter(
                                               (data) => data.ename === obj.ename
@@ -4124,8 +4132,8 @@ function Dashboard() {
                             <td>{obj.offeredServices.join(",")}</td>
                             <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
                             <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                            <td>{obj.estPaymentDate}</td>
-                            <td>{obj.lastFollowUpdate}</td>
+                            <td>{formatDateFinal(obj.estPaymentDate)}</td>
+                            <td>{formatDateFinal(obj.lastFollowUpdate)}</td>
                             <td>{obj.remarks}</td>
                             <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection(obj.companyName)} /></td>
                           </tr>

@@ -481,6 +481,14 @@ function Employees({ onEyeButtonClick }) {
 
   }, [])
 
+  function formatDateFinal(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
 
 
   return (
@@ -873,10 +881,10 @@ function Employees({ onEyeButtonClick }) {
                         <td>{item.ename}</td>
                         <td>{item.number}</td>
                         <td>{item.email}</td>
-                        <td>{formatDate(item.jdate)}</td>
+                        <td>{formatDateFinal(item.jdate)}</td>
                         <td>{item.designation}</td>
                         <td>{item.branchOffice}</td>
-                        <td>{formatDate(item.AddedOn) === "Invalid Date" ? "Feb 6, 2024" : formatDate(item.AddedOn)}</td>
+                        <td>{formatDate(item.AddedOn) === "Invalid Date" ? "06/02/2024" : formatDateFinal(item.AddedOn)}</td>
                         {item.designation !== "Admin Team" ? <td>
                           {(item.Active && item.Active.includes("GMT")) ? (
                             <div>
