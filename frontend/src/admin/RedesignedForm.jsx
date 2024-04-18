@@ -55,6 +55,7 @@ export default function RedesignedForm({
   employeeName,
   employeeEmail,
   setNowToFetch,
+  bdmName
 }) {
   const [totalServices, setTotalServices] = useState(1);
 
@@ -68,7 +69,7 @@ export default function RedesignedForm({
     incoDate: companysInco ? companysInco : "",
     bdeName: employeeName ? employeeName : "",
     bdeEmail: employeeEmail ? employeeEmail : "",
-    bdmName: "",
+    bdmName:  bdmName ? bdmName : "",
     bdmType: "Close-by",
     otherBdmName: "",
     bdmEmail: "",
@@ -479,7 +480,7 @@ export default function RedesignedForm({
     if (activeStep !== 0) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
-      setDataStatus("Matured");
+      // setDataStatus("Matured");
       setFormOpen(false);
     }
   };
@@ -1657,12 +1658,28 @@ export default function RedesignedForm({
       setLeadData({
         ...leadData,
         bdmName: value,
-        bdmEmail: foundUser ? foundUser.email : "", // Check if foundUser exists before accessing email
+        bdmEmail: foundUser ? foundUser.email : "", 
+        // Check if foundUser exists before accessing email
       });
     } else {
       setLeadData({ ...leadData, [id]: value });
     }
   };
+  useEffect(() => {
+
+  if(unames.length!==0 && leadData.bdeEmail === ""){
+    const foundUser = unames.find((item) => item.ename === employeeName);
+    const foundBDM = unames.find((item) => item.ename === bdmName);
+
+    setLeadData({
+      ...leadData,
+      bdmName : bdmName ? bdmName : "",
+      bdeEmail:foundUser ? foundUser.email : "",
+      bdmEmail: foundBDM ? foundBDM.email : "" 
+    })
+  }
+  }, [unames])
+  
 
   const handleRemoveFile = () => {
     setLeadData({ ...leadData, paymentReceipt: null });

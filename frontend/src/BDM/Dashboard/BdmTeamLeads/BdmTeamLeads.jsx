@@ -830,7 +830,9 @@ function BdmTeamLeads() {
                     <div className="request-reply">
                      
                       <button
-                        
+                        onClick={()=>{setFormOpen(true) 
+                        setOpenbdmRequest(false)
+                        }}
                         className="request-display"
                       >
                         Open Form
@@ -1545,14 +1547,15 @@ function BdmTeamLeads() {
             // matured={true}
             // companysId={companyId}
             // setDataStatus={setdataStatus}
-            // setFormOpen={setFormOpen}
-            // companysName={companyName}
-            // companysEmail={companyEmail}
-            // companyNumber={companyNumber}
+            setFormOpen={setFormOpen}
+            companysName={maturedBooking["Company Name"]}
+            companysEmail={maturedBooking["Company Email"]}
+            companyNumber={maturedBooking["Company Number"]}
             // setNowToFetch={setNowToFetch}
-            // companysInco={companyInco}
-            // employeeName={data.ename}
-            // employeeEmail={data.email}
+            companysInco={maturedBooking["Company Incorporation Date  "]}
+            employeeName={maturedBooking.ename}
+          
+            bdmName={maturedBooking.bdmName}
           />
         </>
       )}
