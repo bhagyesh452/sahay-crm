@@ -55,6 +55,13 @@ import { RiShareForward2Fill } from "react-icons/ri";
 import { TiArrowBack } from "react-icons/ti";
 import { TiArrowForward } from "react-icons/ti";
 import { MdNotInterested } from "react-icons/md";
+import { RiInformationLine } from "react-icons/ri";
+import PropTypes from "prop-types";
+import Slider, { SliderThumb } from "@mui/material/Slider";
+import { styled } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
@@ -3290,6 +3297,14 @@ function EmployeePanel() {
                               dataStatus === "FollowUp") && (
                               <th>Forward to BDM</th>
                             )}
+                            {dataStatus === "Forwarded" &&
+                              (dataStatus !== "Interested" ||
+                                dataStatus !== "FollowUp" ||
+                                dataStatus !== "Untouched" ||
+                                dataStatus !== "Matured" ||
+                                dataStatus !== "Not Interested") && (
+                                <th>Feedback</th>
+                              )}
                           </tr>
                         </thead>
                         {loading ? (
@@ -3656,52 +3671,7 @@ function EmployeePanel() {
                                 {dataStatus === "Forwarded" && (
                                   <td>
                                     {company.bdmAcceptStatus ===
-                                    "NotForwarded" ? (
-                                      <TiArrowForward
-                                        onClick={() => {
-                                          handleConfirmAssign(
-                                            company._id,
-                                            company["Company Name"],
-                                            company.Status, // Corrected parameter name
-                                            company.ename,
-                                            company.bdmAcceptStatus
-                                          );
-                                        }}
-                                        style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                        color="grey"
-                                      />
-                                    ) : company.bdmAcceptStatus ===
-                                      "Pending" ? (
-                                      <TiArrowBack
-                                        onClick={() => {
-                                          handleReverseAssign(
-                                            company._id,
-                                            company["Company Name"],
-                                            company.bdmAcceptStatus,
-                                            company.Status
-                                          );
-                                        }}
-                                        style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                        color="#fbb900"
-                                      />
-                                    ) : company.bdmAcceptStatus === "Accept" ? (
-                                      <TiArrowBack
-                                        style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                        color="lightgrey"
-                                      />
-                                    ) : (
+                                      "NotForwarded" && (
                                       <TiArrowForward
                                         onClick={() => {
                                           handleConfirmAssign(
@@ -3722,6 +3692,33 @@ function EmployeePanel() {
                                     )}
                                   </td>
                                 )}
+
+                                {dataStatus === "Forwarded" &&
+                                  company.bdmAcceptStatus !== "NotForwarded" &&
+                                  (company.feedbackPoints ||
+                                    company.feedbackRemarks) && (
+                                    <td>
+                                      <IconButton
+                                        onClick={() => {
+                                          handleViewFeedback(
+                                            company._id,
+                                            company["Company Name"],
+                                            company.feedbackRemarks,
+                                            company.feedbackPoints
+                                          );
+                                        }}
+                                      >
+                                        <RiInformationLine
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="grey"
+                                        />
+                                      </IconButton>
+                                    </td>
+                                  )}
 
                                 {dataStatus === "Matured" && (
                                   <>
@@ -5010,6 +5007,68 @@ function EmployeePanel() {
         <button onClick={handleUploadData} className="btn btn-primary">
           Submit
         </button>
+      </Dialog>
+      {/* -------------------------------------------------------------------------dialog for feedback remarks-------------------------------------- */}
+
+      <Dialog
+        open={feedbackPopupOpen}
+        onClose={closeFeedbackPopup}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>
+          <span style={{ fontSize: "14px" }}>{feedbackCompany}</span>
+          <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="remarks-content">
+            {feedbackRemarks || feedbakPoints ? (
+              <div className="col-sm-12">
+                <div className="card RemarkCard position-relative">
+                  <div className="d-flex justify-content-between">
+                    <div className="reamrk-card-innerText">
+                      <pre className="mt-5 pt-4">
+                        {/* <Slider
+                        defaultValue={feedbakPoints}
+                        //getAriaValueText={feedbakPoints} 
+                        //value={valueSlider}
+                        //onChange={(e) => { handleSliderChange(e.target.value) }}
+                        sx={{ zIndex: "99999999", color: "#ffb900" }}
+                        min={0}
+                        max={10}
+                        disabled
+                        aria-label="Disabled slider"
+                        valueLabelDisplay="on" 
+                        valueLabelFormat={feedbakPoints}
+                        /> */}
+                        <IOSSlider
+                          aria-label="ios slider"
+                          disabled
+                          defaultValue={feedbakPoints}
+                          min={0}
+                          max={10}
+                          valueLabelDisplay="on"
+                        />
+                      </pre>
+                      <pre className="remark-text">{feedbackRemarks}</pre>
+                    </div>
+                  </div>
+
+                  {/* <div className="d-flex card-dateTime justify-content-between">
+                      <div className="date">{historyItem.date}</div>
+                      <div className="time">{historyItem.time}</div>
+                    </div> */}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center overflow-hidden">
+                No Remarks History
+              </div>
+            )}
+          </div>
+        </DialogContent>
       </Dialog>
 
       {/* Side Drawer for Edit Booking Requests */}

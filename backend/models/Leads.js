@@ -84,6 +84,12 @@ const CompanySchema = new mongoose.Schema({
   },
   bdeOldStatus:{
     type:String
+  },
+  feedbackPoints:{
+    type:Number
+  },
+  feedbackRemarks:{
+    type:String
   }
 
 });

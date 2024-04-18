@@ -87,6 +87,12 @@ const CompanySchema = new mongoose.Schema({
   bdmOnRequest:{
     type:Boolean,
     default : false
+  },
+  feedbackPoints:{
+    type:Number
+  },
+  feedbackRemarks:{
+    type:String
   }
 });
 
