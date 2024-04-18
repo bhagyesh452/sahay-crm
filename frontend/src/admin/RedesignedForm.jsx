@@ -122,6 +122,7 @@ export default function RedesignedForm({
   };
 
   const [leadData, setLeadData] = useState(defaultLeadData);
+  const [fetchBDE , setFetchBDE] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -153,9 +154,10 @@ export default function RedesignedForm({
         setLeadData((prevState) => ({
           ...prevState,
           bdeName: employeeName ? employeeName : "",
-          bdeEmail: leadData.bdeEmail ? leadData.bdeEmail ? employeeEmail : employeeEmail : "",
+          bdeEmail: employeeEmail ? employeeEmail : "",
           bookingDate: formatInputDate(new Date()),
         }));
+        setFetchBDE(true)
       } else if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
         setActiveStep(2);
@@ -215,6 +217,23 @@ export default function RedesignedForm({
       console.error("Error fetching data:", error);
     }
   };
+
+  useEffect(() => {
+    if(fetchBDE && unames.length!==0){
+      const foundUser = unames.find((item) => item.ename === employeeName);
+      const foundBDM = unames.find((item)=>item.ename === bdmName)
+      console.log("isme ghusa")
+      setLeadData({
+        ...leadData,
+        bdeEmail: foundUser ? foundUser.email : "", 
+        bdmEmail: foundBDM ? foundBDM.email : "",
+        bdmName: bdmName && bdmName
+        // Check if foundUser exists before accessing email
+      });
+      setFetchBDE(false)
+    }
+  }, [fetchBDE])
+  
   // if (data.Step1Status === true && data.Step2Status === false) {
   //   setLeadData({
   //     ...leadData,
@@ -425,6 +444,7 @@ export default function RedesignedForm({
   console.log("Active Step:" , activeStep);
   useEffect(() => {
     fetchData();
+
     fetchDataEmp();
     console.log("Fetch After Component Mount", leadData);
   }, []);

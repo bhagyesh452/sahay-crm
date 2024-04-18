@@ -6288,6 +6288,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const companyData = await CompanyModel.findOne({
       "Company Name": newData["Company Name"],
     });
+    const teamData = await TeamLeadsModel.findOne({
+      "Company Name": newData["Company Name"],
+    })
     if (companyData) {
       newData.company = companyData._id;
     }
@@ -6300,6 +6303,15 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         lastActionDate: date,
         ename:newData.bdeName
       });
+    }
+    if(teamData) {
+      await TeamLeadsModel.findByIdAndUpdate(teamData._id , {
+        bdmStatus:"Matured",
+        Status:"Matured",
+
+      },
+    {new : true})
+    await RequestMaturedModel.findOneAndDelete({"Company Name" : teamData["Company Name"]})
     }
 
     const totalAmount = newData.services.reduce(
