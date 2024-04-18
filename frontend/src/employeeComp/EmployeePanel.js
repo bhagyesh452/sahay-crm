@@ -56,18 +56,19 @@ import { TiArrowBack } from "react-icons/ti";
 import { TiArrowForward } from "react-icons/ti";
 import { MdNotInterested } from "react-icons/md";
 import { RiInformationLine } from "react-icons/ri";
-import PropTypes from 'prop-types';
-import Slider, { SliderThumb } from '@mui/material/Slider';
-import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import Box from '@mui/material/Box';
+import PropTypes from "prop-types";
+import Slider, { SliderThumb } from "@mui/material/Slider";
+import { styled } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
 // import DrawerComponent from "../components/Drawer.js";
 
 function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
+  const [BDMrequests, setBDMrequests] = useState(null);
   const [openBooking, setOpenBooking] = useState(false);
   const [sortStatus, setSortStatus] = useState("");
   const [maturedID, setMaturedID] = useState("");
@@ -106,11 +107,12 @@ function EmployeePanel() {
   const [data, setData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [emailData, setEmailData] = useState({ to: "", subject: "", body: "" });
-  const [forwardEname, setForrwardEname] = useState("")
-  const [forwardStatus, setForrwardStatus] = useState("")
-  const [teamInfo, setTeamInfo] = useState([])
-  const [bdmName, setBdmName] = useState("")
-
+  const [forwardEname, setForrwardEname] = useState("");
+  const [forwardStatus, setForrwardStatus] = useState("");
+  const [teamInfo, setTeamInfo] = useState([]);
+  const [bdmName, setBdmName] = useState("");
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
   const handleTogglePopup = () => {
     setIsOpen(false);
   };
@@ -157,6 +159,7 @@ function EmployeePanel() {
   const [visibilityOther, setVisibilityOther] = useState("block");
   const [visibilityOthernew, setVisibilityOthernew] = useState("none");
   const [subFilterValue, setSubFilterValue] = useState("");
+  const [openbdmRequest, setOpenbdmRequest] = useState(false);
   const [selectedField, setSelectedField] = useState("Company Name");
   const [cname, setCname] = useState("");
   const [cemail, setCemail] = useState("");
@@ -200,8 +203,13 @@ function EmployeePanel() {
     const audio = new Audio(notificationSound);
     audio.play();
   };
+
+  const connectionString =
+    secretKey === "http://localhost:3001/api"
+      ? "http://localhost:3001"
+      : "/socket.io";
   useEffect(() => {
-    const socket = io('/socket.io'); // Connects to the same host and port as the client
+    const socket = io(secretKey); // Connects to the same host and port as the client
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
@@ -233,6 +241,21 @@ function EmployeePanel() {
     try {
       const response = await axios.get(`${secretKey}/editable-LeadData`);
       setTotalBookings(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const fetchBDMbookingRequests = async () => {
+    const bdeName = data.ename;
+    try {
+      const response = await axios.get(
+        `${secretKey}/matured-get-requests/${bdeName}`
+      );
+      setBDMrequests(response.data[0]);
+      if (response.data.length !== 0) {
+        setOpenbdmRequest(true);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -298,7 +321,7 @@ function EmployeePanel() {
   //     setEditIconColor(color); // assuming you have a state variable to manage icon color
   //   }
   // };
-  console.log(socketID, 'If this shows then boom');
+  console.log(socketID, "If this shows then boom");
   const closeProjection = () => {
     setOpenProjection(false);
     setProjectingCompany("");
@@ -338,9 +361,13 @@ function EmployeePanel() {
   };
   // console.log("currentcompanyname", currentCompanyName);
 
-  const [opeRemarksEdit, setOpenRemarksEdit] = useState(false)
+  const [opeRemarksEdit, setOpenRemarksEdit] = useState(false);
 
-  const functionopenpopupremarksEdit = (companyID, companyStatus, companyName) => {
+  const functionopenpopupremarksEdit = (
+    companyID,
+    companyStatus,
+    companyName
+  ) => {
     setOpenRemarksEdit(true);
     setFilteredRemarks(
       remarksHistory.filter((obj) => obj.companyID === companyID)
@@ -352,9 +379,8 @@ function EmployeePanel() {
   };
 
   const closePopUpRemarksEdit = () => {
-    setOpenRemarksEdit(false)
-
-  }
+    setOpenRemarksEdit(false);
+  };
   const debouncedSetChangeRemarks = useCallback(
     debounce((value) => {
       setChangeRemarks(value);
@@ -388,9 +414,6 @@ function EmployeePanel() {
     setFilteredRemarks([]);
   };
 
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
-
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/einfo`);
@@ -407,31 +430,29 @@ function EmployeePanel() {
   };
 
   const fecthTeamData = async () => {
-    const ename = data.ename
+    const ename = data.ename;
     //console.log("ename", ename)
     try {
-      const response = await axios.get(`${secretKey}/teaminfo/${ename}`)
+      const response = await axios.get(`${secretKey}/teaminfo/${ename}`);
 
       //console.log("teamdata", response.data)
-      setTeamInfo(response.data)
-      setBdmName(response.data.bdmName)
+      setTeamInfo(response.data);
+      setBdmName(response.data.bdmName);
       //setTeamDataFilter(response.data)
-
     } catch (error) {
-      console.log("error Fetching data", error.message)
+      console.log("error Fetching data", error.message);
     }
-  }
+  };
 
   // console.log("teaminfo", teamInfo)
   //console.log("bdmName", bdmName)
 
   useEffect(() => {
     fecthTeamData();
-  }, [data.ename])
+    fetchBDMbookingRequests();
+  }, [data.ename]);
 
-
-
-
+  // console.log("This is elon musk" , BDMrequests);
 
   const fetchProjections = async () => {
     try {
@@ -519,17 +540,14 @@ function EmployeePanel() {
         setdataStatus("Interested");
       }
       if (status === "Forwarded") {
-        setdataStatus("Forwarded")
+        setdataStatus("Forwarded");
         setEmployeeData(
           moreEmpData
             .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded")
             .sort(
-              (a, b) =>
-                new Date(b.lastActionDate) -
-                new Date(a.lastActionDate)
+              (a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate)
             )
         );
-
       }
       // setEmployeeData(tempData.filter(obj => obj.Status === "Busy" || obj.Status === "Not Picked Up" || obj.Status === "Untouched"))
     } catch (error) {
@@ -548,13 +566,8 @@ function EmployeePanel() {
     setEmployeeData(
       moreEmpData
         .filter((obj) => obj.Status === "Matured")
-        .sort(
-          (a, b) =>
-            new Date(b.lastActionDate) -
-            new Date(a.lastActionDate)
-        )
+        .sort((a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate))
     );
-
   }, [nowToFetch]);
 
   const handleFieldChange = (event) => {
@@ -601,7 +614,6 @@ function EmployeePanel() {
   const activeStatus = async () => {
     if (data._id && socketID) {
       try {
-
         const id = data._id;
         const response = await axios.put(
           `${secretKey}/online-status/${id}/${socketID}`
@@ -661,8 +673,9 @@ function EmployeePanel() {
     try {
       const response = await axios.get(`${secretKey}/remarks-history`);
       setRemarksHistory(response.data.reverse());
-      setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid).reverse());
-
+      setFilteredRemarks(
+        response.data.filter((obj) => obj.companyID === cid).reverse()
+      );
 
       console.log(response.data);
     } catch (error) {
@@ -670,7 +683,7 @@ function EmployeePanel() {
     }
   };
 
-  console.log(remarksHistory)
+  console.log(remarksHistory);
 
   // const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
@@ -888,8 +901,6 @@ function EmployeePanel() {
       },
     }));
   };
-
-
 
   const handleDeleteRemarks = async (remarks_id, remarks_value) => {
     const mainRemarks = remarks_value === currentRemarks ? true : false;
@@ -1224,7 +1235,7 @@ function EmployeePanel() {
     if (
       file &&
       file.type ===
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ) {
       const reader = new FileReader();
 
@@ -1695,20 +1706,20 @@ function EmployeePanel() {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-            (obj) =>
-              obj.Status === "Untouched" ||
-              obj.Status === "Busy" ||
-              obj.Status === "Not Picked Up"
-          )
+              (obj) =>
+                obj.Status === "Untouched" ||
+                obj.Status === "Busy" ||
+                obj.Status === "Not Picked Up"
+            )
           : dataStatus === "Interested"
-            ? moreEmpData.filter((obj) => obj.Status === "Interested")
-            : dataStatus === "Not Interested"
-              ? moreEmpData.filter(
-                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-              )
-              : dataStatus === "FollowUp"
-                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                : [];
+          ? moreEmpData.filter((obj) => obj.Status === "Interested")
+          : dataStatus === "Not Interested"
+          ? moreEmpData.filter(
+              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+            )
+          : dataStatus === "FollowUp"
+          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+          : [];
 
       setEmployeeData(newEmpData);
       setSelectedYears([
@@ -1736,20 +1747,20 @@ function EmployeePanel() {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-            (obj) =>
-              obj.Status === "Untouched" ||
-              obj.Status === "Busy" ||
-              obj.Status === "Not Picked Up"
-          )
+              (obj) =>
+                obj.Status === "Untouched" ||
+                obj.Status === "Busy" ||
+                obj.Status === "Not Picked Up"
+            )
           : dataStatus === "Interested"
-            ? moreEmpData.filter((obj) => obj.Status === "Interested")
-            : dataStatus === "Not Interested"
-              ? moreEmpData.filter(
-                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-              )
-              : dataStatus === "FollowUp"
-                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                : [];
+          ? moreEmpData.filter((obj) => obj.Status === "Interested")
+          : dataStatus === "Not Interested"
+          ? moreEmpData.filter(
+              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+            )
+          : dataStatus === "FollowUp"
+          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+          : [];
       setSelectedYears([...selectedYears, selectedYear]); // Add selected year to the list
       const filteredData = newEmpData.filter(
         (data) =>
@@ -1777,20 +1788,20 @@ function EmployeePanel() {
       const newEmpData =
         dataStatus === "All"
           ? moreEmpData.filter(
-            (obj) =>
-              obj.Status === "Untouched" ||
-              obj.Status === "Busy" ||
-              obj.Status === "Not Picked Up"
-          )
+              (obj) =>
+                obj.Status === "Untouched" ||
+                obj.Status === "Busy" ||
+                obj.Status === "Not Picked Up"
+            )
           : dataStatus === "Interested"
-            ? moreEmpData.filter((obj) => obj.Status === "Interested")
-            : dataStatus === "Not Interested"
-              ? moreEmpData.filter(
-                (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
-              )
-              : dataStatus === "FollowUp"
-                ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                : [];
+          ? moreEmpData.filter((obj) => obj.Status === "Interested")
+          : dataStatus === "Not Interested"
+          ? moreEmpData.filter(
+              (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+            )
+          : dataStatus === "FollowUp"
+          ? moreEmpData.filter((obj) => obj.Status === "FollowUp")
+          : [];
       const filteredData = newEmpData.filter((data) => {
         const year = new Date(data["Company Incorporation Date  "])
           .getFullYear()
@@ -1825,8 +1836,7 @@ function EmployeePanel() {
     }
   };
 
-
-  console.log("filtetredremarks", filteredRemarks)
+  console.log("filtetredremarks", filteredRemarks);
 
   // -----------------------------------------------------delete-projection-data-------------------------------
 
@@ -1886,7 +1896,6 @@ function EmployeePanel() {
     const [day, month, year] = dateString.split("/");
     return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
   };
-
 
   // ------------------------------------------------------payment-link-work-----------------------------------------
 
@@ -1987,27 +1996,99 @@ function EmployeePanel() {
       if (data.moreBookings.length !== 0) {
         setOpenBooking(true);
       } else {
-        setEditFormOpen(true)
+        setEditFormOpen(true);
       }
-
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
-
   };
 
   const handleOpenEditForm = () => {
     setOpenBooking(false);
     setEditMoreOpen(true);
-  }
-
-
+  };
 
   // --------------------------------------forward to bdm function---------------------------------------------\
 
-  const [forwardedCompany, setForwardedCompany] = useState("")
-  const [bdmNewAcceptStatus, setBdmNewAcceptStatus] = useState("")
-  const [forwardCompanyId, setforwardCompanyId] = useState("")
+  const [forwardedCompany, setForwardedCompany] = useState("");
+  const [bdmNewAcceptStatus, setBdmNewAcceptStatus] = useState("");
+  const [forwardCompanyId, setforwardCompanyId] = useState("");
+  const [feedbakPoints, setFeedbackPoints] = useState("")
+  const [feedbackRemarks, setFeedbackRemarks] = useState("")
+  const [feedbackPopupOpen, setFeedbackPopupOpen] = useState(false)
+  const [feedbackCompany, setFeedbackCompany] = useState("")
+  const handleViewFeedback = (companyId, companyName, companyFeedbackRemarks, companyFeedbackPoints) => {
+    setFeedbackPopupOpen(true)
+    setFeedbackPoints(companyFeedbackPoints)
+    setFeedbackRemarks(companyFeedbackRemarks)
+    setFeedbackCompany(companyName)
+  }
+  const closeFeedbackPopup = () => {
+    setFeedbackPopupOpen(false)
+  }
+  function ValueLabelComponent(props) {
+    const { children, value } = props;
+
+    return (
+      <Tooltip enterTouchDelay={0} placement="top" title={value}>
+        {children}
+      </Tooltip>
+    );
+  }
+
+  ValueLabelComponent.propTypes = {
+    children: PropTypes.element.isRequired,
+    value: PropTypes.number.isRequired,
+  };
+
+  const iOSBoxShadow =
+    '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
+
+  const IOSSlider = styled(Slider)(({ theme }) => ({
+    color: theme.palette.mode === 'dark' ? '#0a84ff' : '#007bff',
+    height: 5,
+    padding: '15px 0',
+    '& .MuiSlider-thumb': {
+      height: 20,
+      width: 20,
+      backgroundColor: '#fff',
+      boxShadow: '0 0 2px 0px rgba(0, 0, 0, 0.1)',
+      '&:focus, &:hover, &.Mui-active': {
+        boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.1)',
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          boxShadow: iOSBoxShadow,
+        },
+      },
+      '&:before': {
+        boxShadow:
+          '0px 0px 1px 0px rgba(0,0,0,0.2), 0px 0px 0px 0px rgba(0,0,0,0.14), 0px 0px 1px 0px rgba(0,0,0,0.12)',
+      },
+    },
+    '& .MuiSlider-valueLabel': {
+      fontSize: 12,
+      fontWeight: 'normal',
+      top: -6,
+      backgroundColor: 'unset',
+      color: theme.palette.text.primary,
+      '&::before': {
+        display: 'none',
+      },
+      '& *': {
+        background: 'transparent',
+        color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+      },
+    },
+    '& .MuiSlider-track': {
+      border: 'none',
+      height: 5,
+    },
+    '& .MuiSlider-rail': {
+      opacity: 0.5,
+      boxShadow: 'inset 0px 0px 4px -2px #000',
+      backgroundColor: '#d0d0d0',
+    },
+  }));
 
   // const handleConfirmAssign = (companyId, companyName, companyStatus, ename, bdmAcceptStatus) => {
   //   console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
@@ -2038,7 +2119,6 @@ function EmployeePanel() {
   //   }
   // };
 
-
   // // const handleForwardBdm = async() => {
   // //   const selectedData = currentData.filter((company) => company["Company Name"] === forwardedCompany);
   // //   console.log("selectedData", selectedData);
@@ -2057,7 +2137,6 @@ function EmployeePanel() {
   // // };
 
   // console.log(forwardedCompany, 'hayhsjshshsh')
-
 
   // const handleForwardBdm = async () => {
   //   console.log("selectedData", currentData, forwardedCompany);
@@ -2106,17 +2185,24 @@ function EmployeePanel() {
   //   }
   // };
 
-
   const [confirmationPending, setConfirmationPending] = useState(false);
   const [bdeOldStatus, setBdeOldStatus] = useState("");
 
-  const handleConfirmAssign = (companyId, companyName, companyStatus, ename, bdmAcceptStatus) => {
+  const handleConfirmAssign = (
+    companyId,
+    companyName,
+    companyStatus,
+    ename,
+    bdmAcceptStatus
+  ) => {
     console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
 
-
-    if (companyStatus === "Interested" || companyStatus === "FollowUp" && bdmName) {
+    if (
+      companyStatus === "Interested" ||
+      (companyStatus === "FollowUp" && bdmName)
+    ) {
       // Assuming `bdmName` is defined somewhere
-      setBdeOldStatus(companyStatus)
+      setBdeOldStatus(companyStatus);
       setForrwardEname(ename);
       setForrwardStatus(companyStatus);
       setBdmNewAcceptStatus("Pending");
@@ -2128,8 +2214,7 @@ function EmployeePanel() {
     }
   };
 
-  console.log("companyprevstatus", bdeOldStatus)
-
+  console.log("companyprevstatus", bdeOldStatus);
 
   useEffect(() => {
     if (confirmationPending) {
@@ -2140,7 +2225,9 @@ function EmployeePanel() {
 
   const handleForwardBdm = async () => {
     //console.log("selectedData", currentData, forwardedCompany);
-    const selectedDataWithBdm = currentData.filter((company) => company["Company Name"] === forwardedCompany);
+    const selectedDataWithBdm = currentData.filter(
+      (company) => company["Company Name"] === forwardedCompany
+    );
     try {
       const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
         selectedData: selectedDataWithBdm,
@@ -2154,136 +2241,100 @@ function EmployeePanel() {
       //console.log("response", response.data);
       Swal.fire("Data Forwarded");
       fetchNewData("Forwarded");
-      setdataStatus("Forwarded")
+      setdataStatus("Forwarded");
       setEmployeeData(
         moreEmpData
           .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded")
           .sort(
-            (a, b) =>
-              new Date(b.lastActionDate) -
-              new Date(a.lastActionDate)
+            (a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate)
           )
       );
-
     } catch (error) {
       console.log(error);
       Swal.fire("Error Assigning Data");
-
     }
   };
 
-  console.log("datastatus", dataStatus)
+  console.log("datastatus", dataStatus);
 
-
-  const handleReverseAssign = async (companyId, companyName, bdmAcceptStatus, empStatus) => {
+  const handleReverseAssign = async (
+    companyId,
+    companyName,
+    bdmAcceptStatus,
+    empStatus
+  ) => {
     if (bdmAcceptStatus === "Pending") {
       try {
-        const response = await axios.post(`${secretKey}/teamleads-reversedata/${companyId}`, {
-          companyName,
-          bdmAcceptStatus: "NotForwarded", // Corrected parameter name
-        });
+        const response = await axios.post(
+          `${secretKey}/teamleads-reversedata/${companyId}`,
+          {
+            companyName,
+            bdmAcceptStatus: "NotForwarded", // Corrected parameter name
+          }
+        );
         // console.log("response", response.data);
         Swal.fire("Data Reversed");
         fetchNewData(empStatus);
-        setdataStatus(empStatus)
+        setdataStatus(empStatus);
         setEmployeeData(
           moreEmpData
             .filter((obj) => obj.Status !== empStatus)
             .sort(
-              (a, b) =>
-                new Date(b.lastActionDate) -
-                new Date(a.lastActionDate)
+              (a, b) => new Date(b.lastActionDate) - new Date(a.lastActionDate)
             )
         );
       } catch (error) {
         console.log("error reversing bdm forwarded data", error.message);
       }
     } else if (bdmAcceptStatus === "NotForwarded") {
-      Swal.fire("Cannot Reforward Data")
+      Swal.fire("Cannot Reforward Data");
     } else if (bdmAcceptStatus === "Accept") {
-      Swal.fire("BDM already accepted this data!")
+      Swal.fire("BDM already accepted this data!");
     }
   };
 
-  const [feedbakPoints, setFeedbackPoints] = useState("")
-  const [feedbackRemarks, setFeedbackRemarks] = useState("")
-  const [feedbackPopupOpen, setFeedbackPopupOpen] = useState(false)
-  const [feedbackCompany, setFeedbackCompany] = useState("")
-
-  const handleViewFeedback = (companyId, companyName, companyFeedbackRemarks, companyFeedbackPoints) => {
-    setFeedbackPopupOpen(true)
-    setFeedbackPoints(companyFeedbackPoints)
-    setFeedbackRemarks(companyFeedbackRemarks)
-    setFeedbackCompany(companyName)
-  }
-
-  const closeFeedbackPopup = () => {
-    setFeedbackPopupOpen(false)
-  }
-
-  function ValueLabelComponent(props) {
-    const { children, value } = props;
-  
-    return (
-      <Tooltip enterTouchDelay={0} placement="top" title={value}>
-        {children}
-      </Tooltip>
-    );
-  }
-  
-  ValueLabelComponent.propTypes = {
-    children: PropTypes.element.isRequired,
-    value: PropTypes.number.isRequired,
+  // ------------------------------------- Request BDM functions --------------------------------
+  const handleAcceptRequest = async () => {
+    try {
+      const id = BDMrequests._id;
+      // Send a POST request to your backend API to update the object
+      const response = await axios.post(
+        `${secretKey}/update-bdm-Request/${id}`,
+        {
+          requestStatus: "Accepted",
+        }
+      );
+      Swal.fire("Accepted!", "Successfully Accepted the Request", "success");
+      setOpenbdmRequest(false);
+      console.log(response.data); // Log the response data if needed
+      // Optionally, you can update the UI or perform any other actions after the request is successful
+    } catch (error) {
+      Swal.fire("Error!", "Error Accepting the Request", "error");
+      setOpenbdmRequest(false);
+      console.error("Error accepting request:", error);
+      // Handle the error or display a message to the user
+    }
   };
-  
-  const iOSBoxShadow =
-    '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
-  
-  const IOSSlider = styled(Slider)(({ theme }) => ({
-    color: theme.palette.mode === 'dark' ? '#0a84ff' : '#007bff',
-    height: 5,
-    padding: '15px 0',
-    '& .MuiSlider-thumb': {
-      height: 20,
-      width: 20,
-      backgroundColor: '#fff',
-      boxShadow: '0 0 2px 0px rgba(0, 0, 0, 0.1)',
-      '&:focus, &:hover, &.Mui-active': {
-        boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.1)',
-        // Reset on touch devices, it doesn't add specificity
-        '@media (hover: none)': {
-          boxShadow: iOSBoxShadow,
-        },
-      },
-      '&:before': {
-        boxShadow:
-          '0px 0px 1px 0px rgba(0,0,0,0.2), 0px 0px 0px 0px rgba(0,0,0,0.14), 0px 0px 1px 0px rgba(0,0,0,0.12)',
-      },
-    },
-    '& .MuiSlider-valueLabel': {
-      fontSize: 12,
-      fontWeight: 'normal',
-      top: -6,
-      backgroundColor: 'unset',
-      color: theme.palette.text.primary,
-      '&::before': {
-        display: 'none',
-      },
-      '& *': {
-        background: 'transparent',
-        color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-      },
-    },
-    '& .MuiSlider-track': {
-      border: 'none',
-      height: 5,
-    },
-    '& .MuiSlider-rail': {
-      opacity: 0.5,
-      boxShadow: 'inset 0px 0px 4px -2px #000',
-      backgroundColor: '#d0d0d0',
-    },
-  }));
+
+  // Function to handle reject request
+  const handleRejectRequest = async () => {
+    try {
+      const id = BDMrequests._id;
+      // Send a DELETE request to your backend API to delete the object
+      const response = await axios.delete(
+        `${secretKey}/delete-bdm-Request/${id}`
+      );
+      Swal.fire("Rejected!", "Successfully Denied the Request", "success");
+      setOpenbdmRequest(false);
+      console.log(response.data); // Log the response data if needed
+      // Optionally, you can update the UI or perform any other actions after the request is successful
+    } catch (error) {
+      Swal.fire("Error!", "Error Rejecting the Request", "error");
+      setOpenbdmRequest(false);
+      console.error("Error rejecting request:", error);
+      // Handle the error or display a message to the user
+    }
+  };
 
   return (
     <div>
@@ -2294,6 +2345,45 @@ function EmployeePanel() {
       {!formOpen && !editFormOpen && !addFormOpen && !editMoreOpen && (
         <>
           <div className="page-wrapper">
+            {BDMrequests && (
+              <Dialog open={openbdmRequest}>
+                <DialogContent>
+                  <div className="request-bdm-card">
+                    <div className="request-title m-2 d-flex justify-content-between">
+                      <div className="request-content mr-2">
+                        {BDMrequests.bdmName} is requesting to book{" "}
+                        <b>{BDMrequests["Company Name"]}</b> form.
+                      </div>
+                      <div className="request-time">
+                        {new Date(BDMrequests.date).toLocaleTimeString(
+                          "en-US",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          }
+                        )}
+                      </div>
+                    </div>
+                    <div className="request-reply">
+                      <button
+                        onClick={handleAcceptRequest}
+                        className="request-accept"
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={handleRejectRequest}
+                        className="request-reject"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+
             <div className="page-header d-print-none">
               <div className="container-xl">
                 {requestData !== null && requestData !== undefined && (
@@ -2877,7 +2967,9 @@ function EmployeePanel() {
                           setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData.filter(
-                              (obj) => obj.Status === "Interested" && obj.bdmAcceptStatus === "NotForwarded"
+                              (obj) =>
+                                obj.Status === "Interested" &&
+                                obj.bdmAcceptStatus === "NotForwarded"
                             )
                           );
                         }}
@@ -2889,11 +2981,12 @@ function EmployeePanel() {
                         data-bs-toggle="tab"
                       >
                         Interested
-
                         <span className="no_badge">
                           {
                             moreEmpData.filter(
-                              (obj) => obj.Status === "Interested" && obj.bdmAcceptStatus === "NotForwarded"
+                              (obj) =>
+                                obj.Status === "Interested" &&
+                                obj.bdmAcceptStatus === "NotForwarded"
                             ).length
                           }
                         </span>
@@ -2907,7 +3000,9 @@ function EmployeePanel() {
                           setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData.filter(
-                              (obj) => obj.Status === "FollowUp" && obj.bdmAcceptStatus === "NotForwarded"
+                              (obj) =>
+                                obj.Status === "FollowUp" &&
+                                obj.bdmAcceptStatus === "NotForwarded"
                             )
                           );
                         }}
@@ -2922,7 +3017,9 @@ function EmployeePanel() {
                         <span className="no_badge">
                           {
                             moreEmpData.filter(
-                              (obj) => obj.Status === "FollowUp" && obj.bdmAcceptStatus === "NotForwarded"
+                              (obj) =>
+                                obj.Status === "FollowUp" &&
+                                obj.bdmAcceptStatus === "NotForwarded"
                             ).length
                           }
                         </span>
@@ -2937,7 +3034,11 @@ function EmployeePanel() {
                           setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData
-                              .filter((obj) => obj.Status === "Matured" && obj.bdmAcceptStatus === "NotForwarded")
+                              .filter(
+                                (obj) =>
+                                  obj.Status === "Matured" &&
+                                  obj.bdmAcceptStatus === "NotForwarded"
+                              )
                               .sort(
                                 (a, b) =>
                                   new Date(b.lastActionDate) -
@@ -2957,7 +3058,9 @@ function EmployeePanel() {
                           {" "}
                           {
                             moreEmpData.filter(
-                              (obj) => obj.Status === "Matured" && obj.bdmAcceptStatus === "NotForwarded"
+                              (obj) =>
+                                obj.Status === "Matured" &&
+                                obj.bdmAcceptStatus === "NotForwarded"
                             ).length
                           }
                         </span>
@@ -2967,17 +3070,20 @@ function EmployeePanel() {
                       <a
                         href="#tabs-activity-5"
                         onClick={() => {
-                          setdataStatus("Forwarded")
+                          setdataStatus("Forwarded");
                           setCurrentPage(0);
                           setEmployeeData(
                             moreEmpData
-                              .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status !== "Not Interested")
+                              .filter(
+                                (obj) =>
+                                  obj.bdmAcceptStatus !== "NotForwarded" &&
+                                  obj.Status !== "Not Interested"
+                              )
                               .sort(
                                 (a, b) =>
                                   new Date(b.lastActionDate) -
                                   new Date(a.lastActionDate)
                               )
-
                           );
                           //setdataStatus(obj.bdmAcceptStatus);
                         }}
@@ -2993,7 +3099,9 @@ function EmployeePanel() {
                           {" "}
                           {
                             moreEmpData.filter(
-                              (obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status !== "Not Interested"
+                              (obj) =>
+                                obj.bdmAcceptStatus !== "NotForwarded" &&
+                                obj.Status !== "Not Interested"
                             ).length
                           }
                         </span>
@@ -3026,7 +3134,8 @@ function EmployeePanel() {
                             moreEmpData.filter(
                               (obj) =>
                                 (obj.Status === "Not Interested" ||
-                                  obj.Status === "Junk") && (obj.bdmAcceptStatus === "NotForwarded")
+                                  obj.Status === "Junk") &&
+                                obj.bdmAcceptStatus === "NotForwarded"
                             ).length
                           }
                         </span>
@@ -3057,9 +3166,7 @@ function EmployeePanel() {
                             <th className="th-sticky1">Company Name</th>
                             <th>Company Number</th>
                             <th>Status</th>
-                            {(dataStatus === "Forwarded") && (
-                              <th>Bdm Status</th>
-                            )}
+                            {dataStatus === "Forwarded" && <th>Bdm Status</th>}
                             <th>Remarks</th>
 
                             <th>
@@ -3261,14 +3368,19 @@ function EmployeePanel() {
                               <th>Forwarded Date</th>
                             )}
 
-                            {(dataStatus === "Forwarded" || dataStatus === "Interested" || dataStatus === "FollowUp") && (
+                            {(dataStatus === "Forwarded" ||
+                              dataStatus === "Interested" ||
+                              dataStatus === "FollowUp") && (
                               <th>Forward to BDM</th>
                             )}
-                            {(dataStatus === "Forwarded" && (dataStatus !== "Interested" || dataStatus !== "FollowUp" || dataStatus !== "Untouched" || dataStatus !== "Matured" || dataStatus !== "Not Interested"))
-                              && (
+                            {dataStatus === "Forwarded" &&
+                              (dataStatus !== "Interested" ||
+                                dataStatus !== "FollowUp" ||
+                                dataStatus !== "Untouched" ||
+                                dataStatus !== "Matured" ||
+                                dataStatus !== "Not Interested") && (
                                 <th>Feedback</th>
                               )}
-
                           </tr>
                         </thead>
                         {loading ? (
@@ -3314,13 +3426,16 @@ function EmployeePanel() {
                                     <span>{company["Status"]}</span>
                                   ) : (
                                     <>
-                                      {(company.bdmAcceptStatus === "NotForwarded") && (
+                                      {company.bdmAcceptStatus ===
+                                        "NotForwarded" && (
                                         <select
                                           style={{
                                             background: "none",
                                             padding: ".4375rem .75rem",
-                                            border: "1px solid var(--tblr-border-color)",
-                                            borderRadius: "var(--tblr-border-radius)",
+                                            border:
+                                              "1px solid var(--tblr-border-color)",
+                                            borderRadius:
+                                              "var(--tblr-border-radius)",
                                           }}
                                           value={company["Status"]}
                                           onChange={(e) =>
@@ -3329,33 +3444,53 @@ function EmployeePanel() {
                                               e.target.value,
                                               company["Company Name"],
                                               company["Company Email"],
-                                              company["Company Incorporation Date  "],
+                                              company[
+                                                "Company Incorporation Date  "
+                                              ],
                                               company["Company Number"],
                                               company["Status"]
                                             )
                                           }
                                         >
-                                          <option value="Not Picked Up">Not Picked Up</option>
+                                          <option value="Not Picked Up">
+                                            Not Picked Up
+                                          </option>
                                           <option value="Busy">Busy</option>
                                           <option value="Junk">Junk</option>
-                                          <option value="Not Interested">Not Interested</option>
+                                          <option value="Not Interested">
+                                            Not Interested
+                                          </option>
                                           {dataStatus === "All" && (
                                             <>
-                                              <option value="Untouched">Untouched</option>
-                                              <option value="Interested">Interested</option>
+                                              <option value="Untouched">
+                                                Untouched
+                                              </option>
+                                              <option value="Interested">
+                                                Interested
+                                              </option>
                                             </>
                                           )}
                                           {dataStatus === "Interested" && (
                                             <>
-                                              <option value="Interested">Interested</option>
-                                              <option value="FollowUp">Follow Up</option>
-                                              <option value="Matured">Matured</option>
+                                              <option value="Interested">
+                                                Interested
+                                              </option>
+                                              <option value="FollowUp">
+                                                Follow Up
+                                              </option>
+                                              <option value="Matured">
+                                                Matured
+                                              </option>
                                             </>
                                           )}
                                           {dataStatus === "FollowUp" && (
                                             <>
-                                              <option value="FollowUp">Follow Up</option>
-                                              <option value="Matured">Matured</option>
+                                              <option value="FollowUp">
+                                                Follow Up
+                                              </option>
+                                              <option value="Matured">
+                                                Matured
+                                              </option>
                                             </>
                                           )}
                                         </select>
@@ -3378,46 +3513,70 @@ function EmployeePanel() {
                                         // </select>
                                         <span>{company.bdeOldStatus}</span>
                                       )} */}
-                                      {(company.bdmAcceptStatus !== "NotForwarded" && (company.Status === "Interested" || company.Status === "FollowUp")) && (
-                                        <span>{company.bdeOldStatus}</span>
-                                      )}
-                                      {(company.bdmAcceptStatus !== "NotForwarded" && company.Status === "Not Interested") && (
-                                        <select
-                                          style={{
-                                            background: "none",
-                                            padding: ".4375rem .75rem",
-                                            border: "1px solid var(--tblr-border-color)",
-                                            borderRadius: "var(--tblr-border-radius)",
-                                          }}
-                                          value={company["Status"]}
-                                          onChange={(e) =>
-                                            handleStatusChange(
-                                              company._id,
-                                              e.target.value,
-                                              company["Company Name"],
-                                              company["Company Email"],
-                                              company["Company Incorporation Date  "],
-                                              company["Company Number"],
-                                              company["Status"]
-                                            )
-                                          }
-                                        >
-                                          <option value="Not Picked Up">Not Picked Up</option>
-                                          <option value="Busy">Busy</option>
-                                          <option value="Junk">Junk</option>
-                                          <option value="Not Interested">Not Interested</option>
-
-                                        </select>)}
+                                      {company.bdmAcceptStatus !==
+                                        "NotForwarded" &&
+                                        (company.Status === "Interested" ||
+                                          company.Status === "FollowUp") && (
+                                          <span>{company.bdeOldStatus}</span>
+                                        )}
+                                      {company.bdmAcceptStatus !==
+                                        "NotForwarded" &&
+                                        company.Status === "Not Interested" && (
+                                          <select
+                                            style={{
+                                              background: "none",
+                                              padding: ".4375rem .75rem",
+                                              border:
+                                                "1px solid var(--tblr-border-color)",
+                                              borderRadius:
+                                                "var(--tblr-border-radius)",
+                                            }}
+                                            value={company["Status"]}
+                                            onChange={(e) =>
+                                              handleStatusChange(
+                                                company._id,
+                                                e.target.value,
+                                                company["Company Name"],
+                                                company["Company Email"],
+                                                company[
+                                                  "Company Incorporation Date  "
+                                                ],
+                                                company["Company Number"],
+                                                company["Status"]
+                                              )
+                                            }
+                                          >
+                                            <option value="Not Picked Up">
+                                              Not Picked Up
+                                            </option>
+                                            <option value="Busy">Busy</option>
+                                            <option value="Junk">Junk</option>
+                                            <option value="Not Interested">
+                                              Not Interested
+                                            </option>
+                                          </select>
+                                        )}
                                     </>
                                   )}
-
                                 </td>
-                                {dataStatus === "Forwarded" && (<td>
-                                  {company.Status === "Interested" && <span>Interested</span>}
-                                  {company.Status === "FollowUp" && <span>FollowUp</span>}
-                                  {company.Status === "Matured" && <span>Matured</span>}
-                                  {(company.Status === "Not Interested" || company.Status === "Junk" || company.Status === "Busy") && <span></span>}
-                                </td>)}
+                                {dataStatus === "Forwarded" && (
+                                  <td>
+                                    {company.Status === "Interested" && (
+                                      <span>Interested</span>
+                                    )}
+                                    {company.Status === "FollowUp" && (
+                                      <span>FollowUp</span>
+                                    )}
+                                    {company.Status === "Matured" && (
+                                      <span>Matured</span>
+                                    )}
+                                    {(company.Status === "Not Interested" ||
+                                      company.Status === "Junk" ||
+                                      company.Status === "Busy") && (
+                                      <span></span>
+                                    )}
+                                  </td>
+                                )}
                                 <td>
                                   <div
                                     key={company._id}
@@ -3437,17 +3596,8 @@ function EmployeePanel() {
                                         : company.Remarks}
                                     </p>
 
-                                    {company.bdmAcceptStatus !== "Accept" && (<IconButton
-                                      onClick={() => {
-                                        functionopenpopupremarks(
-                                          company._id,
-                                          company.Status,
-                                          company["Company Name"]
-                                        );
-                                        setCurrentRemarks(company.Remarks);
-                                        setCompanyId(company._id);
-                                      }}>
-                                      <EditIcon
+                                    {company.bdmAcceptStatus !== "Accept" && (
+                                      <IconButton
                                         onClick={() => {
                                           functionopenpopupremarks(
                                             company._id,
@@ -3457,12 +3607,24 @@ function EmployeePanel() {
                                           setCurrentRemarks(company.Remarks);
                                           setCompanyId(company._id);
                                         }}
-                                        style={{
-                                          width: "12px",
-                                          height: "12px",
-                                        }}
-                                      />
-                                    </IconButton>)}
+                                      >
+                                        <EditIcon
+                                          onClick={() => {
+                                            functionopenpopupremarks(
+                                              company._id,
+                                              company.Status,
+                                              company["Company Name"]
+                                            );
+                                            setCurrentRemarks(company.Remarks);
+                                            setCompanyId(company._id);
+                                          }}
+                                          style={{
+                                            width: "12px",
+                                            height: "12px",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    )}
                                     {company.bdmAcceptStatus === "Accept" && (
                                       <IconButton
                                         onClick={() => {
@@ -3489,25 +3651,27 @@ function EmployeePanel() {
                                 </td>
 
                                 <td>
-                                  {formatDateNew(company["Company Incorporation Date  "])
-
-                                  }
+                                  {formatDateNew(
+                                    company["Company Incorporation Date  "]
+                                  )}
                                 </td>
                                 <td>{company["City"]}</td>
                                 <td>{company["State"]}</td>
                                 <td>{company["Company Email"]}</td>
                                 <td>{formatDateNew(company["AssignDate"])}</td>
                                 {(dataStatus === "FollowUp" ||
-                                  dataStatus === "Interested") && (<>
-                                    {company.bdmAcceptStatus === "NotForwarded" ? (
+                                  dataStatus === "Interested") && (
+                                  <>
+                                    {company.bdmAcceptStatus ===
+                                    "NotForwarded" ? (
                                       <td>
                                         {company &&
-                                          projectionData &&
-                                          projectionData.some(
-                                            (item) =>
-                                              item.companyName ===
-                                              company["Company Name"]
-                                          ) ? (
+                                        projectionData &&
+                                        projectionData.some(
+                                          (item) =>
+                                            item.companyName ===
+                                            company["Company Name"]
+                                        ) ? (
                                           <IconButton>
                                             <RiEditCircleFill
                                               onClick={() => {
@@ -3540,7 +3704,8 @@ function EmployeePanel() {
                                             />
                                           </IconButton>
                                         )}
-                                      </td>) : (
+                                      </td>
+                                    ) : (
                                       <td>
                                         <IconButton>
                                           <RiEditCircleFill
@@ -3549,7 +3714,7 @@ function EmployeePanel() {
                                               width: "17px",
                                               height: "17px",
                                               alignItems: "center",
-                                              color: "black"
+                                              color: "black",
                                             }}
                                           />
                                         </IconButton>
@@ -3573,58 +3738,17 @@ function EmployeePanel() {
                                         }}
                                         color="grey"
                                       />
-
                                     </td>
-                                  </>)}
+                                  </>
+                                )}
                                 {dataStatus === "Forwarded" && (
                                   <td>{company.bdeForwardDate}</td>
                                 )}
-                                {
-                                  dataStatus === "Forwarded" && (
-                                    <td>
-                                      {company.bdmAcceptStatus === "NotForwarded" ? (
-                                        <TiArrowForward
-                                          onClick={() => {
-                                            handleConfirmAssign(
-                                              company._id,
-                                              company["Company Name"],
-                                              company.Status, // Corrected parameter name
-                                              company.ename,
-                                              company.bdmAcceptStatus
-                                            );
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                          color="grey"
-                                        />
-                                      ) : company.bdmAcceptStatus === "Pending" ? (
-                                        <TiArrowBack
-                                          onClick={() => {
-                                            handleReverseAssign(
-                                              company._id,
-                                              company["Company Name"],
-                                              company.bdmAcceptStatus,
-                                              company.Status,
-                                            )
-                                          }}
-                                          style={{
-                                            cursor: "pointer",
-                                            width: "17px",
-                                            height: "17px",
-                                          }}
-                                          color="#fbb900"
-                                        />
-                                      ) : company.bdmAcceptStatus === "Accept" ? (
-                                        <TiArrowBack style={{
-                                          cursor: "pointer",
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                          color="lightgrey" />
-                                      ) : <TiArrowForward
+                                {dataStatus === "Forwarded" && (
+                                  <td>
+                                    {company.bdmAcceptStatus ===
+                                      "NotForwarded" && (
+                                      <TiArrowForward
                                         onClick={() => {
                                           handleConfirmAssign(
                                             company._id,
@@ -3640,29 +3764,38 @@ function EmployeePanel() {
                                           height: "17px",
                                         }}
                                         color="grey"
-                                      />}
-                                    </td>
-
-                                  )
-                                }
-                                {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints || company.feedbackRemarks) && (
-                                  <td>
-                                    <IconButton onClick={() => {
-                                      handleViewFeedback(
-                                        company._id,
-                                        company["Company Name"],
-                                        company.feedbackRemarks,
-                                        company.feedbackPoints
-                                      )
-                                    }}>
-                                      <RiInformationLine style={{
-                                        cursor: "pointer",
-                                        width: "17px",
-                                        height: "17px",
-                                      }}
-                                        color="grey" /></IconButton>
+                                      />
+                                    )}
                                   </td>
                                 )}
+
+                                {dataStatus === "Forwarded" &&
+                                  company.bdmAcceptStatus !== "NotForwarded" &&
+                                  (company.feedbackPoints ||
+                                    company.feedbackRemarks) && (
+                                    <td>
+                                      <IconButton
+                                        onClick={() => {
+
+                                          handleViewFeedback(
+                                            company._id,
+                                            company["Company Name"],
+                                            company.feedbackRemarks,
+                                            company.feedbackPoints
+                                          );
+                                        }}
+                                      >
+                                        <RiInformationLine
+                                          style={{
+                                            cursor: "pointer",
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                          color="grey"
+                                        />
+                                      </IconButton>
+                                    </td>
+                                  )}
 
                                 {dataStatus === "Matured" && (
                                   <>
@@ -3710,19 +3843,19 @@ function EmployeePanel() {
                                         </IconButton>
                                         <IconButton
                                           onClick={() => {
-                                            handleEditClick(company._id)
+                                            handleEditClick(company._id);
                                           }}
-                                        // onClick={() => {
-                                        //   setMaturedID(company._id);
-                                        //   setTimeout(() => {
-                                        //     setEditFormOpen(true);
-                                        //   }, 1000);
-                                        // }}
-                                        // disabled={totalBookings.some(
-                                        //   (obj) =>
-                                        //     obj["Company Name"] ===
-                                        //     company["Company Name"]
-                                        // )}
+                                          // onClick={() => {
+                                          //   setMaturedID(company._id);
+                                          //   setTimeout(() => {
+                                          //     setEditFormOpen(true);
+                                          //   }, 1000);
+                                          // }}
+                                          // disabled={totalBookings.some(
+                                          //   (obj) =>
+                                          //     obj["Company Name"] ===
+                                          //     company["Company Name"]
+                                          // )}
                                         >
                                           <Edit
                                             style={{
@@ -3892,7 +4025,7 @@ function EmployeePanel() {
                               Math.min(
                                 prevPage + 1,
                                 Math.ceil(filteredData.length / itemsPerPage) -
-                                1
+                                  1
                               )
                             )
                           }
@@ -3946,7 +4079,8 @@ function EmployeePanel() {
       )}
       {editMoreOpen && (
         <>
-          <EditableMoreBooking setFormOpen={setEditMoreOpen}
+          <EditableMoreBooking
+            setFormOpen={setEditMoreOpen}
             bookingIndex={bookingIndex}
             companysName={currentForm["Company Name"]}
             companysEmail={currentForm["Company Email"]}
@@ -3955,7 +4089,8 @@ function EmployeePanel() {
             companysInco={currentForm.incoDate}
             employeeName={data.ename}
             employeeEmail={data.email}
-            setDataStatus={setdataStatus} />
+            setDataStatus={setdataStatus}
+          />
         </>
       )}
       {addFormOpen && (
@@ -3974,8 +4109,8 @@ function EmployeePanel() {
       <Dialog
         open={openBooking}
         onClose={() => {
-          setOpenBooking(false)
-          setCurrentForm(null)
+          setOpenBooking(false);
+          setCurrentForm(null);
         }}
         fullWidth
         maxWidth="sm"
@@ -3984,8 +4119,8 @@ function EmployeePanel() {
           Choose Booking{" "}
           <IconButton
             onClick={() => {
-              setOpenBooking(false)
-              setCurrentForm(null)
+              setOpenBooking(false);
+              setCurrentForm(null);
             }}
             style={{ float: "right" }}
           >
@@ -4006,28 +4141,31 @@ function EmployeePanel() {
                   id="open-bookings-1"
                 />
               </div>
-              {currentForm && currentForm.moreBookings.map((obj, index) => (
-                <div className="booking-2">
-                  <label for="open-bookings"> Booking {index + 2} </label>
-                  <input
-                    onChange={() => setBookingIndex(index + 1)}
-                    className="form-check-input ml-1"
-                    type="radio"
-                    name="open-bookings"
-                    id={`open-booking-${index + 2}`}
-                  />
-                </div>
-              ))}
-
+              {currentForm &&
+                currentForm.moreBookings.map((obj, index) => (
+                  <div className="booking-2">
+                    <label for="open-bookings"> Booking {index + 2} </label>
+                    <input
+                      onChange={() => setBookingIndex(index + 1)}
+                      className="form-check-input ml-1"
+                      type="radio"
+                      name="open-bookings"
+                      id={`open-booking-${index + 2}`}
+                    />
+                  </div>
+                ))}
             </div>
 
             <div className="open-bookings-footer mt-2 d-flex justify-content-center">
-              <button onClick={handleOpenEditForm} style={{ textAlign: "center" }} className="btn btn-primary">
+              <button
+                onClick={handleOpenEditForm}
+                style={{ textAlign: "center" }}
+                className="btn btn-primary"
+              >
                 Confirm Booking
               </button>
             </div>
           </div>
-
         </DialogContent>
       </Dialog>
       {/* Request Data popup */}
@@ -4045,16 +4183,16 @@ function EmployeePanel() {
                 style={
                   selectedOption === "general"
                     ? {
-                      backgroundColor: "#ffb900",
-                      margin: "10px 10px 0px 0px",
-                      cursor: "pointer",
-                      color: "white",
-                    }
+                        backgroundColor: "#ffb900",
+                        margin: "10px 10px 0px 0px",
+                        cursor: "pointer",
+                        color: "white",
+                      }
                     : {
-                      backgroundColor: "white",
-                      margin: "10px 10px 0px 0px",
-                      cursor: "pointer",
-                    }
+                        backgroundColor: "white",
+                        margin: "10px 10px 0px 0px",
+                        cursor: "pointer",
+                      }
                 }
                 onClick={() => {
                   setSelectedOption("general");
@@ -4077,16 +4215,16 @@ function EmployeePanel() {
                 style={
                   selectedOption === "notgeneral"
                     ? {
-                      backgroundColor: "#ffb900",
-                      margin: "10px 0px 0px 0px",
-                      cursor: "pointer",
-                      color: "white",
-                    }
+                        backgroundColor: "#ffb900",
+                        margin: "10px 0px 0px 0px",
+                        cursor: "pointer",
+                        color: "white",
+                      }
                     : {
-                      backgroundColor: "white",
-                      margin: "10px 0px 0px 0px",
-                      cursor: "pointer",
-                    }
+                        backgroundColor: "white",
+                        margin: "10px 0px 0px 0px",
+                        cursor: "pointer",
+                      }
                 }
                 className="notgeneral form-control col"
                 onClick={() => {
@@ -4261,7 +4399,8 @@ function EmployeePanel() {
         open={openRemarks}
         onClose={closepopupRemarks}
         fullWidth
-        maxWidth="sm">
+        maxWidth="sm"
+      >
         <DialogTitle>
           <span style={{ fontSize: "14px" }}>
             {currentCompanyName}'s Remarks
@@ -4279,7 +4418,9 @@ function EmployeePanel() {
                     <div className="d-flex justify-content-between">
                       <div className="reamrk-card-innerText">
                         <pre className="remark-text">{historyItem.remarks}</pre>
-                        {historyItem.bdmName !== undefined && (<pre className="remark-text">By BDM</pre>)}
+                        {historyItem.bdmName !== undefined && (
+                          <pre className="remark-text">By BDM</pre>
+                        )}
                       </div>
                       <div className="dlticon">
                         <DeleteIcon
@@ -4336,19 +4477,22 @@ function EmployeePanel() {
         </DialogContent>
       </Dialog>
 
-
       {/* --------------------------------------------------------------dialog to view remarks only on forwarded status---------------------------------- */}
 
       <Dialog
         open={opeRemarksEdit}
         onClose={closePopUpRemarksEdit}
         fullWidth
-        maxWidth="sm">
+        maxWidth="sm"
+      >
         <DialogTitle>
           <span style={{ fontSize: "14px" }}>
             {currentCompanyName}'s Remarks
           </span>
-          <IconButton onClick={closePopUpRemarksEdit} style={{ float: "right" }}>
+          <IconButton
+            onClick={closePopUpRemarksEdit}
+            style={{ float: "right" }}
+          >
             <CloseIcon color="primary"></CloseIcon>
           </IconButton>{" "}
         </DialogTitle>
@@ -4625,7 +4769,7 @@ function EmployeePanel() {
                         }}
                         type="text"
                         className="form-control"
-                      //disabled={!isEditProjection}
+                        //disabled={!isEditProjection}
                       />
                     </div>
                   </div>
@@ -4943,16 +5087,14 @@ function EmployeePanel() {
       </Dialog>
       {/* -------------------------------------------------------------------------dialog for feedback remarks-------------------------------------- */}
 
-
       <Dialog
         open={feedbackPopupOpen}
         onClose={closeFeedbackPopup}
         fullWidth
-        maxWidth="xs">
+        maxWidth="xs"
+      >
         <DialogTitle>
-          <span style={{ fontSize: "14px" }}>
-            {feedbackCompany}
-          </span>
+          <span style={{ fontSize: "14px" }}>{feedbackCompany}</span>
           <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
             <CloseIcon color="primary"></CloseIcon>
           </IconButton>{" "}
@@ -4964,7 +5106,7 @@ function EmployeePanel() {
                 <div className="card RemarkCard position-relative">
                   <div className="d-flex justify-content-between">
                     <div className="reamrk-card-innerText">
-                      <pre className="mt-5 pt-4" >
+                      <pre className="mt-5 pt-4">
                         {/* <Slider
                         defaultValue={feedbakPoints}
                         //getAriaValueText={feedbakPoints} 
@@ -4978,8 +5120,15 @@ function EmployeePanel() {
                         valueLabelDisplay="on" 
                         valueLabelFormat={feedbakPoints}
                         /> */}
-                        <IOSSlider aria-label="ios slider" disabled defaultValue={feedbakPoints} min={0} max={10} valueLabelDisplay="on" />
-                        </pre>
+                        <IOSSlider
+                          aria-label="ios slider"
+                          disabled
+                          defaultValue={feedbakPoints}
+                          min={0}
+                          max={10}
+                          valueLabelDisplay="on"
+                        />
+                      </pre>
                       <pre className="remark-text">{feedbackRemarks}</pre>
                     </div>
                   </div>
@@ -4990,7 +5139,6 @@ function EmployeePanel() {
                     </div> */}
                 </div>
               </div>
-
             ) : (
               <div className="text-center overflow-hidden">
                 No Remarks History
@@ -5034,7 +5182,8 @@ function EmployeePanel() {
           style={{ top: "50px" }}
           anchor="right"
           open={openProjection}
-          onClose={closeProjection}>
+          onClose={closeProjection}
+        >
           <div style={{ width: "31em" }} className="container-xl">
             <div
               className="header d-flex justify-content-between align-items-center"
@@ -5048,10 +5197,10 @@ function EmployeePanel() {
               </h1>
               <div>
                 {projectingCompany &&
-                  projectionData &&
-                  projectionData.some(
-                    (item) => item.companyName === projectingCompany
-                  ) ? (
+                projectionData &&
+                projectionData.some(
+                  (item) => item.companyName === projectingCompany
+                ) ? (
                   <>
                     <IconButton
                       onClick={() => {
