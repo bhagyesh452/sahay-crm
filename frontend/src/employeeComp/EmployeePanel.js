@@ -68,6 +68,7 @@ function EmployeePanel() {
   const [moreFilteredData, setmoreFilteredData] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
+  const [BDMrequests,setBDMrequests] = useState([]);
   const [openBooking, setOpenBooking] = useState(false);
   const [sortStatus, setSortStatus] = useState("");
   const [maturedID, setMaturedID] = useState("");
@@ -110,7 +111,8 @@ function EmployeePanel() {
   const [forwardStatus, setForrwardStatus] = useState("")
   const [teamInfo, setTeamInfo] = useState([])
   const [bdmName, setBdmName] = useState("")
-
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
   const handleTogglePopup = () => {
     setIsOpen(false);
   };
@@ -157,6 +159,7 @@ function EmployeePanel() {
   const [visibilityOther, setVisibilityOther] = useState("block");
   const [visibilityOthernew, setVisibilityOthernew] = useState("none");
   const [subFilterValue, setSubFilterValue] = useState("");
+  const [openbdmRequest, setOpenbdmRequest] = useState(false);
   const [selectedField, setSelectedField] = useState("Company Name");
   const [cname, setCname] = useState("");
   const [cemail, setCemail] = useState("");
@@ -200,8 +203,10 @@ function EmployeePanel() {
     const audio = new Audio(notificationSound);
     audio.play();
   };
+
+const connectionString = secretKey === 'http://localhost:3001/api' ? 'http://localhost:3001' : '/socket.io';
   useEffect(() => {
-    const socket = io('/socket.io'); // Connects to the same host and port as the client
+    const socket = io(secretKey); // Connects to the same host and port as the client
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
@@ -237,6 +242,20 @@ function EmployeePanel() {
       console.error("Error fetching data:", error);
     }
   };
+   
+  const fetchBDMbookingRequests = async ()=>{
+    const bdeName = data.ename;
+    try{
+      const response = await axios.get(`${secretKey}/matured-get-requests/${bdeName}`);
+      setBDMrequests(response.data);
+      if(response.data.length!==0){
+        setOpenbdmRequest(true);
+      }
+    }catch(error){
+      console.error("Error fetching data:", error);
+    }
+  }
+
 
   //console.log(totalBookings, "This is elon musk");
 
@@ -388,8 +407,7 @@ function EmployeePanel() {
     setFilteredRemarks([]);
   };
 
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
+
 
   const fetchData = async () => {
     try {
@@ -427,9 +445,10 @@ function EmployeePanel() {
 
   useEffect(() => {
     fecthTeamData();
+    fetchBDMbookingRequests();
   }, [data.ename])
 
-
+console.log("This is elon musk" , BDMrequests);
 
 
 
@@ -2294,6 +2313,26 @@ function EmployeePanel() {
       {!formOpen && !editFormOpen && !addFormOpen && !editMoreOpen && (
         <>
           <div className="page-wrapper">
+            <Dialog open={openbdmRequest}>
+              <DialogContent>
+              <div className="request-bdm-card">
+          <div className="request-title">
+            <div className="request-content">
+            THOR PATEL is requesting to book "ASSGUARD PRIVATE LIMITED" form. 
+            </div>
+            <div className="request-time">
+            18:36
+            </div>
+          </div>
+          <div className="request-reply">
+            <button>Accept</button>
+            <button>Reject</button>
+          </div>
+          
+        </div>
+              </DialogContent>
+            </Dialog>
+          
             <div className="page-header d-print-none">
               <div className="container-xl">
                 {requestData !== null && requestData !== undefined && (

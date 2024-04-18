@@ -49,6 +49,7 @@ const { sendMail2 } = require("./helpers/sendMail2");
 const crypto = require('crypto');
 const TeamModel = require("./models/TeamModel.js");
 const TeamLeadsModel = require("./models/TeamLeads.js");
+const RequestMaturedModel = require("./models/RequestMatured.js");
 // const { Cashfree } = require('cashfree-pg');
 
 // const http = require('http');
@@ -5226,6 +5227,49 @@ app.post(
     }
   }
 );
+app.post('/api/matured-case-request', async (req, res) => {
+  try {
+    // Extract data from the request body sent by the frontend
+    const { companyName, requestStatus, bdeName, bdmName, date} = req.body;
+
+    // Create a new instance of RequestMaturedModel
+    const newRequest = new RequestMaturedModel({
+      "Company Name": companyName,
+      requestStatus,
+      bdeName,
+      bdmName,
+      date,
+    });
+    // Save the new request to the database
+    await newRequest.save();
+
+    // Send a success response back to the frontend
+    res.status(200).json({ success: true, message: 'Request saved successfully' });
+  } catch (error) {
+    console.error('Error saving request:', error);
+    res.status(500).json({ success: false, message: 'Error saving request' });
+  }
+});
+
+app.get("/api/matured-get-requests", async(req,res)=>{
+  try{
+    const request = await RequestMaturedModel.find();
+    res.status(200).json(request);
+
+  }catch(error){
+    res.status(400).json({success:false, message:"Error fetching the data"})
+  }
+});
+app.get("/api/matured-get-requests/:bdeName", async(req,res)=>{
+  try{
+    const bdeName = req.params.bdeName
+    const request = await RequestMaturedModel.find({bdeName});
+    res.status(200).json(request);
+
+  }catch(error){
+    res.status(400).json({success:false, message:"Error fetching the data"})
+  }
+});
 app.post(
   "/api/redesigned-edit-leadData/:CompanyName/:step",
   upload.fields([
