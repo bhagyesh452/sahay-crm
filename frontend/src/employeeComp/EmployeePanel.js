@@ -3037,7 +3037,7 @@ function EmployeePanel() {
                               .filter(
                                 (obj) =>
                                   obj.Status === "Matured" &&
-                                  obj.bdmAcceptStatus === "NotForwarded"
+                                  (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                               )
                               .sort(
                                 (a, b) =>
@@ -3060,7 +3060,7 @@ function EmployeePanel() {
                             moreEmpData.filter(
                               (obj) =>
                                 obj.Status === "Matured" &&
-                                obj.bdmAcceptStatus === "NotForwarded"
+                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                             ).length
                           }
                         </span>
@@ -3077,7 +3077,8 @@ function EmployeePanel() {
                               .filter(
                                 (obj) =>
                                   obj.bdmAcceptStatus !== "NotForwarded" &&
-                                  obj.Status !== "Not Interested"
+                                  obj.Status !== "Not Interested" &&
+                                  obj.Status !== "Matured"
                               )
                               .sort(
                                 (a, b) =>
@@ -3101,7 +3102,8 @@ function EmployeePanel() {
                             moreEmpData.filter(
                               (obj) =>
                                 obj.bdmAcceptStatus !== "NotForwarded" &&
-                                obj.Status !== "Not Interested"
+                                obj.Status !== "Not Interested" &&
+                                obj.Status !== "Matured"
                             ).length
                           }
                         </span>
