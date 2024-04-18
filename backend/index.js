@@ -5208,6 +5208,10 @@ app.post(
     }
   }
 );
+
+
+// ---------------------------- BDM Booking Request Section -----------------------------------------------
+
 app.post('/api/matured-case-request', async (req, res) => {
   try {
     // Extract data from the request body sent by the frontend
@@ -5223,6 +5227,13 @@ app.post('/api/matured-case-request', async (req, res) => {
     });
     // Save the new request to the database
     await newRequest.save();
+    const changeStatus = await TeamLeadsModel.findOneAndUpdate({
+      "Company Name": companyName
+    },{
+      bdmOnRequest:true
+    },
+    { new : true}
+  )
 
     // Send a success response back to the frontend
     res.status(200).json({ success: true, message: 'Request saved successfully' });
@@ -5244,13 +5255,79 @@ app.get("/api/matured-get-requests", async(req,res)=>{
 app.get("/api/matured-get-requests/:bdeName", async(req,res)=>{
   try{
     const bdeName = req.params.bdeName
-    const request = await RequestMaturedModel.find({bdeName});
+    const request = await RequestMaturedModel.find({bdeName , requestStatus:"Pending"});
     res.status(200).json(request);
 
   }catch(error){
     res.status(400).json({success:false, message:"Error fetching the data"})
   }
 });
+app.get("/api/matured-get-requests-byBDM/:bdmName", async(req,res)=>{
+  try{
+    const bdmName = req.params.bdmName
+    const request = await RequestMaturedModel.find({bdmName , requestStatus:"Accepted"});
+    res.status(200).json(request);
+
+  }catch(error){
+    res.status(400).json({success:false, message:"Error fetching the data"})
+  }
+});
+
+app.post("/api/update-bdm-Request/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    const { requestStatus } = req.body;
+
+    // Find the BDM request by ID and update the requestStatus
+    const updatedRequest = await RequestMaturedModel.findByIdAndUpdate(
+      _id,
+      { requestStatus },
+      { new: true } // Return the updated document
+    );
+    const changeStatus = await TeamLeadsModel.findOneAndUpdate({
+      "Company Name": updatedRequest["Company Name"]
+    },{
+      bdmOnRequest:false
+    },
+    { new : true}
+  )
+
+    if (!updatedRequest) {
+      return res.status(404).json({ message: "BDM request not found" });
+    }
+
+    res.status(200).json(updatedRequest);
+  } catch (error) {
+    console.error("Error updating BDM request:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+app.delete("/api/delete-bdm-Request/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+
+    // Find the BDM request by ID and delete it
+    const deletedRequest = await RequestMaturedModel.findByIdAndDelete(_id);
+    const changeStatus = await TeamLeadsModel.findOneAndUpdate({
+      "Company Name": deletedRequest["Company Name"]
+    },{
+      bdmOnRequest:false
+    },
+    { new : true}
+  )
+
+    if (!deletedRequest) {
+      return res.status(404).json({ message: "BDM request not found" });
+    }
+
+    res.status(200).json({ message: "BDM request deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting BDM request:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// --------------------------------------- Redesigned Form Section -----------------------------------------------
 app.post(
   "/api/redesigned-edit-leadData/:CompanyName/:step",
   upload.fields([

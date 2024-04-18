@@ -84,6 +84,10 @@ const CompanySchema = new mongoose.Schema({
     type: String, 
     default: Date.now(),
   },
+  bdmOnRequest:{
+    type:Boolean,
+    default : false
+  }
 });
 
 const TeamLeadsModel = mongoose.model('teamleadsmodel', CompanySchema);
