@@ -5166,6 +5166,7 @@ app.post(
           const pdfIndex = (!existingData.moreBookings || existingData.moreBookings.length === 0) ? 1 :( existingData.moreBookings.length +1);
 
           const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
+        
           const filledHtml = htmlTemplate
             .replace("{{Company Name}}", newData["Company Name"])
             .replace("{{Company Name}}", newData["Company Name"])
@@ -5183,6 +5184,13 @@ app.post(
             .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
             .replace("{{Service-Details}}", paymentDetails)
             .replace("{{Company Number}}", newData["Company Number"]);
+            const pdfFilePath = path.join(__dirname, 'Document', `${newData['Company Name']}-Rebooking.pdf`);
+
+// Check if the directory exists, create it if not
+const documentDirectory = path.dirname(pdfFilePath);
+if (!fs.existsSync(documentDirectory)) {
+  fs.mkdirSync(documentDirectory, { recursive: true });
+}
           pdf
             .create(filledHtml, { format: "Letter" })
             .toFile(
