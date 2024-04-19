@@ -5184,12 +5184,13 @@ app.post(
             .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
             .replace("{{Service-Details}}", paymentDetails)
             .replace("{{Company Number}}", newData["Company Number"]);
-            const pdfFilePath = path.join(__dirname, 'Document', `${newData['Company Name']}-Rebooking.pdf`);
+            const pdfFilePath = path.join(__dirname, './Document', `${newData['Company Name']}-Rebooking.pdf`);
 
 // Check if the directory exists, create it if not
 const documentDirectory = path.dirname(pdfFilePath);
 if (!fs.existsSync(documentDirectory)) {
   fs.mkdirSync(documentDirectory, { recursive: true });
+  console.log("Here the path is created:-" ,path.join(__dirname, './Document', `${newData['Company Name']}-Rebooking.pdf`) );
 }
           pdf
             .create(filledHtml, { format: "Letter" })
