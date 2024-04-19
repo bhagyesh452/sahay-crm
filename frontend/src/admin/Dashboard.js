@@ -36,7 +36,7 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 import { MdHistory } from "react-icons/md";
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
-import { lastDayOfDecade } from "date-fns";
+import { lastDayOfDecade, parse } from "date-fns";
 import StatusInfo from './StausInfo.js'
 import Calendar from '@mui/icons-material/Event';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -62,6 +62,8 @@ function Dashboard() {
   const [recentUpdates, setRecentUpdates] = useState([]);
   const [bookingDateFilter, setbookingDateFilter] = useState(new Date().toISOString().slice(0, 10));
   const [bookingObject, setBookingObject] = useState([]);
+  const [uniqueBDE, setUniqueBDE] = useState([]);
+  const [redesignedData, setRedesignedData] = useState([]);
   const [openTable, setOpenTable] = useState(false);
   const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
   const [filteredBooking, setFilteredBooking] = useState([]);
@@ -184,11 +186,37 @@ function Dashboard() {
     }
   };
 
+const fetchRedesignedBookings = async()=>{
+  try{
+    const response = await axios.get(`${secretKey}/redesigned-final-leadData`);
+    const bookingsData = response.data;
+  
+    const getBDEnames = new Set();
+  bookingsData.forEach((obj) => {
+    // Check if the bdeName is already in the Set
 
+    if (!getBDEnames.has(obj.bdeName)) {
+      // If not, add it to the Set and push the object to the final array
+      getBDEnames.add(obj.bdeName);
+    }
+  });
+  setUniqueBDE(getBDEnames);
+  setRedesignedData(bookingsData);
+    
+  }catch(error){
+    console.log("Error Fetching Bookings Data", error);
+  }
+}
+const uniqueBDEobjects = employeeData.length !== 0 && uniqueBDE.size !== 0 &&
+  employeeData.filter(obj => Array.from(uniqueBDE).includes(obj.ename));
+
+
+console.log("Employee Data:- ", uniqueBDEobjects);
   useEffect(() => {
     // Call the fetchData function when the component mounts
 
     fetchCompanies();
+    fetchRedesignedBookings();
     debouncedFetchCompanyData();
     debouncedFetchEmployeeInfo();
 
@@ -2218,6 +2246,89 @@ function Dashboard() {
   //console.log(followDataToday)
 
 
+// ------------------------------------------------------- Redesigned Total Bookings Functions ------------------------------------------------------------------
+
+const functionCalculateMatured = (bdeName) => {
+  let maturedCount = 0;
+  const filteredRedesignedData = redesignedData.filter(obj => obj.bdeName === bdeName);
+
+  filteredRedesignedData.forEach(obj => {
+    if (obj.moreBookings.length === 0) {
+      if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+        maturedCount += 0.5;
+      } else {
+        maturedCount += 1;
+      }
+    } else {
+      if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+        maturedCount += 0.5;
+      } else {
+        maturedCount += 1;
+      }
+      
+      obj.moreBookings.forEach(booking => {
+        if (booking.bdeName !== booking.bdmName && booking.bdmType === "Close-by") {
+          maturedCount += 0.5;
+        } else {
+          maturedCount += 1;
+        }
+      });
+    }
+  });
+
+  return maturedCount;
+};
+const functionCalculateAchievedAmount = (bdeName) => {
+  let achievedAmount = 0;
+  const filteredRedesignedData = redesignedData.filter(obj => obj.bdeName === bdeName);
+
+  filteredRedesignedData.forEach(obj => {
+    if (obj.moreBookings.length === 0) {
+      if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+        achievedAmount += parseInt(obj.receivedAmount/2) 
+      } else {
+        achievedAmount += parseInt(obj.receivedAmount) 
+      }
+    } else {
+      if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+        achievedAmount += parseInt(obj.receivedAmount/2) 
+      } else {
+        achievedAmount += parseInt(obj.receivedAmount) 
+      }
+      obj.moreBookings.forEach(booking => {
+        if (booking.bdeName !== booking.bdmName && booking.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.receivedAmount/2) 
+        } else {
+          achievedAmount += parseInt(obj.receivedAmount) 
+        }
+      });
+    }
+  });
+
+  return achievedAmount;
+};
+
+const currentYear = new Date().getFullYear();
+const monthNames = [
+  "January", "February", "March", "April", "May", "June", 
+  "July", "August", "September", "October", "November", "December"
+];
+const currentMonth = monthNames[new Date().getMonth()];
+
+
+const functionGetAmount= (object)=>{
+ 
+
+  if(object.targetDetails.length!==0){
+    const foundObject = object.targetDetails.find(
+          item => parseInt(item.year) === currentYear && item.month === currentMonth
+        )
+      return foundObject ? foundObject.amount : 0
+  }else{
+    return 0;
+  }
+
+}
 
 
 
@@ -2279,11 +2390,11 @@ function Dashboard() {
                       <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                         <div className="d-flex justify-content-between">
                           <div style={{ minWidth: '14vw' }} className="dashboard-title">
-                            <h2 style={{ marginBottom: '5px' }}>Total Bookings</h2>
+                            <h2 style={{ marginBottom: '5px' }}>THIS MONTH BOOKINGS</h2>
                           </div>
                         </div>
                         <div style={{ m: 1, padding: "0px", marginRight: "30px" }}>
-                          <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
+                          {/* <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
                             <DemoContainer components={['SingleInputDateRangeField']}>
                               <DateRangePicker
                                 onChange={(values) => {
@@ -2303,7 +2414,7 @@ function Dashboard() {
                               //calendars={1}
                               />
                             </DemoContainer>
-                          </LocalizationProvider>
+                          </LocalizationProvider> */}
                         </div>
                         {/* <div className=" form-control date-range-picker d-flex align-items-center justify-content-between">
                           <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
@@ -2361,17 +2472,35 @@ function Dashboard() {
                               >
                                 <th style={{ lineHeight: "32px" }}>SR.NO</th>
                                 <th>BDE NAME</th>
+                                <th>BRANCH</th>
                                 <th>MATURED CASES</th>
-                                <th>NUM OF UNIQUE SERVICES OFFERED</th>
-                                <th>TOTAL PAYMENT</th>
-                                <th>RECEIVED PAYMENT</th>
-                                <th>PENDING PAYMENT</th>
+                                <th>TARGET AMOUNT</th>
+                                <th>ACHIEVED AMOUNT</th>
+                                <th>TARGET/ACHIEVED RATIO</th>
+                              
+                               
                               </tr>
                             </thead>
-                            {finalFilteredData.length !== 0 ? (
+                            {uniqueBDEobjects? (
                               <>
                                 <tbody>
-                                  {finalFilteredData.map((obj, index) => (
+                                  {employeeData && employeeData.filter(item=>item.designation==="Sales Executive").map((obj, index)=>(
+                                    <>
+                                    <tr>
+                                    <td>{index+1}</td>
+                                    <td style={{ lineHeight: "32px" }}>{obj.ename}</td>
+                                    <td>{obj.branchOffice}</td>
+                                    <td>{functionCalculateMatured(obj.ename)}</td>
+                                    <td>₹ {functionGetAmount(obj).toLocaleString()}</td>
+                                    <td>₹ {functionCalculateAchievedAmount(obj.ename).toLocaleString()}</td>
+                                    <td> {((functionCalculateAchievedAmount(obj.ename) / functionGetAmount(obj)) * 100).toFixed(2)} %</td>
+                                    </tr>
+                                    </>
+                                  ))
+
+
+                                  }
+                                  {/* {finalFilteredData.map((obj, index) => (
                                     <>
                                       <tr style={{ position: "relative" }}>
                                         <td style={{ lineHeight: "32px" }}>
@@ -2504,9 +2633,9 @@ function Dashboard() {
                                         </td>
                                       </tr>
                                     </>
-                                  ))}
+                                  ))} */}
                                 </tbody>
-                                <tfoot>
+                                {/* <tfoot>
                                   <tr style={{ fontWeight: "500" }}>
                                     <td colSpan={2} style={{ lineHeight: "32px" }}>
                                       Total:{finalFilteredData.length}
@@ -2579,7 +2708,7 @@ function Dashboard() {
                                         .toLocaleString()}
                                     </td>
                                   </tr>
-                                </tfoot>
+                                </tfoot> */}
                               </>
                             ) : (
                               <tbody>

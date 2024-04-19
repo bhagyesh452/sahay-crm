@@ -2288,7 +2288,7 @@ export default function AdminBookingForm({
                                       }}
                                       disabled={completed[activeStep] === true}
                                     >
-                                      {[...Array(6 - 1).keys()].map((year) => (
+                                      {[...Array(11 - 1).keys()].map((year) => (
                                         <option key={year} value={1 + year}>
                                           {1 + year}
                                         </option>
