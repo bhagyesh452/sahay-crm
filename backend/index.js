@@ -5190,8 +5190,9 @@ app.post(
 const documentDirectory = path.dirname(pdfFilePath);
 if (!fs.existsSync(documentDirectory)) {
   fs.mkdirSync(documentDirectory, { recursive: true });
-  console.log("Here the path is created:-" ,path.join(__dirname, './Document', `${newData['Company Name']}-Rebooking.pdf`) );
+ 
 }
+console.log("Here the path is created:-" ,path.join(__dirname, './Document', `${newData['Company Name']}-Rebooking.pdf`) );
           pdf
             .create(filledHtml, { format: "Letter" })
             .toFile(
