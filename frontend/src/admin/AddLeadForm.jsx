@@ -783,8 +783,9 @@ let isValid = true;
           });
         }
         handleNext();
-        setNowToFetch(true)
+        // setNowToFetch(true)
         setFormOpen(false);
+        setDataStatus("Matured");
       
         return true;
       }
