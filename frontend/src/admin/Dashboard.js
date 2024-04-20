@@ -2247,6 +2247,9 @@ console.log("Employee Data:- ", uniqueBDEobjects);
 
 
 // ------------------------------------------------------- Redesigned Total Bookings Functions ------------------------------------------------------------------
+let totalMaturedCount = 0;
+let totalTargetAmount = 0;
+let totalAchievedAmount =0;
 
 const functionCalculateMatured = (bdeName) => {
   let maturedCount = 0;
@@ -2275,7 +2278,7 @@ const functionCalculateMatured = (bdeName) => {
       });
     }
   });
-
+  totalMaturedCount = totalMaturedCount + maturedCount
   return maturedCount;
 };
 const functionCalculateAchievedAmount = (bdeName) => {
@@ -2304,7 +2307,7 @@ const functionCalculateAchievedAmount = (bdeName) => {
       });
     }
   });
-
+  totalAchievedAmount = parseInt(totalAchievedAmount) + parseInt(achievedAmount)
   return achievedAmount;
 };
 
@@ -2317,17 +2320,49 @@ const currentMonth = monthNames[new Date().getMonth()];
 
 
 const functionGetAmount= (object)=>{
- 
-
   if(object.targetDetails.length!==0){
     const foundObject = object.targetDetails.find(
           item => parseInt(item.year) === currentYear && item.month === currentMonth
         )
+        totalTargetAmount = foundObject && parseInt(totalTargetAmount) + parseInt(foundObject.amount) 
+        console.log("This is total Amount",foundObject && foundObject.amount , totalTargetAmount)
       return foundObject ? foundObject.amount : 0
   }else{
     return 0;
   }
+}
 
+function functionGetLastBookingDate(bdeName) {
+  // Filter objects based on bdeName
+  const filteredRedesignedData = redesignedData.filter(obj => obj.bdeName === bdeName);
+
+  // Initialize variable to store the latest booking date
+  let lastBookingDate = null;
+
+  // Iterate through filtered data
+  filteredRedesignedData.forEach(obj => {
+    if (obj.moreBookings && obj.moreBookings.length > 0) {
+      // If moreBookings exist, find the latest bookingDate
+      const latestBookingDate = obj.moreBookings.reduce((latestDate, booking) => {
+        const bookingDate = new Date(booking.bookingDate);
+        return bookingDate > latestDate ? bookingDate : latestDate;
+      }, new Date(0)); // Initialize with minimum date
+
+      // Update lastBookingDate if latestBookingDate is later
+      if (latestBookingDate > lastBookingDate || !lastBookingDate) {
+        lastBookingDate = latestBookingDate;
+      }
+    } else {
+      // If no moreBookings, directly consider bookingDate
+      const bookingDate = new Date(obj.bookingDate);
+      if (bookingDate > lastBookingDate || !lastBookingDate) {
+        lastBookingDate = bookingDate;
+      }
+    }
+  });
+
+  // Return the formatted date string or an empty string if lastBookingDate is null
+  return lastBookingDate ? formatDateFinal(lastBookingDate) : 'N/A';
 }
 
 
@@ -2462,7 +2497,15 @@ const functionGetAmount= (object)=>{
                             }}
                             className="table-vcenter table-nowrap"
                           >
-                            <thead style={{ lineHeight: "32px" }}>
+                            <thead  style={{
+                                position: "sticky", // Make the header sticky
+                                top: '-1px', // Stick it at the top
+                                backgroundColor: "#ffb900",
+                                color: "black",
+                                fontWeight: "bold",
+                                lineHeight:'32px',
+                                zIndex: 1, // Ensure it's above other content
+                              }}>
                               <tr
                                 style={{
                                   backgroundColor: "#ffb900",
@@ -2477,28 +2520,27 @@ const functionGetAmount= (object)=>{
                                 <th>TARGET AMOUNT</th>
                                 <th>ACHIEVED AMOUNT</th>
                                 <th>TARGET/ACHIEVED RATIO</th>
+                                <th>LAST BOOKING DATE</th>
                               
-                               
                               </tr>
                             </thead>
                             {uniqueBDEobjects? (
                               <>
                                 <tbody>
-                                  {employeeData && employeeData.filter(item=>item.designation==="Sales Executive").map((obj, index)=>(
+                                  {employeeData && employeeData.filter(item=>item.designation==="Sales Executive" && item.targetDetails.length!==0).map((obj, index)=>(
                                     <>
                                     <tr>
                                     <td>{index+1}</td>
                                     <td style={{ lineHeight: "32px" }}>{obj.ename}</td>
                                     <td>{obj.branchOffice}</td>
                                     <td>{functionCalculateMatured(obj.ename)}</td>
-                                    <td>₹ {functionGetAmount(obj).toLocaleString()}</td>
+                                    <td>₹ {parseInt(functionGetAmount(obj)).toLocaleString()}</td>
                                     <td>₹ {functionCalculateAchievedAmount(obj.ename).toLocaleString()}</td>
                                     <td> {((functionCalculateAchievedAmount(obj.ename) / functionGetAmount(obj)) * 100).toFixed(2)} %</td>
+                                    <td>{functionGetLastBookingDate(obj.ename)}</td>
                                     </tr>
                                     </>
                                   ))
-
-
                                   }
                                   {/* {finalFilteredData.map((obj, index) => (
                                     <>
@@ -2635,6 +2677,26 @@ const functionGetAmount= (object)=>{
                                     </>
                                   ))} */}
                                 </tbody>
+                                <tfoot style={{
+                                  position: "sticky", // Make the footer sticky
+                                  bottom: -1, // Stick it at the bottom
+                                  backgroundColor: "#f6f2e9",
+                                  color: "black",
+                                  fontWeight: 500,
+                                  zIndex: 2, // Ensure it's above the content
+                                }}>
+                                <tr style={{ fontWeight: "500" }}>
+                                    <td colSpan={2} style={{ lineHeight: "32px" }}>
+                                      Total:
+                                    </td>
+                                    <td>-</td>
+                                    <td>₹ {totalMaturedCount.toLocaleString()}</td>
+                                    <td>₹ {(totalTargetAmount/2).toLocaleString()}</td>
+                                    <td>₹ {(totalAchievedAmount/2).toLocaleString()}</td>
+                                    <td>{((totalAchievedAmount/totalTargetAmount)*100).toFixed(2)} %</td>
+                                    <td>-</td>
+                                    </tr>
+                                </tfoot>
                                 {/* <tfoot>
                                   <tr style={{ fontWeight: "500" }}>
                                     <td colSpan={2} style={{ lineHeight: "32px" }}>

@@ -454,7 +454,7 @@ function Leads() {
         const sheet = workbook.Sheets[sheetName];
 
         const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
+        const adminName = localStorage.getItem("adminName")
         const formattedJsonData = jsonData
           .slice(1) // Exclude the first row (header)
           .map((row) => ({
@@ -474,9 +474,10 @@ function Leads() {
             "Director Email(Second)": row[13],
             "Director Name(Third)": row[14],
             "Director Number(Third)": row[15],
-            "Director Email(Third)": row[16]
+            "Director Email(Third)": row[16],
+            "UploadedBy": adminName ? adminName : "Admin"
           }));
-
+         
         setCsvData(formattedJsonData);
       };
 
@@ -530,13 +531,15 @@ function Leads() {
     // Get current date and time
 
     // newArray now contains objects with updated properties
+    const adminName = localStorage.getItem("adminName")
 
     if (selectedOption === "someoneElse") {
       const properDate = new Date();
       const updatedCsvdata = csvdata.map((data) => ({
         ...data,
         ename: newemployeeSelection,
-        AssignDate: properDate
+        AssignDate: properDate,
+        UploadedBy: adminName ? adminName : "Admin"
       }));
   
       const currentDate = new Date().toLocaleDateString();
@@ -1199,6 +1202,7 @@ function Leads() {
   const [isUpdateMode, setIsUpdateMode] = useState(false);
 
   const handleSubmit = async (e) => {
+    const adminName = localStorage.getItem("adminName");
     try {
       let dataToSend = {
         "Company Name": companyName,
@@ -1207,6 +1211,7 @@ function Leads() {
         "Company Incorporation Date ": companyIncoDate,
         "City": companyCity,
         "State": companyState,
+        "UploadedBy":adminName ? adminName : "Admin"
       };
       const dateObject = new Date(companyIncoDate);
 
@@ -1226,6 +1231,7 @@ function Leads() {
           "Company Incorporation Date ": isoDateString, // Updated format
           "City": companyCity,
           "State": companyState,
+          "UploadedBy":adminName ? adminName : "Admin"
         };
 
         //console.log("Data to send with updated date format:", dataToSendUpdated);

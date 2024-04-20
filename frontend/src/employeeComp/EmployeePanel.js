@@ -1127,6 +1127,7 @@ function EmployeePanel() {
           "Director Name(Third)": directorNameThird,
           "Director Number(Third)": directorNumberThird,
           "Director Email(Third)": directorEmailThird,
+          "UploadedBy": data.ename
         })
         .then((response) => {
           console.log("response", response);
@@ -1993,11 +1994,9 @@ function EmployeePanel() {
       );
       const data = response.data.find((obj) => obj.company === company);
       setCurrentForm(data);
-      if (data.moreBookings.length !== 0) {
+
         setOpenBooking(true);
-      } else {
-        setEditFormOpen(true);
-      }
+    
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
