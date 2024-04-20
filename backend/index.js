@@ -6561,10 +6561,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const visibility = newData.bookingSource !== "Other" && "none";
     // Send email to recipients
     const recipients = [
-      newData.bdeEmail,
-      newData.bdmEmail,
-      "bookings@startupsahay.com",
-      // "nimesh@incscale.in",
+      // newData.bdeEmail,
+      // newData.bdmEmail,
+      // "bookings@startupsahay.com",
+      "nimesh@incscale.in",
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
