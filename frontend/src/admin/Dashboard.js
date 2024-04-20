@@ -2690,7 +2690,7 @@ function functionGetLastBookingDate(bdeName) {
                                       Total:
                                     </td>
                                     <td>-</td>
-                                    <td>₹ {totalMaturedCount.toLocaleString()}</td>
+                                    <td> {totalMaturedCount.toLocaleString()}</td>
                                     <td>₹ {(totalTargetAmount/2).toLocaleString()}</td>
                                     <td>₹ {(totalAchievedAmount/2).toLocaleString()}</td>
                                     <td>{((totalAchievedAmount/totalTargetAmount)*100).toFixed(2)} %</td>

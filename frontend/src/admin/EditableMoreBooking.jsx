@@ -1707,7 +1707,15 @@ export default function EditableMoreBooking({
       };
     });
   };
+  const formatInputDate = (dateString) => {
+    const parsedDate = new Date(dateString);
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0"); // Adding 1 to month index since it starts from 0
+    const day = String(parsedDate.getDate()).padStart(2, "0");
 
+    const formattedDate = `${year}-${month}-${day}`;
+    return formattedDate;
+  };
   return (
     <div>
       <div className="container mt-2">
@@ -1723,6 +1731,7 @@ export default function EditableMoreBooking({
                       className={
                         activeStep === index ? "form-tab-active" : "No-active"
                       }
+                      disabled={index===0 && bookingIndex!==0}
                      
                     >
                       {label}
@@ -2181,14 +2190,14 @@ export default function EditableMoreBooking({
                                         className="form-control mt-1"
                                         placeholder="Enter Booking date"
                                         id="booking-date"
-                                        value={leadData.bookingDate}
+                                        value={formatInputDate(leadData.bookingDate)}
                                         onChange={(e) => {
                                           handleInputChange(
                                             e.target.value,
                                             "bookingDate"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -3327,7 +3336,7 @@ export default function EditableMoreBooking({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData.extraNotes}
+                                        {leadData.extraNotes ? leadData.extraNotes : "-"}
                                       </div>
                                     </div>
                                   </div>
@@ -3450,7 +3459,7 @@ export default function EditableMoreBooking({
                           onClick={handleBack}
                           sx={{ mr: 1, background: "#ffba00 " }}                          
                         >
-                          {activeStep !== 0 ? "Back" : "Back to Main"}
+                          {bookingIndex===0 ? activeStep !== 0 ? "Back" : "Back to Main" : activeStep !==1 ? "Back" : "Back to Main"}
                         </Button>
                         {/* <Button
                           color="primary"
