@@ -49,6 +49,7 @@ const { sendMail2 } = require("./helpers/sendMail2");
 const crypto = require('crypto');
 const TeamModel = require("./models/TeamModel.js");
 const TeamLeadsModel = require("./models/TeamLeads.js");
+const RequestMaturedModel = require("./models/RequestMatured.js");
 // const { Cashfree } = require('cashfree-pg');
 
 // const http = require('http');
@@ -355,7 +356,7 @@ app.post("/api/bdmlogin", async (req, res) => {
 app.put("/api/online-status/:id/:socketID", async (req, res) => {
   const { id } = req.params;
   const { socketID } = req.params;
-  console.log(socketID);
+  console.log('kuhi',socketID);
   try {
     const admin = await adminModel.findByIdAndUpdate(
       id,
@@ -465,6 +466,7 @@ app.post("/api/leads", async (req, res) => {
         const employeeWithAssignData = {
           ...employeeData,
           AssignDate: new Date(),
+          "Company Name": employeeData["Company Name"].toUpperCase()
         };
         const employee = new CompanyModel(employeeWithAssignData);
         //console.log("newemployee" , employee)
@@ -692,6 +694,8 @@ app.post("/api/update-remarks/:id", async (req, res) => {
     // Update remarks and fetch updated data in a single operation
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
 
+    await TeamLeadsModel.findByIdAndUpdate(id,{ bdmRemarks : Remarks});
+
     // Fetch updated data and remarks history
     const updatedCompany = await CompanyModel.findById(id);
     const remarksHistory = await RemarksHistory.find({ companyId: id });
@@ -859,18 +863,18 @@ app.get("/api/teaminfo/:ename", async (req, res) => {
 
 
 app.post("/api/forwardtobdmdata", async (req, res) => {
-  const { selectedData, bdmName , companyId , bdmAcceptStatus} = req.body;
+  const { selectedData, bdmName , companyId , bdmAcceptStatus , bdeForwardDate , bdeOldStatus} = req.body;
   console.log("selectedData", selectedData);
 
   try {
     // Assuming TeamLeadsModel has a schema similar to the selectedData structure
     const newLeads = await Promise.all(selectedData.map(async (data) => {
       
-      const newData = { ...data, bdmName }; // Add bdmName to each data object
+      const newData = { ...data, bdmName , bdeForwardDate : formatDate(bdeForwardDate)}; // Add bdmName to each data object
       return await TeamLeadsModel.create(newData);
     }));
 
-    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus})
+    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus , bdeForwardDate:formatDate(bdeForwardDate) , bdeOldStatus : bdeOldStatus})
     
     
     console.log("newLeads", newLeads);
@@ -920,7 +924,7 @@ app.post("/api/bdm-status-change/:id", async (req, res) => {
 
   try {
     // Update the status field in the database based on the employee id
-    await TeamLeadsModel.findByIdAndUpdate(id, { bdmStatus : bdmnewstatus });
+    await TeamLeadsModel.findByIdAndUpdate(id, { bdmStatus : bdmnewstatus , Status : bdmnewstatus });
     
     await CompanyModel.findByIdAndUpdate(id , {Status : bdmnewstatus})
 
@@ -962,6 +966,112 @@ app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// app.delete("/api/delete-followup/:companyName", async (req, res) => {
+//   try {
+//     // Extract the company name from the request parameters
+//     const { companyName } = req.params;
+
+//     // Check if a document with the given company name exists
+//     const existingData = await FollowUpModel.findOne({ companyName });
+
+//     if (existingData) {
+//       // If the document exists, delete it
+//       await FollowUpModel.findOneAndDelete({ companyName });
+//       res.status(200).json({ message: "Data deleted successfully" });
+//     } else {
+//       // If no document with the given company name exists, return a 404 Not Found response
+//       res.status(404).json({ error: "Company not found" });
+//     }
+//   } catch (error) {
+//     // If there's an error during the deletion process, send a 500 Internal Server Error response
+//     console.error("Error deleting data:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
+  const teamId = req.params.teamId; // Correctly access teamId from req.params
+  
+  try {
+    const existingData = await TeamModel.findById(teamId);
+    console.log(existingData);
+   
+    if (existingData) {
+      await TeamModel.findByIdAndDelete(teamId); // Use findByIdAndDelete to delete by ID
+      res.status(200).json({ message: "Deleted Successfully" });
+    } else {
+      res.status(400).json({ error: "Team Does Not Exist" }); // Correct typo in error message
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.put("/api/teaminfo/:teamId" , async(req , res)=>{
+  const teamId = req.params.teamId
+
+  const dataToUpdated = req.body
+
+  console.log("Update" , dataToUpdated)
+
+  try{
+    const updatedData = await TeamModel.findByIdAndUpdate(teamId , dataToUpdated , {
+      new : true,
+    })
+    if (!updatedData) {
+      return res.status(404).json({ error: "Data not found" });
+    }else{
+
+      res.json({ message: "Data updated successfully", updatedData });
+    }
+
+ 
+  }catch(error){
+    console.error("Error updating data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+
+  }
+})
+
+app.post("/api/post-feedback-remarks/:companyId" , async (req,res)=>{
+  const companyId = req.params.companyId;
+  const {feedbackPoints , feedbackRemarks} = req.body
+
+
+  try{
+
+    await TeamLeadsModel.findByIdAndUpdate(companyId , {feedbackPoints : feedbackPoints , feedbackRemarks : feedbackRemarks })
+
+    await CompanyModel.findByIdAndUpdate(companyId , {feedbackPoints : feedbackPoints , feedbackRemarks : feedbackRemarks})
+
+    res.status(200).json({ message: "Feedback updated successfully" });
+
+  }catch(error){
+    console.error("Error updating data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
+
+app.post("/api/post-feedback-remarks/:companyId" , async (req,res)=>{
+  const companyId = req.params.companyId;
+  const {feedbackPoints , feedbackRemarks} = req.body
+
+
+  try{
+
+    await TeamLeadsModel.findByIdAndUpdate(companyId , {feedbackPoints : feedbackPoints , feedbackRemarks : feedbackRemarks })
+
+    await CompanyModel.findByIdAndUpdate(companyId , {feedbackPoints : feedbackPoints , feedbackRemarks : feedbackRemarks})
+
+    res.status(200).json({ message: "Feedback updated successfully" });
+
+  }catch(error){
+    console.error("Error updating data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
+
 
 
 // ------------------------------------------------------team api end----------------------------------
@@ -1755,7 +1865,7 @@ app.delete("/api/newcompanynamedelete/:id", async (req, res) => {
 });
 app.post("/api/remarks-history/:companyId", async (req, res) => {
   const { companyId } = req.params;
-  const { Remarks } = req.body;
+  const { Remarks , remarksBdmName } = req.body;
 
   // Get the current date and time
   const currentDate = new Date();
@@ -1769,7 +1879,10 @@ app.post("/api/remarks-history/:companyId", async (req, res) => {
       date,
       companyID: companyId,
       remarks: Remarks,
+      bdmName:remarksBdmName,
     });
+
+    await TeamLeadsModel.findByIdAndUpdate(companyId , {bdmRemarks : Remarks})
 
     // Save the new entry to MongoDB
     await newRemarksHistory.save();
@@ -3467,6 +3580,173 @@ app.get("/api/redesigned-leadData/:CompanyName", async (req, res) => {
   }
 });
 
+app.post("/api/redesigned-importData", async (req, res) => {
+  try {
+    const data = req.body;
+    let leadData = [];
+
+    // Loop through each data object in the array
+    for (const item of data) {
+      const companyName = item["Company Name"];
+      let companyID = "";
+      // Find the object with the given company name in RedesignedLeadformModel
+      let existingData = await RedesignedLeadformModel.findOne({
+        "Company Name": companyName,
+      });
+      const companyExists = await CompanyModel.findOne({
+        "Company Name": companyName
+      })
+      if(companyExists){
+        companyExists.Status = "Matured";
+        const updatedData = await companyExists.save();
+        companyID = updatedData._id;
+      }else {
+        const basicData = new CompanyModel({
+          "Company Name":item["Company Name"],
+          "Company Email":item["Company Email"],
+          "Company Number":item["Company Number"],
+          ename:item.bdeName,
+          "Company Incorporation Date  ":item.incoDate,
+          AssignDate: new Date(),
+          Status: "Matured",
+          Remarks:item.extraRemarks
+        })
+        const storedData =  await basicData.save();
+        companyID = storedData._id;
+      }
+     
+      
+    
+
+      // Create an array to store services data
+      const services = [];
+
+      // Loop through each service index (1 to 5)
+      for (let i = 1; i <= 5; i++) {
+        // Check if the serviceName exists for the current index
+        if (item[`${i}serviceName`]) {
+          const service = {
+            serviceName: item[`${i}serviceName`],
+            totalPaymentWOGST: item[`${i}TotalAmount`],
+            totalPaymentWGST: item[`${i}GST`] === "YES"
+              ? item[`${i}TotalAmount`] + item[`${i}TotalAmount`] * 0.18
+              : item[`${i}TotalAmount`],
+            withGST: item[`${i}GST`] === "YES",
+            withDSC: item[`${i}serviceName`] === "Start-Up India Certificate With DSC",
+            paymentTerms: item[`${i}PaymentTerms`] === "PART-PAYMENT" ? "two-part" : "Full Advanced",
+            firstPayment: item[`${i}FirstPayment`],
+            secondPayment: item[`${i}SecondPayment`],
+            thirdPayment: item[`${i}ThirdPayment`],
+            fourthPayment: item[`${i}FourthPayment`],
+            paymentRemarks: item[`${i}PaymentRemarks`],
+          };
+          services.push(service);
+        }
+      }
+
+      // Save other data with same property names
+      // const otherData = {
+      //   "Company Name": item["Company Name"],
+      //   "Company Email": item["Company Email"],
+      //   "Company Number": item["Company Number"],
+      //   incoDate: item.incoDate,
+      //   panNumber: item.panNumber,
+      //   gstNumber: item.gstNumber,
+      //   bdeName: item.bdeName,
+      //   bdeEmail: item.bdeEmail,
+      //   bdmType: item.bdmType,
+      //   bdmEmail: item.bdmEmail,
+      //   bookingDate: item.bookingDate,
+      //   bookingSource: item.bookingSource,
+      //   otherBookingSource: item.otherBookingSource,
+      //   services: services,
+      //   numberOfServices: services.length,
+      //   caCase: item.caCase,
+      //   caCommission: item.caCommission,
+      //   caNumber: item.caNumber,
+      //   caEmail: item.caEmail,
+      //   totalAmount: item.totalPayment,
+      //   pendingAmount: item.pendingPayment,
+      //   receivedAmount: item.receivedPayment,
+      //   paymentMethod: item.receivedAmount,
+      //   extraRemarks: item.extraRemarks,
+      // };
+      
+      if (!existingData) {
+    
+        // Create a new object if it doesn't exist
+        console.log(item)
+        const lmao = new RedesignedLeadformModel({
+          company : companyID,
+          "Company Name": item["Company Name"],
+          "Company Email": item["Company Email"],
+          "Company Number": item["Company Number"],
+          incoDate: item.incoDate,
+          panNumber: item.panNumber,
+          gstNumber: item.gstNumber,
+          bdeName: item.bdeName,
+          bdeEmail: item.bdeEmail,
+          bdmType: item.bdmType,
+          bdmName:item.bdmName,
+          bdmEmail: item.bdmEmail,
+          bookingDate: item.bookingDate,
+          bookingSource: item.leadSource,
+          otherBookingSource: item.otherBookingSource,
+          services: services,
+          numberOfServices: services.length,
+          caCase: item.caCase,
+          caCommission: item.caCommission,
+          caNumber: item.caNumber,
+          caEmail: item.caEmail,
+          totalAmount: item.totalPayment,
+          pendingAmount: item.pendingPayment,
+          receivedAmount: item.receivedPayment,
+          paymentMethod: item.receivedAmount,
+          extraRemarks: item.extraRemarks,
+        });
+        await lmao.save();
+      }else {
+        existingData.moreBookings.push({
+        "Company Name": item["Company Name"],
+        "Company Email": item["Company Email"],
+        "Company Number": item["Company Number"],
+        incoDate: item.incoDate,
+        panNumber: item.panNumber,
+        gstNumber: item.gstNumber,
+        bdeName: item.bdeName,
+        bdeEmail: item.bdeEmail,
+        bdmType: item.bdmType,
+        bdmEmail: item.bdmEmail,
+        bookingDate: item.bookingDate,
+        bookingSource: item.bookingSource,
+        otherBookingSource: item.otherBookingSource,
+        services: services,
+        numberOfServices: services.length,
+        caCase: item.caCase,
+        caCommission: item.caCommission,
+        caNumber: item.caNumber,
+        caEmail: item.caEmail,
+        totalAmount: item.totalPayment,
+        pendingAmount: item.pendingPayment,
+        receivedAmount: item.receivedPayment,
+        paymentMethod: item.receivedAmount,
+        extraRemarks: item.extraRemarks,
+        });
+        await existingData.save();
+      }
+      // Update existing data or add to moreBookings
+   
+      // Save the updated data
+    }
+    res.status(200).send("Data imported and updated successfully!");
+  } catch (error) {
+    console.error("Error importing data:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
+
 app.post(
   "/api/redesigned-leadData/:CompanyName/:step",
   upload.fields([
@@ -4054,7 +4334,7 @@ app.post(
             .join(" , ");
           const visibility = newData.bookingSource !== "Other" && "none";
           const servicesHtmlContent = renderServices();
-          const recipients = [newData.bdeEmail, newData.bdmEmail];
+          const recipients = [newData.bdeEmail, newData.bdmEmail, 'bookings@startupsahay.com'];
 
           sendMail(
             recipients,
@@ -4886,6 +5166,7 @@ app.post(
           // const pdfIndex = (!existingData.moreBookings || existingData.moreBookings.length === 0) ? 1 :( existingData.moreBookings.length +1);
 
           // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
+        
           // const filledHtml = htmlTemplate
           //   .replace("{{Company Name}}", newData["Company Name"])
           //   .replace("{{Company Name}}", newData["Company Name"])
@@ -4903,7 +5184,16 @@ app.post(
           //   .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
           //   .replace("{{Service-Details}}", paymentDetails)
           //   .replace("{{Company Number}}", newData["Company Number"]);
-          // pdf
+          //   const pdfFilePath = path.join(__dirname, './Document', `${newData['Company Name']}-Rebooking.pdf`);
+
+          //     // Check if the directory exists, create it if not
+          //     const documentDirectory = path.dirname(pdfFilePath);
+          //     if (!fs.existsSync(documentDirectory)) {
+          //       fs.mkdirSync(documentDirectory, { recursive: true });
+
+          //     }
+          //     console.log("Here the path is created:-" ,path.join(__dirname, './Document', `${newData['Company Name']}-Rebooking.pdf`) );
+          //  pdf
           //   .create(filledHtml, { format: "Letter" })
           //   .toFile(
           //     path.join(__dirname, "./Document", `${newData["Company Name"]}-Rebooking.pdf`),
@@ -4918,7 +5208,7 @@ app.post(
           //               `./Document/${newData["Company Name"]}-Rebooking.pdf`
           //             );
           //             sendMail2(
-          //               ["nimesh@incscale.in","nimesh@incscale.in"],
+          //               ["nimesh@incscale.in","aakashseth452@gmail.com"],
           //               `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
           //               ``,
           //               `
@@ -4966,6 +5256,126 @@ app.post(
     }
   }
 );
+
+
+// ---------------------------- BDM Booking Request Section -----------------------------------------------
+
+app.post('/api/matured-case-request', async (req, res) => {
+  try {
+    // Extract data from the request body sent by the frontend
+    const { companyName, requestStatus, bdeName, bdmName, date} = req.body;
+
+    // Create a new instance of RequestMaturedModel
+    const newRequest = new RequestMaturedModel({
+      "Company Name": companyName,
+      requestStatus,
+      bdeName,
+      bdmName,
+      date,
+    });
+    // Save the new request to the database
+    await newRequest.save();
+    const changeStatus = await TeamLeadsModel.findOneAndUpdate({
+      "Company Name": companyName
+    },{
+      bdmOnRequest:true
+    },
+    { new : true}
+  )
+
+    // Send a success response back to the frontend
+    res.status(200).json({ success: true, message: 'Request saved successfully' });
+  } catch (error) {
+    console.error('Error saving request:', error);
+    res.status(500).json({ success: false, message: 'Error saving request' });
+  }
+});
+
+app.get("/api/matured-get-requests", async(req,res)=>{
+  try{
+    const request = await RequestMaturedModel.find();
+    res.status(200).json(request);
+
+  }catch(error){
+    res.status(400).json({success:false, message:"Error fetching the data"})
+  }
+});
+app.get("/api/matured-get-requests/:bdeName", async(req,res)=>{
+  try{
+    const bdeName = req.params.bdeName
+    const request = await RequestMaturedModel.find({bdeName , requestStatus:"Pending"});
+    res.status(200).json(request);
+
+  }catch(error){
+    res.status(400).json({success:false, message:"Error fetching the data"})
+  }
+});
+app.get("/api/matured-get-requests-byBDM/:bdmName", async(req,res)=>{
+  try{
+    const bdmName = req.params.bdmName
+    const request = await RequestMaturedModel.find({bdmName , requestStatus:"Accepted"});
+    res.status(200).json(request);
+
+  }catch(error){
+    res.status(400).json({success:false, message:"Error fetching the data"})
+  }
+});
+
+app.post("/api/update-bdm-Request/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    const { requestStatus } = req.body;
+
+    // Find the BDM request by ID and update the requestStatus
+    const updatedRequest = await RequestMaturedModel.findByIdAndUpdate(
+      _id,
+      { requestStatus },
+      { new: true } // Return the updated document
+    );
+    const changeStatus = await TeamLeadsModel.findOneAndUpdate({
+      "Company Name": updatedRequest["Company Name"]
+    },{
+      bdmOnRequest:false
+    },
+    { new : true}
+  )
+
+    if (!updatedRequest) {
+      return res.status(404).json({ message: "BDM request not found" });
+    }
+
+    res.status(200).json(updatedRequest);
+  } catch (error) {
+    console.error("Error updating BDM request:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+app.delete("/api/delete-bdm-Request/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+
+    // Find the BDM request by ID and delete it
+    const deletedRequest = await RequestMaturedModel.findByIdAndDelete(_id);
+    const changeStatus = await TeamLeadsModel.findOneAndUpdate({
+      "Company Name": deletedRequest["Company Name"]
+    },{
+      bdmOnRequest:false
+    },
+    { new : true}
+  )
+
+    if (!deletedRequest) {
+      return res.status(404).json({ message: "BDM request not found" });
+    }
+
+    res.status(200).json({ message: "BDM request deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting BDM request:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// --------------------------------------- Redesigned Form Section -----------------------------------------------
 app.post(
   "/api/redesigned-edit-leadData/:CompanyName/:step",
   upload.fields([
@@ -5888,6 +6298,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const companyData = await CompanyModel.findOne({
       "Company Name": newData["Company Name"],
     });
+    const teamData = await TeamLeadsModel.findOne({
+      "Company Name": newData["Company Name"],
+    })
     if (companyData) {
       newData.company = companyData._id;
     }
@@ -5900,6 +6313,15 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         lastActionDate: date,
         ename:newData.bdeName
       });
+    }
+    if(teamData) {
+      await TeamLeadsModel.findByIdAndUpdate(teamData._id , {
+        bdmStatus:"Matured",
+        Status:"Matured",
+
+      },
+    {new : true})
+    await RequestMaturedModel.findOneAndDelete({"Company Name" : teamData["Company Name"]})
     }
 
     const totalAmount = newData.services.reduce(
@@ -6136,10 +6558,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const visibility = newData.bookingSource !== "Other" && "none";
     // Send email to recipients
     const recipients = [
-      // newData.bdeEmail,
-      // newData.bdmEmail,
-      // // "bookings@startupsahay.com",
-      "nimesh@incscale.in",
+      newData.bdeEmail,
+      newData.bdmEmail,
+      "bookings@startupsahay.com",
+      // "nimesh@incscale.in",
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -6960,31 +7382,33 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     </div>
     `;
 
-    // const mainPage = newPageDisplay === 'style="display:block' ? mainPageHtml : "";
-    // const bdNames = newData.bdeName == newData.bdmName ? newData.bdeName : `${newData.bdeName} & ${newData.bdmName}`;
-    // const pagination = newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
-    // // Render services HTML content
-    // const serviceList = renderServiceList();
-    // const paymentDetails = renderPaymentDetails();
+    const mainPage = newPageDisplay === 'style="display:block' ? mainPageHtml : "";
+    const bdNames = newData.bdeName == newData.bdmName ? newData.bdeName : `${newData.bdeName} & ${newData.bdmName}`;
+    const pagination = newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
+    // Render services HTML content
+    const serviceList = renderServiceList();
+    const paymentDetails = renderPaymentDetails();
 
-    // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
-    // const filledHtml = htmlTemplate
-    //   .replace("{{Company Name}}", newData["Company Name"])
-    //   .replace("{{Company Name}}", newData["Company Name"])
-    //   .replace("{{Company Name}}", newData["Company Name"])
-    //   .replace("{{Company Name}}", newData["Company Name"])
-    //   .replace("{{Services}}", serviceList)
-    //   .replace("{{page-display}}", newPageDisplay)
-    //   .replace("{{pagination}}", pagination)
-    //   .replace("{{Authorized-Person}}", AuthorizedName)
-    //   .replace("{{Authorized-Number}}", AuthorizedNumber)
-    //   .replace("{{Authorized-Email}}", AuthorizedEmail)
-    //   .replace("{{Main-page}}",mainPage)
-    //   .replace("{{TotalAmount}}", totalAmount.toFixed(2))
-    //   .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
-    //   .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
-    //   .replace("{{Service-Details}}", paymentDetails)
-    //   .replace("{{Company Number}}", newData["Company Number"]);
+    const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
+    const filledHtml = htmlTemplate
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Services}}", serviceList)
+      .replace("{{page-display}}", newPageDisplay)
+      .replace("{{pagination}}", pagination)
+      .replace("{{Authorized-Person}}", AuthorizedName)
+      .replace("{{Authorized-Number}}", AuthorizedNumber)
+      .replace("{{Authorized-Email}}", AuthorizedEmail)
+      .replace("{{Main-page}}",mainPage)
+      .replace("{{TotalAmount}}", totalAmount.toFixed(2))
+      .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
+      .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
+      .replace("{{Service-Details}}", paymentDetails)
+      .replace("{{Company Number}}", newData["Company Number"]);
+
+      console.log("This is html file reading:-", filledHtml);
     // pdf
     //   .create(filledHtml, { format: "Letter" })
     //   .toFile(
@@ -7000,7 +7424,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     //               `./Document/${newData["Company Name"]}.pdf`
     //             );
     //             sendMail2(
-    //               ["nimesh@incscale.in"],
+    //               ["nimesh@incscale.in" , "aakashseth452@gmail.com"],
     //               `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
     //               ``,
     //               `

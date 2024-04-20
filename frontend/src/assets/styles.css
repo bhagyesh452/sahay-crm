@@ -881,6 +881,66 @@ color: #4e884e;
   width: 11vw;
   padding-left: 15px;
 }
+/* *********************   Request BDM CARD *********************************************** */
+.request-bdm-card{
+  border: 1px solid #c6c6c6;
+  border-radius: 14px;
+  font-family: monospace;
+}
+.request-accept{
+  width: 50%;
+  border: none;
+  border-radius: 0px 0px 0px 14px;
+  color: green;
+  background-color: rgb(162, 255, 162);
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+.request-accept:hover{
+  width: 50%;
+  border: none;
+  border-radius: 0px 0px 0px 14px;
+  color: white;
+  background-color: green;
+  font-weight: bold;
+
+}
+.request-reject{
+  width: 50%;
+  border: none;
+  border-radius: 0px 0px 14px 0px;
+  color: red;
+  background-color: #ffc0c0;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+.request-reject:hover{
+  width: 50%;
+  border: none;
+  border-radius:  0px 0px 14px 0px;
+  color: white;
+  background-color: red;
+  font-weight: bold;
+
+}
+.request-display{
+  width: 100%;
+  border: none;
+  border-radius: 0px 0px 14px 14px;
+  color: green;
+  background-color: rgb(162, 255, 162);
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+.request-display:hover{
+  width: 100%;
+  border: none;
+  border-radius: 0px 0px 14px 14px;
+  color: white;
+  background-color: green;
+  font-weight: bold;
+
+}
 /**************** Steper Form CSS Start ************************/
 .css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-active , .MuiButton-textPrimary{
   color: #ffba00 !important;
@@ -1538,3 +1598,6 @@ color: #4e884e;
 
 /************************* Icons  ***************************************/
 
+.feedback-slider{
+  z-index: 9999;
+}

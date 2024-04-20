@@ -783,8 +783,9 @@ let isValid = true;
           });
         }
         handleNext();
-        setNowToFetch(true)
+        // setNowToFetch(true)
         setFormOpen(false);
+        setDataStatus("Matured");
       
         return true;
       }
@@ -2271,7 +2272,7 @@ let isValid = true;
                                       }}
                                       disabled={completed[activeStep] === true}
                                     >
-                                      {[...Array(6 - 1).keys()].map((year) => (
+                                      {[...Array(11 - 1).keys()].map((year) => (
                                         <option key={year} value={1 + year}>
                                           {1 + year}
                                         </option>

@@ -454,7 +454,7 @@ function Leads() {
         const sheet = workbook.Sheets[sheetName];
 
         const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
+        const adminName = localStorage.getItem("adminName")
         const formattedJsonData = jsonData
           .slice(1) // Exclude the first row (header)
           .map((row) => ({
@@ -474,9 +474,10 @@ function Leads() {
             "Director Email(Second)": row[13],
             "Director Name(Third)": row[14],
             "Director Number(Third)": row[15],
-            "Director Email(Third)": row[16]
+            "Director Email(Third)": row[16],
+            "UploadedBy": adminName ? adminName : "Admin"
           }));
-
+         
         setCsvData(formattedJsonData);
       };
 
@@ -530,13 +531,15 @@ function Leads() {
     // Get current date and time
 
     // newArray now contains objects with updated properties
+    const adminName = localStorage.getItem("adminName")
 
     if (selectedOption === "someoneElse") {
       const properDate = new Date();
       const updatedCsvdata = csvdata.map((data) => ({
         ...data,
         ename: newemployeeSelection,
-        AssignDate: properDate
+        AssignDate: properDate,
+        UploadedBy: adminName ? adminName : "Admin"
       }));
   
       const currentDate = new Date().toLocaleDateString();
@@ -730,39 +733,55 @@ function Leads() {
 
   const handleSubmitData = (e) => {
     e.preventDefault();
-    axios
-      .post(`${secretKey}/manual`, {
-        "Company Name": cname,
-        "Company Number": cnumber,
-        "Company Email": cemail,
-        "Company Incorporation Date  ": cidate,
-        City: city,
-        State: state,
-        AssignDate: new Date(),
-        "Company Address": companyAddress,
-        "Director Name(First)": directorNameFirst,
-        "Director Number(First)": directorNumberFirst,
-        "Director Email(First)": directorEmailFirst,
-        "Director Name(Second)": directorNameSecond,
-        "Director Number(Second)": directorNumberSecond,
-        "Director Email(Second)": directorEmailSecond,
-        "Director Name(Third)": directorNameThird,
-        "Director Number(Third)": directorNumberThird,
-        "Director Email(Third)": directorEmailThird
-      })
-      .then((response) => {
-        //console.log("response" , response)
-        Swal.fire({
-          title: "Data Added!",
-          text: "Successfully added new Data!",
-          icon: "success",
+    
+    if (cname === "") {
+      Swal.fire("Please Enter Company Name");
+    } else if (!cnumber) {
+      Swal.fire("Company Number is required");
+    } else if (cemail === "") {
+      Swal.fire("Company Email is required");
+    } else if (city === "") {
+      Swal.fire("City is required");
+    } else if (state === "") {
+      Swal.fire("State is required");
+    } else {
+      axios
+        .post(`${secretKey}/manual`, {
+          "Company Name": cname,
+          "Company Number": cnumber,
+          "Company Email": cemail,
+          "Company Incorporation Date": cidate, // Assuming the correct key is "Company Incorporation Date"
+          City: city,
+          State: state,
+          ename: data.ename,
+          AssignDate: new Date(),
+          "Company Address": companyAddress,
+          "Director Name(First)": directorNameFirst,
+          "Director Number(First)": directorNumberFirst,
+          "Director Email(First)": directorEmailFirst,
+          "Director Name(Second)": directorNameSecond,
+          "Director Number(Second)": directorNumberSecond,
+          "Director Email(Second)": directorEmailSecond,
+          "Director Name(Third)": directorNameThird,
+          "Director Number(Third)": directorNumberThird,
+          "Director Email(Third)": directorEmailThird,
+        })
+        .then((response) => {
+          console.log("response", response);
+          console.log("Data sent Successfully");
+          Swal.fire({
+            title: "Data Added!",
+            text: "Successfully added new Data!",
+            icon: "success",
+          });
+          fetchData();
+          closepopupNew();
+        })
+        .catch((error) => {
+          console.error("Error sending data:", error);
+          Swal.fire("An error occurred. Please try again later.");
         });
-        fetchData();
-        closepopupNew();
-      })
-      .catch((error) => {
-        Swal.fire("Please Enter Unique data!");
-      });
+    }
   };
 
   const [openSecondDirector, setOpenSecondDirector] = useState(false)
@@ -1183,6 +1202,7 @@ function Leads() {
   const [isUpdateMode, setIsUpdateMode] = useState(false);
 
   const handleSubmit = async (e) => {
+    const adminName = localStorage.getItem("adminName");
     try {
       let dataToSend = {
         "Company Name": companyName,
@@ -1191,6 +1211,7 @@ function Leads() {
         "Company Incorporation Date ": companyIncoDate,
         "City": companyCity,
         "State": companyState,
+        "UploadedBy":adminName ? adminName : "Admin"
       };
       const dateObject = new Date(companyIncoDate);
 
@@ -1210,6 +1231,7 @@ function Leads() {
           "Company Incorporation Date ": isoDateString, // Updated format
           "City": companyCity,
           "State": companyState,
+          "UploadedBy":adminName ? adminName : "Admin"
         };
 
         //console.log("Data to send with updated date format:", dataToSendUpdated);
@@ -1309,9 +1331,15 @@ function Leads() {
       console.error("Invalid Company Incorporation Date string:", dateString);
     }
 
-
-
   };
+
+  function formatDateFinal(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
 
 
   return (
@@ -2896,7 +2924,7 @@ function Leads() {
                           <td>{startIndex + index + 1}</td>
                           <td>{company["Company Name"]}</td>
                           <td>{company["Company Number"]}</td>
-                          <td>{formatDate(company["Company Incorporation Date  "])}</td>
+                          <td>{formatDateFinal(company["Company Incorporation Date  "])}</td>
                           <td>{company["City"]}</td>
                           <td>{company["State"]}</td>
                           <td>{company["Company Email"]}</td>
@@ -2906,7 +2934,7 @@ function Leads() {
                                 <p className="rematkText text-wrap m-0">
                                 {company["Remarks"]}{" "}
                                 </p>
-                                <div  onClick={() => {
+                                <div onClick={() => {
                                       functionopenpopupremarks(company._id, company.Status);
                                     }} style={{cursor:"pointer"}}>
                                   <IconEye
@@ -2921,12 +2949,9 @@ function Leads() {
                                   />
                                 </div>
                             </div>
-                           
-                            
-                           
                           </td>
                          {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
-                          <td>{formatDate(company["AssignDate"])}</td>
+                          <td>{formatDateFinal(company["AssignDate"])}</td>
                           <td>
                             <IconButton onClick={() => handleDeleteClick(company._id)}>
                               <DeleteIcon

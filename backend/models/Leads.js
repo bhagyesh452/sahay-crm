@@ -77,6 +77,22 @@ const CompanySchema = new mongoose.Schema({
   bdmAcceptStatus:{
     type:String,
     default:"NotForwarded"
+  },
+  bdeForwardDate:{
+    type: String, 
+    
+  },
+  bdeOldStatus:{
+    type:String
+  },
+  feedbackPoints:{
+    type:Number
+  },
+  feedbackRemarks:{
+    type:String
+  },
+  UploadedBy:{
+    type:String
   }
 
 });

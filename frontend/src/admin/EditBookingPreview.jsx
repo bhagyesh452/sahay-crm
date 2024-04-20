@@ -864,7 +864,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                     </div>
                   </div>
                 </div>
-                <div className="row m-0">
+                {requestedBooking.paymentReceipt && requestedBooking.paymentReceipt.length!==0 && <div className="row m-0">
                   <div className="col-sm-3 align-self-stretc p-0">
                     <div className="form-label-name h-100">
                       <b>Upload Payment Receipt</b>
@@ -942,7 +942,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                       </div>
                     </div>
                   </div>
-                </div>
+                </div>}
                 <div className="row m-0">
                   <div className="col-sm-3 p-0">
                     <div className="form-label-name">
@@ -987,7 +987,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                     </div>
                   </div>
                 </div>
-                <div className="row m-0">
+               {requestedBooking.otherDocs && requestedBooking.otherDocs.length!==0 && <div className="row m-0">
                   <div className="col-sm-3 align-self-stretc p-0">
                     <div className="form-label-name h-100">
                       <b>Additional Docs</b>
@@ -1087,7 +1087,7 @@ function EditBookingPreview({ requestedBooking, existingBooking , setCompareBook
                                         </div> */}
                     </div>
                   </div>
-                </div>
+                </div>}
               </div>
             </div>
             {/* --------------------------------------------- Step 4 Ends Here  ------------------------------------ */}

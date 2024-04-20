@@ -303,7 +303,7 @@ function BookingList() {
             "Company Name": row[1],
             "Company Email" : row[2],
             "Company Number": row[3],
-            "Company Incorporation Date": row[4],
+            "incoDate": formatDateFromExcel(row[4]),
             "panNumber": row[5],
             "gstNumber":row[6],
             "bdeName": row[7],
@@ -314,71 +314,70 @@ function BookingList() {
             "bookingDate": formatDateFromExcel(row[12]),
             "leadSource":row[13],
             "otherLeadSource":row[14],
-            "1stserviceName":row[15],
-            "1stTotalAmount":row[16],
-            "1stGST":row[17],
-            "1stPaymentTerms":row[18],
-            "1stFirstPayment":row[19],
-            "1stSecondPayment":row[20],
-            "1stThirdPayment":row[21],
-            "1stFourthPayment":row[22],
-            "1stPaymentRemarks":row[23],
+            "1serviceName":row[15],
+            "1TotalAmount":row[16],
+            "1GST":row[17],
+            "1PaymentTerms":row[18],
+            "1FirstPayment":row[19],
+            "1SecondPayment":row[20],
+            "1ThirdPayment":row[21],
+            "1FourthPayment":row[22],
+            "1PaymentRemarks":row[23],
             // -------------- 2nd Service --------------------------------
-            "2ndserviceName":row[22],
-            "2ndTotalAmount":row[23],
-            "2ndGST":row[24],
-            "2ndPaymentTerms":row[25],
-            "2ndFirstPayment":row[26],
-            "2ndSecondPayment":row[27],
-            "2ndThirdPayment":row[28],
-            "2ndFourthPayment":row[29],
-            "2ndPaymentRemarks":row[30],
+            "2serviceName":row[24],
+            "2TotalAmount":row[25],
+            "2GST":row[26],
+            "2PaymentTerms":row[27],
+            "2FirstPayment":row[28],
+            "2SecondPayment":row[29],
+            "2ThirdPayment":row[30],
+            "2FourthPayment":row[31],
+            "2PaymentRemarks":row[32],
             // ----------------------- 3rd Service ---------------------------------
-            "3rdserviceName":row[31],
-            "3rdTotalAmount":row[32],
-            "3rdGST":row[33],
-            "3rdPaymentTerms":row[34],
-            "3rdFirstPayment":row[35],
-            "3rdSecondPayment":row[36],
-            "3rdThirdPayment":row[37],
-            "3rdFourthPayment":row[38],
-            "3rdPaymentRemarks":row[39],
+            "3serviceName":row[33],
+            "3TotalAmount":row[34],
+            "3GST":row[35],
+            "3PaymentTerms":row[36],
+            "3FirstPayment":row[37],
+            "3SecondPayment":row[38],
+            "3ThirdPayment":row[39],
+            "3FourthPayment":row[40],
+            "3PaymentRemarks":row[41],
             // ----------------------- 4th Service --------------------------------------
-            "4thserviceName":row[40],
-            "4thTotalAmount":row[41],
-            "4thGST":row[42],
-            "4thPaymentTerms":row[43],
-            "4thFirstPayment":row[44],
-            "4thSecondPayment":row[45],
-            "4thThirdPayment":row[46],
-            "4thFourthPayment":row[47],
-            "4thPaymentRemarks":row[48],
+            "4serviceName":row[42],
+            "4TotalAmount":row[43],
+            "4GST":row[44],
+            "4PaymentTerms":row[45],
+            "4FirstPayment":row[46],
+            "4SecondPayment":row[47],
+            "4ThirdPayment":row[48],
+            "4FourthPayment":row[49],
+            "4PaymentRemarks":row[50],
           // ----------------------   5th Service  --------------------------------------
-          "5thserviceName":row[49],
-          "5thTotalAmount":row[50],
-          "5thGST":row[51],
-          "5thPaymentTerms":row[52],
-          "5thFirstPayment":row[53],
-          "5thSecondPayment":row[54],
-          "5thThirdPayment":row[55],
-          "5thFourthPayment":row[56],
-          "5thPaymentRemarks":row[57],
-            "caCase": row[58],
-            "caNumber": row[59],
-            "caEmail": row[60],
-            "caCommission": row[61],
-            "totalPayment": row[62],
-            "receivedPayment": row[63],
-            "pendingPayment": row[64],
-            "paymentMethod": row[65],
-            "extraRemarks": row[66],
-           
+          "5serviceName":row[51],
+          "5TotalAmount":row[52],
+          "5GST":row[53],
+          "5PaymentTerms":row[54],
+          "5FirstPayment":row[55],
+          "5SecondPayment":row[56],
+          "5ThirdPayment":row[57],
+          "5FourthPayment":row[58],
+          "5PaymentRemarks":row[59],
+            "caCase": row[60],
+            "caNumber": row[61],
+            "caEmail": row[62],
+            "caCommission": row[63],
+            "totalPayment": row[64],
+            "receivedPayment": row[65],
+            "pendingPayment": row[66],
+            "paymentMethod": row[67],
+            "extraRemarks": row[68],
           }));
         const newFormattedData = formattedJsonData.filter((obj) => {
           return obj["Company Name"] !== "" && obj["Company Name"] !== null && obj["Company Name"] !== undefined;
         });
         setExcelData(newFormattedData); 
-        console.log("This is elon musk",newFormattedData)
+        
       };
 
       reader.readAsArrayBuffer(file);
@@ -398,24 +397,32 @@ function BookingList() {
       console.error("Please upload a valid XLSX file.");
     }
   };
+  const handleSubmitImport = async () => {
+    if(excelData.length!==0){
+      try {
+        const response = await axios.post(`${secretKey}/redesigned-importData`, excelData);
+        Swal.fire("Success", "Bookings Uploaded Successfully", "success");
+        fetchRedesignedFormData();
+        closepopup();
+        
+      } catch (error) {
+        console.error("Error importing data:", error);
+        Swal.fire("Error", "Failed to Upload Data" , "error");
+      }
+    }else{
+      Swal.fire('Upload Data First','','warning')
+    }
+  
+  };
+
+
   const parseCsv = (data) => {
     // Use a CSV parsing library (e.g., Papaparse) to parse CSV data
     // Example using Papaparse:
     const parsedData = Papa.parse(data, { header: true });
     return parsedData.data;
   };
-  function formatTimeFromExcel(serialNumber) {
-    // Excel uses a fractional representation for time
-    const totalSeconds = Math.round(serialNumber * 24 * 60 * 60); // Convert days to seconds
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
 
-    // Format the time
-    const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-    return formattedTime;
-  }
   function formatDateFromExcel(serialNumber) {
     // Excel uses a different date origin (January 1, 1900)
     const excelDateOrigin = new Date(Date.UTC(1900, 0, 0));
@@ -533,7 +540,7 @@ function BookingList() {
                 </div>
                 <div className="col-6">
                   <div className="d-flex justify-content-end">
-                    <button className="btn btn-primary mr-1" onClick={functionopenpopup} disabled>
+                    <button className="btn btn-primary mr-1" onClick={functionopenpopup} >
                       Import CSV
                     </button>
                     <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
@@ -557,7 +564,7 @@ function BookingList() {
                           Upload CSV File
                         </label>
                       </div>
-                      <a href={frontendKey + "/AddBookingFormat.xlsx"} download>
+                      <a href={frontendKey + "/BookingExample.xlsx"} download>
                         Download Sample
                       </a>
                     </div>
@@ -575,7 +582,7 @@ function BookingList() {
                     </div>
                   </div>
                 </DialogContent>
-                <button className="btn btn-primary">
+                <button onClick={handleSubmitImport} className="btn btn-primary">
                   Submit
                 </button>
               </Dialog>
