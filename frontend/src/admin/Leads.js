@@ -2851,6 +2851,7 @@ function Leads() {
                       <th>Company Email</th>
                       <th>Status</th>
                       <th>Remarks</th>
+                      <th>Uploaded By</th>
                       {dataStatus!=="Unassigned" &&  <th>Assigned to</th>}
 
                       <th>
@@ -2950,6 +2951,7 @@ function Leads() {
                                 </div>
                             </div>
                           </td>
+                          <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                          {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                           <td>{formatDateFinal(company["AssignDate"])}</td>
                           <td>
