@@ -140,7 +140,7 @@ export default function EditableMoreBooking({
       } = data;
       console.log("Fetched Data" , newLeadData);
       setLeadData(newLeadData);
-      setActiveStep(1);
+      setActiveStep(bookingIndex === 0 ? 0 : 1);
       setCompleted({0:true , 1:true , 2 : true , 3 : true})
       setSelectedValues(newLeadData.bookingSource)
      if (Step2Status === true && Step3Status === false) {
@@ -471,7 +471,9 @@ export default function EditableMoreBooking({
   const navigate = useNavigate();
 
   const handleBack = () => {
-    if (activeStep !== 1) {
+    if (activeStep !== 0 && bookingIndex === 0) {
+      setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    }else if((activeStep !== 1 && bookingIndex !== 0)){
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     } else {
       // setDataStatus("Matured");
@@ -1705,7 +1707,15 @@ export default function EditableMoreBooking({
       };
     });
   };
+  const formatInputDate = (dateString) => {
+    const parsedDate = new Date(dateString);
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0"); // Adding 1 to month index since it starts from 0
+    const day = String(parsedDate.getDate()).padStart(2, "0");
 
+    const formattedDate = `${year}-${month}-${day}`;
+    return formattedDate;
+  };
   return (
     <div>
       <div className="container mt-2">
@@ -1721,7 +1731,8 @@ export default function EditableMoreBooking({
                       className={
                         activeStep === index ? "form-tab-active" : "No-active"
                       }
-                      disabled={index===0}
+                      disabled={index===0 && bookingIndex!==0}
+                     
                     >
                       {label}
                     </StepButton>
@@ -1801,7 +1812,7 @@ export default function EditableMoreBooking({
                                             "Company Email"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -1829,7 +1840,7 @@ export default function EditableMoreBooking({
                                             handleInputChange(inputValue, "Company Number");
                                           }
                                         }}
-                                        readOnly={completed[activeStep] === true}
+                                        disabled={completed[activeStep] === true}
                                       />
                                     </div>
                                   </div>
@@ -1855,7 +1866,7 @@ export default function EditableMoreBooking({
                                             "incoDate"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -1883,7 +1894,7 @@ export default function EditableMoreBooking({
                                             "panNumber"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                         required
@@ -1905,7 +1916,7 @@ export default function EditableMoreBooking({
                                             "gstNumber"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -2179,14 +2190,14 @@ export default function EditableMoreBooking({
                                         className="form-control mt-1"
                                         placeholder="Enter Booking date"
                                         id="booking-date"
-                                        value={leadData.bookingDate}
+                                        value={formatInputDate(leadData.bookingDate)}
                                         onChange={(e) => {
                                           handleInputChange(
                                             e.target.value,
                                             "bookingDate"
                                           );
                                         }}
-                                        readOnly={
+                                        disabled={
                                           completed[activeStep] === true
                                         }
                                       />
@@ -2293,7 +2304,7 @@ export default function EditableMoreBooking({
                                       }}
                                       disabled={completed[activeStep] === true}
                                     >
-                                      {[...Array(6 - 1).keys()].map((year) => (
+                                      {[...Array(11 - 1).keys()].map((year) => (
                                         <option key={year} value={1 + year}>
                                           {1 + year}
                                         </option>
@@ -3325,7 +3336,7 @@ export default function EditableMoreBooking({
                                     </div>
                                     <div className="col-sm-9 p-0">
                                       <div className="form-label-data">
-                                        {leadData.extraNotes}
+                                        {leadData.extraNotes ? leadData.extraNotes : "-"}
                                       </div>
                                     </div>
                                   </div>
@@ -3448,7 +3459,7 @@ export default function EditableMoreBooking({
                           onClick={handleBack}
                           sx={{ mr: 1, background: "#ffba00 " }}                          
                         >
-                          {activeStep !== 1 ? "Back" : "Back to Main"}
+                          {bookingIndex===0 ? activeStep !== 0 ? "Back" : "Back to Main" : activeStep !==1 ? "Back" : "Back to Main"}
                         </Button>
                         {/* <Button
                           color="primary"

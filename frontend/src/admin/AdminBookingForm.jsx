@@ -155,6 +155,7 @@ export default function AdminBookingForm({
         setLeadData((prevState) => ({
           ...prevState,
           bookingDate: formatDate(new Date()),
+          bdmType:"Close-by"
         }));
       } else if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
@@ -2288,7 +2289,7 @@ export default function AdminBookingForm({
                                       }}
                                       disabled={completed[activeStep] === true}
                                     >
-                                      {[...Array(6 - 1).keys()].map((year) => (
+                                      {[...Array(11 - 1).keys()].map((year) => (
                                         <option key={year} value={1 + year}>
                                           {1 + year}
                                         </option>

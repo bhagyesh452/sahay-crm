@@ -90,6 +90,9 @@ const CompanySchema = new mongoose.Schema({
   },
   feedbackRemarks:{
     type:String
+  },
+  UploadedBy:{
+    type:String
   }
 
 });

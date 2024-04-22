@@ -11,6 +11,8 @@ import "../dist/css/tabler-payments.min.css?1684106062";
 import "../dist/css/tabler-vendors.min.css?1684106062";
 import "../dist/css/demo.min.css?1684106062";
 import { IconTrash } from "@tabler/icons-react";
+import { MdDelete } from "react-icons/md";
+import { MdOutlineAddCircle } from "react-icons/md";
 import "../assets/styles.css";
 import "../assets/table.css";
 import Swal from "sweetalert2";
@@ -31,7 +33,6 @@ import { IconEye } from "@tabler/icons-react";
 import Nodata from "../components/Nodata";
 
 function Employees({ onEyeButtonClick }) {
-
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [companyDdata, setCompanyDdata] = useState([]);
@@ -45,15 +46,16 @@ function Employees({ onEyeButtonClick }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [number, setNumber] = useState(0);
+  const [bdeFields, setBdeFields] = useState([]);
   const [ename, setEname] = useState("");
   const [jdate, setJdate] = useState(null);
   const [designation, setDesignation] = useState("");
   const [branchOffice, setBranchOffice] = useState("");
+  const [nowFetched, setNowFetched] = useState(false);
   const [otherdesignation, setotherDesignation] = useState("");
   const [companyData, setCompanyData] = useState([]);
 
   const [open, openchange] = useState(false);
-
 
   // const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedin')==='true');
   // const handleLogin = ()=>{
@@ -64,7 +66,7 @@ function Employees({ onEyeButtonClick }) {
     console.log(id);
   };
   useEffect(() => {
-    const socket = io('/socket.io');
+    const socket = io("/socket.io");
     socket.on("employee-entered", () => {
       console.log("One user Entered");
       setTimeout(() => {
@@ -80,7 +82,6 @@ function Employees({ onEyeButtonClick }) {
       socket.disconnect();
     };
   }, []);
-
 
   const handleDeleteClick = (itemId, nametochange) => {
     // Open the confirm delete modal
@@ -134,8 +135,8 @@ function Employees({ onEyeButtonClick }) {
   const [sortedFormat, setSortedFormat] = useState({
     ename: "ascending",
     jdate: "ascending",
-    addedOn: 'ascending'
-  })
+    addedOn: "ascending",
+  });
 
   const fetchData = async () => {
     try {
@@ -151,12 +152,13 @@ function Employees({ onEyeButtonClick }) {
       setPassword("");
       setJdate(null);
       setDesignation("");
-      setBranchOffice("")
+      setBranchOffice("");
+  
+      
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
-
 
   const handleSearch = (e) => {
     const query = e.target.value;
@@ -171,22 +173,37 @@ function Employees({ onEyeButtonClick }) {
   };
 
   const handleUpdateClick = (id, echangename) => {
+   
     // Set the selected data ID and set update mode to true
     setSelectedDataId(id);
     setIsUpdateMode(true);
     setCompanyData(cdata.filter((item) => item.ename === echangename));
-
     // Find the selected data object
     const selectedData = data.find((item) => item._id === id);
-    console.log(echangename);
-
+ 
+    console.log("This is elon musk" , selectedData.targetDetails)
+    setNowFetched(selectedData.targetDetails.length!==0 ? true : false);
+    setTargetCount(selectedData.targetDetails.length!==0 ? selectedData.targetDetails.length : 1);
+    setTargetObjects(
+      selectedData.targetDetails.length!==0
+        ? selectedData.targetDetails
+        : [
+            {
+              year: "",
+              month: "",
+              amount: 0,
+            },
+          ]
+    );
+    
     // Update the form data with the selected data values
     setEmail(selectedData.email);
     setEname(selectedData.ename);
     setNumber(selectedData.number);
     setPassword(selectedData.password);
+  
     setDesignation(selectedData.designation);
-    setBranchOffice(selectedData.branchOffice)
+    setBranchOffice(selectedData.branchOffice);
 
     const dateObject = new Date(selectedData.jdate);
     const day = dateObject.getDate().toString().padStart(2, "0"); // Ensure two-digit day
@@ -293,6 +310,7 @@ function Employees({ onEyeButtonClick }) {
         jdate: jdate,
         AddedOn: AddedOn,
         branchOffice: branchOffice,
+        targetDetails : targetObjects
       };
       let dataToSendUpdated = {
         email: email,
@@ -301,9 +319,10 @@ function Employees({ onEyeButtonClick }) {
         password: password,
         jdate: jdate,
         designation: designation,
-        branchOffice: branchOffice
-
+        branchOffice: branchOffice,
+        targetDetails:targetObjects
       };
+
 
       // Set designation based on otherDesignation
       if (otherdesignation !== "") {
@@ -313,7 +332,10 @@ function Employees({ onEyeButtonClick }) {
       }
 
       if (isUpdateMode) {
-        await axios.put(`${secretKey}/einfo/${selectedDataId}`, dataToSendUpdated);
+        await axios.put(
+          `${secretKey}/einfo/${selectedDataId}`,
+          dataToSendUpdated
+        );
         Swal.fire({
           title: "Data Updated Succesfully!",
           text: "You have successfully updated the name!",
@@ -348,17 +370,18 @@ function Employees({ onEyeButtonClick }) {
           icon: "success",
         });
       }
-      console.log("datatosend", dataToSend)
+      console.log("datatosend", dataToSend);
 
       setEmail("");
       setEname("");
       setNumber(0);
       setPassword("");
       setDesignation("");
-      setBranchOffice("")
+      setBranchOffice("");
       setotherDesignation("");
       setJdate(null);
       setIsUpdateMode(false);
+      setTargetCount(1);
       fetchData();
       closepopup();
       console.log("Data sent successfully");
@@ -398,7 +421,6 @@ function Employees({ onEyeButtonClick }) {
         a.ename.localeCompare(b.ename)
       );
       setFilteredData(sortedData);
-
     } else {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
@@ -409,9 +431,7 @@ function Employees({ onEyeButtonClick }) {
         b.ename.localeCompare(a.ename)
       );
       setFilteredData(sortedData);
-
     }
-
   };
   const sortDateByAddedOn = () => {
     if (sortedFormat.addedOn === "ascending") {
@@ -424,7 +444,6 @@ function Employees({ onEyeButtonClick }) {
         a.AddedOn.localeCompare(b.AddedOn)
       );
       setFilteredData(sortedData);
-
     } else {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
@@ -435,51 +454,44 @@ function Employees({ onEyeButtonClick }) {
         b.AddedOn.localeCompare(a.AddedOn)
       );
       setFilteredData(sortedData);
-
     }
-
   };
   const sortDataByJoiningDate = () => {
-    if (sortedFormat.jdate === 'ascending') {
+    if (sortedFormat.jdate === "ascending") {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
         jdate: "descending", // Update the jdate property
       });
 
-      const sortedData = [...filteredData].sort((a, b) =>
-        new Date(a.jdate) - new Date(b.jdate)
+      const sortedData = [...filteredData].sort(
+        (a, b) => new Date(a.jdate) - new Date(b.jdate)
       );
       setFilteredData(sortedData);
-    }
-    else {
+    } else {
       setSortedFormat({
         ...sortedFormat, // Spread the existing properties
         jdate: "ascending", // Update the jdate property
       });
 
-      const sortedData = [...filteredData].sort((a, b) =>
-        new Date(b.jdate) - new Date(a.jdate)
+      const sortedData = [...filteredData].sort(
+        (a, b) => new Date(b.jdate) - new Date(a.jdate)
       );
       setFilteredData(sortedData);
-
     }
-
   };
 
-  const [teamData, setTeamData] = useState([])
+  const [teamData, setTeamData] = useState([]);
 
   const fetchTeamData = async () => {
-    const response = await axios.get(`${secretKey}/teaminfo`)
+    const response = await axios.get(`${secretKey}/teaminfo`);
 
-    console.log(response.data)
-    setTeamData(response.data)
-
-  }
+    console.log(response.data);
+    setTeamData(response.data);
+  };
 
   useEffect(() => {
-    fetchTeamData()
-
-  }, [])
+    fetchTeamData();
+  }, []);
 
   function formatDateFinal(timestamp) {
     const date = new Date(timestamp);
@@ -489,8 +501,28 @@ function Employees({ onEyeButtonClick }) {
     return `${day}/${month}/${year}`;
   }
 
-
-
+  // -------------------------------------------------    ADD Target Section   --------------------------------------------------
+const defaultObject = {
+  year:"",
+  month:"",
+  amount:0
+}
+const [targetObjects, setTargetObjects] = useState([defaultObject]);
+const [targetCount , setTargetCount] = useState(1);
+  useEffect(() => {
+    // Create new services array based on totalServices
+    if(!nowFetched)
+    {
+      const totalTargets = Array.from({ length: targetCount }, () => ({
+        ...defaultObject,
+      }));
+      setTargetObjects(totalTargets);
+      console.log("Fetch After changing Services", totalTargets);
+    }else {
+      setNowFetched(false)
+    }
+  }, [targetCount]);
+console.log("target objects:" , targetObjects)
   return (
     <div>
       <Modal
@@ -506,7 +538,8 @@ function Employees({ onEyeButtonClick }) {
             margin: "auto",
             textAlign: "center",
           },
-        }}>
+        }}
+      >
         <div className="modal-header">
           <h3 style={{ fontSize: "20px" }} className="modal-title">
             Confirm Delete?
@@ -690,6 +723,119 @@ function Employees({ onEyeButtonClick }) {
                   </div>
                 </div>
               </div>
+              <label className="form-label">ADD Target</label>
+
+             {targetObjects.map((obj,index)=>(
+
+<div className="row">
+                <div className="col-lg-3">
+                  <div className="mb-3">
+                    <div className="form-control">
+                      <select
+                        style={{
+                          border: "none",
+                          outline: "none",
+                          width: "fit-content",
+                        }}
+                        value={obj.year}
+                        onChange={(e)=>{
+                          setTargetObjects(prevState => {
+                            const updatedTargets = [...prevState]; // Create a copy of the targetCount array
+                            updatedTargets[index] = { ...updatedTargets[index], year: e.target.value }; // Update the specific object at the given index
+                            return updatedTargets; // Set the updated array as the new state
+                          });
+                        }}
+                      >
+                        <option value="" disabled selected>
+                          Select Year
+                        </option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-lg-3">
+                  <div className="mb-3">
+                    <div className="form-control">
+                      <select
+                        style={{
+                          border: "none",
+                          outline: "none",
+                          width: "fit-content",
+                        }}
+                        value={obj.month}
+                        onChange={(e)=>{
+                          setTargetObjects(prevState => {
+                            const updatedTargets = [...prevState]; // Create a copy of the targetCount array
+                            updatedTargets[index] = { ...updatedTargets[index], month: e.target.value }; // Update the specific object at the given index
+                            return updatedTargets; // Set the updated array as the new state
+                          });
+                        }}
+                      >
+                        <option value="" disabled selected>
+                          Select Month
+                        </option>
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-lg-5">
+                  <div className="mb-3">
+                    <input
+                      placeholder="ADD Target value"
+                      type="number"
+                      className="form-control"
+                      value={obj.amount}
+                      onChange={(e)=>{
+                        setTargetObjects(prevState => {
+                          const updatedTargets = [...prevState]; // Create a copy of the targetCount array
+                          updatedTargets[index] = { ...updatedTargets[index], amount: e.target.value }; // Update the specific object at the given index
+                          return updatedTargets; // Set the updated array as the new state
+                        });
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="col-lg-1">
+                  <div className="mb-3 d-flex">
+                    <IconButton style={{ float: "right" }} onClick={()=>setTargetCount(targetCount+1)}>
+                      <MdOutlineAddCircle
+                        color="primary"
+                        style={{
+                          float: "right",
+                          width: "14px",
+                          height: "14px",
+                        }}
+                       
+                      ></MdOutlineAddCircle>
+                    </IconButton>
+                    <IconButton style={{ float: "right" }} onClick={()=>setTargetCount(targetCount-1)}>
+                      <MdDelete
+                      color="primary"
+                      style={{
+                        float: "right",
+                        width: "14px",
+                        height: "14px",
+                      }}
+                      />
+                    </IconButton>
+                  </div>
+                </div>
+              </div>
+             )) }
             </div>
           </div>
         </DialogContent>
@@ -702,7 +848,6 @@ function Employees({ onEyeButtonClick }) {
       <Navbar number={1} /> */}
       <div className="page-wrapper">
         <div className="page-header d-print-none m-0">
-
           <div className="row g-2 align-items-center">
             <div className="col m-0">
               {/* <!-- Page pre-title --> */}
@@ -776,7 +921,6 @@ function Employees({ onEyeButtonClick }) {
               </div>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -784,9 +928,9 @@ function Employees({ onEyeButtonClick }) {
       <div
         onCopy={(e) => {
           e.preventDefault();
-        }} className="mt-2"
+        }}
+        className="mt-2"
       >
-
         <div className="card">
           <div style={{ padding: "0px" }} className="card-body">
             <div
@@ -809,7 +953,11 @@ function Employees({ onEyeButtonClick }) {
                       </button>
                     </th>
                     <th>
-                      <button onClick={sortDataByName} className="table-sort" data-sort="sort-city">
+                      <button
+                        onClick={sortDataByName}
+                        className="table-sort"
+                        data-sort="sort-city"
+                      >
                         Name
                       </button>
                     </th>
@@ -824,7 +972,11 @@ function Employees({ onEyeButtonClick }) {
                       </button>
                     </th>
                     <th>
-                      <button onClick={sortDataByJoiningDate} className="table-sort" data-sort="sort-date">
+                      <button
+                        onClick={sortDataByJoiningDate}
+                        className="table-sort"
+                        data-sort="sort-date"
+                      >
                         Joining date
                       </button>
                     </th>
@@ -839,7 +991,11 @@ function Employees({ onEyeButtonClick }) {
                       </button>
                     </th>
                     <th>
-                      <button onClick={sortDateByAddedOn} className="table-sort" data-sort="sort-date">
+                      <button
+                        onClick={sortDateByAddedOn}
+                        className="table-sort"
+                        data-sort="sort-date"
+                      >
                         Added on
                       </button>
                     </th>
@@ -848,6 +1004,7 @@ function Employees({ onEyeButtonClick }) {
                         Status
                       </button>
                     </th>
+                    <th>Team Name</th>
                     <th>
                       BDM Work
                     </th>
@@ -884,9 +1041,46 @@ function Employees({ onEyeButtonClick }) {
                         <td>{formatDateFinal(item.jdate)}</td>
                         <td>{item.designation}</td>
                         <td>{item.branchOffice}</td>
-                        <td>{formatDate(item.AddedOn) === "Invalid Date" ? "06/02/2024" : formatDateFinal(item.AddedOn)}</td>
-                        {item.designation !== "Admin Team" ? <td>
-                          {(item.Active && item.Active.includes("GMT")) ? (
+                        <td>
+                          {formatDate(item.AddedOn) === "Invalid Date"
+                            ? "06/02/2024"
+                            : formatDateFinal(item.AddedOn)}
+                        </td>
+                        {item.designation !== "Admin Team" ? (
+                          <td>
+                            {item.Active && item.Active.includes("GMT") ? (
+                              <div>
+                                <span
+                                  style={{ color: "red", marginRight: "5px" }}
+                                >
+                                  ●
+                                </span>
+                                <span
+                                  style={{
+                                    fontWeight: "bold",
+                                    color: "rgb(170 144 144)",
+                                  }}
+                                >
+                                  {formatDateWP(item.Active)}
+                                </span>
+                              </div>
+                            ) : (
+                              <div>
+                                <span
+                                  style={{ color: "green", marginRight: "5px" }}
+                                >
+                                  ●
+                                </span>
+                                <span
+                                  style={{ fontWeight: "bold", color: "green" }}
+                                >
+                                  Online
+                                </span>
+                              </div>
+                            )}
+                          </td>
+                        ) : (
+                          <td>
                             <div>
                               <span
                                 style={{ color: "red", marginRight: "5px" }}
@@ -899,40 +1093,13 @@ function Employees({ onEyeButtonClick }) {
                                   color: "rgb(170 144 144)",
                                 }}
                               >
-                                {formatDateWP(item.Active)}
+                                {formatDateWP(
+                                  "Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)"
+                                )}
                               </span>
                             </div>
-                          ) : (
-                            <div>
-                              <span
-                                style={{ color: "green", marginRight: "5px" }}
-                              >
-                                ●
-                              </span>
-                              <span
-                                style={{ fontWeight: "bold", color: "green" }}
-                              >
-                                Online
-                              </span>
-                            </div>
-                          )}
-                        </td> : <td>
-                          <div>
-                            <span
-                              style={{ color: "red", marginRight: "5px" }}
-                            >
-                              ●
-                            </span>
-                            <span
-                              style={{
-                                fontWeight: "bold",
-                                color: "rgb(170 144 144)",
-                              }}
-                            >
-                              {formatDateWP("Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)")}
-                            </span>
-                          </div>
-                        </td>}
+                          </td>
+                        )}
 
                         <td>
                           {/* {teamData
@@ -942,12 +1109,14 @@ function Employees({ onEyeButtonClick }) {
                           } */}
                           {item.bdmWork ? (<span>BDM</span>):(" ")}
                         </td>
-                        <td >
+                        <td>
                           <div className="d-flex justify-content-center align-items-center">
                             <div className="icons-btn">
-                              <IconButton onClick={() =>
-                                handleDeleteClick(item._id, item.ename)
-                              }>
+                              <IconButton
+                                onClick={() =>
+                                  handleDeleteClick(item._id, item.ename)
+                                }
+                              >
                                 <IconTrash
                                   style={{
                                     cursor: "pointer",
@@ -955,15 +1124,16 @@ function Employees({ onEyeButtonClick }) {
                                     width: "14px",
                                     height: "14px",
                                   }}
-
                                 />
                               </IconButton>
                             </div>
                             <div className="icons-btn">
-                              <IconButton onClick={() => {
-                                functionopenpopup();
-                                handleUpdateClick(item._id, item.ename);
-                              }}>
+                              <IconButton
+                                onClick={() => {
+                                  functionopenpopup();
+                                  handleUpdateClick(item._id, item.ename);
+                                }}
+                              >
                                 <ModeEditIcon
                                   style={{
                                     cursor: "pointer",
@@ -971,7 +1141,6 @@ function Employees({ onEyeButtonClick }) {
                                     width: "14px",
                                     height: "14px",
                                   }}
-
                                 />
                               </IconButton>
                             </div>
@@ -979,17 +1148,20 @@ function Employees({ onEyeButtonClick }) {
                               <Link
                                 style={{ color: "black" }}
                                 to={`/admin/employees/${item._id}`}
-                              ><IconButton >  <IconEye
-                                style={{
-                                  width: "14px",
-                                  height: "14px",
-                                  color: "#d6a10c",
-                                }}
-                              /></IconButton>
+                              >
+                                <IconButton>
+                                  {" "}
+                                  <IconEye
+                                    style={{
+                                      width: "14px",
+                                      height: "14px",
+                                      color: "#d6a10c",
+                                    }}
+                                  />
+                                </IconButton>
                               </Link>
                             </div>
                           </div>
-
                         </td>
                       </tr>
                     ))}
@@ -999,7 +1171,6 @@ function Employees({ onEyeButtonClick }) {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

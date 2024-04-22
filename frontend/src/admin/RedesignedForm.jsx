@@ -156,6 +156,7 @@ export default function RedesignedForm({
           bdeName: employeeName ? employeeName : "",
           bdeEmail: employeeEmail ? employeeEmail : "",
           bookingDate: formatInputDate(new Date()),
+          bdmType:"Close-by"
         }));
         setFetchBDE(true)
       } else if (Step2Status === true && Step3Status === false) {
@@ -2308,7 +2309,7 @@ export default function RedesignedForm({
                                       }}
                                       disabled={completed[activeStep] === true}
                                     >
-                                      {[...Array(6 - 1).keys()].map((year) => (
+                                      {[...Array(11 - 1).keys()].map((year) => (
                                         <option key={year} value={1 + year}>
                                           {1 + year}
                                         </option>

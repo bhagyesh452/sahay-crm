@@ -10,8 +10,8 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconEye } from "@tabler/icons-react";
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
+import "react-date-range/dist/styles.css"; // main style file
+import "react-date-range/dist/theme/default.css"; // theme css file
 //import { DateRangePicker } from 'react-date-range';
 import { FaChevronDown } from "react-icons/fa6";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
@@ -19,7 +19,7 @@ import { options } from "../components/Options.js";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { FaRegCalendar } from "react-icons/fa";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { FcDatabase } from "react-icons/fc";
 import { MdPersonSearch } from "react-icons/md";
 import { CiSearch } from "react-icons/ci";
@@ -28,40 +28,42 @@ import { IoCloseSharp } from "react-icons/io5";
 import { FaArrowRightArrowLeft } from "react-icons/fa6";
 import { FaArrowAltCircleRight } from "react-icons/fa";
 import { FaArrowAltCircleLeft } from "react-icons/fa";
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { debounce } from 'lodash';
-import { Link } from 'react-router-dom'
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { debounce } from "lodash";
+import { Link } from "react-router-dom";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import { MdHistory } from "react-icons/md";
 
 import AnnouncementIcon from "@mui/icons-material/Announcement";
-import { lastDayOfDecade } from "date-fns";
-import StatusInfo from './StausInfo.js'
-import Calendar from '@mui/icons-material/Event';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-import { SingleInputDateRangeField } from '@mui/x-date-pickers-pro/SingleInputDateRangeField';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import moment from 'moment'
-import { StaticDateRangePicker } from '@mui/x-date-pickers-pro/StaticDateRangePicker';
-import dayjs from 'dayjs';
+import { lastDayOfDecade, parse } from "date-fns";
+import StatusInfo from "./StausInfo.js";
+import Calendar from "@mui/icons-material/Event";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
+import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import moment from "moment";
+import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
+import dayjs from "dayjs";
 import { IoClose } from "react-icons/io5";
 // import { LicenseInfo } from '@mui/x-date-pickers-pro';
-
 
 // LicenseInfo.setLicenseKey(
 //   'x0jTPl0USVkVZV0SsMjM1kDNyADM5cjM2ETPZJVSQhVRsIDN0YTM6IVREJ1T0b9586ef25c9853decfa7709eee27a1e',
 // );
 
-
 // import LoginAdmin from "./LoginAdmin";
 
 function Dashboard() {
   const [recentUpdates, setRecentUpdates] = useState([]);
-  const [bookingDateFilter, setbookingDateFilter] = useState(new Date().toISOString().slice(0, 10));
+  const [bookingDateFilter, setbookingDateFilter] = useState(
+    new Date().toISOString().slice(0, 10)
+  );
   const [bookingObject, setBookingObject] = useState([]);
+  const [uniqueBDE, setUniqueBDE] = useState([]);
+  const [redesignedData, setRedesignedData] = useState([]);
   const [openTable, setOpenTable] = useState(false);
   const [openEmployeeTable, setOpenEmployeeTable] = useState(false);
   const [filteredBooking, setFilteredBooking] = useState([]);
@@ -75,20 +77,22 @@ function Dashboard() {
   const [endDate, setEndDate] = useState(new Date());
   const [filteredDataDateRange, setFilteredDataDateRange] = useState([]);
   const [showUpdates, setShowUpdates] = useState(false);
-  const [followData, setfollowData] = useState([])
-  const [openProjectionTable, setopenProjectionTable] = useState(false)
-  const [openProjectionHistoryTable, setopenProjectionHistoryTable] = useState(false)
+  const [followData, setfollowData] = useState([]);
+  const [openProjectionTable, setopenProjectionTable] = useState(false);
+  const [openProjectionHistoryTable, setopenProjectionHistoryTable] =
+    useState(false);
   const [projectedEmployee, setProjectedEmployee] = useState([]);
-  const [displayDateRange, setDateRangeDisplay] = useState(false)
-  const [displayDateRangeEmployee, setDateRangeDisplayEmployee] = useState(false)
+  const [displayDateRange, setDateRangeDisplay] = useState(false);
+  const [displayDateRangeEmployee, setDateRangeDisplayEmployee] =
+    useState(false);
   const [buttonToggle, setButtonToggle] = useState(false);
-  const [projectedDataDateRange, setProjectedDataDateRange] = useState([])
+  const [projectedDataDateRange, setProjectedDataDateRange] = useState([]);
   const [startDateEmployee, setStartDateEmployee] = useState(new Date());
   const [endDateEmployee, setEndDateEmployee] = useState(new Date());
-  const [showBookingDate, setShowBookingDate] = useState(false)
+  const [showBookingDate, setShowBookingDate] = useState(false);
   const [startDateAnother, setStartDateAnother] = useState(new Date());
   const [endDateAnother, setEndDateAnother] = useState(new Date());
-  const [projectionEname, setProjectionEname] = useState("")
+  const [projectionEname, setProjectionEname] = useState("");
   const [sortType, setSortType] = useState({
     untouched: "none",
     notPickedUp: "none",
@@ -99,13 +103,13 @@ function Dashboard() {
     matured: "none",
     interested: "none",
     lastLead: "none",
-    totalLeads: 'none'
+    totalLeads: "none",
   });
 
-  const [searchOption, setSearchOption] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [sideBar, setsideBar] = useState(false)
-  const [displayArrow, setDisplayArrow] = useState(true)
+  const [searchOption, setSearchOption] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sideBar, setsideBar] = useState(false);
+  const [displayArrow, setDisplayArrow] = useState(true);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
     const date = new Date(inputDate);
@@ -124,7 +128,6 @@ function Dashboard() {
       .then((data) => {
         setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
         setcompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted"));
-
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -135,7 +138,7 @@ function Dashboard() {
       .then((response) => response.json())
       .then((data) => {
         setEmployeeData(data);
-        setEmployeeDataFilter(data)
+        setEmployeeDataFilter(data);
         // setEmployeeDataFilter(data.filter)
       })
       .catch((error) => {
@@ -184,25 +187,52 @@ function Dashboard() {
     }
   };
 
+  const fetchRedesignedBookings = async () => {
+    try {
+      const response = await axios.get(
+        `${secretKey}/redesigned-final-leadData`
+      );
+      const bookingsData = response.data;
 
+      const getBDEnames = new Set();
+      bookingsData.forEach((obj) => {
+        // Check if the bdeName is already in the Set
+
+        if (!getBDEnames.has(obj.bdeName)) {
+          // If not, add it to the Set and push the object to the final array
+          getBDEnames.add(obj.bdeName);
+        }
+      });
+      setUniqueBDE(getBDEnames);
+      setRedesignedData(bookingsData);
+    } catch (error) {
+      console.log("Error Fetching Bookings Data", error);
+    }
+  };
+  const uniqueBDEobjects =
+    employeeData.length !== 0 &&
+    uniqueBDE.size !== 0 &&
+    employeeData.filter((obj) => Array.from(uniqueBDE).includes(obj.ename));
+
+  console.log("Employee Data:- ", uniqueBDEobjects);
   useEffect(() => {
     // Call the fetchData function when the component mounts
 
     fetchCompanies();
+    fetchRedesignedBookings();
     debouncedFetchCompanyData();
     debouncedFetchEmployeeInfo();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   useEffect(() => {
     fetchCompanies();
-  }, [startDateAnother, endDateAnother])
+  }, [startDateAnother, endDateAnother]);
 
   useEffect(() => {
     fetchData();
-  }, [showUpdates])
+  }, [showUpdates]);
 
   const uniqueBdeNames = new Set();
 
@@ -333,9 +363,9 @@ function Dashboard() {
 
   const handleCloseIconClickAnother = () => {
     if (showBookingDate) {
-      setShowBookingDate(false)
+      setShowBookingDate(false);
     }
-  }
+  };
   const selectionRangeAnother = {
     startDate: startDateAnother,
     endDate: endDateAnother,
@@ -354,16 +384,21 @@ function Dashboard() {
   //   setFilteredBooking(filteredDataDateRange);
   // };
 
-  console.log(bookingObject)
+  console.log(bookingObject);
 
   const handleSelectAnother = (values) => {
-    console.log(values)
+    console.log(values);
     if (values[1]) {
-      const startDate = values[0].format('MM/DD/YYYY');
-      const endDate = values[1].format('MM/DD/YYYY');
+      const startDate = values[0].format("MM/DD/YYYY");
+      const endDate = values[1].format("MM/DD/YYYY");
 
-      const filteredDataDateRange = bookingObject.filter(product => {
-        const productDate = new Date(product["bookingDate"]).setHours(0, 0, 0, 0);
+      const filteredDataDateRange = bookingObject.filter((product) => {
+        const productDate = new Date(product["bookingDate"]).setHours(
+          0,
+          0,
+          0,
+          0
+        );
 
         // Check if the formatted productDate is within the selected date range
         if (startDate === endDate) {
@@ -371,7 +406,10 @@ function Dashboard() {
           return new Date(productDate) === new Date(startDate);
         } else if (startDate !== endDate) {
           // If different startDate and endDate, filter within the range
-          return new Date(productDate) >= new Date(startDate) && new Date(productDate) <= new Date(endDate);
+          return (
+            new Date(productDate) >= new Date(startDate) &&
+            new Date(productDate) <= new Date(endDate)
+          );
         } else {
           return false;
         }
@@ -380,8 +418,7 @@ function Dashboard() {
     } else {
       return true;
     }
-
-  }
+  };
 
   function formatDateFinal(timestamp) {
     const date = new Date(timestamp);
@@ -396,7 +433,7 @@ function Dashboard() {
 
   // ----------------------------------projection-dashboard-----------------------------------------------
 
-  const [followDataToday, setfollowDataToday] = useState([])
+  const [followDataToday, setfollowDataToday] = useState([]);
   //   const[historyFollowUpData , setHistoryFollowUpData] = useState([])
 
   //   useEffect(() => {
@@ -412,15 +449,13 @@ function Dashboard() {
   //     fetchDataProjectionHistory();
   //   }, []);
 
-
   // console.log(projectionEname)
 
   const fetchFollowUpData = async () => {
-
     try {
       const response = await fetch(`${secretKey}/projection-data`);
       const followdata = await response.json();
-      setfollowData(followdata)
+      setfollowData(followdata);
       //console.log("followdata", followdata)
       setfollowDataToday(
         followdata.filter((company) => {
@@ -429,20 +464,33 @@ function Dashboard() {
           return company.estPaymentDate === today;
         })
       );
-
     } catch (error) {
-      console.error('Error fetching data:', error);
-      return { error: 'Error fetching data' };
+      console.error("Error fetching data:", error);
+      return { error: "Error fetching data" };
     }
-  }
-
+  };
+  const handleFilterBranchOffice = (branchName) => {
+    // Filter the followdataToday array based on branchName
+    if(branchName === "none"){
+      
+      
+    setfollowDataToday(followData);
+    }else{
+      const filteredFollowData = followData.filter((obj) =>
+      employeeData.some((empObj) => empObj.branchOffice === branchName && empObj.ename === obj.ename)
+    );
+  
+    setfollowDataToday(filteredFollowData);
+    }
+  };
+  
   //console.log(followDataToday)
 
   useEffect(() => {
     fetchFollowUpData();
   }, []);
 
-  const uniqueEnames = [...new Set(followDataToday.map(item => item.ename))];
+  const uniqueEnames = [...new Set(followDataToday.map((item) => item.ename))];
 
   const servicesByEname = followData.reduce((acc, curr) => {
     // Check if ename already exists in the accumulator
@@ -466,13 +514,15 @@ function Dashboard() {
 
   //console.log(totalservicesByEname);
 
-
   const companiesByEname = followData.reduce((accumulate, current) => {
     if (accumulate[current.ename]) {
       if (Array.isArray(accumulate[current.ename])) {
         accumulate[current.ename].push(current.companyName);
       } else {
-        accumulate[current.ename] = [accumulate[current.ename], current.companyName];
+        accumulate[current.ename] = [
+          accumulate[current.ename],
+          current.companyName,
+        ];
       }
     } else {
       accumulate[current.ename] = current.companyName;
@@ -482,11 +532,10 @@ function Dashboard() {
 
   //console.log(companiesByEname)
 
-
   const totalcompaniesByEname = followData.reduce((accumulate, current) => {
     accumulate = accumulate.concat(current.companyName);
-    return accumulate
-  }, [])
+    return accumulate;
+  }, []);
 
   //console.log(totalcompaniesByEname)
 
@@ -504,12 +553,11 @@ function Dashboard() {
         // If the ename does not exist in the accumulator, initialize it
         accumulator[ename] = {
           totalPaymentSum: totalPayment,
-          offeredPaymentSum: offeredPrize
+          offeredPaymentSum: offeredPrize,
         };
       }
       return accumulator;
     }, initialValue);
-
 
     return sum;
   }
@@ -532,7 +580,10 @@ function Dashboard() {
       if (Array.isArray(accumulate[current.ename])) {
         accumulate[current.ename].push(current.estPaymentDate);
       } else {
-        accumulate[current.ename] = [accumulate[current.ename], current.estPaymentDate];
+        accumulate[current.ename] = [
+          accumulate[current.ename],
+          current.estPaymentDate,
+        ];
       }
     } else {
       accumulate[current.ename] = current.estPaymentDate;
@@ -544,62 +595,64 @@ function Dashboard() {
 
   //console.log(followData)
 
-
   //console.log(projectionEname)
 
-  const [projectedDataToday, setprojectedDataToday] = useState([])
-
+  const [projectedDataToday, setprojectedDataToday] = useState([]);
 
   const functionOpenProjectionTable = (ename) => {
-    setProjectionEname(ename)
+    setProjectionEname(ename);
     //console.log("Ename:", ename)
     setopenProjectionTable(true);
-    const projectedData = followData.filter(obj => obj.ename === ename);
-    console.log("projected", projectedData)
-    const projectedDataDateRange = followDataToday.filter(obj => obj.ename === ename)
-    const projectedDataToday = followDataToday.filter(obj => obj.ename === ename)
+    const projectedData = followData.filter((obj) => obj.ename === ename);
+    console.log("projected", projectedData);
+    const projectedDataDateRange = followDataToday.filter(
+      (obj) => obj.ename === ename
+    );
+    const projectedDataToday = followDataToday.filter(
+      (obj) => obj.ename === ename
+    );
     //console.log(projectedDataDateRange)
     setProjectedEmployee(projectedData);
-    setProjectedDataDateRange(projectedDataDateRange)
-    setprojectedDataToday(projectedDataToday)
+    setProjectedDataDateRange(projectedDataDateRange);
+    setprojectedDataToday(projectedDataToday);
   };
   //console.log(projectedEmployee)
   // console.log("Date Range", projectedDataDateRange)
 
-  console.log(projectedDataToday)
+  console.log(projectedDataToday);
   const closeProjectionTable = () => {
     setopenProjectionTable(false);
   };
 
-  const [completeProjectionTable, setCompleteProjectionTable] = useState(false)
+  const [completeProjectionTable, setCompleteProjectionTable] = useState(false);
 
   const functionCompleteProjectionTable = () => {
-    setCompleteProjectionTable(true)
-  }
+    setCompleteProjectionTable(true);
+  };
 
   const closeCompleteProjectionTable = () => {
     setCompleteProjectionTable(false);
   };
 
-
-
-
-
-
-
-
-
   function calculateSumPopup(data) {
-    const initialValue = { totalPaymentSumPopup: 0, offeredPaymentSumPopup: 0, offeredServicesPopup: [] };
+    const initialValue = {
+      totalPaymentSumPopup: 0,
+      offeredPaymentSumPopup: 0,
+      offeredServicesPopup: [],
+    };
 
     const sum = data.reduce((accumulator, currentValue) => {
       // Concatenate offeredServices from each object into a single array
-      const offeredServicesPopup = accumulator.offeredServicesPopup.concat(currentValue.offeredServices);
+      const offeredServicesPopup = accumulator.offeredServicesPopup.concat(
+        currentValue.offeredServices
+      );
 
       return {
-        totalPaymentSumPopup: accumulator.totalPaymentSumPopup + currentValue.totalPayment,
-        offeredPaymentSumPopup: accumulator.offeredPaymentSumPopup + currentValue.offeredPrize,
-        offeredServicesPopup: offeredServicesPopup
+        totalPaymentSumPopup:
+          accumulator.totalPaymentSumPopup + currentValue.totalPayment,
+        offeredPaymentSumPopup:
+          accumulator.offeredPaymentSumPopup + currentValue.offeredPrize,
+        offeredServicesPopup: offeredServicesPopup,
       };
     }, initialValue);
 
@@ -609,31 +662,28 @@ function Dashboard() {
     return sum;
   }
 
-
   //console.log("projecteddata" , projectedDataToday)
 
   // Calculate the sums
-  const { totalPaymentSumPopup, offeredPaymentSumPopup, offeredServicesPopup } = calculateSumPopup(projectedEmployee);
+  const { totalPaymentSumPopup, offeredPaymentSumPopup, offeredServicesPopup } =
+    calculateSumPopup(projectedEmployee);
   //console.log(totalPaymentSumPopup)
   //console.log(offeredPaymentSumPopup)
   // console.log(offeredServicesPopup)
 
   // ---------------------------------------------history of projection data--------------------------------------------
 
-
-  const [viewHistoryCompanyName, setviewHistoryCompanyName] = useState("")
-  const [historyDataCompany, sethistoryDataCompany] = useState([])
-
-
-
+  const [viewHistoryCompanyName, setviewHistoryCompanyName] = useState("");
+  const [historyDataCompany, sethistoryDataCompany] = useState([]);
 
   const handleViewHistoryProjection = (companyName) => {
+    const companyHistoryName = companyName;
 
-    const companyHistoryName = companyName
-
-    setviewHistoryCompanyName(companyHistoryName)
-    setopenProjectionTable(false)
-    const companyDataProjection = projectedDataToday.find(obj => obj.companyName === companyHistoryName);
+    setviewHistoryCompanyName(companyHistoryName);
+    setopenProjectionTable(false);
+    const companyDataProjection = projectedDataToday.find(
+      (obj) => obj.companyName === companyHistoryName
+    );
     // Check if the company data is found
     if (companyDataProjection) {
       // Check if the company data has a history field
@@ -641,18 +691,21 @@ function Dashboard() {
         // Access the history data
         const historyData = companyDataProjection.history;
         //console.log("History Data for", companyHistoryName, ":", historyData);
-        sethistoryDataCompany(historyData)
+        sethistoryDataCompany(historyData);
         // Now you can use the historyData array as needed
       } else {
         console.log("No history found for", viewHistoryCompanyName);
       }
     } else {
-      console.log("Company", viewHistoryCompanyName, "not found in projectedDataToday");
+      console.log(
+        "Company",
+        viewHistoryCompanyName,
+        "not found in projectedDataToday"
+      );
     }
-    setopenProjectionHistoryTable(true)
+    setopenProjectionHistoryTable(true);
     // Extract history from each object in followData
   };
-
 
   // const handleViewHistoryNew = (companyName) => {
 
@@ -680,22 +733,20 @@ function Dashboard() {
   //   // Extract history from each object in followData
   // };
 
-
-  const latestDataForCompany = projectedDataToday.filter(obj => obj.companyName === viewHistoryCompanyName);
-
+  const latestDataForCompany = projectedDataToday.filter(
+    (obj) => obj.companyName === viewHistoryCompanyName
+  );
 
   //const latestDataForCompanyDateRange = projectedDataDateRange.filter(obj => obj.companyName === viewHistoryCompanyName);
 
-
-  console.log("HistoryCompanyName", viewHistoryCompanyName)
+  console.log("HistoryCompanyName", viewHistoryCompanyName);
 
   const closeProjectionHistoryTable = () => {
     setopenProjectionHistoryTable(false);
-    setopenProjectionTable(true)
+    setopenProjectionTable(true);
   };
 
-
-  console.log(historyDataCompany)
+  console.log(historyDataCompany);
 
   // --------------------------------- date-range-picker-------------------------------------
 
@@ -708,74 +759,88 @@ function Dashboard() {
     setButtonToggle(!buttonToggle);
   };
 
-
   const handleClickOutside = (event) => {
-    if (dateRangePickerRef.current && !dateRangePickerRef.current.contains(event.target)) {
+    if (
+      dateRangePickerRef.current &&
+      !dateRangePickerRef.current.contains(event.target)
+    ) {
       setShowBookingDate(false);
     }
   };
 
   // Add event listener when the component mounts
   useEffect(() => {
-    const totalBookingElement = document.getElementById('totalbooking');
+    const totalBookingElement = document.getElementById("totalbooking");
 
     if (totalBookingElement) {
-      totalBookingElement.addEventListener('click', handleClickOutside);
+      totalBookingElement.addEventListener("click", handleClickOutside);
 
       return () => {
-        totalBookingElement.removeEventListener('click', handleClickOutside);
+        totalBookingElement.removeEventListener("click", handleClickOutside);
       };
     }
   }, []);
 
   const handleClickOutsideProjection = (event) => {
-    if (dateRangePickerProhectionRef.current && !dateRangePickerProhectionRef.current.contains(event.target)) {
+    if (
+      dateRangePickerProhectionRef.current &&
+      !dateRangePickerProhectionRef.current.contains(event.target)
+    ) {
       setDateRangeDisplay(false);
     }
   };
 
   // Add event listener when the component mounts
   useEffect(() => {
-    const totalBookingElement = document.getElementById('projectionsummaryadmin');
+    const totalBookingElement = document.getElementById(
+      "projectionsummaryadmin"
+    );
     if (totalBookingElement) {
-      totalBookingElement.addEventListener('click', handleClickOutsideProjection);
+      totalBookingElement.addEventListener(
+        "click",
+        handleClickOutsideProjection
+      );
       // Remove event listener when the component unmounts
       return () => {
-        totalBookingElement.removeEventListener('click', handleClickOutsideProjection);
+        totalBookingElement.removeEventListener(
+          "click",
+          handleClickOutsideProjection
+        );
       };
-
     }
-
   }, []);
-
-
-
 
   const handleCloseIconClick = () => {
     if (displayDateRange) {
-      setDateRangeDisplay(false)
+      setDateRangeDisplay(false);
     }
-  }
+  };
 
   const handleClickOutsideEmployee = (event) => {
-    if (dateRangePickerEmployeeRef.current && !dateRangePickerEmployeeRef.current.contains(event.target)) {
-      setDateRangeDisplayEmployee(false)
+    if (
+      dateRangePickerEmployeeRef.current &&
+      !dateRangePickerEmployeeRef.current.contains(event.target)
+    ) {
+      setDateRangeDisplayEmployee(false);
     }
   };
 
   // Add event listener when the component mounts
   useEffect(() => {
-    const totalBookingElement = document.getElementById('employeedashboardadmin');
+    const totalBookingElement = document.getElementById(
+      "employeedashboardadmin"
+    );
 
     if (totalBookingElement) {
-      totalBookingElement.addEventListener('click', handleClickOutsideEmployee);
+      totalBookingElement.addEventListener("click", handleClickOutsideEmployee);
       // Remove event listener when the component unmounts
       return () => {
-        totalBookingElement.removeEventListener('click', handleClickOutsideEmployee);
+        totalBookingElement.removeEventListener(
+          "click",
+          handleClickOutsideEmployee
+        );
       };
-
     }
-
   }, []);
 
   const [selectedDateRange, setSelectedDateRange] = useState([]);
@@ -785,7 +850,7 @@ function Dashboard() {
   const selectionRange = {
     startDate: startDate,
     endDate: endDate,
-    key: 'selection',
+    key: "selection",
   };
 
   // const handleSelect = (date) => {
@@ -815,14 +880,11 @@ function Dashboard() {
     const endDate = values[1];
 
     // Filter followData based on the selected date range
-    const filteredDataDateRange = followData.filter(product => {
+    const filteredDataDateRange = followData.filter((product) => {
       const productDate = new Date(product["estPaymentDate"]);
 
       // Check if the productDate is within the selected date range
-      return (
-        productDate >= startDate &&
-        productDate <= endDate
-      );
+      return productDate >= startDate && productDate <= endDate;
     });
 
     // Set the startDate, endDate, and filteredDataDateRange states
@@ -832,23 +894,31 @@ function Dashboard() {
   };
 
   useEffect(() => {
-
     // Filter followData based on the selected date range
-    const filteredDataDateRange = followData.filter(product => {
+    const filteredDataDateRange = followData.filter((product) => {
       const productDate = new Date(product["estPaymentDate"]);
 
       // Convert productDate to the sameformat as startDate and endDate
-      const formattedProductDate = dayjs(productDate).startOf('day');
-      const formattedStartDate = startDate ? dayjs(startDate).startOf('day') : null;
-      const formattedEndDate = endDate ? dayjs(endDate).endOf('day') : null;
+      const formattedProductDate = dayjs(productDate).startOf("day");
+      const formattedStartDate = startDate
+        ? dayjs(startDate).startOf("day")
+        : null;
+      const formattedEndDate = endDate ? dayjs(endDate).endOf("day") : null;
 
       // Check if the formatted productDate is within the selected date range
-      if (formattedStartDate && formattedEndDate && formattedStartDate.isSame(formattedEndDate)) {
+      if (
+        formattedStartDate &&
+        formattedEndDate &&
+        formattedStartDate.isSame(formattedEndDate)
+      ) {
         // If both startDate and endDate are the same, filter for transactions on that day
         return formattedProductDate.isSame(formattedStartDate);
       } else if (formattedStartDate && formattedEndDate) {
         // If different startDate and endDate, filter within the range
-        return formattedProductDate >= formattedStartDate && formattedProductDate <= formattedEndDate;
+        return (
+          formattedProductDate >= formattedStartDate &&
+          formattedProductDate <= formattedEndDate
+        );
       } else {
         // If either startDate or endDate is null, return false
         return false;
@@ -859,23 +929,31 @@ function Dashboard() {
   }, [startDate, endDate]);
 
   useEffect(() => {
-
     // Filter followData based on the selected date range
-    const filteredDataDateRange = followData.filter(product => {
+    const filteredDataDateRange = followData.filter((product) => {
       const productDate = new Date(product["estPaymentDate"]);
 
       // Convert productDate to the sameformat as startDate and endDate
-      const formattedProductDate = dayjs(productDate).startOf('day');
-      const formattedStartDate = startDate ? dayjs(startDate).startOf('day') : null;
-      const formattedEndDate = endDate ? dayjs(endDate).endOf('day') : null;
+      const formattedProductDate = dayjs(productDate).startOf("day");
+      const formattedStartDate = startDate
+        ? dayjs(startDate).startOf("day")
+        : null;
+      const formattedEndDate = endDate ? dayjs(endDate).endOf("day") : null;
 
       // Check if the formatted productDate is within the selected date range
-      if (formattedStartDate && formattedEndDate && formattedStartDate.isSame(formattedEndDate)) {
+      if (
+        formattedStartDate &&
+        formattedEndDate &&
+        formattedStartDate.isSame(formattedEndDate)
+      ) {
         // If both startDate and endDate are the same, filter for transactions on that day
         return formattedProductDate.isSame(formattedStartDate);
       } else if (formattedStartDate && formattedEndDate) {
         // If different startDate and endDate, filter within the range
-        return formattedProductDate >= formattedStartDate && formattedProductDate <= formattedEndDate;
+        return (
+          formattedProductDate >= formattedStartDate &&
+          formattedProductDate <= formattedEndDate
+        );
       } else {
         // If either startDate or endDate is null, return false
         return false;
@@ -885,20 +963,19 @@ function Dashboard() {
     setfollowDataToday(filteredDataDateRange);
   }, [startDate, endDate]);
 
-
   // --------------------------------------daterangepickerfor employeedatareport----------------------------------
 
-
-  const [selectedDateRangeEmployee, setSelectedDateRangeEmployee] = useState([]);
-
+  const [selectedDateRangeEmployee, setSelectedDateRangeEmployee] = useState(
+    []
+  );
 
   const handleSelectEmployee = (values) => {
-    console.log(values)
+    console.log(values);
     if (values[1]) {
-      const startDate = values[0].format('MM/DD/YYYY');
-      const endDate = values[1].format('MM/DD/YYYY');
+      const startDate = values[0].format("MM/DD/YYYY");
+      const endDate = values[1].format("MM/DD/YYYY");
 
-      const filteredDataDateRange = companyDataFilter.filter(product => {
+      const filteredDataDateRange = companyDataFilter.filter((product) => {
         const productDate = new Date(product.AssignDate).setHours(0, 0, 0, 0);
 
         // Check if the formatted productDate is within the selected date range
@@ -907,7 +984,10 @@ function Dashboard() {
           return new Date(productDate) === new Date(startDate);
         } else if (startDate !== endDate) {
           // If different startDate and endDate, filter within the range
-          return new Date(productDate) >= new Date(startDate) && new Date(productDate) <= new Date(endDate);
+          return (
+            new Date(productDate) >= new Date(startDate) &&
+            new Date(productDate) <= new Date(endDate)
+          );
         } else {
           return false;
         }
@@ -916,12 +996,7 @@ function Dashboard() {
     } else {
       return true;
     }
-
-  }
-
-
-
-
+  };
 
   // useEffect(() => {
 
@@ -936,9 +1011,6 @@ function Dashboard() {
   //     console.log(formattedProductDate)
   //     console.log(formattedStartDate)
   //     console.log(formattedEndDate)
-
-
-
 
   //     // Check if the formatted productDate is within the selected date range
   //     if (formattedStartDate && formattedEndDate && formattedStartDate.isSame(formattedEndDate)) {
@@ -962,7 +1034,9 @@ function Dashboard() {
     const day = date.getDate();
     const month = date.getMonth() + 1; // Months are zero-based
     const year = date.getFullYear();
-    return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+    return `${day.toString().padStart(2, "0")}/${month
+      .toString()
+      .padStart(2, "0")}/${year}`;
   }
 
   //console.log("companyData", companyData)
@@ -981,7 +1055,6 @@ function Dashboard() {
     return acc;
   }, []);
 
-
   const servicesByEnameToday = followDataToday.reduce((acc, curr) => {
     // Check if ename already exists in the accumulator
     if (acc[curr.ename]) {
@@ -996,11 +1069,14 @@ function Dashboard() {
 
   //console.log(servicesByEnameDateRange)
 
-  const totalservicesByEnameDateRange = filteredDataDateRange.reduce((acc, curr) => {
-    // Concatenate all offeredServices into a single array
-    acc = acc.concat(curr.offeredServices);
-    return acc;
-  }, []);
+  const totalservicesByEnameDateRange = filteredDataDateRange.reduce(
+    (acc, curr) => {
+      // Concatenate all offeredServices into a single array
+      acc = acc.concat(curr.offeredServices);
+      return acc;
+    },
+    []
+  );
 
   const totalservicesByEnameToday = followDataToday.reduce((acc, curr) => {
     // Concatenate all offeredServices into a single array
@@ -1008,49 +1084,65 @@ function Dashboard() {
     return acc;
   }, []);
 
-
   //onsole.log(totalservicesByEnameDateRange)
 
-  const companiesByEnameDateRange = filteredDataDateRange.reduce((accumulate, current) => {
-    if (accumulate[current.ename]) {
-      if (Array.isArray(accumulate[current.ename])) {
-        accumulate[current.ename].push(current.companyName);
+  const companiesByEnameDateRange = filteredDataDateRange.reduce(
+    (accumulate, current) => {
+      if (accumulate[current.ename]) {
+        if (Array.isArray(accumulate[current.ename])) {
+          accumulate[current.ename].push(current.companyName);
+        } else {
+          accumulate[current.ename] = [
+            accumulate[current.ename],
+            current.companyName,
+          ];
+        }
       } else {
-        accumulate[current.ename] = [accumulate[current.ename], current.companyName];
+        accumulate[current.ename] = [current.companyName];
       }
-    } else {
-      accumulate[current.ename] = [current.companyName];
-    }
-    return accumulate;
-  }, []);
+      return accumulate;
+    },
+    []
+  );
 
-  const companiesByEnameToday = followDataToday.reduce((accumulate, current) => {
-    if (accumulate[current.ename]) {
-      if (Array.isArray(accumulate[current.ename])) {
-        accumulate[current.ename].push(current.companyName);
+  const companiesByEnameToday = followDataToday.reduce(
+    (accumulate, current) => {
+      if (accumulate[current.ename]) {
+        if (Array.isArray(accumulate[current.ename])) {
+          accumulate[current.ename].push(current.companyName);
+        } else {
+          accumulate[current.ename] = [
+            accumulate[current.ename],
+            current.companyName,
+          ];
+        }
       } else {
-        accumulate[current.ename] = [accumulate[current.ename], current.companyName];
+        accumulate[current.ename] = [current.companyName];
       }
-    } else {
-      accumulate[current.ename] = [current.companyName];
-    }
-    return accumulate;
-  }, []);
+      return accumulate;
+    },
+    []
+  );
 
   //console.log(companiesByEnameDateRange)
 
-  const totalcompaniesByEnameDateRange = filteredDataDateRange.reduce((accumulate, current) => {
-    accumulate = accumulate.concat(current.companyName);
-    return accumulate
-  }, [])
+  const totalcompaniesByEnameDateRange = filteredDataDateRange.reduce(
+    (accumulate, current) => {
+      accumulate = accumulate.concat(current.companyName);
+      return accumulate;
+    },
+    []
+  );
 
-  const totalcompaniesByEnameToday = followDataToday.reduce((accumulate, current) => {
-    accumulate = accumulate.concat(current.companyName);
-    return accumulate
-  }, [])
+  const totalcompaniesByEnameToday = followDataToday.reduce(
+    (accumulate, current) => {
+      accumulate = accumulate.concat(current.companyName);
+      return accumulate;
+    },
+    []
+  );
 
   //console.log(totalcompaniesByEnameDateRange)
-
 
   function calculateSumDateRange(data) {
     const initialValue = {};
@@ -1066,12 +1158,11 @@ function Dashboard() {
         // If the ename does not exist in the accumulator, initialize it
         accumulator[ename] = {
           totalPaymentSum: totalPayment,
-          offeredPaymentSum: offeredPrize
+          offeredPaymentSum: offeredPrize,
         };
       }
       return accumulator;
     }, initialValue);
-
 
     return sum;
   }
@@ -1094,12 +1185,11 @@ function Dashboard() {
         // If the ename does not exist in the accumulator, initialize it
         accumulator[ename] = {
           totalPaymentSum: totalPayment,
-          offeredPaymentSum: offeredPrize
+          offeredPaymentSum: offeredPrize,
         };
       }
       return accumulator;
     }, initialValue);
-
 
     return sum;
   }
@@ -1107,19 +1197,16 @@ function Dashboard() {
   // Calculate the sums
   const sumsToday = calculateSumToday(followDataToday);
 
-
-
-
-
   let totalTotalPaymentSumDateRange = 0;
   let totalOfferedPaymentSumDateRange = 0;
 
   // Iterate over the values of sumsDateRange object
-  Object.values(sumsDateRange).forEach(({ totalPaymentSum, offeredPaymentSum }) => {
-    totalTotalPaymentSumDateRange += totalPaymentSum;
-    totalOfferedPaymentSumDateRange += offeredPaymentSum;
-  });
-
+  Object.values(sumsDateRange).forEach(
+    ({ totalPaymentSum, offeredPaymentSum }) => {
+      totalTotalPaymentSumDateRange += totalPaymentSum;
+      totalOfferedPaymentSumDateRange += offeredPaymentSum;
+    }
+  );
 
   let totalTotalPaymentSumToday = 0;
   let totalOfferedPaymentSumToday = 0;
@@ -1130,21 +1217,30 @@ function Dashboard() {
     totalOfferedPaymentSumToday += offeredPaymentSum;
   });
 
-
   //console.log("Total Total Payment Sum Date Range:", totalTotalPaymentSumDateRange);
   //console.log("Total Offered Payment Sum Date Range:", totalOfferedPaymentSumDateRange);
 
   function calculateSumPopupDateRange(data) {
-    const initialValue = { totalPaymentSumPopupDateRange: 0, offeredPaymentSumPopupDateRange: 0, offeredServicesPopupDateRange: [] };
+    const initialValue = {
+      totalPaymentSumPopupDateRange: 0,
+      offeredPaymentSumPopupDateRange: 0,
+      offeredServicesPopupDateRange: [],
+    };
 
     const sum = data.reduce((accumulator, currentValue) => {
       // Concatenate offeredServices from each object into a single array
-      const offeredServicesPopupDateRange = accumulator.offeredServicesPopupDateRange.concat(currentValue.offeredServices);
+      const offeredServicesPopupDateRange =
+        accumulator.offeredServicesPopupDateRange.concat(
+          currentValue.offeredServices
+        );
 
       return {
-        totalPaymentSumPopupDateRange: accumulator.totalPaymentSumPopupDateRange + currentValue.totalPayment,
-        offeredPaymentSumPopupDateRange: accumulator.offeredPaymentSumPopupDateRange + currentValue.offeredPrize,
-        offeredServicesPopupDateRange: offeredServicesPopupDateRange
+        totalPaymentSumPopupDateRange:
+          accumulator.totalPaymentSumPopupDateRange + currentValue.totalPayment,
+        offeredPaymentSumPopupDateRange:
+          accumulator.offeredPaymentSumPopupDateRange +
+          currentValue.offeredPrize,
+        offeredServicesPopupDateRange: offeredServicesPopupDateRange,
       };
     }, initialValue);
 
@@ -1155,23 +1251,35 @@ function Dashboard() {
   }
 
   // Calculate the sums
-  const { totalPaymentSumPopupDateRange, offeredPaymentSumPopupDateRange, offeredServicesPopupDateRange } = calculateSumPopupDateRange(projectedDataDateRange);
+  const {
+    totalPaymentSumPopupDateRange,
+    offeredPaymentSumPopupDateRange,
+    offeredServicesPopupDateRange,
+  } = calculateSumPopupDateRange(projectedDataDateRange);
   // console.log(totalPaymentSumPopupDateRange)
   // console.log(offeredPaymentSumPopupDateRange)
   // console.log(offeredServicesPopupDateRange)
 
-
   function calculateSumPopupToday(data) {
-    const initialValue = { totalPaymentSumPopupToday: 0, offeredPaymentSumPopupToday: 0, offeredServicesPopupToday: [] };
+    const initialValue = {
+      totalPaymentSumPopupToday: 0,
+      offeredPaymentSumPopupToday: 0,
+      offeredServicesPopupToday: [],
+    };
 
     const sum = data.reduce((accumulator, currentValue) => {
       // Concatenate offeredServices from each object into a single array
-      const offeredServicesPopupToday = accumulator.offeredServicesPopupToday.concat(currentValue.offeredServices);
+      const offeredServicesPopupToday =
+        accumulator.offeredServicesPopupToday.concat(
+          currentValue.offeredServices
+        );
 
       return {
-        totalPaymentSumPopupToday: accumulator.totalPaymentSumPopupToday + currentValue.totalPayment,
-        offeredPaymentSumPopupToday: accumulator.offeredPaymentSumPopupToday + currentValue.offeredPrize,
-        offeredServicesPopupToday: offeredServicesPopupToday
+        totalPaymentSumPopupToday:
+          accumulator.totalPaymentSumPopupToday + currentValue.totalPayment,
+        offeredPaymentSumPopupToday:
+          accumulator.offeredPaymentSumPopupToday + currentValue.offeredPrize,
+        offeredServicesPopupToday: offeredServicesPopupToday,
       };
     }, initialValue);
 
@@ -1182,9 +1290,11 @@ function Dashboard() {
   }
 
   // Calculate the sums
-  const { totalPaymentSumPopupToday, offeredPaymentSumPopupToday, offeredServicesPopupToday } = calculateSumPopupToday(projectedDataToday);
-
-
+  const {
+    totalPaymentSumPopupToday,
+    offeredPaymentSumPopupToday,
+    offeredServicesPopupToday,
+  } = calculateSumPopupToday(projectedDataToday);
 
   // -------------------------------------------------------------sorting ascending-descending------------------------------------------
 
@@ -1203,9 +1313,8 @@ function Dashboard() {
     lastleadassign: false,
   });
 
-
   const handleFilterIncoDate = (header) => {
-    setOpenFilters(prevState => {
+    setOpenFilters((prevState) => {
       const updatedState = {};
       for (const key in prevState) {
         updatedState[key] = key === header ? !prevState[header] : false;
@@ -1215,24 +1324,24 @@ function Dashboard() {
   };
   //-------------------------- Sort filteres for different status  -------------------------------------------------------------------------
   const handleSortUntouched = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      untouched: prevData.untouched === "ascending"
-        ? "descending"
-        : prevData.untouched === "descending"
+      untouched:
+        prevData.untouched === "ascending"
+          ? "descending"
+          : prevData.untouched === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
 
     switch (sortBy1) {
-
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Untouched")
-          ) {
-            untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+          if (company.Status === "Untouched") {
+            untouchedCountAscending[company.ename] =
+              (untouchedCountAscending[company.ename] || 0) + 1;
           }
         });
 
@@ -1248,9 +1357,9 @@ function Dashboard() {
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Untouched")
-          ) {
-            untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+          if (company.Status === "Untouched") {
+            untouchedCount[company.ename] =
+              (untouchedCount[company.ename] || 0) + 1;
           }
         });
 
@@ -1270,26 +1379,26 @@ function Dashboard() {
         break;
       default:
         break;
-
     }
   };
   const handleSortNotPickedUp = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      notPickedUp: prevData.notPickedUp === "ascending"
-        ? "descending"
-        : prevData.notPickedUp === "descending"
+      notPickedUp:
+        prevData.notPickedUp === "ascending"
+          ? "descending"
+          : prevData.notPickedUp === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
 
     switch (sortBy1) {
-
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Not Picked Up")
+          if (
+            company.Status === "Not Picked Up"
             // (openFilters.busy && company.Status === "Busy") ||
             // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
             // (openFilters.junk && company.Status === "Junk") ||
@@ -1300,7 +1409,8 @@ function Dashboard() {
             // (openFilters.totalLeads) ||
             // (openFilters.lastleadassign)
           ) {
-            untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+            untouchedCountAscending[company.ename] =
+              (untouchedCountAscending[company.ename] || 0) + 1;
           }
         });
 
@@ -1325,9 +1435,9 @@ function Dashboard() {
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Not Picked Up")
-          ) {
-            untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+          if (company.Status === "Not Picked Up") {
+            untouchedCount[company.ename] =
+              (untouchedCount[company.ename] || 0) + 1;
           }
         });
 
@@ -1347,31 +1457,29 @@ function Dashboard() {
         break;
       default:
         break;
-
     }
   };
 
   // for busy
 
   const handleSortbusy = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      busy: prevData.busy === "ascending"
-        ? "descending"
-        : prevData.busy === "descending"
+      busy:
+        prevData.busy === "ascending"
+          ? "descending"
+          : prevData.busy === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
-
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Busy")
-
-          ) {
-            untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+          if (company.Status === "Busy") {
+            untouchedCountAscending[company.ename] =
+              (untouchedCountAscending[company.ename] || 0) + 1;
           }
         });
 
@@ -1387,9 +1495,9 @@ function Dashboard() {
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Busy")
-          ) {
-            untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+          if (company.Status === "Busy") {
+            untouchedCount[company.ename] =
+              (untouchedCount[company.ename] || 0) + 1;
           }
         });
 
@@ -1409,25 +1517,25 @@ function Dashboard() {
         break;
       default:
         break;
-
     }
   };
   const handleSortInterested = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      interested: prevData.interested === "ascending"
-        ? "descending"
-        : prevData.interested === "descending"
+      interested:
+        prevData.interested === "ascending"
+          ? "descending"
+          : prevData.interested === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
-
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Interested")
+          if (
+            company.Status === "Interested"
             // (openFilters.busy && company.Status === "Busy") ||
             // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
             // (openFilters.junk && company.Status === "Junk") ||
@@ -1438,7 +1546,8 @@ function Dashboard() {
             // (openFilters.totalLeads) ||
             // (openFilters.lastleadassign)
           ) {
-            untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+            untouchedCountAscending[company.ename] =
+              (untouchedCountAscending[company.ename] || 0) + 1;
           }
         });
 
@@ -1463,9 +1572,9 @@ function Dashboard() {
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Interested")
-          ) {
-            untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+          if (company.Status === "Interested") {
+            untouchedCount[company.ename] =
+              (untouchedCount[company.ename] || 0) + 1;
           }
         });
 
@@ -1485,25 +1594,25 @@ function Dashboard() {
         break;
       default:
         break;
-
     }
   };
   const handleSortMatured = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      matured: prevData.matured === "ascending"
-        ? "descending"
-        : prevData.matured === "descending"
+      matured:
+        prevData.matured === "ascending"
+          ? "descending"
+          : prevData.matured === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
-
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Matured")
+          if (
+            company.Status === "Matured"
             // (openFilters.busy && company.Status === "Busy") ||
             // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
             // (openFilters.junk && company.Status === "Junk") ||
@@ -1514,7 +1623,8 @@ function Dashboard() {
             // (openFilters.totalLeads) ||
             // (openFilters.lastleadassign)
           ) {
-            untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+            untouchedCountAscending[company.ename] =
+              (untouchedCountAscending[company.ename] || 0) + 1;
           }
         });
 
@@ -1539,9 +1649,9 @@ function Dashboard() {
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Matured")
-          ) {
-            untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+          if (company.Status === "Matured") {
+            untouchedCount[company.ename] =
+              (untouchedCount[company.ename] || 0) + 1;
           }
         });
 
@@ -1561,25 +1671,25 @@ function Dashboard() {
         break;
       default:
         break;
-
     }
   };
   const handleSortNotInterested = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      notInterested: prevData.notInterested === "ascending"
-        ? "descending"
-        : prevData.notInterested === "descending"
+      notInterested:
+        prevData.notInterested === "ascending"
+          ? "descending"
+          : prevData.notInterested === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
-
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Not Interested")
+          if (
+            company.Status === "Not Interested"
             // (openFilters.busy && company.Status === "Busy") ||
             // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
             // (openFilters.junk && company.Status === "Junk") ||
@@ -1590,7 +1700,8 @@ function Dashboard() {
             // (openFilters.totalLeads) ||
             // (openFilters.lastleadassign)
           ) {
-            untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+            untouchedCountAscending[company.ename] =
+              (untouchedCountAscending[company.ename] || 0) + 1;
           }
         });
 
@@ -1615,9 +1726,9 @@ function Dashboard() {
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Not Interested")
-          ) {
-            untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+          if (company.Status === "Not Interested") {
+            untouchedCount[company.ename] =
+              (untouchedCount[company.ename] || 0) + 1;
           }
         });
 
@@ -1637,28 +1748,26 @@ function Dashboard() {
         break;
       default:
         break;
-
     }
   };
   const handleSortJunk = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      junk: prevData.junk === "ascending"
-        ? "descending"
-        : prevData.junk === "descending"
+      junk:
+        prevData.junk === "ascending"
+          ? "descending"
+          : prevData.junk === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
-
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Junk")
-
-          ) {
-            untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+          if (company.Status === "Junk") {
+            untouchedCountAscending[company.ename] =
+              (untouchedCountAscending[company.ename] || 0) + 1;
           }
         });
 
@@ -1683,9 +1792,9 @@ function Dashboard() {
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Junk")
-          ) {
-            untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+          if (company.Status === "Junk") {
+            untouchedCount[company.ename] =
+              (untouchedCount[company.ename] || 0) + 1;
           }
         });
 
@@ -1705,25 +1814,25 @@ function Dashboard() {
         break;
       default:
         break;
-
     }
   };
   const handleSortFollowUp = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      followUp: prevData.followUp === "ascending"
-        ? "descending"
-        : prevData.followUp === "descending"
+      followUp:
+        prevData.followUp === "ascending"
+          ? "descending"
+          : prevData.followUp === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
-
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         companyData.forEach((company) => {
-          if ((company.Status === "Follow Up")
+          if (
+            company.Status === "Follow Up"
             // (openFilters.busy && company.Status === "Busy") ||
             // (openFilters.notPickedUp && company.Status === "Not Picked Up") ||
             // (openFilters.junk && company.Status === "Junk") ||
@@ -1734,7 +1843,8 @@ function Dashboard() {
             // (openFilters.totalLeads) ||
             // (openFilters.lastleadassign)
           ) {
-            untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
+            untouchedCountAscending[company.ename] =
+              (untouchedCountAscending[company.ename] || 0) + 1;
           }
         });
 
@@ -1759,9 +1869,9 @@ function Dashboard() {
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-          if ((company.Status === "FollowUp")
-          ) {
-            untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
+          if (company.Status === "FollowUp") {
+            untouchedCount[company.ename] =
+              (untouchedCount[company.ename] || 0) + 1;
           }
         });
 
@@ -1781,27 +1891,25 @@ function Dashboard() {
         break;
       default:
         break;
-
     }
   };
   const handleSortLastLead = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      lastLead: prevData.lastLead === "ascending"
-        ? "descending"
-        : prevData.lastLead === "descending"
+      lastLead:
+        prevData.lastLead === "ascending"
+          ? "descending"
+          : prevData.lastLead === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
-
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         companyData.forEach((company) => {
-
-          untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
-
+          untouchedCountAscending[company.ename] =
+            (untouchedCountAscending[company.ename] || 0) + 1;
         });
 
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -1825,9 +1933,8 @@ function Dashboard() {
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-
-          untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
-
+          untouchedCount[company.ename] =
+            (untouchedCount[company.ename] || 0) + 1;
         });
 
         // Step 2: Sort employeeData based on the count of "Untouched" statuses
@@ -1846,23 +1953,21 @@ function Dashboard() {
         break;
       default:
         break;
-
     }
   };
   const handleSortTotalLeads = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      totalLeads: prevData.totalLeads === "ascending" ? "descending" : "ascending"
+      totalLeads:
+        prevData.totalLeads === "ascending" ? "descending" : "ascending",
     }));
     switch (sortBy1) {
-
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         companyData.forEach((company) => {
-
-          untouchedCountAscending[company.ename] = (untouchedCountAscending[company.ename] || 0) + 1;
-
+          untouchedCountAscending[company.ename] =
+            (untouchedCountAscending[company.ename] || 0) + 1;
         });
 
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -1886,9 +1991,8 @@ function Dashboard() {
         setIncoFilter("descending");
         const untouchedCount = {};
         companyData.forEach((company) => {
-
-          untouchedCount[company.ename] = (untouchedCount[company.ename] || 0) + 1;
-
+          untouchedCount[company.ename] =
+            (untouchedCount[company.ename] || 0) + 1;
         });
 
         // Step 2: Sort employeeData based on the count of "Untouched" statuses
@@ -1907,11 +2011,8 @@ function Dashboard() {
         break;
       default:
         break;
-
     }
   };
-
-
 
   useEffect(() => {
     setOriginalEmployeeData([...employeeData]); // Store original state of employeeData
@@ -1928,19 +2029,18 @@ function Dashboard() {
 
   const handleCloseIconClickEmployee = () => {
     if (displayDateRangeEmployee) {
-      setDateRangeDisplayEmployee(false)
+      setDateRangeDisplayEmployee(false);
     }
-  }
+  };
   const selectionRangeEmployee = {
     startDate: startDateEmployee,
     endDate: endDateEmployee,
-    key: 'selection',
+    key: "selection",
   };
 
-  const [companyDataFilter, setcompanyDataFilter] = useState([])
+  const [companyDataFilter, setcompanyDataFilter] = useState([]);
 
   // const handleSelectEmployee = (date) => {
-
 
   //   const filteredDataDateRange = companyDataFilter.filter(product => {
   //     const productDate = new Date(product["AssignDate"]);
@@ -1963,76 +2063,74 @@ function Dashboard() {
   //   //console.log(filteredDataDateRange)
   // };
 
-
-
   // ------------------------------------------search bde name---------------------------------------------------
 
   const handleCloseSearch = () => {
     if (searchOption) {
-      setSearchOption(false)
+      setSearchOption(false);
     }
-  }
+  };
 
   const debouncedFilterSearch = debounce(filterSearch, 100);
 
   // Modified filterSearch function with debounce
   function filterSearch(searchTerm) {
     setSearchTerm(searchTerm);
-    setEmployeeData(employeeDataFilter.filter(company =>
-      company.ename.toLowerCase().includes(searchTerm.toLowerCase())
-    ));
+    setEmployeeData(
+      employeeDataFilter.filter((company) =>
+        company.ename.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
   }
 
   //  ---------------------------------------------status info component-------------------------------------------------
 
-
   const numberFormatOptions = {
-    style: 'currency',
-    currency: 'INR', // Use the currency code for Indian Rupee (INR)
+    style: "currency",
+    currency: "INR", // Use the currency code for Indian Rupee (INR)
     minimumFractionDigits: 0, // Minimum number of fraction digits (adjust as needed)
     maximumFractionDigits: 2, // Maximum number of fraction digits (adjust as needed)
   };
   const shortcutsItems = [
     {
-      label: 'This Week',
+      label: "This Week",
       getValue: () => {
         const today = dayjs();
-        return [today.startOf('week'), today.endOf('week')];
+        return [today.startOf("week"), today.endOf("week")];
       },
     },
     {
-      label: 'Last Week',
+      label: "Last Week",
       getValue: () => {
         const today = dayjs();
-        const prevWeek = today.subtract(7, 'day');
-        return [prevWeek.startOf('week'), prevWeek.endOf('week')];
+        const prevWeek = today.subtract(7, "day");
+        return [prevWeek.startOf("week"), prevWeek.endOf("week")];
       },
     },
     {
-      label: 'Last 7 Days',
+      label: "Last 7 Days",
       getValue: () => {
         const today = dayjs();
-        return [today.subtract(7, 'day'), today];
+        return [today.subtract(7, "day"), today];
       },
     },
     {
-      label: 'Current Month',
+      label: "Current Month",
       getValue: () => {
         const today = dayjs();
-        return [today.startOf('month'), today.endOf('month')];
+        return [today.startOf("month"), today.endOf("month")];
       },
     },
     {
-      label: 'Next Month',
+      label: "Next Month",
       getValue: () => {
         const today = dayjs();
-        const startOfNextMonth = today.endOf('month').add(1, 'day');
-        return [startOfNextMonth, startOfNextMonth.endOf('month')];
+        const startOfNextMonth = today.endOf("month").add(1, "day");
+        return [startOfNextMonth, startOfNextMonth.endOf("month")];
       },
     },
-    { label: 'Reset', getValue: () => [null, null] },
+    { label: "Reset", getValue: () => [null, null] },
   ];
-
 
   // -------------------------------------sorting projection summary-------------------------------------------
   const [incoFilterNew, setIncoFilterNew] = useState("");
@@ -2040,16 +2138,16 @@ function Dashboard() {
     totalCompanies: "ascending",
   });
   const [sortTypeServices, setSortTypeServices] = useState({
-    offeredServices: "ascending"
-  })
+    offeredServices: "ascending",
+  });
 
   const [sortTypePrice, setSortTypePrice] = useState({
-    offeredPrice: "ascending"
-  })
+    offeredPrice: "ascending",
+  });
 
   const [sortTypeExpectedPayment, setSortTypeExpectedPayment] = useState({
-    expectedPayment: "ascending"
-  })
+    expectedPayment: "ascending",
+  });
 
   const handleSortTotalCompanies = (newSortType) => {
     setSortTypeProjection(newSortType);
@@ -2060,12 +2158,11 @@ function Dashboard() {
   };
 
   const handleSortOffredPrize = (newSortType) => {
-
     setSortTypePrice(newSortType);
   };
 
   const handleSortExpectedPayment = (newSortType) => {
-    console.log(newSortType)
+    console.log(newSortType);
     setSortTypeExpectedPayment(newSortType);
   };
   // const getTotalOfferedPrice = (ename) => {
@@ -2090,38 +2187,48 @@ function Dashboard() {
   const sortedData = uniqueEnames.slice().sort((a, b) => {
     // Sorting logic for total companies
     if (sortTypeProjection === "ascending") {
-      return followDataToday.filter((partObj) => partObj.ename === a).length -
-        followDataToday.filter((partObj) => partObj.ename === b).length;
+      return (
+        followDataToday.filter((partObj) => partObj.ename === a).length -
+        followDataToday.filter((partObj) => partObj.ename === b).length
+      );
     } else if (sortTypeProjection === "descending") {
-      return followDataToday.filter((partObj) => partObj.ename === b).length -
-        followDataToday.filter((partObj) => partObj.ename === a).length;
+      return (
+        followDataToday.filter((partObj) => partObj.ename === b).length -
+        followDataToday.filter((partObj) => partObj.ename === a).length
+      );
     }
 
     // Sorting logic for offered services
     if (sortTypeServices === "ascending") {
-      return followDataToday.reduce((totalServicesA, partObj) => {
-        if (partObj.ename === a) {
-          totalServicesA += partObj.offeredServices.length;
-        }
-        return totalServicesA;
-      }, 0) - followDataToday.reduce((totalServicesB, partObj) => {
-        if (partObj.ename === b) {
-          totalServicesB += partObj.offeredServices.length;
-        }
-        return totalServicesB;
-      }, 0);
+      return (
+        followDataToday.reduce((totalServicesA, partObj) => {
+          if (partObj.ename === a) {
+            totalServicesA += partObj.offeredServices.length;
+          }
+          return totalServicesA;
+        }, 0) -
+        followDataToday.reduce((totalServicesB, partObj) => {
+          if (partObj.ename === b) {
+            totalServicesB += partObj.offeredServices.length;
+          }
+          return totalServicesB;
+        }, 0)
+      );
     } else if (sortTypeServices === "descending") {
-      return followDataToday.reduce((totalServicesB, partObj) => {
-        if (partObj.ename === b) {
-          totalServicesB += partObj.offeredServices.length;
-        }
-        return totalServicesB;
-      }, 0) - followDataToday.reduce((totalServicesA, partObj) => {
-        if (partObj.ename === a) {
-          totalServicesA += partObj.offeredServices.length;
-        }
-        return totalServicesA;
-      }, 0);
+      return (
+        followDataToday.reduce((totalServicesB, partObj) => {
+          if (partObj.ename === b) {
+            totalServicesB += partObj.offeredServices.length;
+          }
+          return totalServicesB;
+        }, 0) -
+        followDataToday.reduce((totalServicesA, partObj) => {
+          if (partObj.ename === a) {
+            totalServicesA += partObj.offeredServices.length;
+          }
+          return totalServicesA;
+        }, 0)
+      );
     }
 
     // Sorting logic for total offered price
@@ -2131,58 +2238,68 @@ function Dashboard() {
     //   return getTotalOfferedPrice(b) - getTotalOfferedPrice(a);
     // }
     if (sortTypePrice === "ascending") {
-      return followDataToday.reduce((totalOfferedPriceA, partObj) => {
-        if (partObj.ename === a) {
-          totalOfferedPriceA += partObj.offeredPrize;
-        }
-        return totalOfferedPriceA;
-      }, 0) - followDataToday.reduce((totalOfferedPriceB, partObj) => {
-        if (partObj.ename === b) {
-          totalOfferedPriceB += partObj.offeredPrize;
-        }
-        return totalOfferedPriceB;
-      }, 0);
+      return (
+        followDataToday.reduce((totalOfferedPriceA, partObj) => {
+          if (partObj.ename === a) {
+            totalOfferedPriceA += partObj.offeredPrize;
+          }
+          return totalOfferedPriceA;
+        }, 0) -
+        followDataToday.reduce((totalOfferedPriceB, partObj) => {
+          if (partObj.ename === b) {
+            totalOfferedPriceB += partObj.offeredPrize;
+          }
+          return totalOfferedPriceB;
+        }, 0)
+      );
     } else if (sortTypePrice === "descending") {
-      return followDataToday.reduce((totalOfferedPriceB, partObj) => {
-        if (partObj.ename === b) {
-          totalOfferedPriceB += partObj.offeredPrize;
-        }
-        return totalOfferedPriceB;
-      }, 0) - followDataToday.reduce((totalOfferedPriceA, partObj) => {
-        if (partObj.ename === a) {
-          totalOfferedPriceA += partObj.offeredPrize;
-        }
-        return totalOfferedPriceA;
-      }, 0);
+      return (
+        followDataToday.reduce((totalOfferedPriceB, partObj) => {
+          if (partObj.ename === b) {
+            totalOfferedPriceB += partObj.offeredPrize;
+          }
+          return totalOfferedPriceB;
+        }, 0) -
+        followDataToday.reduce((totalOfferedPriceA, partObj) => {
+          if (partObj.ename === a) {
+            totalOfferedPriceA += partObj.offeredPrize;
+          }
+          return totalOfferedPriceA;
+        }, 0)
+      );
     }
-
-
 
     // Sorting logic for expected amount
     if (sortTypeExpectedPayment === "ascending") {
-      return followDataToday.reduce((totalExpectedPaymentA, partObj) => {
-        if (partObj.ename === a) {
-          totalExpectedPaymentA += partObj.totalPayment;
-        }
-        return totalExpectedPaymentA;
-      }, 0) - followDataToday.reduce((totalExpectedPaymentB, partObj) => {
-        if (partObj.ename === b) {
-          totalExpectedPaymentB += partObj.totalPayment;
-        }
-        return totalExpectedPaymentB;
-      }, 0);
+      return (
+        followDataToday.reduce((totalExpectedPaymentA, partObj) => {
+          if (partObj.ename === a) {
+            totalExpectedPaymentA += partObj.totalPayment;
+          }
+          return totalExpectedPaymentA;
+        }, 0) -
+        followDataToday.reduce((totalExpectedPaymentB, partObj) => {
+          if (partObj.ename === b) {
+            totalExpectedPaymentB += partObj.totalPayment;
+          }
+          return totalExpectedPaymentB;
+        }, 0)
+      );
     } else if (sortTypeExpectedPayment === "descending") {
-      return followDataToday.reduce((totalExpectedPaymentB, partObj) => {
-        if (partObj.ename === b) {
-          totalExpectedPaymentB += partObj.totalPayment;
-        }
-        return totalExpectedPaymentB;
-      }, 0) - followDataToday.reduce((totalExpectedPaymentA, partObj) => {
-        if (partObj.ename === a) {
-          totalExpectedPaymentA += partObj.totalPayment;
-        }
-        return totalExpectedPaymentA;
-      }, 0);
+      return (
+        followDataToday.reduce((totalExpectedPaymentB, partObj) => {
+          if (partObj.ename === b) {
+            totalExpectedPaymentB += partObj.totalPayment;
+          }
+          return totalExpectedPaymentB;
+        }, 0) -
+        followDataToday.reduce((totalExpectedPaymentA, partObj) => {
+          if (partObj.ename === a) {
+            totalExpectedPaymentA += partObj.totalPayment;
+          }
+          return totalExpectedPaymentA;
+        }, 0)
+      );
     }
 
     // If sortType is "none", return original order
@@ -2196,8 +2313,8 @@ function Dashboard() {
       // Assuming you want to filter companies with an estimated payment date for today
       const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
       return company.estPaymentDate === today;
-    })
-   // console.log("kuchbhi" , sendingData)
+    });
+    // console.log("kuchbhi" , sendingData)
     try {
       const response = await axios.post(
         `${secretKey}/followdataexport/`,
@@ -2217,10 +2334,156 @@ function Dashboard() {
 
   //console.log(followDataToday)
 
+  // ------------------------------------------------------- Redesigned Total Bookings Functions ------------------------------------------------------------------
+  let totalMaturedCount = 0;
+  let totalTargetAmount = 0;
+  let totalAchievedAmount = 0;
 
+  const functionCalculateMatured = (bdeName) => {
+    let maturedCount = 0;
+    const filteredRedesignedData = redesignedData.filter(
+      (obj) => obj.bdeName === bdeName
+    );
 
+    filteredRedesignedData.forEach((obj) => {
+      if (obj.moreBookings.length === 0) {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          maturedCount += 0.5;
+        } else {
+          maturedCount += 1;
+        }
+      } else {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          maturedCount += 0.5;
+        } else {
+          maturedCount += 1;
+        }
 
+        obj.moreBookings.forEach((booking) => {
+          if (
+            booking.bdeName !== booking.bdmName &&
+            booking.bdmType === "Close-by"
+          ) {
+            maturedCount += 0.5;
+          } else {
+            maturedCount += 1;
+          }
+        });
+      }
+    });
+    totalMaturedCount = totalMaturedCount + maturedCount;
+    return maturedCount;
+  };
+  const functionCalculateAchievedAmount = (bdeName) => {
+    let achievedAmount = 0;
+    const filteredRedesignedData = redesignedData.filter(
+      (obj) => obj.bdeName === bdeName
+    );
 
+    filteredRedesignedData.forEach((obj) => {
+      if (obj.moreBookings.length === 0) {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.receivedAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.receivedAmount);
+        }
+      } else {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.receivedAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.receivedAmount);
+        }
+        obj.moreBookings.forEach((booking) => {
+          if (
+            booking.bdeName !== booking.bdmName &&
+            booking.bdmType === "Close-by"
+          ) {
+            achievedAmount += parseInt(obj.receivedAmount / 2);
+          } else {
+            achievedAmount += parseInt(obj.receivedAmount);
+          }
+        });
+      }
+    });
+    totalAchievedAmount =
+      parseInt(totalAchievedAmount) + parseInt(achievedAmount);
+    return achievedAmount;
+  };
+
+  const currentYear = new Date().getFullYear();
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const currentMonth = monthNames[new Date().getMonth()];
+
+  const functionGetAmount = (object) => {
+    if (object.targetDetails.length !== 0) {
+      const foundObject = object.targetDetails.find(
+        (item) =>
+          parseInt(item.year) === currentYear && item.month === currentMonth
+      );
+      totalTargetAmount =
+        foundObject &&
+        parseInt(totalTargetAmount) + parseInt(foundObject.amount);
+      console.log(
+        "This is total Amount",
+        foundObject && foundObject.amount,
+        totalTargetAmount
+      );
+      return foundObject ? foundObject.amount : 0;
+    } else {
+      return 0;
+    }
+  };
+
+  function functionGetLastBookingDate(bdeName) {
+    // Filter objects based on bdeName
+    const filteredRedesignedData = redesignedData.filter(
+      (obj) => obj.bdeName === bdeName
+    );
+
+    // Initialize variable to store the latest booking date
+    let lastBookingDate = null;
+
+    // Iterate through filtered data
+    filteredRedesignedData.forEach((obj) => {
+      if (obj.moreBookings && obj.moreBookings.length > 0) {
+        // If moreBookings exist, find the latest bookingDate
+        const latestBookingDate = obj.moreBookings.reduce(
+          (latestDate, booking) => {
+            const bookingDate = new Date(booking.bookingDate);
+            return bookingDate > latestDate ? bookingDate : latestDate;
+          },
+          new Date(0)
+        ); // Initialize with minimum date
+
+        // Update lastBookingDate if latestBookingDate is later
+        if (latestBookingDate > lastBookingDate || !lastBookingDate) {
+          lastBookingDate = latestBookingDate;
+        }
+      } else {
+        // If no moreBookings, directly consider bookingDate
+        const bookingDate = new Date(obj.bookingDate);
+        if (bookingDate > lastBookingDate || !lastBookingDate) {
+          lastBookingDate = bookingDate;
+        }
+      }
+    });
+
+    // Return the formatted date string or an empty string if lastBookingDate is null
+    return lastBookingDate ? formatDateFinal(lastBookingDate) : "N/A";
+  }
 
   return (
     <div>
@@ -2275,15 +2538,58 @@ function Dashboard() {
                   </div>
                   {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
                   <div className="employee-dashboard">
-                    <div className="card todays-booking m-2 totalbooking" id='totalbooking' >
+                    <div
+                      className="card todays-booking m-2 totalbooking"
+                      id="totalbooking"
+                    >
                       <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                         <div className="d-flex justify-content-between">
-                          <div style={{ minWidth: '14vw' }} className="dashboard-title">
-                            <h2 style={{ marginBottom: '5px' }}>Total Bookings</h2>
+                          <div
+                            style={{ minWidth: "14vw" }}
+                            className="dashboard-title"
+                          >
+                            <h2 style={{ marginBottom: "5px" }}>
+                              THIS MONTH BOOKINGS
+                            </h2>
                           </div>
                         </div>
-                        <div style={{ m: 1, padding: "0px", marginRight: "30px" }}>
-                          <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
+
+                        <div
+                          style={{ m: 1, padding: "0px", marginRight: "30px" }}
+                          className="filter-booking d-flex align-items-center"
+                        >
+                          <div className="filter-title mr-1">
+                            <h2 style={{ marginBottom: "5px" }}>
+                              {" "}
+                              Filter Branch : {"  "}
+                            </h2>
+                          </div>
+                          <div className="filter-main">
+                            <select
+                              className="form-select mt-1"
+                              id={`branch-filter`}
+                              onChange={(e)=>{
+                                if(e.target.value === "none"){
+                                  setEmployeeData(employeeDataFilter)
+                                }else{
+                                  setEmployeeData(employeeDataFilter.filter(obj=>obj.branchOffice === e.target.value))
+                                }
+                               
+                              }}
+                            >
+                              <option value="" disabled selected>
+                                Select Branch
+                              </option>
+
+                              <option value={"Gota"}>Gota</option>
+                              <option value={"Sindhu Bhawan"}>
+                                Sindhu Bhawan
+                              </option>
+                              <option value={"none"}>None</option>
+                            </select>
+                          </div>
+                        </div>
+                        {/* <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
                             <DemoContainer components={['SingleInputDateRangeField']}>
                               <DateRangePicker
                                 onChange={(values) => {
@@ -2303,8 +2609,8 @@ function Dashboard() {
                               //calendars={1}
                               />
                             </DemoContainer>
-                          </LocalizationProvider>
-                        </div>
+                          </LocalizationProvider> */}
+
                         {/* <div className=" form-control date-range-picker d-flex align-items-center justify-content-between">
                           <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
                             {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
@@ -2351,7 +2657,17 @@ function Dashboard() {
                             }}
                             className="table-vcenter table-nowrap"
                           >
-                            <thead style={{ lineHeight: "32px" }}>
+                            <thead
+                              style={{
+                                position: "sticky", // Make the header sticky
+                                top: "-1px", // Stick it at the top
+                                backgroundColor: "#ffb900",
+                                color: "black",
+                                fontWeight: "bold",
+                                lineHeight: "32px",
+                                zIndex: 1, // Ensure it's above other content
+                              }}
+                            >
                               <tr
                                 style={{
                                   backgroundColor: "#ffb900",
@@ -2361,17 +2677,70 @@ function Dashboard() {
                               >
                                 <th style={{ lineHeight: "32px" }}>SR.NO</th>
                                 <th>BDE NAME</th>
+                                <th>BRANCH</th>
                                 <th>MATURED CASES</th>
-                                <th>NUM OF UNIQUE SERVICES OFFERED</th>
-                                <th>TOTAL PAYMENT</th>
-                                <th>RECEIVED PAYMENT</th>
-                                <th>PENDING PAYMENT</th>
+                                <th>TARGET AMOUNT</th>
+                                <th>ACHIEVED AMOUNT</th>
+                                <th>TARGET/ACHIEVED RATIO</th>
+                                <th>LAST BOOKING DATE</th>
                               </tr>
                             </thead>
-                            {finalFilteredData.length !== 0 ? (
+                            {uniqueBDEobjects ? (
                               <>
                                 <tbody>
-                                  {finalFilteredData.map((obj, index) => (
+                                  {employeeData &&
+                                    employeeData
+                                      .filter(
+                                        (item) =>
+                                          item.designation ===
+                                            "Sales Executive" &&
+                                          item.targetDetails.length !== 0
+                                      )
+                                      .map((obj, index) => (
+                                        <>
+                                          <tr>
+                                            <td>{index + 1}</td>
+                                            <td style={{ lineHeight: "32px" }}>
+                                              {obj.ename}
+                                            </td>
+                                            <td>{obj.branchOffice}</td>
+                                            <td>
+                                              {functionCalculateMatured(
+                                                obj.ename
+                                              )}
+                                            </td>
+                                            <td>
+                                              ₹{" "}
+                                              {parseInt(
+                                                functionGetAmount(obj)
+                                              ).toLocaleString()}
+                                            </td>
+                                            <td>
+                                              ₹{" "}
+                                              {functionCalculateAchievedAmount(
+                                                obj.ename
+                                              ).toLocaleString()}
+                                            </td>
+                                            <td>
+                                              {" "}
+                                              {(
+                                                (functionCalculateAchievedAmount(
+                                                  obj.ename
+                                                ) /
+                                                  functionGetAmount(obj)) *
+                                                100
+                                              ).toFixed(2)}{" "}
+                                              %
+                                            </td>
+                                            <td>
+                                              {functionGetLastBookingDate(
+                                                obj.ename
+                                              )}
+                                            </td>
+                                          </tr>
+                                        </>
+                                      ))}
+                                  {/* {finalFilteredData.map((obj, index) => (
                                     <>
                                       <tr style={{ position: "relative" }}>
                                         <td style={{ lineHeight: "32px" }}>
@@ -2504,9 +2873,52 @@ function Dashboard() {
                                         </td>
                                       </tr>
                                     </>
-                                  ))}
+                                  ))} */}
                                 </tbody>
-                                <tfoot>
+                                <tfoot
+                                  style={{
+                                    position: "sticky", // Make the footer sticky
+                                    bottom: -1, // Stick it at the bottom
+                                    backgroundColor: "#f6f2e9",
+                                    color: "black",
+                                    fontWeight: 500,
+                                    zIndex: 2, // Ensure it's above the content
+                                  }}
+                                >
+                                  <tr style={{ fontWeight: "500" }}>
+                                    <td
+                                      colSpan={2}
+                                      style={{ lineHeight: "32px" }}
+                                    >
+                                      Total:
+                                    </td>
+                                    <td>-</td>
+                                    <td>
+                                      {" "}
+                                      {totalMaturedCount.toLocaleString()}
+                                    </td>
+                                    <td>
+                                      ₹{" "}
+                                      {(totalTargetAmount / 2).toLocaleString()}
+                                    </td>
+                                    <td>
+                                      ₹{" "}
+                                      {(
+                                        totalAchievedAmount / 2
+                                      ).toLocaleString()}
+                                    </td>
+                                    <td>
+                                      {(
+                                        (totalAchievedAmount /
+                                          totalTargetAmount) *
+                                        100
+                                      ).toFixed(2)}{" "}
+                                      %
+                                    </td>
+                                    <td>-</td>
+                                  </tr>
+                                </tfoot>
+                                {/* <tfoot>
                                   <tr style={{ fontWeight: "500" }}>
                                     <td colSpan={2} style={{ lineHeight: "32px" }}>
                                       Total:{finalFilteredData.length}
@@ -2579,7 +2991,7 @@ function Dashboard() {
                                         .toLocaleString()}
                                     </td>
                                   </tr>
-                                </tfoot>
+                                </tfoot> */}
                               </>
                             ) : (
                               <tbody>
@@ -2597,16 +3009,23 @@ function Dashboard() {
                   </div>
 
                   {/* Employee side Dashboard Analysis */}
-                  <div className="employee-dashboard" id="employeedashboardadmin">
+                  <div
+                    className="employee-dashboard"
+                    id="employeedashboardadmin"
+                  >
                     <div className="card">
                       <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                         <div className="d-flex justify-content-between">
-                          <div style={{ minWidth: '14vw' }} className="dashboard-title">
-                            <h2 style={{ marginBottom: '5px' }}>Employees Data Report</h2>
+                          <div
+                            style={{ minWidth: "14vw" }}
+                            className="dashboard-title"
+                          >
+                            <h2 style={{ marginBottom: "5px" }}>
+                              Employees Data Report
+                            </h2>
                           </div>
                         </div>
                         <div className="d-flex gap-2">
-
                           <div className="general-searchbar form-control d-flex justify-content-center align-items-center input-icon">
                             <span className="input-icon-addon">
                               <svg
@@ -2619,7 +3038,8 @@ function Dashboard() {
                                 stroke="currentColor"
                                 fill="none"
                                 stroke-linecap="round"
-                                stroke-linejoin="round">
+                                stroke-linejoin="round"
+                              >
                                 <path
                                   stroke="none"
                                   d="M0 0h24v24H0z"
@@ -2629,8 +3049,21 @@ function Dashboard() {
                                 <path d="M21 21l-6 -6" />
                               </svg>
                             </span>
-                            <input value={searchTerm}
-                              onChange={(e) => debouncedFilterSearch(e.target.value)} placeholder="Enter BDE Name..." style={{ border: "none", padding: "0px 0px 0px 21px", width: "100%" }} type="text" name="bdeName-search" id="bdeName-search" />
+                            <input
+                              value={searchTerm}
+                              onChange={(e) =>
+                                debouncedFilterSearch(e.target.value)
+                              }
+                              placeholder="Enter BDE Name..."
+                              style={{
+                                border: "none",
+                                padding: "0px 0px 0px 21px",
+                                width: "100%",
+                              }}
+                              type="text"
+                              name="bdeName-search"
+                              id="bdeName-search"
+                            />
                             {/* <CiSearch style={{
                               width: "19px",
                               height: "20px",
@@ -2644,13 +3077,25 @@ function Dashboard() {
                               <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
                             </button>
                           </div> */}
-                          <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
-                            <DemoContainer components={['SingleInputDateRangeField']}>
+                          <LocalizationProvider
+                            dateAdapter={AdapterDayjs}
+                            style={{ padding: "0px" }}
+                          >
+                            <DemoContainer
+                              components={["SingleInputDateRangeField"]}
+                            >
                               <DateRangePicker
                                 onChange={(values) => {
-                                  const startDateEmp = moment(values[0]).format('DD/MM/YYYY');
-                                  const endDateEmp = moment(values[1]).format('DD/MM/YYYY');
-                                  setSelectedDateRangeEmployee([startDateEmp, endDateEmp]);
+                                  const startDateEmp = moment(values[0]).format(
+                                    "DD/MM/YYYY"
+                                  );
+                                  const endDateEmp = moment(values[1]).format(
+                                    "DD/MM/YYYY"
+                                  );
+                                  setSelectedDateRangeEmployee([
+                                    startDateEmp,
+                                    endDateEmp,
+                                  ]);
                                   handleSelectEmployee(values); // Call handleSelect with the selected values
                                 }}
                                 slots={{ field: SingleInputDateRangeField }}
@@ -2659,13 +3104,14 @@ function Dashboard() {
                                     items: shortcutsItems,
                                   },
                                   actionBar: { actions: [] },
-                                  textField: { InputProps: { endAdornment: <Calendar /> } }
+                                  textField: {
+                                    InputProps: { endAdornment: <Calendar /> },
+                                  },
                                 }}
-                              //calendars={1}
+                                //calendars={1}
                               />
                             </DemoContainer>
                           </LocalizationProvider>
-
                         </div>
                       </div>
 
@@ -2712,7 +3158,7 @@ function Dashboard() {
                             <thead
                               style={{
                                 position: "sticky", // Make the header sticky
-                                top: '-1px', // Stick it at the top
+                                top: "-1px", // Stick it at the top
                                 backgroundColor: "#ffb900",
                                 color: "black",
                                 fontWeight: "bold",
@@ -2727,168 +3173,376 @@ function Dashboard() {
                                 >
                                   Sr. No
                                 </th>
-                                <th>BDE/BDM Name
-
+                                <th>BDE/BDM Name</th>
+                                <th
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let newSortType;
+                                    if (sortType.untouched === "ascending") {
+                                      newSortType = "descending";
+                                    } else if (
+                                      sortType.untouched === "descending"
+                                    ) {
+                                      newSortType = "none";
+                                    } else {
+                                      newSortType = "ascending";
+                                    }
+                                    handleSortUntouched(newSortType);
+                                  }}
+                                >
+                                  Untouched
+                                  <ArrowDropUpIcon
+                                    style={{
+                                      color:
+                                        sortType.untouched === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginRight: "-24px",
+                                      marginTop: "-11px",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon
+                                    style={{
+                                      color:
+                                        sortType.untouched === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginTop: "3px",
+                                    }}
+                                  />
                                 </th>
-                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
-                                  let newSortType;
-                                  if (sortType.untouched === "ascending") {
-                                    newSortType = "descending";
-                                  } else if (sortType.untouched === "descending") {
-                                    newSortType = "none";
-                                  } else {
-                                    newSortType = "ascending";
-                                  }
-                                  handleSortUntouched(newSortType);
-                                }}>Untouched
-
-                                  <ArrowDropUpIcon style={{ color: sortType.untouched === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
-
-                                  <ArrowDropDownIcon style={{ color: sortType.untouched === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
+                                <th
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let newSortType;
+                                    if (sortType.busy === "ascending") {
+                                      newSortType = "descending";
+                                    } else if (
+                                      sortType.untouched === "descending"
+                                    ) {
+                                      newSortType = "none";
+                                    } else {
+                                      newSortType = "ascending";
+                                    }
+                                    handleSortbusy(newSortType);
+                                  }}
+                                >
+                                  Busy
+                                  <ArrowDropUpIcon
+                                    style={{
+                                      color:
+                                        sortType.busy === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginRight: "-24px",
+                                      marginTop: "-11px",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon
+                                    style={{
+                                      color:
+                                        sortType.busy === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginTop: "3px",
+                                    }}
+                                  />
                                 </th>
-                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
-                                  let newSortType;
-                                  if (sortType.busy === "ascending") {
-                                    newSortType = "descending";
-                                  } else if (sortType.untouched === "descending") {
-                                    newSortType = "none";
-                                  } else {
-                                    newSortType = "ascending";
-                                  }
-                                  handleSortbusy(newSortType);
-                                }}>Busy
-
-                                  <ArrowDropUpIcon style={{ color: sortType.busy === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
-
-                                  <ArrowDropDownIcon style={{ color: sortType.busy === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
+                                <th
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let newSortType;
+                                    if (sortType.notPickedUp === "ascending") {
+                                      newSortType = "descending";
+                                    } else if (
+                                      sortType.notPickedUp === "descending"
+                                    ) {
+                                      newSortType = "none";
+                                    } else {
+                                      newSortType = "ascending";
+                                    }
+                                    handleSortNotPickedUp(newSortType);
+                                  }}
+                                >
+                                  Not Picked Up
+                                  <ArrowDropUpIcon
+                                    style={{
+                                      color:
+                                        sortType.notPickedUp === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginRight: "-24px",
+                                      marginTop: "-11px",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon
+                                    style={{
+                                      color:
+                                        sortType.notPickedUp === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginTop: "3px",
+                                    }}
+                                  />
                                 </th>
-                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
-                                  let newSortType;
-                                  if (sortType.notPickedUp === "ascending") {
-                                    newSortType = "descending";
-                                  } else if (sortType.notPickedUp === "descending") {
-                                    newSortType = "none";
-                                  } else {
-                                    newSortType = "ascending";
-                                  }
-                                  handleSortNotPickedUp(newSortType);
-                                }}>Not Picked Up
-
-                                  <ArrowDropUpIcon style={{ color: sortType.notPickedUp === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
-
-                                  <ArrowDropDownIcon style={{ color: sortType.notPickedUp === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
+                                <th
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let newSortType;
+                                    if (sortType.junk === "ascending") {
+                                      newSortType = "descending";
+                                    } else if (sortType.junk === "descending") {
+                                      newSortType = "none";
+                                    } else {
+                                      newSortType = "ascending";
+                                    }
+                                    handleSortJunk(newSortType);
+                                  }}
+                                >
+                                  Junk
+                                  <ArrowDropUpIcon
+                                    style={{
+                                      color:
+                                        sortType.junk === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginRight: "-24px",
+                                      marginTop: "-11px",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon
+                                    style={{
+                                      color:
+                                        sortType.junk === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginTop: "3px",
+                                    }}
+                                  />
                                 </th>
-                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
-                                  let newSortType;
-                                  if (sortType.junk === "ascending") {
-                                    newSortType = "descending";
-                                  } else if (sortType.junk === "descending") {
-                                    newSortType = "none";
-                                  } else {
-                                    newSortType = "ascending";
-                                  }
-                                  handleSortJunk(newSortType);
-                                }}>Junk
-
-                                  <ArrowDropUpIcon style={{ color: sortType.junk === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
-
-                                  <ArrowDropDownIcon style={{ color: sortType.junk === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
+                                <th
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let newSortType;
+                                    if (sortType.followUp === "ascending") {
+                                      newSortType = "descending";
+                                    } else if (
+                                      sortType.followUp === "descending"
+                                    ) {
+                                      newSortType = "none";
+                                    } else {
+                                      newSortType = "ascending";
+                                    }
+                                    handleSortFollowUp(newSortType);
+                                  }}
+                                >
+                                  Follow Up
+                                  <ArrowDropUpIcon
+                                    style={{
+                                      color:
+                                        sortType.followUp === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginRight: "-24px",
+                                      marginTop: "-11px",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon
+                                    style={{
+                                      color:
+                                        sortType.followUp === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginTop: "3px",
+                                    }}
+                                  />
                                 </th>
-                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
-                                  let newSortType;
-                                  if (sortType.followUp === "ascending") {
-                                    newSortType = "descending";
-                                  } else if (sortType.followUp === "descending") {
-                                    newSortType = "none";
-                                  } else {
-                                    newSortType = "ascending";
-                                  }
-                                  handleSortFollowUp(newSortType);
-                                }}>Follow Up
-
-                                  <ArrowDropUpIcon style={{ color: sortType.followUp === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
-
-                                  <ArrowDropDownIcon style={{ color: sortType.followUp === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
+                                <th
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let newSortType;
+                                    if (sortType.interested === "ascending") {
+                                      newSortType = "descending";
+                                    } else if (
+                                      sortType.interested === "descending"
+                                    ) {
+                                      newSortType = "none";
+                                    } else {
+                                      newSortType = "ascending";
+                                    }
+                                    handleSortInterested(newSortType);
+                                  }}
+                                >
+                                  Interested
+                                  <ArrowDropUpIcon
+                                    style={{
+                                      color:
+                                        sortType.interested === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginRight: "-24px",
+                                      marginTop: "-11px",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon
+                                    style={{
+                                      color:
+                                        sortType.interested === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginTop: "3px",
+                                    }}
+                                  />
                                 </th>
-                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
-                                  let newSortType;
-                                  if (sortType.interested === "ascending") {
-                                    newSortType = "descending";
-                                  } else if (sortType.interested === "descending") {
-                                    newSortType = "none";
-                                  } else {
-                                    newSortType = "ascending";
-                                  }
-                                  handleSortInterested(newSortType);
-                                }}>Interested
-
-                                  <ArrowDropUpIcon style={{ color: sortType.interested === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
-
-                                  <ArrowDropDownIcon style={{ color: sortType.interested === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
+                                <th
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let newSortType;
+                                    if (
+                                      sortType.notInterested === "ascending"
+                                    ) {
+                                      newSortType = "descending";
+                                    } else if (
+                                      sortType.notInterested === "descending"
+                                    ) {
+                                      newSortType = "none";
+                                    } else {
+                                      newSortType = "ascending";
+                                    }
+                                    handleSortNotInterested(newSortType);
+                                  }}
+                                >
+                                  Not Interested
+                                  <ArrowDropUpIcon
+                                    style={{
+                                      color:
+                                        sortType.notInterested === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginRight: "-24px",
+                                      marginTop: "-11px",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon
+                                    style={{
+                                      color:
+                                        sortType.notInterested === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginTop: "3px",
+                                    }}
+                                  />
                                 </th>
-                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
-                                  let newSortType;
-                                  if (sortType.notInterested === "ascending") {
-                                    newSortType = "descending";
-                                  } else if (sortType.notInterested === "descending") {
-                                    newSortType = "none";
-                                  } else {
-                                    newSortType = "ascending";
-                                  }
-                                  handleSortNotInterested(newSortType);
-                                }}>Not Interested
-
-                                  <ArrowDropUpIcon style={{ color: sortType.notInterested === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
-
-                                  <ArrowDropDownIcon style={{ color: sortType.notInterested === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
+                                <th
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let newSortType;
+                                    if (sortType.matured === "ascending") {
+                                      newSortType = "descending";
+                                    } else if (
+                                      sortType.matured === "descending"
+                                    ) {
+                                      newSortType = "none";
+                                    } else {
+                                      newSortType = "ascending";
+                                    }
+                                    handleSortMatured(newSortType);
+                                  }}
+                                >
+                                  Matured
+                                  <ArrowDropUpIcon
+                                    style={{
+                                      color:
+                                        sortType.matured === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginRight: "-24px",
+                                      marginTop: "-11px",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon
+                                    style={{
+                                      color:
+                                        sortType.matured === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginTop: "3px",
+                                    }}
+                                  />
                                 </th>
-                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
-                                  let newSortType;
-                                  if (sortType.matured === "ascending") {
-                                    newSortType = "descending";
-                                  } else if (sortType.matured === "descending") {
-                                    newSortType = "none";
-                                  } else {
-                                    newSortType = "ascending";
-                                  }
-                                  handleSortMatured(newSortType);
-                                }}>Matured
-
-                                  <ArrowDropUpIcon style={{ color: sortType.matured === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
-
-                                  <ArrowDropDownIcon style={{ color: sortType.matured === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
+                                <th
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let newSortType;
+                                    if (sortType.totalLeads === "ascending") {
+                                      newSortType = "descending";
+                                    } else if (
+                                      sortType.totalLeads === "descending"
+                                    ) {
+                                      newSortType = "none";
+                                    } else {
+                                      newSortType = "ascending";
+                                    }
+                                    handleSortTotalLeads(newSortType);
+                                  }}
+                                >
+                                  Total Leads
+                                  <ArrowDropUpIcon
+                                    style={{
+                                      color:
+                                        sortType.totalLeads === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginRight: "-24px",
+                                      marginTop: "-11px",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon
+                                    style={{
+                                      color:
+                                        sortType.totalLeads === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginTop: "3px",
+                                    }}
+                                  />
                                 </th>
-                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
-                                  let newSortType;
-                                  if (sortType.totalLeads === "ascending") {
-                                    newSortType = "descending";
-                                  } else if (sortType.totalLeads === "descending") {
-                                    newSortType = "none";
-                                  } else {
-                                    newSortType = "ascending";
-                                  }
-                                  handleSortTotalLeads(newSortType);
-                                }}>Total Leads
-
-                                  <ArrowDropUpIcon style={{ color: sortType.totalLeads === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
-
-                                  <ArrowDropDownIcon style={{ color: sortType.totalLeads === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
-                                </th>
-                                <th style={{ cursor: 'pointer' }} onClick={(e) => {
-                                  let newSortType;
-                                  if (sortType.lastLead === "ascending") {
-                                    newSortType = "descending";
-                                  } else if (sortType.lastLead === "descending") {
-                                    newSortType = "none";
-                                  } else {
-                                    newSortType = "ascending";
-                                  }
-                                  handleSortLastLead(newSortType);
-                                }}>Last lead Assign Date
-
-                                  <ArrowDropUpIcon style={{ color: sortType.lastLead === "descending" ? "black" : "#9d8f8f", marginRight: "-24px", marginTop: "-11px" }} />
-
-                                  <ArrowDropDownIcon style={{ color: sortType.lastLead === "ascending" ? "black" : "#9d8f8f", marginTop: "3px" }} />
+                                <th
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    let newSortType;
+                                    if (sortType.lastLead === "ascending") {
+                                      newSortType = "descending";
+                                    } else if (
+                                      sortType.lastLead === "descending"
+                                    ) {
+                                      newSortType = "none";
+                                    } else {
+                                      newSortType = "ascending";
+                                    }
+                                    handleSortLastLead(newSortType);
+                                  }}
+                                >
+                                  Last lead Assign Date
+                                  <ArrowDropUpIcon
+                                    style={{
+                                      color:
+                                        sortType.lastLead === "descending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginRight: "-24px",
+                                      marginTop: "-11px",
+                                    }}
+                                  />
+                                  <ArrowDropDownIcon
+                                    style={{
+                                      color:
+                                        sortType.lastLead === "ascending"
+                                          ? "black"
+                                          : "#9d8f8f",
+                                      marginTop: "3px",
+                                    }}
+                                  />
                                 </th>
                               </tr>
                             </thead>
@@ -2902,162 +3556,187 @@ function Dashboard() {
                                         style={{
                                           lineHeight: "32px",
                                           color: "black",
-                                          textDecoration: "none"
+                                          textDecoration: "none",
                                         }}
                                         key={`row-${index}-1`}
                                       >
                                         {index + 1}
                                       </td>
-                                      <td key={`row-${index}-2`}>{obj.ename}</td>
+                                      <td key={`row-${index}-2`}>
+                                        {obj.ename}
+                                      </td>
 
-                                      <td key={`row-${index}-3`} >
-                                        <Link to={`/employeereport/${obj.ename}/Untouched`} style={{
-                                          color: "black",
-                                          textDecoration: "none"
-                                        }}
+                                      <td key={`row-${index}-3`}>
+                                        <Link
+                                          to={`/employeereport/${obj.ename}/Untouched`}
+                                          style={{
+                                            color: "black",
+                                            textDecoration: "none",
+                                          }}
                                           target="_blank"
-                                          rel="noopener noreferrer">
-                                          {
-                                            (companyData.filter(
+                                          rel="noopener noreferrer"
+                                        >
+                                          {companyData
+                                            .filter(
                                               (data) =>
                                                 data.ename === obj.ename &&
                                                 data.Status === "Untouched"
-                                            ).length).toLocaleString()
-                                          }
+                                            )
+                                            .length.toLocaleString()}
                                         </Link>
                                       </td>
 
-
                                       <td key={`row-${index}-4`}>
-                                        <Link to={`/employeereport/${obj.ename}/Busy`} style={{
-                                          color: "black",
-                                          textDecoration: "none"
-                                        }}
+                                        <Link
+                                          to={`/employeereport/${obj.ename}/Busy`}
+                                          style={{
+                                            color: "black",
+                                            textDecoration: "none",
+                                          }}
                                           target="_blank"
-                                          rel="noopener noreferrer">
-                                          {
-                                            (companyData.filter(
+                                          rel="noopener noreferrer"
+                                        >
+                                          {companyData
+                                            .filter(
                                               (data) =>
                                                 data.ename === obj.ename &&
                                                 data.Status === "Busy"
-                                            ).length).toLocaleString()
-                                          }
+                                            )
+                                            .length.toLocaleString()}
                                         </Link>
                                       </td>
-
 
                                       <td key={`row-${index}-5`}>
                                         <Link
                                           to={`/employeereport/${obj.ename}/Not Picked Up`}
-                                          style={{ color: "black", textDecoration: "none" }}
+                                          style={{
+                                            color: "black",
+                                            textDecoration: "none",
+                                          }}
                                           target="_blank"
                                           rel="noopener noreferrer"
                                         >
-                                          {
-                                            (companyData.filter(
+                                          {companyData
+                                            .filter(
                                               (data) =>
                                                 data.ename === obj.ename &&
                                                 data.Status === "Not Picked Up"
-                                            ).length).toLocaleString()
-                                          }
+                                            )
+                                            .length.toLocaleString()}
                                         </Link>
                                       </td>
 
-
                                       <td key={`row-${index}-6`}>
-                                        <Link to={`/employeereport/${obj.ename}/Junk`} style={{
-                                          color: "black",
-                                          textDecoration: "none"
-                                        }}
+                                        <Link
+                                          to={`/employeereport/${obj.ename}/Junk`}
+                                          style={{
+                                            color: "black",
+                                            textDecoration: "none",
+                                          }}
                                           target="_blank"
-                                          rel="noopener noreferrer">
-                                          {
-                                            (companyData.filter(
+                                          rel="noopener noreferrer"
+                                        >
+                                          {companyData
+                                            .filter(
                                               (data) =>
                                                 data.ename === obj.ename &&
                                                 data.Status === "Junk"
-                                            ).length).toLocaleString()
-                                          }
+                                            )
+                                            .length.toLocaleString()}
                                         </Link>
                                       </td>
 
                                       <td key={`row-${index}-7`}>
-                                        <Link to={`/employeereport/${obj.ename}/FollowUp`} style={{
-                                          color: "black",
-                                          textDecoration: "none"
-                                        }}
+                                        <Link
+                                          to={`/employeereport/${obj.ename}/FollowUp`}
+                                          style={{
+                                            color: "black",
+                                            textDecoration: "none",
+                                          }}
                                           target="_blank"
-                                          rel="noopener noreferrer">
-                                          {
-                                            (companyData.filter(
+                                          rel="noopener noreferrer"
+                                        >
+                                          {companyData
+                                            .filter(
                                               (data) =>
                                                 data.ename === obj.ename &&
                                                 data.Status === "FollowUp"
-                                            ).length).toLocaleString()
-                                          }
+                                            )
+                                            .length.toLocaleString()}
                                         </Link>
                                       </td>
                                       <td key={`row-${index}-8`}>
-                                        <Link to={`/employeereport/${obj.ename}/Interested`} style={{
-                                          color: "black",
-                                          textDecoration: "none"
-                                        }}
+                                        <Link
+                                          to={`/employeereport/${obj.ename}/Interested`}
+                                          style={{
+                                            color: "black",
+                                            textDecoration: "none",
+                                          }}
                                           target="_blank"
-                                          rel="noopener noreferrer">
-                                          {
-                                            (companyData.filter(
+                                          rel="noopener noreferrer"
+                                        >
+                                          {companyData
+                                            .filter(
                                               (data) =>
                                                 data.ename === obj.ename &&
                                                 data.Status === "Interested"
-                                            ).length).toLocaleString()
-                                          }
+                                            )
+                                            .length.toLocaleString()}
                                         </Link>
                                       </td>
                                       <td key={`row-${index}-9`}>
-                                        <Link to={`/employeereport/${obj.ename}/Not Interested`} style={{
-                                          color: "black",
-                                          textDecoration: "none"
-                                        }}
+                                        <Link
+                                          to={`/employeereport/${obj.ename}/Not Interested`}
+                                          style={{
+                                            color: "black",
+                                            textDecoration: "none",
+                                          }}
                                           target="_blank"
-                                          rel="noopener noreferrer">
-                                          {
-                                            (companyData.filter(
+                                          rel="noopener noreferrer"
+                                        >
+                                          {companyData
+                                            .filter(
                                               (data) =>
                                                 data.ename === obj.ename &&
                                                 data.Status === "Not Interested"
-                                            ).length).toLocaleString()
-                                          }
+                                            )
+                                            .length.toLocaleString()}
                                         </Link>
                                       </td>
                                       <td key={`row-${index}-10`}>
-                                        <Link to={`/employeereport/${obj.ename}/Matured`} style={{
-                                          color: "black",
-                                          textDecoration: "none"
-                                        }}
+                                        <Link
+                                          to={`/employeereport/${obj.ename}/Matured`}
+                                          style={{
+                                            color: "black",
+                                            textDecoration: "none",
+                                          }}
                                           target="_blank"
-                                          rel="noopener noreferrer">
-
-                                          {
-                                            (companyData.filter(
+                                          rel="noopener noreferrer"
+                                        >
+                                          {companyData
+                                            .filter(
                                               (data) =>
                                                 data.ename === obj.ename &&
                                                 data.Status === "Matured"
-                                            ).length).toLocaleString()
-                                          }
+                                            )
+                                            .length.toLocaleString()}
                                         </Link>
                                       </td>
                                       <td key={`row-${index}-11`}>
-                                        <Link to={`/employeereport/${obj.ename}/complete`} style={{
-                                          color: "black",
-                                          textDecoration: "none"
-                                        }}
+                                        <Link
+                                          to={`/employeereport/${obj.ename}/complete`}
+                                          style={{
+                                            color: "black",
+                                            textDecoration: "none",
+                                          }}
                                           target="_blank"
-                                          rel="noopener noreferrer">
-                                          {
-                                            (companyData.filter(
+                                          rel="noopener noreferrer"
+                                        >
+                                          {companyData
+                                            .filter(
                                               (data) => data.ename === obj.ename
-                                            ).length).toLocaleString()
-                                          }
+                                            )
+                                            .length.toLocaleString()}
                                         </Link>
                                       </td>
                                       <td key={`row-${index}-12`}>
@@ -3078,10 +3757,16 @@ function Dashboard() {
                                         )}
                                         <OpenInNewIcon
                                           onClick={() => {
-                                            functionOpenEmployeeTable(obj.ename);
-
+                                            functionOpenEmployeeTable(
+                                              obj.ename
+                                            );
                                           }}
-                                          style={{ cursor: "pointer", marginRight: "-41px", marginLeft: "21px", fontSize: '17px' }}
+                                          style={{
+                                            cursor: "pointer",
+                                            marginRight: "-41px",
+                                            marginLeft: "21px",
+                                            fontSize: "17px",
+                                          }}
                                         />
                                       </td>
                                     </tr>
@@ -3090,79 +3775,88 @@ function Dashboard() {
                             </tbody>
                             {employeeData.length !== 0 &&
                               companyData.length !== 0 && (
-                                <tfoot style={{
-                                  position: "sticky", // Make the footer sticky
-                                  bottom: -1, // Stick it at the bottom
-                                  backgroundColor: "#f6f2e9",
-                                  color: "black",
-                                  fontWeight: 500,
-                                  zIndex: 2, // Ensure it's above the content
-                                }}>
+                                <tfoot
+                                  style={{
+                                    position: "sticky", // Make the footer sticky
+                                    bottom: -1, // Stick it at the bottom
+                                    backgroundColor: "#f6f2e9",
+                                    color: "black",
+                                    fontWeight: 500,
+                                    zIndex: 2, // Ensure it's above the content
+                                  }}
+                                >
                                   <tr style={{ fontWeight: 500 }}>
-                                    <td style={{ lineHeight: "32px" }} colSpan="2">
+                                    <td
+                                      style={{ lineHeight: "32px" }}
+                                      colSpan="2"
+                                    >
                                       Total
                                     </td>
                                     <td>
-                                      {
-                                        (companyData.filter(
+                                      {companyData
+                                        .filter(
                                           (partObj) =>
                                             partObj.Status === "Untouched"
-                                        ).length).toLocaleString()
-                                      }
+                                        )
+                                        .length.toLocaleString()}
                                     </td>
                                     <td>
-                                      {
-                                        (companyData.filter(
+                                      {companyData
+                                        .filter(
                                           (partObj) => partObj.Status === "Busy"
-                                        ).length).toLocaleString()
-                                      }
+                                        )
+                                        .length.toLocaleString()}
                                     </td>
                                     <td>
-                                      {
-                                        (companyData.filter(
+                                      {companyData
+                                        .filter(
                                           (partObj) =>
                                             partObj.Status === "Not Picked Up"
-                                        ).length).toLocaleString()
-                                      }
+                                        )
+                                        .length.toLocaleString()}
                                     </td>
                                     <td>
-                                      {
-                                        (companyData.filter(
+                                      {companyData
+                                        .filter(
                                           (partObj) => partObj.Status === "Junk"
-                                        ).length).toLocaleString()
-                                      }
+                                        )
+                                        .length.toLocaleString()}
                                     </td>
                                     <td>
-                                      {
-                                        (companyData.filter(
-                                          (partObj) => partObj.Status === "FollowUp"
-                                        ).length).toLocaleString()
-                                      }
+                                      {companyData
+                                        .filter(
+                                          (partObj) =>
+                                            partObj.Status === "FollowUp"
+                                        )
+                                        .length.toLocaleString()}
                                     </td>
                                     <td>
-                                      {
-                                        (companyData.filter(
+                                      {companyData
+                                        .filter(
                                           (partObj) =>
                                             partObj.Status === "Interested"
-                                        ).length).toLocaleString()
-                                      }
+                                        )
+                                        .length.toLocaleString()}
                                     </td>
                                     <td>
-                                      {
-                                        (companyData.filter(
+                                      {companyData
+                                        .filter(
                                           (partObj) =>
                                             partObj.Status === "Not Interested"
-                                        ).length).toLocaleString()
-                                      }
+                                        )
+                                        .length.toLocaleString()}
                                     </td>
                                     <td>
-                                      {
-                                        (companyData.filter(
-                                          (partObj) => partObj.Status === "Matured"
-                                        ).length).toLocaleString()
-                                      }
+                                      {companyData
+                                        .filter(
+                                          (partObj) =>
+                                            partObj.Status === "Matured"
+                                        )
+                                        .length.toLocaleString()}
                                     </td>
-                                    <td>{(companyData.length).toLocaleString()}</td>
+                                    <td>
+                                      {companyData.length.toLocaleString()}
+                                    </td>
                                     <td>-</td>
                                   </tr>
                                 </tfoot>
@@ -3228,45 +3922,54 @@ function Dashboard() {
                         .map((mainObj, index) => (
                           <>
                             <tr>
-                              <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                              <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
-                                })`}</td>
+                              <td style={{ lineHeight: "32px" }}>
+                                {index + 1}
+                              </td>
+                              <td>{`${formatDate(mainObj.bookingDate)}(${
+                                mainObj.bookingTime
+                              })`}</td>
                               <td>{mainObj.bdeName}</td>
                               <td>{mainObj.companyName}</td>
                               <td>{mainObj.contactNumber}</td>
                               <td>{mainObj.companyEmail}</td>
                               <td>{mainObj.services[0]}</td>
                               <td>
-                                ₹{(mainObj.bdeName !== mainObj.bdmName
+                                ₹
+                                {(mainObj.bdeName !== mainObj.bdmName
                                   ? mainObj.originalTotalPayment / 2
                                   : mainObj.originalTotalPayment
                                 ).toLocaleString()}
                               </td>
                               <td>
-                                ₹{
+                                ₹
+                                {
                                   (mainObj.firstPayment !== 0
                                     ? mainObj.bdeName === mainObj.bdmName
                                       ? mainObj.firstPayment // If bdeName and bdmName are the same
                                       : mainObj.firstPayment / 2 // If bdeName and bdmName are different
                                     : mainObj.bdeName === mainObj.bdmName
-                                      ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                                      : mainObj.originalTotalPayment / 2
+                                    ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                    : mainObj.originalTotalPayment / 2
                                   ).toLocaleString() // If firstPayment is 0 and bdeName and bdmName are different
                                 }
                               </td>
                               <td>
                                 {" "}
-                                ₹{(mainObj.firstPayment !== 0
+                                ₹
+                                {(mainObj.firstPayment !== 0
                                   ? mainObj.bdeName === mainObj.bdmName
-                                    ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                    ? mainObj.originalTotalPayment -
+                                      mainObj.firstPayment
                                     : (mainObj.originalTotalPayment -
-                                      mainObj.firstPayment) /
-                                    2
+                                        mainObj.firstPayment) /
+                                      2
                                   : 0
                                 ).toLocaleString()}{" "}
                               </td>
                               <td>
-                                {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
+                                {mainObj.bdeName !== mainObj.bdmName
+                                  ? "Yes"
+                                  : "No"}
                               </td>
                               <td>
                                 {mainObj.bdeName !== mainObj.bdmName
@@ -3277,7 +3980,9 @@ function Dashboard() {
                                 {mainObj.bdeName !== mainObj.bdmName &&
                                   mainObj.bdmType === "closeby" && (
                                     <AddCircleIcon
-                                      onClick={() => setExpand(mainObj.companyName)}
+                                      onClick={() =>
+                                        setExpand(mainObj.companyName)
+                                      }
                                       style={{ cursor: "pointer" }}
                                     />
                                   )}
@@ -3287,10 +3992,12 @@ function Dashboard() {
                             {expand === index && (
                               <>
                                 <tr>
-                                  <td style={{ lineHeight: "32px" }}>{`${index + 1
-                                    }(${1})`}</td>
-                                  <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
-                                    })`}</td>
+                                  <td style={{ lineHeight: "32px" }}>{`${
+                                    index + 1
+                                  }(${1})`}</td>
+                                  <td>{`${formatDate(mainObj.bookingDate)}(${
+                                    mainObj.bookingTime
+                                  })`}</td>
                                   <td>{mainObj.bdmName}</td>
                                   <td>{mainObj.companyName}</td>
                                   <td>{mainObj.contactNumber}</td>
@@ -3303,19 +4010,21 @@ function Dashboard() {
                                     ).toLocaleString()}{" "}
                                   </td>
                                   <td>
-                                    ₹{(mainObj.firstPayment !== 0
+                                    ₹
+                                    {(mainObj.firstPayment !== 0
                                       ? mainObj.firstPayment / 2
                                       : mainObj.originalTotalPayment / 2
                                     ).toLocaleString()}{" "}
                                   </td>
                                   <td>
-                                    ₹{(mainObj.firstPayment !== 0
+                                    ₹
+                                    {(mainObj.firstPayment !== 0
                                       ? mainObj.bdeName === mainObj.bdmName
                                         ? mainObj.totalPayment -
-                                        mainObj.firstPayment
+                                          mainObj.firstPayment
                                         : (mainObj.originalTotalPayment -
-                                          mainObj.firstPayment) /
-                                        2
+                                            mainObj.firstPayment) /
+                                          2
                                       : 0
                                     ).toLocaleString()}{" "}
                                   </td>
@@ -3339,7 +4048,8 @@ function Dashboard() {
                         <th>-</th>
                         <th>-</th>
                         <th>
-                          ₹{filteredBooking
+                          ₹
+                          {filteredBooking
                             .filter((data) => data.bdeName === tableEmployee)
                             .reduce((total, obj) => {
                               return obj.bdeName === obj.bdmName
@@ -3349,7 +4059,8 @@ function Dashboard() {
                             .toLocaleString()}
                         </th>
                         <th>
-                          ₹{filteredBooking
+                          ₹
+                          {filteredBooking
                             .filter((data) => data.bdeName === tableEmployee)
                             .reduce((total, obj) => {
                               return obj.bdeName === obj.bdmName
@@ -3357,22 +4068,28 @@ function Dashboard() {
                                   ? total + obj.originalTotalPayment
                                   : total + obj.firstPayment
                                 : obj.firstPayment === 0
-                                  ? total + obj.originalTotalPayment / 2
-                                  : total + obj.firstPayment / 2;
+                                ? total + obj.originalTotalPayment / 2
+                                : total + obj.firstPayment / 2;
                             }, 0)
                             .toLocaleString()}
                         </th>
                         <th>
-                          ₹{filteredBooking
+                          ₹
+                          {filteredBooking
                             .filter((data) => data.bdeName === tableEmployee)
                             .reduce((total, obj) => {
                               return obj.bdeName === obj.bdmName
                                 ? obj.firstPayment === 0
                                   ? 0
-                                  : total + (obj.originalTotalPayment - obj.firstPayment)
+                                  : total +
+                                    (obj.originalTotalPayment -
+                                      obj.firstPayment)
                                 : obj.firstPayment === 0
-                                  ? 0
-                                  : total + (obj.originalTotalPayment - obj.firstPayment) / 2;
+                                ? 0
+                                : total +
+                                  (obj.originalTotalPayment -
+                                    obj.firstPayment) /
+                                    2;
                             }, 0)
                             .toLocaleString()}
                         </th>
@@ -3393,29 +4110,36 @@ function Dashboard() {
                         .map((mainObj, index) => (
                           <>
                             <tr key={mainObj._id}>
-                              <td style={{ lineHeight: "32px" }}>{`${index + 1
-                                }`}</td>
-                              <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
-                                })`}</td>
+                              <td style={{ lineHeight: "32px" }}>{`${
+                                index + 1
+                              }`}</td>
+                              <td>{`${formatDate(mainObj.bookingDate)}(${
+                                mainObj.bookingTime
+                              })`}</td>
                               <td>{mainObj.bdeName}</td>
                               <td>{mainObj.companyName}</td>
                               <td>{mainObj.contactNumber}</td>
                               <td>{mainObj.companyEmail}</td>
                               <td>{mainObj.services}</td>
-                              <td>{(mainObj.totalPayment / 2).toLocaleString()}</td>
                               <td>
-                                ₹{(mainObj.firstPayment !== 0
+                                {(mainObj.totalPayment / 2).toLocaleString()}
+                              </td>
+                              <td>
+                                ₹
+                                {(mainObj.firstPayment !== 0
                                   ? mainObj.firstPayment / 2
                                   : mainObj.totalPayment / 2
                                 ).toLocaleString()}
                               </td>
                               <td>
-                                ₹{(mainObj.firstPayment !== 0
+                                ₹
+                                {(mainObj.firstPayment !== 0
                                   ? mainObj.bdeName === mainObj.bdmName
-                                    ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                    ? mainObj.originalTotalPayment -
+                                      mainObj.firstPayment
                                     : (mainObj.originalTotalPayment -
-                                      mainObj.firstPayment) /
-                                    2
+                                        mainObj.firstPayment) /
+                                      2
                                   : 0
                                 ).toLocaleString()}
                               </td>
@@ -3432,10 +4156,12 @@ function Dashboard() {
                               <td>{mainObj.paymentRemarks}</td>
                             </tr>
                             <tr>
-                              <td style={{ lineHeight: "32px" }}>{`${index + 2
-                                }`}</td>
-                              <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
-                                })`}</td>
+                              <td style={{ lineHeight: "32px" }}>{`${
+                                index + 2
+                              }`}</td>
+                              <td>{`${formatDate(mainObj.bookingDate)}(${
+                                mainObj.bookingTime
+                              })`}</td>
                               <td>{mainObj.bdmName}</td>
                               <td>{mainObj.companyName}</td>
                               <td>{mainObj.contactNumber}</td>
@@ -3443,21 +4169,26 @@ function Dashboard() {
                               <td>{mainObj.services[0]}</td>
                               <td>
                                 {" "}
-                                {(mainObj.originalTotalPayment / 2).toLocaleString()}{" "}
+                                {(
+                                  mainObj.originalTotalPayment / 2
+                                ).toLocaleString()}{" "}
                               </td>
                               <td>
-                                ₹{(mainObj.firstPayment !== 0
+                                ₹
+                                {(mainObj.firstPayment !== 0
                                   ? mainObj.firstPayment / 2
                                   : mainObj.originalTotalPayment / 2
                                 ).toLocaleString()}{" "}
                               </td>
                               <td>
-                                ₹{(mainObj.firstPayment !== 0
+                                ₹
+                                {(mainObj.firstPayment !== 0
                                   ? mainObj.bdeName === mainObj.bdmName
-                                    ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                    ? mainObj.originalTotalPayment -
+                                      mainObj.firstPayment
                                     : (mainObj.originalTotalPayment -
-                                      mainObj.firstPayment) /
-                                    2
+                                        mainObj.firstPayment) /
+                                      2
                                   : 0
                                 ).toLocaleString()}{" "}
                               </td>
@@ -3484,16 +4215,21 @@ function Dashboard() {
                               <th>-</th>
                               <th>-</th>
                               <th>-</th>
-                              <th>{mainObj.originalTotalPayment.toLocaleString()}</th>
                               <th>
-                                ₹{(mainObj.firstPayment !== 0
+                                {mainObj.originalTotalPayment.toLocaleString()}
+                              </th>
+                              <th>
+                                ₹
+                                {(mainObj.firstPayment !== 0
                                   ? mainObj.firstPayment
                                   : mainObj.originalTotalPayment
                                 ).toLocaleString()}
                               </th>
                               <th>
-                                ₹{(mainObj.firstPayment !== 0
-                                  ? mainObj.originalTotalPayment - mainObj.firstPayment
+                                ₹
+                                {(mainObj.firstPayment !== 0
+                                  ? mainObj.originalTotalPayment -
+                                    mainObj.firstPayment
                                   : 0
                                 ).toLocaleString()}
                               </th>
@@ -3512,19 +4248,21 @@ function Dashboard() {
             open={openEmployeeTable}
             onClose={closeEmployeeTable}
             fullWidth
-            maxWidth="lg">
+            maxWidth="lg"
+          >
             <DialogTitle>
               <div className="title-header d-flex justify-content-between">
                 <div className="title-name">
-                  <strong>
-                    {selectedEmployee}
-                  </strong>
+                  <strong>{selectedEmployee}</strong>
                 </div>
-                <div style={{ cursor: 'pointer' }} className="closeIcon" onClick={closeEmployeeTable}>
+                <div
+                  style={{ cursor: "pointer" }}
+                  className="closeIcon"
+                  onClick={closeEmployeeTable}
+                >
                   <IoClose />
                 </div>
               </div>
-
             </DialogTitle>
             <DialogContent>
               <div
@@ -3576,87 +4314,92 @@ function Dashboard() {
                       uniqueArray.map((obj, index) => (
                         <tr key={`row-${index}`}>
                           <td>{index + 1}</td>
-                          <td style={{
-                            lineHeight: "32px",
-                          }}>{obj}</td>
+                          <td
+                            style={{
+                              lineHeight: "32px",
+                            }}
+                          >
+                            {obj}
+                          </td>
                           <td>
-                            {
-                              (properCompanyData.filter(
+                            {properCompanyData
+                              .filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Untouched"
-                              ).length).toLocaleString()
-                            }
+                              )
+                              .length.toLocaleString()}
                           </td>
                           <td>
-                            {
-                              (properCompanyData.filter(
+                            {properCompanyData
+                              .filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Busy"
-                              ).length).toLocaleString()
-                            }
+                              )
+                              .length.toLocaleString()}
                           </td>
                           <td>
-                            {
-                              (properCompanyData.filter(
+                            {properCompanyData
+                              .filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Not Picked Up"
-                              ).length).toLocaleString()
-                            }
+                              )
+                              .length.toLocaleString()}
                           </td>
                           <td>
-                            {
-                              (properCompanyData.filter(
+                            {properCompanyData
+                              .filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Junk"
-                              ).length).toLocaleString()
-                            }
+                              )
+                              .length.toLocaleString()}
                           </td>
                           <td>
-                            {
-                              (properCompanyData.filter(
+                            {properCompanyData
+                              .filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "FollowUp"
-                              ).length).toLocaleString()
-                            }
+                              )
+                              .length.toLocaleString()}
                           </td>
                           <td>
-                            {
-                              (properCompanyData.filter(
+                            {properCompanyData
+                              .filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Interested"
-                              ).length).toLocaleString()
-                            }
+                              )
+                              .length.toLocaleString()}
                           </td>
                           <td>
-                            {
-                              (properCompanyData.filter(
+                            {properCompanyData
+                              .filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Not Interested"
-                              ).length).toLocaleString()
-                            }
+                              )
+                              .length.toLocaleString()}
                           </td>
                           <td>
-                            {
-                              (properCompanyData.filter(
+                            {properCompanyData
+                              .filter(
                                 (partObj) =>
                                   formatDate(partObj.AssignDate) === obj &&
                                   partObj.Status === "Matured"
-                              ).length).toLocaleString()
-                            }
+                              )
+                              .length.toLocaleString()}
                           </td>
                           <td>
-                            {
-                              (properCompanyData.filter(
-                                (partObj) => formatDate(partObj.AssignDate) === obj
-                              ).length).toLocaleString()
-                            }
+                            {properCompanyData
+                              .filter(
+                                (partObj) =>
+                                  formatDate(partObj.AssignDate) === obj
+                              )
+                              .length.toLocaleString()}
                           </td>
                         </tr>
                       ))}
@@ -3666,11 +4409,9 @@ function Dashboard() {
                       <tr style={{ fontWeight: 500 }}>
                         <td colSpan="2">Total</td>
                         <td>
-                          {
-                            (properCompanyData.filter(
-                              (partObj) => partObj.Status === "Untouched"
-                            ).length).toLocaleString()
-                          }
+                          {properCompanyData
+                            .filter((partObj) => partObj.Status === "Untouched")
+                            .length.toLocaleString()}
                         </td>
 
                         <td
@@ -3678,55 +4419,47 @@ function Dashboard() {
                             lineHeight: "32px",
                           }}
                         >
-                          {
-                            (properCompanyData.filter(
-                              (partObj) => partObj.Status === "Busy"
-                            ).length).toLocaleString()
-                          }
+                          {properCompanyData
+                            .filter((partObj) => partObj.Status === "Busy")
+                            .length.toLocaleString()}
                         </td>
                         <td>
-                          {
-                            (properCompanyData.filter(
+                          {properCompanyData
+                            .filter(
                               (partObj) => partObj.Status === "Not Picked Up"
-                            ).length).toLocaleString()
-                          }
+                            )
+                            .length.toLocaleString()}
                         </td>
                         <td>
-                          {
-                            (properCompanyData.filter(
-                              (partObj) => partObj.Status === "Junk"
-                            ).length).toLocaleString()
-                          }
+                          {properCompanyData
+                            .filter((partObj) => partObj.Status === "Junk")
+                            .length.toLocaleString()}
                         </td>
                         <td>
-                          {
-                            (properCompanyData.filter(
-                              (partObj) => partObj.Status === "FollowUp"
-                            ).length).toLocaleString()
-                          }
+                          {properCompanyData
+                            .filter((partObj) => partObj.Status === "FollowUp")
+                            .length.toLocaleString()}
                         </td>
                         <td>
-                          {
-                            (properCompanyData.filter(
+                          {properCompanyData
+                            .filter(
                               (partObj) => partObj.Status === "Interested"
-                            ).length).toLocaleString()
-                          }
+                            )
+                            .length.toLocaleString()}
                         </td>
                         <td>
-                          {
-                            (properCompanyData.filter(
+                          {properCompanyData
+                            .filter(
                               (partObj) => partObj.Status === "Not Interested"
-                            ).length).toLocaleString()
-                          }
+                            )
+                            .length.toLocaleString()}
                         </td>
                         <td>
-                          {
-                            (properCompanyData.filter(
-                              (partObj) => partObj.Status === "Matured"
-                            ).length).toLocaleString()
-                          }
+                          {properCompanyData
+                            .filter((partObj) => partObj.Status === "Matured")
+                            .length.toLocaleString()}
                         </td>
-                        <td>{(properCompanyData.length).toLocaleString()}</td>
+                        <td>{properCompanyData.length.toLocaleString()}</td>
                       </tr>
                     </tfoot>
                   )}
@@ -3737,13 +4470,25 @@ function Dashboard() {
 
           {/* -------------------------------------projection-dashboard--------------------------------------------- */}
 
-          <div className="container-xl mt-2 projectionsummaryadmin" id="projectionsummaryadmin">
+          <div
+            className="container-xl mt-2 projectionsummaryadmin"
+            id="projectionsummaryadmin"
+          >
             <div className="card">
-              <div className="card-header employeedashboard d-flex align-items-center justify-content-between" >
+              <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                 <div>
                   <h2>Projection Summary</h2>
                 </div>
-                <div style={{ m: 1, width: '40ch', padding: "0px", marginRight: "30px" }}>
+               
+                <div
+                  style={{
+                    m: 1,
+                    
+                    padding: "0px",
+                    marginRight: "30px",
+                  }}
+                  className="d-flex"
+                >
                   {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={['SingleInputDateRangeField']}>
                       <DateRangePicker className="mydatepickerinput"
@@ -3758,12 +4503,51 @@ function Dashboard() {
                       />
                     </DemoContainer>
                   </LocalizationProvider> */}
-                  <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
-                    <DemoContainer components={['SingleInputDateRangeField']}>
+                     <div
+                          style={{ m: 1, padding: "0px", marginRight: "30px" }}
+                          className="filter-booking d-flex align-items-center"
+                        >
+                          <div className="filter-title mr-1">
+                            <h2 style={{ marginBottom: "5px" }}>
+                              {" "}
+                              Filter Branch : {"  "}
+                            </h2>
+                          </div>
+                          <div className="filter-main">
+                            <select
+                              className="form-select mt-1"
+                              id={`branch-filter`}
+                              onChange={(e)=>{
+                                handleFilterBranchOffice(e.target.value)
+                               
+                              }}
+                            >
+                              <option value="" disabled selected>
+                                Select Branch
+                              </option>
+
+                              <option value={"Gota"}>Gota</option>
+                              <option value={"Sindhu Bhawan"}>
+                                Sindhu Bhawan
+                              </option>
+                              <option value={"none"}>None</option>
+                            </select>
+                          </div>
+                        </div>
+                  <div className="date-filter">
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    style={{ padding: "0px" }}
+                  >
+                    <DemoContainer components={["SingleInputDateRangeField"]}>
                       <DateRangePicker
                         onChange={(values) => {
-                          const startDate = moment(values[0]).format('DD/MM/YYYY');
-                          const endDate = moment(values[1]).format('DD/MM/YYYY');
+                          const startDate = moment(values[0]).format(
+                            "DD/MM/YYYY"
+                          );
+                          const endDate = moment(values[1]).format(
+                            "DD/MM/YYYY"
+                          );
                           setSelectedDateRange([startDate, endDate]);
                           handleSelect(values); // Call handleSelect with the selected values
                         }}
@@ -3773,13 +4557,17 @@ function Dashboard() {
                             items: shortcutsItems,
                           },
                           actionBar: { actions: [] },
-                          textField: { InputProps: { endAdornment: <Calendar /> } }
+                          textField: {
+                            InputProps: { endAdornment: <Calendar /> },
+                          },
                         }}
-                      //calendars={1}
+                        //calendars={1}
                       />
                     </DemoContainer>
                   </LocalizationProvider>
-
+                  </div>
+               
+                
                 </div>
                 {/* <div className="form-control date-range-picker d-flex align-items-center justify-content-between">
                   <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
@@ -3813,15 +4601,18 @@ function Dashboard() {
                       border: "1px solid #ddd",
                       marginBottom: "10px",
                     }}
-                    className="table-vcenter table-nowrap">
-                    <thead style={{
-                      position: "sticky", // Make the header sticky
-                      top: '-1px', // Stick it at the top
-                      backgroundColor: "#ffb900",
-                      color: "black",
-                      fontWeight: "bold",
-                      zIndex: 1, // Ensure it's above other content
-                    }}>
+                    className="table-vcenter table-nowrap"
+                  >
+                    <thead
+                      style={{
+                        position: "sticky", // Make the header sticky
+                        top: "-1px", // Stick it at the top
+                        backgroundColor: "#ffb900",
+                        color: "black",
+                        fontWeight: "bold",
+                        zIndex: 1, // Ensure it's above other content
+                      }}
+                    >
                       <tr
                         style={{
                           backgroundColor: "#ffb900",
@@ -3837,7 +4628,8 @@ function Dashboard() {
                           Sr. No
                         </th>
                         <th>Company Name</th>
-                        <th>Total Companies
+                        <th>
+                          Total Companies
                           <SwapVertIcon
                             style={{
                               height: "15px",
@@ -3857,9 +4649,9 @@ function Dashboard() {
                               handleSortTotalCompanies(newSortType);
                             }}
                           />
-
                         </th>
-                        <th>Offered Services
+                        <th>
+                          Offered Services
                           <SwapVertIcon
                             style={{
                               height: "15px",
@@ -3880,7 +4672,8 @@ function Dashboard() {
                             }}
                           />
                         </th>
-                        <th>Total Offered Price
+                        <th>
+                          Total Offered Price
                           <SwapVertIcon
                             style={{
                               height: "15px",
@@ -3899,28 +4692,33 @@ function Dashboard() {
                               }
                               handleSortOffredPrize(newSortType);
                             }}
-                          /></th>
-                        <th>Expected Amount<SwapVertIcon
-                          style={{
-                            height: "15px",
-                            width: "15px",
-                            cursor: "pointer",
-                            marginLeft: "4px",
-                          }}
-                          onClick={() => {
-                            let newSortType;
-                            if (sortTypeExpectedPayment === "ascending") {
-                              newSortType = "descending";
-                            } else if (sortTypeExpectedPayment === "descending") {
-                              newSortType = "none";
-                            } else {
-                              newSortType = "ascending";
-                            }
-                            handleSortExpectedPayment(newSortType);
-                          }}
-                        /></th>
+                          />
+                        </th>
+                        <th>
+                          Expected Amount
+                          <SwapVertIcon
+                            style={{
+                              height: "15px",
+                              width: "15px",
+                              cursor: "pointer",
+                              marginLeft: "4px",
+                            }}
+                            onClick={() => {
+                              let newSortType;
+                              if (sortTypeExpectedPayment === "ascending") {
+                                newSortType = "descending";
+                              } else if (
+                                sortTypeExpectedPayment === "descending"
+                              ) {
+                                newSortType = "none";
+                              } else {
+                                newSortType = "ascending";
+                              }
+                              handleSortExpectedPayment(newSortType);
+                            }}
+                          />
+                        </th>
                         {/* <th>Est. Payment Date</th> */}
-
                       </tr>
                     </thead>
                     {sortedData && sortedData.length !== 0 ? (
@@ -3930,43 +4728,53 @@ function Dashboard() {
                             <td style={{ lineHeight: "32px" }}>{index + 1}</td>
                             <td>{obj}</td>
                             <td>
-                              {followDataToday.filter((partObj) => partObj.ename === obj).length}
+                              {
+                                followDataToday.filter(
+                                  (partObj) => partObj.ename === obj
+                                ).length
+                              }
                               <FcDatabase
                                 onClick={() => {
                                   functionOpenProjectionTable(obj);
                                 }}
-                                style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "58px" }}
+                                style={{
+                                  cursor: "pointer",
+                                  marginRight: "-71px",
+                                  marginLeft: "58px",
+                                }}
                               />
                             </td>
                             <td>
-                              {
-                                followDataToday.reduce((totalServices, partObj) => {
+                              {followDataToday.reduce(
+                                (totalServices, partObj) => {
                                   if (partObj.ename === obj) {
-                                    totalServices += partObj.offeredServices.length;
+                                    totalServices +=
+                                      partObj.offeredServices.length;
                                   }
                                   return totalServices;
-                                }, 0)
-                              }
+                                },
+                                0
+                              )}
                             </td>
                             <td>
-                              {
-                                followDataToday.reduce((totalOfferedPrize, partObj) => {
+                              {followDataToday
+                                .reduce((totalOfferedPrize, partObj) => {
                                   if (partObj.ename === obj) {
                                     totalOfferedPrize += partObj.offeredPrize;
                                   }
                                   return totalOfferedPrize;
-                                }, 0).toLocaleString('en-IN', numberFormatOptions)
-                              }
+                                }, 0)
+                                .toLocaleString("en-IN", numberFormatOptions)}
                             </td>
                             <td>
-                              {
-                                followDataToday.reduce((totalPaymentSum, partObj) => {
+                              {followDataToday
+                                .reduce((totalPaymentSum, partObj) => {
                                   if (partObj.ename === obj) {
                                     totalPaymentSum += partObj.totalPayment;
                                   }
                                   return totalPaymentSum;
-                                }, 0).toLocaleString('en-IN', numberFormatOptions)
-                              }
+                                }, 0)
+                                .toLocaleString("en-IN", numberFormatOptions)}
                             </td>
                           </tr>
                         ))}
@@ -3974,52 +4782,60 @@ function Dashboard() {
                     ) : null}
 
                     {sortedData && sortedData.length !== 0 && (
-                      <tfoot style={{
-                        position: "sticky", // Make the footer sticky
-                        bottom: -1, // Stick it at the bottom
-                        backgroundColor: "#f6f2e9",
-                        color: "black",
-                        fontWeight: 500,
-                        zIndex: 2, // Ensure it's above the content
-                      }}>
+                      <tfoot
+                        style={{
+                          position: "sticky", // Make the footer sticky
+                          bottom: -1, // Stick it at the bottom
+                          backgroundColor: "#f6f2e9",
+                          color: "black",
+                          fontWeight: 500,
+                          zIndex: 2, // Ensure it's above the content
+                        }}
+                      >
                         <tr style={{ fontWeight: 500 }}>
                           <td style={{ lineHeight: "32px" }} colSpan="2">
                             Total
                           </td>
                           <td>
                             {
-                              followDataToday.filter((partObj) => partObj.ename).length
+                              followDataToday.filter((partObj) => partObj.ename)
+                                .length
                             }
                             <FcDatabase
                               onClick={() => {
                                 functionCompleteProjectionTable();
                               }}
-                              style={{ cursor: "pointer", marginRight: "-71px", marginLeft: "55px" }}
+                              style={{
+                                cursor: "pointer",
+                                marginRight: "-71px",
+                                marginLeft: "55px",
+                              }}
                             />
                           </td>
                           <td>
-                            {
-                              followDataToday.reduce((totalServices, partObj) => {
+                            {followDataToday.reduce(
+                              (totalServices, partObj) => {
                                 totalServices += partObj.offeredServices.length;
                                 return totalServices;
-                              }, 0)
-                            }
+                              },
+                              0
+                            )}
                           </td>
                           <td>
-                            {
-                              followDataToday.reduce((totalOfferedPrize, partObj) => {
+                            {followDataToday
+                              .reduce((totalOfferedPrize, partObj) => {
                                 totalOfferedPrize += partObj.offeredPrize;
                                 return totalOfferedPrize;
-                              }, 0).toLocaleString('en-IN', numberFormatOptions)
-                            }
+                              }, 0)
+                              .toLocaleString("en-IN", numberFormatOptions)}
                           </td>
                           <td>
-                            {
-                              followDataToday.reduce((totalPaymentSum, partObj) => {
+                            {followDataToday
+                              .reduce((totalPaymentSum, partObj) => {
                                 totalPaymentSum += partObj.totalPayment;
-                                return totalPaymentSum
-                              }, 0).toLocaleString('en-IN', numberFormatOptions)
-                            }
+                                return totalPaymentSum;
+                              }, 0)
+                              .toLocaleString("en-IN", numberFormatOptions)}
                           </td>
                         </tr>
                       </tfoot>
@@ -4034,7 +4850,6 @@ function Dashboard() {
                         </tr>
                       </tbody>
                     )}
-
                   </table>
                 </div>
               </div>
@@ -4044,10 +4859,14 @@ function Dashboard() {
             open={openProjectionTable}
             onClose={closeProjectionTable}
             fullWidth
-            maxWidth="lg">
+            maxWidth="lg"
+          >
             <DialogTitle>
-              {projectionEname} Today's Report {" "}
-              <IconButton onClick={closeProjectionTable} style={{ float: "right" }}>
+              {projectionEname} Today's Report{" "}
+              <IconButton
+                onClick={closeProjectionTable}
+                style={{ float: "right" }}
+              >
                 <CloseIcon color="primary"></CloseIcon>
               </IconButton>{" "}
             </DialogTitle>
@@ -4068,14 +4887,16 @@ function Dashboard() {
                   }}
                   className="table-vcenter table-nowrap"
                 >
-                  <thead style={{
-                    position: "sticky", // Make the header sticky
-                    top: '-1px', // Stick it at the top
-                    backgroundColor: "#ffb900",
-                    color: "black",
-                    fontWeight: "bold",
-                    zIndex: 1, // Ensure it's above other content
-                  }}>
+                  <thead
+                    style={{
+                      position: "sticky", // Make the header sticky
+                      top: "-1px", // Stick it at the top
+                      backgroundColor: "#ffb900",
+                      color: "black",
+                      fontWeight: "bold",
+                      zIndex: 1, // Ensure it's above other content
+                    }}
+                  >
                     <tr
                       style={{
                         backgroundColor: "#ffb900",
@@ -4104,9 +4925,8 @@ function Dashboard() {
                   <tbody>
                     {/* Map through uniqueEnames array to render rows */}
 
-                    {
-                      projectedDataToday && projectedDataToday.length > 0 ? (
-                        //   projectedDataDateRange.map((obj, Index) => (
+                    {projectedDataToday && projectedDataToday.length > 0
+                      ? //   projectedDataDateRange.map((obj, Index) => (
                         //     <tr key={`sub-row-${Index}`}>
                         //       <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
                         //       {/* Render other employee data */}
@@ -4121,7 +4941,7 @@ function Dashboard() {
                         //       <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryNew(obj.companyName)} /></td>
                         //     </tr>
                         //   ))
-                        // ) : 
+                        // ) :
 
                         projectedDataToday.map((obj, Index) => (
                           <tr key={`sub-row-${Index}`}>
@@ -4130,46 +4950,69 @@ function Dashboard() {
                             <td>{obj.ename}</td>
                             <td>{obj.companyName}</td>
                             <td>{obj.offeredServices.join(",")}</td>
-                            <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                            <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>
+                              {obj.offeredPrize.toLocaleString(
+                                "en-IN",
+                                numberFormatOptions
+                              )}
+                            </td>
+                            <td>
+                              {obj.totalPayment.toLocaleString(
+                                "en-IN",
+                                numberFormatOptions
+                              )}
+                            </td>
                             <td>{formatDateFinal(obj.estPaymentDate)}</td>
                             <td>{formatDateFinal(obj.lastFollowUpdate)}</td>
                             <td>{obj.remarks}</td>
-                            <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection(obj.companyName)} /></td>
+                            <td>
+                              <MdHistory
+                                style={{
+                                  width: "17px",
+                                  height: "17px",
+                                  color: "grey",
+                                }}
+                                onClick={() =>
+                                  handleViewHistoryProjection(obj.companyName)
+                                }
+                              />
+                            </td>
                           </tr>
                         ))
-                      ) : (null)
-                    }
+                      : null}
                   </tbody>
                   {projectedEmployee && (
-                    <tfoot style={{
-                      position: "sticky", // Make the footer sticky
-                      bottom: -1, // Stick it at the bottom
-                      backgroundColor: "#f6f2e9",
-                      color: "black",
-                      fontWeight: 500,
-                      zIndex: 2
-                    }}>
+                    <tfoot
+                      style={{
+                        position: "sticky", // Make the footer sticky
+                        bottom: -1, // Stick it at the bottom
+                        backgroundColor: "#f6f2e9",
+                        color: "black",
+                        fontWeight: 500,
+                        zIndex: 2,
+                      }}
+                    >
                       <tr style={{ fontWeight: 500 }}>
-                        <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                        <td style={{ lineHeight: "32px" }} colSpan="2">
+                          Total
+                        </td>
                         {/* <td>{projectedEmployee.length}</td> 
                         <td>
                           {projectedDataDateRange && projectedDataDateRange.length > 0 ? (projectedDataDateRange.length) : (projectedDataToday.length)}
                         </td>*/}
-                        <td>
-                          {(projectedDataToday.length)}
-                        </td>
+                        <td>{projectedDataToday.length}</td>
                         {/* <td>{offeredServicesPopup.length}
                     </td> 
                         <td>{projectedDataDateRange && projectedDataDateRange.length > 0 ? (offeredServicesPopupDateRange.length) : (offeredServicesPopupToday.length)}</td>
                         <td>{(offeredServicesPopupToday.length)}</td>*/}
                         <td>
-                          {
-                            projectedDataToday.reduce((totalServices, partObj) => {
+                          {projectedDataToday.reduce(
+                            (totalServices, partObj) => {
                               totalServices += partObj.offeredServices.length;
                               return totalServices;
-                            }, 0)
-                          }
+                            },
+                            0
+                          )}
                         </td>
                         {/* <td>{totalPaymentSumPopup.toLocaleString()}
                     </td> 
@@ -4184,14 +5027,24 @@ function Dashboard() {
                           &#8377;{(totalPaymentSumPopupToday.toLocaleString())}
                         </td>*/}
 
-                        <td>&#8377;{
-                          projectedDataToday.reduce((totalOfferedPrice, partObj) => {
-                            return totalOfferedPrice + partObj.offeredPrize;
-                          }, 0)}</td>
-                        <td>&#8377;{
-                          projectedDataToday.reduce((totalTotalPayment, partObj) => {
-                            return totalTotalPayment + partObj.totalPayment;
-                          }, 0)}</td>
+                        <td>
+                          &#8377;
+                          {projectedDataToday.reduce(
+                            (totalOfferedPrice, partObj) => {
+                              return totalOfferedPrice + partObj.offeredPrize;
+                            },
+                            0
+                          )}
+                        </td>
+                        <td>
+                          &#8377;
+                          {projectedDataToday.reduce(
+                            (totalTotalPayment, partObj) => {
+                              return totalTotalPayment + partObj.totalPayment;
+                            },
+                            0
+                          )}
+                        </td>
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
@@ -4204,25 +5057,28 @@ function Dashboard() {
             </DialogContent>
           </Dialog>
 
-
-
           {/* -------------------------------------------------------------complete projection--------------------------------------- */}
           <Dialog
             open={completeProjectionTable}
             onClose={closeCompleteProjectionTable}
             fullWidth
-            maxWidth="lg">
+            maxWidth="lg"
+          >
             <DialogTitle>
-              Today's Report {" "}
-              <IconButton onClick={closeCompleteProjectionTable} style={{ float: "right" }}>
+              Today's Report{" "}
+              <IconButton
+                onClick={closeCompleteProjectionTable}
+                style={{ float: "right" }}
+              >
                 <CloseIcon color="primary"></CloseIcon>
               </IconButton>{" "}
-                <button style={{float:"right"}}
-                  className="btn btn-primary mr-1"
-                  onClick={exportData}
-                  >
-                  + Export CSV
-                </button>
+              <button
+                style={{ float: "right" }}
+                className="btn btn-primary mr-1"
+                onClick={exportData}
+              >
+                + Export CSV
+              </button>
             </DialogTitle>
             <DialogContent>
               <div
@@ -4241,14 +5097,16 @@ function Dashboard() {
                   }}
                   className="table-vcenter table-nowrap"
                 >
-                  <thead style={{
-                    position: "sticky", // Make the header sticky
-                    top: '-1px', // Stick it at the top
-                    backgroundColor: "#ffb900",
-                    color: "black",
-                    fontWeight: "bold",
-                    zIndex: 1, // Ensure it's above other content
-                  }}>
+                  <thead
+                    style={{
+                      position: "sticky", // Make the header sticky
+                      top: "-1px", // Stick it at the top
+                      backgroundColor: "#ffb900",
+                      color: "black",
+                      fontWeight: "bold",
+                      zIndex: 1, // Ensure it's above other content
+                    }}
+                  >
                     <tr
                       style={{
                         backgroundColor: "#ffb900",
@@ -4277,55 +5135,74 @@ function Dashboard() {
                   <tbody>
                     {/* Map through uniqueEnames array to render rows */}
 
-                    {followDataToday && followDataToday.length > 0 ? (
-                      followDataToday.map((obj, Index) => (
-                        <tr key={`sub-row-${Index}`}>
-                          <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                          {/* Render other employee data */}
-                          <td>{obj.ename}</td>
-                          <td>{obj.companyName}</td>
-                          <td>{obj.offeredServices.join(",")}</td>
-                          <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                          <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                          <td>{obj.estPaymentDate}</td>
-                          <td>{obj.lastFollowUpdate}</td>
-                          <td>{obj.remarks}</td>
-                          {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection(obj.companyName)} /></td> */}
-                        </tr>
-                      ))
-                    ) : (null)
-                    }
+                    {followDataToday && followDataToday.length > 0
+                      ? followDataToday.map((obj, Index) => (
+                          <tr key={`sub-row-${Index}`}>
+                            <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                            {/* Render other employee data */}
+                            <td>{obj.ename}</td>
+                            <td>{obj.companyName}</td>
+                            <td>{obj.offeredServices.join(",")}</td>
+                            <td>
+                              {obj.offeredPrize.toLocaleString(
+                                "en-IN",
+                                numberFormatOptions
+                              )}
+                            </td>
+                            <td>
+                              {obj.totalPayment.toLocaleString(
+                                "en-IN",
+                                numberFormatOptions
+                              )}
+                            </td>
+                            <td>{obj.estPaymentDate}</td>
+                            <td>{obj.lastFollowUpdate}</td>
+                            <td>{obj.remarks}</td>
+                            {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection(obj.companyName)} /></td> */}
+                          </tr>
+                        ))
+                      : null}
                   </tbody>
                   {followDataToday && (
-                    <tfoot style={{
-                      position: "sticky", // Make the footer sticky
-                      bottom: -1, // Stick it at the bottom
-                      backgroundColor: "#f6f2e9",
-                      color: "black",
-                      fontWeight: 500,
-                      zIndex: 2
-                    }}>
+                    <tfoot
+                      style={{
+                        position: "sticky", // Make the footer sticky
+                        bottom: -1, // Stick it at the bottom
+                        backgroundColor: "#f6f2e9",
+                        color: "black",
+                        fontWeight: 500,
+                        zIndex: 2,
+                      }}
+                    >
                       <tr style={{ fontWeight: 500 }}>
-                        <td style={{ lineHeight: '32px' }} colSpan="2">Total</td>
+                        <td style={{ lineHeight: "32px" }} colSpan="2">
+                          Total
+                        </td>
+                        <td>{followDataToday.length}</td>
                         <td>
-                          {(followDataToday.length)}
+                          {followDataToday.reduce((totalServices, partObj) => {
+                            totalServices += partObj.offeredServices.length;
+                            return totalServices;
+                          }, 0)}
                         </td>
                         <td>
-                          {
-                            followDataToday.reduce((totalServices, partObj) => {
-                              totalServices += partObj.offeredServices.length;
-                              return totalServices;
-                            }, 0)
-                          }
+                          &#8377;
+                          {followDataToday.reduce(
+                            (totalOfferedPrice, partObj) => {
+                              return totalOfferedPrice + partObj.offeredPrize;
+                            },
+                            0
+                          )}
                         </td>
-                        <td>&#8377;{
-                          followDataToday.reduce((totalOfferedPrice, partObj) => {
-                            return totalOfferedPrice + partObj.offeredPrize;
-                          }, 0)}</td>
-                        <td>&#8377;{
-                          followDataToday.reduce((totalTotalPayment, partObj) => {
-                            return totalTotalPayment + partObj.totalPayment;
-                          }, 0)}</td>
+                        <td>
+                          &#8377;
+                          {followDataToday.reduce(
+                            (totalTotalPayment, partObj) => {
+                              return totalTotalPayment + partObj.totalPayment;
+                            },
+                            0
+                          )}
+                        </td>
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
@@ -4344,10 +5221,14 @@ function Dashboard() {
             open={openProjectionHistoryTable}
             onClose={closeProjectionHistoryTable}
             fullWidth
-            maxWidth="lg">
+            maxWidth="lg"
+          >
             <DialogTitle>
               {viewHistoryCompanyName}
-              <IconButton onClick={closeProjectionHistoryTable} style={{ float: "right" }}>
+              <IconButton
+                onClick={closeProjectionHistoryTable}
+                style={{ float: "right" }}
+              >
                 <CloseIcon color="primary"></CloseIcon>
               </IconButton>{" "}
             </DialogTitle>
@@ -4368,14 +5249,16 @@ function Dashboard() {
                   }}
                   className="table-vcenter table-nowrap"
                 >
-                  <thead style={{
-                    position: "sticky", // Make the header sticky
-                    top: '-1px', // Stick it at the top
-                    backgroundColor: "#ffb900",
-                    color: "black",
-                    fontWeight: "bold",
-                    zIndex: 1, // Ensure it's above other content
-                  }}>
+                  <thead
+                    style={{
+                      position: "sticky", // Make the header sticky
+                      top: "-1px", // Stick it at the top
+                      backgroundColor: "#ffb900",
+                      color: "black",
+                      fontWeight: "bold",
+                      zIndex: 1, // Ensure it's above other content
+                    }}
+                  >
                     <tr
                       style={{
                         backgroundColor: "#ffb900",
@@ -4402,51 +5285,69 @@ function Dashboard() {
                   </thead>
 
                   <tbody>
-                    {
-                      projectedDataToday && projectedDataToday.length > 0 ? (
-                        historyDataCompany.map((obj, index) => (
+                    {projectedDataToday && projectedDataToday.length > 0
+                      ? historyDataCompany.map((obj, index) => (
                           <tr key={`sub-row-${index}`}>
                             <td style={{ lineHeight: "32px" }}>{index + 1}</td>
                             {/* Render other employee data */}
                             <td>{obj.modifiedAt}</td>
                             <td>{obj.data.companyName}</td>
                             <td>{obj.data.offeredServices.join(",")}</td>
-                            <td>{obj.data.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                            <td>{obj.data.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                            <td>
+                              {obj.data.offeredPrize.toLocaleString(
+                                "en-IN",
+                                numberFormatOptions
+                              )}
+                            </td>
+                            <td>
+                              {obj.data.totalPayment.toLocaleString(
+                                "en-IN",
+                                numberFormatOptions
+                              )}
+                            </td>
                             <td>{obj.data.estPaymentDate}</td>
                             <td>{obj.data.lastFollowUpdate}</td>
                             <td>{obj.data.remarks}</td>
                             {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
                           </tr>
                         ))
-                      ) : (null)
-                    }
+                      : null}
                     {/* Additional rendering for latest data */}
-                    {
-                      latestDataForCompany.map((obj, index) => (
-                        <tr key={`sub-row-latest-${index}`}>
-                          <td style={{ lineHeight: "32px" }}>{historyDataCompany.length + index + 1}</td>
-                          {/* Render other employee data */}
-                          <td>{obj.date}</td>
-                          <td>{obj.companyName}</td>
-                          <td>{obj.offeredServices.join(",")}</td>
-                          <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                          <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                          <td>{obj.estPaymentDate}</td>
-                          <td>{obj.lastFollowUpdate}</td>
-                          <td>{obj.remarks}</td>
-                          {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
-                        </tr>
-                      ))
-                    }
+                    {latestDataForCompany.map((obj, index) => (
+                      <tr key={`sub-row-latest-${index}`}>
+                        <td style={{ lineHeight: "32px" }}>
+                          {historyDataCompany.length + index + 1}
+                        </td>
+                        {/* Render other employee data */}
+                        <td>{obj.date}</td>
+                        <td>{obj.companyName}</td>
+                        <td>{obj.offeredServices.join(",")}</td>
+                        <td>
+                          {obj.offeredPrize.toLocaleString(
+                            "en-IN",
+                            numberFormatOptions
+                          )}
+                        </td>
+                        <td>
+                          {obj.totalPayment.toLocaleString(
+                            "en-IN",
+                            numberFormatOptions
+                          )}
+                        </td>
+                        <td>{obj.estPaymentDate}</td>
+                        <td>{obj.lastFollowUpdate}</td>
+                        <td>{obj.remarks}</td>
+                        {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
             </DialogContent>
           </Dialog>
-        </div >
-      </div >
-    </div >
+        </div>
+      </div>
+    </div>
   );
 }
 
