@@ -831,10 +831,10 @@ const mainAdminName =  localStorage.getItem("adminName");
     } else {
       axios
         .post(`${secretKey}/manual`, {
-          "Company Name": cname,
+          "Company Name": cname.toUpperCase().trim(),
           "Company Number": cnumber,
           "Company Email": cemail,
-          "Company Incorporation Date": cidate, // Assuming the correct key is "Company Incorporation Date"
+          "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
           City: city,
           State: state,
           ename: data.ename,
