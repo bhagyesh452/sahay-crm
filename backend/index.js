@@ -4184,7 +4184,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-              ${newData.services[i].withGST}
+              ${newData.services[i].withGST ? "Yes" : "No"}
             </div>
           </div>
         </div>
@@ -4583,7 +4583,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                      ${newData.bdmName}
+                      ${newData.bdmName} ( ${newData.bdmType} )
                   </div>
                 </div>
               </div>
