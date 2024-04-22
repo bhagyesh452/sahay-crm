@@ -46,7 +46,7 @@ const EditableDraftModel = require("./models/EditableDraftModel");
 const RedesignedDraftModel = require("./models/RedesignedDraftModel");
 const { sendMail2 } = require("./helpers/sendMail2");
 //const axios = require('axios');
-const crypto = require('crypto');
+const crypto = require("crypto");
 const TeamModel = require("./models/TeamModel.js");
 const TeamLeadsModel = require("./models/TeamLeads.js");
 const RequestMaturedModel = require("./models/RequestMatured.js");
@@ -356,7 +356,7 @@ app.post("/api/bdmlogin", async (req, res) => {
 app.put("/api/online-status/:id/:socketID", async (req, res) => {
   const { id } = req.params;
   const { socketID } = req.params;
-  console.log('kuhi',socketID);
+  console.log("kuhi", socketID);
   try {
     const admin = await adminModel.findByIdAndUpdate(
       id,
@@ -466,7 +466,7 @@ app.post("/api/leads", async (req, res) => {
         const employeeWithAssignData = {
           ...employeeData,
           AssignDate: new Date(),
-          "Company Name": employeeData["Company Name"].toUpperCase()
+          "Company Name": employeeData["Company Name"].toUpperCase(),
         };
         const employee = new CompanyModel(employeeWithAssignData);
         //console.log("newemployee" , employee)
@@ -508,26 +508,26 @@ function createCSVString(data) {
   const csvData = [];
   // Push the headers as the first row
   csvData.push([
-      "Company Name",
-      "Company Number",
-      "Company Email",
-      "Company Incorporation Date",
-      "City",
-      "State",
-      `"${lead["Company Address"]}"`,
-      "Director Name(First)",
-      "Director Number(First)",
-      "Director Email(First)",
-      "Director Name(Second)",
-      "Director Number(Second)",
-      "Director Email(Second)",
-      "Director Name(Third)",
-      "Director Number(Third)",
-      "Director Email(Third)",
-      "ename",
-      "AssignDate",
-      "Status",
-      `"${lead["Remarks"]}"`,
+    "Company Name",
+    "Company Number",
+    "Company Email",
+    "Company Incorporation Date",
+    "City",
+    "State",
+    `"${lead["Company Address"]}"`,
+    "Director Name(First)",
+    "Director Number(First)",
+    "Director Email(First)",
+    "Director Name(Second)",
+    "Director Number(Second)",
+    "Director Email(Second)",
+    "Director Name(Third)",
+    "Director Number(Third)",
+    "Director Email(Third)",
+    "ename",
+    "AssignDate",
+    "Status",
+    `"${lead["Remarks"]}"`,
   ]);
 
   // Push each duplicate entry as a row into the csvData array
@@ -694,7 +694,7 @@ app.post("/api/update-remarks/:id", async (req, res) => {
     // Update remarks and fetch updated data in a single operation
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
 
-    await TeamLeadsModel.findByIdAndUpdate(id,{ bdmRemarks : Remarks});
+    await TeamLeadsModel.findByIdAndUpdate(id, { bdmRemarks: Remarks });
 
     // Fetch updated data and remarks history
     const updatedCompany = await CompanyModel.findById(id);
@@ -797,17 +797,19 @@ app.get("/api/einfo", async (req, res) => {
 //   }
 // });
 
-
-app.post('/api/teaminfo', async (req, res) => {
+app.post("/api/teaminfo", async (req, res) => {
   const teamData = req.body;
-    // Assuming `formatDate()` is a function that formats the current date
-   
+  // Assuming `formatDate()` is a function that formats the current date
+
   try {
-    const newTeam = await TeamModel.create({ modifiedAt: formatDate(Date.now()), ...teamData });
+    const newTeam = await TeamModel.create({
+      modifiedAt: formatDate(Date.now()),
+      ...teamData,
+    });
     //console.log("newTeam", newTeam);
     res.status(201).json(newTeam);
   } catch (error) {
-    console.error('Error creating team:', error.message);
+    console.error("Error creating team:", error.message);
     if (teamData.teamName === "") {
       return res.status(500).json({ message: "Please Enter Team Name" });
     } else {
@@ -815,7 +817,6 @@ app.post('/api/teaminfo', async (req, res) => {
     }
   }
 });
-
 
 app.get("/api/teaminfo", async (req, res) => {
   try {
@@ -861,26 +862,43 @@ app.get("/api/teaminfo/:ename", async (req, res) => {
 //   }
 // });
 
-
 app.post("/api/forwardtobdmdata", async (req, res) => {
-  const { selectedData, bdmName , companyId , bdmAcceptStatus , bdeForwardDate , bdeOldStatus} = req.body;
+  const {
+    selectedData,
+    bdmName,
+    companyId,
+    bdmAcceptStatus,
+    bdeForwardDate,
+    bdeOldStatus,
+  } = req.body;
   console.log("selectedData", selectedData);
 
   try {
     // Assuming TeamLeadsModel has a schema similar to the selectedData structure
-    const newLeads = await Promise.all(selectedData.map(async (data) => {
-      
-      const newData = { ...data, bdmName , bdeForwardDate : formatDate(bdeForwardDate)}; // Add bdmName to each data object
-      return await TeamLeadsModel.create(newData);
-    }));
+    const newLeads = await Promise.all(
+      selectedData.map(async (data) => {
+        const newData = {
+          ...data,
+          bdmName,
+          bdeForwardDate: formatDate(bdeForwardDate),
+        }; // Add bdmName to each data object
+        return await TeamLeadsModel.create(newData);
+      })
+    );
 
-    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus , bdeForwardDate:formatDate(bdeForwardDate) , bdeOldStatus : bdeOldStatus})
-    
-    
+    await CompanyModel.findByIdAndUpdate(
+      { _id: companyId },
+      {
+        bdmAcceptStatus: bdmAcceptStatus,
+        bdeForwardDate: formatDate(bdeForwardDate),
+        bdeOldStatus: bdeOldStatus,
+      }
+    );
+
     console.log("newLeads", newLeads);
     res.status(201).json(newLeads);
   } catch (error) {
-    console.error('Error creating new leads:', error.message);
+    console.error("Error creating new leads:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -891,7 +909,7 @@ app.get("/api/forwardedbybdedata/:bdmName", async (req, res) => {
   try {
     // Fetch data using lean queries to retrieve plain JavaScript objects
     const data = await TeamLeadsModel.find({
-      "bdmName": bdmName,
+      bdmName: bdmName,
     }).lean();
 
     res.send(data);
@@ -903,13 +921,15 @@ app.get("/api/forwardedbybdedata/:bdmName", async (req, res) => {
 
 app.post("/api/update-bdm-status/:id", async (req, res) => {
   const { id } = req.params;
-  const { newBdmStatus, companyId , oldStatus , bdmAcceptStatus} = req.body; // Destructure the required properties from req.body
+  const { newBdmStatus, companyId, oldStatus, bdmAcceptStatus } = req.body; // Destructure the required properties from req.body
 
   try {
     // Update the status field in the database based on the employee id
-    await TeamLeadsModel.findByIdAndUpdate(id, { bdmStatus : oldStatus });
-    
-    await CompanyModel.findByIdAndUpdate(id , {bdmAcceptStatus:bdmAcceptStatus})
+    await TeamLeadsModel.findByIdAndUpdate(id, { bdmStatus: oldStatus });
+
+    await CompanyModel.findByIdAndUpdate(id, {
+      bdmAcceptStatus: bdmAcceptStatus,
+    });
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -920,13 +940,16 @@ app.post("/api/update-bdm-status/:id", async (req, res) => {
 
 app.post("/api/bdm-status-change/:id", async (req, res) => {
   const { id } = req.params;
-  const { bdeStatus , bdmnewstatus, title, date, time} = req.body; // Destructure the required properties from req.body
+  const { bdeStatus, bdmnewstatus, title, date, time } = req.body; // Destructure the required properties from req.body
 
   try {
     // Update the status field in the database based on the employee id
-    await TeamLeadsModel.findByIdAndUpdate(id, { bdmStatus : bdmnewstatus , Status : bdmnewstatus });
-    
-    await CompanyModel.findByIdAndUpdate(id , {Status : bdmnewstatus})
+    await TeamLeadsModel.findByIdAndUpdate(id, {
+      bdmStatus: bdmnewstatus,
+      Status: bdmnewstatus,
+    });
+
+    await CompanyModel.findByIdAndUpdate(id, { Status: bdmnewstatus });
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -942,7 +965,9 @@ app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
 
-    await CompanyModel.findByIdAndUpdate(id, { bdmAcceptStatus: bdmAcceptStatus }); // Corrected update
+    await CompanyModel.findByIdAndUpdate(id, {
+      bdmAcceptStatus: bdmAcceptStatus,
+    }); // Corrected update
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -958,7 +983,9 @@ app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
 
-    await CompanyModel.findByIdAndUpdate(id, { bdmAcceptStatus: bdmAcceptStatus }); // Corrected update
+    await CompanyModel.findByIdAndUpdate(id, {
+      bdmAcceptStatus: bdmAcceptStatus,
+    }); // Corrected update
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -992,11 +1019,11 @@ app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
 
 app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
   const teamId = req.params.teamId; // Correctly access teamId from req.params
-  
+
   try {
     const existingData = await TeamModel.findById(teamId);
     console.log(existingData);
-   
+
     if (existingData) {
       await TeamModel.findByIdAndDelete(teamId); // Use findByIdAndDelete to delete by ID
       res.status(200).json({ message: "Deleted Successfully" });
@@ -1008,71 +1035,75 @@ app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
   }
 });
 
-app.put("/api/teaminfo/:teamId" , async(req , res)=>{
-  const teamId = req.params.teamId
+app.put("/api/teaminfo/:teamId", async (req, res) => {
+  const teamId = req.params.teamId;
 
-  const dataToUpdated = req.body
+  const dataToUpdated = req.body;
 
-  console.log("Update" , dataToUpdated)
+  console.log("Update", dataToUpdated);
 
-  try{
-    const updatedData = await TeamModel.findByIdAndUpdate(teamId , dataToUpdated , {
-      new : true,
-    })
+  try {
+    const updatedData = await TeamModel.findByIdAndUpdate(
+      teamId,
+      dataToUpdated,
+      {
+        new: true,
+      }
+    );
     if (!updatedData) {
       return res.status(404).json({ error: "Data not found" });
-    }else{
-
+    } else {
       res.json({ message: "Data updated successfully", updatedData });
     }
-
- 
-  }catch(error){
+  } catch (error) {
     console.error("Error updating data:", error);
     res.status(500).json({ error: "Internal Server Error" });
-
   }
-})
+});
 
-app.post("/api/post-feedback-remarks/:companyId" , async (req,res)=>{
+app.post("/api/post-feedback-remarks/:companyId", async (req, res) => {
   const companyId = req.params.companyId;
-  const {feedbackPoints , feedbackRemarks} = req.body
+  const { feedbackPoints, feedbackRemarks } = req.body;
 
+  try {
+    await TeamLeadsModel.findByIdAndUpdate(companyId, {
+      feedbackPoints: feedbackPoints,
+      feedbackRemarks: feedbackRemarks,
+    });
 
-  try{
-
-    await TeamLeadsModel.findByIdAndUpdate(companyId , {feedbackPoints : feedbackPoints , feedbackRemarks : feedbackRemarks })
-
-    await CompanyModel.findByIdAndUpdate(companyId , {feedbackPoints : feedbackPoints , feedbackRemarks : feedbackRemarks})
+    await CompanyModel.findByIdAndUpdate(companyId, {
+      feedbackPoints: feedbackPoints,
+      feedbackRemarks: feedbackRemarks,
+    });
 
     res.status(200).json({ message: "Feedback updated successfully" });
-
-  }catch(error){
+  } catch (error) {
     console.error("Error updating data:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-})
+});
 
-app.post("/api/post-feedback-remarks/:companyId" , async (req,res)=>{
+app.post("/api/post-feedback-remarks/:companyId", async (req, res) => {
   const companyId = req.params.companyId;
-  const {feedbackPoints , feedbackRemarks} = req.body
+  const { feedbackPoints, feedbackRemarks } = req.body;
 
+  try {
+    await TeamLeadsModel.findByIdAndUpdate(companyId, {
+      feedbackPoints: feedbackPoints,
+      feedbackRemarks: feedbackRemarks,
+    });
 
-  try{
-
-    await TeamLeadsModel.findByIdAndUpdate(companyId , {feedbackPoints : feedbackPoints , feedbackRemarks : feedbackRemarks })
-
-    await CompanyModel.findByIdAndUpdate(companyId , {feedbackPoints : feedbackPoints , feedbackRemarks : feedbackRemarks})
+    await CompanyModel.findByIdAndUpdate(companyId, {
+      feedbackPoints: feedbackPoints,
+      feedbackRemarks: feedbackRemarks,
+    });
 
     res.status(200).json({ message: "Feedback updated successfully" });
-
-  }catch(error){
+  } catch (error) {
     console.error("Error updating data:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-})
-
-
+});
 
 // ------------------------------------------------------team api end----------------------------------
 
@@ -1865,7 +1896,7 @@ app.delete("/api/newcompanynamedelete/:id", async (req, res) => {
 });
 app.post("/api/remarks-history/:companyId", async (req, res) => {
   const { companyId } = req.params;
-  const { Remarks , remarksBdmName } = req.body;
+  const { Remarks, remarksBdmName } = req.body;
 
   // Get the current date and time
   const currentDate = new Date();
@@ -1879,10 +1910,10 @@ app.post("/api/remarks-history/:companyId", async (req, res) => {
       date,
       companyID: companyId,
       remarks: Remarks,
-      bdmName:remarksBdmName,
+      bdmName: remarksBdmName,
     });
 
-    await TeamLeadsModel.findByIdAndUpdate(companyId , {bdmRemarks : Remarks})
+    await TeamLeadsModel.findByIdAndUpdate(companyId, { bdmRemarks: Remarks });
 
     // Save the new entry to MongoDB
     await newRemarksHistory.save();
@@ -1918,7 +1949,7 @@ app.delete("/api/remarks-history/:id", async (req, res) => {
 //     // Determine the destination path based on the fieldname and company name
 //     const companyName = req.params.companyName;
 //     let destinationPath = "";
-    
+
 //     if (file.fieldname === "otherDocs") {
 //       destinationPath = `./${companyName}/ExtraDocs`;
 //     } else if (file.fieldname === "paymentReceipt") {
@@ -1943,7 +1974,7 @@ const storage = multer.diskStorage({
     // Determine the destination path based on the fieldname and company name
     const companyName = req.params.CompanyName;
     let destinationPath = "";
-    
+
     if (file.fieldname === "otherDocs") {
       destinationPath = `BookingsDocument/${companyName}/ExtraDocs`;
     } else if (file.fieldname === "paymentReceipt") {
@@ -2935,7 +2966,11 @@ app.get("/api/loginDetails", (req, res) => {
 app.get("/api/pdf/:CompanyName/:filename", (req, res) => {
   const filepath = req.params.filename;
   const companyName = req.params.CompanyName;
-  const pdfPath = path.join(__dirname, `BookingsDocument/${companyName}/ExtraDocs`, filepath);
+  const pdfPath = path.join(
+    __dirname,
+    `BookingsDocument/${companyName}/ExtraDocs`,
+    filepath
+  );
 
   // Read the PDF file
   fs.readFile(pdfPath, (err, data) => {
@@ -2959,8 +2994,12 @@ app.get("/api/pdf/:CompanyName/:filename", (req, res) => {
 
 app.get("/api/paymentrecieptpdf/:CompanyName/:filename", (req, res) => {
   const filepath = req.params.filename;
-  const companyName = req.params.CompanyName
-  const pdfPath = path.join(__dirname, `BookingsDocument/${companyName}/PaymentReceipts`, filepath);
+  const companyName = req.params.CompanyName;
+  const pdfPath = path.join(
+    __dirname,
+    `BookingsDocument/${companyName}/PaymentReceipts`,
+    filepath
+  );
   console.log(pdfPath);
   // Read the PDF file
   fs.readFile(pdfPath, (err, data) => {
@@ -2983,8 +3022,12 @@ app.get("/api/paymentrecieptpdf/:CompanyName/:filename", (req, res) => {
 
 app.get("/api/recieptpdf/:CompanyName/:filename", (req, res) => {
   const filepath = req.params.filename;
-  const companyName = req.params.CompanyName
-  const pdfPath = path.join(__dirname, `BookingsDocument/${companyName}/PaymentReceipts`, filepath);
+  const companyName = req.params.CompanyName;
+  const pdfPath = path.join(
+    __dirname,
+    `BookingsDocument/${companyName}/PaymentReceipts`,
+    filepath
+  );
 
   // Check if the file exists
   fs.access(pdfPath, fs.constants.F_OK, (err) => {
@@ -3000,8 +3043,12 @@ app.get("/api/recieptpdf/:CompanyName/:filename", (req, res) => {
 
 app.get("/api/otherpdf/:CompanyName/:filename", (req, res) => {
   const filepath = req.params.filename;
-  const companyName = req.params.CompanyName
-  const pdfPath = path.join(__dirname, `BookingsDocument/${companyName}/ExtraDocs`, filepath);
+  const companyName = req.params.CompanyName;
+  const pdfPath = path.join(
+    __dirname,
+    `BookingsDocument/${companyName}/ExtraDocs`,
+    filepath
+  );
 
   // Check if the file exists
   fs.access(pdfPath, fs.constants.F_OK, (err) => {
@@ -3210,7 +3257,7 @@ app.post("/api/exportLeads/", async (req, res) => {
         lead["Director Email(Third)"],
         lead["AssignDate"],
         lead["Status"],
-        `"${lead["Remarks"]}"`
+        `"${lead["Remarks"]}"`,
       ];
       csvData.push(rowData);
       // console.log("rowData:" , rowData)
@@ -3240,7 +3287,7 @@ app.post("/api/followdataexport/", async (req, res) => {
   try {
     const leads = req.body;
 
-    // const leads = await FollowUpModel.find({ 
+    // const leads = await FollowUpModel.find({
     // });
 
     const csvData = [];
@@ -3311,7 +3358,9 @@ app.post(
       }
 
       // Find the company by its name
-      const company = await RedesignedLeadformModel.findOne({ "Company Name": companyName });
+      const company = await RedesignedLeadformModel.findOne({
+        "Company Name": companyName,
+      });
 
       // Check if company exists
       if (!company) {
@@ -3320,14 +3369,18 @@ app.post(
 
       // Get the uploaded files
       const newOtherDocs = req.files["otherDocs"] || []; // Default to empty array
-      
+
       // Check if bookingIndex is valid
       if (bookingIndex === 0) {
         // Update the main company's otherDocs directly
         company.otherDocs = company.otherDocs.concat(newOtherDocs);
-      } else if (bookingIndex > 0 && bookingIndex <= company.moreBookings.length) {
+      } else if (
+        bookingIndex > 0 &&
+        bookingIndex <= company.moreBookings.length
+      ) {
         // Update the otherDocs in the appropriate moreBookings object
-        company.moreBookings[bookingIndex - 1].otherDocs = company.moreBookings[bookingIndex - 1].otherDocs.concat(newOtherDocs);
+        company.moreBookings[bookingIndex - 1].otherDocs =
+          company.moreBookings[bookingIndex - 1].otherDocs.concat(newOtherDocs);
       } else {
         return res.status(400).send("Invalid booking index");
       }
@@ -3345,7 +3398,6 @@ app.post(
     }
   }
 );
-
 
 app.post("/api/redesigned-leadform", async (req, res) => {
   try {
@@ -3552,7 +3604,6 @@ app.get("/api/redesigned-leadData/:CompanyName", async (req, res) => {
       gstNumber: newData.gstNumber,
       bdeName: newData.bdeName,
       bdeEmail: newData.bdeEmail,
-
     };
     // Create a new object with the same company name in RedesignedDraftModel
     const createData = await RedesignedDraftModel.create({
@@ -3570,8 +3621,6 @@ app.get("/api/redesigned-leadData/:CompanyName", async (req, res) => {
       gstNumber: newData.gstNumber,
       bdeName: newData.bdeName,
       bdeEmail: newData.bdeEmail,
- 
-
     });
     res.json(TempDataObject);
   } catch (err) {
@@ -3594,29 +3643,26 @@ app.post("/api/redesigned-importData", async (req, res) => {
         "Company Name": companyName,
       });
       const companyExists = await CompanyModel.findOne({
-        "Company Name": companyName
-      })
-      if(companyExists){
+        "Company Name": companyName,
+      });
+      if (companyExists) {
         companyExists.Status = "Matured";
         const updatedData = await companyExists.save();
         companyID = updatedData._id;
-      }else {
+      } else {
         const basicData = new CompanyModel({
-          "Company Name":item["Company Name"],
-          "Company Email":item["Company Email"],
-          "Company Number":item["Company Number"],
-          ename:item.bdeName,
-          "Company Incorporation Date  ":item.incoDate,
+          "Company Name": item["Company Name"],
+          "Company Email": item["Company Email"],
+          "Company Number": item["Company Number"],
+          ename: item.bdeName,
+          "Company Incorporation Date  ": item.incoDate,
           AssignDate: new Date(),
           Status: "Matured",
-          Remarks:item.extraRemarks
-        })
-        const storedData =  await basicData.save();
+          Remarks: item.extraRemarks,
+        });
+        const storedData = await basicData.save();
         companyID = storedData._id;
       }
-     
-      
-    
 
       // Create an array to store services data
       const services = [];
@@ -3628,12 +3674,17 @@ app.post("/api/redesigned-importData", async (req, res) => {
           const service = {
             serviceName: item[`${i}serviceName`],
             totalPaymentWOGST: item[`${i}TotalAmount`],
-            totalPaymentWGST: item[`${i}GST`] === "YES"
-              ? item[`${i}TotalAmount`] + item[`${i}TotalAmount`] * 0.18
-              : item[`${i}TotalAmount`],
+            totalPaymentWGST:
+              item[`${i}GST`] === "YES"
+                ? item[`${i}TotalAmount`] + item[`${i}TotalAmount`] * 0.18
+                : item[`${i}TotalAmount`],
             withGST: item[`${i}GST`] === "YES",
-            withDSC: item[`${i}serviceName`] === "Start-Up India Certificate With DSC",
-            paymentTerms: item[`${i}PaymentTerms`] === "PART-PAYMENT" ? "two-part" : "Full Advanced",
+            withDSC:
+              item[`${i}serviceName`] === "Start-Up India Certificate With DSC",
+            paymentTerms:
+              item[`${i}PaymentTerms`] === "PART-PAYMENT"
+                ? "two-part"
+                : "Full Advanced",
             firstPayment: item[`${i}FirstPayment`],
             secondPayment: item[`${i}SecondPayment`],
             thirdPayment: item[`${i}ThirdPayment`],
@@ -3671,13 +3722,12 @@ app.post("/api/redesigned-importData", async (req, res) => {
       //   paymentMethod: item.receivedAmount,
       //   extraRemarks: item.extraRemarks,
       // };
-      
+
       if (!existingData) {
-    
         // Create a new object if it doesn't exist
-        console.log(item)
+        console.log(item);
         const lmao = new RedesignedLeadformModel({
-          company : companyID,
+          company: companyID,
           "Company Name": item["Company Name"],
           "Company Email": item["Company Email"],
           "Company Number": item["Company Number"],
@@ -3687,7 +3737,7 @@ app.post("/api/redesigned-importData", async (req, res) => {
           bdeName: item.bdeName,
           bdeEmail: item.bdeEmail,
           bdmType: item.bdmType,
-          bdmName:item.bdmName,
+          bdmName: item.bdmName,
           bdmEmail: item.bdmEmail,
           bookingDate: item.bookingDate,
           bookingSource: item.leadSource,
@@ -3705,37 +3755,37 @@ app.post("/api/redesigned-importData", async (req, res) => {
           extraRemarks: item.extraRemarks,
         });
         await lmao.save();
-      }else {
+      } else {
         existingData.moreBookings.push({
-        "Company Name": item["Company Name"],
-        "Company Email": item["Company Email"],
-        "Company Number": item["Company Number"],
-        incoDate: item.incoDate,
-        panNumber: item.panNumber,
-        gstNumber: item.gstNumber,
-        bdeName: item.bdeName,
-        bdeEmail: item.bdeEmail,
-        bdmType: item.bdmType,
-        bdmEmail: item.bdmEmail,
-        bookingDate: item.bookingDate,
-        bookingSource: item.bookingSource,
-        otherBookingSource: item.otherBookingSource,
-        services: services,
-        numberOfServices: services.length,
-        caCase: item.caCase,
-        caCommission: item.caCommission,
-        caNumber: item.caNumber,
-        caEmail: item.caEmail,
-        totalAmount: item.totalPayment,
-        pendingAmount: item.pendingPayment,
-        receivedAmount: item.receivedPayment,
-        paymentMethod: item.receivedAmount,
-        extraRemarks: item.extraRemarks,
+          "Company Name": item["Company Name"],
+          "Company Email": item["Company Email"],
+          "Company Number": item["Company Number"],
+          incoDate: item.incoDate,
+          panNumber: item.panNumber,
+          gstNumber: item.gstNumber,
+          bdeName: item.bdeName,
+          bdeEmail: item.bdeEmail,
+          bdmType: item.bdmType,
+          bdmEmail: item.bdmEmail,
+          bookingDate: item.bookingDate,
+          bookingSource: item.bookingSource,
+          otherBookingSource: item.otherBookingSource,
+          services: services,
+          numberOfServices: services.length,
+          caCase: item.caCase,
+          caCommission: item.caCommission,
+          caNumber: item.caNumber,
+          caEmail: item.caEmail,
+          totalAmount: item.totalPayment,
+          pendingAmount: item.pendingPayment,
+          receivedAmount: item.receivedPayment,
+          paymentMethod: item.receivedAmount,
+          extraRemarks: item.extraRemarks,
         });
         await existingData.save();
       }
       // Update existing data or add to moreBookings
-   
+
       // Save the updated data
     }
     res.status(200).send("Data imported and updated successfully!");
@@ -3744,8 +3794,6 @@ app.post("/api/redesigned-importData", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
-
 
 app.post(
   "/api/redesigned-leadData/:CompanyName/:step",
@@ -4334,7 +4382,12 @@ app.post(
             .join(" , ");
           const visibility = newData.bookingSource !== "Other" && "none";
           const servicesHtmlContent = renderServices();
-          const recipients = [newData.bdeEmail, newData.bdmEmail, 'bookings@startupsahay.com','documents@startupsahay.com'];
+          const recipients = [
+            newData.bdeEmail,
+            newData.bdmEmail,
+            "bookings@startupsahay.com",
+            "documents@startupsahay.com",
+          ];
 
           sendMail(
             recipients,
@@ -5157,16 +5210,27 @@ app.post(
       </div>
       `;
 
-          const mainPage = newPageDisplay === 'style="display:block' ? mainPageHtml : "";
-          const bdNames = newData.bdeName == newData.bdmName ? newData.bdeName : `${newData.bdeName} & ${newData.bdmName}`;
-          const pagination = newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
+          const mainPage =
+            newPageDisplay === 'style="display:block' ? mainPageHtml : "";
+          const bdNames =
+            newData.bdeName == newData.bdmName
+              ? newData.bdeName
+              : `${newData.bdeName} & ${newData.bdmName}`;
+          const pagination =
+            newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
           // Render services HTML content
           const serviceList = renderServiceList();
           const paymentDetails = renderPaymentDetails();
-          const pdfIndex = (!existingData.moreBookings || existingData.moreBookings.length === 0) ? 1 :( existingData.moreBookings.length +1);
+          const pdfIndex =
+            !existingData.moreBookings || existingData.moreBookings.length === 0
+              ? 1
+              : existingData.moreBookings.length + 1;
 
-          const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
-        
+          const htmlTemplate = fs.readFileSync(
+            "./helpers/template.html",
+            "utf-8"
+          );
+
           const filledHtml = htmlTemplate
             .replace("{{Company Name}}", newData["Company Name"])
             .replace("{{Company Name}}", newData["Company Name"])
@@ -5178,14 +5242,14 @@ app.post(
             .replace("{{Authorized-Person}}", AuthorizedName)
             .replace("{{Authorized-Number}}", AuthorizedNumber)
             .replace("{{Authorized-Email}}", AuthorizedEmail)
-            .replace("{{Main-page}}",mainPage)
+            .replace("{{Main-page}}", mainPage)
             .replace("{{TotalAmount}}", totalAmount.toFixed(2))
             .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
             .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
             .replace("{{Service-Details}}", paymentDetails)
             .replace("{{Company Number}}", newData["Company Number"]);
 
-            console.log("This will be generating" , filledHtml)
+          console.log("This will be generating", filledHtml);
 
           //   const pdfFilePath = path.join(__dirname, './Document', `${newData['Company Name']}-Rebooking.pdf`);
 
@@ -5260,13 +5324,12 @@ app.post(
   }
 );
 
-
 // ---------------------------- BDM Booking Request Section -----------------------------------------------
 
-app.post('/api/matured-case-request', async (req, res) => {
+app.post("/api/matured-case-request", async (req, res) => {
   try {
     // Extract data from the request body sent by the frontend
-    const { companyName, requestStatus, bdeName, bdmName, date} = req.body;
+    const { companyName, requestStatus, bdeName, bdmName, date } = req.body;
 
     // Create a new instance of RequestMaturedModel
     const newRequest = new RequestMaturedModel({
@@ -5278,49 +5341,62 @@ app.post('/api/matured-case-request', async (req, res) => {
     });
     // Save the new request to the database
     await newRequest.save();
-    const changeStatus = await TeamLeadsModel.findOneAndUpdate({
-      "Company Name": companyName
-    },{
-      bdmOnRequest:true
-    },
-    { new : true}
-  )
+    const changeStatus = await TeamLeadsModel.findOneAndUpdate(
+      {
+        "Company Name": companyName,
+      },
+      {
+        bdmOnRequest: true,
+      },
+      { new: true }
+    );
 
     // Send a success response back to the frontend
-    res.status(200).json({ success: true, message: 'Request saved successfully' });
+    res
+      .status(200)
+      .json({ success: true, message: "Request saved successfully" });
   } catch (error) {
-    console.error('Error saving request:', error);
-    res.status(500).json({ success: false, message: 'Error saving request' });
+    console.error("Error saving request:", error);
+    res.status(500).json({ success: false, message: "Error saving request" });
   }
 });
 
-app.get("/api/matured-get-requests", async(req,res)=>{
-  try{
+app.get("/api/matured-get-requests", async (req, res) => {
+  try {
     const request = await RequestMaturedModel.find();
     res.status(200).json(request);
-
-  }catch(error){
-    res.status(400).json({success:false, message:"Error fetching the data"})
+  } catch (error) {
+    res
+      .status(400)
+      .json({ success: false, message: "Error fetching the data" });
   }
 });
-app.get("/api/matured-get-requests/:bdeName", async(req,res)=>{
-  try{
-    const bdeName = req.params.bdeName
-    const request = await RequestMaturedModel.find({bdeName , requestStatus:"Pending"});
+app.get("/api/matured-get-requests/:bdeName", async (req, res) => {
+  try {
+    const bdeName = req.params.bdeName;
+    const request = await RequestMaturedModel.find({
+      bdeName,
+      requestStatus: "Pending",
+    });
     res.status(200).json(request);
-
-  }catch(error){
-    res.status(400).json({success:false, message:"Error fetching the data"})
+  } catch (error) {
+    res
+      .status(400)
+      .json({ success: false, message: "Error fetching the data" });
   }
 });
-app.get("/api/matured-get-requests-byBDM/:bdmName", async(req,res)=>{
-  try{
-    const bdmName = req.params.bdmName
-    const request = await RequestMaturedModel.find({bdmName , requestStatus:"Accepted"});
+app.get("/api/matured-get-requests-byBDM/:bdmName", async (req, res) => {
+  try {
+    const bdmName = req.params.bdmName;
+    const request = await RequestMaturedModel.find({
+      bdmName,
+      requestStatus: "Accepted",
+    });
     res.status(200).json(request);
-
-  }catch(error){
-    res.status(400).json({success:false, message:"Error fetching the data"})
+  } catch (error) {
+    res
+      .status(400)
+      .json({ success: false, message: "Error fetching the data" });
   }
 });
 
@@ -5335,13 +5411,15 @@ app.post("/api/update-bdm-Request/:id", async (req, res) => {
       { requestStatus },
       { new: true } // Return the updated document
     );
-    const changeStatus = await TeamLeadsModel.findOneAndUpdate({
-      "Company Name": updatedRequest["Company Name"]
-    },{
-      bdmOnRequest:false
-    },
-    { new : true}
-  )
+    const changeStatus = await TeamLeadsModel.findOneAndUpdate(
+      {
+        "Company Name": updatedRequest["Company Name"],
+      },
+      {
+        bdmOnRequest: false,
+      },
+      { new: true }
+    );
 
     if (!updatedRequest) {
       return res.status(404).json({ message: "BDM request not found" });
@@ -5359,13 +5437,15 @@ app.delete("/api/delete-bdm-Request/:id", async (req, res) => {
 
     // Find the BDM request by ID and delete it
     const deletedRequest = await RequestMaturedModel.findByIdAndDelete(_id);
-    const changeStatus = await TeamLeadsModel.findOneAndUpdate({
-      "Company Name": deletedRequest["Company Name"]
-    },{
-      bdmOnRequest:false
-    },
-    { new : true}
-  )
+    const changeStatus = await TeamLeadsModel.findOneAndUpdate(
+      {
+        "Company Name": deletedRequest["Company Name"],
+      },
+      {
+        bdmOnRequest: false,
+      },
+      { new: true }
+    );
 
     if (!deletedRequest) {
       return res.status(404).json({ message: "BDM request not found" });
@@ -6303,7 +6383,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     });
     const teamData = await TeamLeadsModel.findOne({
       "Company Name": newData["Company Name"],
-    })
+    });
     if (companyData) {
       newData.company = companyData._id;
     }
@@ -6314,17 +6394,21 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       await CompanyModel.findByIdAndUpdate(companyData._id, {
         Status: "Matured",
         lastActionDate: date,
-        ename:newData.bdeName
+        ename: newData.bdeName,
       });
     }
-    if(teamData) {
-      await TeamLeadsModel.findByIdAndUpdate(teamData._id , {
-        bdmStatus:"Matured",
-        Status:"Matured",
-
-      },
-    {new : true})
-    await RequestMaturedModel.findOneAndDelete({"Company Name" : teamData["Company Name"]})
+    if (teamData) {
+      await TeamLeadsModel.findByIdAndUpdate(
+        teamData._id,
+        {
+          bdmStatus: "Matured",
+          Status: "Matured",
+        },
+        { new: true }
+      );
+      await RequestMaturedModel.findOneAndDelete({
+        "Company Name": teamData["Company Name"],
+      });
     }
 
     const totalAmount = newData.services.reduce(
@@ -6570,540 +6654,535 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .map((service, index) => `${service.serviceName}`)
       .join(" , ");
 
-    sendMail(
-      recipients,
-      `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
-      ``,
-      ` <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
-      <h3 style="text-align: center">Booking Form Deatils</h3>
-      <div style="
-            width: 95%;
-            margin: 0 auto;
-            padding: 20px 10px;
-            background: #fff;
-            border-radius: 10px;
-          ">
-        <!--Step One Start-->
-        <div style="width: 98%; margin: 0 auto">
-          <!-- Step's heading -->
-          <div style="display: flex; align-items: center">
-            <div style="
-                  width: 30px;
-                  height: 30px;
-                  line-height: 30px;
-                  border-radius: 100px;
-                  background: #fbb900;
-                  text-align: center;
-                  font-weight: bold;
-                  color: #fff;
-                ">
-              1
-            </div>
-            <div style="margin-left: 10px">Company's Basic Informations</div>
-          </div>
-          <!-- Step's Table -->
-          <div style="
-                background: #f7f7f7;
-                padding: 15px;
-                border-radius: 10px;
-                position: relative;
-                margin-top: 15px;
-              ">
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  Company Name
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  ${newData["Company Name"]}
-                </div>
-              </div>
-            </div>
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  Email Address:
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData["Company Email"]}
-                </div>
-              </div>
-            </div>
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  Phone No:
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData["Company Number"]}
-                </div>
-              </div>
-            </div>
-  
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  Incorporation date:
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData["incoDate"]}
-                </div>
-              </div>
-            </div>
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  Company's PAN:
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData.panNumber}
-                </div>
-              </div>
-            </div>
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  Company's GST:
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData.gstNumber}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--Step One End-->
-  
-  
-        <!--Step Two Start-->
-        <div style="width: 98%; margin: 10px auto">
-          <!-- Step's heading -->
-          <div style="display: flex; align-items: center">
-            <div style="
-                  width: 30px;
-                  height: 30px;
-                  line-height: 30px;
-                  border-radius: 100px;
-                  background: #fbb900;
-                  text-align: center;
-                  font-weight: bold;
-                  color: #fff;
-                ">
-              2
-            </div>
-            <div style="margin-left: 10px">Booking Details</div>
-          </div>
-          <!-- Step's Table -->
-          <div style="
-                background: #f7f7f7;
-                padding: 15px;
-                border-radius: 10px;
-                position: relative;
-                margin-top: 15px;
-              ">
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  BDE Name:
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData.bdeName}
-                </div>
-              </div>
-            </div>
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  BDE Email
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData.bdeEmail}
-                </div>
-              </div>
-            </div>
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  BDM Name
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData.bdmName}( ${newData.bdmType} )
-                </div>
-              </div>
-            </div>
-  
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  BDM Email
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData.bdmEmail}
-                </div>
-              </div>
-            </div>
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                 Booking Date
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData.bookingDate}
-                </div>
-              </div>
-            </div>
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  Lead Source
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData.bookingSource}
-                </div>
-              </div>
-            </div>
-            <div style="display: flex; flex-wrap: wrap; display: ${visibility}">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  Other Lead Source
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData.otherBookingSource}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Step 2 Ends -->
-  
-  
-        <!--Step 3 Start-->
-        <div style="width: 98%; margin: 10px auto">
-          <!-- Step's heading -->
-          <div style="display: flex; align-items: center">
-            <div style="
-                  width: 30px;
-                  height: 30px;
-                  line-height: 30px;
-                  border-radius: 100px;
-                  background: #fbb900;
-                  text-align: center;
-                  font-weight: bold;
-                  color: #fff;
-                ">
-              3
-            </div>
-            <div style="margin-left: 10px">Services And Payment Details</div>
-          </div>
-          <!-- Step's Table -->
-          <div style="
-                background: #f7f7f7;
-                padding: 15px;
-                border-radius: 10px;
-                position: relative;
-                margin-top: 15px;
-              ">
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  Total Selected Services
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData.services.length}
-                </div>
-              </div>
-            </div>
-           ${servicesHtmlContent}
-           
-          </div>
-        </div>
-        <!-- Step 3 Ends -->
-  
-        <!--Step 4 Start-->
-        <div style="width: 98%; margin: 10px auto">
-          <!-- Step's heading -->
-          <div style="display: flex; align-items: center">
-            <div style="
-                  width: 30px;
-                  height: 30px;
-                  line-height: 30px;
-                  border-radius: 100px;
-                  background: #fbb900;
-                  text-align: center;
-                  font-weight: bold;
-                  color: #fff;
-                ">
-              4
-            </div>
-            <div style="margin-left: 10px">Payment Summery</div>
-          </div>
-          <!-- Step's Table -->
-          <div style="
-                background: #f7f7f7;
-                padding: 15px;
-                border-radius: 10px;
-                position: relative;
-                margin-top: 15px;
-              ">
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 33.33%; display: flex;">
-                <div style="width: 50%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Total Payment
-                  </div>
-                </div>
-                <div style="width: 50%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    ₹ ${totalAmount.toFixed(2)}
-                  </div>
-                </div>
-              </div>
-              <div style="width: 33.33%; display: flex;">
-                <div style="width: 50%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                   Received Payment
-                  </div>
-                </div>
-                <div style="width: 50%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    ₹ ${receivedAmount.toFixed(2)}
-                  </div>
-                </div>
-  
-              </div>
-              <div style="width: 33.33%; display: flex;">
-                <div style="width: 50%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Pending Payment
-                  </div>
-                </div>
-                <div style="width: 50%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                   ₹ ${pendingAmount.toFixed(2)}
-                  </div>
-                </div>
-  
-              </div>
-              
-            </div>
-            <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                 Payment Method
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  ${newData.paymentMethod}
-                </div>
-              </div>
-            </div>
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                Extra Remarks
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  ${newData.extraNotes}
-                </div>
-              </div>
-            </div>
-  
-        
-           
-          </div>
-        </div>
-        <!-- Step 4 Ends -->
-      </div>
-    </div>
-      
+    // sendMail(
+    //   recipients,
+    //   `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
+    //   ``,
+    //   ` <div style="width: 98%; padding: 20px 10px; background: #f6f8fb;margin:0 auto">
+    //   <h3 style="text-align: center">Booking Form Deatils</h3>
+    //   <div style="
+    //         width: 95%;
+    //         margin: 0 auto;
+    //         padding: 20px 10px;
+    //         background: #fff;
+    //         border-radius: 10px;
+    //       ">
+    //     <!--Step One Start-->
+    //     <div style="width: 98%; margin: 0 auto">
+    //       <!-- Step's heading -->
+    //       <div style="display: flex; align-items: center">
+    //         <div style="
+    //               width: 30px;
+    //               height: 30px;
+    //               line-height: 30px;
+    //               border-radius: 100px;
+    //               background: #fbb900;
+    //               text-align: center;
+    //               font-weight: bold;
+    //               color: #fff;
+    //             ">
+    //           1
+    //         </div>
+    //         <div style="margin-left: 10px">Company's Basic Informations</div>
+    //       </div>
+    //       <!-- Step's Table -->
+    //       <div style="
+    //             background: #f7f7f7;
+    //             padding: 15px;
+    //             border-radius: 10px;
+    //             position: relative;
+    //             margin-top: 15px;
+    //           ">
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               Company Name
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               ${newData["Company Name"]}
+    //             </div>
+    //           </div>
+    //         </div>
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               Email Address:
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData["Company Email"]}
+    //             </div>
+    //           </div>
+    //         </div>
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               Phone No:
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData["Company Number"]}
+    //             </div>
+    //           </div>
+    //         </div>
 
-      `,
-      newData.otherDocs,
-      newData.paymentReceipt
-    );
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               Incorporation date:
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData["incoDate"]}
+    //             </div>
+    //           </div>
+    //         </div>
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               Company's PAN:
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData.panNumber}
+    //             </div>
+    //           </div>
+    //         </div>
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               Company's GST:
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData.gstNumber}
+    //             </div>
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //     <!--Step One End-->
+
+    //     <!--Step Two Start-->
+    //     <div style="width: 98%; margin: 10px auto">
+    //       <!-- Step's heading -->
+    //       <div style="display: flex; align-items: center">
+    //         <div style="
+    //               width: 30px;
+    //               height: 30px;
+    //               line-height: 30px;
+    //               border-radius: 100px;
+    //               background: #fbb900;
+    //               text-align: center;
+    //               font-weight: bold;
+    //               color: #fff;
+    //             ">
+    //           2
+    //         </div>
+    //         <div style="margin-left: 10px">Booking Details</div>
+    //       </div>
+    //       <!-- Step's Table -->
+    //       <div style="
+    //             background: #f7f7f7;
+    //             padding: 15px;
+    //             border-radius: 10px;
+    //             position: relative;
+    //             margin-top: 15px;
+    //           ">
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               BDE Name:
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData.bdeName}
+    //             </div>
+    //           </div>
+    //         </div>
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               BDE Email
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData.bdeEmail}
+    //             </div>
+    //           </div>
+    //         </div>
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               BDM Name
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData.bdmName}( ${newData.bdmType} )
+    //             </div>
+    //           </div>
+    //         </div>
+
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               BDM Email
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData.bdmEmail}
+    //             </div>
+    //           </div>
+    //         </div>
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //              Booking Date
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData.bookingDate}
+    //             </div>
+    //           </div>
+    //         </div>
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               Lead Source
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData.bookingSource}
+    //             </div>
+    //           </div>
+    //         </div>
+    //         <div style="display: flex; flex-wrap: wrap; display: ${visibility}">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               Other Lead Source
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData.otherBookingSource}
+    //             </div>
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //     <!-- Step 2 Ends -->
+
+    //     <!--Step 3 Start-->
+    //     <div style="width: 98%; margin: 10px auto">
+    //       <!-- Step's heading -->
+    //       <div style="display: flex; align-items: center">
+    //         <div style="
+    //               width: 30px;
+    //               height: 30px;
+    //               line-height: 30px;
+    //               border-radius: 100px;
+    //               background: #fbb900;
+    //               text-align: center;
+    //               font-weight: bold;
+    //               color: #fff;
+    //             ">
+    //           3
+    //         </div>
+    //         <div style="margin-left: 10px">Services And Payment Details</div>
+    //       </div>
+    //       <!-- Step's Table -->
+    //       <div style="
+    //             background: #f7f7f7;
+    //             padding: 15px;
+    //             border-radius: 10px;
+    //             position: relative;
+    //             margin-top: 15px;
+    //           ">
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               Total Selected Services
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //                 ${newData.services.length}
+    //             </div>
+    //           </div>
+    //         </div>
+    //        ${servicesHtmlContent}
+
+    //       </div>
+    //     </div>
+    //     <!-- Step 3 Ends -->
+
+    //     <!--Step 4 Start-->
+    //     <div style="width: 98%; margin: 10px auto">
+    //       <!-- Step's heading -->
+    //       <div style="display: flex; align-items: center">
+    //         <div style="
+    //               width: 30px;
+    //               height: 30px;
+    //               line-height: 30px;
+    //               border-radius: 100px;
+    //               background: #fbb900;
+    //               text-align: center;
+    //               font-weight: bold;
+    //               color: #fff;
+    //             ">
+    //           4
+    //         </div>
+    //         <div style="margin-left: 10px">Payment Summery</div>
+    //       </div>
+    //       <!-- Step's Table -->
+    //       <div style="
+    //             background: #f7f7f7;
+    //             padding: 15px;
+    //             border-radius: 10px;
+    //             position: relative;
+    //             margin-top: 15px;
+    //           ">
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 33.33%; display: flex;">
+    //             <div style="width: 50%">
+    //               <div style="
+    //                     border: 1px solid #ccc;
+    //                     font-size: 12px;
+    //                     padding: 5px 10px;
+    //                   ">
+    //                 Total Payment
+    //               </div>
+    //             </div>
+    //             <div style="width: 50%">
+    //               <div style="
+    //                     border: 1px solid #ccc;
+    //                     font-size: 12px;
+    //                     padding: 5px 10px;
+    //                   ">
+    //                 ₹ ${totalAmount.toFixed(2)}
+    //               </div>
+    //             </div>
+    //           </div>
+    //           <div style="width: 33.33%; display: flex;">
+    //             <div style="width: 50%">
+    //               <div style="
+    //                     border: 1px solid #ccc;
+    //                     font-size: 12px;
+    //                     padding: 5px 10px;
+    //                   ">
+    //                Received Payment
+    //               </div>
+    //             </div>
+    //             <div style="width: 50%">
+    //               <div style="
+    //                     border: 1px solid #ccc;
+    //                     font-size: 12px;
+    //                     padding: 5px 10px;
+    //                   ">
+    //                 ₹ ${receivedAmount.toFixed(2)}
+    //               </div>
+    //             </div>
+
+    //           </div>
+    //           <div style="width: 33.33%; display: flex;">
+    //             <div style="width: 50%">
+    //               <div style="
+    //                     border: 1px solid #ccc;
+    //                     font-size: 12px;
+    //                     padding: 5px 10px;
+    //                   ">
+    //                 Pending Payment
+    //               </div>
+    //             </div>
+    //             <div style="width: 50%">
+    //               <div style="
+    //                     border: 1px solid #ccc;
+    //                     font-size: 12px;
+    //                     padding: 5px 10px;
+    //                   ">
+    //                ₹ ${pendingAmount.toFixed(2)}
+    //               </div>
+    //             </div>
+
+    //           </div>
+
+    //         </div>
+    //         <div style="display: flex; flex-wrap: wrap; margin-top: 20px;">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //              Payment Method
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               ${newData.paymentMethod}
+    //             </div>
+    //           </div>
+    //         </div>
+    //         <div style="display: flex; flex-wrap: wrap">
+    //           <div style="width: 25%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //             Extra Remarks
+    //             </div>
+    //           </div>
+    //           <div style="width: 75%">
+    //             <div style="
+    //                   border: 1px solid #ccc;
+    //                   font-size: 12px;
+    //                   padding: 5px 10px;
+    //                 ">
+    //               ${newData.extraNotes}
+    //             </div>
+    //           </div>
+    //         </div>
+
+    //       </div>
+    //     </div>
+    //     <!-- Step 4 Ends -->
+    //   </div>
+    // </div>
+
+    //   `,
+    //   newData.otherDocs,
+    //   newData.paymentReceipt
+    // );
 
     const renderServiceList = () => {
       let servicesHtml = "";
@@ -7385,80 +7464,91 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     </div>
     `;
 
-    // const mainPage = newPageDisplay === 'style="display:block' ? mainPageHtml : "";
-    // const bdNames = newData.bdeName == newData.bdmName ? newData.bdeName : `${newData.bdeName} & ${newData.bdmName}`;
-    // const pagination = newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
-    // // Render services HTML content
-    // const serviceList = renderServiceList();
-    // const paymentDetails = renderPaymentDetails();
+    const mainPage =
+      newPageDisplay === 'style="display:block' ? mainPageHtml : "";
+    const bdNames =
+      newData.bdeName == newData.bdmName
+        ? newData.bdeName
+        : `${newData.bdeName} && ${newData.bdmName}`;
+    const pagination =
+      newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
+    // Render services HTML content
+    const serviceList = renderServiceList();
+    const paymentDetails = renderPaymentDetails();
 
-    // const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
-    // const filledHtml = htmlTemplate
-    //   .replace("{{Company Name}}", newData["Company Name"])
-    //   .replace("{{Company Name}}", newData["Company Name"])
-    //   .replace("{{Company Name}}", newData["Company Name"])
-    //   .replace("{{Company Name}}", newData["Company Name"])
-    //   .replace("{{Services}}", serviceList)
-    //   .replace("{{page-display}}", newPageDisplay)
-    //   .replace("{{pagination}}", pagination)
-    //   .replace("{{Authorized-Person}}", AuthorizedName)
-    //   .replace("{{Authorized-Number}}", AuthorizedNumber)
-    //   .replace("{{Authorized-Email}}", AuthorizedEmail)
-    //   .replace("{{Main-page}}",mainPage)
-    //   .replace("{{TotalAmount}}", totalAmount.toFixed(2))
-    //   .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
-    //   .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
-    //   .replace("{{Service-Details}}", paymentDetails)
-    //   .replace("{{Company Number}}", newData["Company Number"]);
+    const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
+    const filledHtml = htmlTemplate
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Company Name}}", newData["Company Name"])
+      .replace("{{Services}}", serviceList)
+      .replace("{{page-display}}", newPageDisplay)
+      .replace("{{pagination}}", pagination)
+      .replace("{{Authorized-Person}}", AuthorizedName)
+      .replace("{{Authorized-Number}}", AuthorizedNumber)
+      .replace("{{Authorized-Email}}", AuthorizedEmail)
+      .replace("{{Main-page}}", mainPage)
+      .replace("{{TotalAmount}}", totalAmount.toFixed(2))
+      .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
+      .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
+      .replace("{{Service-Details}}", paymentDetails)
+      .replace("{{Company Number}}", newData["Company Number"]);
 
     //   console.log("This is html file reading:-", filledHtml);
-    // pdf
-    //   .create(filledHtml, { format: "Letter" })
-    //   .toFile(
-    //     path.join(__dirname, "./Document", `${newData["Company Name"]}.pdf`),
-    //     async (err, response) => {
-    //       if (err) {
-    //         console.error("Error generating PDF:", err);
-    //         res.status(500).send("Error generating PDF");
-    //       } else {
-    //         try {
-    //           setTimeout(() => {
-    //             const mainBuffer = fs.readFileSync(
-    //               `./Document/${newData["Company Name"]}.pdf`
-    //             );
-    //             sendMail2(
-    //               ["nimesh@incscale.in" , "aakashseth452@gmail.com"],
-    //               `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
-    //               ``,
-    //               `
-    //               <div class="container">
+    const pdfFilePath = `./Document/${newData["Company Name"]}.pdf`;
 
-    //               <p>Dear ${newData["Company Name"]},</p>
-    //               <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
-    //               <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
-    //               <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
-    //               <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
-    //               <p style="display:${serviceNames == "Start-Up India Certificate" ? "none" : "block"}">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
-    //               <p style="display:${serviceNames == "Start-Up India Certificate" ? "none" : "block"}">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
-    //               <p >Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
-    //               <div class="signature">
-    //                   <div>Best regards,</div>
-    //                   <div>Shubhi Banthiya – Relationship Manager</div>
-    //                   <div>+91 9998992601</div>
-    //                   <div>Start-Up Sahay Private Limited</div>
-    //               </div>
-    //           </div>
-    //         `,
-    //               mainBuffer
-    //             );
-    //           }, 4000);
-    //         } catch (emailError) {
-    //           console.error("Error sending email:", emailError);
-    //           res.status(500).send("Error sending email with PDF attachment");
-    //         }
-    //       }
-    //     }
-    //   );
+    pdf
+      .create(filledHtml, { format: "Letter" })
+      .toFile(pdfFilePath, async (err, response) => {
+        if (err) {
+          console.error("Error generating PDF:", err);
+          res.status(500).send("Error generating PDF");
+        } else {
+          try {
+            setTimeout(() => {
+              const mainBuffer = fs.readFileSync(pdfFilePath);
+              sendMail2(
+                ["nimesh@incscale.in", "aakashseth452@gmail.com"],
+                `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
+                ``,
+                `
+                    <div class="container">
+
+                    <p>Dear ${newData["Company Name"]},</p>
+                    <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
+                    <p>Following your discussion with ${bdNames}, we understand that you have opted for ${serviceNames} from Start-Up Sahay Private Limited. We are delighted to have you on board and are committed to providing you with exceptional service and support.</p>
+                    <p>In the attachment, you will find important information related to the services you have selected, including your company details, chosen services, and payment terms and conditions. This document named Self-Declaration is designed to be printed on your company letterhead, and we kindly request that you sign and stamp the copy to confirm your agreement.</p>
+                    <p>Please review this information carefully. If you notice any discrepancies or incorrect details, kindly inform us as soon as possible so that we can make the necessary corrections and expedite the process.</p>
+                    <p style="display:${
+                      serviceNames == "Start-Up India Certificate"
+                        ? "none"
+                        : "block"
+                    }">To initiate the process of the services you have taken from us, we require some basic information about your business. This will help us develop the necessary documents for submission in the relevant scheme. Please fill out the form at <a href="https://startupsahay.com/basic-information/" class="btn" target="_blank">Basic Information Form</a>. Please ensure to upload the scanned copy of the signed and stamped <b> Self-Declaration </b> copy while filling out the basic information form.</p>
+                    <p style="display:${
+                      serviceNames == "Start-Up India Certificate"
+                        ? "none"
+                        : "block"
+                    }">If you encounter any difficulties in filling out the form, please do not worry. Our backend admin executives will be happy to assist you over the phone to ensure a smooth process.</p>
+                    <p >Your decision to choose Start-Up Sahay Private Limited is greatly appreciated, and we assure you that we will do everything possible to meet and exceed your expectations. If you have any questions or need assistance at any point, please feel free to reach out to us.</p>
+                    <div class="signature">
+                        <div>Best regards,</div>
+                        <div>Shubhi Banthiya – Relationship Manager</div>
+                        <div>+91 9998992601</div>
+                        <div>Start-Up Sahay Private Limited</div>
+                    </div>
+                </div>
+              `,
+                mainBuffer
+              );
+            }, 4000);
+          } catch (emailError) {
+            console.error("Error sending email:", emailError);
+            res.status(500).send("Error sending email with PDF attachment");
+          }
+        }
+      });
+
     // Send success response
     res.status(201).send("Data sent");
   } catch (error) {
