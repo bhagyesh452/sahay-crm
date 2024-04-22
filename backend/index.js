@@ -7538,7 +7538,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{Company Number}}", newData["Company Number"]);
     
     //   console.log("This is html file reading:-", filledHtml);
-    const pdfFilePath = `./GeneratedDocs/foo.pdf`;
+    const pdfFilePath = `./GeneratedDocs/${newData['Company Name']}.pdf`;
 
 
     pdf
