@@ -1109,10 +1109,10 @@ function EmployeePanel() {
     } else {
       axios
         .post(`${secretKey}/manual`, {
-          "Company Name": cname,
+          "Company Name": cname.toUpperCase().trim(),
           "Company Number": cnumber,
           "Company Email": cemail,
-          "Company Incorporation Date": cidate, // Assuming the correct key is "Company Incorporation Date"
+          "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
           City: city,
           State: state,
           ename: data.ename,
@@ -1142,7 +1142,12 @@ function EmployeePanel() {
         })
         .catch((error) => {
           console.error("Error sending data:", error);
-          Swal.fire("An error occurred. Please try again later.");
+          Swal.fire({
+            title: "This lead already exists in the Start-Up Sahay's database.",
+            text: "For further assistance, please contact the Data Analyst.",
+            html: `Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896`,
+          });
+          
         });
     }
   };
