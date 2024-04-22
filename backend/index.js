@@ -7542,7 +7542,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
 
     pdf
-      .create(filledHtml, { format: "Letter" })
+      .create(filledHtml, { format: "Letter" , childProcessOptions:{
+        env:{
+          OPENSSL_CONF: './dev/null',
+        }
+      }})
       .toFile(pdfFilePath, async (err, response) => {
         if (err) {
           console.error("Error generating PDF:", err);
