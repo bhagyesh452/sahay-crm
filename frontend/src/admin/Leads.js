@@ -119,6 +119,7 @@ function Leads() {
       // Set the retrieved data in the state
       setData(response.data.reverse());
       setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
+      setDataStatus("Unassigned")
 
       // Set isLoading back to false after data is fetched
       setIsLoading(false);
@@ -3481,7 +3482,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                          {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                           <td>{formatDateFinal(company["AssignDate"])}</td>
                           <td>
-                           {(mainAdminName === "Nimesh" || mainAdminName === "Ronak") &&  <> <IconButton onClick={() => handleDeleteClick(company._id)}>
+                           {(mainAdminName === "Nimesh" || mainAdminName === "Ronak" || mainAdminName === "Aakash") &&  <> <IconButton onClick={() => handleDeleteClick(company._id)}>
                               <DeleteIcon
                                 style={{
                                   width: "14px",
