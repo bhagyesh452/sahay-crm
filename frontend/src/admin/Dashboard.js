@@ -82,7 +82,7 @@ function Dashboard() {
   const [openProjectionHistoryTable, setopenProjectionHistoryTable] = useState(false);
   const [projectedEmployee, setProjectedEmployee] = useState([]);
   const [displayDateRange, setDateRangeDisplay] = useState(false);
-  const [displayDateRangeEmployee, setDateRangeDisplayEmployee] =useState(false);
+  const [displayDateRangeEmployee, setDateRangeDisplayEmployee] = useState(false);
   const [buttonToggle, setButtonToggle] = useState(false);
   const [projectedDataDateRange, setProjectedDataDateRange] = useState([]);
   const [startDateEmployee, setStartDateEmployee] = useState(new Date());
@@ -131,12 +131,16 @@ function Dashboard() {
         console.error("Error fetching data:", error);
       });
   };
+
+  const [employeeInfo , setEmployeeInfo] = useState([])
+
   const fetchEmployeeInfo = async () => {
     fetch(`${secretKey}/einfo`)
       .then((response) => response.json())
       .then((data) => {
         setEmployeeData(data);
         setEmployeeDataFilter(data);
+        setEmployeeInfo(data)
         // setEmployeeDataFilter(data.filter)
       })
       .catch((error) => {
@@ -457,12 +461,12 @@ function Dashboard() {
       //console.log("followdata", followdata)
       setfollowDataToday(
         followdata
-            .filter((company) => {
-                // Assuming you want to filter companies with an estimated payment date for today
-                const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-                return company.estPaymentDate === today;
-            })
-    );
+          .filter((company) => {
+            // Assuming you want to filter companies with an estimated payment date for today
+            const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+            return company.estPaymentDate === today;
+          })
+      );
     } catch (error) {
       console.error("Error fetching data:", error);
       return { error: "Error fetching data" };
@@ -470,27 +474,33 @@ function Dashboard() {
   };
 
 
-  const combinedData = followDataToday.concat(employeeData);
-
-  console.log("combinedData" , combinedData)
-  console.log("followDataToday" , followDataToday)
+  
 
 
   const handleFilterBranchOffice = (branchName) => {
     // Filter the followdataToday array based on branchName
-    if(branchName === "none"){
+    if (branchName === "none") {
+
+
+      setfollowDataToday(followData);
+      setEmployeeData(employeeDataFilter)
       
-      
-    setfollowDataToday(followData);
-    }else{
+    } else {
+      console.log("yahan chala")
       const filteredFollowData = followData.filter((obj) =>
-      employeeData.some((empObj) => empObj.branchOffice === branchName && empObj.ename === obj.ename)
-    );
+        employeeData.some((empObj) => empObj.branchOffice === branchName && empObj.ename === obj.ename)
+      );
+
+      const filteredemployeedata = employeeInfo.filter(obj=>obj.branchOffice === branchName)
   
-    setfollowDataToday(filteredFollowData);
+
+      setfollowDataToday(filteredFollowData);
+      setEmployeeData(filteredemployeedata)
+
+      console.log(filteredemployeedata)
     }
   };
-  
+
   //console.log(followDataToday)
 
   useEffect(() => {
@@ -1337,8 +1347,8 @@ function Dashboard() {
         prevData.untouched === "ascending"
           ? "descending"
           : prevData.untouched === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
 
     switch (sortBy1) {
@@ -1395,8 +1405,8 @@ function Dashboard() {
         prevData.notPickedUp === "ascending"
           ? "descending"
           : prevData.notPickedUp === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
 
     switch (sortBy1) {
@@ -1476,8 +1486,8 @@ function Dashboard() {
         prevData.busy === "ascending"
           ? "descending"
           : prevData.busy === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1533,8 +1543,8 @@ function Dashboard() {
         prevData.interested === "ascending"
           ? "descending"
           : prevData.interested === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1610,8 +1620,8 @@ function Dashboard() {
         prevData.matured === "ascending"
           ? "descending"
           : prevData.matured === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1687,8 +1697,8 @@ function Dashboard() {
         prevData.notInterested === "ascending"
           ? "descending"
           : prevData.notInterested === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1764,8 +1774,8 @@ function Dashboard() {
         prevData.junk === "ascending"
           ? "descending"
           : prevData.junk === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1830,8 +1840,8 @@ function Dashboard() {
         prevData.followUp === "ascending"
           ? "descending"
           : prevData.followUp === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1907,8 +1917,8 @@ function Dashboard() {
         prevData.lastLead === "ascending"
           ? "descending"
           : prevData.lastLead === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -2575,13 +2585,13 @@ function Dashboard() {
                             <select
                               className="form-select mt-1"
                               id={`branch-filter`}
-                              onChange={(e)=>{
-                                if(e.target.value === "none"){
+                              onChange={(e) => {
+                                if (e.target.value === "none") {
                                   setEmployeeData(employeeDataFilter)
-                                }else{
-                                  setEmployeeData(employeeDataFilter.filter(obj=>obj.branchOffice === e.target.value))
+                                } else {
+                                  setEmployeeData(employeeDataFilter.filter(obj => obj.branchOffice === e.target.value))
                                 }
-                               
+
                               }}
                             >
                               <option value="" disabled selected>
@@ -2700,7 +2710,7 @@ function Dashboard() {
                                       .filter(
                                         (item) =>
                                           item.designation ===
-                                            "Sales Executive" &&
+                                          "Sales Executive" &&
                                           item.targetDetails.length !== 0
                                       )
                                       .map((obj, index) => (
@@ -3115,7 +3125,7 @@ function Dashboard() {
                                     InputProps: { endAdornment: <Calendar /> },
                                   },
                                 }}
-                                //calendars={1}
+                              //calendars={1}
                               />
                             </DemoContainer>
                           </LocalizationProvider>
@@ -3932,9 +3942,8 @@ function Dashboard() {
                               <td style={{ lineHeight: "32px" }}>
                                 {index + 1}
                               </td>
-                              <td>{`${formatDate(mainObj.bookingDate)}(${
-                                mainObj.bookingTime
-                              })`}</td>
+                              <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                                })`}</td>
                               <td>{mainObj.bdeName}</td>
                               <td>{mainObj.companyName}</td>
                               <td>{mainObj.contactNumber}</td>
@@ -3955,8 +3964,8 @@ function Dashboard() {
                                       ? mainObj.firstPayment // If bdeName and bdmName are the same
                                       : mainObj.firstPayment / 2 // If bdeName and bdmName are different
                                     : mainObj.bdeName === mainObj.bdmName
-                                    ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                                    : mainObj.originalTotalPayment / 2
+                                      ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                      : mainObj.originalTotalPayment / 2
                                   ).toLocaleString() // If firstPayment is 0 and bdeName and bdmName are different
                                 }
                               </td>
@@ -3966,10 +3975,10 @@ function Dashboard() {
                                 {(mainObj.firstPayment !== 0
                                   ? mainObj.bdeName === mainObj.bdmName
                                     ? mainObj.originalTotalPayment -
-                                      mainObj.firstPayment
+                                    mainObj.firstPayment
                                     : (mainObj.originalTotalPayment -
-                                        mainObj.firstPayment) /
-                                      2
+                                      mainObj.firstPayment) /
+                                    2
                                   : 0
                                 ).toLocaleString()}{" "}
                               </td>
@@ -3999,12 +4008,10 @@ function Dashboard() {
                             {expand === index && (
                               <>
                                 <tr>
-                                  <td style={{ lineHeight: "32px" }}>{`${
-                                    index + 1
-                                  }(${1})`}</td>
-                                  <td>{`${formatDate(mainObj.bookingDate)}(${
-                                    mainObj.bookingTime
-                                  })`}</td>
+                                  <td style={{ lineHeight: "32px" }}>{`${index + 1
+                                    }(${1})`}</td>
+                                  <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                                    })`}</td>
                                   <td>{mainObj.bdmName}</td>
                                   <td>{mainObj.companyName}</td>
                                   <td>{mainObj.contactNumber}</td>
@@ -4028,10 +4035,10 @@ function Dashboard() {
                                     {(mainObj.firstPayment !== 0
                                       ? mainObj.bdeName === mainObj.bdmName
                                         ? mainObj.totalPayment -
-                                          mainObj.firstPayment
+                                        mainObj.firstPayment
                                         : (mainObj.originalTotalPayment -
-                                            mainObj.firstPayment) /
-                                          2
+                                          mainObj.firstPayment) /
+                                        2
                                       : 0
                                     ).toLocaleString()}{" "}
                                   </td>
@@ -4075,8 +4082,8 @@ function Dashboard() {
                                   ? total + obj.originalTotalPayment
                                   : total + obj.firstPayment
                                 : obj.firstPayment === 0
-                                ? total + obj.originalTotalPayment / 2
-                                : total + obj.firstPayment / 2;
+                                  ? total + obj.originalTotalPayment / 2
+                                  : total + obj.firstPayment / 2;
                             }, 0)
                             .toLocaleString()}
                         </th>
@@ -4089,14 +4096,14 @@ function Dashboard() {
                                 ? obj.firstPayment === 0
                                   ? 0
                                   : total +
-                                    (obj.originalTotalPayment -
-                                      obj.firstPayment)
+                                  (obj.originalTotalPayment -
+                                    obj.firstPayment)
                                 : obj.firstPayment === 0
-                                ? 0
-                                : total +
+                                  ? 0
+                                  : total +
                                   (obj.originalTotalPayment -
                                     obj.firstPayment) /
-                                    2;
+                                  2;
                             }, 0)
                             .toLocaleString()}
                         </th>
@@ -4117,12 +4124,10 @@ function Dashboard() {
                         .map((mainObj, index) => (
                           <>
                             <tr key={mainObj._id}>
-                              <td style={{ lineHeight: "32px" }}>{`${
-                                index + 1
-                              }`}</td>
-                              <td>{`${formatDate(mainObj.bookingDate)}(${
-                                mainObj.bookingTime
-                              })`}</td>
+                              <td style={{ lineHeight: "32px" }}>{`${index + 1
+                                }`}</td>
+                              <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                                })`}</td>
                               <td>{mainObj.bdeName}</td>
                               <td>{mainObj.companyName}</td>
                               <td>{mainObj.contactNumber}</td>
@@ -4143,10 +4148,10 @@ function Dashboard() {
                                 {(mainObj.firstPayment !== 0
                                   ? mainObj.bdeName === mainObj.bdmName
                                     ? mainObj.originalTotalPayment -
-                                      mainObj.firstPayment
+                                    mainObj.firstPayment
                                     : (mainObj.originalTotalPayment -
-                                        mainObj.firstPayment) /
-                                      2
+                                      mainObj.firstPayment) /
+                                    2
                                   : 0
                                 ).toLocaleString()}
                               </td>
@@ -4163,12 +4168,10 @@ function Dashboard() {
                               <td>{mainObj.paymentRemarks}</td>
                             </tr>
                             <tr>
-                              <td style={{ lineHeight: "32px" }}>{`${
-                                index + 2
-                              }`}</td>
-                              <td>{`${formatDate(mainObj.bookingDate)}(${
-                                mainObj.bookingTime
-                              })`}</td>
+                              <td style={{ lineHeight: "32px" }}>{`${index + 2
+                                }`}</td>
+                              <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                                })`}</td>
                               <td>{mainObj.bdmName}</td>
                               <td>{mainObj.companyName}</td>
                               <td>{mainObj.contactNumber}</td>
@@ -4192,10 +4195,10 @@ function Dashboard() {
                                 {(mainObj.firstPayment !== 0
                                   ? mainObj.bdeName === mainObj.bdmName
                                     ? mainObj.originalTotalPayment -
-                                      mainObj.firstPayment
+                                    mainObj.firstPayment
                                     : (mainObj.originalTotalPayment -
-                                        mainObj.firstPayment) /
-                                      2
+                                      mainObj.firstPayment) /
+                                    2
                                   : 0
                                 ).toLocaleString()}{" "}
                               </td>
@@ -4236,7 +4239,7 @@ function Dashboard() {
                                 ₹
                                 {(mainObj.firstPayment !== 0
                                   ? mainObj.originalTotalPayment -
-                                    mainObj.firstPayment
+                                  mainObj.firstPayment
                                   : 0
                                 ).toLocaleString()}
                               </th>
@@ -4486,11 +4489,11 @@ function Dashboard() {
                 <div>
                   <h2>Projection Summary</h2>
                 </div>
-               
+
                 <div
                   style={{
                     m: 1,
-                    
+
                     padding: "0px",
                     marginRight: "30px",
                   }}
@@ -4510,71 +4513,71 @@ function Dashboard() {
                       />
                     </DemoContainer>
                   </LocalizationProvider> */}
-                     <div
-                          style={{ m: 1, padding: "0px", marginRight: "30px" }}
-                          className="filter-booking d-flex align-items-center"
-                        >
-                          <div className="filter-title mr-1">
-                            <h2 style={{ marginBottom: "5px" }}>
-                              {" "}
-                              Filter Branch : {"  "}
-                            </h2>
-                          </div>
-                          <div className="filter-main">
-                            <select
-                              className="form-select mt-1"
-                              id={`branch-filter`}
-                              onChange={(e)=>{
-                                handleFilterBranchOffice(e.target.value)
-                               
-                              }}
-                            >
-                              <option value="" disabled selected>
-                                Select Branch
-                              </option>
-
-                              <option value={"Gota"}>Gota</option>
-                              <option value={"Sindhu Bhawan"}>
-                                Sindhu Bhawan
-                              </option>
-                              <option value={"none"}>None</option>
-                            </select>
-                          </div>
-                        </div>
-                  <div className="date-filter">
-                  <LocalizationProvider
-                    dateAdapter={AdapterDayjs}
-                    style={{ padding: "0px" }}
+                  <div
+                    style={{ m: 1, padding: "0px", marginRight: "30px" }}
+                    className="filter-booking d-flex align-items-center"
                   >
-                    <DemoContainer components={["SingleInputDateRangeField"]}>
-                      <DateRangePicker
-                        onChange={(values) => {
-                          const startDate = moment(values[0]).format(
-                            "DD/MM/YYYY"
-                          );
-                          const endDate = moment(values[1]).format(
-                            "DD/MM/YYYY"
-                          );
-                          setSelectedDateRange([startDate, endDate]);
-                          handleSelect(values); // Call handleSelect with the selected values
+                    <div className="filter-title mr-1">
+                      <h2 style={{ marginBottom: "5px" }}>
+                        {" "}
+                        Filter Branch : {"  "}
+                      </h2>
+                    </div>
+                    <div className="filter-main">
+                      <select
+                        className="form-select mt-1"
+                        id={`branch-filter`}
+                        onChange={(e) => {
+                          handleFilterBranchOffice(e.target.value)
+
                         }}
-                        slots={{ field: SingleInputDateRangeField }}
-                        slotProps={{
-                          shortcuts: {
-                            items: shortcutsItems,
-                          },
-                          actionBar: { actions: [] },
-                          textField: {
-                            InputProps: { endAdornment: <Calendar /> },
-                          },
-                        }}
-                        //calendars={1}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
+                      >
+                        <option value="" disabled selected>
+                          Select Branch
+                        </option>
+
+                        <option value={"Gota"}>Gota</option>
+                        <option value={"Sindhu Bhawan"}>
+                          Sindhu Bhawan
+                        </option>
+                        <option value={"none"}>None</option>
+                      </select>
+                    </div>
                   </div>
-               
-                
+                  <div className="date-filter">
+                    <LocalizationProvider
+                      dateAdapter={AdapterDayjs}
+                      style={{ padding: "0px" }}
+                    >
+                      <DemoContainer components={["SingleInputDateRangeField"]}>
+                        <DateRangePicker
+                          onChange={(values) => {
+                            const startDate = moment(values[0]).format(
+                              "DD/MM/YYYY"
+                            );
+                            const endDate = moment(values[1]).format(
+                              "DD/MM/YYYY"
+                            );
+                            setSelectedDateRange([startDate, endDate]);
+                            handleSelect(values); // Call handleSelect with the selected values
+                          }}
+                          slots={{ field: SingleInputDateRangeField }}
+                          slotProps={{
+                            shortcuts: {
+                              items: shortcutsItems,
+                            },
+                            actionBar: { actions: [] },
+                            textField: {
+                              InputProps: { endAdornment: <Calendar /> },
+                            },
+                          }}
+                        //calendars={1}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </div>
+
+
                 </div>
                 {/* <div className="form-control date-range-picker d-flex align-items-center justify-content-between">
                   <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
@@ -4634,7 +4637,7 @@ function Dashboard() {
                         >
                           Sr. No
                         </th>
-                        <th>Company Name</th>
+                        <th>Employee Name</th>
                         <th>
                           Total Companies
                           <SwapVertIcon
@@ -4785,8 +4788,32 @@ function Dashboard() {
                             </td>
                           </tr>
                         ))}
+                        {/* Map employeeData with default fields */}
+                        {employeeData
+                          .filter((employee) => !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
+                          .map((employee, index) => (
+                            <tr key={`employee-row-${index}`}>
+                              <td style={{ lineHeight: "32px" }}>{sortedData.length + index + 1}</td>
+                              <td>{employee.ename}</td>
+                              <td>0 <FcDatabase
+                                onClick={() => {
+                                  functionOpenProjectionTable(employee.ename);
+                                }}
+                                style={{
+                                  cursor: "pointer",
+                                  marginRight: "-71px",
+                                  marginLeft: "58px",
+                                }}
+                              /></td>
+                              <td>0</td>
+                              <td>0</td>
+                              <td>0</td>
+                            </tr>
+                          ))}
                       </tbody>
                     ) : null}
+
+
 
                     {sortedData && sortedData.length !== 0 && (
                       <tfoot
@@ -4934,58 +4961,58 @@ function Dashboard() {
 
                     {projectedDataToday && projectedDataToday.length > 0
                       ? //   projectedDataDateRange.map((obj, Index) => (
-                        //     <tr key={`sub-row-${Index}`}>
-                        //       <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                        //       {/* Render other employee data */}
-                        //       <td>{obj.ename}</td>
-                        //       <td>{obj.companyName}</td>
-                        //       <td>{obj.offeredServices.join(",")}</td>
-                        //       <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
-                        //       <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
-                        //       <td>{obj.estPaymentDate}</td>
-                        //       <td>{obj.lastFollowUpdate}</td>
-                        //       <td>{obj.remarks}</td>
-                        //       <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryNew(obj.companyName)} /></td>
-                        //     </tr>
-                        //   ))
-                        // ) :
+                      //     <tr key={`sub-row-${Index}`}>
+                      //       <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                      //       {/* Render other employee data */}
+                      //       <td>{obj.ename}</td>
+                      //       <td>{obj.companyName}</td>
+                      //       <td>{obj.offeredServices.join(",")}</td>
+                      //       <td>{obj.offeredPrize.toLocaleString('en-IN', numberFormatOptions)}</td>
+                      //       <td>{obj.totalPayment.toLocaleString('en-IN', numberFormatOptions)}</td>
+                      //       <td>{obj.estPaymentDate}</td>
+                      //       <td>{obj.lastFollowUpdate}</td>
+                      //       <td>{obj.remarks}</td>
+                      //       <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryNew(obj.companyName)} /></td>
+                      //     </tr>
+                      //   ))
+                      // ) :
 
-                        projectedDataToday.map((obj, Index) => (
-                          <tr key={`sub-row-${Index}`}>
-                            <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                            {/* Render other employee data */}
-                            <td>{obj.ename}</td>
-                            <td>{obj.companyName}</td>
-                            <td>{obj.offeredServices.join(",")}</td>
-                            <td>
-                              {obj.offeredPrize.toLocaleString(
-                                "en-IN",
-                                numberFormatOptions
-                              )}
-                            </td>
-                            <td>
-                              {obj.totalPayment.toLocaleString(
-                                "en-IN",
-                                numberFormatOptions
-                              )}
-                            </td>
-                            <td>{formatDateFinal(obj.estPaymentDate)}</td>
-                            <td>{formatDateFinal(obj.lastFollowUpdate)}</td>
-                            <td>{obj.remarks}</td>
-                            <td>
-                              <MdHistory
-                                style={{
-                                  width: "17px",
-                                  height: "17px",
-                                  color: "grey",
-                                }}
-                                onClick={() =>
-                                  handleViewHistoryProjection(obj.companyName)
-                                }
-                              />
-                            </td>
-                          </tr>
-                        ))
+                      projectedDataToday.map((obj, Index) => (
+                        <tr key={`sub-row-${Index}`}>
+                          <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                          {/* Render other employee data */}
+                          <td>{obj.ename}</td>
+                          <td>{obj.companyName}</td>
+                          <td>{obj.offeredServices.join(",")}</td>
+                          <td>
+                            {obj.offeredPrize.toLocaleString(
+                              "en-IN",
+                              numberFormatOptions
+                            )}
+                          </td>
+                          <td>
+                            {obj.totalPayment.toLocaleString(
+                              "en-IN",
+                              numberFormatOptions
+                            )}
+                          </td>
+                          <td>{formatDateFinal(obj.estPaymentDate)}</td>
+                          <td>{formatDateFinal(obj.lastFollowUpdate)}</td>
+                          <td>{obj.remarks}</td>
+                          <td>
+                            <MdHistory
+                              style={{
+                                width: "17px",
+                                height: "17px",
+                                color: "grey",
+                              }}
+                              onClick={() =>
+                                handleViewHistoryProjection(obj.companyName)
+                              }
+                            />
+                          </td>
+                        </tr>
+                      ))
                       : null}
                   </tbody>
                   {projectedEmployee && (
@@ -5144,30 +5171,30 @@ function Dashboard() {
 
                     {followDataToday && followDataToday.length > 0
                       ? followDataToday.map((obj, Index) => (
-                          <tr key={`sub-row-${Index}`}>
-                            <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
-                            {/* Render other employee data */}
-                            <td>{obj.ename}</td>
-                            <td>{obj.companyName}</td>
-                            <td>{obj.offeredServices.join(",")}</td>
-                            <td>
-                              {obj.offeredPrize.toLocaleString(
-                                "en-IN",
-                                numberFormatOptions
-                              )}
-                            </td>
-                            <td>
-                              {obj.totalPayment.toLocaleString(
-                                "en-IN",
-                                numberFormatOptions
-                              )}
-                            </td>
-                            <td>{obj.estPaymentDate}</td>
-                            <td>{obj.lastFollowUpdate}</td>
-                            <td>{obj.remarks}</td>
-                            {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection(obj.companyName)} /></td> */}
-                          </tr>
-                        ))
+                        <tr key={`sub-row-${Index}`}>
+                          <td style={{ lineHeight: "32px" }}>{Index + 1}</td>
+                          {/* Render other employee data */}
+                          <td>{obj.ename}</td>
+                          <td>{obj.companyName}</td>
+                          <td>{obj.offeredServices.join(",")}</td>
+                          <td>
+                            {obj.offeredPrize.toLocaleString(
+                              "en-IN",
+                              numberFormatOptions
+                            )}
+                          </td>
+                          <td>
+                            {obj.totalPayment.toLocaleString(
+                              "en-IN",
+                              numberFormatOptions
+                            )}
+                          </td>
+                          <td>{obj.estPaymentDate}</td>
+                          <td>{obj.lastFollowUpdate}</td>
+                          <td>{obj.remarks}</td>
+                          {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection(obj.companyName)} /></td> */}
+                        </tr>
+                      ))
                       : null}
                   </tbody>
                   {followDataToday && (
@@ -5294,30 +5321,30 @@ function Dashboard() {
                   <tbody>
                     {projectedDataToday && projectedDataToday.length > 0
                       ? historyDataCompany.map((obj, index) => (
-                          <tr key={`sub-row-${index}`}>
-                            <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                            {/* Render other employee data */}
-                            <td>{obj.modifiedAt}</td>
-                            <td>{obj.data.companyName}</td>
-                            <td>{obj.data.offeredServices.join(",")}</td>
-                            <td>
-                              {obj.data.offeredPrize.toLocaleString(
-                                "en-IN",
-                                numberFormatOptions
-                              )}
-                            </td>
-                            <td>
-                              {obj.data.totalPayment.toLocaleString(
-                                "en-IN",
-                                numberFormatOptions
-                              )}
-                            </td>
-                            <td>{obj.data.estPaymentDate}</td>
-                            <td>{obj.data.lastFollowUpdate}</td>
-                            <td>{obj.data.remarks}</td>
-                            {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
-                          </tr>
-                        ))
+                        <tr key={`sub-row-${index}`}>
+                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                          {/* Render other employee data */}
+                          <td>{obj.modifiedAt}</td>
+                          <td>{obj.data.companyName}</td>
+                          <td>{obj.data.offeredServices.join(",")}</td>
+                          <td>
+                            {obj.data.offeredPrize.toLocaleString(
+                              "en-IN",
+                              numberFormatOptions
+                            )}
+                          </td>
+                          <td>
+                            {obj.data.totalPayment.toLocaleString(
+                              "en-IN",
+                              numberFormatOptions
+                            )}
+                          </td>
+                          <td>{obj.data.estPaymentDate}</td>
+                          <td>{obj.data.lastFollowUpdate}</td>
+                          <td>{obj.data.remarks}</td>
+                          {/* <td><MdHistory style={{ width: "17px", height: "17px", color: "grey" }} onClick={() => handleViewHistoryProjection} /></td> */}
+                        </tr>
+                      ))
                       : null}
                     {/* Additional rendering for latest data */}
                     {latestDataForCompany.map((obj, index) => (
