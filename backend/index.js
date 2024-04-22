@@ -6410,7 +6410,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].withGST}
+            ${newData.services[i].withGST ? "Yes" : "No"}
           </div>
         </div>
       </div>
@@ -6817,7 +6817,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData.bdmName}
+                    ${newData.bdmName}( ${newData.bdmType} )
                 </div>
               </div>
             </div>
