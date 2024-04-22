@@ -1420,7 +1420,7 @@ console.log(totalBooking)
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
-      <EmpNav userId={userId} />
+      <EmpNav userId={userId} bdmWork={data.bdmWork} />
       <div className="container-xl mt-2">
         <div className="card">
           <div className="card-header employeedashboard">

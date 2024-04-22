@@ -849,7 +849,7 @@ function Employees({ onEyeButtonClick }) {
                       </button>
                     </th>
                     <th>
-                      Team Name
+                      BDM Work
                     </th>
                     <th>
                       <button
@@ -935,11 +935,12 @@ function Employees({ onEyeButtonClick }) {
                         </td>}
 
                         <td>
-                          {teamData
+                          {/* {teamData
                             .filter((obj) => obj.employees.some(emp => emp.ename === item.ename && emp.branchOffice === item.branchOffice))
                             .map(obj => obj.teamName)
                             .join(', ') || <span style={{color:"lightgrey"}}>No team allotted</span>
-                          }
+                          } */}
+                          {item.bdmWork ? (<span>BDM</span>):(" ")}
                         </td>
                         <td >
                           <div className="d-flex justify-content-center align-items-center">

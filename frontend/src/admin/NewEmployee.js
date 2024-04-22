@@ -90,7 +90,7 @@ function NewEmployee() {
                                         <span style={{fontSize:"12px"}}>Employee List</span>
                                     </div>
                                 } {...a11yProps(0)} />
-                                <Tab
+                                {/* <Tab
                                     label={
                                         <div style={{ display: "flex", alignItems: "center" }}>
                                             <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
@@ -98,15 +98,15 @@ function NewEmployee() {
                                         </div>
                                     }
                                     {...a11yProps(1)}
-                                />
+                                /> */}
                             </Tabs>
                         </Box>
                         <CustomTabPanel value={value} index={0}>
                             <Employee />
                         </CustomTabPanel>
-                        <CustomTabPanel value={value} index={1}>
+                        {/* <CustomTabPanel value={value} index={1}>
                             <Team/>
-                        </CustomTabPanel>
+                        </CustomTabPanel> */}
                     </div>
                 </div>
             </div>

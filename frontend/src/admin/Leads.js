@@ -1,6 +1,6 @@
 import React from "react";
 import Papa from "papaparse";
-import Header from "./Header";  
+import Header from "./Header";
 import Navbar from "./Navbar";
 import axios from "axios";
 import { IconChevronLeft } from "@tabler/icons-react";
@@ -250,6 +250,17 @@ function Leads() {
   const functioncloseModifyPopup = () => {
     setopenPopupModify(false);
     setIsEditProjection(false);
+    setOpenFirstDirector(true);
+    setOpenSecondDirector(false);
+    setOpenThirdDirector(false);
+    setFirstPlus(true);
+    setSecondPlus(false);
+    setOpenThirdMinus(false)
+    //fetchData();
+    setError('')
+    setErrorDirectorNumberFirst("");
+    setErrorDirectorNumberSecond("");
+    setErrorDirectorNumberThird("");
   }
 
   const functionopenpopupNew = () => {
@@ -263,6 +274,8 @@ function Leads() {
 
     setCsvData([]);
   };
+
+
   const closepopupNew = () => {
     openchangeNew(false);
     setOpenFirstDirector(true);
@@ -272,7 +285,13 @@ function Leads() {
     setSecondPlus(false);
     setOpenThirdMinus(false)
     fetchData();
+    setError('')
+    setErrorDirectorNumberFirst("");
+    setErrorDirectorNumberSecond("");
+    setErrorDirectorNumberThird("");
   };
+
+
   const closepopupEmp = () => {
     openchangeEmp(false);
     fetchData();
@@ -316,15 +335,15 @@ function Leads() {
   };
 
   useEffect(() => {
-    if(filteredData.length===0 && dataStatus === "Assigned"){
+    if (filteredData.length === 0 && dataStatus === "Assigned") {
       setmainData(data.filter((item) => item.ename === "Not Alloted"));
       setDataStatus("Unassigned")
-    }else if(filteredData.length===0 && dataStatus === "Unassigned") {
+    } else if (filteredData.length === 0 && dataStatus === "Unassigned") {
       setmainData(data.filter((item) => item.ename !== "Not Alloted"));
       setDataStatus("Assigned")
     }
   }, [searchText])
-  
+
 
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -538,10 +557,10 @@ function Leads() {
         ename: newemployeeSelection,
         AssignDate: properDate
       }));
-  
+
       const currentDate = new Date().toLocaleDateString();
       const currentTime = new Date().toLocaleTimeString();
-  
+
       //console.log(updatedCsvdata)
       // Create a new array of objects with desired properties
       const newArray = updatedCsvdata.map((data) => ({
@@ -562,7 +581,7 @@ function Leads() {
           // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
 
           const counter = response.data.counter;
-         // console.log("counter", counter)
+          // console.log("counter", counter)
           const successCounter = response.data.sucessCounter;
           //console.log(successCounter)
 
@@ -629,11 +648,11 @@ function Leads() {
             `${secretKey}/leads`,
             csvdata
           );
-        
+
           // await axios.post(`${secretKey}/employee-history`, updatedCsvdata);
 
           const counter = response.data.counter;
-         // console.log("counter", counter)
+          // console.log("counter", counter)
           const successCounter = response.data.sucessCounter;
           //console.log(successCounter)
 
@@ -728,12 +747,13 @@ function Leads() {
 
   // Submit the Dialogue box data manually
 
+
   const handleSubmitData = (e) => {
     e.preventDefault();
-    
+
     if (cname === "") {
       Swal.fire("Please Enter Company Name");
-    } else if (!cnumber) {
+    } else if (!cnumber && !/^\d{10}$/.test(cnumber)) {
       Swal.fire("Company Number is required");
     } else if (cemail === "") {
       Swal.fire("Company Email is required");
@@ -741,6 +761,12 @@ function Leads() {
       Swal.fire("City is required");
     } else if (state === "") {
       Swal.fire("State is required");
+    } else if (directorNumberFirst !== 0 && !/^\d{10}$/.test(directorNumberFirst)) {
+      Swal.fire("First Director Number should be 10 digits");
+    } else if (directorNumberSecond !== 0 && !/^\d{10}$/.test(directorNumberSecond)) {
+      Swal.fire("Second Director Number should be 10 digits");
+    } else if (directorNumberThird !== 0 && !/^\d{10}$/.test(directorNumberThird)) {
+      Swal.fire("Third Director Number should be 10 digits");
     } else {
       axios
         .post(`${secretKey}/manual`, {
@@ -928,7 +954,7 @@ function Leads() {
       selectedRows.includes(row._id)
     );
 
-    console.log("selectedObjecyt" , selectedObjects)
+    console.log("selectedObjecyt", selectedObjects)
     // Check if no data is selected
     if (selectedObjects.length === 0) {
       Swal.fire("Empty Data!");
@@ -1177,13 +1203,13 @@ function Leads() {
     // Filtering logic to set the mainData based on the status
     if (status === "Assigned") {
       setmainData(data.filter((item) => item.ename !== "Not Alloted"));
-    //   setmainData(
-    //     data.sort((a, b) => {
-    //         const dateA = a["AssignDate"] || "";
-    //         const dateB = b["AssignDate"] || "";
-    //         return dateB.localeCompare(dateA);
-    //     })
-    // );
+      //   setmainData(
+      //     data.sort((a, b) => {
+      //         const dateA = a["AssignDate"] || "";
+      //         const dateB = b["AssignDate"] || "";
+      //         return dateB.localeCompare(dateA);
+      //     })
+      // );
     }
     else {
       setmainData(data.filter((item) => item.ename === "Not Alloted"));
@@ -1226,6 +1252,18 @@ function Leads() {
           "Company Incorporation Date ": isoDateString, // Updated format
           "City": companyCity,
           "State": companyState,
+          "Company Address":cAddress,
+          'Director Name(First)':directorNameFirstModify,
+          'Director Number(First)':directorNumberFirstModify,
+          'Director Email(First)':directorEmailFirstModify,
+          'Director Name(Second)':directorNameSecondModify,
+          'Director Number(Second)':directorNumberSecondModify,
+          'Director Email(Second)':directorEmailSecondModify,
+          'Director Name(Third)':directorNameThirdModify,
+          'Director Number(Third)':directorNumberThirdModify,
+          'Director Email(Third)':directorEmailThirdModify
+
+
         };
 
         //console.log("Data to send with updated date format:", dataToSendUpdated);
@@ -1243,16 +1281,6 @@ function Leads() {
         // Date string couldn't be parsed into a valid Date object
         console.error("Invalid Company Incorporation Date string:", companyIncoDate);
       }
-
-
-
-      // setEmail("");
-      // setEname("");
-      // setNumber(0);
-      // setPassword("");
-      // setDesignation("");
-      // setotherDesignation("");
-      // setJdate(null);
       setIsUpdateMode(false);
       fetchDatadebounce();
       functioncloseModifyPopup();
@@ -1275,6 +1303,18 @@ function Leads() {
   const [companyState, setCompnayState] = useState("");
   const [companynumber, setCompnayNumber] = useState("");
   const [isEditProjection, setIsEditProjection] = useState(false);
+  const [cAddress, setCAddress] = useState("");
+  const [directorNameFirstModify, setDirectorNameFirstModify] = useState("")
+  const [directorNumberFirstModify, setDirectorNumberFirstModify] = useState("")
+  const [directorEmailFirstModify, setDirectorEmailFirstModify] = useState("")
+  const [directorNameSecondModify, setDirectorNameSecondModify] = useState("")
+  const [directorNumberSecondModify, setDirectorNumberSecondModify] = useState("")
+  const [directorEmailSecondModify, setDirectorEmailSecondModify] = useState("")
+  const [directorNameThirdModify, setDirectorNameThirdModify] = useState("")
+  const [directorNumberThirdModify, setDirectorNumberThirdModify] = useState("")
+  const [directorEmailThirdModify, setDirectorEmailThirdModify] = useState("")
+
+
 
 
   //console.log(companyCity, companyEmail, companyIncoDate, companyState, companyName, companynumber)
@@ -1289,7 +1329,7 @@ function Leads() {
     // // Find the selected data object
     const selectedData = mainData.find((item) => item._id === id);
     //console.log(selectedData["Company Incorporation Date  "])
-    //console.log(selectedData)
+    console.log(selectedData)
     // console.log(echangename);
 
     // // Update the form data with the selected data values
@@ -1299,7 +1339,16 @@ function Leads() {
     setCompnayCity(selectedData["City"]);
     setCompnayState(selectedData["State"]);
     setCompnayNumber(selectedData["Company Number"]);
-
+    setCAddress(selectedData["Company Address"])
+    setDirectorNameFirstModify(selectedData["Director Name(First)"])
+    setDirectorNumberFirstModify(selectedData["Director Number(First)"])
+    setDirectorEmailFirstModify(selectedData["Director Email(First)"])
+    setDirectorNameSecondModify(selectedData["Director Name(Second)"])
+    setDirectorNumberSecondModify(selectedData["Director Number(Second)"])
+    setDirectorEmailSecondModify(selectedData["Director Email(Second)"])
+    setDirectorNameThirdModify(selectedData["Director Name(Third)"])
+    setDirectorNumberThirdModify(selectedData["Director Number(Third)"])
+    setDirectorEmailThirdModify(selectedData["Director Email(Third)"])
     const dateString = selectedData["Company Incorporation Date  "];
 
     // Parse the date string into a Date object
@@ -1334,6 +1383,105 @@ function Leads() {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   }
+
+  // -------------------------------------------------add leads form validation and debounce correction----------------------------------
+
+  const debouncedSetCname = debounce((value) => {
+    setCname(value);
+  }, 10);
+
+  const debouncedSetEmail = debounce((value) => {
+    setCemail(value);
+  }, 10);
+
+  const debouncedSetAddress = debounce((value) => {
+    setCompanyAddress(value);
+  }, 10);
+
+  const debouncedSetIncoDate = debounce((value) => {
+    setCidate(value);
+  }, 10);
+
+  const [error, setError] = useState('');
+
+  const debouncedSetCompanyNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setCnumber(value);
+      setError('');
+    } else {
+      setError('Please enter a 10-digit number');
+      setCnumber()
+    }
+
+  }, 10);
+
+  const debouncedSetCity = debounce((value) => {
+    setCity(value);
+  }, 10);
+
+  const debouncedSetState = debounce((value) => {
+    setState(value);
+  }, 10);
+
+  const debounceSetFirstDirectorName = debounce((value) => {
+    setDirectorNameFirst(value);
+  }, 10);
+
+  const [errorDirectorNumberFirst, setErrorDirectorNumberFirst] = useState("")
+  const [errorDirectorNumberSecond, setErrorDirectorNumberSecond] = useState("")
+  const [errorDirectorNumberThird, setErrorDirectorNumberThird] = useState("")
+
+  const debounceSetFirstDirectorNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberFirst(value)
+      setErrorDirectorNumberFirst("")
+    } else {
+      setErrorDirectorNumberFirst('Please Enter 10 digit Number')
+      setDirectorNumberFirst()
+    }
+  }, 10);
+
+  const debounceSetFirstDirectorEmail = debounce((value) => {
+    setDirectorEmailFirst(value);
+  }, 10);
+
+  const debounceSetSecondDirectorName = debounce((value) => {
+    setDirectorNameSecond(value);
+  }, 10);
+
+  const debounceSetSecondDirectorNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberSecond(value)
+      setErrorDirectorNumberSecond("")
+    } else {
+      setErrorDirectorNumberSecond('Please Enter 10 digit Number')
+      setDirectorNumberSecond()
+    }
+  }, 10);
+
+  const debounceSetSecondDirectorEmail = debounce((value) => {
+    setDirectorEmailSecond(value);
+  }, 10);
+
+  const debounceSetThirdDirectorName = debounce((value) => {
+    setDirectorNameThird(value);
+  }, 10);
+
+  const debounceSetThirdDirectorNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberThird(value)
+      setErrorDirectorNumberThird("")
+    } else {
+      setErrorDirectorNumberThird('Please Enter 10 digit Number')
+      setDirectorNumberThird()
+    }
+  }, 10);
+
+  const debounceSetThirdDirectorEmail = debounce((value) => {
+    setDirectorEmailThird(value);
+  }, 10);
+
+
 
 
   return (
@@ -1631,46 +1779,46 @@ function Leads() {
                 <div className="row">
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Company Name <span style={{color:"red"}}>*</span></label>
+                      <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
                       <input
                         type="text"
                         className="form-control"
                         name="example-text-input"
                         placeholder="Your Company Name"
                         onChange={(e) => {
-                          setCname(e.target.value);
+                          debouncedSetCname(e.target.value);
                         }}
                       />
                     </div>
                   </div>
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Company Number <span style={{color:"red"}}>*</span></label>
+                      <label className="form-label">Company Number <span style={{ color: "red" }}>*</span></label>
                       <input
                         type="number"
                         placeholder="Enter Company's Phone No."
                         onChange={(e) => {
-                          setCnumber(e.target.value);
+                          debouncedSetCompanyNumber(e.target.value);
                         }}
                         className="form-control"
                       />
+                      {error && <p style={{ color: 'red' }}>{error}</p>}
                     </div>
                   </div>
                   <div className="col-4">
                     <div className="mb-3">
-                      <label className="form-label">Company Email <span style={{color:"red"}}>*</span></label>
+                      <label className="form-label">Company Email <span style={{ color: "red" }}>*</span></label>
                       <input
                         type="email"
                         className="form-control"
                         name="example-text-input"
                         placeholder="example@gmail.com"
                         onChange={(e) => {
-                          setCemail(e.target.value);
+                          debouncedSetEmail(e.target.value);
                         }}
                       />
                     </div>
                   </div>
-                
                 </div>
                 <div className="row">
                   <div className="col-lg-4">
@@ -1680,7 +1828,7 @@ function Leads() {
                       </label>
                       <input
                         onChange={(e) => {
-                          setCidate(e.target.value);
+                          debouncedSetIncoDate(e.target.value);
                         }}
                         type="date"
                         className="form-control"
@@ -1689,10 +1837,10 @@ function Leads() {
                   </div>
                   <div className="col-lg-4">
                     <div className="mb-3">
-                      <label className="form-label">City</label>
+                      <label className="form-label">City<span style={{ color: "red" }}>*</span></label>
                       <input
                         onChange={(e) => {
-                          setCity(e.target.value);
+                          debouncedSetCity(e.target.value);
                         }}
                         type="text"
                         className="form-control"
@@ -1702,10 +1850,10 @@ function Leads() {
                   </div>
                   <div className="col-lg-4">
                     <div className="mb-3">
-                      <label className="form-label">State</label>
+                      <label className="form-label">State<span style={{ color: "red" }}>*</span></label>
                       <input
                         onChange={(e) => {
-                          setState(e.target.value);
+                          debouncedSetState(e.target.value);
                         }}
                         type="text"
                         className="form-control"
@@ -1714,10 +1862,8 @@ function Leads() {
                       />
                     </div>
                   </div>
-
                 </div>
                 <div className="row">
-
                   <div className="col-lg-12">
                     <div className="mb-3">
                       <label className="form-label">Company Address</label>
@@ -1727,7 +1873,7 @@ function Leads() {
                         name="example-text-input"
                         placeholder="Enter Your Address"
                         onChange={(e) => {
-                          setCompanyAddress(e.target.value);
+                          debouncedSetAddress(e.target.value);
                         }}
                       />
                     </div>
@@ -1743,7 +1889,7 @@ function Leads() {
                         name="example-text-input"
                         placeholder="Your Company Name"
                         onChange={(e) => {
-                          setDirectorNameFirst(e.target.value);
+                          debounceSetFirstDirectorName(e.target.value);
                         }}
                       />
                     </div>
@@ -1757,9 +1903,10 @@ function Leads() {
                         name="example-text-input"
                         placeholder="Enter Phone No."
                         onChange={(e) => {
-                          setDirectorNumberFirst(e.target.value);
+                          debounceSetFirstDirectorNumber(e.target.value);
                         }}
                       />
+                      {errorDirectorNumberFirst && <p style={{ color: 'red' }}>{errorDirectorNumberFirst}</p>}
                     </div>
                   </div>
                   <div className="col-4">
@@ -1771,7 +1918,7 @@ function Leads() {
                         name="example-text-input"
                         placeholder="example@gmail.com"
                         onChange={(e) => {
-                          setDirectorEmailFirst(e.target.value);
+                          debounceSetFirstDirectorEmail(e.target.value);
                         }}
                       />
                     </div>
@@ -1816,7 +1963,7 @@ function Leads() {
                           name="example-text-input"
                           placeholder="Your Company Name"
                           onChange={(e) => {
-                            setDirectorNameSecond(e.target.value);
+                            debounceSetSecondDirectorName(e.target.value);
                           }}
                         />
                       </div>
@@ -1830,9 +1977,10 @@ function Leads() {
                           name="example-text-input"
                           placeholder="Enter Phone No."
                           onChange={(e) => {
-                            setDirectorNumberSecond(e.target.value);
+                            debounceSetSecondDirectorNumber(e.target.value);
                           }}
                         />
+                        {errorDirectorNumberSecond && <p style={{ color: 'red' }}>{errorDirectorNumberSecond}</p>}
                       </div>
                     </div>
                     <div className="col-4">
@@ -1844,7 +1992,7 @@ function Leads() {
                           name="example-text-input"
                           placeholder="example@gmail.com"
                           onChange={(e) => {
-                            setDirectorEmailSecond(e.target.value);
+                            debounceSetSecondDirectorEmail(e.target.value);
                           }}
                         />
                       </div>
@@ -1888,7 +2036,7 @@ function Leads() {
                         name="example-text-input"
                         placeholder="Your Company Name"
                         onChange={(e) => {
-                          setDirectorNameThird(e.target.value);
+                          debounceSetThirdDirectorName(e.target.value);
                         }}
                       />
                     </div>
@@ -1902,9 +2050,10 @@ function Leads() {
                         name="example-text-input"
                         placeholder="Enter Phone No"
                         onChange={(e) => {
-                          setDirectorNumberThird(e.target.value);
+                          debounceSetThirdDirectorNumber(e.target.value);
                         }}
                       />
+                      {errorDirectorNumberThird && <p style={{ color: 'red' }}>{errorDirectorNumberThird}</p>}
                     </div>
                   </div>
                   <div className="col-4">
@@ -1916,7 +2065,7 @@ function Leads() {
                         name="example-text-input"
                         placeholder="example@gmail.com"
                         onChange={(e) => {
-                          setDirectorEmailThird(e.target.value);
+                          debounceSetThirdDirectorEmail(e.target.value);
                         }}
                       />
                     </div>
@@ -1943,7 +2092,7 @@ function Leads() {
       {/* ------------------------------------------------------------dialog for modify leads----------------------------------------------- */}
 
 
-      <Dialog open={openPopupModify} onClose={functioncloseModifyPopup} fullWidth maxWidth="sm">
+      <Dialog open={openPopupModify} onClose={functioncloseModifyPopup} fullWidth maxWidth="md">
         <DialogTitle className="d-flex align-items-center justify-content-between">
           <div>
             Company Info{" "}
@@ -1965,6 +2114,325 @@ function Leads() {
 
         </DialogTitle>
         <DialogContent>
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        value={companyName}
+                        onChange={(e) => {
+                          setCompanyName(e.target.value);
+                        }}
+                        disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Number <span style={{ color: "red" }}>*</span></label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Number"
+                        value={companynumber}
+                        onChange={(e) => {
+                          setCompnayNumber(e.target.value);
+                        }}
+                        disabled={!isEditProjection}
+                      />
+                      {error && <p style={{ color: 'red' }}>{error}</p>}
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Email <span style={{ color: "red" }}>*</span></label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        value={companyEmail}
+                        onChange={(e) => {
+                          setCompanyEmail(e.target.value);
+                        }}
+                        disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-4">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Company Incorporation Date
+                      </label>
+                      <input
+                       value={companyIncoDate}
+                       onChange={(e) => {
+                         setCompanyIncoDate(e.target.value)
+                       }}
+                       type="date"
+                       className="form-control"
+                       disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-4">
+                    <div className="mb-3">
+                      <label className="form-label">City<span style={{ color: "red" }}>*</span></label>
+                      <input
+                        value={companyCity}
+                        onChange={(e) => {
+                          setCompnayCity(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                        disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-4">
+                    <div className="mb-3">
+                      <label className="form-label">State<span style={{ color: "red" }}>*</span></label>
+                      <input
+                        value={companyState}
+                        onChange={(e) => {
+                          setCompnayState(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                        disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <div className="mb-3">
+                      <label className="form-label">Company Address</label>
+                      <input
+                       value={cAddress}
+                       onChange={(e) => {
+                         setCAddress(e.target.value);
+                       }}
+                       type="text"
+                       className="form-control"
+                       disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Name(First)</label>
+                      <input
+                        value={directorNameFirstModify}
+                        onChange={(e) => {
+                          setDirectorNameFirstModify(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                        disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Number(First)</label>
+                      <input
+                        value={directorNumberFirstModify}
+                        onChange={(e) => {
+                          setDirectorNumberFirstModify(e.target.value);
+                        }}
+                        type="number"
+                        className="form-control"
+                        disabled={!isEditProjection}
+                      />
+                      {errorDirectorNumberFirst && <p style={{ color: 'red' }}>{errorDirectorNumberFirst}</p>}
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Email(First)</label>
+                      <input
+                        value={directorEmailFirstModify}
+                        onChange={(e) => {
+                          setDirectorEmailFirstModify(e.target.value);
+                        }}
+                        type="email"
+                        className="form-control"
+                        disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                </div>
+                {firstPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
+                  <button
+                    onClick={() => { functionOpenSecondDirector() }}
+                    className="btn btn-primary d-none d-sm-inline-block">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M12 5l0 14" />
+                      <path d="M5 12l14 0" />
+                    </svg>
+                  </button>
+                  <button className="btn btn-primary d-none d-sm-inline-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                      width="24"
+                      height="24"
+                      fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                  </button></div>)}
+
+                {openSecondDirector && (
+                  <div className="row">
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Director's Name(Second)</label>
+                        <input
+                          value={directorNameSecondModify}
+                          onChange={(e) => {
+                            setDirectorNameSecondModify(e.target.value);
+                          }}
+                          type="text"
+                          className="form-control"
+                          disabled={!isEditProjection}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Director's Number(Second)</label>
+                        <input
+                         value={directorNumberSecondModify}
+                         onChange={(e) => {
+                           setDirectorNumberSecondModify(e.target.value);
+                         }}
+                         type="number"
+                         className="form-control"
+                         disabled={!isEditProjection}
+                        />
+                        {errorDirectorNumberSecond && <p style={{ color: 'red' }}>{errorDirectorNumberSecond}</p>}
+                      </div>
+                    </div>
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Director's Email(Second)</label>
+                        <input
+                         value={directorEmailSecondModify}
+                         onChange={(e) => {
+                           setDirectorEmailSecondModify(e.target.value);
+                         }}
+                         type="email"
+                         className="form-control"
+                         disabled={!isEditProjection}
+                        />
+                      </div>
+                    </div>
+                  </div>)}
+                {secondPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
+                  <button
+                    onClick={() => { functionOpenThirdDirector() }}
+                    className="btn btn-primary d-none d-sm-inline-block">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M12 5l0 14" />
+                      <path d="M5 12l14 0" />
+                    </svg>
+                  </button>
+                  <button className="btn btn-primary d-none d-sm-inline-block" onClick={() => { functionCloseSecondDirector() }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                      width="24"
+                      height="24"
+                      fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                  </button></div>)}
+
+                {openThirdDirector && (<div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Name(Third)</label>
+                      <input
+                         value={directorNameThirdModify}
+                         onChange={(e) => {
+                           setDirectorNameThirdModify(e.target.value);
+                         }}
+                         type="text"
+                         className="form-control"
+                         disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Number(Third)</label>
+                      <input
+                         value={directorNumberThirdModify}
+                         onChange={(e) => {
+                           setDirectorNumberThirdModify(e.target.value);
+                         }}
+                         type="number"
+                         className="form-control"
+                         disabled={!isEditProjection}
+                      />
+                      {errorDirectorNumberThird && <p style={{ color: 'red' }}>{errorDirectorNumberThird}</p>}
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Email(Third)</label>
+                      <input
+                        value={directorEmailThirdModify}
+                        onChange={(e) => {
+                          setDirectorEmailThirdModify(e.target.value);
+                        }}
+                        type="email"
+                        className="form-control"
+                        disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                </div>)}
+                {openThirdMinus && (<button className="btn btn-primary d-none d-sm-inline-block" style={{ float: "right" }} onClick={() => { functionCloseThirdDirector() }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                    width="24"
+                    height="24"
+                    fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                </button>)}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        {/* <DialogContent>
           <div className="modal-dialog modal-lg" role="document">
             <div className="modal-content">
               <div className="modal-body">
@@ -2061,7 +2529,7 @@ function Leads() {
               </div>
             </div>
           </div>
-        </DialogContent>
+        </DialogContent> */}
         <button className="btn btn-primary" onClick={handleSubmit}>
           Submit
         </button>
@@ -2845,11 +3313,11 @@ function Leads() {
                       <th>Company Email</th>
                       <th>Status</th>
                       <th>Remarks</th>
-                      {dataStatus!=="Unassigned" &&  <th>Assigned to</th>}
+                      {dataStatus !== "Unassigned" && <th>Assigned to</th>}
 
                       <th>
-                        {dataStatus!=="Unassigned" ? "Assigned On" : "Uploaded On"}
-                      
+                        {dataStatus !== "Unassigned" ? "Assigned On" : "Uploaded On"}
+
                         <FilterListIcon
                           style={{
                             height: "14px",
@@ -2924,27 +3392,27 @@ function Leads() {
                           <td>{company["Company Email"]}</td>
                           <td>{company["Status"]}</td>
                           <td >
-                            <div style={{width:"100px"}} className="d-flex align-items-center justify-content-between">
-                                <p className="rematkText text-wrap m-0">
+                            <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
+                              <p className="rematkText text-wrap m-0">
                                 {company["Remarks"]}{" "}
-                                </p>
-                                <div onClick={() => {
-                                      functionopenpopupremarks(company._id, company.Status);
-                                    }} style={{cursor:"pointer"}}>
-                                  <IconEye
-                                   
-                                    style={{
-                                      width: "14px",
-                                      height: "14px",
-                                      color: "#d6a10c",
-                                      cursor: "pointer",
-                                      marginLeft: "4px",
-                                    }}
-                                  />
-                                </div>
+                              </p>
+                              <div onClick={() => {
+                                functionopenpopupremarks(company._id, company.Status);
+                              }} style={{ cursor: "pointer" }}>
+                                <IconEye
+
+                                  style={{
+                                    width: "14px",
+                                    height: "14px",
+                                    color: "#d6a10c",
+                                    cursor: "pointer",
+                                    marginLeft: "4px",
+                                  }}
+                                />
+                              </div>
                             </div>
                           </td>
-                         {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
+                          {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                           <td>{formatDateFinal(company["AssignDate"])}</td>
                           <td>
                             <IconButton onClick={() => handleDeleteClick(company._id)}>

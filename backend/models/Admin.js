@@ -37,6 +37,10 @@ const yourSchema = new mongoose.Schema({
   },
   access_token:{
     type:String
+  },
+  bdmWork:{
+    type:Boolean,
+    default:false
   }
 });
 

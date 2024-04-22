@@ -768,6 +768,38 @@ app.get("/api/einfo", async (req, res) => {
   }
 });
 
+app.post('/api/post-bdmwork-request/:eid', async (req, res) => {
+  const eid = req.params.eid;
+  const { bdmWork } = req.body;
+  
+  //console.log("bdmwork" , bdmWork)// Extract bdmWork from req.body
+  try {
+    await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork });
+    // Assuming you're returning updatedCompany and remarksHistory after update
+    res.status(200).json({ message: "Status updated successfully" });
+  } catch (error) {
+    console.error("Error updating BDM work:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post('/api/post-bdmwork-revoke/:eid' , async(req,res)=>{
+  const eid = req.params.eid;
+  const { bdmWork } = req.body;
+
+  try{
+    await adminModel.findByIdAndUpdate(eid , {bdmWork : bdmWork})
+
+    res.status(200).json({message : "Status Updated Successfully"})
+
+  }catch(error){
+    console.error("error updating bdm work" , error)
+    res.status(500).json({error: "Internal Server Error"})
+  }
+
+})
+
+
 // --------------------------api for teams----------------------------------------
 
 // app.post('/api/teaminfo', async (req, res) => {
@@ -870,11 +902,11 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
     // Assuming TeamLeadsModel has a schema similar to the selectedData structure
     const newLeads = await Promise.all(selectedData.map(async (data) => {
       
-      const newData = { ...data, bdmName , bdeForwardDate : formatDate(bdeForwardDate)}; // Add bdmName to each data object
+      const newData = { ...data, bdmName , bdeForwardDate : new Date(bdeForwardDate)}; // Add bdmName to each data object
       return await TeamLeadsModel.create(newData);
     }));
 
-    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus , bdeForwardDate:formatDate(bdeForwardDate) , bdeOldStatus : bdeOldStatus})
+    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus , bdeForwardDate:new Date(bdeForwardDate) , bdeOldStatus : bdeOldStatus})
     
     
     console.log("newLeads", newLeads);
@@ -999,6 +1031,24 @@ app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
    
     if (existingData) {
       await TeamModel.findByIdAndDelete(teamId); // Use findByIdAndDelete to delete by ID
+      res.status(200).json({ message: "Deleted Successfully" });
+    } else {
+      res.status(400).json({ error: "Team Does Not Exist" }); // Correct typo in error message
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.delete(`/api/delete-bdm-busy/:companyId`, async (req, res) => {
+  const companyId = req.params.companyId; // Correctly access teamId from req.params
+  
+  try {
+    const existingData = await TeamLeadsModel.findById(companyId);
+    console.log(existingData);
+   
+    if (existingData) {
+      await TeamLeadsModel.findByIdAndDelete(companyId); // Use findByIdAndDelete to delete by ID
       res.status(200).json({ message: "Deleted Successfully" });
     } else {
       res.status(400).json({ error: "Team Does Not Exist" }); // Correct typo in error message
