@@ -999,12 +999,12 @@ console.log("target objects:" , targetObjects)
                         Added on
                       </button>
                     </th>
-                    <th>
+                    {/* <th>
                       <button className="table-sort" data-sort="sort-date">
                         Status
                       </button>
-                    </th>
-                    <th>Team Name</th>
+                    </th> */}
+                    {/* <th>Team Name</th> */}
                     <th>
                       BDM Work
                     </th>
@@ -1046,7 +1046,7 @@ console.log("target objects:" , targetObjects)
                             ? "06/02/2024"
                             : formatDateFinal(item.AddedOn)}
                         </td>
-                        {item.designation !== "Admin Team" ? (
+                        {/* {item.designation !== "Admin Team" ? (
                           <td>
                             {item.Active && item.Active.includes("GMT") ? (
                               <div>
@@ -1099,7 +1099,7 @@ console.log("target objects:" , targetObjects)
                               </span>
                             </div>
                           </td>
-                        )}
+                        )} */}
 
                         <td>
                           {/* {teamData

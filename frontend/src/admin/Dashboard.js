@@ -79,12 +79,10 @@ function Dashboard() {
   const [showUpdates, setShowUpdates] = useState(false);
   const [followData, setfollowData] = useState([]);
   const [openProjectionTable, setopenProjectionTable] = useState(false);
-  const [openProjectionHistoryTable, setopenProjectionHistoryTable] =
-    useState(false);
+  const [openProjectionHistoryTable, setopenProjectionHistoryTable] = useState(false);
   const [projectedEmployee, setProjectedEmployee] = useState([]);
   const [displayDateRange, setDateRangeDisplay] = useState(false);
-  const [displayDateRangeEmployee, setDateRangeDisplayEmployee] =
-    useState(false);
+  const [displayDateRangeEmployee, setDateRangeDisplayEmployee] =useState(false);
   const [buttonToggle, setButtonToggle] = useState(false);
   const [projectedDataDateRange, setProjectedDataDateRange] = useState([]);
   const [startDateEmployee, setStartDateEmployee] = useState(new Date());
@@ -458,17 +456,26 @@ function Dashboard() {
       setfollowData(followdata);
       //console.log("followdata", followdata)
       setfollowDataToday(
-        followdata.filter((company) => {
-          // Assuming you want to filter companies with an estimated payment date for today
-          const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-          return company.estPaymentDate === today;
-        })
-      );
+        followdata
+            .filter((company) => {
+                // Assuming you want to filter companies with an estimated payment date for today
+                const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+                return company.estPaymentDate === today;
+            })
+    );
     } catch (error) {
       console.error("Error fetching data:", error);
       return { error: "Error fetching data" };
     }
   };
+
+
+  const combinedData = followDataToday.concat(employeeData);
+
+  console.log("combinedData" , combinedData)
+  console.log("followDataToday" , followDataToday)
+
+
   const handleFilterBranchOffice = (branchName) => {
     // Filter the followdataToday array based on branchName
     if(branchName === "none"){
