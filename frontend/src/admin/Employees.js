@@ -822,7 +822,7 @@ console.log("target objects:" , targetObjects)
                        
                       ></MdOutlineAddCircle>
                     </IconButton>
-                   {targetCount!==1 && <IconButton style={{ float: "right" }} onClick={()=>setTargetCount(targetCount-1)}>
+                    <IconButton style={{ float: "right" }} onClick={()=>setTargetCount(targetCount-1)}>
                       <MdDelete
                       color="primary"
                       style={{
@@ -831,7 +831,7 @@ console.log("target objects:" , targetObjects)
                         height: "14px",
                       }}
                       />
-                    </IconButton>}
+                    </IconButton>
                   </div>
                 </div>
               </div>

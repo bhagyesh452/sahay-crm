@@ -156,6 +156,7 @@ export default function RedesignedForm({
           bdeName: employeeName ? employeeName : "",
           bdeEmail: employeeEmail ? employeeEmail : "",
           bookingDate: formatInputDate(new Date()),
+          bdmType:"Close-by"
         }));
         setFetchBDE(true)
       } else if (Step2Status === true && Step3Status === false) {

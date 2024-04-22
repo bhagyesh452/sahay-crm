@@ -118,7 +118,7 @@ function Leads() {
 
       // Set the retrieved data in the state
       setData(response.data.reverse());
-      setmainData(response.data.filter((item) => item.ename !== "Not Alloted"));
+      setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
 
       // Set isLoading back to false after data is fetched
       setIsLoading(false);
@@ -315,15 +315,16 @@ function Leads() {
     }
   };
 
-  useEffect(() => {
-    if(filteredData.length===0 && dataStatus === "Assigned"){
-      setmainData(data.filter((item) => item.ename === "Not Alloted"));
-      setDataStatus("Unassigned")
-    }else if(filteredData.length===0 && dataStatus === "Unassigned") {
-      setmainData(data.filter((item) => item.ename !== "Not Alloted"));
-      setDataStatus("Assigned")
-    }
-  }, [searchText])
+  // useEffect(() => {
+
+  //   if(filteredData.length===0 && dataStatus === "Assigned"){
+  //     setmainData(data.filter((item) => item.ename === "Not Alloted"));
+  //     setDataStatus("Unassigned")
+  //   }else if(filteredData.length===0 && dataStatus === "Unassigned") {
+  //     setmainData(data.filter((item) => item.ename !== "Not Alloted"));
+  //     setDataStatus("Assigned")
+  //   }
+  // }, [searchText])
   
 
   const startIndex = currentPage * itemsPerPage;
@@ -376,7 +377,54 @@ function Leads() {
     }
   });
 
+  const anotherMainCount = data.filter(obj => dataStatus === "Unassigned" ? obj.ename !== "Not Alloted" : obj.ename === "Not Alloted").filter((company) => {
+    const fieldValue = company[selectedField];
 
+    if (selectedField === "State" && citySearch) {
+      // Handle filtering by both State and City
+      const stateMatches = fieldValue
+        .toLowerCase()
+        .includes(searchText.toLowerCase());
+      const cityMatches = company.City.toLowerCase().includes(
+        citySearch.toLowerCase()
+      );
+      return stateMatches && cityMatches;
+    } else if (selectedField === "Company Incorporation Date  ") {
+      // Assuming you have the month value in a variable named `month`
+      if (month == 0) {
+        return true;
+      } else if (year == 0) {
+        return true;
+      }
+      const selectedDate = new Date(fieldValue);
+      const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+      const selectedYear = selectedDate.getFullYear();
+
+      // console.log(selectedMonth);
+      //
+
+      // Use the provided month variable in the comparison
+      return (
+        selectedMonth.toString().includes(month) &&
+        selectedYear.toString().includes(year)
+      );
+    } else {
+      // Your existing filtering logic for other fields
+      if (typeof fieldValue === "string") {
+        return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+      } else if (typeof fieldValue === "number") {
+        return fieldValue.toString().includes(searchText);
+      } else if (fieldValue instanceof Date) {
+        // Handle date fields
+
+        return fieldValue.includes(searchText);
+      }
+
+      return false;
+    }
+  });
+
+const mainAdminName =  localStorage.getItem("adminName");
 
 
   // const filteredData = mainData.filter((company) => {
@@ -2628,7 +2676,7 @@ function Leads() {
                       }}
                       className="results"
                     >
-                      {filteredData.length} results found
+                     {dataStatus + ":" } <b>{filteredData.length}</b> ,{dataStatus === "Unassigned" ? "Assigned" : "Unassigned"} : {anotherMainCount.length}
                     </div>
                   ) : (
                     <div></div>
@@ -2955,7 +3003,7 @@ function Leads() {
                          {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                           <td>{formatDateFinal(company["AssignDate"])}</td>
                           <td>
-                            <IconButton onClick={() => handleDeleteClick(company._id)}>
+                           {(mainAdminName === "Nimesh" || mainAdminName === "Ronak") &&  <> <IconButton onClick={() => handleDeleteClick(company._id)}>
                               <DeleteIcon
                                 style={{
                                   width: "14px",
@@ -2983,7 +3031,7 @@ function Leads() {
                               >
                                 Delete
                               </ ModeEditIcon>
-                            </IconButton>
+                            </IconButton> </>}
                             <Link to={`/admin/leads/${company._id}`}>
                               <IconButton>
                                 <IconEye

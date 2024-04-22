@@ -155,6 +155,7 @@ export default function AdminBookingForm({
         setLeadData((prevState) => ({
           ...prevState,
           bookingDate: formatDate(new Date()),
+          bdmType:"Close-by"
         }));
       } else if (Step2Status === true && Step3Status === false) {
         setCompleted({ 0: true, 1: true });
