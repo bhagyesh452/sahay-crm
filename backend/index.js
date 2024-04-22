@@ -4334,7 +4334,7 @@ app.post(
             .join(" , ");
           const visibility = newData.bookingSource !== "Other" && "none";
           const servicesHtmlContent = renderServices();
-          const recipients = [newData.bdeEmail, newData.bdmEmail, 'bookings@startupsahay.com'];
+          const recipients = [newData.bdeEmail, newData.bdmEmail, 'bookings@startupsahay.com','documents@startupsahay.com'];
 
           sendMail(
             recipients,
@@ -6564,7 +6564,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       newData.bdeEmail,
       newData.bdmEmail,
       "bookings@startupsahay.com",
-      // "nimesh@incscale.in",
+      "documents@startupsahay.com",
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
