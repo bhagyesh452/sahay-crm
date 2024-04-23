@@ -3024,7 +3024,7 @@ function EmployeePanel() {
                           </a>
                         </div>
                       </div>
-                      <div className="request" style={{ marginRight: "15px" }}>
+                      <div className="request" style={{ marginRight: "15px" , display:'none' }}>
                         <div className="btn-list">
                           <button
                             onClick={functionopenpopupNew}
