@@ -53,7 +53,7 @@ const processAttachments = (files, prefix) => {
       const mimeType = mime.lookup(file.originalname);
       if (mimeType) {
         attachments.push({
-          filename: `${prefix}${index + 1}.${mime.extension(mimeType)}`,
+          filename:`${file.originalname}`,
           content: file, // Assuming file is a buffer
         });
       } else {

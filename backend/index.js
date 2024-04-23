@@ -4311,7 +4311,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-              ${newData.services[i].firstPayment}
+                ₹ ${parseInt(newData.services[i].firstPayment).toLocaleString()}
             </div>
           </div>
         </div>
@@ -4331,7 +4331,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ${Number(newData.services[i].secondPayment).toFixed(2)} - ${
+                ₹ ${parseInt(newData.services[i].secondPayment).toLocaleString()} - ${
                 isNaN(new Date(newData.services[i].secondPaymentRemarks))
                   ? newData.services[i].secondPaymentRemarks
                   : `Payment On ${newData.services[i].secondPaymentRemarks}`
@@ -4357,7 +4357,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${
+                ₹ ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${
                 isNaN(new Date(newData.services[i].thirdPaymentRemarks))
                   ? newData.services[i].thirdPaymentRemarks
                   : `Payment On ${newData.services[i].thirdPaymentRemarks}`
@@ -4383,7 +4383,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ${Number(newData.services[i].fourthPayment).toFixed(2)} - ${
+                ₹ ${parseInt(newData.services[i].fourthPayment).toLocaleString()} - ${
                 isNaN(new Date(newData.services[i].fourthPaymentRemarks))
                   ? newData.services[i].fourthPaymentRemarks
                   : `Payment On ${newData.services[i].fourthPaymentRemarks}`
@@ -4544,7 +4544,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                      ${newData["incoDate"]}
+                      ${formatDate(newData["incoDate"])}
                   </div>
                 </div>
               </div>
@@ -4584,7 +4584,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                      ${newData.gstNumber}
+                      ${newData.gstNumber!=="" ? newData.gstNumber : "N/A"}
                   </div>
                 </div>
               </div>
@@ -4860,7 +4860,7 @@ app.post(
                           font-size: 12px;
                           padding: 5px 10px;
                         ">
-                      ₹ ${totalAmount.toFixed(2)}
+                      ₹ ${parseInt(totalAmount).toLocaleString()}
                     </div>
                   </div>
                 </div>
@@ -4880,7 +4880,7 @@ app.post(
                           font-size: 12px;
                           padding: 5px 10px;
                         ">
-                      ₹ ${receivedAmount.toFixed(2)}
+                      ₹ ${parseInt(receivedAmount).toLocaleString()}
                     </div>
                   </div>
     
@@ -4901,7 +4901,7 @@ app.post(
                           font-size: 12px;
                           padding: 5px 10px;
                         ">
-                     ₹ ${pendingAmount.toFixed(2)}
+                     ₹ ${parseInt(pendingAmount).toLocaleString()}
                     </div>
                   </div>
     
@@ -4944,7 +4944,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ${newData.extraNotes}
+                    ${newData.extraNotes!== "" ? newData.extraNotes : "N/A"}
                   </div>
                 </div>
               </div>
@@ -6685,9 +6685,6 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     // Send email to recipients
     const recipients = [
       newData.bdeEmail,
-      // 'shivangi@startupsahay.com',
-      // 'aakashseth452@gmail.com',
-      // 'bhagyeshparmar59@gmail.com'
       newData.bdmEmail,
       "bookings@startupsahay.com",
       "documents@startupsahay.com",
@@ -6812,7 +6809,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData["incoDate"]}
+                    ${formatDate(newData["incoDate"])}
                 </div>
               </div>
             </div>

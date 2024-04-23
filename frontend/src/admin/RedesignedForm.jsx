@@ -646,6 +646,18 @@ export default function RedesignedForm({
                 const secondPayment = Number(service.secondPayment);
                 const thirdPayment = Number(service.thirdPayment);
                 const fourthPayment = Number(service.fourthPayment);
+                if(service.secondPayment!==0 && service.secondPaymentRemarks === "" ){
+                  isValid = false;
+                  break;
+                }
+                if(service.thirdPayment!==0 && service.thirdPaymentRemarks === "" ){
+                  isValid = false;
+                  break;
+                }
+                if(service.fourthPayment!==0 && service.fourthPaymentRemarks === "" ){
+                  isValid = false;
+                  break;
+                }
                 // console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
                 if (
                   (service.paymentTerms !== "Full Advanced" &&
@@ -1355,23 +1367,32 @@ export default function RedesignedForm({
                               name="optional-remarks"
                               id="optional-remarks-2"
                             >
-                              <option value="" selected disabled>
+                               <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="After Application">
-                                After Application
+                                AFTER APPLICATION
+                              </option>
+                              <option value="AFTER CERTIFICATE">
+                                AFTER CERTIFICATE
+                              </option>
+                              <option value="AFTER APPROVAL">
+                                AFTER APPROVAL
+                              </option>
+                              <option value="AFTER SERVICE COMPLETION">
+                                AFTER SERVICE COMPLETION
                               </option>
                               <option value="At the time of Application">
-                                At the time of Application
+                               AT THE TIME OF APPLICATION
                               </option>
                               <option value="After Document">
-                                After Document
+                                AFTER DOCUMENT
                               </option>
                               <option value="Before Application">
-                                Before Application
+                                BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
-                                On Particular Date
+                                ON PARTICULAR DATE
                               </option>
                             </select>
                           </div>
@@ -1450,23 +1471,32 @@ export default function RedesignedForm({
                               name="optional-remarks"
                               id="optional-remarks-3"
                             >
-                              <option value="" selected disabled>
+                             <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="After Application">
-                                After Application
+                                AFTER APPLICATION
+                              </option>
+                              <option value="AFTER CERTIFICATE">
+                                AFTER CERTIFICATE
+                              </option>
+                              <option value="AFTER APPROVAL">
+                                AFTER APPROVAL
+                              </option>
+                              <option value="AFTER SERVICE COMPLETION">
+                                AFTER SERVICE COMPLETION
                               </option>
                               <option value="At the time of Application">
-                                At the time of Application
+                               AT THE TIME OF APPLICATION
                               </option>
                               <option value="After Document">
-                                After Document
+                                AFTER DOCUMENT
                               </option>
                               <option value="Before Application">
-                                Before Application
+                                BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
-                                On Particular Date
+                                ON PARTICULAR DATE
                               </option>
                             </select>
                           </div>
@@ -1539,23 +1569,32 @@ export default function RedesignedForm({
                               name="optional-remarks-4"
                               id="optional-remarks-4"
                             >
-                              <option value="" selected disabled>
+                               <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="After Application">
-                                After Application
+                                AFTER APPLICATION
+                              </option>
+                              <option value="AFTER CERTIFICATE">
+                                AFTER CERTIFICATE
+                              </option>
+                              <option value="AFTER APPROVAL">
+                                AFTER APPROVAL
+                              </option>
+                              <option value="AFTER SERVICE COMPLETION">
+                                AFTER SERVICE COMPLETION
                               </option>
                               <option value="At the time of Application">
-                                At the time of Application
+                               AT THE TIME OF APPLICATION
                               </option>
                               <option value="After Document">
-                                After Document
+                                AFTER DOCUMENT
                               </option>
                               <option value="Before Application">
-                                Before Application
+                                BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
-                                On Particular Date
+                                ON PARTICULAR DATE
                               </option>
                             </select>
                           </div>
@@ -2885,8 +2924,9 @@ export default function RedesignedForm({
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">
+
                                       <div className="form-label-data">
-                                        {leadData.bdmName}
+                                        {leadData.bdmName} - {leadData.bdmType}
                                       </div>
                                     </div>
                                   </div>
