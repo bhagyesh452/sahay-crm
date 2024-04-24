@@ -4568,26 +4568,7 @@ app.post(
                   </div>
                 </div>
               </div>
-              // <div style="display: flex; flex-wrap: wrap">
-              //   <div style="width: 25%">
-              //     <div style="
-              //           border: 1px solid #ccc;
-              //           font-size: 12px;
-              //           padding: 5px 10px;
-              //         ">
-              //       Company's GST:
-              //     </div>
-              //   </div>
-              //   <div style="width: 75%">
-              //     <div style="
-              //           border: 1px solid #ccc;
-              //           font-size: 12px;
-              //           padding: 5px 10px;
-              //         ">
-              //         ${newData.gstNumber!=="" ? newData.gstNumber : "N/A"}
-              //     </div>
-              //   </div>
-              // </div>
+             
             </div>
           </div>
           <!--Step One End-->
@@ -4736,7 +4717,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                       ${newData.bdmType} 
+                       ${newData.bdmType === "Close-by" ? "Closed-by" : "Supported-by"} 
                   </div>
                 </div>
               </div>
@@ -6855,26 +6836,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 </div>
               </div>
             </div>
-            // <div style="display: flex; flex-wrap: wrap">
-            //   <div style="width: 25%">
-            //     <div style="
-            //           border: 1px solid #ccc;
-            //           font-size: 12px;
-            //           padding: 5px 10px;
-            //         ">
-            //       Company's GST:
-            //     </div>
-            //   </div>
-            //   <div style="width: 75%">
-            //     <div style="
-            //           border: 1px solid #ccc;
-            //           font-size: 12px;
-            //           padding: 5px 10px;
-            //         ">
-            //         ${newData.gstNumber}
-            //     </div>
-            //   </div>
-            // </div>
+         
           </div>
         </div>
         <!--Step One End-->
@@ -7013,7 +6975,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                  BDM Email
+                  BDM Type
                 </div>
               </div>
               <div style="width: 75%">
