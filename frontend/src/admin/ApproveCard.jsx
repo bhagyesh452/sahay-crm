@@ -5,12 +5,23 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import SaveIcon from '@mui/icons-material/Save';
 import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
 
 function ApproveCard({ name, date, time }) {
   const [requestData, setRequestData] = useState([]);
+  const [editableCompany , setEditableCompany] = useState("");
+  const [companyObject , setCompanyObject] = useState({
+    "Company Name": "",
+        "Company Number": 0,
+        "Company Email": "",
+        "Company Incorporation Date  ": "", 
+        City: "",
+        State: "",
+  })
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [open, openchange] = useState(false);
   const functionopenpopup = () => {
@@ -115,6 +126,37 @@ function ApproveCard({ name, date, time }) {
       console.error('Error deleting data:', error);
     }
   };
+
+  const formatDateDeserving = (date) =>{
+    const formattedDate = new Date(date);
+    const returnableDate = `${formattedDate.getFullYear()}-${(formattedDate.getMonth() + 1).toString().padStart(2, '0')}-${formattedDate.getDate().toString().padStart(2, '0')}`;
+    return returnableDate;
+  }
+
+  const handleSaveCompany = async () => {
+ 
+    try {
+        const response = await axios.post(`${secretKey}/change-edit-request/${editableCompany}`, companyObject);
+        fetchApproveRequests();
+        setEditableCompany("");
+        setCompanyObject({
+          "Company Name": "",
+              "Company Number": 0,
+              "Company Email": "",
+              "Company Incorporation Date  ": "", 
+              City: "",
+              State: "",
+        })
+       
+        // Handle success response as needed
+    } catch (error) {
+        console.error("Error saving company:", error);
+        // Handle error response
+    }
+};
+
+
+  
   return (
     <div>
       <Box sx={{ minWidth: 275, width: "28vw" }}>
@@ -226,6 +268,7 @@ function ApproveCard({ name, date, time }) {
                   <th>State</th>
                   <th>Status</th>
                   <th>Remarks</th>
+                  <th>Edit</th>
                 </tr>
               </thead>
               {requestData.length === 0 ? (
@@ -272,17 +315,114 @@ function ApproveCard({ name, date, time }) {
                           background: "white",
                         }}
                       >
-                        {company["Company Name"]}
+
+                        {editableCompany !== company["Company Name"] ? company["Company Name"] : <input
+                            type="text"
+                            // value={company["Company Name"]}
+                          value = {companyObject["Company Name"]}
+                            placeholder="Search…"
+                            aria-label="Search in website"
+                            style={{border:'none'}}
+                            onChange={(e)=>{
+                              setCompanyObject({
+                                ...companyObject,
+                                "Company Name":e.target.value
+                              })
+                            }}
+                          /> }
+                        { }
                       </td>
-                      <td>{company["Company Number"]}</td>
-                      <td>{company["Company Email"]}</td>
+                      <td>{editableCompany !== company["Company Name"] ? company["Company Number"] : <input
+                            type="number"
+                            // value={company["Company Name"]}
+                          value = {companyObject["Company Number"]}
+                            placeholder="Search…"
+                            aria-label="Search in website"
+                            style={{border:'none'}}
+                            onChange={(e)=>{
+                              setCompanyObject({
+                                ...companyObject,
+                                "Company Number":e.target.value
+                              })
+                            }}
+                          /> }</td>
+                      <td>{editableCompany !== company["Company Name"] ? company["Company Email"] : <input
+                            type="text"
+                            // value={company["Company Name"]}
+                          value = {companyObject["Company Email"]}
+                            placeholder="Search…"
+                            aria-label="Search in website"
+                            style={{border:'none'}}
+                            onChange={(e)=>{
+                              setCompanyObject({
+                                ...companyObject,
+                                "Company Email":e.target.value
+                              })
+                            }}
+                          /> }</td>
                       <td>
-                        {formatDate(company["Company Incorporation Date  "])}
+                      {editableCompany !== company["Company Name"] ? formatDate(company["Company Incorporation Date  "]) : <input
+                            type="date"
+                            value={formatDateDeserving(companyObject["Company Incorporation Date  "])}                          
+                            placeholder="Search…"
+                            aria-label="Search in website"
+                            style={{border:'none'}}
+                            onChange={(e)=>{
+                              setCompanyObject({
+                                ...companyObject,
+                                "Company Incorporation Date  ": new Date(e.target.value)
+                              })
+                            }}
+                          /> }
                       </td>
-                      <td>{company["City"]}</td>
-                      <td>{company["State"]}</td>
+                      <td> {editableCompany !== company["Company Name"] ? company["City"] : <input
+                            type="text"
+                            // value={company["Company Name"]}
+                          value = {companyObject["City"]}
+                            placeholder="Search…"
+                            aria-label="Search in website"
+                            style={{border:'none'}}
+                            onChange={(e)=>{
+                              setCompanyObject({
+                                ...companyObject,
+                                "City":e.target.value
+                              })
+                            }}
+                          /> }</td>
+                      <td>{editableCompany !== company["Company Name"] ? company["State"] : <input
+                            type="text"
+                            // value={company["Company Name"]}
+                          value = {companyObject["State"]}
+                            placeholder="Search…"
+                            aria-label="Search in website"
+                            style={{border:'none'}}
+                            onChange={(e)=>{
+                              setCompanyObject({
+                                ...companyObject,
+                                "State":e.target.value
+                              })
+                            }}
+                          /> }</td>
                       <td>{company["Status"]}</td>
                       <td>{company["Remarks"]}</td>
+                      <td>
+                      <IconButton disabled={editableCompany === company["Company Name"]}>
+              <ModeEditIcon style={{height:'14px' , width:'14px'}} color="grey" onClick={()=>{
+                setEditableCompany(company["Company Name"])
+                setCompanyObject({
+                  "Company Name": company["Company Name"],
+                      "Company Number": company["Company Number"],
+                      "Company Email": company["Company Email"],
+                      "Company Incorporation Date  ": company["Company Incorporation Date  "], 
+                      City: company["City"],
+                      State: company.State,
+                })
+              }}/>             
+            </IconButton>
+            <IconButton onClick={handleSaveCompany} disabled={editableCompany !== company["Company Name"]}>
+              <SaveIcon style={{height:'14px' , width:'14px'}} color="yellow"/>
+            </IconButton>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

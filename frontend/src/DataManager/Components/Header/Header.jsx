@@ -12,7 +12,7 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 //import Notification from "./Notification";
 import Avatar from '@mui/material/Avatar';
 import axios from "axios";
-//import Bellicon from "./Bellicon";
+import Bellicon from "../../../admin/Bellicon.js";
 import io from 'socket.io-client';
 import { AiOutlineLogout } from "react-icons/ai";
 // import "./styles/header.css"
@@ -125,7 +125,7 @@ function Header({ name }) {
             </a>
           </h1>
           <div style={{ display: "flex", alignItems: "center" }} className="navbar-nav flex-row order-md-last">
-            {/* <Bellicon data={requestData} gdata = {requestGData} adata={mapArray}/> */}
+            <Bellicon data={requestData} gdata = {requestGData} adata={mapArray}/>
             <Avatar sx={{ width: 32, height: 32 }} />
             <div className="nav-item dropdown">
               <button

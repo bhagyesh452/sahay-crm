@@ -1147,7 +1147,7 @@ function EmployeePanel() {
     setSelectedOption(event.target.value);
   };
 
-  const handleSubmitData = (e) => {
+  const handleSubmitData = async(e) => {
     e.preventDefault();
 
     if (cname === "") {
@@ -1167,48 +1167,71 @@ function EmployeePanel() {
     } else if (directorNumberThird !== 0 && !/^\d{10}$/.test(directorNumberThird)) {
       Swal.fire("Third Director Number should be 10 digits");
     } else {
-      axios
-        .post(`${secretKey}/manual`, {
-          "Company Name": cname.toUpperCase().trim(),
-          "Company Number": cnumber,
-          "Company Email": cemail,
-          "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
-          City: city,
-          State: state,
-          ename: data.ename,
-          AssignDate: new Date(),
-          "Company Address": companyAddress,
-          "Director Name(First)": directorNameFirst,
-          "Director Number(First)": directorNumberFirst,
-          "Director Email(First)": directorEmailFirst,
-          "Director Name(Second)": directorNameSecond,
-          "Director Number(Second)": directorNumberSecond,
-          "Director Email(Second)": directorEmailSecond,
-          "Director Name(Third)": directorNameThird,
-          "Director Number(Third)": directorNumberThird,
-          "Director Email(Third)": directorEmailThird,
-          "UploadedBy": data.ename
-        })
-        .then((response) => {
-          console.log("response", response);
-          console.log("Data sent Successfully");
-          Swal.fire({
-            title: "Data Added!",
-            text: "Successfully added new Data!",
-            icon: "success",
-          });
-          fetchNewData();
-          closepopupNew();
-        })
-        .catch((error) => {
-          console.error("Error sending data:", error);
-          Swal.fire({
-            title: "This lead already exists in the Start-Up Sahay's database.",
-            text: "For further assistance, please contact the Data Analyst.",
-            html: `Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896`,
-          });
-          
+      const dataToSend = {
+        "Company Name": cname.toUpperCase().trim(),
+        "Company Number": cnumber,
+        "Company Email": cemail,
+        "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
+        City: city,
+        State: state,
+        ename: data.ename,
+        AssignDate: new Date(),
+        "Company Address": companyAddress,
+        "Director Name(First)": directorNameFirst,
+        "Director Number(First)": directorNumberFirst,
+        "Director Email(First)": directorEmailFirst,
+        "Director Name(Second)": directorNameSecond,
+        "Director Number(Second)": directorNumberSecond,
+        "Director Email(Second)": directorEmailSecond,
+        "Director Name(Third)": directorNameThird,
+        "Director Number(Third)": directorNumberThird,
+        "Director Email(Third)": directorEmailThird,
+        "UploadedBy": data.ename
+      }
+      await axios.post(`${secretKey}/requestCompanyData`, dataToSend).then((response) => {
+        console.log("response", response);
+        console.log("Data sent Successfully");
+        Swal.fire({
+          title: "Lead Request Sent!",
+          text: "Your Request has been sent to the Data Manager!",
+          html:'Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896', 
+          icon: "success",
         });
+        fetchNewData();
+        closepopupNew();
+      })
+      .catch((error) => {
+        console.error("Error sending data:", error);
+        Swal.fire({
+          title: "This lead already exists in the Start-Up Sahay's database.",
+          text: "For further assistance, please contact the Data Analyst.",
+          html: `Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896`,
+        });
+        
+      });
+      // axios
+      //   .post(`${secretKey}/manual`, {
+      //     "Company Name": cname.toUpperCase().trim(),
+      //     "Company Number": cnumber,
+      //     "Company Email": cemail,
+      //     "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
+      //     City: city,
+      //     State: state,
+      //     ename: data.ename,
+      //     AssignDate: new Date(),
+      //     "Company Address": companyAddress,
+      //     "Director Name(First)": directorNameFirst,
+      //     "Director Number(First)": directorNumberFirst,
+      //     "Director Email(First)": directorEmailFirst,
+      //     "Director Name(Second)": directorNameSecond,
+      //     "Director Number(Second)": directorNumberSecond,
+      //     "Director Email(Second)": directorEmailSecond,
+      //     "Director Name(Third)": directorNameThird,
+      //     "Director Number(Third)": directorNumberThird,
+      //     "Director Email(Third)": directorEmailThird,
+      //     "UploadedBy": data.ename
+      //   })
+     
     }
   };
 
@@ -1390,7 +1413,7 @@ function EmployeePanel() {
   //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
   // })
 
-  console.log("csv", csvdata);
+  
   const handleUploadData = async (e) => {
     const name = data.ename;
     const updatedCsvdata = csvdata.map((data) => ({
@@ -3024,7 +3047,7 @@ function EmployeePanel() {
                           </a>
                         </div>
                       </div>
-                      <div className="request" style={{ marginRight: "15px" , display:'none' }}>
+                      <div className="request" style={{ marginRight: "15px"  }}>
                         <div className="btn-list">
                           <button
                             onClick={functionopenpopupNew}

@@ -615,11 +615,19 @@ app.get("/api/specific-company/:companyId", async (req, res) => {
   }
 });
 app.post("/api/requestCompanyData", async (req, res) => {
-  //const csvData = req.body;
-  console.log("csv", csvData);
+  const csvData = req.body;
+  let dataArray = [];
+if (Array.isArray(csvData)) {
+    dataArray = csvData;
+} else if (typeof csvData === 'object' && csvData !== null) {
+    dataArray.push(csvData);
+} else {
+    // Handle invalid input
+    console.error('Invalid input: csvData must be an array or an object.');
+}
 
   try {
-    for (const employeeData of csvData) {
+    for (const employeeData of dataArray) {
       try {
         const employeeWithAssignData = {
           ...employeeData,
@@ -641,6 +649,24 @@ app.post("/api/requestCompanyData", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
     console.error("Error in bulk save:", error.message);
+  }
+});
+
+app.post('/api/change-edit-request/:companyName', async (req, res) => {
+  const companyName = req.params.companyName;
+  const companyObject = req.body;
+
+  try {
+      const updatedCompany = await CompanyRequestModel.findOneAndUpdate(
+          { "Company Name": companyName },
+          { $set: companyObject },
+          { new: true }
+      );
+
+      res.status(200).json(updatedCompany);
+  } catch (error) {
+      console.error("Error updating company:", error);
+      res.status(500).json({ error: "Error updating company" });
   }
 });
 

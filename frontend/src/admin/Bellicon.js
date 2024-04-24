@@ -273,7 +273,7 @@ export default function Bellicon({data , gdata,adata}) {
               ))}
               </Stack>
               <div style={{ margin: "3px 0px" }} className="foot">
-          <Link to={"/admin/notification"}>
+          <Link to={"/dataManager/notification"}>
             <div style={{ minWidth: "20vw", textAlign: "center" }}>See All</div>
           </Link>
         </div>
