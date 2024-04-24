@@ -4250,7 +4250,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-              ${newData.services[i].totalPaymentWGST}
+                ₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()}
             </div>
           </div>
         </div>
