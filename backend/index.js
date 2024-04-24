@@ -615,11 +615,19 @@ app.get("/api/specific-company/:companyId", async (req, res) => {
   }
 });
 app.post("/api/requestCompanyData", async (req, res) => {
-  //const csvData = req.body;
-  console.log("csv", csvData);
+  const csvData = req.body;
+  let dataArray = [];
+if (Array.isArray(csvData)) {
+    dataArray = csvData;
+} else if (typeof csvData === 'object' && csvData !== null) {
+    dataArray.push(csvData);
+} else {
+    // Handle invalid input
+    console.error('Invalid input: csvData must be an array or an object.');
+}
 
   try {
-    for (const employeeData of csvData) {
+    for (const employeeData of dataArray) {
       try {
         const employeeWithAssignData = {
           ...employeeData,
@@ -641,6 +649,24 @@ app.post("/api/requestCompanyData", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
     console.error("Error in bulk save:", error.message);
+  }
+});
+
+app.post('/api/change-edit-request/:companyName', async (req, res) => {
+  const companyName = req.params.companyName;
+  const companyObject = req.body;
+
+  try {
+      const updatedCompany = await CompanyRequestModel.findOneAndUpdate(
+          { "Company Name": companyName },
+          { $set: companyObject },
+          { new: true }
+      );
+
+      res.status(200).json(updatedCompany);
+  } catch (error) {
+      console.error("Error updating company:", error);
+      res.status(500).json({ error: "Error updating company" });
   }
 });
 
@@ -4228,7 +4254,7 @@ app.post(
                 newData.services[i].serviceName === "Start Up Certificate"
                   ? newData.services[i].withDSC
                     ? "Start Up Certificate With DSC"
-                    : "Start Up Certificate"
+                    : "Start Up Certificate Without DCS"
                   : newData.services[i].serviceName
               }
             </div>
@@ -4250,7 +4276,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-              ${newData.services[i].totalPaymentWGST}
+                ₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()}
             </div>
           </div>
         </div>
@@ -4291,7 +4317,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-             ${newData.services[i].paymentTerms}
+                ${newData.services[i].paymentTerms === "Full Advanced" ? "Full Advanced" : "Part-Payment"}
             </div>
           </div>
         </div>
@@ -4311,7 +4337,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-              ${newData.services[i].firstPayment}
+                ₹ ${parseInt(newData.services[i].firstPayment).toLocaleString()}
             </div>
           </div>
         </div>
@@ -4331,7 +4357,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ${Number(newData.services[i].secondPayment).toFixed(2)} - ${
+                ₹ ${parseInt(newData.services[i].secondPayment).toLocaleString()} - ${
                 isNaN(new Date(newData.services[i].secondPaymentRemarks))
                   ? newData.services[i].secondPaymentRemarks
                   : `Payment On ${newData.services[i].secondPaymentRemarks}`
@@ -4357,7 +4383,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${
+                ₹ ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${
                 isNaN(new Date(newData.services[i].thirdPaymentRemarks))
                   ? newData.services[i].thirdPaymentRemarks
                   : `Payment On ${newData.services[i].thirdPaymentRemarks}`
@@ -4383,7 +4409,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ${Number(newData.services[i].fourthPayment).toFixed(2)} - ${
+                ₹ ${parseInt(newData.services[i].fourthPayment).toLocaleString()} - ${
                 isNaN(new Date(newData.services[i].fourthPaymentRemarks))
                   ? newData.services[i].fourthPaymentRemarks
                   : `Payment On ${newData.services[i].fourthPaymentRemarks}`
@@ -4544,7 +4570,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                      ${newData["incoDate"]}
+                      ${formatDate(newData["incoDate"])}
                   </div>
                 </div>
               </div>
@@ -4555,7 +4581,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    Company's PAN:
+                    Company's PAN/GST Number:
                   </div>
                 </div>
                 <div style="width: 75%">
@@ -4568,26 +4594,7 @@ app.post(
                   </div>
                 </div>
               </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Company's GST:
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData.gstNumber}
-                  </div>
-                </div>
-              </div>
+             
             </div>
           </div>
           <!--Step One End-->
@@ -4619,6 +4626,26 @@ app.post(
                   position: relative;
                   margin-top: 15px;
                 ">
+                <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                   Booking Date
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.bookingDate}
+                  </div>
+                </div>
+              </div>
               <div style="display: flex; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
@@ -4675,7 +4702,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                      ${newData.bdmName} ( ${newData.bdmType} )
+                      ${newData.bdmName} 
                   </div>
                 </div>
               </div>
@@ -4707,7 +4734,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                   Booking Date
+                    BDM Type
                   </div>
                 </div>
                 <div style="width: 75%">
@@ -4716,10 +4743,12 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                      ${newData.bookingDate}
+                       ${newData.bdmType === "Close-by" ? "Closed-by" : "Supported-by"} 
                   </div>
                 </div>
               </div>
+
+              
               <div style="display: flex; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
@@ -4860,7 +4889,7 @@ app.post(
                           font-size: 12px;
                           padding: 5px 10px;
                         ">
-                      ₹ ${totalAmount.toFixed(2)}
+                      ₹ ${parseInt(totalAmount).toLocaleString()}
                     </div>
                   </div>
                 </div>
@@ -4880,7 +4909,7 @@ app.post(
                           font-size: 12px;
                           padding: 5px 10px;
                         ">
-                      ₹ ${receivedAmount.toFixed(2)}
+                      ₹ ${parseInt(receivedAmount).toLocaleString()}
                     </div>
                   </div>
     
@@ -4901,7 +4930,7 @@ app.post(
                           font-size: 12px;
                           padding: 5px 10px;
                         ">
-                     ₹ ${pendingAmount.toFixed(2)}
+                     ₹ ${parseInt(pendingAmount).toLocaleString()}
                     </div>
                   </div>
     
@@ -4944,7 +4973,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ${newData.extraNotes}
+                    ${newData.extraNotes!== "" ? newData.extraNotes : "N/A"}
                   </div>
                 </div>
               </div>
@@ -6487,10 +6516,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 padding: 5px 10px;
               ">
             ${
-              newData.services[i].serviceName === "Start Up Certificate"
+              newData.services[i].serviceName === "Start-Up India Certificate"
                 ? newData.services[i].withDSC
-                  ? "Start Up Certificate With DSC"
-                  : "Start Up Certificate"
+                  ? "Start-Up India Certificate With DSC"
+                  : "Start-Up India Certificate Without DSC"
                 : newData.services[i].serviceName
             }
           </div>
@@ -6512,7 +6541,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].totalPaymentWGST}
+              ₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString() }
           </div>
         </div>
       </div>
@@ -6553,7 +6582,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-           ${newData.services[i].paymentTerms}
+           ${newData.services[i].paymentTerms === "Full Advanced" ? "Full Advanced" : "Part-Payment"}
           </div>
         </div>
       </div>
@@ -6573,7 +6602,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].firstPayment}
+              ₹ ${parseInt(newData.services[i].firstPayment).toLocaleString()}
           </div>
         </div>
       </div>
@@ -6593,7 +6622,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ${Number(newData.services[i].secondPayment).toFixed(2)} - ${
+              ₹ ${parseInt(newData.services[i].secondPayment).toLocaleString()} - ${
           isNaN(new Date(newData.services[i].secondPaymentRemarks))
             ? newData.services[i].secondPaymentRemarks
             : `Payment On ${newData.services[i].secondPaymentRemarks}`
@@ -6619,7 +6648,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ${Number(newData.services[i].thirdPayment).toFixed(2)} - ${
+              ₹ ${parseInt(newData.services[i].thirdPayment).toLocaleString()} - ${
           isNaN(new Date(newData.services[i].thirdPaymentRemarks))
             ? newData.services[i].thirdPaymentRemarks
             : `Payment On ${newData.services[i].thirdPaymentRemarks}`
@@ -6645,7 +6674,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ${Number(newData.services[i].fourthPayment).toFixed(2)} - ${
+              ₹ ${parseInt(newData.services[i].fourthPayment).toLocaleString()} - ${
           isNaN(new Date(newData.services[i].fourthPaymentRemarks))
             ? newData.services[i].fourthPaymentRemarks
             : `Payment On ${newData.services[i].fourthPaymentRemarks}`
@@ -6685,12 +6714,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     // Send email to recipients
     const recipients = [
       newData.bdeEmail,
-      // 'shivangi@startupsahay.com',
-      // 'aakashseth452@gmail.com',
-      // 'bhagyeshparmar59@gmail.com'
       newData.bdmEmail,
       "bookings@startupsahay.com",
       "documents@startupsahay.com",
+      
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -6812,7 +6839,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData["incoDate"]}
+                    ${formatDate(newData["incoDate"])}
                 </div>
               </div>
             </div>
@@ -6823,7 +6850,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                  Company's PAN:
+                  Company's PAN/GST Number:
                 </div>
               </div>
               <div style="width: 75%">
@@ -6836,26 +6863,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 </div>
               </div>
             </div>
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  Company's GST:
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData.gstNumber}
-                </div>
-              </div>
-            </div>
+         
           </div>
         </div>
         <!--Step One End-->
@@ -6886,6 +6894,26 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 position: relative;
                 margin-top: 15px;
               ">
+              <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                 Booking Date
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.bookingDate}
+                </div>
+              </div>
+            </div>
             <div style="display: flex; flex-wrap: wrap">
               <div style="width: 25%">
                 <div style="
@@ -6942,7 +6970,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData.bdmName}( ${newData.bdmType} )
+                    ${newData.bdmName}
                 </div>
               </div>
             </div>
@@ -6974,7 +7002,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                 Booking Date
+                  BDM Type
                 </div>
               </div>
               <div style="width: 75%">
@@ -6983,10 +7011,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData.bookingDate}
+                    ${newData.bdmType === "Close-by" ? "Closed-by" : "Supported-by"}
                 </div>
               </div>
             </div>
+           
             <div style="display: flex; flex-wrap: wrap">
               <div style="width: 25%">
                 <div style="
@@ -7126,7 +7155,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ₹ ${totalAmount.toFixed(2)}
+                    ₹ ${parseInt(totalAmount).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -7146,7 +7175,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ₹ ${receivedAmount.toFixed(2)}
+                    ₹ ${parseInt(receivedAmount).toLocaleString()}
                   </div>
                 </div>
 
@@ -7167,7 +7196,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                   ₹ ${pendingAmount.toFixed(2)}
+                   ₹ ${parseInt(pendingAmount).toLocaleString()}
                   </div>
                 </div>
 
@@ -7538,11 +7567,15 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{Company Number}}", newData["Company Number"]);
     
     //   console.log("This is html file reading:-", filledHtml);
-    const pdfFilePath = `./GeneratedDocs/foo.pdf`;
+    const pdfFilePath = `./GeneratedDocs/${newData['Company Name']}.pdf`;
 
 
     pdf
-      .create(filledHtml, { format: "Letter" })
+      .create(filledHtml, { format: "Letter" , childProcessOptions:{
+        env:{
+          OPENSSL_CONF: './dev/null',
+        }
+      }})
       .toFile(pdfFilePath, async (err, response) => {
         if (err) {
           console.error("Error generating PDF:", err);

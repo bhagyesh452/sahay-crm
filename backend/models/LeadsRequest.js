@@ -37,7 +37,6 @@ const CompanySchema = new mongoose.Schema({
   Status: {
     type: String,
     default: "Untouched",
-    required:true
   },
   Remarks: {
     type: String,

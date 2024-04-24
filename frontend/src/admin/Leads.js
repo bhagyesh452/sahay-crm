@@ -2369,13 +2369,13 @@ const mainAdminName =  localStorage.getItem("adminName");
           </div>
           <div>
             <IconButton onClick={() => { setIsEditProjection(true) }}>
-              < ModeEditIcon color="grey"
+              <ModeEditIcon color="grey"
                 style={{
                   width: "20px",
                   height: "20px",
                 }}
               >
-              </ ModeEditIcon>
+              </ModeEditIcon>
             </IconButton>
             <IconButton onClick={functioncloseModifyPopup}>
               <CloseIcon color="grey"></CloseIcon>

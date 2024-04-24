@@ -1842,7 +1842,7 @@ let isValid = true;
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="pan">
-                                        Company's PAN:{" "}
+                                        Company's PAN/GST:{" "}
                                         {
                                           <span style={{ color: "red" }}>
                                             *
@@ -1852,7 +1852,7 @@ let isValid = true;
                                       <input
                                         type="text"
                                         className="form-control mt-1"
-                                        placeholder="Enter Company's PAN"
+                                        placeholder="Enter Company's PAN/GST"
                                         id="pan"
                                         value={leadData.panNumber}
                                         onChange={(e) => {
@@ -1868,7 +1868,7 @@ let isValid = true;
                                       />
                                     </div>
                                   </div>
-                                  <div className="col-sm-4">
+                                  {/* <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="gst">Company's GST:</label>
                                       <input
@@ -1888,7 +1888,7 @@ let isValid = true;
                                         }
                                       />
                                     </div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </form>
                             </div>
@@ -2783,7 +2783,7 @@ let isValid = true;
                                   <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
-                                        <b>Company's PAN:</b>
+                                        <b>Company's PAN/GST Number:</b>
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">
@@ -2794,7 +2794,7 @@ let isValid = true;
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0">
+                                  {/* <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
                                         <b>Company's GST:</b>
@@ -2807,7 +2807,7 @@ let isValid = true;
                                           : "-"}
                                       </div>
                                     </div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                               <div className="stepTWOPreview">

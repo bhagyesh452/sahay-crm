@@ -47,6 +47,7 @@ import ManagerBookings from "./DataManager/Dashboard/ManageLeads/ManagerBookings
 import EmployeeTeamLeads from "./employeeComp/EmployeeTeamLeads.jsx";
 import AdminEmployeeLeads from "./admin/AdminEmployeeLeads.jsx";
 import AdminEmployeeTeamLeads from "./admin/AdminEmployeeTeamLeads.jsx";
+import NotificationDM from "./DataManager/Dashboard/ManageLeads/NotificationDM.jsx";
 
 
 
@@ -114,6 +115,10 @@ function App() {
           <Route path="/datamanager/employees" element={<DataManager_Employees/>}></Route>
           <Route path="/datamanager/employeeLeads/:id" element={<EmployeeLeads/>}></Route>
           <Route path="/datamanager/bookings" element={<ManagerBookings/>}></Route>
+          <Route
+                path="/datamanager/notification"
+                element={<NotificationDM />}
+              ></Route>
 
           
           
