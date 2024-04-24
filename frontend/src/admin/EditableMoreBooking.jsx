@@ -1875,7 +1875,7 @@ export default function EditableMoreBooking({
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="pan">
-                                        Company's PAN:{" "}
+                                        Company's PAN/GST Number:{" "}
                                         {
                                           <span style={{ color: "red" }}>
                                             *
@@ -1901,7 +1901,7 @@ export default function EditableMoreBooking({
                                       />
                                     </div>
                                   </div>
-                                  <div className="col-sm-4">
+                                  {/* <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="gst">Company's GST:</label>
                                       <input
@@ -1921,7 +1921,7 @@ export default function EditableMoreBooking({
                                         }
                                       />
                                     </div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </form>
                             </div>
@@ -2814,7 +2814,7 @@ export default function EditableMoreBooking({
                                   <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
-                                        <b>Company's PAN:</b>
+                                        <b>Company's PAN/GST Number:</b>
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">
@@ -2825,7 +2825,7 @@ export default function EditableMoreBooking({
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0">
+                                  {/* <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
                                         <b>Company's GST:</b>
@@ -2838,7 +2838,7 @@ export default function EditableMoreBooking({
                                           : "-"}
                                       </div>
                                     </div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                               <div className="stepTWOPreview">
@@ -2977,8 +2977,7 @@ export default function EditableMoreBooking({
                                         </div>
                                       </div>
                                       {/* <!-- Optional --> */}
-                                      {obj.serviceName ===
-                                        "Start-Up India Certificate" && (
+                                      {obj.serviceName === "Start-Up India Certificate" && (
                                         <div className="row m-0">
                                           <div className="col-sm-3 p-0">
                                             <div className="form-label-name">
@@ -3003,10 +3002,10 @@ export default function EditableMoreBooking({
                                         </div>
                                         <div className="col-sm-9 p-0">
                                           <div className="form-label-data">
-                                            {obj.totalPaymentWGST !== undefined
-                                              ? Number(
+                                          ₹ {obj.totalPaymentWGST !== undefined
+                                              ? parseInt(
                                                   obj.totalPaymentWGST
-                                                ).toFixed(2)
+                                                ).toLocaleString()
                                               : "0"}
                                           </div>
                                         </div>
@@ -3047,9 +3046,9 @@ export default function EditableMoreBooking({
                                             </div>
                                             <div className="col-sm-9 p-0">
                                               <div className="form-label-data">
-                                                {Number(
+                                              ₹ {parseInt(
                                                   obj.firstPayment
-                                                ).toFixed(2)}
+                                                ).toLocaleString()}
                                               </div>
                                             </div>
                                           </div>
@@ -3061,9 +3060,9 @@ export default function EditableMoreBooking({
                                             </div>
                                             <div className="col-sm-9 p-0">
                                               <div className="form-label-data"  style={{textTransform:"uppercase"}}>
-                                                {Number(
+                                              ₹ {parseInt(
                                                   obj.secondPayment
-                                                ).toFixed(2)}{" "}
+                                                ).toLocaleString()}{" "}
                                                 -{" "}
                                                 {isNaN(
                                                   new Date(
@@ -3084,9 +3083,9 @@ export default function EditableMoreBooking({
                                               </div>
                                               <div className="col-sm-9 p-0">
                                                 <div className="form-label-data">
-                                                  {Number(
+                                                ₹ {parseInt(
                                                     obj.thirdPayment
-                                                  ).toFixed(2)}{" "}
+                                                  ).toLocaleString()}{" "}
                                                   -{" "}
                                                   {isNaN(
                                                     new Date(
@@ -3108,9 +3107,9 @@ export default function EditableMoreBooking({
                                               </div>
                                               <div className="col-sm-9 p-0">
                                                 <div className="form-label-data"  style={{textTransform:"uppercase"}}>
-                                                  {Number(
+                                                  {parseInt(
                                                     obj.fourthPayment
-                                                  ).toFixed(2)}{" "}
+                                                  ).toLocaleString()}{" "}
                                                   -{" "}
                                                   {isNaN(
                                                     new Date(
@@ -3164,14 +3163,14 @@ export default function EditableMoreBooking({
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
                                             ₹{" "}
-                                            {Number(
+                                            {parseInt(
                                               leadData.services.reduce(
                                                 (acc, curr) =>
                                                   acc +
                                                   Number(curr.totalPaymentWGST),
                                                 0
                                               )
-                                            ).toFixed(2)}
+                                            ).toLocaleString()}
                                           </div>
                                         </div>
                                       </div>
@@ -3212,7 +3211,7 @@ export default function EditableMoreBooking({
                                         <div className="col-sm-8 p-0">
                                           <div className="form-label-data">
                                             ₹{" "}
-                                            {leadData.services
+                                            {parseInt(leadData.services
                                             .reduce(
                                               (total, service) =>
                                                 service.paymentTerms ===
@@ -3226,8 +3225,8 @@ export default function EditableMoreBooking({
                                                       service.firstPayment
                                                     ),
                                               0
-                                            )
-                                            .toFixed(2)}
+                                            ))
+                                            .toLocaleString()}
                                           </div>
                                         </div>
                                       </div>

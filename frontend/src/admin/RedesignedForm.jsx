@@ -1919,7 +1919,7 @@ export default function RedesignedForm({
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="pan">
-                                        Company's PAN:{" "}
+                                        Company's PAN/GST NUMBER:{" "}
                                         {
                                           <span style={{ color: "red" }}>
                                             *
@@ -1945,7 +1945,7 @@ export default function RedesignedForm({
                                       />
                                     </div>
                                   </div>
-                                  <div className="col-sm-4">
+                                  {/* <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="gst">Company's GST:</label>
                                       <input
@@ -1965,7 +1965,7 @@ export default function RedesignedForm({
                                         }
                                       />
                                     </div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </form>
                             </div>
@@ -2858,7 +2858,7 @@ export default function RedesignedForm({
                                   <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
-                                        <b>Company's PAN:</b>
+                                        <b>Company's PAN/GST Number:</b>
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">
@@ -2869,7 +2869,7 @@ export default function RedesignedForm({
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0">
+                                  {/* <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
                                         <b>Company's GST:</b>
@@ -2882,7 +2882,7 @@ export default function RedesignedForm({
                                           : "-"}
                                       </div>
                                     </div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                               <div className="stepTWOPreview">

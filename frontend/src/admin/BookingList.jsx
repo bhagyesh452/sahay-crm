@@ -797,7 +797,7 @@ function BookingList() {
                             </div>
                           </div>
                           <div className="row m-0 bdr-btm-eee">
-                            <div className="col-lg-3 col-sm-6 p-0 align-self-stretch">
+                            <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
                               <div class="row m-0 h-100">
                                 <div class="col-sm-6 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_h h-100">
@@ -840,11 +840,11 @@ function BookingList() {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-lg-2 col-sm-6 p-0 align-self-stretch">
+                            <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
                               <div class="row m-0 h-100">
                                 <div class="col-sm-5 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                    PAN
+                                    PAN/GST
                                   </div>
                                 </div>
                                 <div class="col-sm-7 align-self-stretch p-0">
@@ -860,7 +860,7 @@ function BookingList() {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-lg-3 col-sm-6 p-0 align-self-stretch">
+                            {/* <div className="col-lg-3 col-sm-6 p-0 align-self-stretch">
                               <div class="row m-0 h-100">
                                 <div class="col-sm-4 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_h bdr-left-eee h-100">
@@ -879,7 +879,7 @@ function BookingList() {
                                   </div>
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </div>
@@ -966,7 +966,7 @@ function BookingList() {
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       <span>
                                         <i>  {currentLeadform &&
-                                        currentLeadform.bdmType}</i>
+                                        currentLeadform.bdmType === "Close-by" ? "Closed-by" : "Supported-by"}</i>
                                       </span>{" "}
                                       {currentLeadform &&
                                         currentLeadform.bdmName}
@@ -1698,7 +1698,7 @@ function BookingList() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             <span>
-                                              <i>Support By</i>
+                                              <i>{objMain.bdmType === "Close-by" ? "Closed-by" : "Supported-by"}</i>
                                             </span>{" "}
                                             {objMain.bdmName}
                                           </div>

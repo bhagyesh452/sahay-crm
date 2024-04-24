@@ -1694,7 +1694,50 @@ today.setDate(boom.getDate() - 1);
   }
 
 
+  const currentYear = new Date().getFullYear();
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const currentMonth = monthNames[new Date().getMonth()];
 
+  const functionGetAmount = () => {
+    if (data.length===0) {
+      return 0; // Return 0 if data is falsy
+    }
+  
+    const object = data;
+    const targetDetails = object.targetDetails;
+  
+    if (targetDetails.length === 0) {
+      return 0; // Return 0 if targetDetails array is empty
+    }
+  
+    const foundObject = targetDetails.find(
+      (item) => parseInt(item.year) === currentYear && item.month === currentMonth
+    );
+  
+    if (!foundObject) {
+      return 0; // Return 0 if no matching object is found
+    }
+  
+    const amount = parseInt(foundObject.amount);
+    totalTargetAmount += amount; // Increment totalTargetAmount by amount
+  
+    
+    return amount;
+  };
+  
 
 
   return (
@@ -2021,7 +2064,7 @@ today.setDate(boom.getDate() - 1);
                   {/* <CiCalendar style={{ width: "50px", height: "50px" }} /> */}
                 </div>
                 <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class=" mb-3 me-2">₹ {functionCalculateTotalRevenue().toLocaleString()}</div>
+                  <div style={{fontSize:'47px'}} class=" mb-3 me-2">₹ {functionGetAmount().toLocaleString()}</div>
                   <div class="me-auto">
                     {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
 
@@ -2074,7 +2117,7 @@ today.setDate(boom.getDate() - 1);
                   /> */}
                 </div>
                 <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class="mb-0 me-2"> {(functionCalculateAchievedRevenue()/functionCalculateTotalRevenue() * 100).toFixed(2)} %</div>
+                  <div style={{fontSize:'47px'}} class="mb-0 me-2"> {(functionCalculateAchievedRevenue()/functionGetAmount() * 100).toFixed(2)} %</div>
                   <div class="me-auto">
                     <span class="text-green d-inline-flex align-items-center lh-1">
                      

@@ -4228,7 +4228,7 @@ app.post(
                 newData.services[i].serviceName === "Start Up Certificate"
                   ? newData.services[i].withDSC
                     ? "Start Up Certificate With DSC"
-                    : "Start Up Certificate"
+                    : "Start Up Certificate Without DCS"
                   : newData.services[i].serviceName
               }
             </div>
@@ -4291,7 +4291,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-             ${newData.services[i].paymentTerms}
+                ${newData.services[i].paymentTerms === "Full Advanced" ? "Full Advanced" : "Part-Payment"}
             </div>
           </div>
         </div>
@@ -4555,7 +4555,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    Company's PAN:
+                    Company's PAN/GST Number:
                   </div>
                 </div>
                 <div style="width: 75%">
@@ -4568,26 +4568,26 @@ app.post(
                   </div>
                 </div>
               </div>
-              <div style="display: flex; flex-wrap: wrap">
-                <div style="width: 25%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                    Company's GST:
-                  </div>
-                </div>
-                <div style="width: 75%">
-                  <div style="
-                        border: 1px solid #ccc;
-                        font-size: 12px;
-                        padding: 5px 10px;
-                      ">
-                      ${newData.gstNumber!=="" ? newData.gstNumber : "N/A"}
-                  </div>
-                </div>
-              </div>
+              // <div style="display: flex; flex-wrap: wrap">
+              //   <div style="width: 25%">
+              //     <div style="
+              //           border: 1px solid #ccc;
+              //           font-size: 12px;
+              //           padding: 5px 10px;
+              //         ">
+              //       Company's GST:
+              //     </div>
+              //   </div>
+              //   <div style="width: 75%">
+              //     <div style="
+              //           border: 1px solid #ccc;
+              //           font-size: 12px;
+              //           padding: 5px 10px;
+              //         ">
+              //         ${newData.gstNumber!=="" ? newData.gstNumber : "N/A"}
+              //     </div>
+              //   </div>
+              // </div>
             </div>
           </div>
           <!--Step One End-->
@@ -4619,6 +4619,26 @@ app.post(
                   position: relative;
                   margin-top: 15px;
                 ">
+                <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                   Booking Date
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.bookingDate}
+                  </div>
+                </div>
+              </div>
               <div style="display: flex; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
@@ -4675,7 +4695,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                      ${newData.bdmName} ( ${newData.bdmType} )
+                      ${newData.bdmName} 
                   </div>
                 </div>
               </div>
@@ -4707,7 +4727,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                   Booking Date
+                    BDM Type
                   </div>
                 </div>
                 <div style="width: 75%">
@@ -4716,10 +4736,12 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                      ${newData.bookingDate}
+                       ${newData.bdmType} 
                   </div>
                 </div>
               </div>
+
+              
               <div style="display: flex; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
@@ -6490,7 +6512,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
               newData.services[i].serviceName === "Start-Up India Certificate"
                 ? newData.services[i].withDSC
                   ? "Start-Up India Certificate With DSC"
-                  : "Start-Up India Certificate"
+                  : "Start-Up India Certificate Without DSC"
                 : newData.services[i].serviceName
             }
           </div>
@@ -6512,7 +6534,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${newData.services[i].totalPaymentWGST }
+            ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString() }
           </div>
         </div>
       </div>
@@ -6553,7 +6575,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-           ${newData.services[i].paymentTerms}
+           ${newData.services[i].paymentTerms === "Full Advanced" ? "Full Advanced" : "Part-Payment"}
           </div>
         </div>
       </div>
@@ -6820,7 +6842,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                  Company's PAN:
+                  Company's PAN/GST Number:
                 </div>
               </div>
               <div style="width: 75%">
@@ -6833,26 +6855,26 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 </div>
               </div>
             </div>
-            <div style="display: flex; flex-wrap: wrap">
-              <div style="width: 25%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                  Company's GST:
-                </div>
-              </div>
-              <div style="width: 75%">
-                <div style="
-                      border: 1px solid #ccc;
-                      font-size: 12px;
-                      padding: 5px 10px;
-                    ">
-                    ${newData.gstNumber}
-                </div>
-              </div>
-            </div>
+            // <div style="display: flex; flex-wrap: wrap">
+            //   <div style="width: 25%">
+            //     <div style="
+            //           border: 1px solid #ccc;
+            //           font-size: 12px;
+            //           padding: 5px 10px;
+            //         ">
+            //       Company's GST:
+            //     </div>
+            //   </div>
+            //   <div style="width: 75%">
+            //     <div style="
+            //           border: 1px solid #ccc;
+            //           font-size: 12px;
+            //           padding: 5px 10px;
+            //         ">
+            //         ${newData.gstNumber}
+            //     </div>
+            //   </div>
+            // </div>
           </div>
         </div>
         <!--Step One End-->
@@ -6883,6 +6905,26 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 position: relative;
                 margin-top: 15px;
               ">
+              <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                 Booking Date
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.bookingDate}
+                </div>
+              </div>
+            </div>
             <div style="display: flex; flex-wrap: wrap">
               <div style="width: 25%">
                 <div style="
@@ -6939,7 +6981,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData.bdmName}( ${newData.bdmType} )
+                    ${newData.bdmName}
                 </div>
               </div>
             </div>
@@ -6971,7 +7013,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                 Booking Date
+                  BDM Email
                 </div>
               </div>
               <div style="width: 75%">
@@ -6980,10 +7022,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData.bookingDate}
+                    ${newData.bdmType === "Close-by" ? "Closed-by" : "Supported-by"}
                 </div>
               </div>
             </div>
+           
             <div style="display: flex; flex-wrap: wrap">
               <div style="width: 25%">
                 <div style="

@@ -194,7 +194,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                 <div class="row m-0">
                   <div class="col-sm-6 align-self-stretc p-0">
                     <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                      PAN No.
+                      PAN/GST No.
                     </div>
                   </div>
                   <div class="col-sm-6 align-self-stretc p-0">
@@ -204,7 +204,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                   </div>
                 </div>
               </div>
-              <div className="col-lg-3 col-sm-6">
+              {/* <div className="col-lg-3 col-sm-6">
                 <div class="row m-0">
                   <div class="col-sm-5 align-self-stretc p-0">
                     <div class="booking_inner_dtl_h bdr-left-eee h-100">
@@ -219,7 +219,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
