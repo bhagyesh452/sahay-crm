@@ -311,7 +311,7 @@ function Team() {
         }
     };
 
-    console.log("bdeFields", bdeFields.length)
+    //console.log("bdeFields", bdeFields.length)
 
     const closeTeamDetails = () => {
         setopenTeamDetails(false)

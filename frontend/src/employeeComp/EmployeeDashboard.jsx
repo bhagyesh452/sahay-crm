@@ -14,8 +14,8 @@ import Select from "react-select";
 import EditIcon from "@mui/icons-material/Edit";
 import { CiSearch } from "react-icons/ci";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import ClipLoader from "react-spinners/ClipLoader";
 import AddCircle from "@mui/icons-material/AddCircle.js";
@@ -24,26 +24,30 @@ import io from "socket.io-client";
 import Nodata from "../components/Nodata";
 import { RiEditCircleFill } from "react-icons/ri";
 import { IoClose } from "react-icons/io5";
-import Calendar from '@mui/icons-material/Event';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-import { SingleInputDateRangeField } from '@mui/x-date-pickers-pro/SingleInputDateRangeField';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import moment from 'moment'
-import { StaticDateRangePicker } from '@mui/x-date-pickers-pro/StaticDateRangePicker';
-import dayjs from 'dayjs';
-
+import Calendar from "@mui/icons-material/Event";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
+import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
+import { GrDocumentStore } from "react-icons/gr";
+import { CiCalendar } from "react-icons/ci";
+import { HiMiniCurrencyRupee } from "react-icons/hi2";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import moment from "moment";
+import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
+import dayjs from "dayjs";
 
 function EmployeeDashboard() {
   const { userId } = useParams();
   const [data, setData] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [projectingCompany, setProjectingCompany] = useState("");
-  const [showBookingDate, setShowBookingDate] = useState(false)
+  const [showBookingDate, setShowBookingDate] = useState(false);
   const [startDateAnother, setStartDateAnother] = useState(new Date());
   const [endDateAnother, setEndDateAnother] = useState(new Date());
-  const [startDateTotalSummary, setStartDateTotalSummary] = useState(new Date());
+  const [startDateTotalSummary, setStartDateTotalSummary] = useState(
+    new Date()
+  );
   const [endDateTotalSummary, setEndDateTotalSummary] = useState(new Date());
   const [openProjection, setOpenProjection] = useState(false);
   const [socketID, setSocketID] = useState("");
@@ -51,10 +55,10 @@ function EmployeeDashboard() {
   //const [uniqueArray, setuniqueArray] = useState([])
   const [filteredBooking, setFilteredBooking] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  const [uniqueArrayLoading, setuniqueArrayLoading] = useState(false)
-  const [projectionLoading, setprojectionLoading] = useState(false)
+  const [uniqueArrayLoading, setuniqueArrayLoading] = useState(false);
+  const [projectionLoading, setprojectionLoading] = useState(false);
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
     ename: "",
@@ -83,14 +87,12 @@ function EmployeeDashboard() {
     matured: "ascending",
     interested: "ascending",
     lastLead: "ascending",
-    totalLeads: 'ascending'
+    totalLeads: "ascending",
   });
   const [incoFilter, setIncoFilter] = useState("");
   const dateRangePickerRef = useRef(null);
   const dateRangePickerProhectionRef = useRef(null);
   const dateRangePickerProhectionSummaryRef = useRef(null);
-
-
 
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const formatDate = (inputDate) => {
@@ -111,8 +113,8 @@ function EmployeeDashboard() {
     }
   };
 
-  const [tempData, setTempData] = useState([])
-  const [loadingNew, setLoadingNew] = useState([])
+  const [tempData, setTempData] = useState([]);
+  const [loadingNew, setLoadingNew] = useState([]);
 
   // -------------------------api for contact number-------------------------------------------------------
 
@@ -127,15 +129,13 @@ function EmployeeDashboard() {
   };
 
   useEffect(() => {
-    fetchNewData()
-  }, [data])
+    fetchNewData();
+    fetchRedesignedBookings();
+  }, [data]);
 
   //console.log("tempData", tempData)
 
-
   //console.log(data)
-
-
 
   // const fetchEmployeeData = async () => {
   //   try {
@@ -152,7 +152,7 @@ function EmployeeDashboard() {
   // };
 
   const fetchEmployeeData = async () => {
-    setLoading(true)
+    setLoading(true);
     fetch(`${secretKey}/edata-particular/${data.ename}`)
       .then((response) => response.json())
       .then((data) => {
@@ -160,7 +160,7 @@ function EmployeeDashboard() {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
-      })
+      });
   };
   //console.log("empData", empData)
 
@@ -181,7 +181,6 @@ function EmployeeDashboard() {
     fetchData();
   }, []);
 
-
   useEffect(() => {
     setLoading(true);
     //setuniqueArrayLoading(true) // Set loading to true when useEffect is triggered
@@ -189,8 +188,7 @@ function EmployeeDashboard() {
   }, [data]);
 
   const formattedDates =
-    empData.length !== 0 &&
-    empData.map((data) => formatDate(data.AssignDate));
+    empData.length !== 0 && empData.map((data) => formatDate(data.AssignDate));
   //console.log("Formatted Dates", formattedDates);
   const uniqueArray = formattedDates && [...new Set(formattedDates)];
 
@@ -201,7 +199,9 @@ function EmployeeDashboard() {
       try {
         setLoading(true);
         //setuniqueArrayLoading(true)// Set loading to true before fetching
-        const response = await axios.get(`${secretKey}/company-ename/${data.ename}`);
+        const response = await axios.get(
+          `${secretKey}/company-ename/${data.ename}`
+        );
         setTotalBooking(response.data);
         setFilteredBooking(response.data);
       } catch (error) {
@@ -215,77 +215,86 @@ function EmployeeDashboard() {
     fetchBookingDetails();
   }, [data.ename]);
 
-
   //console.log("filteredBookings", filteredBooking)
 
   const handleCloseIconClickAnother = () => {
     if (showBookingDate) {
-      setShowBookingDate(false)
+      setShowBookingDate(false);
     }
-  }
+  };
 
   const handleClickOutside = (event) => {
-    if (dateRangePickerRef.current && !dateRangePickerRef.current.contains(event.target)) {
+    if (
+      dateRangePickerRef.current &&
+      !dateRangePickerRef.current.contains(event.target)
+    ) {
       setShowBookingDate(false);
     }
   };
 
   // Add event listener when the component mounts
   useEffect(() => {
-    const totalBookingElement = document.getElementById('bookingdashboard');
+    const totalBookingElement = document.getElementById("bookingdashboard");
     if (totalBookingElement) {
-      totalBookingElement.addEventListener('click', handleClickOutside);
+      totalBookingElement.addEventListener("click", handleClickOutside);
       // Remove event listener when the component unmounts
       return () => {
-        totalBookingElement.removeEventListener('click', handleClickOutside);
+        totalBookingElement.removeEventListener("click", handleClickOutside);
       };
-
     }
-
   }, []);
 
   const handleClickOutsideProjectionSummary = (event) => {
-    if (dateRangePickerProhectionSummaryRef.current && !dateRangePickerProhectionSummaryRef.current.contains(event.target)) {
+    if (
+      dateRangePickerProhectionSummaryRef.current &&
+      !dateRangePickerProhectionSummaryRef.current.contains(event.target)
+    ) {
       setdateRangeTotalSummary(false);
     }
   };
 
   // Add event listener when the component mounts
   useEffect(() => {
-    const totalBookingElement = document.getElementById('projectiontotalsummary');
+    const totalBookingElement = document.getElementById(
+      "projectiontotalsummary"
+    );
     if (totalBookingElement) {
-      totalBookingElement.addEventListener('click', handleClickOutsideProjectionSummary);
+      totalBookingElement.addEventListener(
+        "click",
+        handleClickOutsideProjectionSummary
+      );
       // Remove event listener when the component unmounts
       return () => {
-        totalBookingElement.removeEventListener('click', handleClickOutsideProjectionSummary);
+        totalBookingElement.removeEventListener(
+          "click",
+          handleClickOutsideProjectionSummary
+        );
       };
-
     }
-
   }, []);
 
   useEffect(() => {
-    const totalBookingElement = document.getElementById('bookingdashboard');
+    const totalBookingElement = document.getElementById("bookingdashboard");
     if (totalBookingElement) {
-      totalBookingElement.addEventListener('click', handleClickOutside);
+      totalBookingElement.addEventListener("click", handleClickOutside);
       // Remove event listener when the component unmounts
       return () => {
-        totalBookingElement.removeEventListener('click', handleClickOutside);
+        totalBookingElement.removeEventListener("click", handleClickOutside);
       };
-
     }
-
   }, []);
 
   const handleClickOutsideProjection = (event) => {
-    if (dateRangePickerProhectionRef.current && !dateRangePickerProhectionRef.current.contains(event.target)) {
+    if (
+      dateRangePickerProhectionRef.current &&
+      !dateRangePickerProhectionRef.current.contains(event.target)
+    ) {
       setDateRangeDisplay(false);
     }
   };
 
-
   useEffect(() => {
-    const socket = io('/socket.io');
+    const socket = io("/socket.io");
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
@@ -293,19 +302,19 @@ function EmployeeDashboard() {
 
     return () => {
       socket.disconnect();
-
     };
   }, []);
   const activeStatus = async () => {
     if (data._id && socketID) {
       try {
-
         const id = data._id;
-        const response = await axios.put(`${secretKey}/online-status/${id}/${socketID}`);
+        const response = await axios.put(
+          `${secretKey}/online-status/${id}/${socketID}`
+        );
         //console.log(response.data); // Log response for debugging
         return response.data; // Return response data if needed
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
         throw error; // Throw error for handling in the caller function
       }
     }
@@ -327,7 +336,6 @@ function EmployeeDashboard() {
   };
   // const handleSelectAnother = (date) => {
 
-
   //   const filteredDataDateRange = totalBooking.filter((product) => {
   //     const productDate = new Date(product["bookingDate"]);
   //     return (
@@ -342,8 +350,8 @@ function EmployeeDashboard() {
 
   // ---------------------------projectiondata-------------------------------------
 
-  const [followDataToday, setfollowDataToday] = useState([])
-  const [followDataTodayFilter, setfollowDataTodayFilter] = useState([])
+  const [followDataToday, setfollowDataToday] = useState([]);
+  const [followDataTodayFilter, setfollowDataTodayFilter] = useState([]);
 
   const fetchFollowUpData = async () => {
     try {
@@ -377,7 +385,6 @@ function EmployeeDashboard() {
   };
 
   //console.log("ajki", followDataToday)
-
 
   // console.log(followData);
 
@@ -471,17 +478,22 @@ function EmployeeDashboard() {
       if (finalData.offeredServices.length === 0) {
         Swal.fire({ title: "Services is required!", icon: "warning" });
       } else if (finalData.remarks === "") {
-        Swal.fire({ title: 'Remarks is required!', icon: 'warning' });
+        Swal.fire({ title: "Remarks is required!", icon: "warning" });
       } else if (Number(finalData.totalPayment) === 0) {
-        Swal.fire({ title: "Total Payment Can't be 0!", icon: 'warning' });
+        Swal.fire({ title: "Total Payment Can't be 0!", icon: "warning" });
       } else if (finalData.totalPayment === "") {
-        Swal.fire({ title: "Total Payment Can't be 0", icon: 'warning' });
+        Swal.fire({ title: "Total Payment Can't be 0", icon: "warning" });
       } else if (finalData.offeredPrize === "") {
-        Swal.fire({ title: "Offred Price Can't be 0", icon: 'warning' });
+        Swal.fire({ title: "Offred Price Can't be 0", icon: "warning" });
       } else if (Number(finalData.offeredPrize) === 0) {
-        Swal.fire({ title: 'Offered Prize is required!', icon: 'warning' });
-      } else if (Number(finalData.totalPayment) > Number(finalData.offeredPrize)) {
-        Swal.fire({ title: 'Total Payment cannot be greater than Offered Prize!', icon: 'warning' });
+        Swal.fire({ title: "Offered Prize is required!", icon: "warning" });
+      } else if (
+        Number(finalData.totalPayment) > Number(finalData.offeredPrize)
+      ) {
+        Swal.fire({
+          title: "Total Payment cannot be greater than Offered Prize!",
+          icon: "warning",
+        });
       } else if (finalData.lastFollowpdate === null) {
         Swal.fire({
           title: "Last FollowUp Date is required!",
@@ -509,7 +521,7 @@ function EmployeeDashboard() {
           date: "",
           time: "",
           totalPaymentError: "",
-          totalPayment: 0
+          totalPayment: 0,
         });
         fetchFollowUpData();
       }
@@ -524,7 +536,7 @@ function EmployeeDashboard() {
 
   // -------------------------------date-range-picker-------------------------------------------
 
-  const [dateRangeTotalSummary, setdateRangeTotalSummary] = useState(false)
+  const [dateRangeTotalSummary, setdateRangeTotalSummary] = useState(false);
 
   const handleIconClick = () => {
     if (!buttonToggle) {
@@ -556,18 +568,15 @@ function EmployeeDashboard() {
     key: "selection",
   };
 
-  const[selectedDateRange , setSelectedDateRange] = useState([])
+  const [selectedDateRange, setSelectedDateRange] = useState([]);
 
-  console.log("selectedDates" , selectedDateRange)
-
-  
+  console.log("selectedDates", selectedDateRange);
 
   const handleSelect = (values) => {
     // Extract startDate and endDate from the values array
     const startDate = values[0];
     const endDate = values[1];
 
-    
     // Set the startDate, endDate, and filteredDataDateRange states
     setStartDate(startDate);
     setEndDate(endDate);
@@ -575,23 +584,31 @@ function EmployeeDashboard() {
   };
 
   useEffect(() => {
-
     // Filter followData based on the selected date range
-    const filteredDataDateRange = followData.filter(product => {
+    const filteredDataDateRange = followData.filter((product) => {
       const productDate = new Date(product["estPaymentDate"]);
 
       // Convert productDate to the sameformat as startDate and endDate
-      const formattedProductDate = dayjs(productDate).startOf('day');
-      const formattedStartDate = startDate ? dayjs(startDate).startOf('day') : null;
-      const formattedEndDate = endDate ? dayjs(endDate).endOf('day') : null;
+      const formattedProductDate = dayjs(productDate).startOf("day");
+      const formattedStartDate = startDate
+        ? dayjs(startDate).startOf("day")
+        : null;
+      const formattedEndDate = endDate ? dayjs(endDate).endOf("day") : null;
 
       // Check if the formatted productDate is within the selected date range
-      if (formattedStartDate && formattedEndDate && formattedStartDate.isSame(formattedEndDate)) {
+      if (
+        formattedStartDate &&
+        formattedEndDate &&
+        formattedStartDate.isSame(formattedEndDate)
+      ) {
         // If both startDate and endDate are the same, filter for transactions on that day
         return formattedProductDate.isSame(formattedStartDate);
       } else if (formattedStartDate && formattedEndDate) {
         // If different startDate and endDate, filter within the range
-        return formattedProductDate >= formattedStartDate && formattedProductDate <= formattedEndDate;
+        return (
+          formattedProductDate >= formattedStartDate &&
+          formattedProductDate <= formattedEndDate
+        );
       } else {
         // If either startDate or endDate is null, return false
         return false;
@@ -601,36 +618,41 @@ function EmployeeDashboard() {
     setFollowDataFilter(filteredDataDateRange);
   }, [startDate, endDate]);
 
+  console.log(totalBooking);
 
-console.log(totalBooking)
+  const handleSelectAnother = (values) => {
+    console.log(values);
+    if (values[1]) {
+      const startDate = values[0].format("MM/DD/YYYY");
+      const endDate = values[1].format("MM/DD/YYYY");
 
-  const handleSelectAnother = (values)=>{
-    console.log(values)
-    if(values[1]){
-      const startDate = values[0].format('MM/DD/YYYY');
-      const endDate = values[1].format('MM/DD/YYYY');    
-      
-      const filteredDataDateRange = totalBooking.filter(product => {
-       const productDate = new Date(product["bookingDate"]).setHours(0, 0, 0, 0);
-        
+      const filteredDataDateRange = totalBooking.filter((product) => {
+        const productDate = new Date(product["bookingDate"]).setHours(
+          0,
+          0,
+          0,
+          0
+        );
+
         // Check if the formatted productDate is within the selected date range
         if (startDate === endDate) {
           // If both startDate and endDate are the same, filter for transactions on that day
-          return  new Date(productDate) === new Date(startDate);
-        } else if (startDate !==endDate) {
+          return new Date(productDate) === new Date(startDate);
+        } else if (startDate !== endDate) {
           // If different startDate and endDate, filter within the range
-          return new Date(productDate) >= new Date(startDate) && new Date(productDate) <= new Date(endDate);
+          return (
+            new Date(productDate) >= new Date(startDate) &&
+            new Date(productDate) <= new Date(endDate)
+          );
         } else {
           return false;
         }
       });
       setFilteredBooking(filteredDataDateRange);
-    }else{
-      return true;
-    }
-  }
-
-
+    } else {
+      return true;
+    }
+  };
 
   const handleSelectTotalSummary = (date) => {
     const filteredDataDateRange = followData.filter((product) => {
@@ -656,7 +678,6 @@ console.log(totalBooking)
   };
   //console.log(startDateTotalSummary)
   //console.log(endDateTotalSummary)
-
 
   // function calculateSumFilter(data) {
   //   const initialValue = {
@@ -693,7 +714,6 @@ console.log(totalBooking)
   //   offeredServicesFilter,
   // } = calculateSumFilter(filteredDataDateRange);
 
-
   function calculateSumFilter(data) {
     const initialValue = {
       totalPaymentSumFilter: 0,
@@ -729,7 +749,6 @@ console.log(totalBooking)
     offeredServicesFilter,
   } = calculateSumFilter(followDataTodayFilter);
 
-
   //console.log("follow data:", currentProjection);
   // -----------------------------------------------------general-search--------------------------------------------
 
@@ -747,23 +766,25 @@ console.log(totalBooking)
   //   ));
   // }
 
-
   function filterSearch(searchTerm) {
     setSearchTerm(searchTerm);
-    setfollowDataTodayFilter(followDataToday.filter(company =>
-      company.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.offeredServices.some(service =>
-        service.toLowerCase().includes(searchTerm.toLowerCase())
-      ) ||
-      company.totalPayment.toString() === searchTerm ||
-      company.offeredPrize.toString() === searchTerm ||
-      company.estPaymentDate.includes(searchTerm)
-
-    ));
+    setfollowDataTodayFilter(
+      followDataToday.filter(
+        (company) =>
+          company.companyName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          company.offeredServices.some((service) =>
+            service.toLowerCase().includes(searchTerm.toLowerCase())
+          ) ||
+          company.totalPayment.toString() === searchTerm ||
+          company.offeredPrize.toString() === searchTerm ||
+          company.estPaymentDate.includes(searchTerm)
+      )
+    );
   }
 
-
-  const [searchTermTotalSummary, setsearchTermTotalSummary] = useState("")
+  const [searchTermTotalSummary, setsearchTermTotalSummary] = useState("");
 
   //console.log(followDataFilter)
   //console.log(followData)
@@ -771,54 +792,71 @@ console.log(totalBooking)
   function filterSearchTotalSummary(searchTermTotalSummary) {
     setsearchTermTotalSummary(searchTermTotalSummary);
     //console.log(searchTermTotalSummary)
-    setFollowDataFilter(followData.filter(company =>
-      company.companyName.toLowerCase().includes(searchTermTotalSummary.toLowerCase()) ||
-      company.offeredServices.some(service =>
-        service.toLowerCase().includes(searchTermTotalSummary.toLowerCase())
-      ) ||
-      company.totalPayment.toString() === searchTermTotalSummary ||
-      company.offeredPrize.toString() === searchTermTotalSummary ||
-      company.estPaymentDate.includes(searchTermTotalSummary)
-    ));
+    setFollowDataFilter(
+      followData.filter(
+        (company) =>
+          company.companyName
+            .toLowerCase()
+            .includes(searchTermTotalSummary.toLowerCase()) ||
+          company.offeredServices.some((service) =>
+            service.toLowerCase().includes(searchTermTotalSummary.toLowerCase())
+          ) ||
+          company.totalPayment.toString() === searchTermTotalSummary ||
+          company.offeredPrize.toString() === searchTermTotalSummary ||
+          company.estPaymentDate.includes(searchTermTotalSummary)
+      )
+    );
   }
 
   //console.log(filteredDataDateRange)
-  const [newSearchTerm, setNewSearchTerm] = useState("")
+  const [newSearchTerm, setNewSearchTerm] = useState("");
 
   function filterSearchBooking(newSearchTerm) {
-    setNewSearchTerm(newSearchTerm)
-    setFilteredBooking(totalBooking.filter(company =>
-      company.companyName.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
-      company.contactNumber.toString() === newSearchTerm ||
-      company.companyEmail.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
-      company.services.some(service =>
-        service.toLowerCase().includes(newSearchTerm.toLowerCase())) ||
-      company.totalPayment.toString() === newSearchTerm ||
-      //(company.firstPayment ? company.firstPayment.toString() : company.totalPayment.toString()) === newSearchTerm
-      company.bdmName.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
-      new Date(company.bookingDate).toLocaleDateString().includes(newSearchTerm)
-    ))
+    setNewSearchTerm(newSearchTerm);
+    setFilteredBooking(
+      totalBooking.filter(
+        (company) =>
+          company.companyName
+            .toLowerCase()
+            .includes(newSearchTerm.toLowerCase()) ||
+          company.contactNumber.toString() === newSearchTerm ||
+          company.companyEmail
+            .toLowerCase()
+            .includes(newSearchTerm.toLowerCase()) ||
+          company.services.some((service) =>
+            service.toLowerCase().includes(newSearchTerm.toLowerCase())
+          ) ||
+          company.totalPayment.toString() === newSearchTerm ||
+          //(company.firstPayment ? company.firstPayment.toString() : company.totalPayment.toString()) === newSearchTerm
+          company.bdmName.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+          new Date(company.bookingDate)
+            .toLocaleDateString()
+            .includes(newSearchTerm)
+      )
+    );
   }
 
   //  -----------------------------------sorting- your -dashboard-----------------------------------
 
   const handleSortUntouched = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      untouched: prevData.untouched === "ascending"
-        ? "descending"
-        : prevData.untouched === "descending"
+      untouched:
+        prevData.untouched === "ascending"
+          ? "descending"
+          : prevData.untouched === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         //console.log("ascending is working")
         empData.forEach((company) => {
           if (company.Status === "Untouched") {
-            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+            untouchedCountAscending[company.AssignDate] =
+              (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -835,9 +873,9 @@ console.log(totalBooking)
         const untouchedCount = {};
         //console.log("descending is working")
         empData.forEach((company) => {
-          if ((company.Status === "Untouched")
-          ) {
-            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          if (company.Status === "Untouched") {
+            untouchedCount[company.AssignDate] =
+              (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -856,28 +894,27 @@ console.log(totalBooking)
 
       default:
         break;
-
     }
   };
 
   const handleSortBusy = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      busy: prevData.busy === "ascending"
-        ? "descending"
-        : prevData.untouched === "descending"
+      busy:
+        prevData.busy === "ascending"
+          ? "descending"
+          : prevData.untouched === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         empData.forEach((company) => {
-          if ((company.Status === "Busy")
-
-          ) {
-            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if (company.Status === "Busy") {
+            untouchedCountAscending[company.AssignDate] =
+              (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -892,9 +929,9 @@ console.log(totalBooking)
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if ((company.Status === "Busy")
-          ) {
-            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          if (company.Status === "Busy") {
+            untouchedCount[company.AssignDate] =
+              (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -913,27 +950,26 @@ console.log(totalBooking)
 
       default:
         break;
-
     }
   };
   const handleSortJunk = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      junk: prevData.junk === "ascending"
-        ? "descending"
-        : prevData.junk === "descending"
+      junk:
+        prevData.junk === "ascending"
+          ? "descending"
+          : prevData.junk === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         empData.forEach((company) => {
-          if ((company.Status === "Junk")
-
-          ) {
-            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if (company.Status === "Junk") {
+            untouchedCountAscending[company.AssignDate] =
+              (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -948,9 +984,9 @@ console.log(totalBooking)
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if ((company.Status === "Junk")
-          ) {
-            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          if (company.Status === "Junk") {
+            untouchedCount[company.AssignDate] =
+              (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -969,27 +1005,26 @@ console.log(totalBooking)
 
       default:
         break;
-
     }
   };
   const handleSortNotPickedUp = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      notPickedUp: prevData.notPickedUp === "ascending"
-        ? "descending"
-        : prevData.notPickedUp === "descending"
+      notPickedUp:
+        prevData.notPickedUp === "ascending"
+          ? "descending"
+          : prevData.notPickedUp === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         empData.forEach((company) => {
-          if ((company.Status === "Not Picked Up")
-
-          ) {
-            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if (company.Status === "Not Picked Up") {
+            untouchedCountAscending[company.AssignDate] =
+              (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -1004,9 +1039,9 @@ console.log(totalBooking)
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if ((company.Status === "Not Picked Up")
-          ) {
-            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          if (company.Status === "Not Picked Up") {
+            untouchedCount[company.AssignDate] =
+              (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -1025,28 +1060,27 @@ console.log(totalBooking)
 
       default:
         break;
-
     }
   };
 
   const handleSortFollowUp = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      followUp: prevData.followUp === "ascending"
-        ? "descending"
-        : prevData.followUp === "descending"
+      followUp:
+        prevData.followUp === "ascending"
+          ? "descending"
+          : prevData.followUp === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         empData.forEach((company) => {
-          if ((company.Status === "FollowUp")
-
-          ) {
-            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if (company.Status === "FollowUp") {
+            untouchedCountAscending[company.AssignDate] =
+              (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -1061,9 +1095,9 @@ console.log(totalBooking)
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if ((company.Status === "FollowUp")
-          ) {
-            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          if (company.Status === "FollowUp") {
+            untouchedCount[company.AssignDate] =
+              (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -1082,28 +1116,27 @@ console.log(totalBooking)
 
       default:
         break;
-
     }
   };
 
   const handleSortInterested = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      interested: prevData.interested === "ascending"
-        ? "descending"
-        : prevData.interested === "descending"
+      interested:
+        prevData.interested === "ascending"
+          ? "descending"
+          : prevData.interested === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         empData.forEach((company) => {
-          if ((company.Status === "Interested")
-
-          ) {
-            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if (company.Status === "Interested") {
+            untouchedCountAscending[company.AssignDate] =
+              (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -1118,9 +1151,9 @@ console.log(totalBooking)
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if ((company.Status === "Interested")
-          ) {
-            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          if (company.Status === "Interested") {
+            untouchedCount[company.AssignDate] =
+              (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -1139,28 +1172,27 @@ console.log(totalBooking)
 
       default:
         break;
-
     }
   };
 
   const handleSortNotInterested = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      notInterested: prevData.notInterested === "ascending"
-        ? "descending"
-        : prevData.notInterested === "descending"
+      notInterested:
+        prevData.notInterested === "ascending"
+          ? "descending"
+          : prevData.notInterested === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         empData.forEach((company) => {
-          if ((company.Status === "Not Interested")
-
-          ) {
-            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if (company.Status === "Not Interested") {
+            untouchedCountAscending[company.AssignDate] =
+              (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -1175,9 +1207,9 @@ console.log(totalBooking)
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if ((company.Status === "Not Interested")
-          ) {
-            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          if (company.Status === "Not Interested") {
+            untouchedCount[company.AssignDate] =
+              (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -1196,28 +1228,27 @@ console.log(totalBooking)
 
       default:
         break;
-
     }
   };
 
   const handleSortMatured = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      matured: prevData.matured === "ascending"
-        ? "descending"
-        : prevData.matured === "descending"
+      matured:
+        prevData.matured === "ascending"
+          ? "descending"
+          : prevData.matured === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         empData.forEach((company) => {
-          if ((company.Status === "Matured")
-
-          ) {
-            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if (company.Status === "Matured") {
+            untouchedCountAscending[company.AssignDate] =
+              (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -1232,9 +1263,9 @@ console.log(totalBooking)
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if ((company.Status === "Matured")
-          ) {
-            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          if (company.Status === "Matured") {
+            untouchedCount[company.AssignDate] =
+              (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -1253,27 +1284,26 @@ console.log(totalBooking)
 
       default:
         break;
-
     }
   };
   const handleSortTotalLeads = (sortBy1) => {
-    setSortType(prevData => ({
+    setSortType((prevData) => ({
       ...prevData,
-      totalLeads: prevData.totalLeads === "ascending"
-        ? "descending"
-        : prevData.totalLeads === "descending"
+      totalLeads:
+        prevData.totalLeads === "ascending"
+          ? "descending"
+          : prevData.totalLeads === "descending"
           ? "none"
-          : "ascending"
+          : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
         setIncoFilter("ascending");
-        const untouchedCountAscending = {}
+        const untouchedCountAscending = {};
         empData.forEach((company) => {
-          if ((company)
-
-          ) {
-            untouchedCountAscending[company.AssignDate] = (untouchedCountAscending[company.AssignDate] || 0) + 1;
+          if (company) {
+            untouchedCountAscending[company.AssignDate] =
+              (untouchedCountAscending[company.AssignDate] || 0) + 1;
           }
         });
         // Step 2: Sort employeeData based on the count of "Untouched" statuses in ascending order
@@ -1288,9 +1318,9 @@ console.log(totalBooking)
         setIncoFilter("descending");
         const untouchedCount = {};
         empData.forEach((company) => {
-          if ((company)
-          ) {
-            untouchedCount[company.AssignDate] = (untouchedCount[company.AssignDate] || 0) + 1;
+          if (company) {
+            untouchedCount[company.AssignDate] =
+              (untouchedCount[company.AssignDate] || 0) + 1;
           }
         });
 
@@ -1309,7 +1339,6 @@ console.log(totalBooking)
 
       default:
         break;
-
     }
   };
 
@@ -1320,7 +1349,6 @@ console.log(totalBooking)
     width: "20px",
   };
 
-
   // ---------------------------------------------delete Projection----------------------------------------------------\
 
   const handleDelete = async (company) => {
@@ -1329,7 +1357,9 @@ console.log(totalBooking)
 
     try {
       // Send a DELETE request to the backend API endpoint
-      const response = await axios.delete(`${secretKey}/delete-followup/${companyName}`);
+      const response = await axios.delete(
+        `${secretKey}/delete-followup/${companyName}`
+      );
       //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
       //console.log('Deleted!', 'Your data has been deleted.', 'success');
@@ -1347,11 +1377,11 @@ console.log(totalBooking)
       });
       setSelectedValues([]);
       fetchFollowUpData();
-      setIsEditProjection(true)
+      setIsEditProjection(true);
     } catch (error) {
-      console.error('Error deleting data:', error);
+      console.error("Error deleting data:", error);
       // Show an error message if deletion fails
-      console.log('Error!', 'Follow Up Not Found.', 'error');
+      console.log("Error!", "Follow Up Not Found.", "error");
     }
   };
   //console.log("projections", currentProjection);
@@ -1373,60 +1403,761 @@ console.log(totalBooking)
   //   }
   // };
 
-
   // ---------------------------newdaterangepicker--------------------------------
-
+  function formatDateFinal(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
   const shortcutsItems = [
     {
-      label: 'This Week',
+      label: "This Week",
       getValue: () => {
         const today = dayjs();
-        return [today.startOf('week'), today.endOf('week')];
+        return [today.startOf("week"), today.endOf("week")];
       },
     },
     {
-      label: 'Last Week',
+      label: "Last Week",
       getValue: () => {
         const today = dayjs();
-        const prevWeek = today.subtract(7, 'day');
-        return [prevWeek.startOf('week'), prevWeek.endOf('week')];
+        const prevWeek = today.subtract(7, "day");
+        return [prevWeek.startOf("week"), prevWeek.endOf("week")];
       },
     },
     {
-      label: 'Last 7 Days',
+      label: "Last 7 Days",
       getValue: () => {
         const today = dayjs();
-        return [today.subtract(7, 'day'), today];
+        return [today.subtract(7, "day"), today];
       },
     },
     {
-      label: 'Current Month',
+      label: "Current Month",
       getValue: () => {
         const today = dayjs();
-        return [today.startOf('month'), today.endOf('month')];
+        return [today.startOf("month"), today.endOf("month")];
       },
     },
     {
-      label: 'Next Month',
+      label: "Next Month",
       getValue: () => {
         const today = dayjs();
-        const startOfNextMonth = today.endOf('month').add(1, 'day');
-        return [startOfNextMonth, startOfNextMonth.endOf('month')];
+        const startOfNextMonth = today.endOf("month").add(1, "day");
+        return [startOfNextMonth, startOfNextMonth.endOf("month")];
       },
     },
-    { label: 'Reset', getValue: () => [null, null] },
+    { label: "Reset", getValue: () => [null, null] },
   ];
+  const [redesignedData , setRedesignedData] = useState([]);
+  const fetchRedesignedBookings = async () => {
+    try {
+      const response = await axios.get(
+        `${secretKey}/redesigned-final-leadData`
+      );
+      const bookingsData = response.data;
+
+  
+      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename));
+    } catch (error) {
+      console.log("Error Fetching Bookings Data", error);
+    }
+  };
+
+  // -------------------------------------------  Calculations --------------------------------------------------------
+
+  let totalMaturedCount = 0;
+  let totalTargetAmount = 0;
+  let totalAchievedAmount = 0;
+
+  const functionCalculateMatured = (istrue) => {
+  
+    let maturedCount = 0;
+    const today = new Date();
+    
+    // Set hours, minutes, and seconds to zero
+    const todayData = istrue
+      ? redesignedData.filter(
+          (obj) => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()
+        )
+      : redesignedData.filter(
+          (obj) => new Date(obj.bookingDate).getMonth() === today.getMonth()
+        );
+    
+    todayData.forEach((obj) => {
+      if (obj.moreBookings.length === 0) {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          maturedCount += 0.5;
+        } else {
+          maturedCount += 1;
+        }
+      } else {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          maturedCount += 0.5;
+        } else {
+          maturedCount += 1;
+        }
+
+        obj.moreBookings.forEach((booking) => {
+          if (
+            booking.bdeName !== booking.bdmName &&
+            booking.bdmType === "Close-by"
+          ) {
+            maturedCount += 0.5;
+          } else {
+            maturedCount += 1;
+          }
+        });
+      }
+    });
+    totalMaturedCount = totalMaturedCount + maturedCount;
+    return maturedCount;
+  };
+  const functionCalculateTotalRevenue = (istrue) => {
+    let achievedAmount = 0;
+    const today = new Date();
+     // Set hours, minutes, and seconds to zero
+    const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString())  : redesignedData.filter(
+      (obj) => new Date(obj.bookingDate).getMonth() === today.getMonth()
+    ) ;
+   
+    todayData.forEach((obj) => {
+      if (obj.moreBookings.length === 0) {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.totalAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.totalAmount);
+        }
+      } else {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.totalAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.totalAmount);
+        }
+        obj.moreBookings.forEach((booking) => {
+          if (
+            booking.bdeName !== booking.bdmName &&
+            booking.bdmType === "Close-by"
+          ) {
+            achievedAmount += parseInt(obj.totalAmount / 2);
+          } else {
+            achievedAmount += parseInt(obj.totalAmount);
+          }
+        });
+      }
+    });
+    return achievedAmount
+
+  };
+  const functionCalculateAchievedRevenue = (istrue) => {
+    let achievedAmount = 0;
+    const today = new Date();
+     // Set hours, minutes, and seconds to zero
+    const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) :  redesignedData.filter(
+      (obj) => new Date(obj.bookingDate).getMonth() === today.getMonth()
+    ); 
+   
+    todayData.forEach((obj) => {
+      if (obj.moreBookings.length === 0) {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.receivedAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.receivedAmount);
+        }
+      } else {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.receivedAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.receivedAmount);
+        }
+        obj.moreBookings.forEach((booking) => {
+          if (
+            booking.bdeName !== booking.bdmName &&
+            booking.bdmType === "Close-by"
+          ) {
+            achievedAmount += parseInt(obj.receivedAmount / 2);
+          } else {
+            achievedAmount += parseInt(obj.receivedAmount);
+          }
+        });
+      }
+    });
+    return achievedAmount
+  };
+  const functionCalculateYesterdayRevenue = () => {
+    let achievedAmount = 0;
+    const boom = new Date();
+const today = new Date(boom);
+today.setDate(boom.getDate() - 1);
+
+     // Set hours, minutes, and seconds to zero
+    const todayData = redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) ;
+   
+    todayData.forEach((obj) => {
+      if (obj.moreBookings.length === 0) {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.receivedAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.receivedAmount);
+        }
+      } else {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.receivedAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.receivedAmount);
+        }
+        obj.moreBookings.forEach((booking) => {
+          if (
+            booking.bdeName !== booking.bdmName &&
+            booking.bdmType === "Close-by"
+          ) {
+            achievedAmount += parseInt(obj.receivedAmount / 2);
+          } else {
+            achievedAmount += parseInt(obj.receivedAmount);
+          }
+        });
+      }
+    });
+    return achievedAmount
+  };
+  const functionCalculatePendingRevenue = (istrue) => {
+    let achievedAmount = 0;
+    const today = new Date();
+     // Set hours, minutes, and seconds to zero
+    const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) : redesignedData ;
+   
+    todayData.forEach((obj) => {
+      if (obj.moreBookings.length === 0) {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.pendingAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.pendingAmount);
+        }
+      } else {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.pendingAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.pendingAmount);
+        }
+        obj.moreBookings.forEach((booking) => {
+          if (
+            booking.bdeName !== booking.bdmName &&
+            booking.bdmType === "Close-by"
+          ) {
+            achievedAmount += parseInt(obj.pendingAmount / 2);
+          } else {
+            achievedAmount += parseInt(obj.pendingAmount);
+          }
+        });
+      }
+    });
+    return achievedAmount
+
+  };
+  
+  function functionGetLastBookingDate() {
+    // Filter objects based on bdeName
+
+
+    // Initialize variable to store the latest booking date
+    let lastBookingDate = null;
+
+    // Iterate through filtered data
+    redesignedData.forEach((obj) => {
+      if (obj.moreBookings && obj.moreBookings.length > 0) {
+        // If moreBookings exist, find the latest bookingDate
+        const latestBookingDate = obj.moreBookings.reduce(
+          (latestDate, booking) => {
+            const bookingDate = new Date(booking.bookingDate);
+            return bookingDate > latestDate ? bookingDate : latestDate;
+          },
+          new Date(0)
+        ); // Initialize with minimum date
+
+        // Update lastBookingDate if latestBookingDate is later
+        if (latestBookingDate > lastBookingDate || !lastBookingDate) {
+          lastBookingDate = latestBookingDate;
+        }
+      } else {
+        // If no moreBookings, directly consider bookingDate
+        const bookingDate = new Date(obj.bookingDate);
+        if (bookingDate > lastBookingDate || !lastBookingDate) {
+          lastBookingDate = bookingDate;
+        }
+      }
+    });
+
+    // Return the formatted date string or an empty string if lastBookingDate is null
+    return lastBookingDate ? formatDateFinal(lastBookingDate) : "N/A";
+  }
+
+
+  const currentYear = new Date().getFullYear();
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const currentMonth = monthNames[new Date().getMonth()];
+
+  const functionGetAmount = () => {
+    if (data.length===0) {
+      return 0; // Return 0 if data is falsy
+    }
+  
+    const object = data;
+    const targetDetails = object.targetDetails;
+  
+    if (targetDetails.length === 0) {
+      return 0; // Return 0 if targetDetails array is empty
+    }
+  
+    const foundObject = targetDetails.find(
+      (item) => parseInt(item.year) === currentYear && item.month === currentMonth
+    );
+  
+    if (!foundObject) {
+      return 0; // Return 0 if no matching object is found
+    }
+  
+    const amount = parseInt(foundObject.amount);
+    totalTargetAmount += amount; // Increment totalTargetAmount by amount
+  
+    
+    return amount;
+  };
+  
+
 
   return (
     <div>
       <Header name={data.ename} designation={data.designation} />
-      <EmpNav userId={userId} />
+      <EmpNav userId={userId} bdmWork={data.bdmWork} />
       <div className="container-xl mt-2">
+        <div className="row row-deck row-cards mt-2">
+          <div className="dashboard-header">
+            <h1>Leads Report</h1>
+          </div>
+          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2 ">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                    Total Leads
+                  </div>
+                  {/* <GrDocumentStore style={{ width: "50px", height: "50px" }} /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class="mb-3 me-2">{empData.length}</div>
+                  <div class="me-auto">
+                    {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
+                                        </span> */}
+                  </div>
+                </div>
+                <div id="chart-new-clients" class="chart-sm"></div>
+              </div>
+            </div>
+          </div>
+          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                    Interested Leads
+                  </div>
+                  {/* <CiCalendar style={{ width: "50px", height: "50px" }} /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class=" mb-3 me-2">{
+                          empData.filter(
+                            (partObj) => partObj.Status === "Interested"
+                          ).length
+                        }</div>
+                  <div class="me-auto">
+                    {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
+                                        </span> */}
+                  </div>
+                </div>
+                <div id="chart-new-clients" class="chart-sm"></div>
+              </div>
+            </div>
+          </div>
+          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                    Follow Up Leads
+                  </div>
+                  {/* <HiMiniCurrencyRupee
+                    style={{ width: "50px", height: "50px" }}
+                  /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class=" mb-0 me-2">  <div style={{fontSize:'47px'}} class=" mb-3 me-2">{
+                          empData.filter(
+                            (partObj) => partObj.Status === "FollowUp"
+                          ).length
+                        }</div></div>
+                  <div class="me-auto">
+                    <span class="text-green d-inline-flex align-items-center lh-1">
+                     
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div id="chart-revenue-bg" class="chart-sm"></div>
+            </div>
+          </div>
+          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                    Matured Leads
+                  </div>
+                  {/* <HiMiniCurrencyRupee
+                    style={{ width: "50px", height: "50px" }}
+                  /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class="mb-0 me-2">  <div style={{fontSize:'47px'}} class=" mb-3 me-2">{
+                          empData.filter(
+                            (partObj) => partObj.Status === "Matured"
+                          ).length
+                        }</div></div>
+                  <div class="me-auto">
+                    <span class="text-green d-inline-flex align-items-center lh-1">
+                     
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div id="chart-revenue-bg" class="chart-sm"></div>
+            </div>
+          </div>
+          <div style={{width:"20%"}} class="col-sm-6 col-lg-2">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                    Not Interested Leads
+                  </div>
+                 
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class=" mb-0 me-2">  <div style={{fontSize:'47px'}} class=" mb-3 me-2">{
+                          empData.filter(
+                            (partObj) => partObj.Status === "Not Interested"
+                          ).length
+                        }</div></div>
+                 
+                </div>
+              </div>
+             
+            </div>
+          </div>
+        </div>
+        <div className="row row-deck row-cards mt-2">
+          <div className="dashboard-header">
+            <h1>Today's Report</h1>
+          </div>
+          <div style={{width:'20%'}} class="col-sm-6 col-lg-2 ">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                    Matured Cases
+                  </div>
+                  {/* <GrDocumentStore style={{ width: "50px", height: "50px" }} /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class="mb-3 me-2">{functionCalculateMatured(true).toLocaleString()}</div>
+                  <div class="me-auto">
+                    {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
+                                        </span> */}
+                  </div>
+                </div>
+                <div id="chart-new-clients" class="chart-sm"></div>
+              </div>
+            </div>
+          </div>
+          <div style={{width:'20%'}} class="col-sm-6 col-lg-2">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                    Total Revenue
+                  </div>
+                  {/* <CiCalendar style={{ width: "50px", height: "50px" }} /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class=" mb-3 me-2">₹ {functionCalculateTotalRevenue(true).toLocaleString()}</div>
+                  <div class="me-auto">
+                    {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
+                                        </span> */}
+                  </div>
+                </div>
+                <div id="chart-new-clients" class="chart-sm"></div>
+              </div>
+            </div>
+          </div>
+          <div style={{width:'20%'}} class="col-sm-6 col-lg-2">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                    Advance Collected
+                  </div>
+                  {/* <HiMiniCurrencyRupee
+                    style={{ width: "50px", height: "50px" }}
+                  /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class=" mb-0 me-2">₹ {functionCalculateAchievedRevenue(true).toLocaleString()}</div>
+                  <div class="me-auto">
+                    <span class="text-green d-inline-flex align-items-center lh-1">
+                     
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div id="chart-revenue-bg" class="chart-sm"></div>
+            </div>
+          </div>
+          <div style={{width:'20%'}}  class="col-sm-6 col-lg-2">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                   Remaining Payment
+                  </div>
+                  {/* <HiMiniCurrencyRupee
+                    style={{ width: "50px", height: "50px" }}
+                  /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class="mb-0 me-2">₹ {functionCalculatePendingRevenue(true).toLocaleString()}</div>
+                  <div class="me-auto">
+                    <span class="text-green d-inline-flex align-items-center lh-1">
+                     
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div id="chart-revenue-bg" class="chart-sm"></div>
+            </div>
+          </div>
+          <div style={{width:'20%'}}  class="col-sm-6 col-lg-2">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                   Yesterday's Collection
+                  </div>
+                  {/* <HiMiniCurrencyRupee
+                    style={{ width: "50px", height: "50px" }}
+                  /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class="mb-0 me-2">₹ {functionCalculateYesterdayRevenue().toLocaleString()}</div>
+                  <div class="me-auto">
+                    <span class="text-green d-inline-flex align-items-center lh-1">
+                     
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div id="chart-revenue-bg" class="chart-sm"></div>
+            </div>
+          </div>
+          
+        </div>
+        <div className="row row-deck row-cards mt-2 mb-2">
+          <div className="dashboard-header">
+            <h1>Current Month Report</h1>
+          </div>
+          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2 ">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                    Total Matured Cases
+                  </div>
+                  {/* <GrDocumentStore style={{ width: "50px", height: "50px" }} /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class="mb-3 me-2">₹ {functionCalculateMatured().toLocaleString()}</div>
+                  <div class="me-auto">
+                    {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
+                                        </span> */}
+                  </div>
+                </div>
+                <div id="chart-new-clients" class="chart-sm"></div>
+              </div>
+            </div>
+          </div>
+          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                    Target
+                  </div>
+                  {/* <CiCalendar style={{ width: "50px", height: "50px" }} /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class=" mb-3 me-2">₹ {functionGetAmount().toLocaleString()}</div>
+                  <div class="me-auto">
+                    {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
+                                        </span> */}
+                  </div>
+                </div>
+                <div id="chart-new-clients" class="chart-sm"></div>
+              </div>
+            </div>
+          </div>
+          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                   Achieved Target
+                  </div>
+                  {/* <HiMiniCurrencyRupee
+                    style={{ width: "50px", height: "50px" }}
+                  /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class=" mb-0 me-2">₹ {functionCalculateAchievedRevenue().toLocaleString()}</div>
+                  <div class="me-auto">
+                    <span class="text-green d-inline-flex align-items-center lh-1">
+                     
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div id="chart-revenue-bg" class="chart-sm"></div>
+            </div>
+          </div>
+          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                    Achieved Target Ratio
+                  </div>
+                  {/* <HiMiniCurrencyRupee
+                    style={{ width: "50px", height: "50px" }}
+                  /> */}
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class="mb-0 me-2"> {(functionCalculateAchievedRevenue()/functionGetAmount() * 100).toFixed(2)} %</div>
+                  <div class="me-auto">
+                    <span class="text-green d-inline-flex align-items-center lh-1">
+                     
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div id="chart-revenue-bg" class="chart-sm"></div>
+            </div>
+          </div>
+          <div style={{width:"20%" }} class="col-sm-6 col-lg-2">
+            <div class="card firstClass">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div
+                    class="subheader"
+                    style={{ color: "black", fontSize: "20px" }}
+                  >
+                   Last Booking Date
+                  </div>
+                 
+                </div>
+                <div class="d-flex align-items-baseline">
+                  <div style={{fontSize:'47px'}} class=" mb-0 me-2"> {functionGetLastBookingDate()}</div>
+                  <div class="me-auto">
+                    <span class="text-green d-inline-flex align-items-center lh-1">
+                   
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div id="chart-revenue-bg" class="chart-sm"></div>
+            </div>
+          </div>
+        </div>
         <div className="card">
           <div className="card-header employeedashboard">
             <div className="d-flex justify-content-between">
-              <div style={{ minWidth: '14vw' }} className="dashboard-title">
-                <h2 style={{ marginBottom: '5px' }}>Data Summary</h2>
+              <div style={{ minWidth: "14vw" }} className="dashboard-title">
+                <h2 style={{ marginBottom: "5px" }}>Data Summary</h2>
               </div>
               {/* <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
                 <input
@@ -1488,7 +2219,8 @@ console.log(totalBooking)
                       Sr. No
                     </th>
                     <th>Lead Assign Date</th>
-                    <th>Untouched
+                    <th>
+                      Untouched
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1508,9 +2240,9 @@ console.log(totalBooking)
                           handleSortUntouched(newSortType);
                         }}
                       />
-
                     </th>
-                    <th>Busy
+                    <th>
+                      Busy
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1531,7 +2263,8 @@ console.log(totalBooking)
                         }}
                       />
                     </th>
-                    <th>Not Picked Up
+                    <th>
+                      Not Picked Up
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1552,7 +2285,8 @@ console.log(totalBooking)
                         }}
                       />
                     </th>
-                    <th>Junk
+                    <th>
+                      Junk
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1573,7 +2307,8 @@ console.log(totalBooking)
                         }}
                       />
                     </th>
-                    <th>Follow Up
+                    <th>
+                      Follow Up
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1594,7 +2329,8 @@ console.log(totalBooking)
                         }}
                       />
                     </th>
-                    <th>Interested
+                    <th>
+                      Interested
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1615,7 +2351,8 @@ console.log(totalBooking)
                         }}
                       />
                     </th>
-                    <th>Not Interested
+                    <th>
+                      Not Interested
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1636,7 +2373,8 @@ console.log(totalBooking)
                         }}
                       />
                     </th>
-                    <th>Matured
+                    <th>
+                      Matured
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1657,7 +2395,8 @@ console.log(totalBooking)
                         }}
                       />
                     </th>
-                    <th>Total Leads
+                    <th>
+                      Total Leads
                       <SwapVertIcon
                         style={{
                           height: "15px",
@@ -1774,25 +2513,32 @@ console.log(totalBooking)
                             }
                           </td>
                         </tr>
-                      ))) : (
+                      ))
+                    ) : (
                       <tr>
-                        <td colSpan="11" style={{ textAlign: 'center' }}><Nodata /></td>
+                        <td colSpan="11" style={{ textAlign: "center" }}>
+                          <Nodata />
+                        </td>
                       </tr>
                     )
-                  ) : (<tr style={{ minHeight: "350px" }}><td colSpan={11}>
-                    <ScaleLoader
-                      color="lightgrey"
-                      loading
-                      cssOverride={override}
-                      size={10}
-                      height="25"
-                      width="2"
-                      style={{ width: "10px", height: "10px" }}
-                      //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
-                      aria-label="Loading Spinner"
-                      data-testid="loader"
-                    /></td></tr>)
-                  }
+                  ) : (
+                    <tr style={{ minHeight: "350px" }}>
+                      <td colSpan={11}>
+                        <ScaleLoader
+                          color="lightgrey"
+                          loading
+                          cssOverride={override}
+                          size={10}
+                          height="25"
+                          width="2"
+                          style={{ width: "10px", height: "10px" }}
+                          //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
+                          aria-label="Loading Spinner"
+                          data-testid="loader"
+                        />
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
                 {uniqueArray && (
                   <tfoot>
@@ -2044,7 +2790,6 @@ console.log(totalBooking)
                       </tr>
                     </tbody>
                   )} */}
-
               </table>
             </div>
           </div>
@@ -2226,17 +2971,24 @@ console.log(totalBooking)
       </div> */}
       {/* --------------------------------------------------projection dashboard new------------------------------------ */}
 
-
       <div className="container-xl mt-2">
         <div className="row">
           <div className="col-12" id="projectiontotalsummary">
             <div className="card">
               <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                 <div className="dashboard-title">
-                  <h2 style={{ marginBottom: '5px' }}>Total Projection Summary</h2>
+                  <h2 style={{ marginBottom: "5px" }}>
+                    Total Projection Summary
+                  </h2>
                 </div>
-                <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
-                  <div className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon" style={{ width: "50%" }}>
+                <div
+                  className="d-flex justify-content-between"
+                  style={{ gap: "10px" }}
+                >
+                  <div
+                    className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
+                    style={{ width: "50%" }}
+                  >
                     <span className="input-icon-addon">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -2249,13 +3001,8 @@ console.log(totalBooking)
                         fill="none"
                         stroke-linecap="round"
                         stroke-linejoin="round"
-
                       >
-                        <path
-                          stroke="none"
-                          d="M0 0h24v24H0z"
-                          fill="none"
-                        />
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                         <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
                         <path d="M21 21l-6 -6" />
                       </svg>
@@ -2267,7 +3014,7 @@ console.log(totalBooking)
                       placeholder="Search here....."
                       style={{
                         border: "none",
-                        padding: "0px 0px 0px 21px"
+                        padding: "0px 0px 0px 21px",
                         // Add a bottom border for the input field itself
                       }}
                       type="text"
@@ -2275,28 +3022,44 @@ console.log(totalBooking)
                       id="bdeName-search"
                     />
                   </div>
-                  <div style={{ m: 1, width: '40ch', padding: "0px", marginRight: "30px" }}>
-                   <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
-                    <DemoContainer components={['SingleInputDateRangeField']}>
-                      <DateRangePicker
-                        onChange={(values) => {
-                          const startDate = moment(values[0]).format('DD/MM/YYYY');
-                          const endDate = moment(values[1]).format('DD/MM/YYYY');
-                          setSelectedDateRange([startDate, endDate]);
-                          handleSelect(values); // Call handleSelect with the selected values
-                        }}
-                        slots={{ field: SingleInputDateRangeField }}
-                        slotProps={{
-                          shortcuts: {
-                            items: shortcutsItems,
-                          },
-                          actionBar: { actions: [] },
-                          textField: { InputProps: { endAdornment: <Calendar /> } }
-                        }}
-                      //calendars={1}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
+                  <div
+                    style={{
+                      m: 1,
+                      width: "40ch",
+                      padding: "0px",
+                      marginRight: "30px",
+                    }}
+                  >
+                    <LocalizationProvider
+                      dateAdapter={AdapterDayjs}
+                      style={{ padding: "0px" }}
+                    >
+                      <DemoContainer components={["SingleInputDateRangeField"]}>
+                        <DateRangePicker
+                          onChange={(values) => {
+                            const startDate = moment(values[0]).format(
+                              "DD/MM/YYYY"
+                            );
+                            const endDate = moment(values[1]).format(
+                              "DD/MM/YYYY"
+                            );
+                            setSelectedDateRange([startDate, endDate]);
+                            handleSelect(values); // Call handleSelect with the selected values
+                          }}
+                          slots={{ field: SingleInputDateRangeField }}
+                          slotProps={{
+                            shortcuts: {
+                              items: shortcutsItems,
+                            },
+                            actionBar: { actions: [] },
+                            textField: {
+                              InputProps: { endAdornment: <Calendar /> },
+                            },
+                          }}
+                          //calendars={1}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
                   </div>
 
                   {/* <div
@@ -2341,8 +3104,9 @@ console.log(totalBooking)
                     overflowX: "auto",
                     overflowY: "auto",
                     maxHeight: "60vh",
-                    height: "30vh"
-                  }}>
+                    height: "30vh",
+                  }}
+                >
                   <table
                     style={{
                       width: "100%",
@@ -2350,9 +3114,11 @@ console.log(totalBooking)
                       border: "1px solid #ddd",
                       marginBottom: "10px",
                     }}
-                    className="table-vcenter table-nowrap">
+                    className="table-vcenter table-nowrap"
+                  >
                     <thead style={{ backgroundColor: "grey" }}>
-                      <tr className="tr-sticky"
+                      <tr
+                        className="tr-sticky"
                         style={{
                           backgroundColor: "#ffb900",
                           color: "white",
@@ -2397,13 +3163,25 @@ console.log(totalBooking)
                             <tbody>
                               {followDataFilter.map((obj, index) => (
                                 <tr key={`row-${index}`}>
-                                  <td style={{
-                                    lineHeight: "32px",
-                                  }}>{index + 1}</td>
+                                  <td
+                                    style={{
+                                      lineHeight: "32px",
+                                    }}
+                                  >
+                                    {index + 1}
+                                  </td>
                                   <td>{obj.companyName}</td>
-                                  <td>{obj.offeredServices.join(', ')}</td>
-                                  <td>₹{obj.offeredPrize && obj.offeredPrize.toLocaleString()}</td>
-                                  <td>₹{obj.totalPayment && obj.totalPayment.toLocaleString()}</td>
+                                  <td>{obj.offeredServices.join(", ")}</td>
+                                  <td>
+                                    ₹
+                                    {obj.offeredPrize &&
+                                      obj.offeredPrize.toLocaleString()}
+                                  </td>
+                                  <td>
+                                    ₹
+                                    {obj.totalPayment &&
+                                      obj.totalPayment.toLocaleString()}
+                                  </td>
                                   <td>{obj.remarks}</td>
                                   <td>{obj.lastFollowUpdate}</td>
                                   <td>{obj.estPaymentDate}</td>
@@ -2413,7 +3191,13 @@ console.log(totalBooking)
                                         functionopenprojection(obj.companyName);
                                       }}
                                     >
-                                      <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }} />
+                                      <RiEditCircleFill
+                                        color="grey"
+                                        style={{
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
+                                      />
                                     </IconButton>
                                   </td>
                                 </tr>
@@ -2421,8 +3205,14 @@ console.log(totalBooking)
                             </tbody>
                             {followDataFilter && (
                               <tfoot>
-                                <tr style={{ fontWeight: 500 }} className="tf-sticky">
-                                  <td style={{ lineHeight: "32px" }} colSpan="2">
+                                <tr
+                                  style={{ fontWeight: 500 }}
+                                  className="tf-sticky"
+                                >
+                                  <td
+                                    style={{ lineHeight: "32px" }}
+                                    colSpan="2"
+                                  >
                                     Total
                                   </td>
                                   <td>{offeredServices.length}</td>
@@ -2441,7 +3231,6 @@ console.log(totalBooking)
                             <td colSpan="11">
                               <Nodata />
                             </td>
-
                           </tr>
                         )}
                       </>
@@ -2451,14 +3240,22 @@ console.log(totalBooking)
               </div>
             </div>
           </div>
-          <div className="col-12 mt-2" id="projectiondashboardemployee" >
+          <div className="col-12 mt-2" id="projectiondashboardemployee">
             <div className="card">
               <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                 <div className="dashboard-title">
-                  <h2 style={{ marginBottom: '5px' }}>Todays's Projection Summary</h2>
+                  <h2 style={{ marginBottom: "5px" }}>
+                    Todays's Projection Summary
+                  </h2>
                 </div>
-                <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
-                  <div className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon" style={{ marginRight: "26px", width: "100%" }}>
+                <div
+                  className="d-flex justify-content-between"
+                  style={{ gap: "10px" }}
+                >
+                  <div
+                    className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
+                    style={{ marginRight: "26px", width: "100%" }}
+                  >
                     <span className="input-icon-addon">
                       {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
                       <svg
@@ -2473,11 +3270,7 @@ console.log(totalBooking)
                         stroke-linecap="round"
                         stroke-linejoin="round"
                       >
-                        <path
-                          stroke="none"
-                          d="M0 0h24v24H0z"
-                          fill="none"
-                        />
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                         <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
                         <path d="M21 21l-6 -6" />
                       </svg>
@@ -2489,7 +3282,7 @@ console.log(totalBooking)
                       placeholder="Search here....."
                       style={{
                         border: "none",
-                        padding: "0px 0px 0px 21px"
+                        padding: "0px 0px 0px 21px",
                         // Add a bottom border for the input field itself
                       }}
                       type="text"
@@ -2538,7 +3331,6 @@ console.log(totalBooking)
                   style={{
                     overflowX: "auto",
                     overflowY: "auto",
-
                   }}
                 >
                   <table
@@ -2551,7 +3343,8 @@ console.log(totalBooking)
                     className="table-vcenter table-nowrap"
                   >
                     <thead stSyle={{ backgroundColor: "grey" }}>
-                      <tr className="tr-sticky"
+                      <tr
+                        className="tr-sticky"
                         style={{
                           backgroundColor: "#ffb900",
                           color: "white",
@@ -2592,7 +3385,8 @@ console.log(totalBooking)
                       </tbody>
                     ) : (
                       <>
-                        {followDataTodayFilter && followDataTodayFilter.length > 0 ? (
+                        {followDataTodayFilter &&
+                        followDataTodayFilter.length > 0 ? (
                           <>
                             <tbody>
                               {followDataTodayFilter.map((obj, index) => (
@@ -2605,11 +3399,18 @@ console.log(totalBooking)
                                     {index + 1}
                                   </td>
                                   <td>{obj.companyName}</td>
-                                  <td>{
-                                    tempData
-                                      .filter(company => company["Company Name"] === obj.companyName)
-                                      .map(filteredCompany => filteredCompany["Company Number"])
-                                  }</td>
+                                  <td>
+                                    {tempData
+                                      .filter(
+                                        (company) =>
+                                          company["Company Name"] ===
+                                          obj.companyName
+                                      )
+                                      .map(
+                                        (filteredCompany) =>
+                                          filteredCompany["Company Number"]
+                                      )}
+                                  </td>
                                   <td>{obj.offeredServices.join(", ")}</td>
                                   <td>₹{obj.offeredPrize.toLocaleString()}</td>
                                   <td>
@@ -2626,21 +3427,34 @@ console.log(totalBooking)
                                         functionopenprojection(obj.companyName);
                                       }}
                                     >
-                                      <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }}></RiEditCircleFill>
+                                      <RiEditCircleFill
+                                        color="grey"
+                                        style={{
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
+                                      ></RiEditCircleFill>
                                     </IconButton>
                                   </td>
                                 </tr>
                               ))}
                             </tbody>
                             <tfoot>
-                              <tr style={{ fontWeight: 500 }} className="tf-sticky">
+                              <tr
+                                style={{ fontWeight: 500 }}
+                                className="tf-sticky"
+                              >
                                 <td style={{ lineHeight: "32px" }} colSpan="2">
                                   Total
                                 </td>
                                 <td>-</td>
                                 <td>{offeredServicesFilter.length}</td>
-                                <td>₹{offeredPaymentSumFilter.toLocaleString()}</td>
-                                <td>₹{totalPaymentSumFilter.toLocaleString()}</td>
+                                <td>
+                                  ₹{offeredPaymentSumFilter.toLocaleString()}
+                                </td>
+                                <td>
+                                  ₹{totalPaymentSumFilter.toLocaleString()}
+                                </td>
                                 <td>-</td>
                                 <td>-</td>
                                 <td>-</td>
@@ -2665,12 +3479,9 @@ console.log(totalBooking)
             </div>
           </div>
         </div>
-
-
       </div>
 
       {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
-
 
       <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard">
         <div className="card">
@@ -2678,8 +3489,14 @@ console.log(totalBooking)
             <div>
               <h2>Matured Clients Summary</h2>
             </div>
-            <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
-              <div className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon" style={{ width: "50%" }}>
+            <div
+              className="d-flex justify-content-between"
+              style={{ gap: "10px" }}
+            >
+              <div
+                className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
+                style={{ width: "50%" }}
+              >
                 <span className="input-icon-addon">
                   {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
                   <svg
@@ -2694,11 +3511,7 @@ console.log(totalBooking)
                     stroke-linecap="round"
                     stroke-linejoin="round"
                   >
-                    <path
-                      stroke="none"
-                      d="M0 0h24v24H0z"
-                      fill="none"
-                    />
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                     <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
                     <path d="M21 21l-6 -6" />
                   </svg>
@@ -2710,7 +3523,7 @@ console.log(totalBooking)
                   placeholder="Search here....."
                   style={{
                     border: "none",
-                    padding: "0px 0px 0px 21px"
+                    padding: "0px 0px 0px 21px",
                     // Add a bottom border for the input field itself
                   }}
                   type="text"
@@ -2727,28 +3540,35 @@ console.log(totalBooking)
                 /> */}
               </div>
               <div style={{ m: 1, padding: "0px", marginRight: "30px" }}>
-                   <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
-                    <DemoContainer components={['SingleInputDateRangeField']}>
-                      <DateRangePicker
-                        onChange={(values) => {
-                          const startDate = moment(values[0]).format('DD/MM/YYYY');
-                          const endDate = moment(values[1]).format('DD/MM/YYYY');
-                          //setSelectedDateRange([startDate, endDate]);
-                          handleSelectAnother(values); // Call handleSelect with the selected values
-                        }}
-                        slots={{ field: SingleInputDateRangeField }}
-                        slotProps={{
-                          shortcuts: {
-                            items: shortcutsItems,
-                          },
-                          actionBar: { actions: [] },
-                          textField: { InputProps: { endAdornment: <Calendar /> } }
-                        }}
+                <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  style={{ padding: "0px" }}
+                >
+                  <DemoContainer components={["SingleInputDateRangeField"]}>
+                    <DateRangePicker
+                      onChange={(values) => {
+                        const startDate = moment(values[0]).format(
+                          "DD/MM/YYYY"
+                        );
+                        const endDate = moment(values[1]).format("DD/MM/YYYY");
+                        //setSelectedDateRange([startDate, endDate]);
+                        handleSelectAnother(values); // Call handleSelect with the selected values
+                      }}
+                      slots={{ field: SingleInputDateRangeField }}
+                      slotProps={{
+                        shortcuts: {
+                          items: shortcutsItems,
+                        },
+                        actionBar: { actions: [] },
+                        textField: {
+                          InputProps: { endAdornment: <Calendar /> },
+                        },
+                      }}
                       //calendars={1}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
-                  </div>
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+              </div>
               {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
                 <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
                   {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
@@ -2785,7 +3605,6 @@ console.log(totalBooking)
                 overflowX: "auto",
                 overflowY: "auto",
                 maxHeight: "60vh",
-
               }}
             >
               <table
@@ -2825,7 +3644,9 @@ console.log(totalBooking)
                       {filteredBooking.map((mainObj, index) => (
                         <tr key={index}>
                           <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                          <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime})`}</td>
+                          <td>{`${formatDate(mainObj.bookingDate)}(${
+                            mainObj.bookingTime
+                          })`}</td>
                           <td>{mainObj.companyName}</td>
                           <td>{mainObj.contactNumber}</td>
                           <td>{mainObj.companyEmail}</td>
@@ -2844,20 +3665,25 @@ console.log(totalBooking)
                                 ? mainObj.firstPayment // If bdeName and bdmName are the same
                                 : mainObj.firstPayment / 2 // If bdeName and bdmName are different
                               : mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                                : mainObj.originalTotalPayment / 2
+                              ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                              : mainObj.originalTotalPayment / 2
                             ).toLocaleString()}{" "}
                           </td>
                           <td>
                             ₹
                             {(mainObj.firstPayment !== 0
                               ? mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.originalTotalPayment - mainObj.firstPayment
-                                : (mainObj.originalTotalPayment - mainObj.firstPayment) / 2
+                                ? mainObj.originalTotalPayment -
+                                  mainObj.firstPayment
+                                : (mainObj.originalTotalPayment -
+                                    mainObj.firstPayment) /
+                                  2
                               : 0
                             ).toLocaleString()}{" "}
                           </td>
-                          <td>{mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}</td>
+                          <td>
+                            {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
+                          </td>
                           <td>
                             {mainObj.bdeName !== mainObj.bdmName
                               ? mainObj.bdmType === "closeby"
@@ -2879,35 +3705,41 @@ console.log(totalBooking)
                         <th>-</th>
                         <th>
                           ₹
-                          {filteredBooking.reduce((total, obj) => {
-                            return obj.bdeName === obj.bdmName
-                              ? total + obj.originalTotalPayment
-                              : total + obj.originalTotalPayment / 2;
-                          }, 0).toLocaleString()}
+                          {filteredBooking
+                            .reduce((total, obj) => {
+                              return obj.bdeName === obj.bdmName
+                                ? total + obj.originalTotalPayment
+                                : total + obj.originalTotalPayment / 2;
+                            }, 0)
+                            .toLocaleString()}
                         </th>
                         <th>
                           ₹
-                          {filteredBooking.reduce((total, obj) => {
-                            return obj.bdeName === obj.bdmName
-                              ? obj.firstPayment === 0
-                                ? total + obj.originalTotalPayment
-                                : total + obj.firstPayment
-                              : obj.firstPayment === 0
+                          {filteredBooking
+                            .reduce((total, obj) => {
+                              return obj.bdeName === obj.bdmName
+                                ? obj.firstPayment === 0
+                                  ? total + obj.originalTotalPayment
+                                  : total + obj.firstPayment
+                                : obj.firstPayment === 0
                                 ? total + obj.originalTotalPayment / 2
                                 : total + obj.firstPayment / 2;
-                          }, 0).toLocaleString()}
+                            }, 0)
+                            .toLocaleString()}
                         </th>
                         <th>
                           ₹
-                          {filteredBooking.reduce((total, obj) => {
-                            return obj.bdeName === obj.bdmName
-                              ? obj.firstPayment === 0
-                                ? total + obj.originalTotalPayment
-                                : total + obj.firstPayment
-                              : obj.firstPayment === 0
+                          {filteredBooking
+                            .reduce((total, obj) => {
+                              return obj.bdeName === obj.bdmName
+                                ? obj.firstPayment === 0
+                                  ? total + obj.originalTotalPayment
+                                  : total + obj.firstPayment
+                                : obj.firstPayment === 0
                                 ? total + obj.originalTotalPayment / 2
                                 : total + obj.firstPayment / 2;
-                          }, 0).toLocaleString()}
+                            }, 0)
+                            .toLocaleString()}
                         </th>
                         <th>-</th>
                         <th>-</th>
@@ -2915,9 +3747,19 @@ console.log(totalBooking)
                       </tr>
                     </tfoot>
                   </>
-                ) : filteredBooking && filteredBooking.length === 0 && loading ? (
+                ) : filteredBooking &&
+                  filteredBooking.length === 0 &&
+                  loading ? (
                   <tr>
-                    <td colSpan={12} style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
+                    <td
+                      colSpan={12}
+                      style={{
+                        position: "absolute",
+                        left: "50%",
+                        textAlign: "center",
+                        verticalAlign: "middle",
+                      }}
+                    >
                       <ScaleLoader
                         color="lightgrey"
                         loading
@@ -2930,12 +3772,12 @@ console.log(totalBooking)
                       />
                     </td>
                   </tr>
-
                 ) : (
                   <tr>
-                    <td colSpan={12} style={{ textAlign: 'center' }}><Nodata /></td>
+                    <td colSpan={12} style={{ textAlign: "center" }}>
+                      <Nodata />
+                    </td>
                   </tr>
-
                 )}
               </table>
             </div>
@@ -2949,20 +3791,35 @@ console.log(totalBooking)
           style={{ top: "50px" }}
           anchor="right"
           open={openProjection}
-          onClose={closeProjection}>
+          onClose={closeProjection}
+        >
           <div style={{ width: "31em" }} className="container-xl">
-            <div className="d-flex justify-content-between align-items-center" style={{ margin: "10px 0px" }}>
-              <h1 style={{ marginBottom: "0px", fontSize: "20px", }} className="title">
+            <div
+              className="d-flex justify-content-between align-items-center"
+              style={{ margin: "10px 0px" }}
+            >
+              <h1
+                style={{ marginBottom: "0px", fontSize: "20px" }}
+                className="title"
+              >
                 Projection Form
               </h1>
               <div>
-                <IconButton onClick={() => {
-                  setIsEditProjection(true);
-                }}>
-                  <EditIcon color="grey" style={{ width: "17px", height: "17px" }}></EditIcon>
+                <IconButton
+                  onClick={() => {
+                    setIsEditProjection(true);
+                  }}
+                >
+                  <EditIcon
+                    color="grey"
+                    style={{ width: "17px", height: "17px" }}
+                  ></EditIcon>
                 </IconButton>
                 <IconButton>
-                  <IoClose onClick={closeProjection} style={{ width: "17px", height: "17px" }} />
+                  <IoClose
+                    onClick={closeProjection}
+                    style={{ width: "17px", height: "17px" }}
+                  />
                 </IconButton>
               </div>
             </div>
@@ -2971,7 +3828,8 @@ console.log(totalBooking)
               <div className="d-flex align-items-center justify-content-between">
                 <div>
                   <h1
-                    title={projectingCompany} style={{
+                    title={projectingCompany}
+                    style={{
                       fontSize: "14px",
                       textShadow: "none",
                       fontWeight: "400",
@@ -2981,19 +3839,20 @@ console.log(totalBooking)
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
-                    }}>
+                    }}
+                  >
                     {projectingCompany}
                   </h1>
                 </div>
                 <div>
                   <button
                     onClick={() => handleDelete(projectingCompany)}
-                    className="btn btn-link" style={{ color: "grey" }}
+                    className="btn btn-link"
+                    style={{ color: "grey" }}
                   >
                     Clear Form
                   </button>
                 </div>
-
               </div>
               <div className="label">
                 <strong>Offered Services :</strong>
@@ -3023,8 +3882,13 @@ console.log(totalBooking)
                 </div>
               </div>
               <div className="label">
-                <strong>Offered Prices (With GST){!currentProjection.offeredPrize && (<span style={{ color: "red" }}>*</span>)}{" "}
-                  :</strong>
+                <strong>
+                  Offered Prices (With GST)
+                  {!currentProjection.offeredPrize && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}{" "}
+                  :
+                </strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -3042,10 +3906,13 @@ console.log(totalBooking)
                 </div>
               </div>
               <div className="label">
-                <strong>Expected Price (With GST) {currentProjection.totalPayment === 0 && (
-                  <span style={{ color: "red" }}>*</span>
-                )}{" "}
-                  :</strong>
+                <strong>
+                  Expected Price (With GST){" "}
+                  {currentProjection.totalPayment === 0 && (
+                    <span style={{ color: "red" }}>*</span>
+                  )}{" "}
+                  :
+                </strong>
                 <div className="services mb-3">
                   <input
                     type="number"
@@ -3053,12 +3920,15 @@ console.log(totalBooking)
                     placeholder="Please enter total Payment"
                     value={currentProjection.totalPayment}
                     onChange={(e) => {
-                      const newTotalPayment = e.target.value
-                      if (Number(newTotalPayment) <= Number(currentProjection.offeredPrize)) {
+                      const newTotalPayment = e.target.value;
+                      if (
+                        Number(newTotalPayment) <=
+                        Number(currentProjection.offeredPrize)
+                      ) {
                         setCurrentProjection((prevLeadData) => ({
                           ...prevLeadData,
                           totalPayment: newTotalPayment,
-                          totalPaymentError: ""
+                          totalPaymentError: "",
                         }));
                       } else {
                         setCurrentProjection((prevLeadData) => ({
@@ -3068,11 +3938,12 @@ console.log(totalBooking)
                             "Expected Price should be less than or equal to Offered Price.",
                         }));
                       }
-
                     }}
                     disabled={!isEditProjection}
                   />
-                  <div style={{ color: "lightred" }}>{currentProjection.totalPaymentError}</div>
+                  <div style={{ color: "lightred" }}>
+                    {currentProjection.totalPaymentError}
+                  </div>
                 </div>
               </div>
               <div className="label">
@@ -3144,7 +4015,7 @@ console.log(totalBooking)
           </div>
         </Drawer>
       </div>
-    </div >
+    </div>
   );
 }
 

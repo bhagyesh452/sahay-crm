@@ -44,6 +44,8 @@ import BdmLeads from "./BDM/Dashboard/BdmLeads/BdmLeads.js";
 import BdmTeamLeads from "./BDM/Dashboard/BdmTeamLeads/BdmTeamLeads";
 import ManagerBookings from "./DataManager/Dashboard/ManageLeads/ManagerBookings.jsx";
 
+import EmployeeTeamLeads from "./employeeComp/EmployeeTeamLeads.jsx";
+
 
 
 function App() {
@@ -75,6 +77,9 @@ function App() {
           <Route
             path="/employee-dashboard/:userId/"
             element={newtoken ? <EmployeeDashboard /> : <Navigate to="/" />}></Route>
+
+            <Route path="/employee-team-leads/:userId" element={newtoken ? <EmployeeTeamLeads/> : <Navigate to="/" />}>
+            </Route>
 
 
 
@@ -133,6 +138,7 @@ function App() {
                 path="/admin/employees/:id"
                 element={<EmployeeParticular />}
               />
+              
               <Route
                 path="/admin/employees/:id/login-details"
                 element={<LoginDetails />}

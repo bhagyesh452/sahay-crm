@@ -156,6 +156,7 @@ export default function RedesignedForm({
           bdeName: employeeName ? employeeName : "",
           bdeEmail: employeeEmail ? employeeEmail : "",
           bookingDate: formatInputDate(new Date()),
+          bdmType:"Close-by"
         }));
         setFetchBDE(true)
       } else if (Step2Status === true && Step3Status === false) {
@@ -645,6 +646,18 @@ export default function RedesignedForm({
                 const secondPayment = Number(service.secondPayment);
                 const thirdPayment = Number(service.thirdPayment);
                 const fourthPayment = Number(service.fourthPayment);
+                if(service.secondPayment!==0 && service.secondPaymentRemarks === "" ){
+                  isValid = false;
+                  break;
+                }
+                if(service.thirdPayment!==0 && service.thirdPaymentRemarks === "" ){
+                  isValid = false;
+                  break;
+                }
+                if(service.fourthPayment!==0 && service.fourthPaymentRemarks === "" ){
+                  isValid = false;
+                  break;
+                }
                 // console.log( firstPayment + secondPayment + thirdPayment + fourthPayment, Number(service.totalPaymentWGST) , "This is it" )
                 if (
                   (service.paymentTerms !== "Full Advanced" &&
@@ -1354,23 +1367,32 @@ export default function RedesignedForm({
                               name="optional-remarks"
                               id="optional-remarks-2"
                             >
-                              <option value="" selected disabled>
+                               <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="After Application">
-                                After Application
+                                AFTER APPLICATION
+                              </option>
+                              <option value="AFTER CERTIFICATE">
+                                AFTER CERTIFICATE
+                              </option>
+                              <option value="AFTER APPROVAL">
+                                AFTER APPROVAL
+                              </option>
+                              <option value="AFTER SERVICE COMPLETION">
+                                AFTER SERVICE COMPLETION
                               </option>
                               <option value="At the time of Application">
-                                At the time of Application
+                               AT THE TIME OF APPLICATION
                               </option>
                               <option value="After Document">
-                                After Document
+                                AFTER DOCUMENT
                               </option>
                               <option value="Before Application">
-                                Before Application
+                                BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
-                                On Particular Date
+                                ON PARTICULAR DATE
                               </option>
                             </select>
                           </div>
@@ -1449,23 +1471,32 @@ export default function RedesignedForm({
                               name="optional-remarks"
                               id="optional-remarks-3"
                             >
-                              <option value="" selected disabled>
+                             <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="After Application">
-                                After Application
+                                AFTER APPLICATION
+                              </option>
+                              <option value="AFTER CERTIFICATE">
+                                AFTER CERTIFICATE
+                              </option>
+                              <option value="AFTER APPROVAL">
+                                AFTER APPROVAL
+                              </option>
+                              <option value="AFTER SERVICE COMPLETION">
+                                AFTER SERVICE COMPLETION
                               </option>
                               <option value="At the time of Application">
-                                At the time of Application
+                               AT THE TIME OF APPLICATION
                               </option>
                               <option value="After Document">
-                                After Document
+                                AFTER DOCUMENT
                               </option>
                               <option value="Before Application">
-                                Before Application
+                                BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
-                                On Particular Date
+                                ON PARTICULAR DATE
                               </option>
                             </select>
                           </div>
@@ -1538,23 +1569,32 @@ export default function RedesignedForm({
                               name="optional-remarks-4"
                               id="optional-remarks-4"
                             >
-                              <option value="" selected disabled>
+                               <option value="" selected disabled>
                                 Select Payment Date
                               </option>
                               <option value="After Application">
-                                After Application
+                                AFTER APPLICATION
+                              </option>
+                              <option value="AFTER CERTIFICATE">
+                                AFTER CERTIFICATE
+                              </option>
+                              <option value="AFTER APPROVAL">
+                                AFTER APPROVAL
+                              </option>
+                              <option value="AFTER SERVICE COMPLETION">
+                                AFTER SERVICE COMPLETION
                               </option>
                               <option value="At the time of Application">
-                                At the time of Application
+                               AT THE TIME OF APPLICATION
                               </option>
                               <option value="After Document">
-                                After Document
+                                AFTER DOCUMENT
                               </option>
                               <option value="Before Application">
-                                Before Application
+                                BEFORE APPLICATION
                               </option>
                               <option value="On Particular Date">
-                                On Particular Date
+                                ON PARTICULAR DATE
                               </option>
                             </select>
                           </div>
@@ -1879,7 +1919,7 @@ export default function RedesignedForm({
                                   <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="pan">
-                                        Company's PAN:{" "}
+                                        Company's PAN/GST NUMBER:{" "}
                                         {
                                           <span style={{ color: "red" }}>
                                             *
@@ -1905,7 +1945,7 @@ export default function RedesignedForm({
                                       />
                                     </div>
                                   </div>
-                                  <div className="col-sm-4">
+                                  {/* <div className="col-sm-4">
                                     <div className="form-group mt-2 mb-2">
                                       <label for="gst">Company's GST:</label>
                                       <input
@@ -1925,7 +1965,7 @@ export default function RedesignedForm({
                                         }
                                       />
                                     </div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </form>
                             </div>
@@ -2818,7 +2858,7 @@ export default function RedesignedForm({
                                   <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
-                                        <b>Company's PAN:</b>
+                                        <b>Company's PAN/GST Number:</b>
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">
@@ -2829,7 +2869,7 @@ export default function RedesignedForm({
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="row m-0">
+                                  {/* <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
                                         <b>Company's GST:</b>
@@ -2842,7 +2882,7 @@ export default function RedesignedForm({
                                           : "-"}
                                       </div>
                                     </div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
                               <div className="stepTWOPreview">
@@ -2884,8 +2924,9 @@ export default function RedesignedForm({
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">
+
                                       <div className="form-label-data">
-                                        {leadData.bdmName}
+                                        {leadData.bdmName} - {leadData.bdmType}
                                       </div>
                                     </div>
                                   </div>

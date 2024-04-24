@@ -122,6 +122,10 @@ function EmployeeParticular() {
       const selectedEmployee = response.data.find(
         (employee) => employee._id === id
       );
+
+      //
+      //
+      //console.log("selectedemployee" , selectedEmployee)
       //console.log(selectedEmployee._id)
 
       //console.log("eData", eData[0])
@@ -140,6 +144,7 @@ function EmployeeParticular() {
 
       if (selectedEmployee) {
         setEmployeeName(selectedEmployee.ename);
+        setBdmWorkOn(selectedEmployee.bdmWork);
       } else {
         // Handle the case where no employee is found with the given id
         setEmployeeName("Employee not found");
@@ -148,7 +153,7 @@ function EmployeeParticular() {
       console.error("Error fetching employee details:", error.message);
     }
   };
-  console.log(currentProjection);
+  //console.log(currentProjection);
   const functionopenAnchor = () => {
     setTimeout(() => {
       setOpenAnchor(true);
@@ -159,7 +164,7 @@ function EmployeeParticular() {
   };
   const fetchRedesignedFormData = async () => {
     try {
-      console.log(maturedID);
+      //console.log(maturedID);
       const response = await axios.get(
         `${secretKey}/redesigned-final-leadData`
       );
@@ -170,7 +175,7 @@ function EmployeeParticular() {
     }
   };
   useEffect(() => {
-    console.log("Matured ID Changed", maturedID);
+    //console.log("Matured ID Changed", maturedID);
     if (maturedID) {
       fetchRedesignedFormData();
     }
@@ -244,7 +249,7 @@ function EmployeeParticular() {
       setLoading(false);
     }
   };
-  console.log("employeedata", employeeData);
+  //console.log("employeedata", employeeData);
   useEffect(() => {
     // Fetch employee details and related data when the component mounts or id changes
     fetchEmployeeDetails();
@@ -263,12 +268,13 @@ function EmployeeParticular() {
   }, []);
   useEffect(() => {
     if (employeeName) {
-      console.log("Employee found");
+      //console.log("Employee found");
       fetchNewData();
     } else {
       console.log("No employees found");
     }
   }, [employeeName]);
+
 
   const filteredData = employeeData.filter((company) => {
     const fieldValue = company[selectedField];
@@ -336,7 +342,7 @@ function EmployeeParticular() {
       setVisibilityOthernew("none");
     }
 
-    console.log(selectedField);
+    //console.log(selectedField);
   };
 
   const handleDateChange = (e) => {
@@ -377,7 +383,7 @@ function EmployeeParticular() {
       setSelectedRows((prevSelectedRows) => {
         // If the Ctrl key is pressed
         if (event.ctrlKey) {
-          console.log("pressed");
+          //console.log("pressed");
           const selectedIndex = filteredData.findIndex((row) => row._id === id);
           const lastSelectedIndex = filteredData.findIndex((row) =>
             prevSelectedRows.includes(row._id)
@@ -523,7 +529,7 @@ function EmployeeParticular() {
   };
 
   const handleUploadData = async (e) => {
-    console.log("Uploading data");
+    //console.log("Uploading data");
 
     const currentDate = new Date().toLocaleDateString();
     const currentTime = new Date().toLocaleTimeString();
@@ -571,7 +577,7 @@ function EmployeeParticular() {
     try {
       // Wait for all update promises to resolve
       await Promise.all(updatePromises);
-      console.log("Employee data updated!");
+      //console.log("Employee data updated!");
 
       // Clear the selection
       setnewEmployeeSelection("Not Alloted");
@@ -597,7 +603,7 @@ function EmployeeParticular() {
     }
   };
 
-  console.log(loginDetails);
+  //console.log(loginDetails);
 
   const handleMouseDown = (id) => {
     // Initiate drag selection
@@ -646,7 +652,7 @@ function EmployeeParticular() {
       setRemarksHistory(response.data);
       setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
-      console.log(response.data);
+      //console.log(response.data);
     } catch (error) {
       console.error("Error fetching remarks history:", error);
     }
@@ -755,6 +761,84 @@ function EmployeeParticular() {
       console.log("Current ID not found in eData array.");
     }
   };
+  // --------------------------------bdm work assgin-------------------------------------------------------------
+
+  const [bdmWorkOn, setBdmWorkOn] = useState(false)
+
+  console.log("bdmWork", bdmWorkOn)
+
+  const handleAssignBdmWork = async () => {
+    const currentId = id;
+
+    //console.log("currentId" , currentId)
+    // Show Swal confirmation dialog
+    const confirmation = await Swal.fire({
+      title: 'Assign BDM Work',
+      text: 'Are you sure you want to assign BDM work?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No'
+    });
+
+    // If user confirms
+    if (confirmation.isConfirmed) {
+      //console.log("yahna confirm hua")
+      try {
+        const response = await axios.post(`${secretKey}/post-bdmwork-request/${currentId}`, {
+          bdmWork: true
+        });
+ 
+        fetchEmployeeDetails()
+        console.log(response.data)
+        // Show success message
+        Swal.fire('BDM Work Assigned!', '', 'success');
+      } catch (error) {
+        console.log("error message", error.message);
+        // Show error message
+        Swal.fire('Error', 'An error occurred while assigning BDM work.', 'error');
+      }
+    }
+  };
+
+  const handleReverseBdmWork = async () => {
+    const currentId = id;
+    try {
+      const confirmation = await Swal.fire({
+        title: 'Revoke BDM Work',
+        text: 'Are you sure you want to revoke BDM work?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+      });
+      if (confirmation.isConfirmed) {
+        //console.log("Confirmed"); // Log confirmation
+        try {
+          const response = await axios.post(`${secretKey}/post-bdmwork-revoke/${currentId}`, {
+            bdmWork: false
+          });
+          fetchEmployeeDetails(); // Assuming this function fetches updated employee details
+          console.log(response.data); // Log response data
+          // Show success message
+          Swal.fire('BDM Work Revoked!', '', 'success');
+        } catch (error) {
+          console.error("Error revoking BDM work:", error);
+          // Show error message
+          Swal.fire('Error', 'An error occurred while revoking BDM work.', 'error');
+        }
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      // Show error message
+      Swal.fire('Error', 'An error occurred.', 'error');
+    }
+  };
+  
+
+
+
+
 
   return (
     <div>
@@ -765,8 +849,7 @@ function EmployeeParticular() {
           style={{
             margin: "3px 0px 1px 0px",
           }}
-          className="page-header d-print-none"
-        >
+          className="page-header d-print-none">
           <div className="container-xl">
             <div className="row g-2 align-items-center">
               <div className="col d-flex justify-content-between">
@@ -820,130 +903,138 @@ function EmployeeParticular() {
                       </div>
                     </div>
                   )}
-                {!AddForm && <>
-                  <div className="form-control sort-by">
-                    <label htmlFor="sort-by">Sort By:</label>
-                    <select
-                      style={{
-                        border: "none",
-                        outline: "none",
-                        color: "#666a66",
-                      }}
-                      name="sort-by"
-                      id="sort-by"
-                      onChange={(e) => {
-                        const selectedOption = e.target.value;
+                  {!AddForm && <>
+                    <div className="form-control sort-by">
+                      <label htmlFor="sort-by">Sort By:</label>
+                      <select
+                        style={{
+                          border: "none",
+                          outline: "none",
+                          color: "#666a66",
+                        }}
+                        name="sort-by"
+                        id="sort-by"
+                        onChange={(e) => {
+                          const selectedOption = e.target.value;
 
-                        switch (selectedOption) {
-                          case "Busy":
-                          case "Untouched":
-                          case "Not Picked Up":
-                            setdataStatus("All");
-                            setEmployeeData(
-                              moreEmpData
-                                .filter((data) =>
-                                  [
-                                    "Busy",
-                                    "Untouched",
-                                    "Not Picked Up",
-                                  ].includes(data.Status)
+                          switch (selectedOption) {
+                            case "Busy":
+                            case "Untouched":
+                            case "Not Picked Up":
+                              setdataStatus("All");
+                              setEmployeeData(
+                                moreEmpData
+                                  .filter((data) =>
+                                    [
+                                      "Busy",
+                                      "Untouched",
+                                      "Not Picked Up",
+                                    ].includes(data.Status)
+                                  )
+                                  .sort((a, b) => {
+                                    if (a.Status === selectedOption) return -1;
+                                    if (b.Status === selectedOption) return 1;
+                                    return 0;
+                                  })
+                              );
+                              break;
+                            case "Interested":
+                              setdataStatus("Interested");
+                              setEmployeeData(
+                                moreEmpData
+                                  .filter((data) => data.Status === "Interested")
+                                  .sort((a, b) =>
+                                    a.AssignDate.localeCompare(b.AssignDate)
+                                  )
+                              );
+                              break;
+                            case "Not Interested":
+                              setdataStatus("NotInterested");
+                              setEmployeeData(
+                                moreEmpData
+                                  .filter((data) =>
+                                    ["Not Interested", "Junk"].includes(
+                                      data.Status
+                                    )
+                                  )
+                                  .sort((a, b) =>
+                                    a.AssignDate.localeCompare(b.AssignDate)
+                                  )
+                              );
+                              break;
+                            case "FollowUp":
+                              setdataStatus("FollowUp");
+                              setEmployeeData(
+                                moreEmpData
+                                  .filter((data) => data.Status === "FollowUp")
+                                  .sort((a, b) =>
+                                    a.AssignDate.localeCompare(b.AssignDate)
+                                  )
+                              );
+                              break;
+                            case "AssignDate":
+                              setdataStatus("AssignDate");
+                              setEmployeeData(
+                                moreEmpData.sort((a, b) =>
+                                  b.AssignDate.localeCompare(a.AssignDate)
                                 )
-                                .sort((a, b) => {
+                              );
+                              break;
+                            case "Company Incorporation Date  ":
+                              setdataStatus("CompanyIncorporationDate");
+                              setEmployeeData(
+                                moreEmpData.sort((a, b) =>
+                                  b["Company Incorporation Date  "].localeCompare(
+                                    a["Company Incorporation Date  "]
+                                  )
+                                )
+                              );
+                              break;
+                            default:
+                              // No filtering if default option selected
+                              setdataStatus("All");
+                              setEmployeeData(
+                                moreEmpData.sort((a, b) => {
                                   if (a.Status === selectedOption) return -1;
                                   if (b.Status === selectedOption) return 1;
                                   return 0;
                                 })
-                            );
-                            break;
-                          case "Interested":
-                            setdataStatus("Interested");
-                            setEmployeeData(
-                              moreEmpData
-                                .filter((data) => data.Status === "Interested")
-                                .sort((a, b) =>
-                                  a.AssignDate.localeCompare(b.AssignDate)
-                                )
-                            );
-                            break;
-                          case "Not Interested":
-                            setdataStatus("NotInterested");
-                            setEmployeeData(
-                              moreEmpData
-                                .filter((data) =>
-                                  ["Not Interested", "Junk"].includes(
-                                    data.Status
-                                  )
-                                )
-                                .sort((a, b) =>
-                                  a.AssignDate.localeCompare(b.AssignDate)
-                                )
-                            );
-                            break;
-                          case "FollowUp":
-                            setdataStatus("FollowUp");
-                            setEmployeeData(
-                              moreEmpData
-                                .filter((data) => data.Status === "FollowUp")
-                                .sort((a, b) =>
-                                  a.AssignDate.localeCompare(b.AssignDate)
-                                )
-                            );
-                            break;
-                          case "AssignDate":
-                            setdataStatus("AssignDate");
-                            setEmployeeData(
-                              moreEmpData.sort((a, b) =>
-                                b.AssignDate.localeCompare(a.AssignDate)
-                              )
-                            );
-                            break;
-                          case "Company Incorporation Date  ":
-                            setdataStatus("CompanyIncorporationDate");
-                            setEmployeeData(
-                              moreEmpData.sort((a, b) =>
-                                b["Company Incorporation Date  "].localeCompare(
-                                  a["Company Incorporation Date  "]
-                                )
-                              )
-                            );
-                            break;
-                          default:
-                            // No filtering if default option selected
-                            setdataStatus("All");
-                            setEmployeeData(
-                              moreEmpData.sort((a, b) => {
-                                if (a.Status === selectedOption) return -1;
-                                if (b.Status === selectedOption) return 1;
-                                return 0;
-                              })
-                            );
-                            break;
-                        }
-                      }}
-                    >
-                      <option value="" disabled selected>
-                        Select Status
-                      </option>
-                      <option value="Untouched">Untouched</option>
-                      <option value="Busy">Busy</option>
-                      <option value="Not Picked Up">Not Picked Up</option>
-                      <option value="FollowUp">Follow Up</option>
-                      <option value="Interested">Interested</option>
-                      <option value="Not Interested">Not Interested</option>
-                      <option value="AssignDate">Assigned Date</option>
-                      <option value="Company Incorporation Date  ">
-                        C.Inco. Date
-                      </option>
-                    </select>
-                  </div>
-                  <Link
-                    to={`/admin/employees/${id}/login-details`}
-                    style={{ marginLeft: "10px" }}
-                  >
-                    <button className="btn btn-primary d-none d-sm-inline-block">
-                      Login Details
-                    </button>
-                  </Link>
+                              );
+                              break;
+                          }
+                        }}
+                      >
+                        <option value="" disabled selected>
+                          Select Status
+                        </option>
+                        <option value="Untouched">Untouched</option>
+                        <option value="Busy">Busy</option>
+                        <option value="Not Picked Up">Not Picked Up</option>
+                        <option value="FollowUp">Follow Up</option>
+                        <option value="Interested">Interested</option>
+                        <option value="Not Interested">Not Interested</option>
+                        <option value="AssignDate">Assigned Date</option>
+                        <option value="Company Incorporation Date  ">
+                          C.Inco. Date
+                        </option>
+                      </select>
+                    </div>
+                    {bdmWorkOn ? (
+                      <button className="btn btn-primary d-none d-sm-inline-block ml-1" onClick={() => handleReverseBdmWork()}>
+                        Revoke Bdm Work
+                      </button>
+                    ) : (
+                      <button className="btn btn-primary d-none d-sm-inline-block ml-1" onClick={() => handleAssignBdmWork()}>
+                        Assign Bdm Work
+                      </button>
+                    )}
+                    <Link
+                      to={`/admin/employees/${id}/login-details`}
+                      style={{ marginLeft: "10px" }}>
+                      <button className="btn btn-primary d-none d-sm-inline-block">
+                        Login Details
+                      </button>
+                    </Link>
                   </>}
 
                   {backButton && (
@@ -964,7 +1055,7 @@ function EmployeeParticular() {
                           Back
                         </button>
                       </Link> : <>
-                      <button className="btn btn-primary d-none d-sm-inline-block" onClick={()=>setAddForm(false)}>
+                        <button className="btn btn-primary d-none d-sm-inline-block" onClick={() => setAddForm(false)}>
                           <span>
                             <FaArrowLeft
                               style={{
@@ -996,6 +1087,15 @@ function EmployeeParticular() {
                 </div>
               </div>
             </div>
+            {/* <div className="row g-2 align-items-center mt-5 mb-5 ml-2">
+              <div className="col-2 d-flex justify-content-between">
+                <Link to={`/admin/admin-user`}
+                  style={{ marginLeft: "10px" }} > My Leads</Link>
+              </div>
+              <div className="col-2 d-flex justify-content-between">
+                TeamLeads
+              </div>
+            </div> */}
           </div>
         </div>
         {!openLogin && !AddForm && !EditForm && (
@@ -1678,43 +1778,43 @@ function EmployeeParticular() {
                                   <td>{formatDate(company["AssignDate"])}</td>
                                   {(dataStatus === "FollowUp" ||
                                     dataStatus === "Interested") && (
-                                    <td>
-                                      {company &&
-                                      projectionData &&
-                                      projectionData.some(
-                                        (item) =>
-                                          item.companyName ===
-                                          company["Company Name"]
-                                      ) ? (
-                                        <IconButton>
-                                          <HiOutlineEye
-                                            onClick={() => {
-                                              functionopenprojection(
-                                                company["Company Name"]
-                                              );
-                                            }}
-                                            style={{
-                                              cursor: "pointer",
-                                              width: "17px",
-                                              height: "17px",
-                                              color: "fbb900",
-                                            }}
-                                          />
-                                        </IconButton>
-                                      ) : (
-                                        <IconButton>
-                                          <HiOutlineEye
-                                            style={{
-                                              cursor: "pointer",
-                                              width: "17px",
-                                              height: "17px",
-                                            }}
-                                            color="lightgrey"
-                                          />
-                                        </IconButton>
-                                      )}
-                                    </td>
-                                  )}
+                                      <td>
+                                        {company &&
+                                          projectionData &&
+                                          projectionData.some(
+                                            (item) =>
+                                              item.companyName ===
+                                              company["Company Name"]
+                                          ) ? (
+                                          <IconButton>
+                                            <HiOutlineEye
+                                              onClick={() => {
+                                                functionopenprojection(
+                                                  company["Company Name"]
+                                                );
+                                              }}
+                                              style={{
+                                                cursor: "pointer",
+                                                width: "17px",
+                                                height: "17px",
+                                                color: "fbb900",
+                                              }}
+                                            />
+                                          </IconButton>
+                                        ) : (
+                                          <IconButton>
+                                            <HiOutlineEye
+                                              style={{
+                                                cursor: "pointer",
+                                                width: "17px",
+                                                height: "17px",
+                                              }}
+                                              color="lightgrey"
+                                            />
+                                          </IconButton>
+                                        )}
+                                      </td>
+                                    )}
 
                                   {dataStatus === "Matured" && (
                                     <>
@@ -1752,15 +1852,17 @@ function EmployeeParticular() {
                                               }}
                                             />
                                           </div>
-                                          <div onClick={()=>{setCompanyName(company["Company Name"])
-                                              setAddForm(true)}} >
-                                              <AddCircleIcon style={{
-                                                  cursor: "pointer",
-                                                  color: "#4f5b74",
-                                                  width: "14px",
-                                                  height: "14px",
-                                                }}/>
-                                        </div>
+                                          <div onClick={() => {
+                                            setCompanyName(company["Company Name"])
+                                            setAddForm(true)
+                                          }} >
+                                            <AddCircleIcon style={{
+                                              cursor: "pointer",
+                                              color: "#4f5b74",
+                                              width: "14px",
+                                              height: "14px",
+                                            }} />
+                                          </div>
                                         </div>
                                       </td>
                                     </>
@@ -1953,20 +2055,20 @@ function EmployeeParticular() {
             <LoginDetails loginDetails={loginDetails} />
           </>
         )}
-         {
- EditForm && ( <>
-  <EditableLeadform
-    setFormOpen={EditForm}
-  />
-</>)
-        } 
+        {
+          EditForm && (<>
+            <EditableLeadform
+              setFormOpen={EditForm}
+            />
+          </>)
+        }
         {
           AddForm && companyName !== "" && (
-            <> <AddLeadForm    setFormOpen={setAddForm}
-            companysName={companyName}
-            setDataStatus={setdataStatus}
-            setNowToFetch={setNowToFetch} />
-           
+            <> <AddLeadForm setFormOpen={setAddForm}
+              companysName={companyName}
+              setDataStatus={setdataStatus}
+              setNowToFetch={setNowToFetch} />
+
             </>
           )
         }
@@ -1991,15 +2093,15 @@ function EmployeeParticular() {
                 style={
                   selectedOption === "direct"
                     ? {
-                        backgroundColor: "#e9eae9",
-                        margin: "10px 10px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "#e9eae9",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                    }
                     : {
-                        backgroundColor: "white",
-                        margin: "10px 10px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "white",
+                      margin: "10px 10px 0px 0px",
+                      cursor: "pointer",
+                    }
                 }
                 onClick={() => {
                   setSelectedOption("direct");
@@ -2022,15 +2124,15 @@ function EmployeeParticular() {
                 style={
                   selectedOption === "someoneElse"
                     ? {
-                        backgroundColor: "#e9eae9",
-                        margin: "10px 0px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "#e9eae9",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                    }
                     : {
-                        backgroundColor: "white",
-                        margin: "10px 0px 0px 0px",
-                        cursor: "pointer",
-                      }
+                      backgroundColor: "white",
+                      margin: "10px 0px 0px 0px",
+                      cursor: "pointer",
+                    }
                 }
                 className="indirect form-control"
                 onClick={() => {
@@ -2285,7 +2387,7 @@ function EmployeeParticular() {
                   className="form-control"
                   placeholder="0"
                   value={currentProjection.offeredPrize}
-                  //disabled
+                //disabled
                 />
               </div>
             </div>
@@ -2297,7 +2399,7 @@ function EmployeeParticular() {
                   className="form-control"
                   placeholder="Lasf followUp date is not mentioned"
                   value={currentProjection.lastFollowUpdate}
-                  //disabled
+                //disabled
                 />
               </div>
             </div>
@@ -2310,7 +2412,7 @@ function EmployeeParticular() {
                   placeholder="Total Payment is not mentioned"
                   value={currentProjection.totalPayment}
 
-                  //disabled
+                //disabled
                 />
               </div>
             </div>
@@ -2322,7 +2424,7 @@ function EmployeeParticular() {
                   className="form-control"
                   placeholder="Estimated Date not mentioned"
                   value={currentProjection.estPaymentDate}
-                  //disabled
+                //disabled
                 />
               </div>
             </div>

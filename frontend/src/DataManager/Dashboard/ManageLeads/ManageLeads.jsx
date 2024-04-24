@@ -703,6 +703,7 @@ function ManageLeads() {
                 City: city,
                 State: state,
                 AssignDate: new Date(),
+                "UploadedBy":dataManagerName,
                 "Company Address": companyAddress,
                 "Director Name(First)": directorNameFirst,
                 "Director Number(First)": directorNumberFirst,
@@ -1156,6 +1157,7 @@ function ManageLeads() {
                 "Company Incorporation Date ": companyIncoDate,
                 "City": companyCity,
                 "State": companyState,
+                "UploadedBy":dataManagerName
             };
             const dateObject = new Date(companyIncoDate);
 

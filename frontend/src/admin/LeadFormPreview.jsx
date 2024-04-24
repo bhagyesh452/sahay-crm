@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+
 import pdfimg from "../static/my-images/pdf.png";
 import Swal from "sweetalert2";
 import PdfImageViewerAdmin from "./PdfViewerAdmin";
-import img from "../static/my-images/image.png";
+import { IoAdd } from "react-icons/io5";
+import CloseIcon from "@mui/icons-material/Close";
+import { IconX } from "@tabler/icons-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+} from "@mui/material";
+
 
 function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
+  const [selectedDocuments, setSelectedDocuments] = useState([]);
+  const [sendingIndex, setSendingIndex] = useState(0);
+  const [openOtherDocs, setOpenOtherDocs] = useState(false);
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   function formatDate(inputDate) {
     const date = new Date(inputDate);
@@ -39,6 +52,80 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
     const pathname = pdfurl;
     console.log(pathname);
     window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
+  };
+
+  
+  // ----------------------------------------- Upload documents Section -----------------------------------------------------
+
+  const handleOtherDocsUpload = (updatedFiles) => {
+    setSelectedDocuments((prevSelectedDocuments) => {
+      return [...prevSelectedDocuments, ...updatedFiles];
+    });
+  };
+
+  const handleRemoveFile = (index) => {
+    setSelectedDocuments((prevSelectedDocuments) => {
+      // Create a copy of the array of selected documents
+      const updatedDocuments = [...prevSelectedDocuments];
+      // Remove the document at the specified index
+      updatedDocuments.splice(index, 1);
+      // Return the updated array of selected documents
+      return updatedDocuments;
+    });
+  };
+
+  const closeOtherDocsPopup = () => {
+    setOpenOtherDocs(false);
+  };
+  const handleotherdocsAttachment = async () => {
+    try {
+      const files = selectedDocuments;
+      console.log(files);
+
+      if (files.length === 0) {
+        // No files selected
+        return;
+      }
+
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append("otherDocs", files[i]);
+      }
+      console.log(formData);
+      const response = await fetch(
+        `${secretKey}/uploadotherdocsAttachment/${currentLeadForm["Company Name"]}/${sendingIndex}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      if (response.ok) {
+        Swal.fire({
+          title: "Success!",
+          html: `<small> File Uploaded successfully </small>
+        `,
+          icon: "success",
+        });
+        setSelectedDocuments([]);
+        setOpenOtherDocs(false);
+
+        
+        
+      } else {
+        Swal.fire({
+          title: "Error uploading file",
+
+          icon: "error",
+        });
+        console.error("Error uploading file");
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error uploading file",
+        icon: "error",
+      });
+      console.error("Error uploading file:", error);
+    }
   };
   return (
     <>
@@ -107,7 +194,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                 <div class="row m-0">
                   <div class="col-sm-6 align-self-stretc p-0">
                     <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                      PAN No.
+                      PAN/GST No.
                     </div>
                   </div>
                   <div class="col-sm-6 align-self-stretc p-0">
@@ -117,7 +204,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                   </div>
                 </div>
               </div>
-              <div className="col-lg-3 col-sm-6">
+              {/* <div className="col-lg-3 col-sm-6">
                 <div class="row m-0">
                   <div class="col-sm-5 align-self-stretc p-0">
                     <div class="booking_inner_dtl_h bdr-left-eee h-100">
@@ -132,7 +219,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -579,7 +666,7 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                 </div>
               </div>
             </div>}
-            {currentLeadForm.paymentReceipt.length!==0 && currentLeadForm.otherDocs.map((obj) => (
+            { currentLeadForm.otherDocs.map((obj) => (
               <div className="col-sm-2 mb-1">
                 <div className="booking-docs-preview">
                   <div
@@ -603,6 +690,111 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                 </div>
               </div>
             ))}
+              <div className="col-sm-2 mb-1">
+                                  <div
+                                    className="booking-docs-preview"
+                                    title="Upload More Documents"
+                                  >
+                                    <div
+                                      className="upload-Docs-BTN"
+                                      onClick={() => {
+                                        setOpenOtherDocs(true);
+                                        setSendingIndex(0);
+                                      }}
+                                    >
+                                      <IoAdd />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <Dialog
+                                  open={openOtherDocs}
+                                  onClose={closeOtherDocsPopup}
+                                  fullWidth
+                                  maxWidth="sm"
+                                >
+                                  <DialogTitle>
+                                    Upload Your Attachments
+                                    <IconButton
+                                      onClick={closeOtherDocsPopup}
+                                      style={{ float: "right" }}
+                                    >
+                                      <CloseIcon color="primary"></CloseIcon>
+                                    </IconButton>{" "}
+                                  </DialogTitle>
+                                  <DialogContent>
+                                    <div className="maincon">
+                                      {/* Single file input for multiple documents */}
+                                      <div
+                                        style={{
+                                          justifyContent: "space-between",
+                                        }}
+                                        className="con1 d-flex"
+                                      >
+                                        <div
+                                          style={{ paddingTop: "9px" }}
+                                          className="uploadcsv"
+                                        >
+                                          <label
+                                            style={{
+                                              margin: "0px 0px 6px 0px",
+                                            }}
+                                            htmlFor="attachmentfile"
+                                          >
+                                            Upload Files
+                                          </label>
+                                        </div>
+                                      </div>
+                                      <div
+                                        style={{ margin: "5px 0px 0px 0px" }}
+                                        className="form-control"
+                                      >
+                                        <input
+                                          type="file"
+                                          name="attachmentfile"
+                                          id="attachmentfile"
+                                          onChange={(e) => {
+                                            handleOtherDocsUpload(
+                                              e.target.files
+                                            );
+                                          }}
+                                          multiple // Allow multiple files selection
+                                        />
+                                        {selectedDocuments &&
+                                          selectedDocuments.length > 0 && (
+                                            <div className="uploaded-filename-main d-flex flex-wrap">
+                                              {selectedDocuments.map(
+                                                (file, index) => (
+                                                  <div
+                                                    className="uploaded-fileItem d-flex align-items-center"
+                                                    key={index}
+                                                  >
+                                                    <p className="m-0">
+                                                      {file.name}
+                                                    </p>
+                                                    <button
+                                                      className="fileItem-dlt-btn"
+                                                      onClick={() =>
+                                                        handleRemoveFile(index)
+                                                      }
+                                                    >
+                                                      <IconX className="close-icon" />
+                                                    </button>
+                                                  </div>
+                                                )
+                                              )}
+                                            </div>
+                                          )}
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                  <button
+                                    className="btn btn-primary"
+                                    onClick={handleotherdocsAttachment}
+                                  >
+                                    Submit
+                                  </button>
+                                </Dialog>
           </div></>)}
         </div>
         {currentLeadForm.moreBookings &&
@@ -1022,11 +1214,11 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                     </div>
                   </div>
                 </div>
-
-               {(objMain.paymentReceipt.length!==0 || objMain.otherDocs.length!==0) && <>
                 <div className="mb-2 mt-3 mul-booking-card-inner-head">
                   <b>Payment Receipt and Additional Documents:</b>
                 </div>
+               {(objMain.paymentReceipt.length!==0 || objMain.otherDocs.length!==0) && <>
+               
                 <div className="row">
                   {objMain.paymentReceipt.length!==0 && <div className="col-sm-2 mb-1">
                     <div className="booking-docs-preview">
@@ -1086,8 +1278,117 @@ function LeadFormPreview({ setOpenAnchor, currentLeadForm }) {
                       </div>
                     </div>
                   ))}
+                  
+                
                 </div>
+              
                 </>}
+                <div className="col-sm-2 mb-1">
+                                  <div
+                                    className="booking-docs-preview"
+                                    title="Upload More Documents"
+                                  >
+                                    <div
+                                      className="upload-Docs-BTN"
+                                      onClick={() => {
+                                        setOpenOtherDocs(true);
+                                        setSendingIndex(index+1);
+                                      }}
+                                    >
+                                      <IoAdd />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <Dialog
+                                  open={openOtherDocs}
+                                  onClose={closeOtherDocsPopup}
+                                  fullWidth
+                                  maxWidth="sm"
+                                >
+                                  <DialogTitle>
+                                    Upload Your Attachments
+                                    <IconButton
+                                      onClick={closeOtherDocsPopup}
+                                      style={{ float: "right" }}
+                                    >
+                                      <CloseIcon color="primary"></CloseIcon>
+                                    </IconButton>{" "}
+                                  </DialogTitle>
+                                  <DialogContent>
+                                    <div className="maincon">
+                                      {/* Single file input for multiple documents */}
+                                      <div
+                                        style={{
+                                          justifyContent: "space-between",
+                                        }}
+                                        className="con1 d-flex"
+                                      >
+                                        <div
+                                          style={{ paddingTop: "9px" }}
+                                          className="uploadcsv"
+                                        >
+                                          <label
+                                            style={{
+                                              margin: "0px 0px 6px 0px",
+                                            }}
+                                            htmlFor="attachmentfile"
+                                          >
+                                            Upload Files
+                                          </label>
+                                        </div>
+                                      </div>
+                                      <div
+                                        style={{ margin: "5px 0px 0px 0px" }}
+                                        className="form-control"
+                                      >
+                                        <input
+                                          type="file"
+                                          name="attachmentfile"
+                                          id="attachmentfile"
+                                          onChange={(e) => {
+                                            handleOtherDocsUpload(
+                                              e.target.files
+                                            );
+                                          }}
+                                          multiple // Allow multiple files selection
+                                        />
+                                        {selectedDocuments &&
+                                          selectedDocuments.length > 0 && (
+                                            <div className="uploaded-filename-main d-flex flex-wrap">
+                                              {selectedDocuments.map(
+                                                (file, index) => (
+                                                  <div
+                                                    className="uploaded-fileItem d-flex align-items-center"
+                                                    key={index}
+                                                  >
+                                                    <p className="m-0">
+                                                      {file.name}
+                                                    </p>
+                                                    <button
+                                                      className="fileItem-dlt-btn"
+                                                      onClick={() =>
+                                                        handleRemoveFile(index)
+                                                      }
+                                                    >
+                                                      <IconX className="close-icon" />
+                                                    </button>
+                                                  </div>
+                                                )
+                                              )}
+                                            </div>
+                                          )}
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                  <button
+                                    className="btn btn-primary"
+                                    onClick={handleotherdocsAttachment}
+                                  >
+                                    Submit
+                                  </button>
+                                </Dialog>
+                
               </div>
             </>
           ))}
