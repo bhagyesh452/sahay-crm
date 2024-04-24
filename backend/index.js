@@ -6515,7 +6515,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString() }
+              ₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString() }
           </div>
         </div>
       </div>
@@ -6576,7 +6576,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${parseInt(newData.services[i].firstPayment).toLocaleString()}
+              ₹ ${parseInt(newData.services[i].firstPayment).toLocaleString()}
           </div>
         </div>
       </div>
@@ -6596,7 +6596,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ${parseInt(newData.services[i].secondPayment).toLocaleString()} - ${
+              ₹ ${parseInt(newData.services[i].secondPayment).toLocaleString()} - ${
           isNaN(new Date(newData.services[i].secondPaymentRemarks))
             ? newData.services[i].secondPaymentRemarks
             : `Payment On ${newData.services[i].secondPaymentRemarks}`
@@ -6622,7 +6622,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ${parseInt(newData.services[i].thirdPayment).toLocaleString()} - ${
+              ₹ ${parseInt(newData.services[i].thirdPayment).toLocaleString()} - ${
           isNaN(new Date(newData.services[i].thirdPaymentRemarks))
             ? newData.services[i].thirdPaymentRemarks
             : `Payment On ${newData.services[i].thirdPaymentRemarks}`
@@ -6648,7 +6648,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ${parseInt(newData.services[i].fourthPayment).toLocaleString()} - ${
+              ₹ ${parseInt(newData.services[i].fourthPayment).toLocaleString()} - ${
           isNaN(new Date(newData.services[i].fourthPaymentRemarks))
             ? newData.services[i].fourthPaymentRemarks
             : `Payment On ${newData.services[i].fourthPaymentRemarks}`
@@ -6691,6 +6691,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       newData.bdmEmail,
       "bookings@startupsahay.com",
       "documents@startupsahay.com",
+      
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -7128,7 +7129,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ₹ ${totalAmount.toFixed(2)}
+                    ₹ ${parseInt(totalAmount).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -7148,7 +7149,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ₹ ${receivedAmount.toFixed(2)}
+                    ₹ ${parseInt(receivedAmount).toLocaleString()}
                   </div>
                 </div>
 
@@ -7169,7 +7170,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                   ₹ ${pendingAmount.toFixed(2)}
+                   ₹ ${parseInt(pendingAmount).toLocaleString()}
                   </div>
                 </div>
 
