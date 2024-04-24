@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "./Navbar";
 import Header from "./Header";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { IconBoxPadding, IconChevronLeft, IconEye } from "@tabler/icons-react";
 import PageviewIcon from "@mui/icons-material/Pageview";
 import { IconChevronRight } from "@tabler/icons-react";
@@ -38,6 +38,21 @@ import ClipLoader from "react-spinners/ClipLoader";
 import LeadFormPreview from "./LeadFormPreview";
 import EditableLeadform from "./EditableLeadform";
 import AddLeadForm from "./AddLeadForm";
+import { RiInformationLine } from "react-icons/ri";
+import PropTypes from "prop-types";
+import Slider, { SliderThumb } from "@mui/material/Slider";
+import { styled } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+//import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import { AiOutlineTeam } from "react-icons/ai";
+import { GoPerson } from "react-icons/go";
+import { MdOutlinePersonPin } from "react-icons/md";
+//import Typography from '@mui/material/Typography';
+//import Box from '@mui/material/Box';
 
 const secretKey = process.env.REACT_APP_SECRET_KEY;
 const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -94,6 +109,7 @@ function EmployeeParticular() {
   const [backButton, setBackButton] = useState(false);
   const [loading, setLoading] = useState(false);
   const [companiesLoading, setCompaniesLoading] = useState(false);
+  const [currentTab, setCurrentTab] = useState("Leads");
   // const [updateData, setUpdateData] = useState({});
   const [eData, seteData] = useState([]);
   const [year, setYear] = useState(0);
@@ -180,6 +196,7 @@ function EmployeeParticular() {
       fetchRedesignedFormData();
     }
   }, [maturedID]);
+
   useEffect(() => {
     if (employeeName) {
       const fetchCompanies = async () => {
@@ -321,6 +338,8 @@ function EmployeeParticular() {
       return false;
     }
   });
+
+
   const handleFieldChange = (event) => {
     if (event.target.value === "Company Incorporation Date  ") {
       setSelectedField(event.target.value);
@@ -412,8 +431,7 @@ function EmployeeParticular() {
   };
 
   // const [employeeSelection, setEmployeeSelection] = useState("Select Employee");
-  const [newemployeeSelection, setnewEmployeeSelection] =
-    useState("Not Alloted");
+  const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
 
 
 
@@ -428,12 +446,16 @@ function EmployeeParticular() {
       console.error("Error fetching data:", error.message);
     }
   };
+
+
   const handleFilterIncoDate = () => {
     setOpenIncoDate(!openIncoDate);
   };
   useEffect(() => {
     fetchNewData();
   }, [nowToFetch]);
+
+
   const handleSort = (sortType) => {
     switch (sortType) {
       case "oldest":
@@ -788,7 +810,7 @@ function EmployeeParticular() {
         const response = await axios.post(`${secretKey}/post-bdmwork-request/${currentId}`, {
           bdmWork: true
         });
- 
+
         fetchEmployeeDetails()
         console.log(response.data)
         // Show success message
@@ -834,7 +856,142 @@ function EmployeeParticular() {
       Swal.fire('Error', 'An error occurred.', 'error');
     }
   };
-  
+
+  function formatDateNew(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  // ----------------------------------feedback----------------------------------------------
+
+  const [forwardedCompany, setForwardedCompany] = useState("");
+  const [bdmNewAcceptStatus, setBdmNewAcceptStatus] = useState("");
+  const [forwardCompanyId, setforwardCompanyId] = useState("");
+  const [feedbakPoints, setFeedbackPoints] = useState("")
+  const [feedbackRemarks, setFeedbackRemarks] = useState("")
+  const [feedbackPopupOpen, setFeedbackPopupOpen] = useState(false)
+  const [feedbackCompany, setFeedbackCompany] = useState("")
+
+
+  const handleViewFeedback = (companyId, companyName, companyFeedbackRemarks, companyFeedbackPoints) => {
+    setFeedbackPopupOpen(true)
+    setFeedbackPoints(companyFeedbackPoints)
+    setFeedbackRemarks(companyFeedbackRemarks)
+    setFeedbackCompany(companyName)
+  }
+  const closeFeedbackPopup = () => {
+    setFeedbackPopupOpen(false)
+  }
+  function ValueLabelComponent(props) {
+    const { children, value } = props;
+
+    return (
+      <Tooltip enterTouchDelay={0} placement="top" title={value}>
+        {children}
+      </Tooltip>
+    );
+  }
+
+  ValueLabelComponent.propTypes = {
+    children: PropTypes.element.isRequired,
+    value: PropTypes.number.isRequired,
+  };
+
+  const iOSBoxShadow =
+    '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
+
+  const IOSSlider = styled(Slider)(({ theme }) => ({
+    color: theme.palette.mode === 'dark' ? '#0a84ff' : '#007bff',
+    height: 5,
+    padding: '15px 0',
+    '& .MuiSlider-thumb': {
+      height: 20,
+      width: 20,
+      backgroundColor: '#fff',
+      boxShadow: '0 0 2px 0px rgba(0, 0, 0, 0.1)',
+      '&:focus, &:hover, &.Mui-active': {
+        boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.1)',
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          boxShadow: iOSBoxShadow,
+        },
+      },
+      '&:before': {
+        boxShadow:
+          '0px 0px 1px 0px rgba(0,0,0,0.2), 0px 0px 0px 0px rgba(0,0,0,0.14), 0px 0px 1px 0px rgba(0,0,0,0.12)',
+      },
+    },
+    '& .MuiSlider-valueLabel': {
+      fontSize: 12,
+      fontWeight: 'normal',
+      top: -6,
+      backgroundColor: 'unset',
+      color: theme.palette.text.primary,
+      '&::before': {
+        display: 'none',
+      },
+      '& *': {
+        background: 'transparent',
+        color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+      },
+    },
+    '& .MuiSlider-track': {
+      border: 'none',
+      height: 5,
+    },
+    '& .MuiSlider-rail': {
+      opacity: 0.5,
+      boxShadow: 'inset 0px 0px 4px -2px #000',
+      backgroundColor: '#d0d0d0',
+    },
+  }));
+
+  // ------------------------------panel-----------------------------------------
+
+  function CustomTabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {value === index && (
+          <Box sx={{ p: 3 }}>
+            <Typography>{children}</Typography>
+          </Box>
+        )}
+      </div>
+    );
+  }
+
+  CustomTabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.number.isRequired,
+    value: PropTypes.number.isRequired,
+  };
+
+  function a11yProps(index) {
+    return {
+      id: `simple-tab-${index}`,
+      'aria-controls': `simple-tabpanel-${index}`,
+    };
+  }
+  const location = useLocation();
+  const [value, setValue] = React.useState(location.pathname === `/admin/employees/${id}` ? 0 : 1);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  console.log(value)
+
 
 
 
@@ -1019,7 +1176,7 @@ function EmployeeParticular() {
                         </option>
                       </select>
                     </div>
-                    {bdmWorkOn ? (
+                    {/* {bdmWorkOn ? (
                       <button className="btn btn-primary d-none d-sm-inline-block ml-1" onClick={() => handleReverseBdmWork()}>
                         Revoke Bdm Work
                       </button>
@@ -1027,7 +1184,7 @@ function EmployeeParticular() {
                       <button className="btn btn-primary d-none d-sm-inline-block ml-1" onClick={() => handleAssignBdmWork()}>
                         Assign Bdm Work
                       </button>
-                    )}
+                    )} */}
                     <Link
                       to={`/admin/employees/${id}/login-details`}
                       style={{ marginLeft: "10px" }}>
@@ -1071,7 +1228,6 @@ function EmployeeParticular() {
                   )}
                 </div>
               </div>
-
               {/* <!-- Page title actions --> */}
               <div className="col-auto ms-auto d-print-none">
                 <div className="btn-list">
@@ -1087,16 +1243,54 @@ function EmployeeParticular() {
                 </div>
               </div>
             </div>
-            {/* <div className="row g-2 align-items-center mt-5 mb-5 ml-2">
-              <div className="col-2 d-flex justify-content-between">
-                <Link to={`/admin/admin-user`}
-                  style={{ marginLeft: "10px" }} > My Leads</Link>
-              </div>
-              <div className="col-2 d-flex justify-content-between">
-                TeamLeads
-              </div>
-            </div> */}
           </div>
+        </div>
+        <div className="container-xl card mt-2 mb-2" style={{width:"95%"}}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+            <a
+                      href="#tabs-home-5"
+                      onClick={() => {
+                        setCurrentTab("Leads")
+                        window.location.pathname = `/admin/employees/${id}`
+                      }}
+                      className={
+                        currentTab === "Leads"
+                          ? "nav-link"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                    ><Tab  label={
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                  <span style={{ fontSize: "12px" }}>
+                   Leads </span>
+                </div>
+              } {...a11yProps(0)} /></a>
+                <a
+                      href="#tabs-activity-5"
+                      onClick={() => {
+                        setCurrentTab("TeamLeads")
+                        window.location.pathname = `/admin/employeeleads/${id}`
+                      }}
+                      className={
+                        currentTab === "TeamLeads"
+                          ? "nav-link"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                    ><Tab
+                label={
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                    <span style={{ fontSize: "12px" }}> 
+                  Team Leads</span>
+                  </div>
+                }
+                {...a11yProps(1)}
+              /></a>
+            </Tabs>
+          </Box>
         </div>
         {!openLogin && !AddForm && !EditForm && (
           <div
@@ -1373,6 +1567,47 @@ function EmployeeParticular() {
 
                 {/* <!-- Page title actions --> */}
               </div>
+              {/* <div class="card-header my-tab">
+                <ul
+                  class="nav nav-tabs card-header-tabs nav-fill p-0"
+                  data-bs-toggle="tabs"
+                >
+                  <li class="nav-item data-heading">
+                    <a
+                      href="#tabs-home-5"
+                      onClick={() => {
+                        setCurrentTab("Leads")
+                        window.location.pathname = `/admin/employees/${id}`
+                      }}
+                      className={
+                        currentTab === "Leads"
+                          ? "nav-link active item-act"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                    >
+                      Leads{" "}
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      href="#tabs-activity-5"
+                      onClick={() => {
+                        setCurrentTab("TeamLeads")
+                        window.location.pathname = `/admin/employeeleads/${id}`
+                      }}
+                      className={
+                        currentTab === "TeamLeads"
+                          ? "nav-link active item-act"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                    >
+                      <span>Team Leads</span>
+                    </a>
+                  </li>
+                </ul>
+              </div> */}
               <div class="card-header my-tab">
                 <ul
                   class="nav nav-tabs card-header-tabs nav-fill p-0"
@@ -1421,7 +1656,9 @@ function EmployeeParticular() {
                         setCurrentPage(0);
                         setEmployeeData(
                           moreEmpData.filter(
-                            (obj) => obj.Status === "Interested"
+                            (obj) =>
+                              obj.Status === "Interested" &&
+                              obj.bdmAcceptStatus === "NotForwarded"
                           )
                         );
                       }}
@@ -1436,7 +1673,9 @@ function EmployeeParticular() {
                       <span className="no_badge">
                         {
                           moreEmpData.filter(
-                            (obj) => obj.Status === "Interested"
+                            (obj) =>
+                              obj.Status === "Interested" &&
+                              obj.bdmAcceptStatus === "NotForwarded"
                           ).length
                         }
                       </span>
@@ -1450,7 +1689,11 @@ function EmployeeParticular() {
                         setdataStatus("FollowUp");
                         setCurrentPage(0);
                         setEmployeeData(
-                          moreEmpData.filter((obj) => obj.Status === "FollowUp")
+                          moreEmpData.filter(
+                            (obj) =>
+                              obj.Status === "FollowUp" &&
+                              obj.bdmAcceptStatus === "NotForwarded"
+                          )
                         );
                       }}
                       className={
@@ -1464,8 +1707,11 @@ function EmployeeParticular() {
 
                       <span className="no_badge">
                         {
-                          moreEmpData.filter((obj) => obj.Status === "FollowUp")
-                            .length
+                          moreEmpData.filter(
+                            (obj) =>
+                              obj.Status === "FollowUp" &&
+                              obj.bdmAcceptStatus === "NotForwarded"
+                          ).length
                         }
                       </span>
                     </a>
@@ -1478,7 +1724,17 @@ function EmployeeParticular() {
                         setdataStatus("Matured");
                         setCurrentPage(0);
                         setEmployeeData(
-                          moreEmpData.filter((obj) => obj.Status === "Matured")
+                          moreEmpData
+                            .filter(
+                              (obj) =>
+                                obj.Status === "Matured" &&
+                                (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                            )
+                            .sort(
+                              (a, b) =>
+                                new Date(b.lastActionDate) -
+                                new Date(a.lastActionDate)
+                            )
                         );
                       }}
                       className={
@@ -1492,8 +1748,55 @@ function EmployeeParticular() {
                       <span className="no_badge">
                         {" "}
                         {
-                          moreEmpData.filter((obj) => obj.Status === "Matured")
-                            .length
+                          moreEmpData.filter(
+                            (obj) =>
+                              obj.Status === "Matured" &&
+                              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                          ).length
+                        }
+                      </span>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      href="#tabs-activity-5"
+                      onClick={() => {
+                        setdataStatus("Forwarded");
+                        setCurrentPage(0);
+                        setEmployeeData(
+                          moreEmpData
+                            .filter(
+                              (obj) =>
+                                obj.bdmAcceptStatus !== "NotForwarded" &&
+                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                obj.Status !== "Matured"
+                            )
+                            // .sort(
+                            //   (a, b) =>
+                            //     convertDateFormat(b.bdeForwardDate) > convertDateFormat(a.bdeForwardDate) ? 1 :
+                            //       convertDateFormat(b.bdeForwardDate) < convertDateFormat(a.bdeForwardDate) ? -1 : 0
+                            // )
+                            .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
+                        );
+                        //setdataStatus(obj.bdmAcceptStatus);
+                      }}
+                      className={
+                        dataStatus === "Forwarded"
+                          ? "nav-link active item-act"
+                          : "nav-link"
+                      }
+                      data-bs-toggle="tab"
+                    >
+                      Bdm Forwarded{" "}
+                      <span className="no_badge">
+                        {" "}
+                        {
+                          moreEmpData.filter(
+                            (obj) =>
+                              obj.bdmAcceptStatus !== "NotForwarded" &&
+                              obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                              obj.Status !== "Matured"
+                          ).length
                         }
                       </span>
                     </a>
@@ -1507,8 +1810,9 @@ function EmployeeParticular() {
                         setEmployeeData(
                           moreEmpData.filter(
                             (obj) =>
-                              obj.Status === "Not Interested" ||
-                              obj.Status === "Junk"
+                              (obj.Status === "Not Interested" ||
+                                obj.Status === "Junk") &&
+                              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                           )
                         );
                       }}
@@ -1524,8 +1828,9 @@ function EmployeeParticular() {
                         {
                           moreEmpData.filter(
                             (obj) =>
-                              obj.Status === "Not Interested" ||
-                              obj.Status === "Junk"
+                              (obj.Status === "Not Interested" ||
+                                obj.Status === "Junk") &&
+                              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                           ).length
                         }
                       </span>
@@ -1566,6 +1871,7 @@ function EmployeeParticular() {
                           <th className="th-sticky1">Company Name</th>
                           <th>Company Number</th>
                           <th>Status</th>
+                          {dataStatus === "Forwarded" && <th>Bdm Status</th>}
                           <th>Remarks</th>
 
                           <th>
@@ -1657,6 +1963,22 @@ function EmployeeParticular() {
                             (dataStatus === "Interested" && (
                               <th>View Projection</th>
                             ))}
+                          {dataStatus === "Forwarded" && (
+                            <th>Forwarded Date</th>
+                          )}
+                          {/* {(dataStatus === "Forwarded" ||
+                              dataStatus === "Interested" ||
+                              dataStatus === "FollowUp") && (
+                                <th>Forward to BDM</th>
+                              )} */}
+                          {dataStatus === "Forwarded" &&
+                            (dataStatus !== "Interested" ||
+                              dataStatus !== "FollowUp" ||
+                              dataStatus !== "Untouched" ||
+                              dataStatus !== "Matured" ||
+                              dataStatus !== "Not Interested") && (
+                              <th>Feedback</th>
+                            )}
                         </tr>
                       </thead>
                       {loading ? (
@@ -1702,8 +2024,7 @@ function EmployeeParticular() {
                                       left: 0,
                                       zIndex: 1,
                                       background: "white",
-                                    }}
-                                  >
+                                    }}>
                                     <input
                                       type="checkbox"
                                       checked={selectedRows.includes(
@@ -1732,6 +2053,24 @@ function EmployeeParticular() {
                                   <td>
                                     <span>{company["Status"]}</span>
                                   </td>
+                                  {dataStatus === "Forwarded" && (
+                                    <td>
+                                      {company.Status === "Interested" && (
+                                        <span>Interested</span>
+                                      )}
+                                      {company.Status === "FollowUp" && (
+                                        <span>FollowUp</span>
+                                      )}
+                                      {/* {company.Status === "Matured" && (
+                                      <span>Matured</span>
+                                    )}
+                                    {(company.Status === "Not Interested" ||
+                                      company.Status === "Junk" ||
+                                      company.Status === "Busy") && (
+                                      <span></span>
+                                    )} */}
+                                    </td>
+                                  )}
                                   <td>
                                     <div
                                       key={company._id}
@@ -1768,14 +2107,14 @@ function EmployeeParticular() {
                                   </td>
 
                                   <td>
-                                    {formatDate(
+                                    {formatDateNew(
                                       company["Company Incorporation Date  "]
                                     )}
                                   </td>
                                   <td>{company["City"]}</td>
                                   <td>{company["State"]}</td>
                                   <td>{company["Company Email"]}</td>
-                                  <td>{formatDate(company["AssignDate"])}</td>
+                                  <td>{formatDateNew(company["AssignDate"])}</td>
                                   {(dataStatus === "FollowUp" ||
                                     dataStatus === "Interested") && (
                                       <td>
@@ -1815,6 +2154,13 @@ function EmployeeParticular() {
                                         )}
                                       </td>
                                     )}
+                                  {dataStatus === "Forwarded" && (
+                                    <>
+                                      {company.bdeForwardDate ? (
+                                        <td>{formatDateNew(company.bdeForwardDate)}</td>
+                                      ) : (<td></td>)}
+                                    </>
+                                  )}
 
                                   {dataStatus === "Matured" && (
                                     <>
@@ -1866,6 +2212,24 @@ function EmployeeParticular() {
                                         </div>
                                       </td>
                                     </>
+                                  )}
+                                  {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints || company.feedbackRemarks) && (
+                                    <td>
+                                      <IconButton onClick={() => {
+                                        handleViewFeedback(
+                                          company._id,
+                                          company["Company Name"],
+                                          company.feedbackRemarks,
+                                          company.feedbackPoints
+                                        )
+                                      }}>
+                                        <RiInformationLine style={{
+                                          cursor: "pointer",
+                                          width: "17px",
+                                          height: "17px",
+                                        }}
+                                          color="grey" /></IconButton>
+                                    </td>
                                   )}
                                 </tr>
                               ))}
@@ -2274,6 +2638,9 @@ function EmployeeParticular() {
                       <div className="d-flex justify-content-between">
                         <div className="reamrk-card-innerText">
                           <pre>{historyItem.remarks}</pre>
+                          {historyItem.bdmName !== undefined && (
+                            <pre className="remark-text">By BDM</pre>
+                          )}
                         </div>
                       </div>
 
@@ -2292,6 +2659,71 @@ function EmployeeParticular() {
           </div>
         </DialogContent>
       </Dialog>
+
+
+      {/* -------------------------------------------------------------------------dialog for feedback remarks-------------------------------------- */}
+
+      <Dialog
+        open={feedbackPopupOpen}
+        onClose={closeFeedbackPopup}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>
+          <span style={{ fontSize: "14px" }}>{feedbackCompany}</span>
+          <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="remarks-content">
+            {feedbackRemarks || feedbakPoints ? (
+              <div className="col-sm-12">
+                <div className="card RemarkCard position-relative">
+                  <div className="d-flex justify-content-between">
+                    <div className="reamrk-card-innerText">
+                      <pre className="mt-5 pt-4">
+                        {/* <Slider
+                        defaultValue={feedbakPoints}
+                        //getAriaValueText={feedbakPoints} 
+                        //value={valueSlider}
+                        //onChange={(e) => { handleSliderChange(e.target.value) }}
+                        sx={{ zIndex: "99999999", color: "#ffb900" }}
+                        min={0}
+                        max={10}
+                        disabled
+                        aria-label="Disabled slider"
+                        valueLabelDisplay="on" 
+                        valueLabelFormat={feedbakPoints}
+                        /> */}
+                        <IOSSlider
+                          aria-label="ios slider"
+                          disabled
+                          defaultValue={feedbakPoints}
+                          min={0}
+                          max={10}
+                          valueLabelDisplay="on"
+                        />
+                      </pre>
+                      <pre className="remark-text">{feedbackRemarks}</pre>
+                    </div>
+                  </div>
+
+                  {/* <div className="d-flex card-dateTime justify-content-between">
+                      <div className="date">{historyItem.date}</div>
+                      <div className="time">{historyItem.time}</div>
+                    </div> */}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center overflow-hidden">
+                No Remarks History
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
 
       {/* View Bookings Page */}
       <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>

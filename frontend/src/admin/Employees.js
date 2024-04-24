@@ -31,6 +31,15 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import Modal from "react-modal";
 import { IconEye } from "@tabler/icons-react";
 import Nodata from "../components/Nodata";
+import { styled } from '@mui/material/styles';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+
+
+
 
 function Employees({ onEyeButtonClick }) {
   const [itemIdToDelete, setItemIdToDelete] = useState(null);
@@ -153,8 +162,8 @@ function Employees({ onEyeButtonClick }) {
       setJdate(null);
       setDesignation("");
       setBranchOffice("");
-  
-      
+
+
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -173,35 +182,35 @@ function Employees({ onEyeButtonClick }) {
   };
 
   const handleUpdateClick = (id, echangename) => {
-   
+
     // Set the selected data ID and set update mode to true
     setSelectedDataId(id);
     setIsUpdateMode(true);
     setCompanyData(cdata.filter((item) => item.ename === echangename));
     // Find the selected data object
     const selectedData = data.find((item) => item._id === id);
- 
-    console.log("This is elon musk" , selectedData.targetDetails)
-    setNowFetched(selectedData.targetDetails.length!==0 ? true : false);
-    setTargetCount(selectedData.targetDetails.length!==0 ? selectedData.targetDetails.length : 1);
+
+    console.log("This is elon musk", selectedData.targetDetails)
+    setNowFetched(selectedData.targetDetails.length !== 0 ? true : false);
+    setTargetCount(selectedData.targetDetails.length !== 0 ? selectedData.targetDetails.length : 1);
     setTargetObjects(
-      selectedData.targetDetails.length!==0
+      selectedData.targetDetails.length !== 0
         ? selectedData.targetDetails
         : [
-            {
-              year: "",
-              month: "",
-              amount: 0,
-            },
-          ]
+          {
+            year: "",
+            month: "",
+            amount: 0,
+          },
+        ]
     );
-    
+
     // Update the form data with the selected data values
     setEmail(selectedData.email);
     setEname(selectedData.ename);
     setNumber(selectedData.number);
     setPassword(selectedData.password);
-  
+
     setDesignation(selectedData.designation);
     setBranchOffice(selectedData.branchOffice);
 
@@ -310,7 +319,7 @@ function Employees({ onEyeButtonClick }) {
         jdate: jdate,
         AddedOn: AddedOn,
         branchOffice: branchOffice,
-        targetDetails : targetObjects
+        targetDetails: targetObjects
       };
       let dataToSendUpdated = {
         email: email,
@@ -320,7 +329,7 @@ function Employees({ onEyeButtonClick }) {
         jdate: jdate,
         designation: designation,
         branchOffice: branchOffice,
-        targetDetails:targetObjects
+        targetDetails: targetObjects
       };
 
 
@@ -502,27 +511,121 @@ function Employees({ onEyeButtonClick }) {
   }
 
   // -------------------------------------------------    ADD Target Section   --------------------------------------------------
-const defaultObject = {
-  year:"",
-  month:"",
-  amount:0
-}
-const [targetObjects, setTargetObjects] = useState([defaultObject]);
-const [targetCount , setTargetCount] = useState(1);
+  const defaultObject = {
+    year: "",
+    month: "",
+    amount: 0
+  }
+  const [targetObjects, setTargetObjects] = useState([defaultObject]);
+  const [targetCount, setTargetCount] = useState(1);
   useEffect(() => {
     // Create new services array based on totalServices
-    if(!nowFetched)
-    {
+    if (!nowFetched) {
       const totalTargets = Array.from({ length: targetCount }, () => ({
         ...defaultObject,
       }));
       setTargetObjects(totalTargets);
       console.log("Fetch After changing Services", totalTargets);
-    }else {
+    } else {
       setNowFetched(false)
     }
   }, [targetCount]);
-console.log("target objects:" , targetObjects)
+  console.log("target objects:", targetObjects)
+
+  // ----------------------------------------- material ui bdm work switch---------------------------------------
+
+  const AntSwitch = styled(Switch)(({ theme }) => ({
+    width: 28,
+    height: 16,
+    padding: 0,
+    display: 'flex',
+    '&:active': {
+      '& .MuiSwitch-thumb': {
+        width: 15,
+      },
+      '& .MuiSwitch-switchBase.Mui-checked': {
+        transform: 'translateX(9px)',
+      },
+    },
+    '& .MuiSwitch-switchBase': {
+      padding: 2,
+      '&.Mui-checked': {
+        transform: 'translateX(12px)',
+        color: '#fff',
+        '& + .MuiSwitch-track': {
+          opacity: 1,
+          backgroundColor: theme.palette.mode === 'dark' ? '#177ddc' : '#1890ff',
+        },
+      },
+    },
+    '& .MuiSwitch-thumb': {
+      boxShadow: '0 2px 4px 0 rgb(0 35 11 / 20%)',
+      width: 12,
+      height: 12,
+      borderRadius: 6,
+      transition: theme.transitions.create(['width'], {
+        duration: 200,
+      }),
+    },
+    '& .MuiSwitch-track': {
+      borderRadius: 16 / 2,
+      opacity: 1,
+      backgroundColor:
+        theme.palette.mode === 'dark' ? 'rgba(255,255,255,.35)' : 'rgba(0,0,0,.25)',
+      boxSizing: 'border-box',
+    },
+  }));
+
+
+
+  const handlChecked = async (employeeId, bdmWork) => {
+    console.log(employeeId)
+    console.log(bdmWork)
+
+    if (!bdmWork) {
+      try {
+        const response = await axios.post(`${secretKey}/post-bdmwork-request/${employeeId}`, {
+          bdmWork: true
+        });
+
+        fetchData()
+
+        console.log(response.data)
+        setTimeout(() => {
+          Swal.fire('BDM Work Assigned!', '', 'success');
+
+        }, 500)
+
+      } catch (error) {
+        console.log("error message", error.message);
+        // Show error message
+        Swal.fire('Error', 'An error occurred while assigning BDM work.', 'error');
+      }
+    } else {
+      try {
+        const response = await axios.post(`${secretKey}/post-bdmwork-revoke/${employeeId}`, {
+          bdmWork: false
+        });
+        fetchData(); // Assuming this function fetches updated employee details
+        console.log(response.data); // Log response data
+        // Show success message
+        setTimeout(()=>{
+          Swal.fire('BDM Work Revoked!', '', 'success');
+        },500)
+       
+      } catch (error) {
+        console.error("Error revoking BDM work:", error);
+        // Show error message
+        Swal.fire('Error', 'An error occurred while revoking BDM work.', 'error');
+      }
+    }
+
+  }
+
+
+
+
+
   return (
     <div>
       <Modal
@@ -725,117 +828,117 @@ console.log("target objects:" , targetObjects)
               </div>
               <label className="form-label">ADD Target</label>
 
-             {targetObjects.map((obj,index)=>(
+              {targetObjects.map((obj, index) => (
 
-<div className="row">
-                <div className="col-lg-3">
-                  <div className="mb-3">
-                    <div className="form-control">
-                      <select
-                        style={{
-                          border: "none",
-                          outline: "none",
-                          width: "fit-content",
-                        }}
-                        value={obj.year}
-                        onChange={(e)=>{
+                <div className="row">
+                  <div className="col-lg-3">
+                    <div className="mb-3">
+                      <div className="form-control">
+                        <select
+                          style={{
+                            border: "none",
+                            outline: "none",
+                            width: "fit-content",
+                          }}
+                          value={obj.year}
+                          onChange={(e) => {
+                            setTargetObjects(prevState => {
+                              const updatedTargets = [...prevState]; // Create a copy of the targetCount array
+                              updatedTargets[index] = { ...updatedTargets[index], year: e.target.value }; // Update the specific object at the given index
+                              return updatedTargets; // Set the updated array as the new state
+                            });
+                          }}
+                        >
+                          <option value="" disabled selected>
+                            Select Year
+                          </option>
+                          <option value="2024">2024</option>
+                          <option value="2023">2023</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-lg-3">
+                    <div className="mb-3">
+                      <div className="form-control">
+                        <select
+                          style={{
+                            border: "none",
+                            outline: "none",
+                            width: "fit-content",
+                          }}
+                          value={obj.month}
+                          onChange={(e) => {
+                            setTargetObjects(prevState => {
+                              const updatedTargets = [...prevState]; // Create a copy of the targetCount array
+                              updatedTargets[index] = { ...updatedTargets[index], month: e.target.value }; // Update the specific object at the given index
+                              return updatedTargets; // Set the updated array as the new state
+                            });
+                          }}
+                        >
+                          <option value="" disabled selected>
+                            Select Month
+                          </option>
+                          <option value="January">January</option>
+                          <option value="February">February</option>
+                          <option value="March">March</option>
+                          <option value="April">April</option>
+                          <option value="May">May</option>
+                          <option value="June">June</option>
+                          <option value="July">July</option>
+                          <option value="August">August</option>
+                          <option value="September">September</option>
+                          <option value="October">October</option>
+                          <option value="November">November</option>
+                          <option value="December">December</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-lg-5">
+                    <div className="mb-3">
+                      <input
+                        placeholder="ADD Target value"
+                        type="number"
+                        className="form-control"
+                        value={obj.amount}
+                        onChange={(e) => {
                           setTargetObjects(prevState => {
                             const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                            updatedTargets[index] = { ...updatedTargets[index], year: e.target.value }; // Update the specific object at the given index
+                            updatedTargets[index] = { ...updatedTargets[index], amount: e.target.value }; // Update the specific object at the given index
                             return updatedTargets; // Set the updated array as the new state
                           });
                         }}
-                      >
-                        <option value="" disabled selected>
-                          Select Year
-                        </option>
-                        <option value="2024">2024</option>
-                        <option value="2023">2023</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-lg-3">
-                  <div className="mb-3">
-                    <div className="form-control">
-                      <select
-                        style={{
-                          border: "none",
-                          outline: "none",
-                          width: "fit-content",
-                        }}
-                        value={obj.month}
-                        onChange={(e)=>{
-                          setTargetObjects(prevState => {
-                            const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                            updatedTargets[index] = { ...updatedTargets[index], month: e.target.value }; // Update the specific object at the given index
-                            return updatedTargets; // Set the updated array as the new state
-                          });
-                        }}
-                      >
-                        <option value="" disabled selected>
-                          Select Month
-                        </option>
-                        <option value="January">January</option>
-                        <option value="February">February</option>
-                        <option value="March">March</option>
-                        <option value="April">April</option>
-                        <option value="May">May</option>
-                        <option value="June">June</option>
-                        <option value="July">July</option>
-                        <option value="August">August</option>
-                        <option value="September">September</option>
-                        <option value="October">October</option>
-                        <option value="November">November</option>
-                        <option value="December">December</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-lg-5">
-                  <div className="mb-3">
-                    <input
-                      placeholder="ADD Target value"
-                      type="number"
-                      className="form-control"
-                      value={obj.amount}
-                      onChange={(e)=>{
-                        setTargetObjects(prevState => {
-                          const updatedTargets = [...prevState]; // Create a copy of the targetCount array
-                          updatedTargets[index] = { ...updatedTargets[index], amount: e.target.value }; // Update the specific object at the given index
-                          return updatedTargets; // Set the updated array as the new state
-                        });
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="col-lg-1">
-                  <div className="mb-3 d-flex">
-                    <IconButton style={{ float: "right" }} onClick={()=>setTargetCount(targetCount+1)}>
-                      <MdOutlineAddCircle
-                        color="primary"
-                        style={{
-                          float: "right",
-                          width: "14px",
-                          height: "14px",
-                        }}
-                       
-                      ></MdOutlineAddCircle>
-                    </IconButton>
-                    <IconButton style={{ float: "right" }} onClick={()=>setTargetCount(targetCount-1)}>
-                      <MdDelete
-                      color="primary"
-                      style={{
-                        float: "right",
-                        width: "14px",
-                        height: "14px",
-                      }}
                       />
-                    </IconButton>
+                    </div>
+                  </div>
+                  <div className="col-lg-1">
+                    <div className="mb-3 d-flex">
+                      <IconButton style={{ float: "right" }} onClick={() => setTargetCount(targetCount + 1)}>
+                        <MdOutlineAddCircle
+                          color="primary"
+                          style={{
+                            float: "right",
+                            width: "14px",
+                            height: "14px",
+                          }}
+
+                        ></MdOutlineAddCircle>
+                      </IconButton>
+                      <IconButton style={{ float: "right" }} onClick={() => setTargetCount(targetCount - 1)}>
+                        <MdDelete
+                          color="primary"
+                          style={{
+                            float: "right",
+                            width: "14px",
+                            height: "14px",
+                          }}
+                        />
+                      </IconButton>
+                    </div>
                   </div>
                 </div>
-              </div>
-             )) }
+              ))}
             </div>
           </div>
         </DialogContent>
@@ -1107,7 +1210,16 @@ console.log("target objects:" , targetObjects)
                             .map(obj => obj.teamName)
                             .join(', ') || <span style={{color:"lightgrey"}}>No team allotted</span>
                           } */}
-                          {item.bdmWork ? (<span>BDM</span>):(" ")}
+                          <Stack direction="row" spacing={10} alignItems="center" justifyContent="center">
+
+                            <AntSwitch checked={item.bdmWork} inputProps={{ 'aria-label': 'ant design' }}
+                              onClick={(event) => {
+
+                                handlChecked(item._id, item.bdmWork)
+                              }} />
+
+                          </Stack>
+                          {/* {item.bdmWork ? (<span>BDM</span>) : (" ")} */}
                         </td>
                         <td>
                           <div className="d-flex justify-content-center align-items-center">
@@ -1160,6 +1272,21 @@ console.log("target objects:" , targetObjects)
                                   />
                                 </IconButton>
                               </Link>
+                              {/* <Link
+                                style={{ color: "black" }}
+                                to={`/admin/employeeleads/${item._id}`}
+                              >
+                                <IconButton>
+                                  {" "}
+                                  <IconEye
+                                    style={{
+                                      width: "14px",
+                                      height: "14px",
+                                      color: "#d6a10c",
+                                    }}
+                                  />
+                                </IconButton>
+                              </Link> */}
                             </div>
                           </div>
                         </td>

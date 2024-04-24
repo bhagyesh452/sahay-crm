@@ -45,6 +45,8 @@ import BdmTeamLeads from "./BDM/Dashboard/BdmTeamLeads/BdmTeamLeads";
 import ManagerBookings from "./DataManager/Dashboard/ManageLeads/ManagerBookings.jsx";
 
 import EmployeeTeamLeads from "./employeeComp/EmployeeTeamLeads.jsx";
+import AdminEmployeeLeads from "./admin/AdminEmployeeLeads.jsx";
+import AdminEmployeeTeamLeads from "./admin/AdminEmployeeTeamLeads.jsx";
 
 
 
@@ -137,6 +139,10 @@ function App() {
               <Route
                 path="/admin/employees/:id"
                 element={<EmployeeParticular />}
+              />
+               <Route
+                path="/admin/employeeleads/:id"
+                element={<AdminEmployeeTeamLeads />}
               />
               
               <Route

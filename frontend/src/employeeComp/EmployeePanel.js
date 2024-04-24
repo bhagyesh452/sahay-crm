@@ -723,6 +723,7 @@ function EmployeePanel() {
 
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
+
   const fetchRemarksHistory = async () => {
     try {
       const response = await axios.get(`${secretKey}/remarks-history`);
@@ -1207,7 +1208,7 @@ function EmployeePanel() {
             text: "For further assistance, please contact the Data Analyst.",
             html: `Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896`,
           });
-          
+
         });
     }
   };
@@ -2060,8 +2061,8 @@ function EmployeePanel() {
       const data = response.data.find((obj) => obj.company === company);
       setCurrentForm(data);
 
-        setOpenBooking(true);
-    
+      setOpenBooking(true);
+
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -2370,9 +2371,9 @@ function EmployeePanel() {
     }
   };
 
-   // -------------------------------------------------add leads form validation and debounce correction----------------------------------
+  // -------------------------------------------------add leads form validation and debounce correction----------------------------------
 
-   const debouncedSetCname = debounce((value) => {
+  const debouncedSetCname = debounce((value) => {
     setCname(value);
   }, 10);
 
@@ -4940,7 +4941,7 @@ function EmployeePanel() {
                         }}
                         className="form-control"
                       />
-                        {errorCNumber && <p style={{ color: 'red' }}>{errorCNumber}</p>}
+                      {errorCNumber && <p style={{ color: 'red' }}>{errorCNumber}</p>}
                     </div>
                   </div>
                   <div className="col-4">
@@ -5049,7 +5050,7 @@ function EmployeePanel() {
                           debounceSetFirstDirectorNumber(e.target.value);
                         }}
                       />
-                       {errorDirectorNumberFirst && <p style={{ color: 'red' }}>{errorDirectorNumberFirst}</p>}
+                      {errorDirectorNumberFirst && <p style={{ color: 'red' }}>{errorDirectorNumberFirst}</p>}
                     </div>
                   </div>
                   <div className="col-4">
@@ -5239,7 +5240,7 @@ function EmployeePanel() {
                             debounceSetThirdDirectorNumber(e.target.value);
                           }}
                         />
-                         {errorDirectorNumberThird && <p style={{ color: 'red' }}>{errorDirectorNumberThird}</p>}
+                        {errorDirectorNumberThird && <p style={{ color: 'red' }}>{errorDirectorNumberThird}</p>}
                       </div>
                     </div>
                     <div className="col-4">
@@ -5351,9 +5352,17 @@ function EmployeePanel() {
             {feedbackRemarks || feedbakPoints ? (
               <div className="col-sm-12">
                 <div className="card RemarkCard position-relative">
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints}
+                    min={0}
+                    max={10}
+                    valueLabelDisplay="on"
+                  />
                   <div className="d-flex justify-content-between">
                     <div className="reamrk-card-innerText">
-                      <pre className="mt-5 pt-4">
+                      <pre className="pt-4">
                         {/* <Slider
                         defaultValue={feedbakPoints}
                         //getAriaValueText={feedbakPoints} 
@@ -5367,14 +5376,7 @@ function EmployeePanel() {
                         valueLabelDisplay="on" 
                         valueLabelFormat={feedbakPoints}
                         /> */}
-                        <IOSSlider
-                          aria-label="ios slider"
-                          disabled
-                          defaultValue={feedbakPoints}
-                          min={0}
-                          max={10}
-                          valueLabelDisplay="on"
-                        />
+
                       </pre>
                       <pre className="remark-text">{feedbackRemarks}</pre>
                     </div>

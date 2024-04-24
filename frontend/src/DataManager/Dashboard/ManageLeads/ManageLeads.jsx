@@ -422,7 +422,7 @@ function ManageLeads() {
 
 
     //console.log(mainData)
-    const currentData = filteredData.slice(startIndex, endIndex);   
+    const currentData = filteredData.slice(startIndex, endIndex);
 
     //  Sub-filter value
 
@@ -703,7 +703,7 @@ function ManageLeads() {
                 City: city,
                 State: state,
                 AssignDate: new Date(),
-                "UploadedBy":dataManagerName,
+                "UploadedBy": dataManagerName,
                 "Company Address": companyAddress,
                 "Director Name(First)": directorNameFirst,
                 "Director Number(First)": directorNumberFirst,
@@ -860,7 +860,7 @@ function ManageLeads() {
 
     // Fetch Employees Data
     // const [dataManager,setDataManager] = useState([])
-    
+
     const fetchnewData = async () => {
         try {
             const response = await axios.get(`${secretKey}/einfo`);
@@ -873,7 +873,7 @@ function ManageLeads() {
         }
     };
 
-    console.log("newEmpData" , newempData)
+    console.log("newEmpData", newempData)
 
     const handleconfirmAssign = async () => {
         const selectedObjects = data.filter((row) =>
@@ -1157,7 +1157,7 @@ function ManageLeads() {
                 "Company Incorporation Date ": companyIncoDate,
                 "City": companyCity,
                 "State": companyState,
-                "UploadedBy":dataManagerName
+                "UploadedBy": dataManagerName
             };
             const dateObject = new Date(companyIncoDate);
 
@@ -1177,6 +1177,16 @@ function ManageLeads() {
                     "Company Incorporation Date ": isoDateString, // Updated format
                     "City": companyCity,
                     "State": companyState,
+                    'Director Name(First)': directorNameFirstModify,
+                    'Director Number(First)': directorNumberFirstModify,
+                    'Director Email(First)': directorEmailFirstModify,
+                    'Director Name(Second)': directorNameSecondModify,
+                    'Director Number(Second)': directorNumberSecondModify,
+                    'Director Email(Second)': directorEmailSecondModify,
+                    'Director Name(Third)': directorNameThirdModify,
+                    'Director Number(Third)': directorNumberThirdModify,
+                    'Director Email(Third)': directorEmailThirdModify,
+                    
                 };
 
                 //console.log("Data to send with updated date format:", dataToSendUpdated);
@@ -1226,6 +1236,16 @@ function ManageLeads() {
     const [companyState, setCompnayState] = useState("");
     const [companynumber, setCompnayNumber] = useState("");
     const [isEditProjection, setIsEditProjection] = useState(false);
+    const [cAddress, setCAddress] = useState("");
+    const [directorNameFirstModify, setDirectorNameFirstModify] = useState("")
+    const [directorNumberFirstModify, setDirectorNumberFirstModify] = useState("")
+    const [directorEmailFirstModify, setDirectorEmailFirstModify] = useState("")
+    const [directorNameSecondModify, setDirectorNameSecondModify] = useState("")
+    const [directorNumberSecondModify, setDirectorNumberSecondModify] = useState("")
+    const [directorEmailSecondModify, setDirectorEmailSecondModify] = useState("")
+    const [directorNameThirdModify, setDirectorNameThirdModify] = useState("")
+    const [directorNumberThirdModify, setDirectorNumberThirdModify] = useState("")
+    const [directorEmailThirdModify, setDirectorEmailThirdModify] = useState("")
 
 
     //console.log(companyCity, companyEmail, companyIncoDate, companyState, companyName, companynumber)
@@ -1281,7 +1301,7 @@ function ManageLeads() {
     };
     const dataManagerName = localStorage.getItem("dataManagerName")
     //console.log(dataManagerName)
-    
+
 
 
 
@@ -1729,7 +1749,352 @@ function ManageLeads() {
             {/* ------------------------------------------------------------dialog for modify leads----------------------------------------------- */}
 
 
-            <Dialog open={openPopupModify} onClose={functioncloseModifyPopup} fullWidth maxWidth="sm">
+            <Dialog open={openPopupModify} onClose={functioncloseModifyPopup} fullWidth maxWidth="md">
+                <DialogTitle className="d-flex align-items-center justify-content-between">
+                    <div>
+                        Company Info{" "}
+                    </div>
+                    <div>
+                        <IconButton onClick={() => { setIsEditProjection(true) }}>
+                            < ModeEditIcon color="grey"
+                                style={{
+                                    width: "20px",
+                                    height: "20px",
+                                }}
+                            >
+                            </ ModeEditIcon>
+                        </IconButton>
+                        <IconButton onClick={functioncloseModifyPopup}>
+                            <CloseIcon color="grey"></CloseIcon>
+                        </IconButton>{" "}
+                    </div>
+
+                </DialogTitle>
+                <DialogContent>
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                <div className="row">
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Your Company Name"
+                                                value={companyName}
+                                                onChange={(e) => {
+                                                    setCompanyName(e.target.value);
+                                                }}
+                                                disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Number <span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Your Company Number"
+                                                value={companynumber}
+                                                onChange={(e) => {
+                                                    setCompnayNumber(e.target.value);
+                                                }}
+                                                disabled={!isEditProjection}
+                                            />
+                                            
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Email <span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="example@gmail.com"
+                                                value={companyEmail}
+                                                onChange={(e) => {
+                                                    setCompanyEmail(e.target.value);
+                                                }}
+                                                disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">
+                                                Company Incorporation Date
+                                            </label>
+                                            <input
+                                                value={companyIncoDate}
+                                                onChange={(e) => {
+                                                    setCompanyIncoDate(e.target.value)
+                                                }}
+                                                type="date"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">City<span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                value={companyCity}
+                                                onChange={(e) => {
+                                                    setCompnayCity(e.target.value);
+                                                }}
+                                                type="text"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">State<span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                value={companyState}
+                                                onChange={(e) => {
+                                                    setCompnayState(e.target.value);
+                                                }}
+                                                type="text"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-lg-12">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Address</label>
+                                            <input
+                                                value={cAddress}
+                                                onChange={(e) => {
+                                                    setCAddress(e.target.value);
+                                                }}
+                                                type="text"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Director's Name(First)</label>
+                                            <input
+                                                value={directorNameFirstModify}
+                                                onChange={(e) => {
+                                                    setDirectorNameFirstModify(e.target.value);
+                                                }}
+                                                type="text"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Director's Number(First)</label>
+                                            <input
+                                                value={directorNumberFirstModify}
+                                                onChange={(e) => {
+                                                    setDirectorNumberFirstModify(e.target.value);
+                                                }}
+                                                type="number"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
+                                            />
+                                           
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Director's Email(First)</label>
+                                            <input
+                                                value={directorEmailFirstModify}
+                                                onChange={(e) => {
+                                                    setDirectorEmailFirstModify(e.target.value);
+                                                }}
+                                                type="email"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                {firstPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
+                                    <button
+                                        onClick={() => { functionOpenSecondDirector() }}
+                                        className="btn btn-primary d-none d-sm-inline-block">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="icon"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="2"
+                                            stroke="currentColor"
+                                            fill="none"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M12 5l0 14" />
+                                            <path d="M5 12l14 0" />
+                                        </svg>
+                                    </button>
+                                    <button className="btn btn-primary d-none d-sm-inline-block">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                                            width="24"
+                                            height="24"
+                                            fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                                    </button></div>)}
+
+                                {openSecondDirector && (
+                                    <div className="row">
+                                        <div className="col-4">
+                                            <div className="mb-3">
+                                                <label className="form-label">Director's Name(Second)</label>
+                                                <input
+                                                    value={directorNameSecondModify}
+                                                    onChange={(e) => {
+                                                        setDirectorNameSecondModify(e.target.value);
+                                                    }}
+                                                    type="text"
+                                                    className="form-control"
+                                                    disabled={!isEditProjection}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-4">
+                                            <div className="mb-3">
+                                                <label className="form-label">Director's Number(Second)</label>
+                                                <input
+                                                    value={directorNumberSecondModify}
+                                                    onChange={(e) => {
+                                                        setDirectorNumberSecondModify(e.target.value);
+                                                    }}
+                                                    type="number"
+                                                    className="form-control"
+                                                    disabled={!isEditProjection}
+                                                />
+                                                
+                                            </div>
+                                        </div>
+                                        <div className="col-4">
+                                            <div className="mb-3">
+                                                <label className="form-label">Director's Email(Second)</label>
+                                                <input
+                                                    value={directorEmailSecondModify}
+                                                    onChange={(e) => {
+                                                        setDirectorEmailSecondModify(e.target.value);
+                                                    }}
+                                                    type="email"
+                                                    className="form-control"
+                                                    disabled={!isEditProjection}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>)}
+                                {secondPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
+                                    <button
+                                        onClick={() => { functionOpenThirdDirector() }}
+                                        className="btn btn-primary d-none d-sm-inline-block">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="icon"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="2"
+                                            stroke="currentColor"
+                                            fill="none"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M12 5l0 14" />
+                                            <path d="M5 12l14 0" />
+                                        </svg>
+                                    </button>
+                                    <button className="btn btn-primary d-none d-sm-inline-block" onClick={() => { functionCloseSecondDirector() }}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                                            width="24"
+                                            height="24"
+                                            fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                                    </button></div>)}
+
+                                {openThirdDirector && (<div className="row">
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Director's Name(Third)</label>
+                                            <input
+                                                value={directorNameThirdModify}
+                                                onChange={(e) => {
+                                                    setDirectorNameThirdModify(e.target.value);
+                                                }}
+                                                type="text"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Director's Number(Third)</label>
+                                            <input
+                                                value={directorNumberThirdModify}
+                                                onChange={(e) => {
+                                                    setDirectorNumberThirdModify(e.target.value);
+                                                }}
+                                                type="number"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
+                                            />
+                                           
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Director's Email(Third)</label>
+                                            <input
+                                                value={directorEmailThirdModify}
+                                                onChange={(e) => {
+                                                    setDirectorEmailThirdModify(e.target.value);
+                                                }}
+                                                type="email"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>)}
+                                {openThirdMinus && (<button className="btn btn-primary d-none d-sm-inline-block" style={{ float: "right" }} onClick={() => { functionCloseThirdDirector() }}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                                        width="24"
+                                        height="24"
+                                        fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                                </button>)}
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+                <button className="btn btn-primary" onClick={handleSubmit}>
+                    Submit
+                </button>
+            </Dialog>
+
+            {/* <Dialog open={openPopupModify} onClose={functioncloseModifyPopup} fullWidth maxWidth="sm">
                 <DialogTitle className="d-flex align-items-center justify-content-between">
                     <div>
                         Company Info{" "}
@@ -1851,7 +2216,7 @@ function ManageLeads() {
                 <button className="btn btn-primary" onClick={handleSubmit}>
                     Submit
                 </button>
-            </Dialog>
+            </Dialog> */}
 
             {open && (
                 <div>
@@ -2068,7 +2433,7 @@ function ManageLeads() {
                                 style={{ display: "flex", justifyContent: "space-between" }}
                                 className="tit"
                             >
-                               
+
                                 <div className="headtit">
                                     <h2 className="page-title">Leads</h2>
                                 </div>
@@ -2123,7 +2488,7 @@ function ManageLeads() {
                                                 }
                                                 className="btn btn-primary d-none d-sm-inline-block"
                                             >
-                                                
+
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className="icon"
@@ -2504,6 +2869,7 @@ function ManageLeads() {
                                             <th>State</th>
                                             <th>Company Email</th>
                                             <th>Status</th>
+                                            <th>Uploaded By</th>
                                             <th>Assigned to</th>
 
                                             <th>
@@ -2581,9 +2947,24 @@ function ManageLeads() {
                                                     <td>{company["State"]}</td>
                                                     <td>{company["Company Email"]}</td>
                                                     <td>{company["Status"]}</td>
+                                                    <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                     <td>{company["ename"]}</td>
                                                     <td>{formatDate(company["AssignDate"])}</td>
                                                     <td>
+                                                        <IconButton onClick={() => {
+                                                            functionopenModifyPopup();
+                                                            handleUpdateClick(company._id);
+                                                        }}>
+                                                            < ModeEditIcon
+                                                                style={{
+                                                                    width: "14px",
+                                                                    height: "14px",
+                                                                    color: "grey",
+                                                                }}
+                                                            >
+                                                                Delete
+                                                            </ ModeEditIcon>
+                                                        </IconButton>
                                                         <Link to={`/datamanager/leads/${company._id}`}>
                                                             <IconButton>
                                                                 <IconEye

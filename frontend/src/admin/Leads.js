@@ -1286,77 +1286,186 @@ const mainAdminName =  localStorage.getItem("adminName");
 
   const [isUpdateMode, setIsUpdateMode] = useState(false);
 
+  // const handleSubmit = async (e) => {
+  //   const adminName = localStorage.getItem("adminName");
+  //   try {
+  //     let dataToSend = {
+  //       "Company Name": companyName,
+  //       "Company Email": companyEmail,
+  //       "Company Number": companynumber,
+  //       "Company Incorporation Date ": companyIncoDate,
+  //       "City": companyCity,
+  //       "State": companyState,
+  //       "UploadedBy":adminName ? adminName : "Admin"
+  //     };
+  //     const dateObject = new Date(companyIncoDate);
+
+  //     // Check if the parsed Date object is valid
+  //     if (!isNaN(dateObject.getTime())) {
+  //       // Date object is valid, proceed with further processing
+  //       //console.log("Company Incorporation Date:", dateObject);
+
+  //       // Format the date as yyyy-mm-ddThh:mm:ss.000
+  //       const isoDateString = dateObject.toISOString();
+
+  //       // Update dataToSendUpdated with the formatted date
+  //       let dataToSendUpdated = {
+  //         "Company Name": companyName,
+  //         "Company Email": companyEmail,
+  //         "Company Number": companynumber,
+  //         "Company Incorporation Date ": isoDateString, // Updated format
+  //         "City": companyCity,
+  //         "State": companyState,
+  //         "Company Address":cAddress,
+  //         'Director Name(First)':directorNameFirstModify,
+  //         'Director Number(First)':directorNumberFirstModify,
+  //         'Director Email(First)':directorEmailFirstModify,
+  //         'Director Name(Second)':directorNameSecondModify,
+  //         'Director Number(Second)':directorNumberSecondModify,
+  //         'Director Email(Second)':directorEmailSecondModify,
+  //         'Director Name(Third)':directorNameThirdModify,
+  //         'Director Number(Third)':directorNumberThirdModify,
+  //         'Director Email(Third)':directorEmailThirdModify,
+  //         "UploadedBy":adminName ? adminName : "Admin"
+  //       };
+
+  //       //console.log("Data to send with updated date format:", dataToSendUpdated);
+  //       if (isUpdateMode) {
+  //         if (companyName === "") {
+  //           Swal.fire("Please Enter Company Name");
+  //         } else if (!companynumber && !/^\d{10}$/.test(companynumber)) {
+  //           Swal.fire("Company Number is required");
+  //         } else if (companyEmail === "") {
+  //           Swal.fire("Company Email is required");
+  //         } else if (companyCity === "") {
+  //           Swal.fire("City is required");
+  //         } else if (companyState === "") {
+  //           Swal.fire("State is required");
+  //         } else if (directorNumberFirstModify !== 0 && !/^\d{10}$/.test(directorNumberFirstModify)) {
+  //           Swal.fire("First Director Number should be 10 digits");
+  //         } else if (directorNumberSecondModify !== 0 && !/^\d{10}$/.test(directorNumberSecondModify)) {
+  //           Swal.fire("Second Director Number should be 10 digits");
+  //         } else if (directorNumberThirdModify !== 0 && !/^\d{10}$/.test(directorNumberThirdModify)) {
+  //           Swal.fire("Third Director Number should be 10 digits");
+  //         }else{
+  //         await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
+  //         Swal.fire({
+  //           title: "Data Updated!",
+  //           text: "You have successfully updated the name!",
+  //           icon: "success",
+  //         });
+  //       }
+  //     }
+
+  //       // Rest of your code...
+  //     } else {
+  //       // Date string couldn't be parsed into a valid Date object
+  //       console.error("Invalid Company Incorporation Date string:", companyIncoDate);
+  //     }
+  //     setIsUpdateMode(false);
+  //     fetchDatadebounce();
+  //     functioncloseModifyPopup();
+  //     //console.log("Data sent successfully");
+  //   } catch {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Oops...",
+  //       text: "Something went wrong!",
+  //     });
+  //     console.error("Internal server error");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
+    e.preventDefault();
     const adminName = localStorage.getItem("adminName");
     try {
-      let dataToSend = {
-        "Company Name": companyName,
-        "Company Email": companyEmail,
-        "Company Number": companynumber,
-        "Company Incorporation Date ": companyIncoDate,
-        "City": companyCity,
-        "State": companyState,
-        "UploadedBy":adminName ? adminName : "Admin"
-      };
-      const dateObject = new Date(companyIncoDate);
+        let validationError = false;
 
-      // Check if the parsed Date object is valid
-      if (!isNaN(dateObject.getTime())) {
-        // Date object is valid, proceed with further processing
-        //console.log("Company Incorporation Date:", dateObject);
-
-        // Format the date as yyyy-mm-ddThh:mm:ss.000
-        const isoDateString = dateObject.toISOString();
-
-        // Update dataToSendUpdated with the formatted date
-        let dataToSendUpdated = {
-          "Company Name": companyName,
-          "Company Email": companyEmail,
-          "Company Number": companynumber,
-          "Company Incorporation Date ": isoDateString, // Updated format
-          "City": companyCity,
-          "State": companyState,
-          "Company Address":cAddress,
-          'Director Name(First)':directorNameFirstModify,
-          'Director Number(First)':directorNumberFirstModify,
-          'Director Email(First)':directorEmailFirstModify,
-          'Director Name(Second)':directorNameSecondModify,
-          'Director Number(Second)':directorNumberSecondModify,
-          'Director Email(Second)':directorEmailSecondModify,
-          'Director Name(Third)':directorNameThirdModify,
-          'Director Number(Third)':directorNumberThirdModify,
-          'Director Email(Third)':directorEmailThirdModify,
-          "UploadedBy":adminName ? adminName : "Admin"
-        };
-
-        //console.log("Data to send with updated date format:", dataToSendUpdated);
-        if (isUpdateMode) {
-          await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
-          Swal.fire({
-            title: "Data Updated!",
-            text: "You have successfully updated the name!",
-            icon: "success",
-          });
+        if (companyName === "") {
+            validationError = true;
+            Swal.fire("Please Enter Company Name");
+        } else if (!companynumber || !/^\d{10}$/.test(companynumber)) {
+            validationError = true;
+            Swal.fire("Company Number is required and should be 10 digits");
+        } else if (companyEmail === "") {
+            validationError = true;
+            Swal.fire("Company Email is required");
+        } else if (companyCity === "") {
+            validationError = true;
+            Swal.fire("City is required");
+        } else if (companyState === "") {
+            validationError = true;
+            Swal.fire("State is required");
+        } else if (directorNumberFirstModify && !/^\d{10}$/.test(directorNumberFirstModify)) {
+            validationError = true;
+            Swal.fire("First Director Number should be 10 digits");
+        } else if (directorNumberSecondModify && !/^\d{10}$/.test(directorNumberSecondModify)) {
+            validationError = true;
+            Swal.fire("Second Director Number should be 10 digits");
+        } else if (directorNumberThirdModify && !/^\d{10}$/.test(directorNumberThirdModify)) {
+            validationError = true;
+            Swal.fire("Third Director Number should be 10 digits");
         }
 
-        // Rest of your code...
-      } else {
-        // Date string couldn't be parsed into a valid Date object
-        console.error("Invalid Company Incorporation Date string:", companyIncoDate);
-      }
-      setIsUpdateMode(false);
-      fetchDatadebounce();
-      functioncloseModifyPopup();
-      //console.log("Data sent successfully");
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Something went wrong!",
-      });
-      console.error("Internal server error");
+        if (!validationError) {
+            const dateObject = new Date(companyIncoDate);
+
+            // Check if the parsed Date object is valid
+            if (!isNaN(dateObject.getTime())) {
+                // Date object is valid, proceed with further processing
+                // Format the date as yyyy-mm-ddThh:mm:ss.000
+                const isoDateString = dateObject.toISOString();
+
+                // Update dataToSendUpdated with the formatted date
+                let dataToSendUpdated = {
+                    "Company Name": companyName,
+                    "Company Email": companyEmail,
+                    "Company Number": companynumber,
+                    "Company Incorporation Date ": isoDateString, // Updated format
+                    "City": companyCity,
+                    "State": companyState,
+                    "Company Address": cAddress,
+                    'Director Name(First)': directorNameFirstModify,
+                    'Director Number(First)': directorNumberFirstModify,
+                    'Director Email(First)': directorEmailFirstModify,
+                    'Director Name(Second)': directorNameSecondModify,
+                    'Director Number(Second)': directorNumberSecondModify,
+                    'Director Email(Second)': directorEmailSecondModify,
+                    'Director Name(Third)': directorNameThirdModify,
+                    'Director Number(Third)': directorNumberThirdModify,
+                    'Director Email(Third)': directorEmailThirdModify,
+                    "UploadedBy": adminName ? adminName : "Admin"
+                };
+
+                if (isUpdateMode) {
+                    await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
+                    Swal.fire({
+                        title: "Data Updated!",
+                        text: "You have successfully updated the name!",
+                        icon: "success",
+                    });
+                }
+
+                // Reset the form and any error messages
+                setIsUpdateMode(false);
+                fetchDatadebounce();
+                functioncloseModifyPopup();
+            } else {
+                // Date string couldn't be parsed into a valid Date object
+                console.error("Invalid Company Incorporation Date string:", companyIncoDate);
+            }
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Something went wrong!",
+        });
+        console.error("Internal server error", error);
     }
-  };
+};
+
 
   const [selectedDataId, setSelectedDataId] = useState()
   const [companyEmail, setCompanyEmail] = useState("");
@@ -1543,6 +1652,104 @@ const mainAdminName =  localStorage.getItem("adminName");
   const debounceSetThirdDirectorEmail = debounce((value) => {
     setDirectorEmailThird(value);
   }, 10);
+
+  // ----------------------------------------modify popup window-------------------------------
+
+  const debouncedSetCompanyName = debounce((value) => {
+    setCompanyName(value);
+  }, 10);
+
+  const debouncedSetCompanyEmail = debounce((value) => {
+    setCompanyEmail(value);
+  }, 10);
+
+  const debouncedSetCAddress = debounce((value) => {
+    setCAddress(value);
+  }, 10);
+
+  const debouncedSetCompanyIncoDate = debounce((value) => {
+   setCompanyIncoDate(value);
+  }, 10);
+
+  const [errorCompnayNumber, setErrorCompnayNumber] = useState('');
+
+  const debouncedSetCompnayNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setCompnayNumber(value);
+      setErrorCompnayNumber('');
+    } else {
+      setError('Please enter a 10-digit number');
+      setCompnayNumber()
+    }
+
+  }, 10);
+
+  const debouncedSetCompnayCity = debounce((value) => {
+    setCompnayCity(value);
+  }, 10);
+
+  const debouncedSetCompanyState = debounce((value) => {
+    setCompnayState(value);
+  }, 10);
+
+  const debounceSetFirstDirectorNameModify = debounce((value) => {
+    setDirectorNameFirstModify(value);
+  }, 10);
+
+  const [errorDirectorNumberFirstModify, setErrorDirectorNumberFirstModify] = useState("")
+  const [errorDirectorNumberSecondModify, setErrorDirectorNumberSecondModify] = useState("")
+  const [errorDirectorNumberThirdModify, setErrorDirectorNumberThirdModify] = useState("")
+
+  const debounceSetFirstDirectorNumberModify = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberFirstModify(value)
+      setErrorDirectorNumberFirstModify("")
+    } else {
+      setErrorDirectorNumberFirstModify('Please Enter 10 digit Number')
+      setDirectorNumberFirstModify()
+    }
+  }, 10);
+
+  const debounceSetFirstDirectorEmailModify = debounce((value) => {
+    setDirectorEmailFirstModify(value);
+  }, 10);
+
+  const debounceSetSecondDirectorNameModify = debounce((value) => {
+    setDirectorNameSecondModify(value);
+  }, 10);
+
+  const debounceSetSecondDirectorNumberModify = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberSecondModify(value)
+      setErrorDirectorNumberSecondModify("")
+    } else {
+      setErrorDirectorNumberSecondModify('Please Enter 10 digit Number')
+      setDirectorNumberSecondModify()
+    }
+  }, 10);
+
+  const debounceSetSecondDirectorEmailModify = debounce((value) => {
+    setDirectorEmailSecondModify(value);
+  }, 10);
+
+  const debounceSetThirdDirectorNameModify = debounce((value) => {
+    setDirectorNameThirdModify(value);
+  }, 10);
+
+  const debounceSetThirdDirectorNumberModify = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberThirdModify(value)
+      setErrorDirectorNumberThirdModify("")
+    } else {
+      setErrorDirectorNumberThirdModify('Please Enter 10 digit Number')
+      setDirectorNumberThirdModify()
+    }
+  }, 10);
+
+  const debounceSetThirdDirectorEmailModify = debounce((value) => {
+    setDirectorEmailThirdModify(value);
+  }, 10);
+
 
 
 
@@ -2191,7 +2398,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                         placeholder="Your Company Name"
                         value={companyName}
                         onChange={(e) => {
-                          setCompanyName(e.target.value);
+                          debouncedSetCompanyName(e.target.value);
                         }}
                         disabled={!isEditProjection}
                       />
@@ -2207,11 +2414,11 @@ const mainAdminName =  localStorage.getItem("adminName");
                         placeholder="Your Company Number"
                         value={companynumber}
                         onChange={(e) => {
-                          setCompnayNumber(e.target.value);
+                          debouncedSetCompnayNumber(e.target.value);
                         }}
                         disabled={!isEditProjection}
                       />
-                      {error && <p style={{ color: 'red' }}>{error}</p>}
+                      {errorCompnayNumber && <p style={{ color: 'red' }}>{errorCompnayNumber}</p>}
                     </div>
                   </div>
                   <div className="col-4">
@@ -2224,7 +2431,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                         placeholder="example@gmail.com"
                         value={companyEmail}
                         onChange={(e) => {
-                          setCompanyEmail(e.target.value);
+                          debouncedSetCompanyEmail(e.target.value);
                         }}
                         disabled={!isEditProjection}
                       />
@@ -2240,7 +2447,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <input
                        value={companyIncoDate}
                        onChange={(e) => {
-                         setCompanyIncoDate(e.target.value)
+                        debouncedSetCompanyIncoDate(e.target.value)
                        }}
                        type="date"
                        className="form-control"
@@ -2254,7 +2461,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <input
                         value={companyCity}
                         onChange={(e) => {
-                          setCompnayCity(e.target.value);
+                          debouncedSetCompnayCity(e.target.value);
                         }}
                         type="text"
                         className="form-control"
@@ -2268,7 +2475,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <input
                         value={companyState}
                         onChange={(e) => {
-                          setCompnayState(e.target.value);
+                          debouncedSetCompanyState(e.target.value);
                         }}
                         type="text"
                         className="form-control"
@@ -2284,7 +2491,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <input
                        value={cAddress}
                        onChange={(e) => {
-                         setCAddress(e.target.value);
+                        debouncedSetCAddress(e.target.value);
                        }}
                        type="text"
                        className="form-control"
@@ -2300,7 +2507,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <input
                         value={directorNameFirstModify}
                         onChange={(e) => {
-                          setDirectorNameFirstModify(e.target.value);
+                          debounceSetFirstDirectorNameModify(e.target.value);
                         }}
                         type="text"
                         className="form-control"
@@ -2314,7 +2521,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <input
                         value={directorNumberFirstModify}
                         onChange={(e) => {
-                          setDirectorNumberFirstModify(e.target.value);
+                          debounceSetFirstDirectorNumberModify(e.target.value);
                         }}
                         type="number"
                         className="form-control"
@@ -2329,7 +2536,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <input
                         value={directorEmailFirstModify}
                         onChange={(e) => {
-                          setDirectorEmailFirstModify(e.target.value);
+                          debounceSetFirstDirectorEmailModify(e.target.value);
                         }}
                         type="email"
                         className="form-control"
@@ -2374,7 +2581,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                         <input
                           value={directorNameSecondModify}
                           onChange={(e) => {
-                            setDirectorNameSecondModify(e.target.value);
+                            debounceSetSecondDirectorNameModify(e.target.value);
                           }}
                           type="text"
                           className="form-control"
@@ -2388,13 +2595,13 @@ const mainAdminName =  localStorage.getItem("adminName");
                         <input
                          value={directorNumberSecondModify}
                          onChange={(e) => {
-                           setDirectorNumberSecondModify(e.target.value);
+                          debounceSetSecondDirectorNumberModify(e.target.value);
                          }}
                          type="number"
                          className="form-control"
                          disabled={!isEditProjection}
                         />
-                        {errorDirectorNumberSecond && <p style={{ color: 'red' }}>{errorDirectorNumberSecond}</p>}
+                        {errorDirectorNumberSecondModify && <p style={{ color: 'red' }}>{errorDirectorNumberSecondModify}</p>}
                       </div>
                     </div>
                     <div className="col-4">
@@ -2403,7 +2610,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                         <input
                          value={directorEmailSecondModify}
                          onChange={(e) => {
-                           setDirectorEmailSecondModify(e.target.value);
+                          debounceSetSecondDirectorEmailModify(e.target.value);
                          }}
                          type="email"
                          className="form-control"
@@ -2447,7 +2654,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <input
                          value={directorNameThirdModify}
                          onChange={(e) => {
-                           setDirectorNameThirdModify(e.target.value);
+                          debounceSetThirdDirectorNameModify(e.target.value);
                          }}
                          type="text"
                          className="form-control"
@@ -2461,13 +2668,13 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <input
                          value={directorNumberThirdModify}
                          onChange={(e) => {
-                           setDirectorNumberThirdModify(e.target.value);
+                          debounceSetThirdDirectorNumberModify(e.target.value);
                          }}
                          type="number"
                          className="form-control"
                          disabled={!isEditProjection}
                       />
-                      {errorDirectorNumberThird && <p style={{ color: 'red' }}>{errorDirectorNumberThird}</p>}
+                      {errorDirectorNumberThirdModify && <p style={{ color: 'red' }}>{errorDirectorNumberThirdModify}</p>}
                     </div>
                   </div>
                   <div className="col-4">
@@ -2476,7 +2683,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <input
                         value={directorEmailThirdModify}
                         onChange={(e) => {
-                          setDirectorEmailThirdModify(e.target.value);
+                          debounceSetThirdDirectorEmailModify(e.target.value);
                         }}
                         type="email"
                         className="form-control"
@@ -2667,7 +2874,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                       checked={selectedOption === "direct"}
                       onChange={handleOptionChange}
                     />
-                    <label htmlFor="direct">Assign Directly?</label>
+                    <label htmlFor="direct">Upload To General</label>
                   </div>
                   <div
                     style={
@@ -3482,7 +3689,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                          {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                           <td>{formatDateFinal(company["AssignDate"])}</td>
                           <td>
-                           {(mainAdminName === "Nimesh" || mainAdminName === "Ronak" || mainAdminName === "Aakash") &&  <> <IconButton onClick={() => handleDeleteClick(company._id)}>
+                           {(mainAdminName === "Nimesh" || mainAdminName === "Ronak" || mainAdminName === "Aakash" || mainAdminName === "shivangi") &&  <> <IconButton onClick={() => handleDeleteClick(company._id)}>
                               <DeleteIcon
                                 style={{
                                   width: "14px",
