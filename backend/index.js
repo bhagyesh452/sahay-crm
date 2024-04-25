@@ -73,6 +73,8 @@ app.use(
 // }));
 // app.use(passport.initialize())
 // app.use(passport.session());
+
+
 var http = require("http").createServer(app);
 var socketIO = require("socket.io")(http, {
   cors: {
@@ -929,7 +931,7 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
     bdeForwardDate,
     bdeOldStatus,
   } = req.body;
-  console.log("selectedData", selectedData);
+  //console.log("selectedData", selectedData);
 
   try {
     // Assuming TeamLeadsModel has a schema similar to the selectedData structure
@@ -942,7 +944,7 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
     await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus , bdeForwardDate:new Date(bdeForwardDate) , bdeOldStatus : bdeOldStatus})
     
     
-    console.log("newLeads", newLeads);
+    //console.log("newLeads", newLeads);
     res.status(201).json(newLeads);
   } catch (error) {
     console.error("Error creating new leads:", error.message);
@@ -1655,6 +1657,66 @@ app.post("/api/assign-new", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+app.post("/api/assign-leads-newbdm", async (req, res) => {
+  const { newemployeeSelection, data , bdmAcceptStatus} = req.body;
+
+  console.log(newemployeeSelection , data , bdmAcceptStatus)
+  
+  if(newemployeeSelection !== "Not Alloted"){
+    try {
+      // Add AssignDate property with the current date
+      const updatedObj = {
+        ...data,
+        bdmName: newemployeeSelection,
+        AssignDate: new Date(),
+        
+      };
+  
+      console.log("updated" , updatedObj)
+  
+      // Update TeamLeadsModel for the specific data
+      await TeamLeadsModel.updateOne({ _id: data._id }, updatedObj);
+  
+      // Delete objects from RemarksHistory collection that match the "Company Name"
+      //await RemarksHistory.deleteMany({ companyID: data._id });
+  
+      res.status(200).json({ message: "Data updated successfully" });
+    }  catch (error) {
+      console.error("Error updating data:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  } else {
+    try {
+      // If newemployeeSelection is "Not Alloted", delete the company record and update AssignDate
+      const updatedObj = {
+        ...data,
+        ename: newemployeeSelection,
+        AssignDate: new Date(),
+        bdmAcceptStatus : bdmAcceptStatus
+        
+      };
+      console.log("updated" , updatedObj)
+      // Delete the record from TeamLeadsModel
+      await TeamLeadsModel.findByIdAndDelete({_id: data._id});
+
+      // Update the record in CompanyModel
+      await CompanyModel.findByIdAndUpdate({_id: data._id}, updatedObj);
+
+      // Delete records from RemarksHistory collection that match the companyID
+      await RemarksHistory.deleteMany({ companyID: data._id });
+
+      res.status(200).json({ message: "Data updated successfully" });
+    } catch(error) {
+      console.error("Error updating data:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+});
+
+
+
+
 
 app.post("/api/company", async (req, res) => {
   const { newemployeeSelection, csvdata } = req.body;

@@ -446,7 +446,7 @@ function EmployeeParticular() {
       console.error("Error fetching data:", error.message);
     }
   };
-
+//console.log("empData" , newempData)
 
   const handleFilterIncoDate = () => {
     setOpenIncoDate(!openIncoDate);
@@ -516,6 +516,8 @@ function EmployeeParticular() {
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
+
+
   const functionopenprojection = (comName) => {
     setProjectingCompany(comName);
     setOpenProjection(true);
@@ -1267,7 +1269,7 @@ function EmployeeParticular() {
                    Leads </span>
                 </div>
               } {...a11yProps(0)} /></a>
-                <a
+                {bdmWorkOn && (<a
                       href="#tabs-activity-5"
                       onClick={() => {
                         setCurrentTab("TeamLeads")
@@ -1288,7 +1290,7 @@ function EmployeeParticular() {
                   </div>
                 }
                 {...a11yProps(1)}
-              /></a>
+              /></a>)}
             </Tabs>
           </Box>
         </div>
@@ -2442,8 +2444,7 @@ function EmployeeParticular() {
         open={openAssign}
         onClose={closepopupAssign}
         fullWidth
-        maxWidth="sm"
-      >
+        maxWidth="sm">
         <DialogTitle>
           Change BDE{" "}
           <IconButton onClick={closepopupAssign} style={{ float: "right" }}>

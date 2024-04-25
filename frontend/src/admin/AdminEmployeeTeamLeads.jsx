@@ -141,8 +141,10 @@ function AdminEmployeeTeamLeads() {
     const [updateData, setUpdateData] = useState({});
     const [projectionData, setProjectionData] = useState([]);
     const [eData, seteData] = useState([]);
-
-
+    const [bdmWorkOn, setBdmWorkOn] = useState(false)
+    const [bdmNames , setBdmNames] = useState([])
+    const [branchOffice , setBranchOffice] = useState("")
+    const [empData , setEmpData] = useState([])
 
     const fetchData = async () => {
         try {
@@ -153,9 +155,18 @@ function AdminEmployeeTeamLeads() {
             const userData = tempData.find((item) => item._id === id);
             const salesExecutivesIds = response.data.filter((employee) => employee.designation === "Sales Executive")
                 .map((employee) => employee._id)
-            //console.log(tempData);
+            //console.log(userData);
+            setEmpData(tempData)
+            setBranchOffice(userData.branchOffice)
             seteData(salesExecutivesIds)
             setData(userData);
+            setBdmNames(tempData
+                .filter((obj) => obj.bdmWork && obj.branchOffice === branchOffice && !userData.ename.includes(obj.ename))
+                .map((employee) => employee.ename)
+              );
+              
+            setBdmWorkOn(tempData.find((item) => item._id === id)?.bdmWork || null);
+            //console.log((tempData.find((item)=>item._id === id))?.bdmWork || null)
             //setmoreFilteredData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
@@ -163,6 +174,19 @@ function AdminEmployeeTeamLeads() {
     };
     //console.log(eData)
     //console.log(data)
+   
+    // useEffect(()=>{
+    //     fetchData()
+    //     setBdmNames(empData
+    //         .filter((obj) => obj.bdmWork && obj.branchOffice === branchOffice)
+    //         .map((employee) => employee.ename)
+    //       );
+
+    // }, [empData])
+
+
+
+    console.log(bdmNames)
 
     const [maturedBooking, setMaturedBooking] = useState(null);
 
@@ -221,8 +245,8 @@ function AdminEmployeeTeamLeads() {
         }
     }
 
-    console.log("teamData", teamData)
-    console.log(data.ename)
+    //console.log("teamData", teamData)
+    //console.log(data.ename)
 
     useEffect(() => {
         if (teamData.length !== 0 && BDMrequests) {
@@ -241,6 +265,7 @@ function AdminEmployeeTeamLeads() {
     }, [])
 
     useEffect(() => {
+        fetchData()
         fetchTeamLeadsData()
         fetchBDMbookingRequests()
     }, [data.ename])
@@ -988,6 +1013,7 @@ function AdminEmployeeTeamLeads() {
     const [year, setYear] = useState(0);
     const [subFilterValue, setSubFilterValue] = useState("");
     const [currentTab, setCurrentTab] = useState("TeamLeads");
+    const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
 
 
     const handleChangeUrl = () => {
@@ -1018,8 +1044,97 @@ function AdminEmployeeTeamLeads() {
     const closepopupAssign = () => {
         openchangeAssign(false);
     };
+    const [selectedOption, setSelectedOption] = useState("direct");
 
-    const handleFieldChange = (event) => {
+    const handleOptionChange = (event) => {
+        setSelectedOption(event.target.value);
+      };
+    
+  
+
+    const handleUploadData = async (e) => {
+        //console.log("Uploading data");
+    
+        const currentDate = new Date().toLocaleDateString();
+        const currentTime = new Date().toLocaleTimeString();
+        const bdmAcceptStatus = "NotForwarded"
+    
+    
+        const csvdata = teamleadsData
+          .filter((employee) => selectedRows.includes(employee._id))
+          .map((employee) => {
+            if (
+              employee.bdmStatus === "Interested" ||
+              employee.bdmStatus === "FollowUp"
+            ) {
+              // If Status is "Interested" or "FollowUp", don't change Status and Remarks
+              return { ...employee };
+            } else {
+              // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
+              return {
+                ...employee,
+                bdmStatus: "Untouched",
+                Remarks: "No Remarks Added",
+              };
+            }
+          });
+    
+        // Create an array to store promises for updating CompanyModel
+        const updatePromises = [];
+    
+        for (const data of csvdata) {
+          const updatedObj = {
+            ...data,
+            date: currentDate,
+            time: currentTime,
+            bdmName : newemployeeSelection,
+            companyName: data["Company Name"],
+            bdmAcceptStatus,
+          };
+         console.log(newemployeeSelection , data , bdmAcceptStatus)
+          // Add the promise for updating CompanyModel to the array
+          updatePromises.push(
+            axios.post(`${secretKey}/assign-leads-newbdm`, {
+               
+              newemployeeSelection,
+              data: updatedObj,
+              bdmAcceptStatus ,
+            })
+          );
+        }
+    
+        try {
+          // Wait for all update promises to resolve
+          await Promise.all(updatePromises);
+          //console.log("Employee data updated!");
+    
+          // Clear the selection
+          setnewEmployeeSelection("Not Alloted");
+    
+          Swal.fire({
+            title: "Data Sent!",
+            text: "Data sent successfully!",
+            icon: "success",
+          });
+    
+          // Fetch updated employee details and new data
+          //fetchEmployeeDetails();
+          //fetchNewData();
+          closepopupAssign();
+        } catch (error) {
+          console.error("Error updating employee data:", error);
+    
+          Swal.fire({
+            title: "Error!",
+            text: "Failed to update employee data. Please try again later.",
+            icon: "error",
+          });
+        }
+      };
+
+      //console.log("new" , newemployeeSelection)
+    
+      const handleFieldChange = (event) => {
         if (event.target.value === "Company Incorporation Date  ") {
             setSelectedField(event.target.value);
             setVisibility("block");
@@ -1147,90 +1262,90 @@ function AdminEmployeeTeamLeads() {
 
     console.log(value)
 
-// -------------------------------------------handle checkbox----------------------------------------------------------
+    // -------------------------------------------handle checkbox----------------------------------------------------------
 
 
-const handleCheckboxChange = (id, event) => {
-    // If the id is 'all', toggle all checkboxes
-    if (id === "all") {
-      // If all checkboxes are already selected, clear the selection; otherwise, select all
-      setSelectedRows((prevSelectedRows) =>
-        prevSelectedRows.length === filteredData.length
-          ? []
-          : filteredData.map((row) => row._id)
-      );
-    } else {
-      // Toggle the selection status of the row with the given id
-      setSelectedRows((prevSelectedRows) => {
-        // If the Ctrl key is pressed
-        if (event.ctrlKey) {
-          //console.log("pressed");
-          const selectedIndex = filteredData.findIndex((row) => row._id === id);
-          const lastSelectedIndex = filteredData.findIndex((row) =>
-            prevSelectedRows.includes(row._id)
-          );
+    const handleCheckboxChange = (id, event) => {
+        // If the id is 'all', toggle all checkboxes
+        if (id === "all") {
+            // If all checkboxes are already selected, clear the selection; otherwise, select all
+            setSelectedRows((prevSelectedRows) =>
+                prevSelectedRows.length === filteredData.length
+                    ? []
+                    : filteredData.map((row) => row._id)
+            );
+        } else {
+            // Toggle the selection status of the row with the given id
+            setSelectedRows((prevSelectedRows) => {
+                // If the Ctrl key is pressed
+                if (event.ctrlKey) {
+                    //console.log("pressed");
+                    const selectedIndex = filteredData.findIndex((row) => row._id === id);
+                    const lastSelectedIndex = filteredData.findIndex((row) =>
+                        prevSelectedRows.includes(row._id)
+                    );
 
-          // Select rows between the last selected row and the current row
-          if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
-            const start = Math.min(selectedIndex, lastSelectedIndex);
-            const end = Math.max(selectedIndex, lastSelectedIndex);
-            const idsToSelect = filteredData
-              .slice(start, end + 1)
-              .map((row) => row._id);
+                    // Select rows between the last selected row and the current row
+                    if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
+                        const start = Math.min(selectedIndex, lastSelectedIndex);
+                        const end = Math.max(selectedIndex, lastSelectedIndex);
+                        const idsToSelect = filteredData
+                            .slice(start, end + 1)
+                            .map((row) => row._id);
 
-            return prevSelectedRows.includes(id)
-              ? prevSelectedRows.filter((rowId) => !idsToSelect.includes(rowId))
-              : [...prevSelectedRows, ...idsToSelect];
-          }
+                        return prevSelectedRows.includes(id)
+                            ? prevSelectedRows.filter((rowId) => !idsToSelect.includes(rowId))
+                            : [...prevSelectedRows, ...idsToSelect];
+                    }
+                }
+
+                // Toggle the selection status of the row with the given id
+                return prevSelectedRows.includes(id)
+                    ? prevSelectedRows.filter((rowId) => rowId !== id)
+                    : [...prevSelectedRows, id];
+            });
         }
+    };
 
-        // Toggle the selection status of the row with the given id
-        return prevSelectedRows.includes(id)
-          ? prevSelectedRows.filter((rowId) => rowId !== id)
-          : [...prevSelectedRows, id];
-      });
-    }
-  };
+    const [startRowIndex, setStartRowIndex] = useState(null);
 
-  const [startRowIndex, setStartRowIndex] = useState(null);
+    const handleMouseEnter = (id) => {
+        // Update selected rows during drag selection
+        if (startRowIndex !== null) {
+            const endRowIndex = filteredData.findIndex((row) => row._id === id);
+            const selectedRange = [];
+            const startIndex = Math.min(startRowIndex, endRowIndex);
+            const endIndex = Math.max(startRowIndex, endRowIndex);
 
-  const handleMouseEnter = (id) => {
-    // Update selected rows during drag selection
-    if (startRowIndex !== null) {
-      const endRowIndex = filteredData.findIndex((row) => row._id === id);
-      const selectedRange = [];
-      const startIndex = Math.min(startRowIndex, endRowIndex);
-      const endIndex = Math.max(startRowIndex, endRowIndex);
+            for (let i = startIndex; i <= endIndex; i++) {
+                selectedRange.push(filteredData[i]._id);
+            }
 
-      for (let i = startIndex; i <= endIndex; i++) {
-        selectedRange.push(filteredData[i]._id);
-      }
+            setSelectedRows(selectedRange);
 
-      setSelectedRows(selectedRange);
+            // Scroll the window vertically when dragging beyond the visible viewport
+            const windowHeight = document.documentElement.clientHeight;
+            const mouseY = window.event.clientY;
+            const tableHeight = document.querySelector("table").clientHeight;
+            const maxVisibleRows = Math.floor(
+                windowHeight / (tableHeight / filteredData.length)
+            );
 
-      // Scroll the window vertically when dragging beyond the visible viewport
-      const windowHeight = document.documentElement.clientHeight;
-      const mouseY = window.event.clientY;
-      const tableHeight = document.querySelector("table").clientHeight;
-      const maxVisibleRows = Math.floor(
-        windowHeight / (tableHeight / filteredData.length)
-      );
+            if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
+                window.scrollTo(0, window.scrollY + 20);
+            }
+        }
+    };
 
-      if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
-        window.scrollTo(0, window.scrollY + 20);
-      }
-    }
-  };
+    const handleMouseUp = () => {
+        // End drag selection
+        setStartRowIndex(null);
+    };
 
-  const handleMouseUp = () => {
-    // End drag selection
-    setStartRowIndex(null);
-  };
-
-  const handleMouseDown = (id) => {
-    // Initiate drag selection
-    setStartRowIndex(filteredData.findIndex((row) => row._id === id));
-  };
+    const handleMouseDown = (id) => {
+        // Initiate drag selection
+        setStartRowIndex(filteredData.findIndex((row) => row._id === id));
+    };
 
 
 
@@ -1270,7 +1385,7 @@ const handleCheckboxChange = (id, event) => {
                                 </div>
                                 <div className="d-flex align-items-center justify-content-center">
                                     {selectedRows.length !== 0 && (
-                                        <div className="request">
+                                        <div className="request mr-1">
                                             <div className="btn-list">
                                                 <button
                                                     onClick={functionOpenAssign}
@@ -1471,7 +1586,7 @@ const handleCheckboxChange = (id, event) => {
                                     </div>
                                 } {...a11yProps(0)} /></a>
 
-                            <a
+                            {bdmWorkOn && (<a
                                 href="#tabs-activity-5"
                                 onClick={() => {
                                     setCurrentTab("TeamLeads")
@@ -1492,7 +1607,7 @@ const handleCheckboxChange = (id, event) => {
                                         </div>
                                     }
                                     {...a11yProps(1)}
-                                /></a>
+                                /></a>)}
                         </Tabs>
                     </Box>
                 </div>
@@ -2761,6 +2876,135 @@ const handleCheckboxChange = (id, event) => {
                 </DialogContent>
             </Dialog>
 
+            {/* --------------------------------dialog for assign data-------------------------------- */}
+            <Dialog
+                open={openAssign}
+                onClose={closepopupAssign}
+                fullWidth
+                maxWidth="sm">
+                <DialogTitle>
+                    Change BDM{" "}
+                    <IconButton onClick={closepopupAssign} style={{ float: "right" }}>
+                        <CloseIcon color="primary"></CloseIcon>
+                    </IconButton>{" "}
+                </DialogTitle>
+                <DialogContent>
+                    <div className="maincon">
+                        <div className="con2 d-flex">
+                            <div
+                                style={
+                                    selectedOption === "direct"
+                                        ? {
+                                            backgroundColor: "#e9eae9",
+                                            margin: "10px 10px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                        : {
+                                            backgroundColor: "white",
+                                            margin: "10px 10px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                }
+                                onClick={() => {
+                                    setSelectedOption("direct");
+                                }}
+                                className="direct form-control"
+                            >
+                                <input
+                                    type="radio"
+                                    id="direct"
+                                    value="direct"
+                                    style={{
+                                        display: "none",
+                                    }}
+                                    checked={selectedOption === "direct"}
+                                    onChange={handleOptionChange}
+                                />
+                                <label htmlFor="direct">Move In General Data</label>
+                            </div>
+                            <div
+                                style={
+                                    selectedOption === "someoneElse"
+                                        ? {
+                                            backgroundColor: "#e9eae9",
+                                            margin: "10px 0px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                        : {
+                                            backgroundColor: "white",
+                                            margin: "10px 0px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                }
+                                className="indirect form-control"
+                                onClick={() => {
+                                    setSelectedOption("someoneElse");
+                                }}
+                            >
+                                <input
+                                    type="radio"
+                                    id="someoneElse"
+                                    value="someoneElse"
+                                    style={{
+                                        display: "none",
+                                    }}
+                                    checked={selectedOption === "someoneElse"}
+                                    onChange={handleOptionChange}
+                                />
+                                <label htmlFor="someoneElse">Assign to BDM</label>
+                            </div>
+                        </div>
+                    </div>
+                    {selectedOption === "someoneElse" && (
+                        <div>
+                            {bdmNames.length !== 0 ? (
+                                <>
+                                    <div className="dialogAssign">
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                justifyContent: "space-between",
+                                                margin: " 10px 0px 0px 0px",
+                                            }}
+                                            className="selector"
+                                        >
+                                            <label>Select an Employee</label>
+                                            <div className="form-control">
+                                                <select
+                                                    style={{
+                                                        width: "inherit",
+                                                        border: "none",
+                                                        outline: "none",
+                                                    }}
+                                                    value={newemployeeSelection}
+                                                    onChange={(e) => {
+                                                        setnewEmployeeSelection(e.target.value);
+                                                    }}
+                                                >
+                                                    <option value="Not Alloted" disabled>
+                                                        Select employee
+                                                    </option>
+                                                    {bdmNames.map((item) => (
+                                                        <option value={item}>{item}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <div>
+                                    <h1>No Employees Found</h1>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </DialogContent>
+                <button onClick={handleUploadData} className="btn btn-primary">
+                    Submit
+                </button>
+            </Dialog>
 
 
 
