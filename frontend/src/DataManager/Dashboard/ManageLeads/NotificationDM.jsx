@@ -148,6 +148,7 @@ function NotificationDM() {
   const dataManagerName = localStorage.getItem("dataManagerName")
   return (
     <div>
+      
       {" "}
       <Header name={dataManagerName} />
       <Navbar />

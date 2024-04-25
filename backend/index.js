@@ -6715,8 +6715,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const recipients = [
       newData.bdeEmail,
       newData.bdmEmail,
-      "bookings@startupsahay.com",
-      "documents@startupsahay.com",
+      // "bookings@startupsahay.com",
+      // "documents@startupsahay.com",
       
     ];
     const serviceNames = newData.services
@@ -7654,21 +7654,36 @@ function generatePdf(htmlContent) {
       });
   }
 }
-app.post("/api/update-redesigned-final-form/:companyName", async (req, res) => {
+app.post("/api/update-redesigned-final-form/:CompanyName",
+upload.fields([
+  { name: "otherDocs", maxCount: 50 },
+  { name: "paymentReceipt", maxCount: 1 },
+]), async (req, res) => {
   // Assuming updatedBooking contains the updated data
-  const companyName = req.params.companyName; // Get the _id from the request parameters
-  console.log("Api run");
-  const { _id, ...updatedDocWithoutId } = req.body;
+  const companyName = req.params.CompanyName; // Get the _id from the request parameters
+  const { _id,moreBookings,step4changed,otherDocs,paymentReceipt ,...updatedDocs } = req.body;
+  const newOtherDocs = req.files["otherDocs"] || []; 
+  const newPaymentReceipt = req.files["paymentReceipt"] || [];
+  const updatedDocWithoutId = {
+    ...updatedDocs,
+    otherDocs: newOtherDocs,
+    paymentReceipt: newPaymentReceipt,
+  };
+  const goingToUpdate = step4changed=== "true" ? updatedDocWithoutId : updatedDocs;
+ 
+  
   try {
     // Find the document by _id and update it with the updatedBooking data
+
     const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
       {
         "Company Name": companyName,
       },
-
-      { $set: updatedDocWithoutId },
+      goingToUpdate, 
+   // Set all properties except "moreBookings"
       { new: true } // Return the updated document
     );
+  
 
     if (!updatedDocument) {
       return res.status(404).json({ error: "Document not found" });
