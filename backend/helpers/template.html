@@ -2,12 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Generated PDF</title>
     <style>
       /* Your CSS styles here */
       body {
         font-family: Arial, sans-serif;
+        margin: 0px;
+        padding: 0px;
+        font-size: 12px  !important;
+        line-height: 24px  !important;
       }
       .position-relative {
         position: relative;
@@ -15,6 +18,7 @@
       .page {
         page-break-after: always; /* Ensure each section starts on a new page */
         height: 1169px;
+        width: 100%;
       }
       .pagination {
         /* margin-top: 100px;
@@ -25,7 +29,7 @@
         font-size: 12px;
         color: #333;
         margin-top: 10vh;
-        left: calc(50% - 50px );
+       
       }
       .pagination-text {
         text-align: center;
@@ -43,7 +47,7 @@
         margin-top: 20px;
       }
       .container {
-        max-width: 800px;
+        max-width: 95%;
         margin: 0 auto;
         padding: 20px;
       }

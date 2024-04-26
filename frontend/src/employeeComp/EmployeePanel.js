@@ -269,11 +269,25 @@ function EmployeePanel() {
     }
   };
 
+  // const fetchBDMbookingRequests = async () => {
+  //   const bdeName = data.ename;
+  //   try {
+  //     const response = await axios.get(
+  //       `${secretKey}/matured-get-requests/${bdeName}`
+  //     );
+  //     setBDMrequests(response.data[0]);
+  //     if (response.data.length !== 0) {
+  //       setOpenbdmRequest(true);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
   const fetchBDMbookingRequests = async () => {
     const bdeName = data.ename;
     try {
       const response = await axios.get(
-        `${secretKey}/matured-get-requests/${bdeName}`
+        `${secretKey}/inform-bde-requests/${bdeName}`
       );
       setBDMrequests(response.data[0]);
       if (response.data.length !== 0) {
@@ -2580,6 +2594,25 @@ function EmployeePanel() {
       // Handle the error or display a message to the user
     }
   };
+  const handleDoneInform = async () => {
+    try {
+      const id = BDMrequests._id;
+      // Send a DELETE request to your backend API to delete the object
+      const response = await axios.delete(
+        `${secretKey}/delete-inform-Request/${id}`
+      );
+     
+      setOpenbdmRequest(false);
+      fetchBDMbookingRequests()
+      console.log(response.data); // Log the response data if needed
+      // Optionally, you can update the UI or perform any other actions after the request is successful
+    } catch (error) {
+      Swal.fire("Error!", "Error Rejecting the Request", "error");
+      setOpenbdmRequest(false);
+      console.error("Error rejecting request:", error);
+      // Handle the error or display a message to the user
+    }
+  };
 
 
   // ------------------------------- Next Follow Up Date -------------------------------------------------------------------
@@ -2618,8 +2651,8 @@ function EmployeePanel() {
                   <div className="request-bdm-card">
                     <div className="request-title m-2 d-flex justify-content-between">
                       <div className="request-content mr-2">
-                        {BDMrequests.bdmName} is requesting to book{" "}
-                        <b>{BDMrequests["Company Name"]}</b> form.
+                       {BDMrequests.bdmName} has Matured the case of{" "}
+                        <b>{BDMrequests["Company Name"]}</b>.
                       </div>
                       <div className="request-time">
                         {new Date(BDMrequests.date).toLocaleTimeString(
@@ -2634,17 +2667,12 @@ function EmployeePanel() {
                     </div>
                     <div className="request-reply">
                       <button
-                        onClick={handleAcceptRequest}
+                        onClick={handleDoneInform}
                         className="request-accept"
                       >
-                        Accept
+                        Ok
                       </button>
-                      <button
-                        onClick={handleRejectRequest}
-                        className="request-reject"
-                      >
-                        Reject
-                      </button>
+                      
                     </div>
                   </div>
                 </DialogContent>

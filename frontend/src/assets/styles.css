@@ -888,18 +888,18 @@ color: #4e884e;
   font-family: monospace;
 }
 .request-accept{
-  width: 50%;
+  width: 100%;
   border: none;
-  border-radius: 0px 0px 0px 14px;
+  border-radius: 0px 0px 14px 14px;
   color: green;
   background-color: rgb(162, 255, 162);
   font-weight: bold;
   transition: all 0.3s ease;
 }
 .request-accept:hover{
-  width: 50%;
+  width: 100%;
   border: none;
-  border-radius: 0px 0px 0px 14px;
+  border-radius: 0px 0px 14px 14px;
   color: white;
   background-color: green;
   font-weight: bold;
