@@ -740,6 +740,9 @@ let isValid = true;
           }
           try {
             console.log("Api is about to work")
+            for (const pair of formData.entries()) {
+              console.log(pair[0], pair[1]);
+            }
             const response = await axios.post(
               `${secretKey}/redesigned-addmore-booking/${companysName}/step4`,
               formData

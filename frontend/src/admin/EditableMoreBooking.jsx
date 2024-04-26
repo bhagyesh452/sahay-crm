@@ -59,6 +59,7 @@ export default function EditableMoreBooking({
   setNowToFetch,
 }) {
   const [totalServices, setTotalServices] = useState(1);
+  const [step4changed, setStep4Changed] = useState(false)
 
   const [fetchedService, setfetchedService] = useState(false);
   const defaultLeadData = {
@@ -901,11 +902,89 @@ export default function EditableMoreBooking({
   //     console.error("Error sending data to backend:", error);
   //     // Handle error if needed
   //   }
-
+    if(activeStep === 2){
+      console.log("2nd step chala")
+      setLeadData((prevState) => ({
+        ...prevState,
+       receivedAmount : parseInt( leadData.services
+       .reduce(
+         (total, service) =>
+           service.paymentTerms ===
+           "Full Advanced"
+             ? total +
+               Number(
+                 service.totalPaymentWGST
+               )
+             : total +
+               Number(
+                 service.firstPayment
+               ),
+         0
+       ))
+       .toFixed(2) ,
+       pendingAmount:parseInt(leadData.services
+       .reduce(
+         (total, service) =>
+           service.paymentTerms ===
+           "Full Advanced"
+             ? total + 0
+             : total +
+               Number(
+                 service.totalPaymentWGST
+               ) -
+               Number(
+                 service.firstPayment
+               ),
+         0
+       ))
+       .toFixed(2),
+       totalAmount : parseInt(leadData.services.reduce((total,service)=>
+       total + Number(service.totalPaymentWGST)
+       ))
+      
+      }));
+    
+    }
   if(activeStep===4 && !isAdmin){
 
-   console.log("Data sending to change:-", leadData);
-    const dataToSend = {...leadData, requestBy:employeeName , bookingSource:selectedValues}
+    console.log("Data sending to change:-", leadData);
+    const dataToSend = {...leadData, requestBy:employeeName , bookingSource:selectedValues,  receivedAmount : parseInt( leadData.services
+      .reduce(
+        (total, service) =>
+          service.paymentTerms ===
+          "Full Advanced"
+            ? total +
+              Number(
+                service.totalPaymentWGST
+              )
+            : total +
+              Number(
+                service.firstPayment
+              ),
+        0
+      ))
+      .toFixed(2) ,
+      pendingAmount:parseInt(leadData.services
+        .reduce(
+          (total, service) =>
+            service.paymentTerms ===
+            "Full Advanced"
+              ? total + 0
+              : total +
+                Number(
+                  service.totalPaymentWGST
+                ) -
+                Number(
+                  service.firstPayment
+                ),
+          0
+        ))
+        .toFixed(2) , 
+         totalAmount : leadData.services.reduce((total, service) =>
+        total + parseFloat(service.totalPaymentWGST || 0), 0)
+      
+        }
+    
     try {
       const response = await axios.post(`${secretKey}/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
       console.log('Data created:', response.data);
@@ -917,11 +996,75 @@ export default function EditableMoreBooking({
       Swal.fire("Request Failed!","Failed to Request Admin","error");
     }
   }else if(activeStep === 4 && isAdmin){
-    const dataToSend = {...leadData,  bookingSource:selectedValues}
+    const dataToSend = {...leadData,  bookingSource:selectedValues , step4changed : step4changed , receivedAmount : parseInt( leadData.services
+      .reduce(
+        (total, service) =>
+          service.paymentTerms ===
+          "Full Advanced"
+            ? total +
+              Number(
+                service.totalPaymentWGST
+              )
+            : total +
+              Number(
+                service.firstPayment
+              ),
+        0
+      ))
+      .toFixed(2) ,
+      pendingAmount:parseInt(leadData.services
+        .reduce(
+          (total, service) =>
+            service.paymentTerms ===
+            "Full Advanced"
+              ? total + 0
+              : total +
+                Number(
+                  service.totalPaymentWGST
+                ) -
+                Number(
+                  service.firstPayment
+                ),
+          0
+        ))
+        .toFixed(2) , 
+        totalAmount : leadData.services.reduce((total, service) =>
+        total + parseFloat(service.totalPaymentWGST || 0), 0) }
   
     if(bookingIndex === 0){
       try {
-        const response = await axios.post(`${secretKey}/update-redesigned-final-form/${companysName}`, dataToSend);
+        console.log(leadData.otherDocs , "Boom");
+        const formData = new FormData();
+        Object.keys(dataToSend).forEach((key) => {
+          if (key === "services") {
+            // Handle services separately as it's an array
+            dataToSend.services.forEach((service, index) => {
+              Object.keys(service).forEach((prop) => {
+                formData.append(`services[${index}][${prop}]`, service[prop]);
+              });
+            });
+          } else if (key === "otherDocs" ) {
+            for (let i = 0; i < leadData.otherDocs.length; i++) {
+              formData.append("otherDocs", leadData.otherDocs[i]);
+            }
+          } else if (key === "paymentReceipt" ) {
+            for (let i = 0; i < leadData.paymentReceipt.length; i++) {
+              formData.append("paymentReceipt", leadData.paymentReceipt[i]);
+            }
+          } else {
+            formData.append(key, dataToSend[key]);
+          }
+        });
+        // console.log(activeStep, dataToSend);
+      for (const pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+      
+        const response = await axios.post(`${secretKey}/update-redesigned-final-form/${companysName}`, formData ,{
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
        Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
        setFormOpen(false)
        setNowToFetch(true)
@@ -930,8 +1073,33 @@ export default function EditableMoreBooking({
         Swal.fire({title:"Error Updating Data" , icon:"error"})// Display error message
       }
     }else {
+      const formData = new FormData();
+      Object.keys(dataToSend).forEach((key) => {
+        if (key === "services") {
+          // Handle services separately as it's an array
+          dataToSend.services.forEach((service, index) => {
+            Object.keys(service).forEach((prop) => {
+              formData.append(`services[${index}][${prop}]`, service[prop]);
+            });
+          });
+        } else if (key === "otherDocs" ) {
+          for (let i = 0; i < leadData.otherDocs.length; i++) {
+            formData.append("otherDocs", leadData.otherDocs[i]);
+          }
+        } else if (key === "paymentReceipt" ) {
+          for (let i = 0; i < leadData.paymentReceipt.length; i++) {
+            formData.append("paymentReceipt", leadData.paymentReceipt[i]);
+          }
+        } else {
+          formData.append(key, dataToSend[key]);
+        }
+      });
       try {
-        const response = await axios.put(`${secretKey}/update-more-booking/${companysName}/${bookingIndex}`, leadData);
+        const response = await axios.put(`${secretKey}/update-more-booking/${companysName}/${bookingIndex}`, formData ,{
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         setFormOpen(false)
         setNowToFetch(true)
        Swal.fire({title:"Data Updated" , icon:"success"}) // Display success message
@@ -1217,6 +1385,10 @@ export default function EditableMoreBooking({
                             ? {
                                 ...service,
                                 paymentTerms: e.target.value,
+                                firstPayment:0,
+                                secondPayment:0,
+                                thirdPayment:0,
+                                fourthPayment:0
                               }
                             : service
                         ),
@@ -2589,6 +2761,8 @@ export default function EditableMoreBooking({
                                         id="Company"
                                         onChange={(e) => {
                                           // Update the state with the selected files
+                                         
+                                          setStep4Changed(true)
                                           setLeadData((prevLeadData) => ({
                                             ...prevLeadData,
                                             paymentReceipt: [
@@ -2690,6 +2864,7 @@ export default function EditableMoreBooking({
                                         type="file"
                                         onChange={(e) => {
                                           // Update the state with the selected files
+                                          setStep4Changed(true)
                                           setLeadData((prevLeadData) => ({
                                             ...prevLeadData,
                                             otherDocs: [
@@ -2721,10 +2896,12 @@ export default function EditableMoreBooking({
                                                   </p>
                                                   <button
                                                     className="fileItem-dlt-btn"
-                                                    onClick={() =>
+                                                    onClick={(e) => {
+                                                      e.preventDefault()
                                                       handleRemoveOtherFile(
                                                         index
                                                       )
+                                                    }
                                                     }
                                                     disabled={
                                                       completed[activeStep] ===

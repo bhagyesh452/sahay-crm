@@ -422,7 +422,7 @@ function ManageLeads() {
 
 
     //console.log(mainData)
-    const currentData = filteredData.slice(startIndex, endIndex);   
+    const currentData = filteredData.slice(startIndex, endIndex);
 
     //  Sub-filter value
 
@@ -692,43 +692,206 @@ function ManageLeads() {
 
     // Submit the Dialogue box data manually
 
+    // const handleSubmitData = (e) => {
+    //     e.preventDefault();
+    //     axios
+    //         .post(`${secretKey}/manual`, {
+    //             "Company Name": cname,
+    //             "Company Number": cnumber,
+    //             "Company Email": cemail,
+    //             "Company Incorporation Date  ": cidate,
+    //             City: city,
+    //             State: state,
+    //             AssignDate: new Date(),
+    //             "UploadedBy": dataManagerName,
+    //             "Company Address": companyAddress,
+    //             "Director Name(First)": directorNameFirst,
+    //             "Director Number(First)": directorNumberFirst,
+    //             "Director Email(First)": directorEmailFirst,
+    //             "Director Name(Second)": directorNameSecond,
+    //             "Director Number(Second)": directorNumberSecond,
+    //             "Director Email(Second)": directorEmailSecond,
+    //             "Director Name(Third)": directorNameThird,
+    //             "Director Number(Third)": directorNumberThird,
+    //             "Director Email(Third)": directorEmailThird
+    //         })
+    //         .then((response) => {
+    //             //console.log("response" , response)
+    //             Swal.fire({
+    //                 title: "Data Added!",
+    //                 text: "Successfully added new Data!",
+    //                 icon: "success",
+    //             });
+    //             fetchData();
+    //             closepopupNew();
+    //         })
+    //         .catch((error) => {
+    //             Swal.fire("Please Enter Unique data!");
+    //         });
+    // };
+
     const handleSubmitData = (e) => {
         e.preventDefault();
-        axios
+    
+        if (cname === "") {
+          Swal.fire("Please Enter Company Name");
+        } else if (!cnumber && !/^\d{10}$/.test(cnumber)) {
+          Swal.fire("Company Number is required");
+        } else if (cemail === "") {
+          Swal.fire("Company Email is required");
+        } else if (city === "") {
+          Swal.fire("City is required");
+        } else if (state === "") {
+          Swal.fire("State is required");
+        } else if (directorNumberFirst !== 0 && !/^\d{10}$/.test(directorNumberFirst)) {
+          Swal.fire("First Director Number should be 10 digits");
+        } else if (directorNumberSecond !== 0 && !/^\d{10}$/.test(directorNumberSecond)) {
+          Swal.fire("Second Director Number should be 10 digits");
+        } else if (directorNumberThird !== 0 && !/^\d{10}$/.test(directorNumberThird)) {
+          Swal.fire("Third Director Number should be 10 digits");
+        } else {
+          axios
             .post(`${secretKey}/manual`, {
-                "Company Name": cname,
-                "Company Number": cnumber,
-                "Company Email": cemail,
-                "Company Incorporation Date  ": cidate,
-                City: city,
-                State: state,
-                AssignDate: new Date(),
-                "UploadedBy":dataManagerName,
-                "Company Address": companyAddress,
-                "Director Name(First)": directorNameFirst,
-                "Director Number(First)": directorNumberFirst,
-                "Director Email(First)": directorEmailFirst,
-                "Director Name(Second)": directorNameSecond,
-                "Director Number(Second)": directorNumberSecond,
-                "Director Email(Second)": directorEmailSecond,
-                "Director Name(Third)": directorNameThird,
-                "Director Number(Third)": directorNumberThird,
-                "Director Email(Third)": directorEmailThird
+              "Company Name": cname.toUpperCase().trim(),
+              "Company Number": cnumber,
+              "Company Email": cemail,
+              "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
+              City: city,
+              State: state,
+              ename: data.ename,
+              AssignDate: new Date(),
+              "Company Address": companyAddress,
+              "Director Name(First)": directorNameFirst,
+              "Director Number(First)": directorNumberFirst,
+              "Director Email(First)": directorEmailFirst,
+              "Director Name(Second)": directorNameSecond,
+              "Director Number(Second)": directorNumberSecond,
+              "Director Email(Second)": directorEmailSecond,
+              "Director Name(Third)": directorNameThird,
+              "Director Number(Third)": directorNumberThird,
+              "Director Email(Third)": directorEmailThird,
             })
             .then((response) => {
-                //console.log("response" , response)
-                Swal.fire({
-                    title: "Data Added!",
-                    text: "Successfully added new Data!",
-                    icon: "success",
-                });
-                fetchData();
-                closepopupNew();
+              console.log("response", response);
+              console.log("Data sent Successfully");
+              Swal.fire({
+                title: "Data Added!",
+                text: "Successfully added new Data!",
+                icon: "success",
+              });
+              fetchData();
+              closepopupNew();
             })
             .catch((error) => {
-                Swal.fire("Please Enter Unique data!");
+              console.error("Error sending data:", error);
+              Swal.fire("An error occurred. Please try again later.");
             });
-    };
+        }
+      };
+ // -------------------------------------------------add leads form validation and debounce correction----------------------------------
+
+ const debouncedSetCname = debounce((value) => {
+    setCname(value);
+  }, 10);
+
+  const debouncedSetEmail = debounce((value) => {
+    setCemail(value);
+  }, 10);
+
+  const debouncedSetAddress = debounce((value) => {
+    setCompanyAddress(value);
+  }, 10);
+
+  const debouncedSetIncoDate = debounce((value) => {
+    setCidate(value);
+  }, 10);
+
+  const [error, setError] = useState('');
+
+  const debouncedSetCompanyNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setCnumber(value);
+      setError('');
+    } else {
+      setError('Please enter a 10-digit number');
+      setCnumber()
+    }
+
+  }, 10);
+
+  const debouncedSetCity = debounce((value) => {
+    setCity(value);
+  }, 10);
+
+  const debouncedSetState = debounce((value) => {
+    setState(value);
+  }, 10);
+
+  const debounceSetFirstDirectorName = debounce((value) => {
+    setDirectorNameFirst(value);
+  }, 10);
+
+  const [errorDirectorNumberFirst, setErrorDirectorNumberFirst] = useState("")
+  const [errorDirectorNumberSecond, setErrorDirectorNumberSecond] = useState("")
+  const [errorDirectorNumberThird, setErrorDirectorNumberThird] = useState("")
+
+  const debounceSetFirstDirectorNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberFirst(value)
+      setErrorDirectorNumberFirst("")
+    } else {
+      setErrorDirectorNumberFirst('Please Enter 10 digit Number')
+      setDirectorNumberFirst()
+    }
+  }, 10);
+
+  const debounceSetFirstDirectorEmail = debounce((value) => {
+    setDirectorEmailFirst(value);
+  }, 10);
+
+  const debounceSetSecondDirectorName = debounce((value) => {
+    setDirectorNameSecond(value);
+  }, 10);
+
+  const debounceSetSecondDirectorNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberSecond(value)
+      setErrorDirectorNumberSecond("")
+    } else {
+      setErrorDirectorNumberSecond('Please Enter 10 digit Number')
+      setDirectorNumberSecond()
+    }
+  }, 10);
+
+  const debounceSetSecondDirectorEmail = debounce((value) => {
+    setDirectorEmailSecond(value);
+  }, 10);
+
+  const debounceSetThirdDirectorName = debounce((value) => {
+    setDirectorNameThird(value);
+  }, 10);
+
+  const debounceSetThirdDirectorNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberThird(value)
+      setErrorDirectorNumberThird("")
+    } else {
+      setErrorDirectorNumberThird('Please Enter 10 digit Number')
+      setDirectorNumberThird()
+    }
+  }, 10);
+
+  const debounceSetThirdDirectorEmail = debounce((value) => {
+    setDirectorEmailThird(value);
+  }, 10);
+
+
+
+
+
+
+
+
 
     const [openSecondDirector, setOpenSecondDirector] = useState(false)
     const [openFirstDirector, setOpenFirstDirector] = useState(true)
@@ -860,7 +1023,7 @@ function ManageLeads() {
 
     // Fetch Employees Data
     // const [dataManager,setDataManager] = useState([])
-    
+
     const fetchnewData = async () => {
         try {
             const response = await axios.get(`${secretKey}/einfo`);
@@ -873,7 +1036,7 @@ function ManageLeads() {
         }
     };
 
-    console.log("newEmpData" , newempData)
+    console.log("newEmpData", newempData)
 
     const handleconfirmAssign = async () => {
         const selectedObjects = data.filter((row) =>
@@ -1148,73 +1311,162 @@ function ManageLeads() {
 
     const [isUpdateMode, setIsUpdateMode] = useState(false);
 
+    // const handleSubmit = async (e) => {
+    //     try {
+    //         let dataToSend = {
+    //             "Company Name": companyName,
+    //             "Company Email": companyEmail,
+    //             "Company Number": companynumber,
+    //             "Company Incorporation Date ": companyIncoDate,
+    //             "City": companyCity,
+    //             "State": companyState,
+    //             "UploadedBy": dataManagerName
+    //         };
+    //         const dateObject = new Date(companyIncoDate);
+
+    //         // Check if the parsed Date object is valid
+    //         if (!isNaN(dateObject.getTime())) {
+    //             // Date object is valid, proceed with further processing
+    //             //console.log("Company Incorporation Date:", dateObject);
+
+    //             // Format the date as yyyy-mm-ddThh:mm:ss.000
+    //             const isoDateString = dateObject.toISOString();
+
+    //             // Update dataToSendUpdated with the formatted date
+    //             let dataToSendUpdated = {
+    //                 "Company Name": companyName,
+    //                 "Company Email": companyEmail,
+    //                 "Company Number": companynumber,
+    //                 "Company Incorporation Date ": isoDateString, // Updated format
+    //                 "City": companyCity,
+    //                 "State": companyState,
+    //                 'Director Name(First)': directorNameFirstModify,
+    //                 'Director Number(First)': directorNumberFirstModify,
+    //                 'Director Email(First)': directorEmailFirstModify,
+    //                 'Director Name(Second)': directorNameSecondModify,
+    //                 'Director Number(Second)': directorNumberSecondModify,
+    //                 'Director Email(Second)': directorEmailSecondModify,
+    //                 'Director Name(Third)': directorNameThirdModify,
+    //                 'Director Number(Third)': directorNumberThirdModify,
+    //                 'Director Email(Third)': directorEmailThirdModify,
+                    
+    //             };
+
+    //             //console.log("Data to send with updated date format:", dataToSendUpdated);
+    //             if (isUpdateMode) {
+    //                 await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
+    //                 Swal.fire({
+    //                     title: "Data Updated!",
+    //                     text: "You have successfully updated the name!",
+    //                     icon: "success",
+    //                 });
+    //             }
+
+    //             // Rest of your code...
+    //         } else {
+    //             // Date string couldn't be parsed into a valid Date object
+    //             console.error("Invalid Company Incorporation Date string:", companyIncoDate);
+    //         }
+    //         setIsUpdateMode(false);
+    //         fetchDatadebounce();
+    //         functioncloseModifyPopup();
+    //     } catch {
+    //         Swal.fire({
+    //             icon: "error",
+    //             title: "Oops...",
+    //             text: "Something went wrong!",
+    //         });
+    //         console.error("Internal server error");
+    //     }
+    // };
+
     const handleSubmit = async (e) => {
+        e.preventDefault();
+        const adminName = localStorage.getItem("adminName");
         try {
-            let dataToSend = {
-                "Company Name": companyName,
-                "Company Email": companyEmail,
-                "Company Number": companynumber,
-                "Company Incorporation Date ": companyIncoDate,
-                "City": companyCity,
-                "State": companyState,
-                "UploadedBy":dataManagerName
-            };
-            const dateObject = new Date(companyIncoDate);
-
-            // Check if the parsed Date object is valid
-            if (!isNaN(dateObject.getTime())) {
-                // Date object is valid, proceed with further processing
-                //console.log("Company Incorporation Date:", dateObject);
-
-                // Format the date as yyyy-mm-ddThh:mm:ss.000
-                const isoDateString = dateObject.toISOString();
-
-                // Update dataToSendUpdated with the formatted date
-                let dataToSendUpdated = {
-                    "Company Name": companyName,
-                    "Company Email": companyEmail,
-                    "Company Number": companynumber,
-                    "Company Incorporation Date ": isoDateString, // Updated format
-                    "City": companyCity,
-                    "State": companyState,
-                };
-
-                //console.log("Data to send with updated date format:", dataToSendUpdated);
-                if (isUpdateMode) {
-                    await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
-                    Swal.fire({
-                        title: "Data Updated!",
-                        text: "You have successfully updated the name!",
-                        icon: "success",
-                    });
-                }
-
-                // Rest of your code...
-            } else {
-                // Date string couldn't be parsed into a valid Date object
-                console.error("Invalid Company Incorporation Date string:", companyIncoDate);
+            let validationError = false;
+    
+            if (companyName === "") {
+                validationError = true;
+                Swal.fire("Please Enter Company Name");
+            } else if (!companynumber || !/^\d{10}$/.test(companynumber)) {
+                validationError = true;
+                Swal.fire("Company Number is required and should be 10 digits");
+            } else if (companyEmail === "") {
+                validationError = true;
+                Swal.fire("Company Email is required");
+            } else if (companyCity === "") {
+                validationError = true;
+                Swal.fire("City is required");
+            } else if (companyState === "") {
+                validationError = true;
+                Swal.fire("State is required");
+            } else if (directorNumberFirstModify && !/^\d{10}$/.test(directorNumberFirstModify)) {
+                validationError = true;
+                Swal.fire("First Director Number should be 10 digits");
+            } else if (directorNumberSecondModify && !/^\d{10}$/.test(directorNumberSecondModify)) {
+                validationError = true;
+                Swal.fire("Second Director Number should be 10 digits");
+            } else if (directorNumberThirdModify && !/^\d{10}$/.test(directorNumberThirdModify)) {
+                validationError = true;
+                Swal.fire("Third Director Number should be 10 digits");
             }
-
-
-
-            // setEmail("");
-            // setEname("");
-            // setNumber(0);
-            // setPassword("");
-            // setDesignation("");
-            // setotherDesignation("");
-            // setJdate(null);
-            setIsUpdateMode(false);
-            fetchDatadebounce();
-            functioncloseModifyPopup();
-            //console.log("Data sent successfully");
-        } catch {
+    
+            if (!validationError) {
+                const dateObject = new Date(companyIncoDate);
+    
+                // Check if the parsed Date object is valid
+                if (!isNaN(dateObject.getTime())) {
+                    // Date object is valid, proceed with further processing
+                    // Format the date as yyyy-mm-ddThh:mm:ss.000
+                    const isoDateString = dateObject.toISOString();
+    
+                    // Update dataToSendUpdated with the formatted date
+                    let dataToSendUpdated = {
+                        "Company Name": companyName,
+                        "Company Email": companyEmail,
+                        "Company Number": companynumber,
+                        "Company Incorporation Date ": isoDateString, // Updated format
+                        "City": companyCity,
+                        "State": companyState,
+                        "Company Address": cAddress,
+                        'Director Name(First)': directorNameFirstModify,
+                        'Director Number(First)': directorNumberFirstModify,
+                        'Director Email(First)': directorEmailFirstModify,
+                        'Director Name(Second)': directorNameSecondModify,
+                        'Director Number(Second)': directorNumberSecondModify,
+                        'Director Email(Second)': directorEmailSecondModify,
+                        'Director Name(Third)': directorNameThirdModify,
+                        'Director Number(Third)': directorNumberThirdModify,
+                        'Director Email(Third)': directorEmailThirdModify,
+                        "UploadedBy": adminName ? adminName : "Admin"
+                    };
+    
+                    if (isUpdateMode) {
+                        await axios.put(`${secretKey}/leads/${selectedDataId}`, dataToSendUpdated);
+                        Swal.fire({
+                            title: "Data Updated!",
+                            text: "You have successfully updated the name!",
+                            icon: "success",
+                        });
+                    }
+    
+                    // Reset the form and any error messages
+                    setIsUpdateMode(false);
+                    fetchDatadebounce();
+                    functioncloseModifyPopup();
+                } else {
+                    // Date string couldn't be parsed into a valid Date object
+                    console.error("Invalid Company Incorporation Date string:", companyIncoDate);
+                }
+            }
+        } catch (error) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Something went wrong!",
             });
-            console.error("Internal server error");
+            console.error("Internal server error", error);
         }
     };
 
@@ -1226,6 +1478,16 @@ function ManageLeads() {
     const [companyState, setCompnayState] = useState("");
     const [companynumber, setCompnayNumber] = useState("");
     const [isEditProjection, setIsEditProjection] = useState(false);
+    const [cAddress, setCAddress] = useState("");
+    const [directorNameFirstModify, setDirectorNameFirstModify] = useState("")
+    const [directorNumberFirstModify, setDirectorNumberFirstModify] = useState("")
+    const [directorEmailFirstModify, setDirectorEmailFirstModify] = useState("")
+    const [directorNameSecondModify, setDirectorNameSecondModify] = useState("")
+    const [directorNumberSecondModify, setDirectorNumberSecondModify] = useState("")
+    const [directorEmailSecondModify, setDirectorEmailSecondModify] = useState("")
+    const [directorNameThirdModify, setDirectorNameThirdModify] = useState("")
+    const [directorNumberThirdModify, setDirectorNumberThirdModify] = useState("")
+    const [directorEmailThirdModify, setDirectorEmailThirdModify] = useState("")
 
 
     //console.log(companyCity, companyEmail, companyIncoDate, companyState, companyName, companynumber)
@@ -1250,6 +1512,16 @@ function ManageLeads() {
         setCompnayCity(selectedData["City"]);
         setCompnayState(selectedData["State"]);
         setCompnayNumber(selectedData["Company Number"]);
+        setCAddress(selectedData["Company Address"])
+        setDirectorNameFirstModify(selectedData["Director Name(First)"])
+        setDirectorNumberFirstModify(selectedData["Director Number(First)"])
+        setDirectorEmailFirstModify(selectedData["Director Email(First)"])
+        setDirectorNameSecondModify(selectedData["Director Name(Second)"])
+        setDirectorNumberSecondModify(selectedData["Director Number(Second)"])
+        setDirectorEmailSecondModify(selectedData["Director Email(Second)"])
+        setDirectorNameThirdModify(selectedData["Director Name(Third)"])
+        setDirectorNumberThirdModify(selectedData["Director Number(Third)"])
+        setDirectorEmailThirdModify(selectedData["Director Email(Third)"])
 
         const dateString = selectedData["Company Incorporation Date  "];
 
@@ -1281,7 +1553,105 @@ function ManageLeads() {
     };
     const dataManagerName = localStorage.getItem("dataManagerName")
     //console.log(dataManagerName)
+// ----------------------------------------modify popup window-------------------------------
+
+const debouncedSetCompanyName = debounce((value) => {
+    setCompanyName(value);
+  }, 10);
+
+  const debouncedSetCompanyEmail = debounce((value) => {
+    setCompanyEmail(value);
+  }, 10);
+
+  const debouncedSetCAddress = debounce((value) => {
+    setCAddress(value);
+  }, 10);
+
+  const debouncedSetCompanyIncoDate = debounce((value) => {
+   setCompanyIncoDate(value);
+  }, 10);
+
+  const [errorCompnayNumber, setErrorCompnayNumber] = useState('');
+
+  const debouncedSetCompnayNumber = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setCompnayNumber(value);
+      setErrorCompnayNumber('');
+    } else {
+      setError('Please enter a 10-digit number');
+      setCompnayNumber()
+    }
+
+  }, 10);
+
+  const debouncedSetCompnayCity = debounce((value) => {
+    setCompnayCity(value);
+  }, 10);
+
+  const debouncedSetCompanyState = debounce((value) => {
+    setCompnayState(value);
+  }, 10);
+
+  const debounceSetFirstDirectorNameModify = debounce((value) => {
+    setDirectorNameFirstModify(value);
+  }, 10);
+
+  const [errorDirectorNumberFirstModify, setErrorDirectorNumberFirstModify] = useState("")
+  const [errorDirectorNumberSecondModify, setErrorDirectorNumberSecondModify] = useState("")
+  const [errorDirectorNumberThirdModify, setErrorDirectorNumberThirdModify] = useState("")
+
+  const debounceSetFirstDirectorNumberModify = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberFirstModify(value)
+      setErrorDirectorNumberFirstModify("")
+    } else {
+      setErrorDirectorNumberFirstModify('Please Enter 10 digit Number')
+      setDirectorNumberFirstModify()
+    }
+  }, 10);
+
+  const debounceSetFirstDirectorEmailModify = debounce((value) => {
+    setDirectorEmailFirstModify(value);
+  }, 10);
+
+  const debounceSetSecondDirectorNameModify = debounce((value) => {
+    setDirectorNameSecondModify(value);
+  }, 10);
+
+  const debounceSetSecondDirectorNumberModify = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberSecondModify(value)
+      setErrorDirectorNumberSecondModify("")
+    } else {
+      setErrorDirectorNumberSecondModify('Please Enter 10 digit Number')
+      setDirectorNumberSecondModify()
+    }
+  }, 10);
+
+  const debounceSetSecondDirectorEmailModify = debounce((value) => {
+    setDirectorEmailSecondModify(value);
+  }, 10);
+
+  const debounceSetThirdDirectorNameModify = debounce((value) => {
+    setDirectorNameThirdModify(value);
+  }, 10);
+
+  const debounceSetThirdDirectorNumberModify = debounce((value) => {
+    if (/^\d{10}$/.test(value)) {
+      setDirectorNumberThirdModify(value)
+      setErrorDirectorNumberThirdModify("")
+    } else {
+      setErrorDirectorNumberThirdModify('Please Enter 10 digit Number')
+      setDirectorNumberThirdModify()
+    }
+  }, 10);
+
+  const debounceSetThirdDirectorEmailModify = debounce((value) => {
+    setDirectorEmailThirdModify(value);
+  }, 10);
+
     
+
 
 
 
@@ -1408,12 +1778,361 @@ function ManageLeads() {
                     </button>
                 </div>
             </Dialog>
-            <Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
-                <DialogTitle>
-                    Company Info{" "}
-                    <IconButton onClick={closepopupNew} style={{ float: "right" }}>
-                        <CloseIcon color="primary"></CloseIcon>
-                    </IconButton>{" "}
+
+
+{/* -------------------------------dialog for add leads------------------------------------ */}
+
+
+
+
+<Dialog open={openNew} onClose={closepopupNew} fullWidth maxWidth="md">
+        <DialogTitle>
+          Company Info{" "}
+          <IconButton onClick={closepopupNew} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          debouncedSetCname(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Number <span style={{ color: "red" }}>*</span></label>
+                      <input
+                        type="number"
+                        placeholder="Enter Company's Phone No."
+                        onChange={(e) => {
+                          debouncedSetCompanyNumber(e.target.value);
+                        }}
+                        className="form-control"
+                      />
+                      {error && <p style={{ color: 'red' }}>{error}</p>}
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Company Email <span style={{ color: "red" }}>*</span></label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          debouncedSetEmail(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-4">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Company Incorporation Date
+                      </label>
+                      <input
+                        onChange={(e) => {
+                          debouncedSetIncoDate(e.target.value);
+                        }}
+                        type="date"
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-4">
+                    <div className="mb-3">
+                      <label className="form-label">City<span style={{ color: "red" }}>*</span></label>
+                      <input
+                        onChange={(e) => {
+                          debouncedSetCity(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter Your City"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-4">
+                    <div className="mb-3">
+                      <label className="form-label">State<span style={{ color: "red" }}>*</span></label>
+                      <input
+                        onChange={(e) => {
+                          debouncedSetState(e.target.value);
+                        }}
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter Your State"
+                      //disabled={!isEditProjection}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <div className="mb-3">
+                      <label className="form-label">Company Address</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Enter Your Address"
+                        onChange={(e) => {
+                          debouncedSetAddress(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Name(First)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          debounceSetFirstDirectorName(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Number(First)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Enter Phone No."
+                        onChange={(e) => {
+                          debounceSetFirstDirectorNumber(e.target.value);
+                        }}
+                      />
+                      {errorDirectorNumberFirst && <p style={{ color: 'red' }}>{errorDirectorNumberFirst}</p>}
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Email(First)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          debounceSetFirstDirectorEmail(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                {firstPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
+                  <button
+                    onClick={() => { functionOpenSecondDirector() }}
+                    className="btn btn-primary d-none d-sm-inline-block">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M12 5l0 14" />
+                      <path d="M5 12l14 0" />
+                    </svg>
+                  </button>
+                  <button className="btn btn-primary d-none d-sm-inline-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                      width="24"
+                      height="24"
+                      fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                  </button></div>)}
+
+                {openSecondDirector && (
+                  <div className="row">
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Director's Name(Second)</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="Your Company Name"
+                          onChange={(e) => {
+                            debounceSetSecondDirectorName(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Director's Number(Second)</label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="Enter Phone No."
+                          onChange={(e) => {
+                            debounceSetSecondDirectorNumber(e.target.value);
+                          }}
+                        />
+                        {errorDirectorNumberSecond && <p style={{ color: 'red' }}>{errorDirectorNumberSecond}</p>}
+                      </div>
+                    </div>
+                    <div className="col-4">
+                      <div className="mb-3">
+                        <label className="form-label">Director's Email(Second)</label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="example@gmail.com"
+                          onChange={(e) => {
+                            debounceSetSecondDirectorEmail(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>)}
+                {secondPlus && (<div className="d-flex align-items-center justify-content-end gap-2">
+                  <button
+                    onClick={() => { functionOpenThirdDirector() }}
+                    className="btn btn-primary d-none d-sm-inline-block">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M12 5l0 14" />
+                      <path d="M5 12l14 0" />
+                    </svg>
+                  </button>
+                  <button className="btn btn-primary d-none d-sm-inline-block" onClick={() => { functionCloseSecondDirector() }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                      width="24"
+                      height="24"
+                      fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                  </button></div>)}
+
+                {openThirdDirector && (<div className="row">
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Name(Third)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Your Company Name"
+                        onChange={(e) => {
+                          debounceSetThirdDirectorName(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Number(Third)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Enter Phone No"
+                        onChange={(e) => {
+                          debounceSetThirdDirectorNumber(e.target.value);
+                        }}
+                      />
+                      {errorDirectorNumberThird && <p style={{ color: 'red' }}>{errorDirectorNumberThird}</p>}
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="mb-3">
+                      <label className="form-label">Director's Email(Third)</label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="example@gmail.com"
+                        onChange={(e) => {
+                          debounceSetThirdDirectorEmail(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>)}
+                {openThirdMinus && (<button className="btn btn-primary d-none d-sm-inline-block" style={{ float: "right" }} onClick={() => { functionCloseThirdDirector() }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon"
+                    width="24"
+                    height="24"
+                    fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
+                </button>)}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <button className="btn btn-primary" onClick={handleSubmitData}>
+          Submit
+        </button>
+      </Dialog>
+
+
+            {/* ----------------------------ADD-Lead Ends here------------------------------------------------------------------------  */}
+
+
+            {/* ------------------------------------------------------------dialog for modify leads----------------------------------------------- */}
+
+
+            <Dialog open={openPopupModify} onClose={functioncloseModifyPopup} fullWidth maxWidth="md">
+                <DialogTitle className="d-flex align-items-center justify-content-between">
+                    <div>
+                        Company Info{" "}
+                    </div>
+                    <div>
+                        <IconButton onClick={() => { setIsEditProjection(true) }}>
+                            < ModeEditIcon color="grey"
+                                style={{
+                                    width: "20px",
+                                    height: "20px",
+                                }}
+                            >
+                            </ ModeEditIcon>
+                        </IconButton>
+                        <IconButton onClick={functioncloseModifyPopup}>
+                            <CloseIcon color="grey"></CloseIcon>
+                        </IconButton>{" "}
+                    </div>
+
                 </DialogTitle>
                 <DialogContent>
                     <div className="modal-dialog" role="document">
@@ -1422,100 +2141,112 @@ function ManageLeads() {
                                 <div className="row">
                                     <div className="col-4">
                                         <div className="mb-3">
-                                            <label className="form-label">Company Name</label>
+                                            <label className="form-label">Company Name <span style={{ color: "red" }}>*</span></label>
                                             <input
                                                 type="text"
                                                 className="form-control"
                                                 name="example-text-input"
                                                 placeholder="Your Company Name"
+                                                value={companyName}
                                                 onChange={(e) => {
-                                                    setCname(e.target.value);
+                                                    setCompanyName(e.target.value);
                                                 }}
-                                            />
-                                        </div>
-
-                                    </div>
-                                    <div className="col-4">
-                                        <div className="mb-3">
-                                            <label className="form-label">Company Email</label>
-                                            <input
-                                                type="email"
-                                                className="form-control"
-                                                name="example-text-input"
-                                                placeholder="example@gmail.com"
-                                                onChange={(e) => {
-                                                    setCemail(e.target.value);
-                                                }}
+                                                disabled={!isEditProjection}
                                             />
                                         </div>
                                     </div>
                                     <div className="col-4">
                                         <div className="mb-3">
-                                            <label className="form-label">Company Address</label>
+                                            <label className="form-label">Company Number <span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                name="example-text-input"
+                                                placeholder="Your Company Number"
+                                                value={companynumber}
+                                                onChange={(e) => {
+                                                    setCompnayNumber(e.target.value);
+                                                }}
+                                                disabled={!isEditProjection}
+                                            />
+                                            
+                                        </div>
+                                    </div>
+                                    <div className="col-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">Company Email <span style={{ color: "red" }}>*</span></label>
                                             <input
                                                 type="email"
                                                 className="form-control"
                                                 name="example-text-input"
                                                 placeholder="example@gmail.com"
+                                                value={companyEmail}
                                                 onChange={(e) => {
-                                                    setCompanyAddress(e.target.value);
+                                                    setCompanyEmail(e.target.value);
                                                 }}
+                                                disabled={!isEditProjection}
                                             />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-6">
-                                        <div className="mb-3">
-                                            <label className="form-label">Company Number</label>
-                                            <input
-                                                type="number"
-                                                onChange={(e) => {
-                                                    setCnumber(e.target.value);
-                                                }}
-                                                className="form-control"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
+                                    <div className="col-lg-4">
                                         <div className="mb-3">
                                             <label className="form-label">
                                                 Company Incorporation Date
                                             </label>
                                             <input
+                                                value={companyIncoDate}
                                                 onChange={(e) => {
-                                                    setCidate(e.target.value);
+                                                    setCompanyIncoDate(e.target.value)
                                                 }}
                                                 type="date"
                                                 className="form-control"
+                                                disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">City<span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                value={companyCity}
+                                                onChange={(e) => {
+                                                    setCompnayCity(e.target.value);
+                                                }}
+                                                type="text"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="mb-3">
+                                            <label className="form-label">State<span style={{ color: "red" }}>*</span></label>
+                                            <input
+                                                value={companyState}
+                                                onChange={(e) => {
+                                                    setCompnayState(e.target.value);
+                                                }}
+                                                type="text"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
                                             />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-lg-6">
+                                    <div className="col-lg-12">
                                         <div className="mb-3">
-                                            <label className="form-label">City</label>
+                                            <label className="form-label">Company Address</label>
                                             <input
+                                                value={cAddress}
                                                 onChange={(e) => {
-                                                    setCity(e.target.value);
+                                                    setCAddress(e.target.value);
                                                 }}
                                                 type="text"
                                                 className="form-control"
-
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="mb-3">
-                                            <label className="form-label">State</label>
-                                            <input
-                                                onChange={(e) => {
-                                                    setState(e.target.value);
-                                                }}
-                                                type="text"
-                                                className="form-control"
-                                            //disabled={!isEditProjection}
+                                                disabled={!isEditProjection}
                                             />
                                         </div>
                                     </div>
@@ -1525,13 +2256,13 @@ function ManageLeads() {
                                         <div className="mb-3">
                                             <label className="form-label">Director's Name(First)</label>
                                             <input
+                                                value={directorNameFirstModify}
+                                                onChange={(e) => {
+                                                    setDirectorNameFirstModify(e.target.value);
+                                                }}
                                                 type="text"
                                                 className="form-control"
-                                                name="example-text-input"
-                                                placeholder="Your Company Name"
-                                                onChange={(e) => {
-                                                    setDirectorNameFirst(e.target.value);
-                                                }}
+                                                disabled={!isEditProjection}
                                             />
                                         </div>
                                     </div>
@@ -1539,27 +2270,28 @@ function ManageLeads() {
                                         <div className="mb-3">
                                             <label className="form-label">Director's Number(First)</label>
                                             <input
-                                                type="email"
-                                                className="form-control"
-                                                name="example-text-input"
-                                                placeholder="example@gmail.com"
+                                                value={directorNumberFirstModify}
                                                 onChange={(e) => {
-                                                    setDirectorNumberFirst(e.target.value);
+                                                    setDirectorNumberFirstModify(e.target.value);
                                                 }}
+                                                type="number"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
                                             />
+                                           
                                         </div>
                                     </div>
                                     <div className="col-4">
                                         <div className="mb-3">
                                             <label className="form-label">Director's Email(First)</label>
                                             <input
+                                                value={directorEmailFirstModify}
+                                                onChange={(e) => {
+                                                    setDirectorEmailFirstModify(e.target.value);
+                                                }}
                                                 type="email"
                                                 className="form-control"
-                                                name="example-text-input"
-                                                placeholder="example@gmail.com"
-                                                onChange={(e) => {
-                                                    setDirectorEmailFirst(e.target.value);
-                                                }}
+                                                disabled={!isEditProjection}
                                             />
                                         </div>
                                     </div>
@@ -1598,13 +2330,13 @@ function ManageLeads() {
                                             <div className="mb-3">
                                                 <label className="form-label">Director's Name(Second)</label>
                                                 <input
+                                                    value={directorNameSecondModify}
+                                                    onChange={(e) => {
+                                                        setDirectorNameSecondModify(e.target.value);
+                                                    }}
                                                     type="text"
                                                     className="form-control"
-                                                    name="example-text-input"
-                                                    placeholder="Your Company Name"
-                                                    onChange={(e) => {
-                                                        setDirectorNameSecond(e.target.value);
-                                                    }}
+                                                    disabled={!isEditProjection}
                                                 />
                                             </div>
                                         </div>
@@ -1612,27 +2344,28 @@ function ManageLeads() {
                                             <div className="mb-3">
                                                 <label className="form-label">Director's Number(Second)</label>
                                                 <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    name="example-text-input"
-                                                    placeholder="example@gmail.com"
+                                                    value={directorNumberSecondModify}
                                                     onChange={(e) => {
-                                                        setDirectorNumberSecond(e.target.value);
+                                                        setDirectorNumberSecondModify(e.target.value);
                                                     }}
+                                                    type="number"
+                                                    className="form-control"
+                                                    disabled={!isEditProjection}
                                                 />
+                                                
                                             </div>
                                         </div>
                                         <div className="col-4">
                                             <div className="mb-3">
                                                 <label className="form-label">Director's Email(Second)</label>
                                                 <input
+                                                    value={directorEmailSecondModify}
+                                                    onChange={(e) => {
+                                                        setDirectorEmailSecondModify(e.target.value);
+                                                    }}
                                                     type="email"
                                                     className="form-control"
-                                                    name="example-text-input"
-                                                    placeholder="example@gmail.com"
-                                                    onChange={(e) => {
-                                                        setDirectorEmailSecond(e.target.value);
-                                                    }}
+                                                    disabled={!isEditProjection}
                                                 />
                                             </div>
                                         </div>
@@ -1664,18 +2397,19 @@ function ManageLeads() {
                                             height="24"
                                             fill="white" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" /></svg>
                                     </button></div>)}
+
                                 {openThirdDirector && (<div className="row">
                                     <div className="col-4">
                                         <div className="mb-3">
                                             <label className="form-label">Director's Name(Third)</label>
                                             <input
+                                                value={directorNameThirdModify}
+                                                onChange={(e) => {
+                                                    setDirectorNameThirdModify(e.target.value);
+                                                }}
                                                 type="text"
                                                 className="form-control"
-                                                name="example-text-input"
-                                                placeholder="Your Company Name"
-                                                onChange={(e) => {
-                                                    setDirectorNameThird(e.target.value);
-                                                }}
+                                                disabled={!isEditProjection}
                                             />
                                         </div>
                                     </div>
@@ -1683,27 +2417,28 @@ function ManageLeads() {
                                         <div className="mb-3">
                                             <label className="form-label">Director's Number(Third)</label>
                                             <input
-                                                type="email"
-                                                className="form-control"
-                                                name="example-text-input"
-                                                placeholder="example@gmail.com"
+                                                value={directorNumberThirdModify}
                                                 onChange={(e) => {
-                                                    setDirectorNumberThird(e.target.value);
+                                                    setDirectorNumberThirdModify(e.target.value);
                                                 }}
+                                                type="number"
+                                                className="form-control"
+                                                disabled={!isEditProjection}
                                             />
+                                           
                                         </div>
                                     </div>
                                     <div className="col-4">
                                         <div className="mb-3">
                                             <label className="form-label">Director's Email(Third)</label>
                                             <input
+                                                value={directorEmailThirdModify}
+                                                onChange={(e) => {
+                                                    setDirectorEmailThirdModify(e.target.value);
+                                                }}
                                                 type="email"
                                                 className="form-control"
-                                                name="example-text-input"
-                                                placeholder="example@gmail.com"
-                                                onChange={(e) => {
-                                                    setDirectorEmailThird(e.target.value);
-                                                }}
+                                                disabled={!isEditProjection}
                                             />
                                         </div>
                                     </div>
@@ -1718,18 +2453,12 @@ function ManageLeads() {
                         </div>
                     </div>
                 </DialogContent>
-                <button className="btn btn-primary" onClick={handleSubmitData}>
+                <button className="btn btn-primary" onClick={handleSubmit}>
                     Submit
                 </button>
             </Dialog>
 
-            {/* ----------------------------ADD-Lead Ends here------------------------------------------------------------------------  */}
-
-
-            {/* ------------------------------------------------------------dialog for modify leads----------------------------------------------- */}
-
-
-            <Dialog open={openPopupModify} onClose={functioncloseModifyPopup} fullWidth maxWidth="sm">
+            {/* <Dialog open={openPopupModify} onClose={functioncloseModifyPopup} fullWidth maxWidth="sm">
                 <DialogTitle className="d-flex align-items-center justify-content-between">
                     <div>
                         Company Info{" "}
@@ -1851,7 +2580,7 @@ function ManageLeads() {
                 <button className="btn btn-primary" onClick={handleSubmit}>
                     Submit
                 </button>
-            </Dialog>
+            </Dialog> */}
 
             {open && (
                 <div>
@@ -2068,7 +2797,7 @@ function ManageLeads() {
                                 style={{ display: "flex", justifyContent: "space-between" }}
                                 className="tit"
                             >
-                               
+
                                 <div className="headtit">
                                     <h2 className="page-title">Leads</h2>
                                 </div>
@@ -2123,7 +2852,7 @@ function ManageLeads() {
                                                 }
                                                 className="btn btn-primary d-none d-sm-inline-block"
                                             >
-                                                
+
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className="icon"
@@ -2504,6 +3233,7 @@ function ManageLeads() {
                                             <th>State</th>
                                             <th>Company Email</th>
                                             <th>Status</th>
+                                            <th>Uploaded By</th>
                                             <th>Assigned to</th>
 
                                             <th>
@@ -2581,9 +3311,24 @@ function ManageLeads() {
                                                     <td>{company["State"]}</td>
                                                     <td>{company["Company Email"]}</td>
                                                     <td>{company["Status"]}</td>
+                                                    <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                                                     <td>{company["ename"]}</td>
                                                     <td>{formatDate(company["AssignDate"])}</td>
                                                     <td>
+                                                        <IconButton onClick={() => {
+                                                            functionopenModifyPopup();
+                                                            handleUpdateClick(company._id);
+                                                        }}>
+                                                            < ModeEditIcon
+                                                                style={{
+                                                                    width: "14px",
+                                                                    height: "14px",
+                                                                    color: "grey",
+                                                                }}
+                                                            >
+                                                                Delete
+                                                            </ ModeEditIcon>
+                                                        </IconButton>
                                                         <Link to={`/datamanager/leads/${company._id}`}>
                                                             <IconButton>
                                                                 <IconEye

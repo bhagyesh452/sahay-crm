@@ -228,7 +228,7 @@ function EmployeePanel() {
       ? "http://localhost:3001"
       : "/socket.io";
   useEffect(() => {
-    const socket = io(secretKey); // Connects to the same host and port as the client
+    const socket = io("https://localhost:3001"); // Connects to the same host and port as the client
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
@@ -723,6 +723,7 @@ function EmployeePanel() {
 
   const [remarksHistory, setRemarksHistory] = useState([]);
   const [filteredRemarks, setFilteredRemarks] = useState([]);
+
   const fetchRemarksHistory = async () => {
     try {
       const response = await axios.get(`${secretKey}/remarks-history`);
@@ -1147,7 +1148,7 @@ function EmployeePanel() {
     setSelectedOption(event.target.value);
   };
 
-  const handleSubmitData = (e) => {
+  const handleSubmitData = async(e) => {
     e.preventDefault();
 
     if (cname === "") {
@@ -1167,48 +1168,71 @@ function EmployeePanel() {
     } else if (directorNumberThird !== 0 && !/^\d{10}$/.test(directorNumberThird)) {
       Swal.fire("Third Director Number should be 10 digits");
     } else {
-      axios
-        .post(`${secretKey}/manual`, {
-          "Company Name": cname.toUpperCase().trim(),
-          "Company Number": cnumber,
-          "Company Email": cemail,
-          "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
-          City: city,
-          State: state,
-          ename: data.ename,
-          AssignDate: new Date(),
-          "Company Address": companyAddress,
-          "Director Name(First)": directorNameFirst,
-          "Director Number(First)": directorNumberFirst,
-          "Director Email(First)": directorEmailFirst,
-          "Director Name(Second)": directorNameSecond,
-          "Director Number(Second)": directorNumberSecond,
-          "Director Email(Second)": directorEmailSecond,
-          "Director Name(Third)": directorNameThird,
-          "Director Number(Third)": directorNumberThird,
-          "Director Email(Third)": directorEmailThird,
-          "UploadedBy": data.ename
-        })
-        .then((response) => {
-          console.log("response", response);
-          console.log("Data sent Successfully");
-          Swal.fire({
-            title: "Data Added!",
-            text: "Successfully added new Data!",
-            icon: "success",
-          });
-          fetchNewData();
-          closepopupNew();
-        })
-        .catch((error) => {
-          console.error("Error sending data:", error);
-          Swal.fire({
-            title: "This lead already exists in the Start-Up Sahay's database.",
-            text: "For further assistance, please contact the Data Analyst.",
-            html: `Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896`,
-          });
-          
+      const dataToSend = {
+        "Company Name": cname.toUpperCase().trim(),
+        "Company Number": cnumber,
+        "Company Email": cemail,
+        "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
+        City: city,
+        State: state,
+        ename: data.ename,
+        AssignDate: new Date(),
+        "Company Address": companyAddress,
+        "Director Name(First)": directorNameFirst,
+        "Director Number(First)": directorNumberFirst,
+        "Director Email(First)": directorEmailFirst,
+        "Director Name(Second)": directorNameSecond,
+        "Director Number(Second)": directorNumberSecond,
+        "Director Email(Second)": directorEmailSecond,
+        "Director Name(Third)": directorNameThird,
+        "Director Number(Third)": directorNumberThird,
+        "Director Email(Third)": directorEmailThird,
+        "UploadedBy": data.ename
+      }
+      await axios.post(`${secretKey}/requestCompanyData`, dataToSend).then((response) => {
+        console.log("response", response);
+        console.log("Data sent Successfully");
+        Swal.fire({
+          title: "Lead Request Sent!",
+          text: "Your Request has been sent to the Data Manager!",
+          html:'Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896', 
+          icon: "success",
         });
+        fetchNewData();
+        closepopupNew();
+      })
+      .catch((error) => {
+        console.error("Error sending data:", error);
+        Swal.fire({
+          title: "This lead already exists in the Start-Up Sahay's database.",
+          text: "For further assistance, please contact the Data Analyst.",
+          html: `Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896`,
+        });
+        
+      });
+      // axios
+      //   .post(`${secretKey}/manual`, {
+      //     "Company Name": cname.toUpperCase().trim(),
+      //     "Company Number": cnumber,
+      //     "Company Email": cemail,
+      //     "Company Incorporation Date  ": cidate, // Assuming the correct key is "Company Incorporation Date"
+      //     City: city,
+      //     State: state,
+      //     ename: data.ename,
+      //     AssignDate: new Date(),
+      //     "Company Address": companyAddress,
+      //     "Director Name(First)": directorNameFirst,
+      //     "Director Number(First)": directorNumberFirst,
+      //     "Director Email(First)": directorEmailFirst,
+      //     "Director Name(Second)": directorNameSecond,
+      //     "Director Number(Second)": directorNumberSecond,
+      //     "Director Email(Second)": directorEmailSecond,
+      //     "Director Name(Third)": directorNameThird,
+      //     "Director Number(Third)": directorNumberThird,
+      //     "Director Email(Third)": directorEmailThird,
+      //     "UploadedBy": data.ename
+      //   })
+     
     }
   };
 
@@ -1390,7 +1414,7 @@ function EmployeePanel() {
   //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
   // })
 
-  console.log("csv", csvdata);
+  
   const handleUploadData = async (e) => {
     const name = data.ename;
     const updatedCsvdata = csvdata.map((data) => ({
@@ -2060,8 +2084,8 @@ function EmployeePanel() {
       const data = response.data.find((obj) => obj.company === company);
       setCurrentForm(data);
 
-        setOpenBooking(true);
-    
+      setOpenBooking(true);
+
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -2301,10 +2325,11 @@ function EmployeePanel() {
         companyId: forwardCompanyId,
         bdmAcceptStatus: bdmNewAcceptStatus,
         bdeForwardDate: new Date(),
-        bdeOldStatus: bdeOldStatus, // Assuming bdmName is defined elsewhere in your component
+        bdeOldStatus: bdeOldStatus,
+                          // Assuming bdmName is defined elsewhere in your component
       });
       Swal.fire('Company Forwarded', '', 'success');
-      //setdataStatus("Forwarded");
+      //setdataStatus("Forwarded"); 
       console.log("bdeoldstatus", bdeOldStatus)
       fetchNewData(bdeOldStatus)
       closeBdmNamePopup()
@@ -2338,7 +2363,8 @@ function EmployeePanel() {
     companyId,
     companyName,
     bdmAcceptStatus,
-    empStatus
+    empStatus,
+    bdmName
   ) => {
     if (bdmAcceptStatus === "Pending") {
       try {
@@ -2346,7 +2372,8 @@ function EmployeePanel() {
           `${secretKey}/teamleads-reversedata/${companyId}`,
           {
             companyName,
-            bdmAcceptStatus: "NotForwarded", // Corrected parameter name
+            bdmAcceptStatus: "NotForwarded",
+            bdmName:"NoOne" // Corrected parameter name
           }
         );
         // console.log("response", response.data);
@@ -2370,9 +2397,9 @@ function EmployeePanel() {
     }
   };
 
-   // -------------------------------------------------add leads form validation and debounce correction----------------------------------
+  // -------------------------------------------------add leads form validation and debounce correction----------------------------------
 
-   const debouncedSetCname = debounce((value) => {
+  const debouncedSetCname = debounce((value) => {
     setCname(value);
   }, 10);
 
@@ -3024,7 +3051,7 @@ function EmployeePanel() {
                           </a>
                         </div>
                       </div>
-                      <div className="request" style={{ marginRight: "15px" , display:'none' }}>
+                      <div className="request" style={{ marginRight: "15px"  }}>
                         <div className="btn-list">
                           <button
                             onClick={functionopenpopupNew}
@@ -3549,9 +3576,10 @@ function EmployeePanel() {
                                 <th>Add Projection</th>
                               ))}
 
-                            {dataStatus === "Forwarded" && (
+                            {dataStatus === "Forwarded" && (<>
+                              <th>BDM Name</th>
                               <th>Forwarded Date</th>
-                            )}
+                          </>  )}
 
                             {(dataStatus === "Forwarded" ||
                               dataStatus === "Interested" ||
@@ -3927,9 +3955,10 @@ function EmployeePanel() {
                                       </td>
                                     </>
                                   )}
-                                {dataStatus === "Forwarded" && (
+                                {dataStatus === "Forwarded" && (<>
+                                  {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) :(<td></td>)}
                                   <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                )}
+                               </> )}
                                 {/* {dataStatus === "Forwarded" && (
                                   <td>
                                     {company.bdmAcceptStatus ===
@@ -3983,6 +4012,7 @@ function EmployeePanel() {
                                               company["Company Name"],
                                               company.bdmAcceptStatus,
                                               company.Status,
+                                              company.bdmName
                                             )
                                           }}
                                           style={{
@@ -4940,7 +4970,7 @@ function EmployeePanel() {
                         }}
                         className="form-control"
                       />
-                        {errorCNumber && <p style={{ color: 'red' }}>{errorCNumber}</p>}
+                      {errorCNumber && <p style={{ color: 'red' }}>{errorCNumber}</p>}
                     </div>
                   </div>
                   <div className="col-4">
@@ -5049,7 +5079,7 @@ function EmployeePanel() {
                           debounceSetFirstDirectorNumber(e.target.value);
                         }}
                       />
-                       {errorDirectorNumberFirst && <p style={{ color: 'red' }}>{errorDirectorNumberFirst}</p>}
+                      {errorDirectorNumberFirst && <p style={{ color: 'red' }}>{errorDirectorNumberFirst}</p>}
                     </div>
                   </div>
                   <div className="col-4">
@@ -5239,7 +5269,7 @@ function EmployeePanel() {
                             debounceSetThirdDirectorNumber(e.target.value);
                           }}
                         />
-                         {errorDirectorNumberThird && <p style={{ color: 'red' }}>{errorDirectorNumberThird}</p>}
+                        {errorDirectorNumberThird && <p style={{ color: 'red' }}>{errorDirectorNumberThird}</p>}
                       </div>
                     </div>
                     <div className="col-4">
@@ -5351,9 +5381,17 @@ function EmployeePanel() {
             {feedbackRemarks || feedbakPoints ? (
               <div className="col-sm-12">
                 <div className="card RemarkCard position-relative">
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints}
+                    min={0}
+                    max={10}
+                    valueLabelDisplay="on"
+                  />
                   <div className="d-flex justify-content-between">
                     <div className="reamrk-card-innerText">
-                      <pre className="mt-5 pt-4">
+                      <pre className="pt-4">
                         {/* <Slider
                         defaultValue={feedbakPoints}
                         //getAriaValueText={feedbakPoints} 
@@ -5367,14 +5405,7 @@ function EmployeePanel() {
                         valueLabelDisplay="on" 
                         valueLabelFormat={feedbakPoints}
                         /> */}
-                        <IOSSlider
-                          aria-label="ios slider"
-                          disabled
-                          defaultValue={feedbakPoints}
-                          min={0}
-                          max={10}
-                          valueLabelDisplay="on"
-                        />
+
                       </pre>
                       <pre className="remark-text">{feedbackRemarks}</pre>
                     </div>

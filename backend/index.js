@@ -73,6 +73,8 @@ app.use(
 // }));
 // app.use(passport.initialize())
 // app.use(passport.session());
+
+
 var http = require("http").createServer(app);
 var socketIO = require("socket.io")(http, {
   cors: {
@@ -615,11 +617,19 @@ app.get("/api/specific-company/:companyId", async (req, res) => {
   }
 });
 app.post("/api/requestCompanyData", async (req, res) => {
-  //const csvData = req.body;
-  console.log("csv", csvData);
+  const csvData = req.body;
+  let dataArray = [];
+if (Array.isArray(csvData)) {
+    dataArray = csvData;
+} else if (typeof csvData === 'object' && csvData !== null) {
+    dataArray.push(csvData);
+} else {
+    // Handle invalid input
+    console.error('Invalid input: csvData must be an array or an object.');
+}
 
   try {
-    for (const employeeData of csvData) {
+    for (const employeeData of dataArray) {
       try {
         const employeeWithAssignData = {
           ...employeeData,
@@ -641,6 +651,24 @@ app.post("/api/requestCompanyData", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
     console.error("Error in bulk save:", error.message);
+  }
+});
+
+app.post('/api/change-edit-request/:companyName', async (req, res) => {
+  const companyName = req.params.companyName;
+  const companyObject = req.body;
+
+  try {
+      const updatedCompany = await CompanyRequestModel.findOneAndUpdate(
+          { "Company Name": companyName },
+          { $set: companyObject },
+          { new: true }
+      );
+
+      res.status(200).json(updatedCompany);
+  } catch (error) {
+      console.error("Error updating company:", error);
+      res.status(500).json({ error: "Error updating company" });
   }
 });
 
@@ -901,9 +929,9 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
     companyId,
     bdmAcceptStatus,
     bdeForwardDate,
-    bdeOldStatus,
+    bdeOldStatus
   } = req.body;
-  console.log("selectedData", selectedData);
+  //console.log("selectedData", selectedData);
 
   try {
     // Assuming TeamLeadsModel has a schema similar to the selectedData structure
@@ -913,10 +941,10 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
       return await TeamLeadsModel.create(newData);
     }));
 
-    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus , bdeForwardDate:new Date(bdeForwardDate) , bdeOldStatus : bdeOldStatus})
+    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus , bdeForwardDate:new Date(bdeForwardDate) , bdeOldStatus : bdeOldStatus , bdmName:bdmName})
     
     
-    console.log("newLeads", newLeads);
+    //console.log("newLeads", newLeads);
     res.status(201).json(newLeads);
   } catch (error) {
     console.error("Error creating new leads:", error.message);
@@ -981,13 +1009,14 @@ app.post("/api/bdm-status-change/:id", async (req, res) => {
 
 app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
-  const { companyName, bdmAcceptStatus } = req.body;
+  const { companyName, bdmAcceptStatus , bdmName } = req.body;
   try {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
 
-    await CompanyModel.findByIdAndUpdate(id, {
+    await CompanyModel.findByIdAndUpdate(id, { 
       bdmAcceptStatus: bdmAcceptStatus,
+      bdmName : bdmName
     }); // Corrected update
 
     res.status(200).json({ message: "Status updated successfully" });
@@ -1629,6 +1658,66 @@ app.post("/api/assign-new", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+app.post("/api/assign-leads-newbdm", async (req, res) => {
+  const { newemployeeSelection, data , bdmAcceptStatus} = req.body;
+
+  console.log(newemployeeSelection , data , bdmAcceptStatus)
+  
+  if(newemployeeSelection !== "Not Alloted"){
+    try {
+      // Add AssignDate property with the current date
+      const updatedObj = {
+        ...data,
+        bdmName: newemployeeSelection,
+        AssignDate: new Date(),
+        
+      };
+  
+      //console.log("updated" , updatedObj)
+  
+      // Update TeamLeadsModel for the specific data
+      await TeamLeadsModel.updateOne({ _id: data._id }, updatedObj);
+  
+      // Delete objects from RemarksHistory collection that match the "Company Name"
+      //await RemarksHistory.deleteMany({ companyID: data._id });
+  
+      res.status(200).json({ message: "Data updated successfully" });
+    }  catch (error) {
+      console.error("Error updating data:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  } else {
+    try {
+      // If newemployeeSelection is "Not Alloted", delete the company record and update AssignDate
+      const updatedObj = {
+        ...data,
+        ename: newemployeeSelection,
+        AssignDate: new Date(),
+        bdmAcceptStatus : bdmAcceptStatus
+        
+      };
+      //console.log("updated" , updatedObj)
+      // Delete the record from TeamLeadsModel
+      await TeamLeadsModel.findByIdAndDelete({_id: data._id});
+
+      // Update the record in CompanyModel
+      await CompanyModel.findByIdAndUpdate({_id: data._id}, updatedObj);
+
+      // Delete records from RemarksHistory collection that match the companyID
+      await RemarksHistory.deleteMany({ companyID: data._id });
+
+      res.status(200).json({ message: "Data updated successfully" });
+    } catch(error) {
+      console.error("Error updating data:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+});
+
+
+
+
 
 app.post("/api/company", async (req, res) => {
   const { newemployeeSelection, csvdata } = req.body;
@@ -4250,7 +4339,7 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-              ${newData.services[i].totalPaymentWGST}
+                ₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()}
             </div>
           </div>
         </div>
@@ -4568,26 +4657,7 @@ app.post(
                   </div>
                 </div>
               </div>
-              // <div style="display: flex; flex-wrap: wrap">
-              //   <div style="width: 25%">
-              //     <div style="
-              //           border: 1px solid #ccc;
-              //           font-size: 12px;
-              //           padding: 5px 10px;
-              //         ">
-              //       Company's GST:
-              //     </div>
-              //   </div>
-              //   <div style="width: 75%">
-              //     <div style="
-              //           border: 1px solid #ccc;
-              //           font-size: 12px;
-              //           padding: 5px 10px;
-              //         ">
-              //         ${newData.gstNumber!=="" ? newData.gstNumber : "N/A"}
-              //     </div>
-              //   </div>
-              // </div>
+             
             </div>
           </div>
           <!--Step One End-->
@@ -4736,7 +4806,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                       ${newData.bdmType} 
+                       ${newData.bdmType === "Close-by" ? "Closed-by" : "Supported-by"} 
                   </div>
                 </div>
               </div>
@@ -6467,9 +6537,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         },
         { new: true }
       );
-      await RequestMaturedModel.findOneAndDelete({
-        "Company Name": teamData["Company Name"],
-      });
+     
     }
 
     const totalAmount = newData.services.reduce(
@@ -6534,7 +6602,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString() }
+              ₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString() }
           </div>
         </div>
       </div>
@@ -6595,7 +6663,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-            ${parseInt(newData.services[i].firstPayment).toLocaleString()}
+              ₹ ${parseInt(newData.services[i].firstPayment).toLocaleString()}
           </div>
         </div>
       </div>
@@ -6615,7 +6683,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ${parseInt(newData.services[i].secondPayment).toLocaleString()} - ${
+              ₹ ${parseInt(newData.services[i].secondPayment).toLocaleString()} - ${
           isNaN(new Date(newData.services[i].secondPaymentRemarks))
             ? newData.services[i].secondPaymentRemarks
             : `Payment On ${newData.services[i].secondPaymentRemarks}`
@@ -6641,7 +6709,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ${parseInt(newData.services[i].thirdPayment).toLocaleString()} - ${
+              ₹ ${parseInt(newData.services[i].thirdPayment).toLocaleString()} - ${
           isNaN(new Date(newData.services[i].thirdPaymentRemarks))
             ? newData.services[i].thirdPaymentRemarks
             : `Payment On ${newData.services[i].thirdPaymentRemarks}`
@@ -6667,7 +6735,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ${parseInt(newData.services[i].fourthPayment).toLocaleString()} - ${
+              ₹ ${parseInt(newData.services[i].fourthPayment).toLocaleString()} - ${
           isNaN(new Date(newData.services[i].fourthPaymentRemarks))
             ? newData.services[i].fourthPaymentRemarks
             : `Payment On ${newData.services[i].fourthPaymentRemarks}`
@@ -6708,8 +6776,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const recipients = [
       newData.bdeEmail,
       newData.bdmEmail,
-      "bookings@startupsahay.com",
-      "documents@startupsahay.com",
+      // "bookings@startupsahay.com",
+      // "documents@startupsahay.com",
+      
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
@@ -6855,26 +6924,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 </div>
               </div>
             </div>
-            // <div style="display: flex; flex-wrap: wrap">
-            //   <div style="width: 25%">
-            //     <div style="
-            //           border: 1px solid #ccc;
-            //           font-size: 12px;
-            //           padding: 5px 10px;
-            //         ">
-            //       Company's GST:
-            //     </div>
-            //   </div>
-            //   <div style="width: 75%">
-            //     <div style="
-            //           border: 1px solid #ccc;
-            //           font-size: 12px;
-            //           padding: 5px 10px;
-            //         ">
-            //         ${newData.gstNumber}
-            //     </div>
-            //   </div>
-            // </div>
+         
           </div>
         </div>
         <!--Step One End-->
@@ -7013,7 +7063,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                  BDM Email
+                  BDM Type
                 </div>
               </div>
               <div style="width: 75%">
@@ -7166,7 +7216,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ₹ ${totalAmount.toFixed(2)}
+                    ₹ ${parseInt(totalAmount).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -7186,7 +7236,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ₹ ${receivedAmount.toFixed(2)}
+                    ₹ ${parseInt(receivedAmount).toLocaleString()}
                   </div>
                 </div>
 
@@ -7207,7 +7257,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                   ₹ ${pendingAmount.toFixed(2)}
+                   ₹ ${parseInt(pendingAmount).toLocaleString()}
                   </div>
                 </div>
 
@@ -7665,21 +7715,36 @@ function generatePdf(htmlContent) {
       });
   }
 }
-app.post("/api/update-redesigned-final-form/:companyName", async (req, res) => {
+app.post("/api/update-redesigned-final-form/:CompanyName",
+upload.fields([
+  { name: "otherDocs", maxCount: 50 },
+  { name: "paymentReceipt", maxCount: 1 },
+]), async (req, res) => {
   // Assuming updatedBooking contains the updated data
-  const companyName = req.params.companyName; // Get the _id from the request parameters
-  console.log("Api run");
-  const { _id, ...updatedDocWithoutId } = req.body;
+  const companyName = req.params.CompanyName; // Get the _id from the request parameters
+  const { _id,moreBookings,step4changed,otherDocs,paymentReceipt ,...updatedDocs } = req.body;
+  const newOtherDocs = req.files["otherDocs"] || []; 
+  const newPaymentReceipt = req.files["paymentReceipt"] || [];
+  const updatedDocWithoutId = {
+    ...updatedDocs,
+    otherDocs: newOtherDocs,
+    paymentReceipt: newPaymentReceipt,
+  };
+  const goingToUpdate = step4changed=== "true" ? updatedDocWithoutId : updatedDocs;
+ 
+  
   try {
     // Find the document by _id and update it with the updatedBooking data
+
     const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
       {
         "Company Name": companyName,
       },
-
-      { $set: updatedDocWithoutId },
+      goingToUpdate, 
+   // Set all properties except "moreBookings"
       { new: true } // Return the updated document
     );
+  
 
     if (!updatedDocument) {
       return res.status(404).json({ error: "Document not found" });
@@ -7697,15 +7762,24 @@ app.post("/api/update-redesigned-final-form/:companyName", async (req, res) => {
   }
 });
 app.put(
-  "/api/update-more-booking/:companyName/:bookingIndex",
+  "/api/update-more-booking/:CompanyName/:bookingIndex",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 1 },
+  ]),
   async (req, res) => {
     try {
-      const { companyName, bookingIndex } = req.params;
-      const newData = req.body;
+      const { CompanyName, bookingIndex } = req.params;
+      const {otherDocs,paymentReceipt ,step4changed,...newData} = req.body;
+  
+      const newOtherDocs = req.files["otherDocs"] || []; 
+      const newPaymentReceipt = req.files["paymentReceipt"] || [];
+      const latestData = {...newData , otherDocs:newOtherDocs , paymentReceipt:newPaymentReceipt }
 
+      const dataToSend = step4changed === "true" ? latestData : newData
       // Find the document by companyName
       const existingDocument = await RedesignedLeadformModel.findOne({
-        "Company Name": companyName,
+        "Company Name": CompanyName,
       });
 
       if (!existingDocument) {
@@ -7713,12 +7787,12 @@ app.put(
       }
 
       // Update the booking in moreBookings array at the specified index
-      existingDocument.moreBookings[bookingIndex - 1] = newData;
+      existingDocument.moreBookings[bookingIndex - 1] = dataToSend;
 
       // Save the updated document
       const updatedDocument = await existingDocument.save();
       const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": companyName,
+        "Company Name": CompanyName,
       });
 
       res.status(200).json(updatedDocument);

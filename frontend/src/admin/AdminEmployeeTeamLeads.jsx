@@ -24,10 +24,10 @@
 // import Slider from '@mui/material/Slider';
 // import RedesignedForm from "../../../admin/RedesignedForm.jsx";
 import React, { useEffect, useState } from "react";
-import EmpNav from "./EmpNav.js";
 
-import Header from "../components/Header";
-import { useParams } from "react-router-dom";
+import Navbar from "./Navbar";
+import Header from "./Header";
+import { useLocation, useParams } from "react-router-dom";
 import notificationSound from "../assets/media/iphone_sound.mp3";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
@@ -89,6 +89,19 @@ import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
 import { GrStatusGood } from "react-icons/gr";
 import { IoAddCircle } from "react-icons/io5";
+import { FaArrowLeft } from "react-icons/fa6";
+//import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+//import Typography from '@mui/material/Typography';
+//import Box from '@mui/material/Box';
+import { GrDocumentStore } from "react-icons/gr";
+import { AiOutlineTeam } from "react-icons/ai";
+import { GoPerson } from "react-icons/go";
+import { MdOutlinePersonPin } from "react-icons/md";
+import Employee from './Employees.js'
+import Team from './Team.js'
+import EmployeeParticular from "./EmployeeParticular.js";
 
 
 
@@ -97,8 +110,9 @@ import { IoAddCircle } from "react-icons/io5";
 
 
 
-function EmployeeTeamLeads() {
-    const { userId } = useParams();
+
+function AdminEmployeeTeamLeads() {
+    const { id } = useParams();
     const [data, setData] = useState([])
     const [dataStatus, setdataStatus] = useState("All");
     const [currentPage, setCurrentPage] = useState(0);
@@ -126,8 +140,11 @@ function EmployeeTeamLeads() {
     const [changeRemarks, setChangeRemarks] = useState("");
     const [updateData, setUpdateData] = useState({});
     const [projectionData, setProjectionData] = useState([]);
-
-
+    const [eData, seteData] = useState([]);
+    const [bdmWorkOn, setBdmWorkOn] = useState(false)
+    const [bdmNames , setBdmNames] = useState([])
+    const [branchOffice , setBranchOffice] = useState("")
+    const [empData , setEmpData] = useState([])
 
     const fetchData = async () => {
         try {
@@ -135,14 +152,42 @@ function EmployeeTeamLeads() {
 
             // Set the retrieved data in the state
             const tempData = response.data;
-            const userData = tempData.find((item) => item._id === userId);
-            //console.log(tempData);
+            const userData = tempData.find((item) => item._id === id);
+            const salesExecutivesIds = response.data.filter((employee) => employee.designation === "Sales Executive")
+                .map((employee) => employee._id)
+            //console.log(userData);
+            setEmpData(tempData)
+            setBranchOffice(userData.branchOffice)
+            seteData(salesExecutivesIds)
             setData(userData);
+            setBdmNames(tempData
+                .filter((obj) => obj.bdmWork && obj.branchOffice === branchOffice && !userData.ename.includes(obj.ename))
+                .map((employee) => employee.ename)
+              );
+              
+            setBdmWorkOn(tempData.find((item) => item._id === id)?.bdmWork || null);
+            //console.log((tempData.find((item)=>item._id === id))?.bdmWork || null)
             //setmoreFilteredData(userData);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
     };
+    //console.log(eData)
+    //console.log(data)
+   
+    // useEffect(()=>{
+    //     fetchData()
+    //     setBdmNames(empData
+    //         .filter((obj) => obj.bdmWork && obj.branchOffice === branchOffice)
+    //         .map((employee) => employee.ename)
+    //       );
+
+    // }, [empData])
+
+
+
+    console.log(bdmNames)
+
     const [maturedBooking, setMaturedBooking] = useState(null);
 
     const fetchBDMbookingRequests = async () => {
@@ -169,8 +214,7 @@ function EmployeeTeamLeads() {
         try {
             const response = await axios.get(`${secretKey}/forwardedbybdedata/${bdmName}`)
 
-
-
+            console.log("teamdata", response.data)
 
             setTeamData(response.data)
             if (bdmNewStatus === "Untouched") {
@@ -201,14 +245,17 @@ function EmployeeTeamLeads() {
         }
     }
 
-    // useEffect(() => {
-    //     if (teamData.length !== 0 && BDMrequests) {
-    //         const companyName = BDMrequests["Company Name"];
-    //         const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
-    //         setMaturedBooking(currentObject);
-    //         console.log("Current Booking:", currentObject);
-    //     }
-    // }, [teamData, BDMrequests]);
+    //console.log("teamData", teamData)
+    //console.log(data.ename)
+
+    useEffect(() => {
+        if (teamData.length !== 0 && BDMrequests) {
+            const companyName = BDMrequests["Company Name"];
+            const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
+            setMaturedBooking(currentObject);
+            console.log("Current Booking:", currentObject);
+        }
+    }, [teamData, BDMrequests]);
 
 
     console.log("teamdata", teamleadsData)
@@ -218,6 +265,7 @@ function EmployeeTeamLeads() {
     }, [])
 
     useEffect(() => {
+        fetchData()
         fetchTeamLeadsData()
         fetchBDMbookingRequests()
     }, [data.ename])
@@ -596,44 +644,40 @@ function EmployeeTeamLeads() {
 
 
             } else {
-                const currentObject = teamData.find(obj => obj["Company Name"] === cname);
-                setMaturedBooking(currentObject);
-                setFormOpen(true)
-
                 // Use SweetAlert to confirm the "Matured" status
-                // const requestData = {
-                //     companyName: cname,
-                //     requestStatus: "Pending",
-                //     bdeName: bdeName,
-                //     bdmName: data.ename,
-                //     date: new Date(),
-                //     time: new Date().toLocaleTimeString(), // Assuming you want the current time
-                // };
+                const requestData = {
+                    companyName: cname,
+                    requestStatus: "Pending",
+                    bdeName: bdeName,
+                    bdmName: data.ename,
+                    date: new Date(),
+                    time: new Date().toLocaleTimeString(), // Assuming you want the current time
+                };
 
                 // Make API call to send the request
-                // axios
-                //     .post(`${secretKey}/matured-case-request`, requestData)
-                //     .then((response) => {
-                //         if (response.status === 200) {
-                //             // Assuming fetchData is a function to fetch updated employee data
-                //             fetchTeamLeadsData(bdmnewstatus);
-                //             setBdmNewStatus(bdmnewstatus);
-                //             setTeamLeadsData(
-                //                 teamData.filter((obj) => obj.bdmStatus === bdmnewstatus)
-                //             );
-                //             Swal.fire(
-                //                 "Request Sent",
-                //                 "Request has been successfully sent to the BDE",
-                //                 "success"
-                //             );
-                //         } else {
-                //             Swal.fire("Error", "Failed to sent Request", "error");
-                //             console.error("Failed to update status:", response.data.message);
-                //         }
-                //     })
-                //     .catch((error) => {
-                //         console.error("Error sending request to backend:", error);
-                //     });
+                axios
+                    .post(`${secretKey}/matured-case-request`, requestData)
+                    .then((response) => {
+                        if (response.status === 200) {
+                            // Assuming fetchData is a function to fetch updated employee data
+                            fetchTeamLeadsData(bdmnewstatus);
+                            setBdmNewStatus(bdmnewstatus);
+                            setTeamLeadsData(
+                                teamData.filter((obj) => obj.bdmStatus === bdmnewstatus)
+                            );
+                            Swal.fire(
+                                "Request Sent",
+                                "Request has been successfully sent to the BDE",
+                                "success"
+                            );
+                        } else {
+                            Swal.fire("Error", "Failed to sent Request", "error");
+                            console.error("Failed to update status:", response.data.message);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error sending request to backend:", error);
+                    });
             }
             // Make an API call to update the employee status in the database
 
@@ -924,72 +968,949 @@ function EmployeeTeamLeads() {
 
     }
 
+    const handleChangeUrlPrev = () => {
+        const currId = id;
+        //console.log(eData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
+
+        // Find the index of the currentId in the eData array
+        const currentIndex = eData.findIndex((itemId) => itemId === currId);
+
+        if (currentIndex !== -1) {
+            // Calculate the previous index in a circular manner
+            const prevIndex = (currentIndex - 1 + eData.length) % eData.length;
+
+            if (currentIndex === 0) {
+                // If it's the first page, navigate to the employees page
+                window.location.replace(`/admin/admin-user`);
+                setBackButton(false)
+            } else {
+                // Get the previousId from the eData array
+                const prevId = eData[prevIndex];
+                window.location.replace(`/admin/employeeleads/${prevId}`);
+            }
+
+            //setBackButton(prevIndex !== 0);
+        } else {
+            console.log("Current ID not found in eData array.");
+        }
+    };
+
+    const [employeeName, setEmployeeName] = useState("");
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [AddForm, setAddForm] = useState(false);
+    const [employeeData, setEmployeeData] = useState([]);
+    const [moreEmpData, setmoreEmpData] = useState([]);
+    const [backButton, setBackButton] = useState(false);
+
+    const [openAssign, openchangeAssign] = useState(false);
+    const [selectedField, setSelectedField] = useState("Company Name");
+    const [visibility, setVisibility] = useState("none");
+    const [visibilityOther, setVisibilityOther] = useState("block");
+    const [visibilityOthernew, setVisibilityOthernew] = useState("none");
+    const [searchText, setSearchText] = useState("");
+    const [citySearch, setcitySearch] = useState("");
+    const [month, setMonth] = useState(0);
+    const [year, setYear] = useState(0);
+    const [subFilterValue, setSubFilterValue] = useState("");
+    const [currentTab, setCurrentTab] = useState("TeamLeads");
+    const [newemployeeSelection, setnewEmployeeSelection] = useState("Not Alloted");
 
 
+    const handleChangeUrl = () => {
+        const currId = id;
+        //console.log(eData); // This is how the array looks like ['65bcb5ac2e8f74845bdc6211', '65bde8cf23df48d5fe3227ca']
+
+        // Find the index of the currentId in the eData array
+        const currentIndex = eData.findIndex((itemId) => itemId === currId);
+
+        if (currentIndex !== -1) {
+            // Calculate the next index in a circular manner
+            const nextIndex = (currentIndex + 1) % eData.length;
+
+            // Get the nextId from the eData array
+            const nextId = eData[nextIndex];
+            window.location.replace(`/admin/employeeleads/${nextId}`);
 
 
+            //setBackButton(nextId !== 0);
+        } else {
+            console.log("Current ID not found in eData array.");
+        }
+    };
+
+    const functionOpenAssign = () => {
+        openchangeAssign(true);
+    };
+    const closepopupAssign = () => {
+        openchangeAssign(false);
+    };
+    const [selectedOption, setSelectedOption] = useState("direct");
+
+    const handleOptionChange = (event) => {
+        setSelectedOption(event.target.value);
+      };
+    
+  
+
+    const handleUploadData = async (e) => {
+        //console.log("Uploading data");
+    
+        const currentDate = new Date().toLocaleDateString();
+        const currentTime = new Date().toLocaleTimeString();
+        const bdmAcceptStatus = "NotForwarded"
+    
+    
+        const csvdata = teamleadsData
+          .filter((employee) => selectedRows.includes(employee._id))
+          .map((employee) => {
+            if (
+              employee.bdmStatus === "Interested" ||
+              employee.bdmStatus === "FollowUp"
+            ) {
+              // If Status is "Interested" or "FollowUp", don't change Status and Remarks
+              return { ...employee };
+            } else {
+              // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
+              return {
+                ...employee,
+                bdmStatus: "Untouched",
+                Remarks: "No Remarks Added",
+              };
+            }
+          });
+    
+        // Create an array to store promises for updating CompanyModel
+        const updatePromises = [];
+    
+        for (const data of csvdata) {
+          const updatedObj = {
+            ...data,
+            date: currentDate,
+            time: currentTime,
+            bdmName : newemployeeSelection,
+            companyName: data["Company Name"],
+            bdmAcceptStatus,
+          };
+         console.log(newemployeeSelection , data , bdmAcceptStatus)
+          // Add the promise for updating CompanyModel to the array
+          updatePromises.push(
+            axios.post(`${secretKey}/assign-leads-newbdm`, {
+               
+              newemployeeSelection,
+              data: updatedObj,
+              bdmAcceptStatus ,
+            })
+          );
+        }
+    
+        try {
+          // Wait for all update promises to resolve
+          await Promise.all(updatePromises);
+          //console.log("Employee data updated!");
+    
+          // Clear the selection
+          setnewEmployeeSelection("Not Alloted");
+    
+          Swal.fire({
+            title: "Data Sent!",
+            text: "Data sent successfully!",
+            icon: "success",
+          });
+    
+          // Fetch updated employee details and new data
+          //fetchEmployeeDetails();
+          //fetchNewData();
+          closepopupAssign();
+        } catch (error) {
+          console.error("Error updating employee data:", error);
+    
+          Swal.fire({
+            title: "Error!",
+            text: "Failed to update employee data. Please try again later.",
+            icon: "error",
+          });
+        }
+      };
+
+      //console.log("new" , newemployeeSelection)
+    
+      const handleFieldChange = (event) => {
+        if (event.target.value === "Company Incorporation Date  ") {
+            setSelectedField(event.target.value);
+            setVisibility("block");
+            setVisibilityOther("none");
+            setSubFilterValue("");
+            setVisibilityOthernew("none");
+        } else if (event.target.value === "Status") {
+            setSelectedField(event.target.value);
+            setVisibility("none");
+            setVisibilityOther("none");
+            setSubFilterValue("");
+            setVisibilityOthernew("block");
+        } else {
+            setSelectedField(event.target.value);
+            setVisibility("none");
+            setVisibilityOther("block");
+            setSubFilterValue("");
+            setVisibilityOthernew("none");
+        }
+
+        console.log(selectedField);
+    };
+
+    const filteredData = teamleadsData.filter((company) => {
+        const fieldValue = company[selectedField];
+
+        if (selectedField === "State" && citySearch) {
+            // Handle filtering by both State and City
+            const stateMatches = fieldValue
+                .toLowerCase()
+                .includes(searchText.toLowerCase());
+            const cityMatches = company.City.toLowerCase().includes(
+                citySearch.toLowerCase()
+            );
+            return stateMatches && cityMatches;
+        } else if (selectedField === "Company Incorporation Date  ") {
+            // Assuming you have the month value in a variable named `month`
+            if (month == 0) {
+                return fieldValue.includes(searchText);
+            } else if (year == 0) {
+                return fieldValue.includes(searchText);
+            }
+            const selectedDate = new Date(fieldValue);
+            const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+            const selectedYear = selectedDate.getFullYear();
+
+            // Use the provided month variable in the comparison
+            return (
+                selectedMonth.toString().includes(month) &&
+                selectedYear.toString().includes(year)
+            );
+        } else if (selectedField === "Status" && searchText === "All") {
+            // Display all data when Status is "All"
+            return true;
+        } else {
+            // Your existing filtering logic for other fields
+            if (typeof fieldValue === "string") {
+                return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+            } else if (typeof fieldValue === "number") {
+                return fieldValue.toString().includes(searchText);
+            } else if (fieldValue instanceof Date) {
+                // Handle date fields
+                return fieldValue.includes(searchText);
+            }
+
+            return false;
+        }
+    });
+
+    const handleDateChange = (e) => {
+        const dateValue = e.target.value;
+        setCurrentPage(0);
+
+        // Check if the dateValue is not an empty string
+        if (dateValue) {
+            const dateObj = new Date(dateValue);
+            const formattedDate = dateObj.toISOString().split("T")[0];
+            setSearchText(formattedDate);
+        } else {
+            // Handle the case when the date is cleared
+            setSearchText("");
+        }
+    };
+
+    // ------------------------------panel-----------------------------------------
+
+    function CustomTabPanel(props) {
+        const { children, value, index, ...other } = props;
+
+        return (
+            <div
+                role="tabpanel"
+                hidden={value !== index}
+                id={`simple-tabpanel-${index}`}
+                aria-labelledby={`simple-tab-${index}`}
+                {...other}
+            >
+                {value === index && (
+                    <Box sx={{ p: 3 }}>
+                        <Typography>{children}</Typography>
+                    </Box>
+                )}
+            </div>
+        );
+    }
+
+    CustomTabPanel.propTypes = {
+        children: PropTypes.node,
+        index: PropTypes.number.isRequired,
+        value: PropTypes.number.isRequired,
+    };
+
+    function a11yProps(index) {
+        return {
+            id: `simple-tab-${index}`,
+            'aria-controls': `simple-tabpanel-${index}`,
+        };
+    }
+    const location = useLocation()
+    const [value, setValue] = React.useState(location.pathname === `/admin/employeesleads/${id}` ? 0 : 1);
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    console.log(value)
+
+    // -------------------------------------------handle checkbox----------------------------------------------------------
 
 
+    const handleCheckboxChange = (id, event) => {
+        // If the id is 'all', toggle all checkboxes
+        if (id === "all") {
+            // If all checkboxes are already selected, clear the selection; otherwise, select all
+            setSelectedRows((prevSelectedRows) =>
+                prevSelectedRows.length === filteredData.length
+                    ? []
+                    : filteredData.map((row) => row._id)
+            );
+        } else {
+            // Toggle the selection status of the row with the given id
+            setSelectedRows((prevSelectedRows) => {
+                // If the Ctrl key is pressed
+                if (event.ctrlKey) {
+                    //console.log("pressed");
+                    const selectedIndex = filteredData.findIndex((row) => row._id === id);
+                    const lastSelectedIndex = filteredData.findIndex((row) =>
+                        prevSelectedRows.includes(row._id)
+                    );
+
+                    // Select rows between the last selected row and the current row
+                    if (lastSelectedIndex !== -1 && selectedIndex !== -1) {
+                        const start = Math.min(selectedIndex, lastSelectedIndex);
+                        const end = Math.max(selectedIndex, lastSelectedIndex);
+                        const idsToSelect = filteredData
+                            .slice(start, end + 1)
+                            .map((row) => row._id);
+
+                        return prevSelectedRows.includes(id)
+                            ? prevSelectedRows.filter((rowId) => !idsToSelect.includes(rowId))
+                            : [...prevSelectedRows, ...idsToSelect];
+                    }
+                }
+
+                // Toggle the selection status of the row with the given id
+                return prevSelectedRows.includes(id)
+                    ? prevSelectedRows.filter((rowId) => rowId !== id)
+                    : [...prevSelectedRows, id];
+            });
+        }
+    };
+
+    const [startRowIndex, setStartRowIndex] = useState(null);
+
+    const handleMouseEnter = (id) => {
+        // Update selected rows during drag selection
+        if (startRowIndex !== null) {
+            const endRowIndex = filteredData.findIndex((row) => row._id === id);
+            const selectedRange = [];
+            const startIndex = Math.min(startRowIndex, endRowIndex);
+            const endIndex = Math.max(startRowIndex, endRowIndex);
+
+            for (let i = startIndex; i <= endIndex; i++) {
+                selectedRange.push(filteredData[i]._id);
+            }
+
+            setSelectedRows(selectedRange);
+
+            // Scroll the window vertically when dragging beyond the visible viewport
+            const windowHeight = document.documentElement.clientHeight;
+            const mouseY = window.event.clientY;
+            const tableHeight = document.querySelector("table").clientHeight;
+            const maxVisibleRows = Math.floor(
+                windowHeight / (tableHeight / filteredData.length)
+            );
+
+            if (mouseY >= windowHeight - 20 && endIndex >= maxVisibleRows) {
+                window.scrollTo(0, window.scrollY + 20);
+            }
+        }
+    };
+
+    const handleMouseUp = () => {
+        // End drag selection
+        setStartRowIndex(null);
+    };
+
+    const handleMouseDown = (id) => {
+        // Initiate drag selection
+        setStartRowIndex(filteredData.findIndex((row) => row._id === id));
+    };
 
 
 
 
     return (
         <div>
-
-            <Header name={data.ename} designation={data.designation} />
-            <EmpNav userId={userId} bdmWork={data.bdmWork} />
+            <Header />
+            <Navbar />
             {!formOpen && <div className="page-wrapper">
-                {BDMrequests && (
-                    <Dialog open={openbdmRequest}>
-                        <DialogContent>
-                            <div className="request-bdm-card">
-                                <div className="request-title m-2 d-flex justify-content-between">
-                                    <div className="request-content mr-2">
-                                        Your Request to book form of{" "}
-                                        <b>{BDMrequests["Company Name"]}</b> has been accepted by <b>{BDMrequests.bdeName}</b>
-                                    </div>
-                                    <div className="request-time">
-                                        <IconButton onClick={() => setOpenbdmRequest(false)}>
-                                            <CloseIcon style={{ height: "15px", width: "15px" }} />
+
+                <div style={{
+                    margin: "3px 0px 1px 0px",
+                }} className="page-header d-print-none">
+                    <div className="container-xl">
+                        <div className="row g-2 align-items-center">
+                            <div className="col d-flex justify-content-between">
+                                {/* <!-- Page pre-title --> */}
+                                <div className="d-flex">
+                                    <IconButton>
+                                        <IconChevronLeft onClick={handleChangeUrlPrev} />
+                                    </IconButton>
+                                    <h2 className="page-title">{data.ename}</h2>
+                                    <div className="nextBtn">
+                                        <IconButton onClick={handleChangeUrl}>
+                                            <IconChevronRight
+                                                style={
+                                                    {
+                                                        // backgroundColor: "#fbb900",
+                                                        // borderRadius: "5px",
+                                                        // padding: "2px",
+                                                        // color: "white"
+                                                    }
+                                                }
+                                            />
                                         </IconButton>
                                     </div>
+                                </div>
+                                <div className="d-flex align-items-center justify-content-center">
+                                    {selectedRows.length !== 0 && (
+                                        <div className="request mr-1">
+                                            <div className="btn-list">
+                                                <button
+                                                    onClick={functionOpenAssign}
+                                                    className="btn btn-primary d-none d-sm-inline-block 2"
+                                                >
+                                                    Assign Data
+                                                </button>
+                                                <a
+                                                    href="#"
+                                                    className="btn btn-primary d-sm-none btn-icon"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modal-report"
+                                                    aria-label="Create new report"
+                                                >
+                                                    {/* <!-- Download SVG icon from http://tabler-icons.io/i/plus --> */}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="form-control sort-by">
+                                        <label htmlFor="sort-by">Sort By:</label>
+                                        <select
+                                            style={{
+                                                border: "none",
+                                                outline: "none",
+                                                color: "#666a66",
+                                            }}
+                                            name="sort-by"
+                                            id="sort-by"
+                                            onChange={(e) => {
+                                                const selectedOption = e.target.value;
+
+                                                switch (selectedOption) {
+                                                    case "Busy":
+                                                    case "Untouched":
+                                                    case "Not Picked Up":
+                                                        setBdmNewStatus("Untouched");
+                                                        setTeamLeadsData(
+                                                            teamData
+                                                                .filter((data) =>
+                                                                    [
+                                                                        "Busy",
+                                                                        "Untouched",
+                                                                        "Not Picked Up",
+                                                                    ].includes(data.bdmStatus)
+                                                                )
+                                                                .sort((a, b) => {
+                                                                    if (a.bdmStatus === selectedOption) return -1;
+                                                                    if (b.bdmStatus === selectedOption) return 1;
+                                                                    return 0;
+                                                                })
+                                                        );
+                                                        break;
+                                                    case "Interested":
+                                                        setBdmNewStatus("Interested");
+                                                        setTeamLeadsData(
+                                                            teamData
+                                                                .filter((data) => data.bdmStatus === "Interested")
+                                                                .sort((a, b) =>
+                                                                    a.AssignDate.localeCompare(b.AssignDate)
+                                                                )
+                                                        );
+                                                        break;
+                                                    case "Not Interested":
+                                                        setBdmNewStatus("NotInterested");
+                                                        setTeamLeadsData(
+                                                            teamData
+                                                                .filter((data) =>
+                                                                    ["Not Interested", "Junk"].includes(
+                                                                        data.bdmStatus
+                                                                    )
+                                                                )
+                                                                .sort((a, b) =>
+                                                                    a.AssignDate.localeCompare(b.AssignDate)
+                                                                )
+                                                        );
+                                                        break;
+                                                    case "FollowUp":
+                                                        setBdmNewStatus("FollowUp");
+                                                        setTeamLeadsData(
+                                                            teamData
+                                                                .filter((data) => data.bdmStatus === "FollowUp")
+                                                                .sort((a, b) =>
+                                                                    a.AssignDate.localeCompare(b.AssignDate)
+                                                                )
+                                                        );
+                                                        break;
+                                                    case "BdeForwardDate":
+                                                        setBdmNewStatus("BdeForwardDate");
+                                                        setTeamLeadsData(
+                                                            teamData.sort((a, b) =>
+                                                                b.bdeForwardDate.localeCompare(a.bdeForwardDate)
+                                                            )
+                                                        );
+                                                        break;
+                                                    case "Company Incorporation Date  ":
+                                                        setBdmNewStatus("CompanyIncorporationDate");
+                                                        setTeamLeadsData(
+                                                            teamData.sort((a, b) =>
+                                                                b["Company Incorporation Date  "].localeCompare(
+                                                                    a["Company Incorporation Date  "]
+                                                                )
+                                                            )
+                                                        );
+                                                        break;
+                                                    default:
+                                                        // No filtering if default option selected
+                                                        setBdmNewStatus("Untouched");
+                                                        setTeamLeadsData(
+                                                            teamData.sort((a, b) => {
+                                                                if (a.bdmStatus === selectedOption) return -1;
+                                                                if (b.bdmStatus === selectedOption) return 1;
+                                                                return 0;
+                                                            })
+                                                        );
+                                                        break;
+                                                }
+                                            }}
+                                        >
+                                            <option value="" disabled selected>
+                                                Select Status
+                                            </option>
+                                            <option value="Untouched">Untouched</option>
+                                            <option value="Busy">Busy</option>
+                                            <option value="Not Picked Up">Not Picked Up</option>
+                                            <option value="FollowUp">Follow Up</option>
+                                            <option value="Interested">Interested</option>
+                                            <option value="Not Interested">Not Interested</option>
+                                            <option value="BdeForwardDate">Bde Forward Date</option>
+                                            <option value="Company Incorporation Date  ">
+                                                C.Inco. Date
+                                            </option>
+                                        </select>
+                                    </div>
+                                    {/* {bdmWorkOn ? (
+                                                  <button className="btn btn-primary d-none d-sm-inline-block ml-1" onClick={() => handleReverseBdmWork()}>
+                                                         Revoke Bdm Work
+                                                              </button>
+                                                        ) : (
+                                               <button className="btn btn-primary d-none d-sm-inline-block ml-1" onClick={() => handleAssignBdmWork()}>
+                                                                   Assign Bdm Work
+                                                                           </button>
+                                                                   )} */}
+                                    <Link
+                                        to={`/admin/employees/${id}/login-details`}
+                                        style={{ marginLeft: "10px" }}>
+                                        <button className="btn btn-primary d-none d-sm-inline-block">
+                                            Login Details
+                                        </button>
+                                    </Link>
+                                    <div>
+                                        <Link
+                                            to={`/admin/admin-user`}
+                                            style={{ marginLeft: "10px" }}>
+                                            <button className="btn btn-primary d-none d-sm-inline-block">
+                                                <span>
+                                                    <FaArrowLeft
+                                                        style={{
+                                                            marginRight: "10px",
+                                                            marginBottom: "3px",
+                                                        }}
+                                                    />
+                                                </span>
+                                                Back
+                                            </button>
+                                        </Link>
+                                    </div>
 
                                 </div>
-                                <div className="request-reply">
+                            </div>
 
-                                    <button
-                                        onClick={() => {
-                                            setFormOpen(true)
-                                            setOpenbdmRequest(false)
-                                        }}
-                                        className="request-display"
-                                    >
-                                        Open Form
-                                    </button>
-                                </div>
-                            </div>
-                        </DialogContent>
-                    </Dialog>
-                )}
-                <div className="page-header d-print-none">
-                    <div className="container-xl">
-                        <div className="row">
-                            <div className="col-sm-3">
-                                <div class="input-icon">
-                                    <span class="input-icon-addon">
-                                        {/* <CiSearch /> */}
-                                    </span>
-                                    <input type="text" value="" class="form-control" placeholder="Search…" aria-label="Search in website" />
-                                </div>
-                            </div>
+                            {/* <!-- Page title actions --> */}
                         </div>
                     </div>
+                </div>
+                <div className="container-xl card mt-2 mb-2" style={{ width: "95%" }}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                            <a
+                                href="#tabs-home-5"
+                                onClick={() => {
+                                    setCurrentTab("Leads")
+                                    window.location.pathname = `/admin/employees/${id}`
+                                }}
+                                className={
+                                    currentTab === "Leads"
+                                        ? "nav-link"
+                                        : "nav-link"
+                                }
+                                data-bs-toggle="tab"
+                            >
+                                <Tab value={value} index={0} label={
+                                    <div style={{ display: "flex", alignItems: "center" }}>
+                                        <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                        <span style={{ fontSize: "12px" }}>
+                                            Leads </span>
+                                    </div>
+                                } {...a11yProps(0)} /></a>
+
+                            {bdmWorkOn && (<a
+                                href="#tabs-activity-5"
+                                onClick={() => {
+                                    setCurrentTab("TeamLeads")
+                                    window.location.pathname = `/admin/employeeleads/${id}`
+                                }}
+                                className={
+                                    currentTab === "TeamLeads"
+                                        ? "nav-link"
+                                        : "nav-link"
+                                }
+                                data-bs-toggle="tab">
+                                <Tab value={value} index={1}
+                                    label={
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                                            <span style={{ fontSize: "12px" }}>
+                                                Team Leads</span>
+                                        </div>
+                                    }
+                                    {...a11yProps(1)}
+                                /></a>)}
+                        </Tabs>
+                    </Box>
                 </div>
                 <div className="page-body" onCopy={(e) => {
                     e.preventDefault();
                 }}>
                     <div className="container-xl">
+                        <div className="row g-2 align-items-center">
+                            <div className="col-2">
+                                <div
+                                    className="form-control"
+                                    style={{ height: "fit-content", width: "auto" }}
+                                >
+                                    <select
+                                        style={{
+                                            border: "none",
+                                            outline: "none",
+                                            width: "fit-content",
+                                        }}
+                                        value={selectedField}
+                                        onChange={handleFieldChange}
+                                    >
+                                        <option value="Company Name">Company Name</option>
+                                        <option value="Company Number">Company Number</option>
+                                        <option value="Company Email">Company Email</option>
+                                        <option value="Company Incorporation Date  ">
+                                            Company Incorporation Date
+                                        </option>
+                                        <option value="City">City</option>
+                                        <option value="State">State</option>
+                                        <option value="Status">Status</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {visibility === "block" && (
+                                <div className="col-2">
+                                    <input
+                                        onChange={handleDateChange}
+                                        style={{ display: visibility }}
+                                        type="date"
+                                        className="form-control"
+                                    />
+                                </div>
+                            )}
+                            <div className="col-2">
+                                {visibilityOther === "block" && (
+                                    <div
+                                        style={{
+                                            //width: "20vw",
+                                            //margin: "0px 8px",
+                                            display: visibilityOther,
+                                        }}
+                                        className="input-icon"
+                                    >
+                                        <span className="input-icon-addon">
+                                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="icon"
+                                                width="20"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="2"
+                                                stroke="currentColor"
+                                                fill="none"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            >
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                                                <path d="M21 21l-6 -6" />
+                                            </svg>
+                                        </span>
+                                        <input
+                                            type="text"
+                                            value={searchText}
+                                            onChange={(e) => {
+                                                setSearchText(e.target.value);
+                                                setCurrentPage(0);
+                                            }}
+                                            className="form-control"
+                                            placeholder="Search…"
+                                            aria-label="Search in website"
+                                        />
+                                    </div>
+                                )}
+                                {visibilityOthernew === "block" && (
+                                    <div
+                                        style={{
+                                            //width: "20vw",
+                                            width: "120px",
+                                            // margin: "0px 8px",
+                                            display: visibilityOthernew,
+                                        }}
+                                        className="input-icon"
+                                    >
+                                        <select
+                                            value={searchText}
+                                            onChange={(e) => {
+                                                setSearchText(e.target.value);
+                                                // Set dataStatus based on selected option
+                                                if (
+                                                    e.target.value === "All" ||
+                                                    e.target.value === "Busy" ||
+                                                    e.target.value === "Not Picked Up"
+                                                ) {
+                                                    setdataStatus("All");
+                                                } else if (
+                                                    e.target.value === "Junk" ||
+                                                    e.target.value === "Not Interested"
+                                                ) {
+                                                    setdataStatus("NotInterested");
+                                                } else if (e.target.value === "Interested") {
+                                                    setdataStatus("Interested");
+                                                } else if (e.target.value === "Untouched") {
+                                                    setEmployeeData(
+                                                        moreEmpData.filter(
+                                                            (obj) => obj.Status === "Untouched"
+                                                        )
+                                                    );
+                                                }
+                                            }}
+                                            className="form-select"
+                                        >
+                                            <option value="All">All</option>
+                                            <option value="Busy">Busy</option>
+                                            <option value="Not Picked Up">Not Picked Up</option>
+                                            <option value="Junk">Junk</option>
+                                            <option value="Interested">Interested</option>
+                                            <option value="Not Interested">Not Interested</option>
+                                            <option value="Untouched">Untouched</option>
+                                        </select>
+                                    </div>
+                                )}
+                            </div>
+                            <div
+                                className="col-2"
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "7px",
+                                }}
+                            >
+                                {selectedField === "State" && (
+                                    <div style={{ marginLeft: "-16px" }} className="input-icon">
+                                        <span className="input-icon-addon">
+                                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="icon"
+                                                width="20"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="2"
+                                                stroke="currentColor"
+                                                fill="none"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            >
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                                                <path d="M21 21l-6 -6" />
+                                            </svg>
+                                        </span>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={citySearch}
+                                            onChange={(e) => {
+                                                setcitySearch(e.target.value);
+                                                setCurrentPage(0);
+                                            }}
+                                            placeholder="Search City"
+                                            aria-label="Search in website"
+                                        />
+                                    </div>
+                                )}
+                                {selectedField === "Company Incorporation Date  " && (
+                                    <>
+                                        <div
+                                            style={{ width: "fit-content" }}
+                                            className="form-control"
+                                        >
+                                            <select
+                                                style={{ border: "none", outline: "none" }}
+                                                onChange={(e) => {
+                                                    setMonth(e.target.value);
+                                                    setCurrentPage(0);
+                                                }}
+                                            >
+                                                <option value="" disabled selected>
+                                                    Select Month
+                                                </option>
+                                                <option value="12">December</option>
+                                                <option value="11">November</option>
+                                                <option value="10">October</option>
+                                                <option value="9">September</option>
+                                                <option value="8">August</option>
+                                                <option value="7">July</option>
+                                                <option value="6">June</option>
+                                                <option value="5">May</option>
+                                                <option value="4">April</option>
+                                                <option value="3">March</option>
+                                                <option value="2">February</option>
+                                                <option value="1">January</option>
+                                            </select>
+                                        </div>
+                                        <div className="input-icon form-control">
+                                            <select
+                                                select
+                                                style={{ border: "none", outline: "none" }}
+                                                value={year}
+                                                onChange={(e) => {
+                                                    setYear(e.target.value);
+                                                    setCurrentPage(0); // Reset page when year changes
+                                                }}
+                                            >
+                                                <option value="">Select Year</option>
+                                                {[...Array(15)].map((_, index) => {
+                                                    const yearValue = 2024 - index;
+                                                    return (
+                                                        <option key={yearValue} value={yearValue}>
+                                                            {yearValue}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                            <div
+                                style={{ display: "flex", justifyContent: "space-between" }}
+                                className="features"
+                            >
+                                <div style={{ display: "flex" }} className="feature1 mb-2">
+                                    {selectedRows.length !== 0 && (
+                                        <div className="form-control">
+                                            {selectedRows.length} Data Selected
+                                        </div>
+                                    )}
+                                    {searchText !== "" && (
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                fontSize: "16px",
+                                                fontFamily: "sans-serif",
+                                            }}
+                                            className="results"
+                                        >
+                                            {filteredData.length} results found
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* <!-- Page title actions --> */}
+                        </div>
+                        {/* <div class="card-header my-tab">
+                            <ul
+                                class="nav nav-tabs card-header-tabs nav-fill p-0"
+                                data-bs-toggle="tabs"
+                            >
+                                <li class="nav-item data-heading">
+                                    <a
+                                        href="#tabs-home-5"
+                                        onClick={() => {
+                                            setCurrentTab("Leads")
+                                            window.location.pathname = `/admin/employees/${id}`
+                                        }}
+                                        className={
+                                            currentTab === 'Leads'
+                                                ? "nav-link active item-act"
+                                                : "nav-link"
+                                        }
+                                        data-bs-toggle="tab"
+                                    >
+                                        Leads{" "}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a
+                                        href="#tabs-activity-5"
+                                        onClick={() => {
+                                            setCurrentTab("TeamLeads")
+                                            window.location.pathname = `/admin/employeeleads/${id}`
+                                        }}
+                                        className={
+                                            currentTab === "TeamLeads"
+                                                ? "nav-link active item-act"
+                                                : "nav-link"
+                                        }
+                                        data-bs-toggle="tab"
+                                    >
+                                        <span>Team Leads</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div> */}
                         <div class="card-header my-tab">
                             <ul class="nav nav-tabs card-header-tabs nav-fill p-0"
                                 data-bs-toggle="tabs">
@@ -1198,16 +2119,25 @@ function EmployeeTeamLeads() {
                                         className="table-vcenter table-nowrap">
                                         <thead>
                                             <tr className="tr-sticky">
+                                                <th>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={
+                                                            selectedRows.length === filteredData.length
+                                                        }
+                                                        onChange={() => handleCheckboxChange("all")}
+                                                    />
+                                                </th>
                                                 <th className="th-sticky">Sr.No</th>
                                                 <th className="th-sticky1">Company Name</th>
-                                                <th>Bde Name</th>
+                                                <th>BDE Name</th>
                                                 <th>Company Number</th>
-                                                <th>Bde Status</th>
-                                                <th>Bde Remarks</th>
+                                                <th>BDE Status</th>
+                                                <th>Remarks</th>
                                                 {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "NotInterested") && (
                                                     <>
-                                                        <th>Bdm Status</th>
-                                                        <th>Bdm Remarks</th>
+                                                        <th>BDM Status</th>
+                                                        {/* <th>BDM Remarks</th> */}
                                                     </>
                                                 )}
                                                 <th>
@@ -1219,7 +2149,7 @@ function EmployeeTeamLeads() {
                                                 <th>
                                                     Bde Forward Date
                                                 </th>
-                                                {bdmNewStatus === "Untouched" && <th>Action</th>}
+                                                {/* {bdmNewStatus === "Untouched" && <th>Action</th>} */}
                                                 {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                                                     <th>Add Projection</th>
                                                     <th>Add Feedback</th>
@@ -1228,11 +2158,41 @@ function EmployeeTeamLeads() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {teamleadsData.map((company, index) => (
+                                            {filteredData.map((company, index) => (
                                                 <tr
                                                     key={index}
+                                                    className={
+                                                        selectedRows.includes(company._id)
+                                                            ? "selected"
+                                                            : ""
+                                                    }
                                                     style={{ border: "1px solid #ddd" }}
                                                 >
+                                                    <td
+                                                        style={{
+                                                            position: "sticky",
+                                                            left: 0,
+                                                            zIndex: 1,
+                                                            background: "white",
+                                                        }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedRows.includes(
+                                                                company._id
+                                                            )}
+                                                            onChange={(e) =>
+                                                                handleCheckboxChange(company._id, e)
+                                                            }
+                                                            onMouseDown={() =>
+                                                                handleMouseDown(company._id)
+                                                            }
+                                                            onMouseEnter={() =>
+                                                                handleMouseEnter(company._id)
+                                                            }
+                                                            onMouseUp={handleMouseUp}
+                                                        />
+                                                    </td>
+
                                                     <td className="td-sticky">
                                                         {startIndex + index + 1}
                                                     </td>
@@ -1363,7 +2323,7 @@ function EmployeeTeamLeads() {
                                                                         </select>
                                                                     )}
                                                                 </td>
-                                                                <td>
+                                                                {/* <td>
                                                                     <div
                                                                         key={company._id}
                                                                         style={{
@@ -1403,7 +2363,7 @@ function EmployeeTeamLeads() {
                                                                             />
                                                                         </IconButton>
                                                                     </div>
-                                                                </td>
+                                                                </td> */}
 
                                                             </>
                                                         )}
@@ -1416,7 +2376,7 @@ function EmployeeTeamLeads() {
                                                     <td>{company["State"]}</td>
                                                     <td>{company["Company Email"]}</td>
                                                     <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                                    {
+                                                    {/* {
                                                         company.bdmStatus === "Untouched" && (
                                                             <td>
                                                                 <IconButton style={{ color: "green", marginRight: "5px", height: "25px", width: "25px" }}
@@ -1444,7 +2404,7 @@ function EmployeeTeamLeads() {
                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>
                                                             </td>
                                                         )
-                                                    }
+                                                    } */}
                                                     {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                                                         <td>
                                                             {company &&
@@ -1676,7 +2636,6 @@ function EmployeeTeamLeads() {
                         // matured={true}
                         // companysId={companyId}
                         // setDataStatus={setdataStatus}
-                      
                         setFormOpen={setFormOpen}
                         companysName={maturedBooking["Company Name"]}
                         companysEmail={maturedBooking["Company Email"]}
@@ -1713,6 +2672,7 @@ function EmployeeTeamLeads() {
                                         <div className="d-flex justify-content-between">
                                             <div className="reamrk-card-innerText">
                                                 <pre className="remark-text">{historyItem.remarks}</pre>
+                                                {historyItem.bdmName && <span>By BDM</span>}
                                             </div>
                                             {/* <div className="dlticon">
                         <DeleteIcon
@@ -1916,6 +2876,135 @@ function EmployeeTeamLeads() {
                 </DialogContent>
             </Dialog>
 
+            {/* --------------------------------dialog for assign data-------------------------------- */}
+            <Dialog
+                open={openAssign}
+                onClose={closepopupAssign}
+                fullWidth
+                maxWidth="sm">
+                <DialogTitle>
+                    Change BDM{" "}
+                    <IconButton onClick={closepopupAssign} style={{ float: "right" }}>
+                        <CloseIcon color="primary"></CloseIcon>
+                    </IconButton>{" "}
+                </DialogTitle>
+                <DialogContent>
+                    <div className="maincon">
+                        <div className="con2 d-flex">
+                            <div
+                                style={
+                                    selectedOption === "direct"
+                                        ? {
+                                            backgroundColor: "#e9eae9",
+                                            margin: "10px 10px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                        : {
+                                            backgroundColor: "white",
+                                            margin: "10px 10px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                }
+                                onClick={() => {
+                                    setSelectedOption("direct");
+                                }}
+                                className="direct form-control"
+                            >
+                                <input
+                                    type="radio"
+                                    id="direct"
+                                    value="direct"
+                                    style={{
+                                        display: "none",
+                                    }}
+                                    checked={selectedOption === "direct"}
+                                    onChange={handleOptionChange}
+                                />
+                                <label htmlFor="direct">Move In General Data</label>
+                            </div>
+                            <div
+                                style={
+                                    selectedOption === "someoneElse"
+                                        ? {
+                                            backgroundColor: "#e9eae9",
+                                            margin: "10px 0px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                        : {
+                                            backgroundColor: "white",
+                                            margin: "10px 0px 0px 0px",
+                                            cursor: "pointer",
+                                        }
+                                }
+                                className="indirect form-control"
+                                onClick={() => {
+                                    setSelectedOption("someoneElse");
+                                }}
+                            >
+                                <input
+                                    type="radio"
+                                    id="someoneElse"
+                                    value="someoneElse"
+                                    style={{
+                                        display: "none",
+                                    }}
+                                    checked={selectedOption === "someoneElse"}
+                                    onChange={handleOptionChange}
+                                />
+                                <label htmlFor="someoneElse">Assign to BDM</label>
+                            </div>
+                        </div>
+                    </div>
+                    {selectedOption === "someoneElse" && (
+                        <div>
+                            {bdmNames.length !== 0 ? (
+                                <>
+                                    <div className="dialogAssign">
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                justifyContent: "space-between",
+                                                margin: " 10px 0px 0px 0px",
+                                            }}
+                                            className="selector"
+                                        >
+                                            <label>Select an Employee</label>
+                                            <div className="form-control">
+                                                <select
+                                                    style={{
+                                                        width: "inherit",
+                                                        border: "none",
+                                                        outline: "none",
+                                                    }}
+                                                    value={newemployeeSelection}
+                                                    onChange={(e) => {
+                                                        setnewEmployeeSelection(e.target.value);
+                                                    }}
+                                                >
+                                                    <option value="Not Alloted" disabled>
+                                                        Select employee
+                                                    </option>
+                                                    {bdmNames.map((item) => (
+                                                        <option value={item}>{item}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <div>
+                                    <h1>No Employees Found</h1>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </DialogContent>
+                <button onClick={handleUploadData} className="btn btn-primary">
+                    Submit
+                </button>
+            </Dialog>
 
 
 
@@ -2201,4 +3290,4 @@ function EmployeeTeamLeads() {
     );
 }
 
-export default EmployeeTeamLeads;
+export default AdminEmployeeTeamLeads;

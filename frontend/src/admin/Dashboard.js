@@ -132,21 +132,23 @@ function Dashboard() {
       });
   };
 
-  const [employeeInfo , setEmployeeInfo] = useState([])
+  const [employeeInfo, setEmployeeInfo] = useState([])
 
   const fetchEmployeeInfo = async () => {
     fetch(`${secretKey}/einfo`)
       .then((response) => response.json())
       .then((data) => {
-        setEmployeeData(data);
-        setEmployeeDataFilter(data);
-        setEmployeeInfo(data)
+        setEmployeeData(data.filter((employee)=> employee.designation === "Sales Executive"));
+        setEmployeeDataFilter(data.filter((employee)=> employee.designation === "Sales Executive"));
+        setEmployeeInfo(data.filter((employee)=> employee.designation === "Sales Executive"))
         // setEmployeeDataFilter(data.filter)
       })
       .catch((error) => {
         console.error(`Error Fetching Employee Data `, error);
       });
   };
+
+  
   const debounceDelay = 300;
 
   // Wrap the fetch functions with debounce
@@ -474,7 +476,7 @@ function Dashboard() {
   };
 
 
-  
+
 
 
   const handleFilterBranchOffice = (branchName) => {
@@ -484,20 +486,20 @@ function Dashboard() {
 
       setfollowDataToday(followData);
       setEmployeeData(employeeDataFilter)
-      
+
     } else {
-      console.log("yahan chala")
+      //console.log("yahan chala")
       const filteredFollowData = followData.filter((obj) =>
         employeeData.some((empObj) => empObj.branchOffice === branchName && empObj.ename === obj.ename)
       );
 
       const filteredemployeedata = employeeInfo.filter(obj=>obj.branchOffice === branchName)
-  
+
 
       setfollowDataToday(filteredFollowData);
       setEmployeeData(filteredemployeedata)
 
-      console.log(filteredemployeedata)
+      //console.log(filteredemployeedata)
     }
   };
 
@@ -4731,87 +4733,112 @@ function Dashboard() {
                         {/* <th>Est. Payment Date</th> */}
                       </tr>
                     </thead>
-                    {sortedData && sortedData.length !== 0 ? (
-                      <tbody>
-                        {sortedData.map((obj, index) => (
-                          <tr key={`row-${index}`}>
-                            <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                            <td>{obj}</td>
-                            <td>
-                              {
-                                followDataToday.filter(
-                                  (partObj) => partObj.ename === obj
-                                ).length
-                              }
-                              <FcDatabase
-                                onClick={() => {
-                                  functionOpenProjectionTable(obj);
-                                }}
-                                style={{
-                                  cursor: "pointer",
-                                  marginRight: "-71px",
-                                  marginLeft: "58px",
-                                }}
-                              />
-                            </td>
-                            <td>
-                              {followDataToday.reduce(
-                                (totalServices, partObj) => {
-                                  if (partObj.ename === obj) {
-                                    totalServices +=
-                                      partObj.offeredServices.length;
-                                  }
-                                  return totalServices;
-                                },
-                                0
-                              )}
-                            </td>
-                            <td>
-                              {followDataToday
-                                .reduce((totalOfferedPrize, partObj) => {
-                                  if (partObj.ename === obj) {
-                                    totalOfferedPrize += partObj.offeredPrize;
-                                  }
-                                  return totalOfferedPrize;
-                                }, 0)
-                                .toLocaleString("en-IN", numberFormatOptions)}
-                            </td>
-                            <td>
-                              {followDataToday
-                                .reduce((totalPaymentSum, partObj) => {
-                                  if (partObj.ename === obj) {
-                                    totalPaymentSum += partObj.totalPayment;
-                                  }
-                                  return totalPaymentSum;
-                                }, 0)
-                                .toLocaleString("en-IN", numberFormatOptions)}
-                            </td>
-                          </tr>
-                        ))}
-                        {/* Map employeeData with default fields */}
-                        {employeeData
-                          .filter((employee) => !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
-                          .map((employee, index) => (
-                            <tr key={`employee-row-${index}`}>
-                              <td style={{ lineHeight: "32px" }}>{sortedData.length + index + 1}</td>
-                              <td>{employee.ename}</td>
-                              <td>0 <FcDatabase
-                                onClick={() => {
-                                  functionOpenProjectionTable(employee.ename);
-                                }}
-                                style={{
-                                  cursor: "pointer",
-                                  marginRight: "-71px",
-                                  marginLeft: "58px",
-                                }}
-                              /></td>
-                              <td>0</td>
-                              <td>0</td>
-                              <td>0</td>
+                    <tbody>
+                      {sortedData && sortedData.length !== 0 ? (
+                        <>
+                          {sortedData.map((obj, index) => (
+                            <tr key={`row-${index}`}>
+                              <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                              <td>{obj}</td>
+                              <td>
+                                {
+                                  followDataToday.filter(
+                                    (partObj) => partObj.ename === obj
+                                  ).length
+                                }
+                                <FcDatabase
+                                  onClick={() => {
+                                    functionOpenProjectionTable(obj);
+                                  }}
+                                  style={{
+                                    cursor: "pointer",
+                                    marginRight: "-71px",
+                                    marginLeft: "58px",
+                                  }}
+                                />
+                              </td>
+                              <td>
+                                {followDataToday.reduce(
+                                  (totalServices, partObj) => {
+                                    if (partObj.ename === obj) {
+                                      totalServices += partObj.offeredServices.length;
+                                    }
+                                    return totalServices;
+                                  },
+                                  0
+                                )}
+                              </td>
+                              <td>
+                                {followDataToday
+                                  .reduce((totalOfferedPrize, partObj) => {
+                                    if (partObj.ename === obj) {
+                                      totalOfferedPrize += partObj.offeredPrize;
+                                    }
+                                    return totalOfferedPrize;
+                                  }, 0)
+                                  .toLocaleString("en-IN", numberFormatOptions)}
+                              </td>
+                              <td>
+                                {followDataToday
+                                  .reduce((totalPaymentSum, partObj) => {
+                                    if (partObj.ename === obj) {
+                                      totalPaymentSum += partObj.totalPayment;
+                                    }
+                                    return totalPaymentSum;
+                                  }, 0)
+                                  .toLocaleString("en-IN", numberFormatOptions)}
+                              </td>
                             </tr>
                           ))}
-                      </tbody>
-                    ) : null}
+                          {/* Map employeeData with default fields */}
+                          {employeeData
+                            .filter((employee) =>(employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
+                            .map((employee, index) => (
+                              <tr key={`employee-row-${index}`}>
+                                <td style={{ lineHeight: "32px" }}>{sortedData.length + index + 1}</td>
+                                <td>{employee.ename}</td>
+                                <td>0 <FcDatabase
+                                  onClick={() => {
+                                    functionOpenProjectionTable(employee.ename);
+                                  }}
+                                  style={{
+                                    cursor: "pointer",
+                                    marginRight: "-71px",
+                                    marginLeft: "58px",
+                                  }}
+                                /></td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                              </tr>
+                            ))}
+                        </>
+                      ) : (
+                        employeeData
+                          .filter((employee) => !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
+                          .map((employee, index) => (
+                           
+                              <tr key={`employee-row-${index}`}>
+                                <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                                <td>{employee.ename}</td>
+                                <td>0 <FcDatabase
+                                  onClick={() => {
+                                    functionOpenProjectionTable(employee.ename);
+                                  }}
+                                  style={{
+                                    cursor: "pointer",
+                                    marginRight: "-71px",
+                                    marginLeft: "58px",
+                                  }}
+                                /></td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                              </tr>
+                           
+                          ))
+                      )}
+                    </tbody>
 
 
 
@@ -4875,7 +4902,7 @@ function Dashboard() {
                       </tfoot>
                     )}
 
-                    {sortedData && sortedData.length === 0 && (
+                    {/* {sortedData && sortedData.length === 0 && (
                       <tbody>
                         <tr>
                           <td className="particular" colSpan={9}>
@@ -4883,7 +4910,7 @@ function Dashboard() {
                           </td>
                         </tr>
                       </tbody>
-                    )}
+                    )} */}
                   </table>
                 </div>
               </div>
