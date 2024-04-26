@@ -93,6 +93,10 @@ const CompanySchema = new mongoose.Schema({
   },
   UploadedBy:{
     type:String
+  },
+  bdmName:{
+    type :String,
+    default:"NoOne"
   }
 
 });
