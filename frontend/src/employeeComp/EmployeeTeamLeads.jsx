@@ -201,14 +201,14 @@ function EmployeeTeamLeads() {
         }
     }
 
-    useEffect(() => {
-        if (teamData.length !== 0 && BDMrequests) {
-            const companyName = BDMrequests["Company Name"];
-            const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
-            setMaturedBooking(currentObject);
-            console.log("Current Booking:", currentObject);
-        }
-    }, [teamData, BDMrequests]);
+    // useEffect(() => {
+    //     if (teamData.length !== 0 && BDMrequests) {
+    //         const companyName = BDMrequests["Company Name"];
+    //         const currentObject = teamData.find(obj => obj["Company Name"] === companyName);
+    //         setMaturedBooking(currentObject);
+    //         console.log("Current Booking:", currentObject);
+    //     }
+    // }, [teamData, BDMrequests]);
 
 
     console.log("teamdata", teamleadsData)
@@ -596,40 +596,44 @@ function EmployeeTeamLeads() {
 
 
             } else {
+                const currentObject = teamData.find(obj => obj["Company Name"] === cname);
+                setMaturedBooking(currentObject);
+                setFormOpen(true)
+
                 // Use SweetAlert to confirm the "Matured" status
-                const requestData = {
-                    companyName: cname,
-                    requestStatus: "Pending",
-                    bdeName: bdeName,
-                    bdmName: data.ename,
-                    date: new Date(),
-                    time: new Date().toLocaleTimeString(), // Assuming you want the current time
-                };
+                // const requestData = {
+                //     companyName: cname,
+                //     requestStatus: "Pending",
+                //     bdeName: bdeName,
+                //     bdmName: data.ename,
+                //     date: new Date(),
+                //     time: new Date().toLocaleTimeString(), // Assuming you want the current time
+                // };
 
                 // Make API call to send the request
-                axios
-                    .post(`${secretKey}/matured-case-request`, requestData)
-                    .then((response) => {
-                        if (response.status === 200) {
-                            // Assuming fetchData is a function to fetch updated employee data
-                            fetchTeamLeadsData(bdmnewstatus);
-                            setBdmNewStatus(bdmnewstatus);
-                            setTeamLeadsData(
-                                teamData.filter((obj) => obj.bdmStatus === bdmnewstatus)
-                            );
-                            Swal.fire(
-                                "Request Sent",
-                                "Request has been successfully sent to the BDE",
-                                "success"
-                            );
-                        } else {
-                            Swal.fire("Error", "Failed to sent Request", "error");
-                            console.error("Failed to update status:", response.data.message);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Error sending request to backend:", error);
-                    });
+                // axios
+                //     .post(`${secretKey}/matured-case-request`, requestData)
+                //     .then((response) => {
+                //         if (response.status === 200) {
+                //             // Assuming fetchData is a function to fetch updated employee data
+                //             fetchTeamLeadsData(bdmnewstatus);
+                //             setBdmNewStatus(bdmnewstatus);
+                //             setTeamLeadsData(
+                //                 teamData.filter((obj) => obj.bdmStatus === bdmnewstatus)
+                //             );
+                //             Swal.fire(
+                //                 "Request Sent",
+                //                 "Request has been successfully sent to the BDE",
+                //                 "success"
+                //             );
+                //         } else {
+                //             Swal.fire("Error", "Failed to sent Request", "error");
+                //             console.error("Failed to update status:", response.data.message);
+                //         }
+                //     })
+                //     .catch((error) => {
+                //         console.error("Error sending request to backend:", error);
+                //     });
             }
             // Make an API call to update the employee status in the database
 
@@ -1672,6 +1676,7 @@ function EmployeeTeamLeads() {
                         // matured={true}
                         // companysId={companyId}
                         // setDataStatus={setdataStatus}
+                      
                         setFormOpen={setFormOpen}
                         companysName={maturedBooking["Company Name"]}
                         companysEmail={maturedBooking["Company Email"]}

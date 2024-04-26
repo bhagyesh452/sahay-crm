@@ -6536,9 +6536,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         },
         { new: true }
       );
-      await RequestMaturedModel.findOneAndDelete({
-        "Company Name": teamData["Company Name"],
-      });
+     
     }
 
     const totalAmount = newData.services.reduce(
@@ -6777,8 +6775,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const recipients = [
       newData.bdeEmail,
       newData.bdmEmail,
-      "bookings@startupsahay.com",
-      "documents@startupsahay.com",
+      // "bookings@startupsahay.com",
+      // "documents@startupsahay.com",
       
     ];
     const serviceNames = newData.services
