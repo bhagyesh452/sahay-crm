@@ -902,11 +902,84 @@ export default function EditableMoreBooking({
   //     console.error("Error sending data to backend:", error);
   //     // Handle error if needed
   //   }
-
+    if(activeStep === 2){
+      console.log("2nd step chala")
+      setLeadData((prevState) => ({
+        ...prevState,
+       receivedAmount : parseInt( leadData.services
+       .reduce(
+         (total, service) =>
+           service.paymentTerms ===
+           "Full Advanced"
+             ? total +
+               Number(
+                 service.totalPaymentWGST
+               )
+             : total +
+               Number(
+                 service.firstPayment
+               ),
+         0
+       ))
+       .toFixed(2) ,
+       pendingAmount:parseInt(leadData.services
+       .reduce(
+         (total, service) =>
+           service.paymentTerms ===
+           "Full Advanced"
+             ? total + 0
+             : total +
+               Number(
+                 service.totalPaymentWGST
+               ) -
+               Number(
+                 service.firstPayment
+               ),
+         0
+       ))
+       .toFixed(2)
+      
+      }));
+    
+    }
   if(activeStep===4 && !isAdmin){
 
     console.log("Data sending to change:-", leadData);
-    const dataToSend = {...leadData, requestBy:employeeName , bookingSource:selectedValues }
+    const dataToSend = {...leadData, requestBy:employeeName , bookingSource:selectedValues,  receivedAmount : parseInt( leadData.services
+      .reduce(
+        (total, service) =>
+          service.paymentTerms ===
+          "Full Advanced"
+            ? total +
+              Number(
+                service.totalPaymentWGST
+              )
+            : total +
+              Number(
+                service.firstPayment
+              ),
+        0
+      ))
+      .toFixed(2) ,
+      pendingAmount:parseInt(leadData.services
+        .reduce(
+          (total, service) =>
+            service.paymentTerms ===
+            "Full Advanced"
+              ? total + 0
+              : total +
+                Number(
+                  service.totalPaymentWGST
+                ) -
+                Number(
+                  service.firstPayment
+                ),
+          0
+        ))
+        .toFixed(2) , 
+      totalAmount : parseInt(leadData.services.reduce((total,service)=>
+    total + Number(service.totalPaymentWGST)
+    )) }
     
     try {
       const response = await axios.post(`${secretKey}/edit-moreRequest/${companysName}/${bookingIndex}`, dataToSend);
