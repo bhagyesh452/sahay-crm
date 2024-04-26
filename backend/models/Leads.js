@@ -85,8 +85,12 @@ const CompanySchema = new mongoose.Schema({
   bdeOldStatus:{
     type:String
   },
-  feedbackPoints:{
-    type:Number
+  // feedbackPoints:{
+  //   type:Number
+  // },
+  feedbackPoints: {
+    type:Array, // Define feedbackPoints as an array of numbers
+    // Default array with five elements initialized to 0
   },
   feedbackRemarks:{
     type:String
@@ -97,6 +101,9 @@ const CompanySchema = new mongoose.Schema({
   bdmName:{
     type :String,
     default:"NoOne"
+  },
+  bdeNextFollowUpDate:{
+    type: Date
   }
 
 });

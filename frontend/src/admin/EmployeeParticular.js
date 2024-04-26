@@ -994,7 +994,13 @@ function EmployeeParticular() {
 
   console.log(value)
 
-
+  function formatDateNow(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  }
 
 
 
@@ -1873,6 +1879,7 @@ function EmployeeParticular() {
                           <th className="th-sticky1">Company Name</th>
                           <th>Company Number</th>
                           <th>Status</th>
+                          {dataStatus === "FollowUp" && <th>Next FollowUp Date</th>}
                           {dataStatus === "Forwarded" && <th>Bdm Status</th>}
                           <th>Remarks</th>
 
@@ -2055,6 +2062,7 @@ function EmployeeParticular() {
                                   <td>
                                     <span>{company["Status"]}</span>
                                   </td>
+                                  {dataStatus === "FollowUp" && (<td>{formatDateNew(company.bdeNextFollowUpDate)}</td>)}
                                   {dataStatus === "Forwarded" && (
                                     <td>
                                       {company.Status === "Interested" && (

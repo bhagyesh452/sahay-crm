@@ -1601,4 +1601,6 @@ color: #4e884e;
 .feedback-slider{
   z-index: 9999;
 }
-
+.hide-placeholder::-webkit-input-placeholder {
+  color: transparent !important;
+}
