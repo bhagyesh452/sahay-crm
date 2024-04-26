@@ -2339,10 +2339,11 @@ function EmployeePanel() {
         companyId: forwardCompanyId,
         bdmAcceptStatus: bdmNewAcceptStatus,
         bdeForwardDate: new Date(),
-        bdeOldStatus: bdeOldStatus, // Assuming bdmName is defined elsewhere in your component
+        bdeOldStatus: bdeOldStatus,
+                          // Assuming bdmName is defined elsewhere in your component
       });
       Swal.fire('Company Forwarded', '', 'success');
-      //setdataStatus("Forwarded");
+      //setdataStatus("Forwarded"); 
       console.log("bdeoldstatus", bdeOldStatus)
       fetchNewData(bdeOldStatus)
       closeBdmNamePopup()
@@ -2376,7 +2377,8 @@ function EmployeePanel() {
     companyId,
     companyName,
     bdmAcceptStatus,
-    empStatus
+    empStatus,
+    bdmName
   ) => {
     if (bdmAcceptStatus === "Pending") {
       try {
@@ -2384,7 +2386,8 @@ function EmployeePanel() {
           `${secretKey}/teamleads-reversedata/${companyId}`,
           {
             companyName,
-            bdmAcceptStatus: "NotForwarded", // Corrected parameter name
+            bdmAcceptStatus: "NotForwarded",
+            bdmName:"NoOne" // Corrected parameter name
           }
         );
         // console.log("response", response.data);
@@ -3601,9 +3604,10 @@ function EmployeePanel() {
                                 <th>Add Projection</th>
                               ))}
 
-                            {dataStatus === "Forwarded" && (
+                            {dataStatus === "Forwarded" && (<>
+                              <th>BDM Name</th>
                               <th>Forwarded Date</th>
-                            )}
+                          </>  )}
 
                             {(dataStatus === "Forwarded" ||
                               dataStatus === "Interested" ||
@@ -3979,9 +3983,10 @@ function EmployeePanel() {
                                       </td>
                                     </>
                                   )}
-                                {dataStatus === "Forwarded" && (
+                                {dataStatus === "Forwarded" && (<>
+                                  {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) :(<td></td>)}
                                   <td>{formatDateNew(company.bdeForwardDate)}</td>
-                                )}
+                               </> )}
                                 {/* {dataStatus === "Forwarded" && (
                                   <td>
                                     {company.bdmAcceptStatus ===
@@ -4035,6 +4040,7 @@ function EmployeePanel() {
                                               company["Company Name"],
                                               company.bdmAcceptStatus,
                                               company.Status,
+                                              company.bdmName
                                             )
                                           }}
                                           style={{

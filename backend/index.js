@@ -930,7 +930,7 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
     companyId,
     bdmAcceptStatus,
     bdeForwardDate,
-    bdeOldStatus,
+    bdeOldStatus
   } = req.body;
   //console.log("selectedData", selectedData);
 
@@ -942,7 +942,7 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
       return await TeamLeadsModel.create(newData);
     }));
 
-    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus , bdeForwardDate:new Date(bdeForwardDate) , bdeOldStatus : bdeOldStatus})
+    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus , bdeForwardDate:new Date(bdeForwardDate) , bdeOldStatus : bdeOldStatus , bdmName:bdmName})
     
     
     //console.log("newLeads", newLeads);
@@ -1010,13 +1010,14 @@ app.post("/api/bdm-status-change/:id", async (req, res) => {
 
 app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
-  const { companyName, bdmAcceptStatus } = req.body;
+  const { companyName, bdmAcceptStatus , bdmName } = req.body;
   try {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
 
-    await CompanyModel.findByIdAndUpdate(id, {
+    await CompanyModel.findByIdAndUpdate(id, { 
       bdmAcceptStatus: bdmAcceptStatus,
+      bdmName : bdmName
     }); // Corrected update
 
     res.status(200).json({ message: "Status updated successfully" });
@@ -1674,7 +1675,7 @@ app.post("/api/assign-leads-newbdm", async (req, res) => {
         
       };
   
-      console.log("updated" , updatedObj)
+      //console.log("updated" , updatedObj)
   
       // Update TeamLeadsModel for the specific data
       await TeamLeadsModel.updateOne({ _id: data._id }, updatedObj);
@@ -1697,7 +1698,7 @@ app.post("/api/assign-leads-newbdm", async (req, res) => {
         bdmAcceptStatus : bdmAcceptStatus
         
       };
-      console.log("updated" , updatedObj)
+      //console.log("updated" , updatedObj)
       // Delete the record from TeamLeadsModel
       await TeamLeadsModel.findByIdAndDelete({_id: data._id});
 
