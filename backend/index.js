@@ -6537,9 +6537,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         },
         { new: true }
       );
-      await RequestMaturedModel.findOneAndDelete({
-        "Company Name": teamData["Company Name"],
-      });
+     
     }
 
     const totalAmount = newData.services.reduce(
@@ -7764,15 +7762,24 @@ upload.fields([
   }
 });
 app.put(
-  "/api/update-more-booking/:companyName/:bookingIndex",
+  "/api/update-more-booking/:CompanyName/:bookingIndex",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 1 },
+  ]),
   async (req, res) => {
     try {
-      const { companyName, bookingIndex } = req.params;
-      const newData = req.body;
+      const { CompanyName, bookingIndex } = req.params;
+      const {otherDocs,paymentReceipt ,step4changed,...newData} = req.body;
+  
+      const newOtherDocs = req.files["otherDocs"] || []; 
+      const newPaymentReceipt = req.files["paymentReceipt"] || [];
+      const latestData = {...newData , otherDocs:newOtherDocs , paymentReceipt:newPaymentReceipt }
 
+      const dataToSend = step4changed === "true" ? latestData : newData
       // Find the document by companyName
       const existingDocument = await RedesignedLeadformModel.findOne({
-        "Company Name": companyName,
+        "Company Name": CompanyName,
       });
 
       if (!existingDocument) {
@@ -7780,12 +7787,12 @@ app.put(
       }
 
       // Update the booking in moreBookings array at the specified index
-      existingDocument.moreBookings[bookingIndex - 1] = newData;
+      existingDocument.moreBookings[bookingIndex - 1] = dataToSend;
 
       // Save the updated document
       const updatedDocument = await existingDocument.save();
       const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-        "Company Name": companyName,
+        "Company Name": CompanyName,
       });
 
       res.status(200).json(updatedDocument);
