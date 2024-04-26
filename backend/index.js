@@ -50,6 +50,7 @@ const crypto = require("crypto");
 const TeamModel = require("./models/TeamModel.js");
 const TeamLeadsModel = require("./models/TeamLeads.js");
 const RequestMaturedModel = require("./models/RequestMatured.js");
+const InformBDEModel = require("./models/InformBDE.js");
 // const { Cashfree } = require('cashfree-pg');
 
 // const http = require('http');
@@ -5491,9 +5492,22 @@ app.post("/api/matured-case-request", async (req, res) => {
   }
 });
 
-app.get("/api/matured-get-requests", async (req, res) => {
+// app.get("/api/matured-get-requests", async (req, res) => {
+//   try {
+//     const request = await RequestMaturedModel.find();
+//     res.status(200).json(request);
+//   } catch (error) {
+//     res
+//       .status(400)
+//       .json({ success: false, message: "Error fetching the data" });
+//   }
+// });
+app.get("/api/inform-bde-requests/:bdeName", async (req, res) => {
   try {
-    const request = await RequestMaturedModel.find();
+    const bdeName = req.params.bdeName;
+    const request = await InformBDEModel.find({
+      bdeName
+    });
     res.status(200).json(request);
   } catch (error) {
     res
@@ -5561,21 +5575,39 @@ app.post("/api/update-bdm-Request/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-app.delete("/api/delete-bdm-Request/:id", async (req, res) => {
+// app.delete("/api/delete-bdm-Request/:id", async (req, res) => {
+//   try {
+//     const _id = req.params.id;
+
+//     // Find the BDM request by ID and delete it
+//     const deletedRequest = await RequestMaturedModel.findByIdAndDelete(_id);
+//     const changeStatus = await TeamLeadsModel.findOneAndUpdate(
+//       {
+//         "Company Name": deletedRequest["Company Name"],
+//       },
+//       {
+//         bdmOnRequest: false,
+//       },
+//       { new: true }
+//     );
+
+//     if (!deletedRequest) {
+//       return res.status(404).json({ message: "BDM request not found" });
+//     }
+
+//     res.status(200).json({ message: "BDM request deleted successfully" });
+//   } catch (error) {
+//     console.error("Error deleting BDM request:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
+app.delete("/api/delete-inform-Request/:id", async (req, res) => {
   try {
     const _id = req.params.id;
 
     // Find the BDM request by ID and delete it
-    const deletedRequest = await RequestMaturedModel.findByIdAndDelete(_id);
-    const changeStatus = await TeamLeadsModel.findOneAndUpdate(
-      {
-        "Company Name": deletedRequest["Company Name"],
-      },
-      {
-        bdmOnRequest: false,
-      },
-      { new: true }
-    );
+    const deletedRequest = await InformBDEModel.findByIdAndDelete(_id);
+  
 
     if (!deletedRequest) {
       return res.status(404).json({ message: "BDM request not found" });
@@ -6536,6 +6568,13 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         },
         { new: true }
       );
+      const date = new Date()
+      await InformBDEModel.create({
+        bdeName : teamData.ename,
+        bdmName : teamData.bdmName,
+        "Company Name": teamData["Company Name"],
+        date:date
+      })
      
     }
 
@@ -6775,8 +6814,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const recipients = [
       newData.bdeEmail,
       newData.bdmEmail,
-      // "bookings@startupsahay.com",
-      // "documents@startupsahay.com",
+      "bookings@startupsahay.com",
+      "documents@startupsahay.com",
       
     ];
     const serviceNames = newData.services

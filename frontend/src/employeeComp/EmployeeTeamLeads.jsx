@@ -102,6 +102,8 @@ function EmployeeTeamLeads() {
     const [data, setData] = useState([])
     const [dataStatus, setdataStatus] = useState("All");
     const [currentPage, setCurrentPage] = useState(0);
+    const [sortStatus, setSortStatus] = useState("");
+    const [selectedField, setSelectedField] = useState("Company Name");
     const [formOpen, setFormOpen] = useState(false);
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
@@ -116,6 +118,8 @@ function EmployeeTeamLeads() {
     const [openRemarks, setOpenRemarks] = useState(false)
     const [remarksHistory, setRemarksHistory] = useState([]);
     const [filteredRemarks, setFilteredRemarks] = useState([]);
+    const [maturedID, setMaturedID] = useState("");
+    const [currentForm, setCurrentForm] = useState(null);
     const [cid, setcid] = useState("");
     const [cstat, setCstat] = useState("");
     const [currentCompanyName, setCurrentCompanyName] = useState("");
@@ -126,6 +130,14 @@ function EmployeeTeamLeads() {
     const [changeRemarks, setChangeRemarks] = useState("");
     const [updateData, setUpdateData] = useState({});
     const [projectionData, setProjectionData] = useState([]);
+    const [searchText, setSearchText] = useState("");
+    const [citySearch, setcitySearch] = useState("");
+    const [visibility, setVisibility] = useState("none");
+    const [visibilityOther, setVisibilityOther] = useState("block");
+    const [visibilityOthernew, setVisibilityOthernew] = useState("none");
+    const [subFilterValue, setSubFilterValue] = useState("");
+    const [month, setMonth] = useState(0);
+    const [year, setYear] = useState(0);
 
 
 
@@ -733,6 +745,28 @@ function EmployeeTeamLeads() {
             setOpenAnchor(true);
         }, 1000);
     };
+    const closeAnchor = () => {
+        setOpenAnchor(false);
+      };
+      const fetchRedesignedFormData = async () => {
+        try {
+          console.log(maturedID);
+          const response = await axios.get(
+            `${secretKey}/redesigned-final-leadData`
+          );
+          const data = response.data.find((obj) => obj.company === maturedID);
+          console.log(data);
+          setCurrentForm(data);
+        } catch (error) {
+          console.error("Error fetching data:", error.message);
+        }
+      };
+      useEffect(() => {
+        console.log("Matured ID Changed", maturedID);
+        if (maturedID) {
+          fetchRedesignedFormData();
+        }
+      }, [maturedID]);
 
     const handleDelete = async (company) => {
         const companyName = company;
@@ -924,7 +958,98 @@ function EmployeeTeamLeads() {
 
     }
 
+  //  ----------------------------------------  Filterization Process ---------------------------------------------
 
+  const handleFieldChange = (event) => {
+    if (
+      event.target.value === "Company Incorporation Date  " ||
+      event.target.value === "AssignDate"
+    ) {
+      setSelectedField(event.target.value);
+      setVisibility("block");
+      setVisibilityOther("none");
+      setSubFilterValue("");
+      setVisibilityOthernew("none");
+    } else if (event.target.value === "Status") {
+      setSelectedField(event.target.value);
+      setVisibility("none");
+      setVisibilityOther("none");
+      setSubFilterValue("");
+      setVisibilityOthernew("block");
+    } else {
+      setSelectedField(event.target.value);
+      setVisibility("none");
+      setVisibilityOther("block");
+      setSubFilterValue("");
+      setVisibilityOthernew("none");
+    }
+
+    //console.log(selectedField);
+  };
+
+  const handleDateChange = (e) => {
+    const dateValue = e.target.value;
+    setCurrentPage(0);
+
+    // Check if the dateValue is not an empty string
+    if (dateValue) {
+      const dateObj = new Date(dateValue);
+      const formattedDate = dateObj.toISOString().split("T")[0];
+      setSearchText(formattedDate);
+    } else {
+      // Handle the case when the date is cleared
+      setSearchText("");
+    }
+  };
+
+  const filteredData = teamleadsData.filter((company) => {
+    const fieldValue = company[selectedField];
+
+    if (selectedField === "State" && citySearch) {
+      // Handle filtering by both State and City
+      const stateMatches = fieldValue
+        .toLowerCase()
+        .includes(searchText.toLowerCase());
+      const cityMatches = company.City.toLowerCase().includes(
+        citySearch.toLowerCase()
+      );
+      return stateMatches && cityMatches;
+    } else if (selectedField === "Company Incorporation Date  ") {
+      // Assuming you have the month value in a variable named `month`
+      if (month == 0) {
+        return fieldValue.includes(searchText);
+      } else if (year == 0) {
+        return fieldValue.includes(searchText);
+      }
+      const selectedDate = new Date(fieldValue);
+      const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+      const selectedYear = selectedDate.getFullYear();
+
+      // Use the provided month variable in the comparison
+      return (
+        selectedMonth.toString().includes(month) &&
+        selectedYear.toString().includes(year)
+      );
+    } else if (selectedField === "AssignDate") {
+      // Assuming you have the month value in a variable named `month`
+      return fieldValue.includes(searchText);
+    } else if (selectedField === "Status" && searchText === "All") {
+      // Display all data when Status is "All"
+      return true;
+    } else {
+      // Your existing filtering logic for other fields
+      if (typeof fieldValue === "string") {
+        return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+      } else if (typeof fieldValue === "number") {
+        return fieldValue.toString().includes(searchText);
+      } else if (fieldValue instanceof Date) {
+        // Handle date fields
+        return fieldValue.includes(searchText);
+      }
+
+      return false;
+    }
+  });
 
 
 
@@ -972,24 +1097,458 @@ function EmployeeTeamLeads() {
                         </DialogContent>
                     </Dialog>
                 )}
-                <div className="page-header d-print-none">
+                {/* <div className="page-header d-print-none">
                     <div className="container-xl">
                         <div className="row">
                             <div className="col-sm-3">
                                 <div class="input-icon">
                                     <span class="input-icon-addon">
-                                        {/* <CiSearch /> */}
+                                        {/* <CiSearch /> 
                                     </span>
                                     <input type="text" value="" class="form-control" placeholder="Search…" aria-label="Search in website" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
+               
                 <div className="page-body" onCopy={(e) => {
                     e.preventDefault();
                 }}>
                     <div className="container-xl">
+                         {/*  ----------------------------------------- Filter Starts from here...  ----------------------------------------------- */}
+                <div className="row g-2 align-items-center mb-2">
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}
+                    className="features"
+                  >
+                    <div style={{ display: "flex" }} className="feature1">
+                      {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
+                        Gmail SignIn
+                    </button>
+                    <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
+                      <DialogTitle>
+                      <h1>Login Page</h1>
+                      </DialogTitle>
+                      <DialogContent>
+                      <div className="sign-in-google">
+
+                           <p>Please sign in with your Google account.</p>
+                          <button onClick={handleGoogleLogin} >Sign in with Google</button>
+                               </div>
+                      </DialogContent>
+
+                    </Dialog> */}
+
+                      <div
+                        className="form-control"
+                        style={{ height: "fit-content", width: "auto" }}
+                      >
+                        <select
+                          style={{
+                            border: "none",
+                            outline: "none",
+                            width: "fit-content",
+                          }}
+                          value={selectedField}
+                          onChange={handleFieldChange}
+                        >
+                          <option value="Company Name">Company Name</option>
+                          <option value="Company Number">Company Number</option>
+                          <option value="Company Email">Company Email</option>
+                          <option value="Company Incorporation Date  ">
+                            Company Incorporation Date
+                          </option>
+                          <option value="City">City</option>
+                          <option value="State">State</option>
+                          <option value="Status">Status</option>
+                          <option value="AssignDate">Assigned Date</option>
+                        </select>
+                      </div>
+                      {visibility === "block" && (
+                        <div>
+                          <input
+                            onChange={handleDateChange}
+                            style={{
+                              display: visibility,
+                              width: "83%",
+                              marginLeft: "10px",
+                            }}
+                            type="date"
+                            className="form-control"
+                          />
+                        </div>
+                      )}
+
+                      {visibilityOther === "block" ? (
+                        <div
+                          style={{
+                            //width: "20vw",
+                            margin: "0px 0px 0px 9px",
+                            display: visibilityOther,
+                          }}
+                          className="input-icon"
+                        >
+                          <span className="input-icon-addon">
+                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="icon"
+                              width="20"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              stroke-width="2"
+                              stroke="currentColor"
+                              fill="none"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            >
+                              <path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                              />
+                              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                              <path d="M21 21l-6 -6" />
+                            </svg>
+                          </span>
+                          <input
+                            type="text"
+                            value={searchText}
+                            onChange={(e) => {
+                              setSearchText(e.target.value);
+                              setCurrentPage(0);
+                            }}
+                            className="form-control"
+                            placeholder="Search…"
+                            aria-label="Search in website"
+                            style={{ width: "60%" }}
+                          />
+                        </div>
+                      ) : (
+                        <div></div>
+                      )}
+                      {visibilityOthernew === "block" ? (
+                        <div
+                          style={{
+                            //width: "20vw",
+                            margin: "0px 0px 0px 9px",
+                            display: visibilityOthernew,
+                          }}
+                          className="input-icon"
+                        >
+                          <select
+                            value={searchText}
+                            onChange={(e) => {
+                              setSearchText(e.target.value);
+                              // Set dataStatus based on selected option
+                              if (
+                                e.target.value === "All" ||
+                                e.target.value === "Busy" ||
+                                e.target.value === "Not Picked Up"
+                              ) {
+                                setdataStatus("All");
+                                setTeamLeadsData(
+                                  teamData.filter(
+                                    (obj) =>
+                                      obj.Status === "Busy" ||
+                                      obj.Status === "Not Picked Up" ||
+                                      obj.Status === "Untouched"
+                                  )
+                                );
+                              } else if (
+                                e.target.value === "Junk" ||
+                                e.target.value === "Not Interested"
+                              ) {
+                                setdataStatus("NotInterested");
+                                setTeamLeadsData(
+                                  teamData.filter(
+                                    (obj) =>
+                                      obj.Status === "Not Interested" ||
+                                      obj.Status === "Junk"
+                                  )
+                                );
+                              } else if (e.target.value === "Interested") {
+                                setdataStatus("Interested");
+                                setTeamLeadsData(
+                                  teamData.filter(
+                                    (obj) => obj.Status === "Interested"
+                                  )
+                                );
+                              } else if (e.target.value === "Untouched") {
+                                setdataStatus("All");
+                                setTeamLeadsData(
+                                  teamData.filter(
+                                    (obj) => obj.Status === "Untouched"
+                                  )
+                                );
+                              }
+                            }}
+                            className="form-select"
+                          >
+                            <option value="All">All </option>
+                            <option value="Busy">Busy </option>
+                            <option value="Not Picked Up">
+                              Not Picked Up{" "}
+                            </option>
+                            <option value="Junk">Junk</option>
+                            <option value="Interested">Interested</option>
+                            <option value="Not Interested">
+                              Not Interested
+                            </option>
+                            <option value="Untouched">Untouched</option>
+                          </select>
+                        </div>
+                      ) : (
+                        <div></div>
+                      )}
+                      {searchText !== "" && (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "end",
+                            fontsize: "10px",
+                            fontfamily: "Poppins",
+                            //marginLeft: "-70px"
+                          }}
+                          className="results"
+                        >
+                          {filteredData.length} results found
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      style={{ display: "flex", alignItems: "center" }}
+                      className="feature2"
+                    >
+                      <div
+                        className="form-control mr-1 sort-by"
+                        style={{ width: "190px" }}
+                      >
+                        <label htmlFor="sort-by">Sort By:</label>
+                        <select
+                          style={{
+                            border: "none",
+                            outline: "none",
+                            color: "#666a66",
+                          }}
+                          name="sort-by"
+                          id="sort-by"
+                          onChange={(e) => {
+                            setSortStatus(e.target.value);
+                            const selectedOption = e.target.value;
+
+                            switch (selectedOption) {
+                              case "Busy":
+                              case "Untouched":
+                              case "Not Picked Up":
+                                setdataStatus("All");
+                                setTeamLeadsData(
+                                  teamData
+                                    .filter((data) =>
+                                      [
+                                        "Busy",
+                                        "Untouched",
+                                        "Not Picked Up",
+                                      ].includes(data.Status)
+                                    )
+                                    .sort((a, b) => {
+                                      if (a.Status === selectedOption)
+                                        return -1;
+                                      if (b.Status === selectedOption) return 1;
+                                      return 0;
+                                    })
+                                );
+                                break;
+                              case "Interested":
+                                setdataStatus("Interested");
+                                setTeamLeadsData(
+                                  teamData
+                                    .filter(
+                                      (data) => data.Status === "Interested"
+                                    )
+                                    .sort((a, b) =>
+                                      a.AssignDate.localeCompare(b.AssignDate)
+                                    )
+                                );
+                                break;
+                              case "Not Interested":
+                                setdataStatus("NotInterested");
+                                setTeamLeadsData(
+                                  teamData
+                                    .filter((data) =>
+                                      ["Not Interested", "Junk"].includes(
+                                        data.Status
+                                      )
+                                    )
+                                    .sort((a, b) =>
+                                      a.AssignDate.localeCompare(b.AssignDate)
+                                    )
+                                );
+                                break;
+                              case "FollowUp":
+                                setdataStatus("FollowUp");
+                                setTeamLeadsData(
+                                  teamData
+                                    .filter(
+                                      (data) => data.Status === "FollowUp"
+                                    )
+                                    .sort((a, b) =>
+                                      a.AssignDate.localeCompare(b.AssignDate)
+                                    )
+                                );
+                                break;
+
+                              default:
+                                // No filtering if default option selected
+                                setdataStatus("All");
+                                setTeamLeadsData(
+                                  teamData.sort((a, b) => {
+                                    if (a.Status === selectedOption) return -1;
+                                    if (b.Status === selectedOption) return 1;
+                                    return 0;
+                                  })
+                                );
+                                break;
+                            }
+                          }}
+                        >
+                          <option value="" disabled selected>
+                            Select Status
+                          </option>
+                          <option value="Untouched">Untouched</option>
+                          <option value="Busy">Busy</option>
+                          <option value="Not Picked Up">Not Picked Up</option>
+                          <option value="FollowUp">Follow Up</option>
+                          <option value="Interested">Interested</option>
+                          <option value="Not Interested">Not Interested</option>
+                        </select>
+                      </div>
+
+                      {selectedField === "State" && (
+                        <div style={{ width: "15vw" }} className="input-icon">
+                          <span className="input-icon-addon">
+                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="icon"
+                              width="20"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              stroke-width="2"
+                              stroke="currentColor"
+                              fill="none"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            >
+                              <path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                              />
+                              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                              <path d="M21 21l-6 -6" />
+                            </svg>
+                          </span>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={citySearch}
+                            onChange={(e) => {
+                              setcitySearch(e.target.value);
+                              setCurrentPage(0);
+                            }}
+                            placeholder="Search City"
+                            aria-label="Search in website"
+                          />
+                        </div>
+                      )}
+                      {selectedField === "Company Incorporation Date  " && (
+                        <>
+                          <div
+                            style={{ width: "fit-content" }}
+                            className="form-control"
+                          >
+                            <select
+                              style={{
+                                border: "none",
+                                outline: "none",
+                                marginRight: "10px",
+                                width: "115px",
+                                paddingLeft: "10px",
+                              }}
+                              onChange={(e) => {
+                                setMonth(e.target.value);
+                                setCurrentPage(0);
+                              }}
+                            >
+                              <option value="" disabled selected>
+                                Select Month
+                              </option>
+                              <option value="12">December</option>
+                              <option value="11">November</option>
+                              <option value="10">October</option>
+                              <option value="9">September</option>
+                              <option value="8">August</option>
+                              <option value="7">July</option>
+                              <option value="6">June</option>
+                              <option value="5">May</option>
+                              <option value="4">April</option>
+                              <option value="3">March</option>
+                              <option value="2">February</option>
+                              <option value="1">January</option>
+                            </select>
+                          </div>
+                          <div
+                            className="input-icon  form-control"
+                            style={{ margin: "0px 10px", width: "110px" }}
+                          >
+                            {/* <input
+                            type="number"
+                            value={year}
+                            defaultValue="Select Year"
+                            className="form-control"
+                            placeholder="Select Year.."
+                            onChange={(e) => {
+                              setYear(e.target.value);
+                            }}
+                            aria-label="Search in website"
+                          /> */}
+                            <select
+                              select
+                              style={{ border: "none", outline: "none" }}
+                              value={year}
+                              onChange={(e) => {
+                                setYear(e.target.value);
+                                setCurrentPage(0); // Reset page when year changes
+                              }}
+                            >
+                              <option value="">Select Year</option>
+                              {[...Array(15)].map((_, index) => {
+                                const yearValue = 2024 - index;
+                                return (
+                                  <option key={yearValue} value={yearValue}>
+                                    {yearValue}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+                        </>
+                      )}
+
+                     
+                    </div>
+                  </div>
+
+                  {/* <!-- Page title actions --> */}
+                </div>
+
+                {/* -----------------------------------------    Table Starts from here   ------------------------------------------------ */}
                         <div class="card-header my-tab">
                             <ul class="nav nav-tabs card-header-tabs nav-fill p-0"
                                 data-bs-toggle="tabs">
@@ -1063,8 +1622,8 @@ function EmployeeTeamLeads() {
                           // onClick={() => {
                           //   setdataStatus("FollowUp");
                           //   setCurrentPage(0);
-                          //   setEmployeeData(
-                          //     moreEmpData.filter(
+                          //   setTeamLeadsData(
+                          //     teamData.filter(
                           //       (obj) => obj.Status === "FollowUp"
                           //     )
                           //   );
@@ -1219,7 +1778,8 @@ function EmployeeTeamLeads() {
                                                 <th>
                                                     Bde Forward Date
                                                 </th>
-                                                {bdmNewStatus === "Untouched" && <th>Action</th>}
+                                               
+                                                {(bdmNewStatus === "Untouched" || bdmNewStatus === "Matured") && <th>Action</th>}
                                                 {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                                                     <th>Add Projection</th>
                                                     <th>Add Feedback</th>
@@ -1228,7 +1788,7 @@ function EmployeeTeamLeads() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {teamleadsData.map((company, index) => (
+                                            {filteredData.map((company, index) => (
                                                 <tr
                                                     key={index}
                                                     style={{ border: "1px solid #ddd" }}
@@ -1299,8 +1859,8 @@ function EmployeeTeamLeads() {
                                                         bdmNewStatus === "NotInterested") && (
                                                             <>
                                                                 <td>
-                                                                    {company.bdmStatus === "Matured" || company.bdmOnRequest ? (
-                                                                        <span>{company.bdmStatus} {"("}{company.bdmOnRequest && "Requested"}{")"}</span>
+                                                                    {company.bdmStatus === "Matured"? (
+                                                                        <span>{company.bdmStatus}</span>
                                                                     ) : (
                                                                         <select
                                                                             style={{
@@ -1444,6 +2004,30 @@ function EmployeeTeamLeads() {
                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>
                                                             </td>
                                                         )
+                                                    }
+                                                    {
+                                                        bdmNewStatus === "Matured" && <>
+                                                        <td>
+                                                        <IconButton
+                                          style={{ marginRight: "5px" }}
+                                          onClick={() => {
+                                            setMaturedID(company._id);
+
+                                            functionopenAnchor();
+                                          }}
+                                        >
+                                          <IconEye
+                                            style={{
+                                              width: "14px",
+                                              height: "14px",
+                                              color: "#d6a10c",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </IconButton>
+
+                                                        </td>
+                                                        </>
                                                     }
                                                     {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                                                         <td>
@@ -1613,7 +2197,7 @@ function EmployeeTeamLeads() {
                                         {teamleadsData.length === 0 && (
                                             <tbody>
                                                 <tr>
-                                                    <td colSpan="11" className="p-2 particular">
+                                                    <td colSpan={bdmNewStatus==="Interested" || bdmNewStatus==="FollowUp" ? "15" : "11"} className="p-2 particular">
                                                         <Nodata />
                                                     </td>
                                                 </tr>
@@ -2194,6 +2778,34 @@ function EmployeeTeamLeads() {
                     </div>
                 </Drawer>
             </div>
+
+            {/*  --------------------------------     Bookings View Sidebar   --------------------------------------------- */}
+            <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
+        <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
+          <div className="LeadFormPreviewDrawar-header">
+            <div className="Container">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <h2 className="title m-0 ml-1">
+                    {currentForm ? currentForm["Company Name"] : "Company Name"}
+                  </h2>
+                </div>
+                <div>
+                  <IconButton onClick={closeAnchor}>
+                    <CloseIcon />
+                  </IconButton>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <LeadFormPreview
+              setOpenAnchor={setOpenAnchor}
+              currentLeadForm={currentForm}
+            />
+          </div>
+        </div>
+      </Drawer>
 
 
         </div>
