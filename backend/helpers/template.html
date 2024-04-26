@@ -6,16 +6,20 @@
     <title>Generated PDF</title>
     <style>
       /* Your CSS styles here */
-      body{
-        font-size: 6px;
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0px;
+        padding: 0px;
+        font-size: 12px;
+        line-height: 24px;
       }
-   
       .position-relative {
         position: relative;
       }
       .page {
         page-break-after: always; /* Ensure each section starts on a new page */
         height: 1169px;
+        width: 100%;
       }
       .pagination {
         /* margin-top: 100px;
@@ -23,10 +27,10 @@
         color: #333;
         width: 100%;
         text-align: center; */
-        
+        font-size: 12px;
         color: #333;
         margin-top: 10vh;
-        left: calc(50% - 50px );
+       
       }
       .pagination-text {
         text-align: center;
@@ -44,9 +48,9 @@
         margin-top: 20px;
       }
       .container {
-        
+        max-width: 95%;
         margin: 0 auto;
-        padding: 20px 87px;
+        padding: 20px;
       }
       .date {
         text-align: right;
@@ -75,7 +79,7 @@
         width: auto;
         text-align: center;
         padding: 8px;
-     
+        font-size: 14px;
       }
       th {
         font-weight: 600 !important;
@@ -97,7 +101,43 @@
   </head>
   <body>
     {{Main-page}}
- 
+    <!-- <div class="page">
+      <div class="container position-relative">
+        <div class="front-page">
+          <div class="page-heading">
+            <div class="date">Date: 28-02-2024</div>
+            <div class="acknowledgement">
+              <b> Self Declaration </b>
+            </div>
+          </div>
+          <div class="page-body">
+            {{Service-Kawali}}
+
+            <p>
+              I, understands that because of government regulations and portal,
+              I have no objections if the process takes longer than initially
+              committed, knowing it's just how government schemes related
+              process works.
+            </p>
+            <p>
+              I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up
+              India certificate application if required on my behalf, as I am
+              not familiar with the process.
+            </p>
+          </div>
+
+          <div class="page-footer">
+            <span>
+              Client's Signature: ___________________________________
+            </span>
+          </div>
+
+          <div class="pagination">
+            <span class="pagination-text"> Page 1/2 </span>
+          </div>
+        </div>
+      </div>
+    </div> -->
 
     <div class="page-2">
       <div class="container position-relative">
