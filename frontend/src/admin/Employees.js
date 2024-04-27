@@ -949,7 +949,7 @@ function Employees({ onEyeButtonClick }) {
 
       {/* <Header />
       <Navbar number={1} /> */}
-      <div className="page-wrapper">
+      <div className="">
         <div className="page-header d-print-none m-0">
           <div className="row g-2 align-items-center">
             <div className="col m-0">
