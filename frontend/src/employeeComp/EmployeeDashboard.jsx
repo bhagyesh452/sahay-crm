@@ -180,18 +180,44 @@ function EmployeeDashboard() {
   //   console.log("empData", empData);
   // };
 
+  const [todayFollowUpDateData, setTodayFollowUpDateData] = useState([])
+  const [todayFollowUpDateDataFilter, setTodayFollowUpDateDataFilter] = useState([])
+
+  function formatDateNow(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  }
+
   const fetchEmployeeData = async () => {
     setLoading(true);
     fetch(`${secretKey}/edata-particular/${data.ename}`)
       .then((response) => response.json())
       .then((data) => {
         setEmpData(data);
+        setTodayFollowUpDateDataFilter(data.filter((company) => {
+          // Assuming you want to filter companies with an estimated payment date for today
+          const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+          return formatDateNow(company.bdeNextFollowUpDate) === today;
+        }));
+        setTodayFollowUpDateData(
+          data.filter((company) => {
+            // Assuming you want to filter companies with an estimated payment date for today
+            const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+            return formatDateNow(company.bdeNextFollowUpDate) === today;
+          })
+        );
+        //setTodayFollowUpDateData(data.filter((company)=> company.bdeNextFollowUpDate === new Date().toISOString().split("T")[0]))
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   };
   //console.log("empData", empData)
+
+  console.log("ajki", todayFollowUpDateData)
 
   // const fetchEmployeeData = async () => {
   //   try {
@@ -413,7 +439,9 @@ function EmployeeDashboard() {
     }
   };
 
-  //console.log("ajki", followDataToday)
+  console.log("ajki", followDataToday)
+
+  const today = new Date().toISOString().split("T")[0];
 
   // console.log(followData);
 
@@ -839,6 +867,7 @@ function EmployeeDashboard() {
 
   //console.log(filteredDataDateRange)
   const [newSearchTerm, setNewSearchTerm] = useState("");
+  const [newSearchTermFollow, setNewSearchTermFollow] = useState("");
 
   function filterSearchBooking(newSearchTerm) {
     setNewSearchTerm(newSearchTerm);
@@ -865,6 +894,19 @@ function EmployeeDashboard() {
     );
   }
 
+
+  function filterSearchBookingFollow(newSearchTerm) {
+    setNewSearchTermFollow(newSearchTerm);
+
+    console.log(newSearchTerm);
+
+    setTodayFollowUpDateData(
+      todayFollowUpDateDataFilter.filter((company) =>
+        company["Company Name"].toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+        company["Company Number"].toString() === newSearchTerm
+      )
+    );
+  }
   //  -----------------------------------sorting- your -dashboard-----------------------------------
 
   const handleSortUntouched = (sortBy1) => {
@@ -874,8 +916,8 @@ function EmployeeDashboard() {
         prevData.untouched === "ascending"
           ? "descending"
           : prevData.untouched === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -933,8 +975,8 @@ function EmployeeDashboard() {
         prevData.busy === "ascending"
           ? "descending"
           : prevData.untouched === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -988,8 +1030,8 @@ function EmployeeDashboard() {
         prevData.junk === "ascending"
           ? "descending"
           : prevData.junk === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1043,8 +1085,8 @@ function EmployeeDashboard() {
         prevData.notPickedUp === "ascending"
           ? "descending"
           : prevData.notPickedUp === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1099,8 +1141,8 @@ function EmployeeDashboard() {
         prevData.followUp === "ascending"
           ? "descending"
           : prevData.followUp === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1155,8 +1197,8 @@ function EmployeeDashboard() {
         prevData.interested === "ascending"
           ? "descending"
           : prevData.interested === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1211,8 +1253,8 @@ function EmployeeDashboard() {
         prevData.notInterested === "ascending"
           ? "descending"
           : prevData.notInterested === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1267,8 +1309,8 @@ function EmployeeDashboard() {
         prevData.matured === "ascending"
           ? "descending"
           : prevData.matured === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1322,8 +1364,8 @@ function EmployeeDashboard() {
         prevData.totalLeads === "ascending"
           ? "descending"
           : prevData.totalLeads === "descending"
-          ? "none"
-          : "ascending",
+            ? "none"
+            : "ascending",
     }));
     switch (sortBy1) {
       case "ascending":
@@ -1480,7 +1522,7 @@ function EmployeeDashboard() {
     },
     { label: "Reset", getValue: () => [null, null] },
   ];
-  const [redesignedData , setRedesignedData] = useState([]);
+  const [redesignedData, setRedesignedData] = useState([]);
   const fetchRedesignedBookings = async () => {
     try {
       const response = await axios.get(
@@ -1488,7 +1530,7 @@ function EmployeeDashboard() {
       );
       const bookingsData = response.data;
 
-  
+
       setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename));
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
@@ -1502,19 +1544,19 @@ function EmployeeDashboard() {
   let totalAchievedAmount = 0;
 
   const functionCalculateMatured = (istrue) => {
-  
+
     let maturedCount = 0;
     const today = new Date();
-    
+
     // Set hours, minutes, and seconds to zero
     const todayData = istrue
       ? redesignedData.filter(
-          (obj) => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()
-        )
+        (obj) => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()
+      )
       : redesignedData.filter(
-          (obj) => new Date(obj.bookingDate).getMonth() === today.getMonth()
-        );
-    
+        (obj) => new Date(obj.bookingDate).getMonth() === today.getMonth()
+      );
+
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
@@ -1547,11 +1589,11 @@ function EmployeeDashboard() {
   const functionCalculateTotalRevenue = (istrue) => {
     let achievedAmount = 0;
     const today = new Date();
-     // Set hours, minutes, and seconds to zero
-    const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString())  : redesignedData.filter(
+    // Set hours, minutes, and seconds to zero
+    const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) : redesignedData.filter(
       (obj) => new Date(obj.bookingDate).getMonth() === today.getMonth()
-    ) ;
-   
+    );
+
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
@@ -1583,11 +1625,11 @@ function EmployeeDashboard() {
   const functionCalculateAchievedRevenue = (istrue) => {
     let achievedAmount = 0;
     const today = new Date();
-     // Set hours, minutes, and seconds to zero
-    const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) :  redesignedData.filter(
+    // Set hours, minutes, and seconds to zero
+    const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) : redesignedData.filter(
       (obj) => new Date(obj.bookingDate).getMonth() === today.getMonth()
-    ); 
-   
+    );
+
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
@@ -1618,12 +1660,12 @@ function EmployeeDashboard() {
   const functionCalculateYesterdayRevenue = () => {
     let achievedAmount = 0;
     const boom = new Date();
-const today = new Date(boom);
-today.setDate(boom.getDate() - 1);
+    const today = new Date(boom);
+    today.setDate(boom.getDate() - 1);
 
-     // Set hours, minutes, and seconds to zero
-    const todayData = redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) ;
-   
+    // Set hours, minutes, and seconds to zero
+    const todayData = redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString());
+
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
@@ -1654,9 +1696,9 @@ today.setDate(boom.getDate() - 1);
   const functionCalculatePendingRevenue = (istrue) => {
     let achievedAmount = 0;
     const today = new Date();
-     // Set hours, minutes, and seconds to zero
-    const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) : redesignedData ;
-   
+    // Set hours, minutes, and seconds to zero
+    const todayData = istrue ? redesignedData.filter(obj => new Date(obj.bookingDate).toLocaleDateString() === today.toLocaleDateString()) : redesignedData;
+
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
@@ -1685,7 +1727,7 @@ today.setDate(boom.getDate() - 1);
     return achievedAmount
 
   };
-  
+
   function functionGetLastBookingDate() {
     // Filter objects based on bdeName
 
@@ -1741,32 +1783,34 @@ today.setDate(boom.getDate() - 1);
   const currentMonth = monthNames[new Date().getMonth()];
 
   const functionGetAmount = () => {
-    if (data.length===0) {
+    if (data.length === 0) {
       return 0; // Return 0 if data is falsy
     }
-  
+
     const object = data;
     const targetDetails = object.targetDetails;
-  
+
     if (targetDetails.length === 0) {
       return 0; // Return 0 if targetDetails array is empty
     }
-  
+
     const foundObject = targetDetails.find(
       (item) => parseInt(item.year) === currentYear && item.month === currentMonth
     );
-  
+
     if (!foundObject) {
       return 0; // Return 0 if no matching object is found
     }
-  
+
     const amount = parseInt(foundObject.amount);
     totalTargetAmount += amount; // Increment totalTargetAmount by amount
-  
-    
+
+
     return amount;
   };
-  
+
+  //console.log("filtered" , filteredBooking)
+
 
 
   return (
@@ -1787,7 +1831,7 @@ today.setDate(boom.getDate() - 1);
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-1ac9bd">
-                      {empData.length}
+                        {empData.length}
                       </div>
                     </div>
                   </div>
@@ -1799,7 +1843,7 @@ today.setDate(boom.getDate() - 1);
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-ffb900">
-                      {
+                        {
                           empData.filter(
                             (partObj) => partObj.Status === "Interested"
                           ).length
@@ -1815,7 +1859,7 @@ today.setDate(boom.getDate() - 1);
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-4299e1">
-                      {
+                        {
                           empData.filter(
                             (partObj) => partObj.Status === "FollowUp"
                           ).length
@@ -1831,7 +1875,7 @@ today.setDate(boom.getDate() - 1);
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-1cba19">
-                      {
+                        {
                           empData.filter(
                             (partObj) => partObj.Status === "Matured"
                           ).length
@@ -1847,7 +1891,7 @@ today.setDate(boom.getDate() - 1);
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-e65b5b">
-                      {
+                        {
                           empData.filter(
                             (partObj) => partObj.Status === "Not Interested"
                           ).length
@@ -1863,7 +1907,7 @@ today.setDate(boom.getDate() - 1);
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-00d19d" >
-                      {
+                        {
                           empData.filter(
                             (partObj) => partObj.bdmAcceptStatus === "Accept"
                           ).length
@@ -1892,11 +1936,11 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">MATURED CASES</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-e65b5b" >
-                        ₹ {functionCalculateTotalRevenue(true).toLocaleString()}
+                          ₹ {functionCalculateTotalRevenue(true).toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
-                        <img src={successImg}/>
+                        <img src={successImg} />
                       </div>
                     </div>
 
@@ -1912,11 +1956,11 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">TOTAL REVENUE</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-1cba19" >
-                        ₹ {functionCalculateTotalRevenue(true).toLocaleString()}
+                          ₹ {functionCalculateTotalRevenue(true).toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
-                        <img src={TotalAmount}/>
+                        <img src={TotalAmount} />
                       </div>
                     </div>
                   </div>
@@ -1931,11 +1975,11 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">ADVANCE COLLECTED</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-1ac9bd" >
-                        ₹ {functionCalculateAchievedRevenue(true).toLocaleString()}
+                          ₹ {functionCalculateAchievedRevenue(true).toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
-                        <img src={advance}/>
+                        <img src={advance} />
                       </div>
                     </div>
                   </div>
@@ -1950,11 +1994,11 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">REMAINING PAYMENT</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-ffb900" >
-                        ₹ {functionCalculatePendingRevenue(true).toLocaleString()}
+                          ₹ {functionCalculatePendingRevenue(true).toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
-                        <img src={pending}/>
+                        <img src={pending} />
                       </div>
                     </div>
                   </div>
@@ -1969,11 +2013,11 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">YESTERDAY'S COLLECTIONS</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-4299e1" >
-                        ₹ {functionCalculateYesterdayRevenue().toLocaleString()}
+                          ₹ {functionCalculateYesterdayRevenue().toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
-                        <img src={yesterday}/>
+                        <img src={yesterday} />
                       </div>
                     </div>
                   </div>
@@ -1998,11 +2042,11 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">TOTAL MATURED CASES</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-e65b5b" >
-                         {functionCalculateMatured()}
+                          {functionCalculateMatured()}
                         </div>
                       </div>
                       <div className="dashIconImg">
-                        <img src={successImg}/>
+                        <img src={successImg} />
                       </div>
                     </div>
 
@@ -2018,11 +2062,11 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">TARGET</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-1cba19" >
-                        ₹ {functionGetAmount().toLocaleString()}
+                          ₹ {functionGetAmount().toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
-                        <img src={target}/>
+                        <img src={target} />
                       </div>
                     </div>
                   </div>
@@ -2037,11 +2081,11 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">ACHIEVED TARGET</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-1ac9bd" >
-                        ₹ {functionCalculateAchievedRevenue().toLocaleString()}
+                          ₹ {functionCalculateAchievedRevenue().toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
-                        <img src={achivement}/>
+                        <img src={achivement} />
                       </div>
                     </div>
                   </div>
@@ -2056,11 +2100,11 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">ACHIEVED TARGET RATIO</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-ffb900" >
-                        {(functionCalculateAchievedRevenue()/functionGetAmount() * 100).toFixed(2)} %
+                          {(functionCalculateAchievedRevenue() / functionGetAmount() * 100).toFixed(2)} %
                         </div>
                       </div>
                       <div className="dashIconImg">
-                        <img src={ratio}/>
+                        <img src={ratio} />
                       </div>
                     </div>
                   </div>
@@ -2075,11 +2119,11 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">LAST BOOKING DATE</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-4299e1" >
-                        {functionGetLastBookingDate()}
+                          {functionGetLastBookingDate()}
                         </div>
                       </div>
                       <div className="dashIconImg">
-                        <img src={booking_date}/>
+                        <img src={booking_date} />
                       </div>
                     </div>
                   </div>
@@ -2174,7 +2218,7 @@ today.setDate(boom.getDate() - 1);
                                 InputProps: { endAdornment: <Calendar /> },
                               },
                             }}
-                            //calendars={1}
+                          //calendars={1}
                           />
                         </DemoContainer>
                       </LocalizationProvider>
@@ -2408,41 +2452,8 @@ today.setDate(boom.getDate() - 1);
                         id="bdeName-search"
                       />
                     </div>
-                    {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
-                          <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
-                          <button
-                            onClick={handleIconClick}
-                            style={{
-                              border: "none",
-                              padding: "0px",
-                              backgroundColor: "white",
-                            }}
-                          >
-                            <FaRegCalendar
-                              style={{
-                                width: "17px",
-                                height: "17px",
-                                color: "#bcbaba",
-                                color: "grey",
-                              }}
-                            />
-                          </button>
-                        </div> */}
                   </div>
                 </div>
-                {/* {displayDateRange && (
-                      <div
-                        ref={dateRangePickerProhectionRef}
-                        className="position-absolute "
-                        style={{ zIndex: "1", top: "20%", left: "75%" }}
-                      >
-                        <DateRangePicker
-                          ranges={[selectionRange]}
-                          onClose={() => setDateRangeDisplay(false)}
-                          onChange={handleSelect}
-                        />
-                      </div>
-                    )} */}
                 <div className="card-body">
                   <div
                     id="table-default"
@@ -2504,7 +2515,7 @@ today.setDate(boom.getDate() - 1);
                       ) : (
                         <>
                           {followDataTodayFilter &&
-                          followDataTodayFilter.length > 0 ? (
+                            followDataTodayFilter.length > 0 ? (
                             <>
                               <tbody>
                                 {followDataTodayFilter.map((obj, index) => (
@@ -2682,7 +2693,7 @@ today.setDate(boom.getDate() - 1);
                             InputProps: { endAdornment: <Calendar /> },
                           },
                         }}
-                        //calendars={1}
+                      //calendars={1}
                       />
                     </DemoContainer>
                   </LocalizationProvider>
@@ -2762,9 +2773,8 @@ today.setDate(boom.getDate() - 1);
                         {filteredBooking.map((mainObj, index) => (
                           <tr key={index}>
                             <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                            <td>{`${formatDate(mainObj.bookingDate)}(${
-                              mainObj.bookingTime
-                            })`}</td>
+                            <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                              })`}</td>
                             <td>{mainObj.companyName}</td>
                             <td>{mainObj.contactNumber}</td>
                             <td>{mainObj.companyEmail}</td>
@@ -2783,8 +2793,8 @@ today.setDate(boom.getDate() - 1);
                                   ? mainObj.firstPayment // If bdeName and bdmName are the same
                                   : mainObj.firstPayment / 2 // If bdeName and bdmName are different
                                 : mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                                : mainObj.originalTotalPayment / 2
+                                  ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                  : mainObj.originalTotalPayment / 2
                               ).toLocaleString()}{" "}
                             </td>
                             <td>
@@ -2792,10 +2802,10 @@ today.setDate(boom.getDate() - 1);
                               {(mainObj.firstPayment !== 0
                                 ? mainObj.bdeName === mainObj.bdmName
                                   ? mainObj.originalTotalPayment -
-                                    mainObj.firstPayment
+                                  mainObj.firstPayment
                                   : (mainObj.originalTotalPayment -
-                                      mainObj.firstPayment) /
-                                    2
+                                    mainObj.firstPayment) /
+                                  2
                                 : 0
                               ).toLocaleString()}{" "}
                             </td>
@@ -2840,8 +2850,8 @@ today.setDate(boom.getDate() - 1);
                                     ? total + obj.originalTotalPayment
                                     : total + obj.firstPayment
                                   : obj.firstPayment === 0
-                                  ? total + obj.originalTotalPayment / 2
-                                  : total + obj.firstPayment / 2;
+                                    ? total + obj.originalTotalPayment / 2
+                                    : total + obj.firstPayment / 2;
                               }, 0)
                               .toLocaleString()}
                           </th>
@@ -2854,8 +2864,8 @@ today.setDate(boom.getDate() - 1);
                                     ? total + obj.originalTotalPayment
                                     : total + obj.firstPayment
                                   : obj.firstPayment === 0
-                                  ? total + obj.originalTotalPayment / 2
-                                  : total + obj.firstPayment / 2;
+                                    ? total + obj.originalTotalPayment / 2
+                                    : total + obj.firstPayment / 2;
                               }, 0)
                               .toLocaleString()}
                           </th>
@@ -2864,6 +2874,284 @@ today.setDate(boom.getDate() - 1);
                           <th>-</th>
                         </tr>
                       </tfoot>
+                    </>
+                  ) : filteredBooking &&
+                    filteredBooking.length === 0 &&
+                    loading ? (
+                    <tr>
+                      <td
+                        colSpan={12}
+                        style={{
+                          position: "absolute",
+                          left: "50%",
+                          textAlign: "center",
+                          verticalAlign: "middle",
+                        }}
+                      >
+                        <ScaleLoader
+                          color="lightgrey"
+                          loading
+                          cssOverride={override}
+                          size={10}
+                          height="25"
+                          width="2"
+                          aria-label="Loading Spinner"
+                          data-testid="loader"
+                        />
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr>
+                      <td colSpan={12} style={{ textAlign: "center" }}>
+                        <Nodata />
+                      </td>
+                    </tr>
+                  )}
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ------------------------------------------------------------- Todays Follow Up date Data------------------------------------------------------ */}
+
+        <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard">
+          <div className="card">
+            <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
+              <div>
+                <h2>Todays FollowUp Leads</h2>
+              </div>
+              <div
+                className="d-flex justify-content-between"
+                style={{ gap: "10px" }}
+              >
+                <div
+                  className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
+                  style={{ width: "100%", marginRight: "30px" }} >
+                  <span className="input-icon-addon">
+                    {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="20"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                      <path d="M21 21l-6 -6" />
+                    </svg>
+                  </span>
+                  <input
+                    className=""
+                    value={newSearchTermFollow}
+                    onChange={(e) => filterSearchBookingFollow(e.target.value)}
+                    placeholder="Search here....."
+                    style={{
+                      border: "none",
+                      padding: "0px 0px 0px 21px",
+                      // Add a bottom border for the input field itself
+                    }}
+                    type="text"
+                    name="bdeName-search"
+                    id="bdeName-search"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="card-body">
+              <div
+                id="table-default"
+                style={{
+                  overflowX: "auto",
+                  overflowY: "auto",
+                  maxHeight: "60vh",
+                }}
+              >
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                    marginBottom: "10px",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
+                  <thead stSyle={{ backgroundColor: "grey" }}>
+                    <tr
+                      style={{
+                        backgroundColor: "#ffb900",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <th style={{ lineHeight: "32px" }}>SR.NO</th>
+                      {/* <th>BOOKING DATE & TIME</th> */}
+                      <th>COMPANY NAME</th>
+                      <th>COMPANY NUMBER</th>
+                      <th>COMPANY EMAIL</th>
+                      <th>ACTION</th>
+                      {/* <th>SERVICES</th> */}
+                      {/* <th>TOTAL PAYMENT</th>
+                      <th>RECEIVED PAYMENT</th>
+                      <th>PENDING PAYMENT</th>
+                      <th>50/50 CASE</th>
+                      <th>CLOSED/SUPPORTED BY</th>
+                      <th>REMARKS</th> */}
+                    </tr>
+                  </thead>
+                  {todayFollowUpDateData && todayFollowUpDateData.length > 0 ? (
+                    <>
+                      <tbody>
+                        {todayFollowUpDateData.map((mainObj, index) => (
+                          <tr key={index}>
+                            <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                            {/* <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
+                                })`}</td> */}
+                            <td>{mainObj["Company Name"]}</td>
+                            <td>{mainObj["Company Number"]}</td>
+                            <td>{mainObj["Company Email"]}</td>
+                            <td>
+                              { followDataToday &&
+                                followDataToday.some(
+                                  (item) =>
+                                    item.companyName ===
+                                    mainObj["Company Name"]
+                                ) ? (
+                                <IconButton>
+                                  <RiEditCircleFill
+                                    onClick={() => {
+                                      functionopenprojection(
+                                        mainObj["Company Name"]
+                                      );
+                                    }}
+                                    style={{
+                                      cursor: "pointer",
+                                      width: "17px",
+                                      height: "17px",
+                                    }}
+                                    color="#fbb900"
+                                  />
+                                </IconButton>
+                              ) : (
+                                <IconButton>
+                                  <RiEditCircleFill
+                                    onClick={() => {
+                                      functionopenprojection(
+                                        mainObj["Company Name"]
+                                      );
+                                      setIsEditProjection(true);
+                                    }}
+                                    style={{
+                                      cursor: "pointer",
+                                      width: "17px",
+                                      height: "17px",
+                                    }}
+                                  />
+                                </IconButton>
+                              )}
+                            </td>
+                            {/* <td>{mainObj.services[0]}</td> */}
+                            {/* <td>
+                                ₹
+                                {(mainObj.bdeName !== mainObj.bdmName
+                                  ? mainObj.originalTotalPayment / 2
+                                  : mainObj.originalTotalPayment
+                                ).toLocaleString()}
+                              </td> */}
+                            {/* <td>
+                                ₹
+                                {(mainObj.firstPayment !== 0
+                                  ? mainObj.bdeName === mainObj.bdmName
+                                    ? mainObj.firstPayment // If bdeName and bdmName are the same
+                                    : mainObj.firstPayment / 2 // If bdeName and bdmName are different
+                                  : mainObj.bdeName === mainObj.bdmName
+                                    ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                    : mainObj.originalTotalPayment / 2
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>
+                                ₹
+                                {(mainObj.firstPayment !== 0
+                                  ? mainObj.bdeName === mainObj.bdmName
+                                    ? mainObj.originalTotalPayment -
+                                    mainObj.firstPayment
+                                    : (mainObj.originalTotalPayment -
+                                      mainObj.firstPayment) /
+                                    2
+                                  : 0
+                                ).toLocaleString()}{" "}
+                              </td>
+                              <td>
+                                {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
+                              </td>
+                              <td>
+                                {mainObj.bdeName !== mainObj.bdmName
+                                  ? mainObj.bdmType === "closeby"
+                                    ? `Closed by ${mainObj.bdmName}`
+                                    : `Supported by ${mainObj.bdmName}`
+                                  : `Self Closed`}{" "}
+                              </td>
+                              <td>{mainObj.paymentRemarks}</td> */}
+                          </tr>
+                        ))}
+                      </tbody>
+                      {/* <tfoot>
+                        <tr>
+                          <th colSpan={3}>
+                            <strong>Total</strong>
+                          </th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>
+                            ₹
+                            {filteredBooking
+                              .reduce((total, obj) => {
+                                return obj.bdeName === obj.bdmName
+                                  ? total + obj.originalTotalPayment
+                                  : total + obj.originalTotalPayment / 2;
+                              }, 0)
+                              .toLocaleString()}
+                          </th>
+                          <th>
+                            ₹
+                            {filteredBooking
+                              .reduce((total, obj) => {
+                                return obj.bdeName === obj.bdmName
+                                  ? obj.firstPayment === 0
+                                    ? total + obj.originalTotalPayment
+                                    : total + obj.firstPayment
+                                  : obj.firstPayment === 0
+                                    ? total + obj.originalTotalPayment / 2
+                                    : total + obj.firstPayment / 2;
+                              }, 0)
+                              .toLocaleString()}
+                          </th>
+                          <th>
+                            ₹
+                            {filteredBooking
+                              .reduce((total, obj) => {
+                                return obj.bdeName === obj.bdmName
+                                  ? obj.firstPayment === 0
+                                    ? total + obj.originalTotalPayment
+                                    : total + obj.firstPayment
+                                  : obj.firstPayment === 0
+                                    ? total + obj.originalTotalPayment / 2
+                                    : total + obj.firstPayment / 2;
+                              }, 0)
+                              .toLocaleString()}
+                          </th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>-</th>
+                        </tr>
+                      </tfoot> */}
                     </>
                   ) : filteredBooking &&
                     filteredBooking.length === 0 &&

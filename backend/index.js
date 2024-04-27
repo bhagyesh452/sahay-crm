@@ -1310,7 +1310,13 @@ app.get("/api/projection-data/:ename", async (req, res) => {
   try {
     const ename = req.params.ename;
     // Fetch data from the FollowUpModel based on the employeeName if provided
-    const followUps = await FollowUpModel.find({ ename: ename });
+    const followUps = await FollowUpModel.find({
+      $or: [
+        { ename: ename }, // First condition
+        { bdeName: ename } // Second condition
+        // Add more conditions if needed
+      ]
+    });
     // Return the data as JSON response
     res.json(followUps);
   } catch (error) {
@@ -2041,12 +2047,15 @@ app.put("/api/requestgData/:id", async (req, res) => {
 app.get("/api/edata-particular/:ename", async (req, res) => {
   try {
     const { ename } = req.params;
-    const filteredEmployeeData = await CompanyModel.find({ ename });
+    const filteredEmployeeData = await CompanyModel.find({  $or:[
+      {ename:ename},
+      {maturedBdmName:ename}
+    ] });
     res.json(filteredEmployeeData);
   } catch (error) {
     console.error("Error fetching employee data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 app.delete("/api/newcompanynamedelete/:id", async (req, res) => {
