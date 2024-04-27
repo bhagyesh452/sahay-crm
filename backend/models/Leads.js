@@ -7,8 +7,6 @@ const CompanySchema = new mongoose.Schema({
   },
   "Company Number": {
     type: Number,
-   
-
   },
   "Company Email": {
     type: String,
@@ -18,13 +16,9 @@ const CompanySchema = new mongoose.Schema({
   },
   City: {
     type: String,
-    
-
   },
   State: {
     type: String,
-    
-
   },
   ename:{
     type:String,
@@ -104,6 +98,9 @@ const CompanySchema = new mongoose.Schema({
   },
   bdeNextFollowUpDate:{
     type: Date
+  },
+  maturedBdmName:{
+    type:String
   }
 
 });

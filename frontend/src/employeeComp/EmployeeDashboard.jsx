@@ -1892,7 +1892,7 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">MATURED CASES</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-e65b5b" >
-                        ₹ {functionCalculateTotalRevenue(true).toLocaleString()}
+                         {functionCalculateMatured(true)}
                         </div>
                       </div>
                       <div className="dashIconImg">

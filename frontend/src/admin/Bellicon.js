@@ -13,7 +13,7 @@ import axios from 'axios';
 import { Link } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import socketIO from 'socket.io-client';
-export default function Bellicon({data , gdata,adata}) {
+export default function Bellicon({data , gdata,adata , isAdmin}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [count, setCount] = useState(0);
   const totalCount = data.filter((item) => !item.read).length + gdata.filter((item) => !item.read).length + adata.length;
@@ -273,7 +273,7 @@ export default function Bellicon({data , gdata,adata}) {
               ))}
               </Stack>
               <div style={{ margin: "3px 0px" }} className="foot">
-          <Link to={"/dataManager/notification"}>
+          <Link to={isAdmin ? "/admin/notification" : "/dataManager/notification"}>
             <div style={{ minWidth: "20vw", textAlign: "center" }}>See All</div>
           </Link>
         </div>

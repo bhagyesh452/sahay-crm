@@ -1806,7 +1806,12 @@ app.get("/api/employees/:ename", async (req, res) => {
     const employeeName = req.params.ename;
 
     // Fetch data from companyModel where ename matches employeeName
-    const data = await CompanyModel.find({ ename: employeeName });
+    const data = await CompanyModel.find({
+      $or:[
+        {ename:employeeName},
+        {maturedBdmName:employeeName}
+      ]
+     });
     //console.log(data)
     res.json(data);
   } catch (error) {
@@ -2041,7 +2046,10 @@ app.put("/api/requestgData/:id", async (req, res) => {
 app.get("/api/edata-particular/:ename", async (req, res) => {
   try {
     const { ename } = req.params;
-    const filteredEmployeeData = await CompanyModel.find({ ename });
+    const filteredEmployeeData = await CompanyModel.find({  $or:[
+      {ename:ename},
+      {maturedBdmName:ename}
+    ] });
     res.json(filteredEmployeeData);
   } catch (error) {
     console.error("Error fetching employee data:", error);
@@ -2089,13 +2097,13 @@ app.post("/api/remarks-history/:companyId", async (req, res) => {
 
     // Save the new entry to MongoDB
     await newRemarksHistory.save();
-
     res.json({ success: true, message: "Remarks history added successfully" });
   } catch (error) {
     console.error("Error adding remarks history:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
+
 app.get("/api/remarks-history", async (req, res) => {
   try {
     const remarksHistory = await RemarksHistory.find();
@@ -6681,6 +6689,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         Status: "Matured",
         lastActionDate: date,
         ename: newData.bdeName,
+        maturedBdmName:newData.bdmName
       });
     }
     if (teamData) {
