@@ -1787,7 +1787,7 @@ today.setDate(boom.getDate() - 1);
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-1ac9bd">
-                        500
+                      {empData.length}
                       </div>
                     </div>
                   </div>
@@ -1799,7 +1799,11 @@ today.setDate(boom.getDate() - 1);
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-ffb900">
-                        12
+                      {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Interested"
+                          ).length
+                        }
                       </div>
                     </div>
                   </div>
@@ -1811,7 +1815,11 @@ today.setDate(boom.getDate() - 1);
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-4299e1">
-                        20
+                      {
+                          empData.filter(
+                            (partObj) => partObj.Status === "FollowUp"
+                          ).length
+                        }
                       </div>
                     </div>
                   </div>
@@ -1823,7 +1831,11 @@ today.setDate(boom.getDate() - 1);
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-1cba19">
-                        05
+                      {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Matured"
+                          ).length
+                        }
                       </div>
                     </div>
                   </div>
@@ -1835,7 +1847,11 @@ today.setDate(boom.getDate() - 1);
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-e65b5b">
-                        100
+                      {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Not Interested"
+                          ).length
+                        }
                       </div>
                     </div>
                   </div>
@@ -1847,7 +1863,11 @@ today.setDate(boom.getDate() - 1);
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-00d19d" >
-                        50
+                      {
+                          empData.filter(
+                            (partObj) => partObj.bdmAcceptStatus === "Accept"
+                          ).length
+                        }
                       </div>
                     </div>
                   </div>
@@ -1872,7 +1892,7 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">MATURED CASES</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-e65b5b" >
-                          50
+                        ₹ {functionCalculateTotalRevenue(true).toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
@@ -1892,7 +1912,7 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">TOTAL REVENUE</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-1cba19" >
-                          ₹ 2,000
+                        ₹ {functionCalculateTotalRevenue(true).toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
@@ -1911,7 +1931,7 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">ADVANCE COLLECTED</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-1ac9bd" >
-                          ₹ 2,000
+                        ₹ {functionCalculateAchievedRevenue(true).toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
@@ -1930,7 +1950,7 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">REMAINING PAYMENT</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-ffb900" >
-                          ₹ 2,000
+                        ₹ {functionCalculatePendingRevenue(true).toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
@@ -1949,7 +1969,7 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">YESTERDAY'S COLLECTIONS</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-4299e1" >
-                          ₹ 2,000
+                        ₹ {functionCalculateYesterdayRevenue().toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
@@ -1978,7 +1998,7 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">TOTAL MATURED CASES</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-e65b5b" >
-                          50
+                         {functionCalculateMatured()}
                         </div>
                       </div>
                       <div className="dashIconImg">
@@ -1998,7 +2018,7 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">TARGET</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-1cba19" >
-                          ₹ 5,20,000
+                        ₹ {functionGetAmount().toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
@@ -2017,7 +2037,7 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">ACHIEVED TARGET</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-1ac9bd" >
-                          ₹ 2,000
+                        ₹ {functionCalculateAchievedRevenue().toLocaleString()}
                         </div>
                       </div>
                       <div className="dashIconImg">
@@ -2036,7 +2056,7 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">ACHIEVED TARGET RATIO</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-ffb900" >
-                          66%
+                        {(functionCalculateAchievedRevenue()/functionGetAmount() * 100).toFixed(2)} %
                         </div>
                       </div>
                       <div className="dashIconImg">
@@ -2055,7 +2075,7 @@ today.setDate(boom.getDate() - 1);
                           <div className="dash-card-1-head2">LAST BOOKING DATE</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-4299e1" >
-                          02/06/2023
+                        {functionGetLastBookingDate()}
                         </div>
                       </div>
                       <div className="dashIconImg">
@@ -2068,789 +2088,796 @@ today.setDate(boom.getDate() - 1);
             </div>
           </div>
         </div>
-      </div>
-      <div className="container-xl mt-2" style={{display: "none"}}>
-        <div className="row row-deck row-cards mt-2">
-          <div className="dashboard-header">
-            <h1>Leads Report</h1>
-          </div>
-          <div class="col-sm-6 col-lg-2 ">
-            <div class="card firstClass">
-              <div class="card-header subheader">
-              Total Leads
-              </div>
-              <div class="card-body">
-                <div class="d-flex align-items-center">
+        {/* --------------------------------------------------projection dashboard new------------------------------------ */}
+        <div className="container-xl mt-4">
+          <div className="row">
+            <div className="col-12" id="projectiontotalsummary">
+              <div className="card">
+                <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
+                  <div className="dashboard-title">
+                    <h2 style={{ marginBottom: "5px" }}>
+                      Total Projection Summary
+                    </h2>
+                  </div>
                   <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
+                    className="d-flex justify-content-between"
+                    style={{ gap: "10px" }}
                   >
-                  </div>
-                  {/* <GrDocumentStore style={{ width: "50px", height: "50px" }} /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class="mb-3 me-2">{empData.length}</div>
-                  <div class="me-auto">
-                    {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
-                                        </span> */}
-                  </div>
-                </div>
-                <div id="chart-new-clients" class="chart-sm"></div>
-              </div>
-            </div>
-          </div>
-          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                    Interested Leads
-                  </div>
-                  {/* <CiCalendar style={{ width: "50px", height: "50px" }} /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class=" mb-3 me-2">{
-                          empData.filter(
-                            (partObj) => partObj.Status === "Interested"
-                          ).length
-                        }</div>
-                  <div class="me-auto">
-                    {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
-                                        </span> */}
-                  </div>
-                </div>
-                <div id="chart-new-clients" class="chart-sm"></div>
-              </div>
-            </div>
-          </div>
-          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                    Follow Up Leads
-                  </div>
-                  {/* <HiMiniCurrencyRupee
-                    style={{ width: "50px", height: "50px" }}
-                  /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class=" mb-0 me-2">  <div style={{fontSize:'47px'}} class=" mb-3 me-2">{
-                          empData.filter(
-                            (partObj) => partObj.Status === "FollowUp"
-                          ).length
-                        }</div></div>
-                  <div class="me-auto">
-                    <span class="text-green d-inline-flex align-items-center lh-1">
-                     
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div id="chart-revenue-bg" class="chart-sm"></div>
-            </div>
-          </div>
-          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                    Matured Leads
-                  </div>
-                  {/* <HiMiniCurrencyRupee
-                    style={{ width: "50px", height: "50px" }}
-                  /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class="mb-0 me-2">  <div style={{fontSize:'47px'}} class=" mb-3 me-2">{
-                          empData.filter(
-                            (partObj) => partObj.Status === "Matured"
-                          ).length
-                        }</div></div>
-                  <div class="me-auto">
-                    <span class="text-green d-inline-flex align-items-center lh-1">
-                     
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div id="chart-revenue-bg" class="chart-sm"></div>
-            </div>
-          </div>
-          <div style={{width:"20%"}} class="col-sm-6 col-lg-2">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                    Not Interested Leads
-                  </div>
-                 
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class=" mb-0 me-2">  <div style={{fontSize:'47px'}} class=" mb-3 me-2">{
-                          empData.filter(
-                            (partObj) => partObj.Status === "Not Interested"
-                          ).length
-                        }</div></div>
-                 
-                </div>
-              </div>
-             
-            </div>
-          </div>
-        </div>
-        <div className="row row-deck row-cards mt-2">
-          <div className="dashboard-header">
-            <h1>Today's Report</h1>
-          </div>
-          <div style={{width:'20%'}} class="col-sm-6 col-lg-2 ">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                    Matured Cases
-                  </div>
-                  {/* <GrDocumentStore style={{ width: "50px", height: "50px" }} /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class="mb-3 me-2">{functionCalculateMatured(true).toLocaleString()}</div>
-                  <div class="me-auto">
-                    {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
-                                        </span> */}
-                  </div>
-                </div>
-                <div id="chart-new-clients" class="chart-sm"></div>
-              </div>
-            </div>
-          </div>
-          <div style={{width:'20%'}} class="col-sm-6 col-lg-2">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                    Total Revenue
-                  </div>
-                  {/* <CiCalendar style={{ width: "50px", height: "50px" }} /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class=" mb-3 me-2">₹ {functionCalculateTotalRevenue(true).toLocaleString()}</div>
-                  <div class="me-auto">
-                    {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
-                                        </span> */}
-                  </div>
-                </div>
-                <div id="chart-new-clients" class="chart-sm"></div>
-              </div>
-            </div>
-          </div>
-          <div style={{width:'20%'}} class="col-sm-6 col-lg-2">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                    Advance Collected
-                  </div>
-                  {/* <HiMiniCurrencyRupee
-                    style={{ width: "50px", height: "50px" }}
-                  /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class=" mb-0 me-2">₹ {functionCalculateAchievedRevenue(true).toLocaleString()}</div>
-                  <div class="me-auto">
-                    <span class="text-green d-inline-flex align-items-center lh-1">
-                     
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div id="chart-revenue-bg" class="chart-sm"></div>
-            </div>
-          </div>
-          <div style={{width:'20%'}}  class="col-sm-6 col-lg-2">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                   Remaining Payment
-                  </div>
-                  {/* <HiMiniCurrencyRupee
-                    style={{ width: "50px", height: "50px" }}
-                  /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class="mb-0 me-2">₹ {functionCalculatePendingRevenue(true).toLocaleString()}</div>
-                  <div class="me-auto">
-                    <span class="text-green d-inline-flex align-items-center lh-1">
-                     
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div id="chart-revenue-bg" class="chart-sm"></div>
-            </div>
-          </div>
-          <div style={{width:'20%'}}  class="col-sm-6 col-lg-2">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                   Yesterday's Collection
-                  </div>
-                  {/* <HiMiniCurrencyRupee
-                    style={{ width: "50px", height: "50px" }}
-                  /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class="mb-0 me-2">₹ {functionCalculateYesterdayRevenue().toLocaleString()}</div>
-                  <div class="me-auto">
-                    <span class="text-green d-inline-flex align-items-center lh-1">
-                     
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div id="chart-revenue-bg" class="chart-sm"></div>
-            </div>
-          </div>
-          
-        </div>
-        <div className="row row-deck row-cards mt-2 mb-2">
-          <div className="dashboard-header">
-            <h1>Current Month Report</h1>
-          </div>
-          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2 ">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                    Total Matured Cases
-                  </div>
-                  {/* <GrDocumentStore style={{ width: "50px", height: "50px" }} /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class="mb-3 me-2">₹ {functionCalculateMatured().toLocaleString()}</div>
-                  <div class="me-auto">
-                    {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
-                                        </span> */}
-                  </div>
-                </div>
-                <div id="chart-new-clients" class="chart-sm"></div>
-              </div>
-            </div>
-          </div>
-          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                    Target
-                  </div>
-                  {/* <CiCalendar style={{ width: "50px", height: "50px" }} /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class=" mb-3 me-2">₹ {functionGetAmount().toLocaleString()}</div>
-                  <div class="me-auto">
-                    {/* <span class="text-yellow d-inline-flex align-items-center lh-1">
-
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
-                                        </span> */}
-                  </div>
-                </div>
-                <div id="chart-new-clients" class="chart-sm"></div>
-              </div>
-            </div>
-          </div>
-          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                   Achieved Target
-                  </div>
-                  {/* <HiMiniCurrencyRupee
-                    style={{ width: "50px", height: "50px" }}
-                  /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class=" mb-0 me-2">₹ {functionCalculateAchievedRevenue().toLocaleString()}</div>
-                  <div class="me-auto">
-                    <span class="text-green d-inline-flex align-items-center lh-1">
-                     
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div id="chart-revenue-bg" class="chart-sm"></div>
-            </div>
-          </div>
-          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                    Achieved Target Ratio
-                  </div>
-                  {/* <HiMiniCurrencyRupee
-                    style={{ width: "50px", height: "50px" }}
-                  /> */}
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class="mb-0 me-2"> {(functionCalculateAchievedRevenue()/functionGetAmount() * 100).toFixed(2)} %</div>
-                  <div class="me-auto">
-                    <span class="text-green d-inline-flex align-items-center lh-1">
-                     
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div id="chart-revenue-bg" class="chart-sm"></div>
-            </div>
-          </div>
-          <div style={{width:"20%" }} class="col-sm-6 col-lg-2">
-            <div class="card firstClass">
-              <div class="card-body">
-                <div class="d-flex align-items-center">
-                  <div
-                    class="subheader"
-                    style={{ color: "black", fontSize: "20px" }}
-                  >
-                   Last Booking Date
-                  </div>
-                 
-                </div>
-                <div class="d-flex align-items-baseline">
-                  <div style={{fontSize:'47px'}} class=" mb-0 me-2"> {functionGetLastBookingDate()}</div>
-                  <div class="me-auto">
-                    <span class="text-green d-inline-flex align-items-center lh-1">
-                   
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div id="chart-revenue-bg" class="chart-sm"></div>
-            </div>
-          </div>
-        </div>
-        <div className="card">
-          <div className="card-header employeedashboard">
-            <div className="d-flex justify-content-between">
-              <div style={{ minWidth: "14vw" }} className="dashboard-title">
-                <h2 style={{ marginBottom: "5px" }}>Data Summary</h2>
-              </div>
-              {/* <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
-                <input
-                  className=""
-                  value={searchTerm}
-                  // onChange={(e) => filterSearch(e.target.value)}
-                  // placeholder="Enter BDE Name..."
-                  style={{
-                    border: "none",
-                    padding:"0px"
-                      // Add a bottom border for the input field itself
-                   }}
-                  type="text"
-                  name="bdeName-search"
-                  id="bdeName-search"
-                />
-                 <CiSearch
-                  style={{
-                    width: "19px",
-                    height: "20px",
-                    marginRight: "5px",
-                    color: "grey"
-                  }}
-                /> 
-              </div> */}
-            </div>
-          </div>
-          <div className="card-body">
-            <div
-              id="table-default"
-              style={{
-                overflowX: "auto",
-                overflowY: "auto",
-                maxHeight: "60vh",
-              }}
-            >
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  border: "1px solid #ddd",
-                  marginBottom: "10px",
-                }}
-                className="table-vcenter table-nowrap"
-              >
-                <thead stSyle={{ backgroundColor: "grey" }}>
-                  <tr
-                    style={{
-                      backgroundColor: "#ffb900",
-                      color: "white",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    <th
+                    <div
+                      className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
+                      style={{ width: "50%" }}
+                    >
+                      <span className="input-icon-addon">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="icon"
+                          width="20"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          stroke-width="2"
+                          stroke="currentColor"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                          <path d="M21 21l-6 -6" />
+                        </svg>
+                      </span>
+                      <input
+                        className=""
+                        value={searchTermTotalSummary}
+                        onChange={(e) => filterSearchTotalSummary(e.target.value)}
+                        placeholder="Search here....."
+                        style={{
+                          border: "none",
+                          padding: "0px 0px 0px 21px",
+                          // Add a bottom border for the input field itself
+                        }}
+                        type="text"
+                        name="bdeName-search"
+                        id="bdeName-search"
+                      />
+                    </div>
+                    <div
                       style={{
-                        lineHeight: "32px",
+                        m: 1,
+                        width: "40ch",
+                        padding: "0px",
+                        marginRight: "30px",
                       }}
                     >
-                      Sr. No
-                    </th>
-                    <th>Lead Assign Date</th>
-                    <th>
-                      Untouched
-                      <SwapVertIcon
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        style={{ padding: "0px" }}
+                      >
+                        <DemoContainer components={["SingleInputDateRangeField"]}>
+                          <DateRangePicker
+                            onChange={(values) => {
+                              const startDate = moment(values[0]).format(
+                                "DD/MM/YYYY"
+                              );
+                              const endDate = moment(values[1]).format(
+                                "DD/MM/YYYY"
+                              );
+                              setSelectedDateRange([startDate, endDate]);
+                              handleSelect(values); // Call handleSelect with the selected values
+                            }}
+                            slots={{ field: SingleInputDateRangeField }}
+                            slotProps={{
+                              shortcuts: {
+                                items: shortcutsItems,
+                              },
+                              actionBar: { actions: [] },
+                              textField: {
+                                InputProps: { endAdornment: <Calendar /> },
+                              },
+                            }}
+                            //calendars={1}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    </div>
+
+                    {/* <div
+                      className="form-control d-flex align-items-center justify-content-between date-range-picker">
+                      <div>{`${formatDate(startDateTotalSummary)} - ${formatDate(endDateTotalSummary)}`}</div>
+                      <button
+                        onClick={handleIconClickTotalSummary}
                         style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
+                          border: "none",
+                          padding: "0px",
+                          backgroundColor: "white",
                         }}
-                        onClick={(e) => {
-                          let newSortType;
-                          if (sortType.untouched === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortType.untouched === "descending") {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortUntouched(newSortType);
-                        }}
-                      />
-                    </th>
-                    <th>
-                      Busy
-                      <SwapVertIcon
-                        style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
-                        }}
-                        onClick={(e) => {
-                          let newSortType;
-                          if (sortType.busy === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortType.busy === "descending") {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortBusy(newSortType);
-                        }}
-                      />
-                    </th>
-                    <th>
-                      Not Picked Up
-                      <SwapVertIcon
-                        style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
-                        }}
-                        onClick={(e) => {
-                          let newSortType;
-                          if (sortType.notPickedUp === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortType.notPickedUp === "descending") {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortNotPickedUp(newSortType);
-                        }}
-                      />
-                    </th>
-                    <th>
-                      Junk
-                      <SwapVertIcon
-                        style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
-                        }}
-                        onClick={(e) => {
-                          let newSortType;
-                          if (sortType.junk === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortType.junk === "descending") {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortJunk(newSortType);
-                        }}
-                      />
-                    </th>
-                    <th>
-                      Follow Up
-                      <SwapVertIcon
-                        style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
-                        }}
-                        onClick={(e) => {
-                          let newSortType;
-                          if (sortType.followUp === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortType.followUp === "descending") {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortFollowUp(newSortType);
-                        }}
-                      />
-                    </th>
-                    <th>
-                      Interested
-                      <SwapVertIcon
-                        style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
-                        }}
-                        onClick={(e) => {
-                          let newSortType;
-                          if (sortType.interested === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortType.interested === "descending") {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortInterested(newSortType);
-                        }}
-                      />
-                    </th>
-                    <th>
-                      Not Interested
-                      <SwapVertIcon
-                        style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
-                        }}
-                        onClick={(e) => {
-                          let newSortType;
-                          if (sortType.notInterested === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortType.notInterested === "descending") {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortNotInterested(newSortType);
-                        }}
-                      />
-                    </th>
-                    <th>
-                      Matured
-                      <SwapVertIcon
-                        style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
-                        }}
-                        onClick={(e) => {
-                          let newSortType;
-                          if (sortType.matured === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortType.matured === "descending") {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortMatured(newSortType);
-                        }}
-                      />
-                    </th>
-                    <th>
-                      Total Leads
-                      <SwapVertIcon
-                        style={{
-                          height: "15px",
-                          width: "15px",
-                          cursor: "pointer",
-                          marginLeft: "4px",
-                        }}
-                        onClick={(e) => {
-                          let newSortType;
-                          if (sortType.totalLeads === "ascending") {
-                            newSortType = "descending";
-                          } else if (sortType.totalLeads === "descending") {
-                            newSortType = "none";
-                          } else {
-                            newSortType = "ascending";
-                          }
-                          handleSortTotalLeads(newSortType);
-                        }}
-                      />
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {uniqueArray ? (
-                    uniqueArray.length !== 0 ? (
-                      uniqueArray.map((obj, index) => (
-                        <tr key={`row-${index}`}>
-                          <td
+                      >
+                        <FaRegCalendar
+                          style={{
+                            width: "17px",
+                            height: "17px",
+                            color: "#bcbaba",
+                            color: "grey",
+                          }}
+                        />
+                      </button>
+                    </div> */}
+                  </div>
+                </div>
+                {/* {dateRangeTotalSummary && (
+                  <div
+                    ref={dateRangePickerProhectionSummaryRef}
+                    className="position-absolute "
+                    style={{ zIndex: "1000", top: "14%", left: "75%" }}>
+                    <DateRangePicker
+                      ranges={[selectionRangeTotalSummary]}
+                      onClose={() => setdateRangeTotalSummary(false)}
+                      onChange={handleSelectTotalSummary}
+                    />
+                  </div>
+                )} */}
+                <div className="card-body">
+                  <div
+                    id="table-default"
+                    style={{
+                      overflowX: "auto",
+                      overflowY: "auto",
+                      maxHeight: "60vh",
+                      height: "30vh",
+                    }}
+                  >
+                    <table
+                      style={{
+                        width: "100%",
+                        borderCollapse: "collapse",
+                        border: "1px solid #ddd",
+                        marginBottom: "10px",
+                      }}
+                      className="table-vcenter table-nowrap"
+                    >
+                      <thead style={{ backgroundColor: "grey" }}>
+                        <tr
+                          className="tr-sticky"
+                          style={{
+                            backgroundColor: "#ffb900",
+                            color: "white",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          <th
                             style={{
                               lineHeight: "32px",
                             }}
                           >
-                            {index + 1}
-                          </td>
-                          <td>{obj}</td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Untouched"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Busy"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Not Picked Up"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Junk"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "FollowUp"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Interested"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Not Interested"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Matured"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj
-                              ).length
-                            }
-                          </td>
+                            Sr. No
+                          </th>
+                          <th>Company Name</th>
+                          <th>Offered Services</th>
+                          <th> Offered Price</th>
+                          <th>Expected Amount</th>
+                          <th>Remarks</th>
+                          <th>Last FollowUp Date</th>
+                          <th>Estimated Payment Date</th>
+                          <th>Action</th>
                         </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="11" style={{ textAlign: "center" }}>
-                          <Nodata />
-                        </td>
-                      </tr>
-                    )
-                  ) : (
-                    <tr style={{ minHeight: "350px" }}>
-                      <td colSpan={11}>
+                      </thead>
+                      {projectionLoading ? (
+                        <tbody>
+                          <tr>
+                            <td colSpan="11" className="LoaderTDSatyle">
+                              <ClipLoader
+                                color="lightgrey"
+                                loading
+                                size={30}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      ) : (
+                        <>
+                          {followDataFilter && followDataFilter.length > 0 ? (
+                            <>
+                              <tbody>
+                                {followDataFilter.map((obj, index) => (
+                                  <tr key={`row-${index}`}>
+                                    <td
+                                      style={{
+                                        lineHeight: "32px",
+                                      }}
+                                    >
+                                      {index + 1}
+                                    </td>
+                                    <td>{obj.companyName}</td>
+                                    <td>{obj.offeredServices.join(", ")}</td>
+                                    <td>
+                                      ₹
+                                      {obj.offeredPrize &&
+                                        obj.offeredPrize.toLocaleString()}
+                                    </td>
+                                    <td>
+                                      ₹
+                                      {obj.totalPayment &&
+                                        obj.totalPayment.toLocaleString()}
+                                    </td>
+                                    <td>{obj.remarks}</td>
+                                    <td>{obj.lastFollowUpdate}</td>
+                                    <td>{obj.estPaymentDate}</td>
+                                    <td>
+                                      <IconButton
+                                        onClick={() => {
+                                          functionopenprojection(obj.companyName);
+                                        }}
+                                      >
+                                        <RiEditCircleFill
+                                          color="grey"
+                                          style={{
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                              {followDataFilter && (
+                                <tfoot>
+                                  <tr
+                                    style={{ fontWeight: 500 }}
+                                    className="tf-sticky"
+                                  >
+                                    <td
+                                      style={{ lineHeight: "32px" }}
+                                      colSpan="2"
+                                    >
+                                      Total
+                                    </td>
+                                    <td>{offeredServices.length}</td>
+                                    <td>₹{offeredPaymentSum.toLocaleString()}</td>
+                                    <td> ₹{totalPaymentSum.toLocaleString()}</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                  </tr>
+                                </tfoot>
+                              )}
+                            </>
+                          ) : (
+                            <tr>
+                              <td colSpan="11">
+                                <Nodata />
+                              </td>
+                            </tr>
+                          )}
+                        </>
+                      )}
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-12 mt-2" id="projectiondashboardemployee">
+              <div className="card">
+                <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
+                  <div className="dashboard-title">
+                    <h2 style={{ marginBottom: "5px" }}>
+                      Todays's Projection Summary
+                    </h2>
+                  </div>
+                  <div
+                    className="d-flex justify-content-between"
+                    style={{ gap: "10px" }}
+                  >
+                    <div
+                      className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
+                      style={{ marginRight: "26px", width: "100%" }}
+                    >
+                      <span className="input-icon-addon">
+                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="icon"
+                          width="20"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          stroke-width="2"
+                          stroke="currentColor"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                          <path d="M21 21l-6 -6" />
+                        </svg>
+                      </span>
+                      <input
+                        className=""
+                        value={searchTerm}
+                        onChange={(e) => filterSearch(e.target.value)}
+                        placeholder="Search here....."
+                        style={{
+                          border: "none",
+                          padding: "0px 0px 0px 21px",
+                          // Add a bottom border for the input field itself
+                        }}
+                        type="text"
+                        name="bdeName-search"
+                        id="bdeName-search"
+                      />
+                    </div>
+                    {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
+                          <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
+                          <button
+                            onClick={handleIconClick}
+                            style={{
+                              border: "none",
+                              padding: "0px",
+                              backgroundColor: "white",
+                            }}
+                          >
+                            <FaRegCalendar
+                              style={{
+                                width: "17px",
+                                height: "17px",
+                                color: "#bcbaba",
+                                color: "grey",
+                              }}
+                            />
+                          </button>
+                        </div> */}
+                  </div>
+                </div>
+                {/* {displayDateRange && (
+                      <div
+                        ref={dateRangePickerProhectionRef}
+                        className="position-absolute "
+                        style={{ zIndex: "1", top: "20%", left: "75%" }}
+                      >
+                        <DateRangePicker
+                          ranges={[selectionRange]}
+                          onClose={() => setDateRangeDisplay(false)}
+                          onChange={handleSelect}
+                        />
+                      </div>
+                    )} */}
+                <div className="card-body">
+                  <div
+                    id="table-default"
+                    style={{
+                      overflowX: "auto",
+                      overflowY: "auto",
+                    }}
+                  >
+                    <table
+                      style={{
+                        width: "100%",
+                        borderCollapse: "collapse",
+                        border: "1px solid #ddd",
+                        marginBottom: "10px",
+                      }}
+                      className="table-vcenter table-nowrap"
+                    >
+                      <thead stSyle={{ backgroundColor: "grey" }}>
+                        <tr
+                          className="tr-sticky"
+                          style={{
+                            backgroundColor: "#ffb900",
+                            color: "white",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          <th
+                            style={{
+                              lineHeight: "32px",
+                            }}
+                          >
+                            Sr. No
+                          </th>
+                          <th>Company Name</th>
+                          <th>Contact Number</th>
+                          <th>Offered Services</th>
+                          <th>Total Offered Price</th>
+                          <th>Expected Amount</th>
+                          <th>Remarks</th>
+                          <th>Last FollowUp Date</th>
+                          <th>Estimated Payment Date</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      {projectionLoading ? (
+                        <tbody>
+                          <tr>
+                            <td colSpan="11" className="LoaderTDSatyle">
+                              <ClipLoader
+                                color="lightgrey"
+                                loading
+                                size={30}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      ) : (
+                        <>
+                          {followDataTodayFilter &&
+                          followDataTodayFilter.length > 0 ? (
+                            <>
+                              <tbody>
+                                {followDataTodayFilter.map((obj, index) => (
+                                  <tr key={`row-${index}`}>
+                                    <td
+                                      style={{
+                                        lineHeight: "32px",
+                                      }}
+                                    >
+                                      {index + 1}
+                                    </td>
+                                    <td>{obj.companyName}</td>
+                                    <td>
+                                      {tempData
+                                        .filter(
+                                          (company) =>
+                                            company["Company Name"] ===
+                                            obj.companyName
+                                        )
+                                        .map(
+                                          (filteredCompany) =>
+                                            filteredCompany["Company Number"]
+                                        )}
+                                    </td>
+                                    <td>{obj.offeredServices.join(", ")}</td>
+                                    <td>₹{obj.offeredPrize.toLocaleString()}</td>
+                                    <td>
+                                      ₹
+                                      {obj.totalPayment &&
+                                        obj.totalPayment.toLocaleString()}
+                                    </td>
+                                    <td>{obj.remarks}</td>
+                                    <td>{obj.lastFollowUpdate}</td>
+                                    <td>{obj.estPaymentDate}</td>
+                                    <td>
+                                      <IconButton
+                                        onClick={() => {
+                                          functionopenprojection(obj.companyName);
+                                        }}
+                                      >
+                                        <RiEditCircleFill
+                                          color="grey"
+                                          style={{
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                        ></RiEditCircleFill>
+                                      </IconButton>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                              <tfoot>
+                                <tr
+                                  style={{ fontWeight: 500 }}
+                                  className="tf-sticky"
+                                >
+                                  <td style={{ lineHeight: "32px" }} colSpan="2">
+                                    Total
+                                  </td>
+                                  <td>-</td>
+                                  <td>{offeredServicesFilter.length}</td>
+                                  <td>
+                                    ₹{offeredPaymentSumFilter.toLocaleString()}
+                                  </td>
+                                  <td>
+                                    ₹{totalPaymentSumFilter.toLocaleString()}
+                                  </td>
+                                  <td>-</td>
+                                  <td>-</td>
+                                  <td>-</td>
+                                  <td>-</td>
+                                </tr>
+                              </tfoot>
+                            </>
+                          ) : (
+                            <tbody>
+                              <tr>
+                                <td className="particular" colSpan="11">
+                                  <Nodata />
+                                </td>
+                              </tr>
+                            </tbody>
+                          )}
+                        </>
+                      )}
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
+
+        <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard">
+          <div className="card">
+            <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
+              <div>
+                <h2>Matured Clients Summary</h2>
+              </div>
+              <div
+                className="d-flex justify-content-between"
+                style={{ gap: "10px" }}
+              >
+                <div
+                  className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
+                  style={{ width: "50%" }}
+                >
+                  <span className="input-icon-addon">
+                    {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="20"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                      <path d="M21 21l-6 -6" />
+                    </svg>
+                  </span>
+                  <input
+                    className=""
+                    value={newSearchTerm}
+                    onChange={(e) => filterSearchBooking(e.target.value)}
+                    placeholder="Search here....."
+                    style={{
+                      border: "none",
+                      padding: "0px 0px 0px 21px",
+                      // Add a bottom border for the input field itself
+                    }}
+                    type="text"
+                    name="bdeName-search"
+                    id="bdeName-search"
+                  />
+                  {/* <CiSearch
+                    style={{
+                      width: "19px",
+                      height: "20px",
+                      marginRight: "5px",
+                      color: "grey"
+                    }} 
+                  /> */}
+                </div>
+                <div style={{ m: 1, padding: "0px", marginRight: "30px" }}>
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    style={{ padding: "0px" }}
+                  >
+                    <DemoContainer components={["SingleInputDateRangeField"]}>
+                      <DateRangePicker
+                        onChange={(values) => {
+                          const startDate = moment(values[0]).format(
+                            "DD/MM/YYYY"
+                          );
+                          const endDate = moment(values[1]).format("DD/MM/YYYY");
+                          //setSelectedDateRange([startDate, endDate]);
+                          handleSelectAnother(values); // Call handleSelect with the selected values
+                        }}
+                        slots={{ field: SingleInputDateRangeField }}
+                        slotProps={{
+                          shortcuts: {
+                            items: shortcutsItems,
+                          },
+                          actionBar: { actions: [] },
+                          textField: {
+                            InputProps: { endAdornment: <Calendar /> },
+                          },
+                        }}
+                        //calendars={1}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
+                </div>
+                {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
+                  <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
+                    {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
+                  </div>
+                  <button
+                    style={{ border: "none", padding: "0px", backgroundColor: "white" }} onClick={() => setShowBookingDate(!showBookingDate)}>
+                    <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
+                  </button>
+                </div> */}
+              </div>
+            </div>
+            {/* {showBookingDate && <div
+              ref={dateRangePickerRef}
+              style={{
+                position: "absolute",
+                top: "65px",
+                zIndex: 9,
+                right: "157px",
+              }}
+              className="booking-filter"
+            >
+              <DateRangePicker
+                direction="upward"
+                ranges={[selectionRangeAnother]}
+                onChange={handleSelectAnother}
+                onClose={() => setShowBookingDate(false)}
+                position="auto"
+              />
+            </div>} */}
+            <div className="card-body">
+              <div
+                id="table-default"
+                style={{
+                  overflowX: "auto",
+                  overflowY: "auto",
+                  maxHeight: "60vh",
+                }}
+              >
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: "1px solid #ddd",
+                    marginBottom: "10px",
+                  }}
+                  className="table-vcenter table-nowrap"
+                >
+                  <thead stSyle={{ backgroundColor: "grey" }}>
+                    <tr
+                      style={{
+                        backgroundColor: "#ffb900",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      <th style={{ lineHeight: "32px" }}>SR.NO</th>
+                      <th>BOOKING DATE & TIME</th>
+                      <th>COMPANY NAME</th>
+                      <th>COMPANY NUMBER</th>
+                      <th>COMPANY EMAIL</th>
+                      <th>SERVICES</th>
+                      <th>TOTAL PAYMENT</th>
+                      <th>RECEIVED PAYMENT</th>
+                      <th>PENDING PAYMENT</th>
+                      <th>50/50 CASE</th>
+                      <th>CLOSED/SUPPORTED BY</th>
+                      <th>REMARKS</th>
+                    </tr>
+                  </thead>
+                  {filteredBooking && filteredBooking.length > 0 ? (
+                    <>
+                      <tbody>
+                        {filteredBooking.map((mainObj, index) => (
+                          <tr key={index}>
+                            <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                            <td>{`${formatDate(mainObj.bookingDate)}(${
+                              mainObj.bookingTime
+                            })`}</td>
+                            <td>{mainObj.companyName}</td>
+                            <td>{mainObj.contactNumber}</td>
+                            <td>{mainObj.companyEmail}</td>
+                            <td>{mainObj.services[0]}</td>
+                            <td>
+                              ₹
+                              {(mainObj.bdeName !== mainObj.bdmName
+                                ? mainObj.originalTotalPayment / 2
+                                : mainObj.originalTotalPayment
+                              ).toLocaleString()}
+                            </td>
+                            <td>
+                              ₹
+                              {(mainObj.firstPayment !== 0
+                                ? mainObj.bdeName === mainObj.bdmName
+                                  ? mainObj.firstPayment // If bdeName and bdmName are the same
+                                  : mainObj.firstPayment / 2 // If bdeName and bdmName are different
+                                : mainObj.bdeName === mainObj.bdmName
+                                ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
+                                : mainObj.originalTotalPayment / 2
+                              ).toLocaleString()}{" "}
+                            </td>
+                            <td>
+                              ₹
+                              {(mainObj.firstPayment !== 0
+                                ? mainObj.bdeName === mainObj.bdmName
+                                  ? mainObj.originalTotalPayment -
+                                    mainObj.firstPayment
+                                  : (mainObj.originalTotalPayment -
+                                      mainObj.firstPayment) /
+                                    2
+                                : 0
+                              ).toLocaleString()}{" "}
+                            </td>
+                            <td>
+                              {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
+                            </td>
+                            <td>
+                              {mainObj.bdeName !== mainObj.bdmName
+                                ? mainObj.bdmType === "closeby"
+                                  ? `Closed by ${mainObj.bdmName}`
+                                  : `Supported by ${mainObj.bdmName}`
+                                : `Self Closed`}{" "}
+                            </td>
+                            <td>{mainObj.paymentRemarks}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <th colSpan={3}>
+                            <strong>Total</strong>
+                          </th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>
+                            ₹
+                            {filteredBooking
+                              .reduce((total, obj) => {
+                                return obj.bdeName === obj.bdmName
+                                  ? total + obj.originalTotalPayment
+                                  : total + obj.originalTotalPayment / 2;
+                              }, 0)
+                              .toLocaleString()}
+                          </th>
+                          <th>
+                            ₹
+                            {filteredBooking
+                              .reduce((total, obj) => {
+                                return obj.bdeName === obj.bdmName
+                                  ? obj.firstPayment === 0
+                                    ? total + obj.originalTotalPayment
+                                    : total + obj.firstPayment
+                                  : obj.firstPayment === 0
+                                  ? total + obj.originalTotalPayment / 2
+                                  : total + obj.firstPayment / 2;
+                              }, 0)
+                              .toLocaleString()}
+                          </th>
+                          <th>
+                            ₹
+                            {filteredBooking
+                              .reduce((total, obj) => {
+                                return obj.bdeName === obj.bdmName
+                                  ? obj.firstPayment === 0
+                                    ? total + obj.originalTotalPayment
+                                    : total + obj.firstPayment
+                                  : obj.firstPayment === 0
+                                  ? total + obj.originalTotalPayment / 2
+                                  : total + obj.firstPayment / 2;
+                              }, 0)
+                              .toLocaleString()}
+                          </th>
+                          <th>-</th>
+                          <th>-</th>
+                          <th>-</th>
+                        </tr>
+                      </tfoot>
+                    </>
+                  ) : filteredBooking &&
+                    filteredBooking.length === 0 &&
+                    loading ? (
+                    <tr>
+                      <td
+                        colSpan={12}
+                        style={{
+                          position: "absolute",
+                          left: "50%",
+                          textAlign: "center",
+                          verticalAlign: "middle",
+                        }}
+                      >
                         <ScaleLoader
                           color="lightgrey"
                           loading
@@ -2858,1255 +2885,20 @@ today.setDate(boom.getDate() - 1);
                           size={10}
                           height="25"
                           width="2"
-                          style={{ width: "10px", height: "10px" }}
-                          //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
                           aria-label="Loading Spinner"
                           data-testid="loader"
                         />
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr>
+                      <td colSpan={12} style={{ textAlign: "center" }}>
+                        <Nodata />
                       </td>
                     </tr>
                   )}
-                </tbody>
-                {uniqueArray && (
-                  <tfoot>
-                    <tr style={{ fontWeight: 500 }}>
-                      <td style={{ lineHeight: "32px" }} colSpan="2">
-                        Total
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) => partObj.Status === "Untouched"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter((partObj) => partObj.Status === "Busy")
-                            .length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) => partObj.Status === "Not Picked Up"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter((partObj) => partObj.Status === "Junk")
-                            .length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) => partObj.Status === "FollowUp"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) => partObj.Status === "Interested"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) => partObj.Status === "Not Interested"
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        {
-                          empData.filter(
-                            (partObj) => partObj.Status === "Matured"
-                          ).length
-                        }
-                      </td>
-                      <td>{empData.length}</td>
-                    </tr>
-                  </tfoot>
-                )}
-                {/* {uniqueArrayLoading ? (
-                  <tbody>
-                    <tr>
-                      <td colSpan="11" style={{ height: "100px !important", padding: "80px !important" }}>
-                        <ClipLoader
-                          color="lightgrey"
-                          loading
-                          size={35}
-                          height="25"
-                          width="25"
-                          aria-label="Loading Spinner"
-                          data-testid="loader"
-                        />
-                      </td>
-                    </tr>
-                  </tbody>
-                ) : (
-                  <>
-                    <tbody>
-                      {uniqueArray && uniqueArray.map((obj, index) => (
-                        <tr key={`row-${index}`}>
-                          <td
-                            style={{
-                              lineHeight: "32px",
-                            }}
-                          >
-                            {index + 1}
-                          </td>
-                          <td>{obj}</td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Untouched"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Busy"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Not Picked Up"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Junk"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "FollowUp"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Interested"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Not Interested"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj &&
-                                  partObj.Status === "Matured"
-                              ).length
-                            }
-                          </td>
-                          <td>
-                            {
-                              empData.filter(
-                                (partObj) =>
-                                  formatDate(partObj.AssignDate) === obj
-                              ).length
-                            }
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr style={{ fontWeight: 500 }}>
-                        <td style={{ lineHeight: "32px" }} colSpan="2">
-                          Total
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) => partObj.Status === "Untouched"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter((partObj) => partObj.Status === "Busy")
-                              .length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) => partObj.Status === "Not Picked Up"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter((partObj) => partObj.Status === "Junk")
-                              .length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) => partObj.Status === "FollowUp"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) => partObj.Status === "Interested"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) => partObj.Status === "Not Interested"
-                            ).length
-                          }
-                        </td>
-                        <td>
-                          {
-                            empData.filter(
-                              (partObj) => partObj.Status === "Matured"
-                            ).length
-                          }
-                        </td>
-                        <td>{empData.length}</td>
-                      </tr>
-                    </tfoot>
-                  </>
-                )}
-                {uniqueArray.length === 0 && !uniqueArrayLoading
-                  (
-                    <tbody>
-                      <tr>
-                        <td colSpan={9} className="p-2 particular">
-                          <Nodata />
-                        </td>
-                      </tr>
-                    </tbody>
-                  )} */}
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* -----------------------------------------------projection dashboard-------------------------------------------------- */}
-
-      {/* <div className="container-xl mt-2 projectiondashboard" id="projectiondashboardemployee">
-        <div className="card">
-          <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-            <div className="dashboard-title">
-              <h2 style={{ marginBottom: '5px' }}>Projection Summary</h2>
-            </div>
-            <div className="d-flex justify-content-between" style={{ gap: "10px" }}>
-              <div className=" form-control d-flex justify-content-center align-items-center general-searchbar">
-                <input
-                  className=""
-                  value={searchTerm}
-                  onChange={(e) => filterSearch(e.target.value)}
-                  placeholder="Search here....."
-                  style={{
-                    border: "none",
-                    padding: "0px"
-                    // Add a bottom border for the input field itself
-                  }}
-                  type="text"
-                  name="bdeName-search"
-                  id="bdeName-search"
-                />
-               
+                </table>
               </div>
-              <div
-                className="form-control d-flex align-items-center justify-content-between date-range-picker">
-                <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
-                <button
-                  onClick={handleIconClick}
-                  style={{
-                    border: "none",
-                    padding: "0px",
-                    backgroundColor: "white",
-                  }}
-                >
-                  <FaRegCalendar
-                    style={{
-                      width: "17px",
-                      height: "17px",
-                      color: "#bcbaba",
-                      color: "grey",
-                    }}
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-          {displayDateRange && (
-            <div
-            ref={dateRangePickerProhectionRef}
-              className="position-absolute "
-              style={{ zIndex: "1", top: "20%", left: "75%" }}
-            >
-              <DateRangePicker
-                ranges={[selectionRange]}
-                onClose={() => setDateRangeDisplay(false)}
-                onChange={handleSelect}
-              />
-            </div>
-          )}
-          <div className="card-body">
-            <div
-              id="table-default"
-              style={{
-                overflowX: "auto",
-                overflowY: "auto",
-                maxHeight: "60vh",
-              }}
-            >
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  border: "1px solid #ddd",
-                  marginBottom: "10px",
-                }}
-                className="table-vcenter table-nowrap"
-              >
-                <thead stSyle={{ backgroundColor: "grey" }}>
-                  <tr
-                    style={{
-                      backgroundColor: "#ffb900",
-                      color: "white",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    <th
-                      style={{
-                        lineHeight: "32px",
-                      }}
-                    >
-                      Sr. No
-                    </th>
-                    <th>Company Name</th>
-                    <th>Offered Services</th>
-                    <th>Total Offered Price</th>
-                    <th>Expected Amount</th>
-                    <th>Remarks</th>
-                    <th>Last FollowUp Date</th>
-                    <th>Estimated Payment Date</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredDataDateRange ? (
-                    filteredDataDateRange.map((obj, index) => (
-                      <tr key={`row-${index}`}>
-                        <td
-                          style={{
-                            lineHeight: "32px",
-                          }}
-                        >
-                          {index + 1}
-                        </td>
-                        <td>{obj.companyName}</td>
-                        <td>{obj.offeredServices.join(", ")}</td>
-                        <td>
-                          ₹
-                          {obj.totalPayment &&
-                            obj.totalPayment.toLocaleString()}
-                        </td>
-                        <td>₹{obj.offeredPrize.toLocaleString()}</td>
-                        <td>{obj.remarks}</td>
-                        <td>{obj.lastFollowUpdate}</td>
-                        <td>{obj.estPaymentDate}</td>
-                        <td>
-                          <IconButton
-                            onClick={() => {
-                              functionopenprojection(obj.companyName);
-                            }}
-                          >
-                            <RiEditCircleFill color="grey" style={{ width: "17px", height: "17px" }}></RiEditCircleFill>
-                          </IconButton>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (<tr>
-                    <td style={{ position: "absolute", left: "50%", textAlign: 'center', verticalAlign: 'middle' }}>
-                      <ScaleLoader
-                        color="lightgrey"
-                        loading
-                        cssOverride={override}
-                        size={10}
-                        //cssOverride={{ margin: '0 auto', width: "35", height: "4" }} // Adjust the size here
-                        aria-label="Loading Spinner"
-                        data-testid="loader"
-                      />
-                    </td>
-                  </tr>)}
-                </tbody>
-                {filteredDataDateRange && (
-                  <tfoot>
-                    <tr style={{ fontWeight: 500 }}>
-                      <td style={{ lineHeight: "32px" }} colSpan="2">
-                        Total
-                      </td>
-                      <td>{offeredServicesFilter.length}</td>
-                      <td> ₹{totalPaymentSumFilter.toLocaleString()}</td>
-                      <td>₹{offeredPaymentSumFilter.toLocaleString()}</td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td>-</td>
-                    </tr>
-                  </tfoot>
-                )}
-              </table>
-            </div>
-          </div>
-        </div>
-      </div> */}
-      {/* --------------------------------------------------projection dashboard new------------------------------------ */}
-
-      <div className="container-xl mt-2" style={{display: "none"}}>
-        <div className="row">
-          <div className="col-12" id="projectiontotalsummary">
-            <div className="card">
-              <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-                <div className="dashboard-title">
-                  <h2 style={{ marginBottom: "5px" }}>
-                    Total Projection Summary
-                  </h2>
-                </div>
-                <div
-                  className="d-flex justify-content-between"
-                  style={{ gap: "10px" }}
-                >
-                  <div
-                    className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
-                    style={{ width: "50%" }}
-                  >
-                    <span className="input-icon-addon">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="icon"
-                        width="20"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        fill="none"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                        <path d="M21 21l-6 -6" />
-                      </svg>
-                    </span>
-                    <input
-                      className=""
-                      value={searchTermTotalSummary}
-                      onChange={(e) => filterSearchTotalSummary(e.target.value)}
-                      placeholder="Search here....."
-                      style={{
-                        border: "none",
-                        padding: "0px 0px 0px 21px",
-                        // Add a bottom border for the input field itself
-                      }}
-                      type="text"
-                      name="bdeName-search"
-                      id="bdeName-search"
-                    />
-                  </div>
-                  <div
-                    style={{
-                      m: 1,
-                      width: "40ch",
-                      padding: "0px",
-                      marginRight: "30px",
-                    }}
-                  >
-                    <LocalizationProvider
-                      dateAdapter={AdapterDayjs}
-                      style={{ padding: "0px" }}
-                    >
-                      <DemoContainer components={["SingleInputDateRangeField"]}>
-                        <DateRangePicker
-                          onChange={(values) => {
-                            const startDate = moment(values[0]).format(
-                              "DD/MM/YYYY"
-                            );
-                            const endDate = moment(values[1]).format(
-                              "DD/MM/YYYY"
-                            );
-                            setSelectedDateRange([startDate, endDate]);
-                            handleSelect(values); // Call handleSelect with the selected values
-                          }}
-                          slots={{ field: SingleInputDateRangeField }}
-                          slotProps={{
-                            shortcuts: {
-                              items: shortcutsItems,
-                            },
-                            actionBar: { actions: [] },
-                            textField: {
-                              InputProps: { endAdornment: <Calendar /> },
-                            },
-                          }}
-                          //calendars={1}
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
-                  </div>
-
-                  {/* <div
-                    className="form-control d-flex align-items-center justify-content-between date-range-picker">
-                    <div>{`${formatDate(startDateTotalSummary)} - ${formatDate(endDateTotalSummary)}`}</div>
-                    <button
-                      onClick={handleIconClickTotalSummary}
-                      style={{
-                        border: "none",
-                        padding: "0px",
-                        backgroundColor: "white",
-                      }}
-                    >
-                      <FaRegCalendar
-                        style={{
-                          width: "17px",
-                          height: "17px",
-                          color: "#bcbaba",
-                          color: "grey",
-                        }}
-                      />
-                    </button>
-                  </div> */}
-                </div>
-              </div>
-              {/* {dateRangeTotalSummary && (
-                <div
-                  ref={dateRangePickerProhectionSummaryRef}
-                  className="position-absolute "
-                  style={{ zIndex: "1000", top: "14%", left: "75%" }}>
-                  <DateRangePicker
-                    ranges={[selectionRangeTotalSummary]}
-                    onClose={() => setdateRangeTotalSummary(false)}
-                    onChange={handleSelectTotalSummary}
-                  />
-                </div>
-              )} */}
-              <div className="card-body">
-                <div
-                  id="table-default"
-                  style={{
-                    overflowX: "auto",
-                    overflowY: "auto",
-                    maxHeight: "60vh",
-                    height: "30vh",
-                  }}
-                >
-                  <table
-                    style={{
-                      width: "100%",
-                      borderCollapse: "collapse",
-                      border: "1px solid #ddd",
-                      marginBottom: "10px",
-                    }}
-                    className="table-vcenter table-nowrap"
-                  >
-                    <thead style={{ backgroundColor: "grey" }}>
-                      <tr
-                        className="tr-sticky"
-                        style={{
-                          backgroundColor: "#ffb900",
-                          color: "white",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        <th
-                          style={{
-                            lineHeight: "32px",
-                          }}
-                        >
-                          Sr. No
-                        </th>
-                        <th>Company Name</th>
-                        <th>Offered Services</th>
-                        <th> Offered Price</th>
-                        <th>Expected Amount</th>
-                        <th>Remarks</th>
-                        <th>Last FollowUp Date</th>
-                        <th>Estimated Payment Date</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    {projectionLoading ? (
-                      <tbody>
-                        <tr>
-                          <td colSpan="11" className="LoaderTDSatyle">
-                            <ClipLoader
-                              color="lightgrey"
-                              loading
-                              size={30}
-                              aria-label="Loading Spinner"
-                              data-testid="loader"
-                            />
-                          </td>
-                        </tr>
-                      </tbody>
-                    ) : (
-                      <>
-                        {followDataFilter && followDataFilter.length > 0 ? (
-                          <>
-                            <tbody>
-                              {followDataFilter.map((obj, index) => (
-                                <tr key={`row-${index}`}>
-                                  <td
-                                    style={{
-                                      lineHeight: "32px",
-                                    }}
-                                  >
-                                    {index + 1}
-                                  </td>
-                                  <td>{obj.companyName}</td>
-                                  <td>{obj.offeredServices.join(", ")}</td>
-                                  <td>
-                                    ₹
-                                    {obj.offeredPrize &&
-                                      obj.offeredPrize.toLocaleString()}
-                                  </td>
-                                  <td>
-                                    ₹
-                                    {obj.totalPayment &&
-                                      obj.totalPayment.toLocaleString()}
-                                  </td>
-                                  <td>{obj.remarks}</td>
-                                  <td>{obj.lastFollowUpdate}</td>
-                                  <td>{obj.estPaymentDate}</td>
-                                  <td>
-                                    <IconButton
-                                      onClick={() => {
-                                        functionopenprojection(obj.companyName);
-                                      }}
-                                    >
-                                      <RiEditCircleFill
-                                        color="grey"
-                                        style={{
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                      />
-                                    </IconButton>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                            {followDataFilter && (
-                              <tfoot>
-                                <tr
-                                  style={{ fontWeight: 500 }}
-                                  className="tf-sticky"
-                                >
-                                  <td
-                                    style={{ lineHeight: "32px" }}
-                                    colSpan="2"
-                                  >
-                                    Total
-                                  </td>
-                                  <td>{offeredServices.length}</td>
-                                  <td>₹{offeredPaymentSum.toLocaleString()}</td>
-                                  <td> ₹{totalPaymentSum.toLocaleString()}</td>
-                                  <td>-</td>
-                                  <td>-</td>
-                                  <td>-</td>
-                                  <td>-</td>
-                                </tr>
-                              </tfoot>
-                            )}
-                          </>
-                        ) : (
-                          <tr>
-                            <td colSpan="11">
-                              <Nodata />
-                            </td>
-                          </tr>
-                        )}
-                      </>
-                    )}
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-12 mt-2" id="projectiondashboardemployee">
-            <div className="card">
-              <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-                <div className="dashboard-title">
-                  <h2 style={{ marginBottom: "5px" }}>
-                    Todays's Projection Summary
-                  </h2>
-                </div>
-                <div
-                  className="d-flex justify-content-between"
-                  style={{ gap: "10px" }}
-                >
-                  <div
-                    className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
-                    style={{ marginRight: "26px", width: "100%" }}
-                  >
-                    <span className="input-icon-addon">
-                      {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="icon"
-                        width="20"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        fill="none"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                        <path d="M21 21l-6 -6" />
-                      </svg>
-                    </span>
-                    <input
-                      className=""
-                      value={searchTerm}
-                      onChange={(e) => filterSearch(e.target.value)}
-                      placeholder="Search here....."
-                      style={{
-                        border: "none",
-                        padding: "0px 0px 0px 21px",
-                        // Add a bottom border for the input field itself
-                      }}
-                      type="text"
-                      name="bdeName-search"
-                      id="bdeName-search"
-                    />
-                  </div>
-                  {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
-                        <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
-                        <button
-                          onClick={handleIconClick}
-                          style={{
-                            border: "none",
-                            padding: "0px",
-                            backgroundColor: "white",
-                          }}
-                        >
-                          <FaRegCalendar
-                            style={{
-                              width: "17px",
-                              height: "17px",
-                              color: "#bcbaba",
-                              color: "grey",
-                            }}
-                          />
-                        </button>
-                      </div> */}
-                </div>
-              </div>
-              {/* {displayDateRange && (
-                    <div
-                      ref={dateRangePickerProhectionRef}
-                      className="position-absolute "
-                      style={{ zIndex: "1", top: "20%", left: "75%" }}
-                    >
-                      <DateRangePicker
-                        ranges={[selectionRange]}
-                        onClose={() => setDateRangeDisplay(false)}
-                        onChange={handleSelect}
-                      />
-                    </div>
-                  )} */}
-              <div className="card-body">
-                <div
-                  id="table-default"
-                  style={{
-                    overflowX: "auto",
-                    overflowY: "auto",
-                  }}
-                >
-                  <table
-                    style={{
-                      width: "100%",
-                      borderCollapse: "collapse",
-                      border: "1px solid #ddd",
-                      marginBottom: "10px",
-                    }}
-                    className="table-vcenter table-nowrap"
-                  >
-                    <thead stSyle={{ backgroundColor: "grey" }}>
-                      <tr
-                        className="tr-sticky"
-                        style={{
-                          backgroundColor: "#ffb900",
-                          color: "white",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        <th
-                          style={{
-                            lineHeight: "32px",
-                          }}
-                        >
-                          Sr. No
-                        </th>
-                        <th>Company Name</th>
-                        <th>Contact Number</th>
-                        <th>Offered Services</th>
-                        <th>Total Offered Price</th>
-                        <th>Expected Amount</th>
-                        <th>Remarks</th>
-                        <th>Last FollowUp Date</th>
-                        <th>Estimated Payment Date</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    {projectionLoading ? (
-                      <tbody>
-                        <tr>
-                          <td colSpan="11" className="LoaderTDSatyle">
-                            <ClipLoader
-                              color="lightgrey"
-                              loading
-                              size={30}
-                              aria-label="Loading Spinner"
-                              data-testid="loader"
-                            />
-                          </td>
-                        </tr>
-                      </tbody>
-                    ) : (
-                      <>
-                        {followDataTodayFilter &&
-                        followDataTodayFilter.length > 0 ? (
-                          <>
-                            <tbody>
-                              {followDataTodayFilter.map((obj, index) => (
-                                <tr key={`row-${index}`}>
-                                  <td
-                                    style={{
-                                      lineHeight: "32px",
-                                    }}
-                                  >
-                                    {index + 1}
-                                  </td>
-                                  <td>{obj.companyName}</td>
-                                  <td>
-                                    {tempData
-                                      .filter(
-                                        (company) =>
-                                          company["Company Name"] ===
-                                          obj.companyName
-                                      )
-                                      .map(
-                                        (filteredCompany) =>
-                                          filteredCompany["Company Number"]
-                                      )}
-                                  </td>
-                                  <td>{obj.offeredServices.join(", ")}</td>
-                                  <td>₹{obj.offeredPrize.toLocaleString()}</td>
-                                  <td>
-                                    ₹
-                                    {obj.totalPayment &&
-                                      obj.totalPayment.toLocaleString()}
-                                  </td>
-                                  <td>{obj.remarks}</td>
-                                  <td>{obj.lastFollowUpdate}</td>
-                                  <td>{obj.estPaymentDate}</td>
-                                  <td>
-                                    <IconButton
-                                      onClick={() => {
-                                        functionopenprojection(obj.companyName);
-                                      }}
-                                    >
-                                      <RiEditCircleFill
-                                        color="grey"
-                                        style={{
-                                          width: "17px",
-                                          height: "17px",
-                                        }}
-                                      ></RiEditCircleFill>
-                                    </IconButton>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                            <tfoot>
-                              <tr
-                                style={{ fontWeight: 500 }}
-                                className="tf-sticky"
-                              >
-                                <td style={{ lineHeight: "32px" }} colSpan="2">
-                                  Total
-                                </td>
-                                <td>-</td>
-                                <td>{offeredServicesFilter.length}</td>
-                                <td>
-                                  ₹{offeredPaymentSumFilter.toLocaleString()}
-                                </td>
-                                <td>
-                                  ₹{totalPaymentSumFilter.toLocaleString()}
-                                </td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                              </tr>
-                            </tfoot>
-                          </>
-                        ) : (
-                          <tbody>
-                            <tr>
-                              <td className="particular" colSpan="11">
-                                <Nodata />
-                              </td>
-                            </tr>
-                          </tbody>
-                        )}
-                      </>
-                    )}
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
-
-      <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard" style={{display: "none"}}>
-        <div className="card">
-          <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-            <div>
-              <h2>Matured Clients Summary</h2>
-            </div>
-            <div
-              className="d-flex justify-content-between"
-              style={{ gap: "10px" }}
-            >
-              <div
-                className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
-                style={{ width: "50%" }}
-              >
-                <span className="input-icon-addon">
-                  {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="icon"
-                    width="20"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                    <path d="M21 21l-6 -6" />
-                  </svg>
-                </span>
-                <input
-                  className=""
-                  value={newSearchTerm}
-                  onChange={(e) => filterSearchBooking(e.target.value)}
-                  placeholder="Search here....."
-                  style={{
-                    border: "none",
-                    padding: "0px 0px 0px 21px",
-                    // Add a bottom border for the input field itself
-                  }}
-                  type="text"
-                  name="bdeName-search"
-                  id="bdeName-search"
-                />
-                {/* <CiSearch
-                  style={{
-                    width: "19px",
-                    height: "20px",
-                    marginRight: "5px",
-                    color: "grey"
-                  }} 
-                /> */}
-              </div>
-              <div style={{ m: 1, padding: "0px", marginRight: "30px" }}>
-                <LocalizationProvider
-                  dateAdapter={AdapterDayjs}
-                  style={{ padding: "0px" }}
-                >
-                  <DemoContainer components={["SingleInputDateRangeField"]}>
-                    <DateRangePicker
-                      onChange={(values) => {
-                        const startDate = moment(values[0]).format(
-                          "DD/MM/YYYY"
-                        );
-                        const endDate = moment(values[1]).format("DD/MM/YYYY");
-                        //setSelectedDateRange([startDate, endDate]);
-                        handleSelectAnother(values); // Call handleSelect with the selected values
-                      }}
-                      slots={{ field: SingleInputDateRangeField }}
-                      slotProps={{
-                        shortcuts: {
-                          items: shortcutsItems,
-                        },
-                        actionBar: { actions: [] },
-                        textField: {
-                          InputProps: { endAdornment: <Calendar /> },
-                        },
-                      }}
-                      //calendars={1}
-                    />
-                  </DemoContainer>
-                </LocalizationProvider>
-              </div>
-              {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
-                <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
-                  {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
-                </div>
-                <button
-                  style={{ border: "none", padding: "0px", backgroundColor: "white" }} onClick={() => setShowBookingDate(!showBookingDate)}>
-                  <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
-                </button>
-              </div> */}
-            </div>
-          </div>
-          {/* {showBookingDate && <div
-            ref={dateRangePickerRef}
-            style={{
-              position: "absolute",
-              top: "65px",
-              zIndex: 9,
-              right: "157px",
-            }}
-            className="booking-filter"
-          >
-            <DateRangePicker
-              direction="upward"
-              ranges={[selectionRangeAnother]}
-              onChange={handleSelectAnother}
-              onClose={() => setShowBookingDate(false)}
-              position="auto"
-            />
-          </div>} */}
-          <div className="card-body">
-            <div
-              id="table-default"
-              style={{
-                overflowX: "auto",
-                overflowY: "auto",
-                maxHeight: "60vh",
-              }}
-            >
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  border: "1px solid #ddd",
-                  marginBottom: "10px",
-                }}
-                className="table-vcenter table-nowrap"
-              >
-                <thead stSyle={{ backgroundColor: "grey" }}>
-                  <tr
-                    style={{
-                      backgroundColor: "#ffb900",
-                      color: "white",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    <th style={{ lineHeight: "32px" }}>SR.NO</th>
-                    <th>BOOKING DATE & TIME</th>
-                    <th>COMPANY NAME</th>
-                    <th>COMPANY NUMBER</th>
-                    <th>COMPANY EMAIL</th>
-                    <th>SERVICES</th>
-                    <th>TOTAL PAYMENT</th>
-                    <th>RECEIVED PAYMENT</th>
-                    <th>PENDING PAYMENT</th>
-                    <th>50/50 CASE</th>
-                    <th>CLOSED/SUPPORTED BY</th>
-                    <th>REMARKS</th>
-                  </tr>
-                </thead>
-                {filteredBooking && filteredBooking.length > 0 ? (
-                  <>
-                    <tbody>
-                      {filteredBooking.map((mainObj, index) => (
-                        <tr key={index}>
-                          <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                          <td>{`${formatDate(mainObj.bookingDate)}(${
-                            mainObj.bookingTime
-                          })`}</td>
-                          <td>{mainObj.companyName}</td>
-                          <td>{mainObj.contactNumber}</td>
-                          <td>{mainObj.companyEmail}</td>
-                          <td>{mainObj.services[0]}</td>
-                          <td>
-                            ₹
-                            {(mainObj.bdeName !== mainObj.bdmName
-                              ? mainObj.originalTotalPayment / 2
-                              : mainObj.originalTotalPayment
-                            ).toLocaleString()}
-                          </td>
-                          <td>
-                            ₹
-                            {(mainObj.firstPayment !== 0
-                              ? mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.firstPayment // If bdeName and bdmName are the same
-                                : mainObj.firstPayment / 2 // If bdeName and bdmName are different
-                              : mainObj.bdeName === mainObj.bdmName
-                              ? mainObj.originalTotalPayment // If firstPayment is 0 and bdeName and bdmName are the same
-                              : mainObj.originalTotalPayment / 2
-                            ).toLocaleString()}{" "}
-                          </td>
-                          <td>
-                            ₹
-                            {(mainObj.firstPayment !== 0
-                              ? mainObj.bdeName === mainObj.bdmName
-                                ? mainObj.originalTotalPayment -
-                                  mainObj.firstPayment
-                                : (mainObj.originalTotalPayment -
-                                    mainObj.firstPayment) /
-                                  2
-                              : 0
-                            ).toLocaleString()}{" "}
-                          </td>
-                          <td>
-                            {mainObj.bdeName !== mainObj.bdmName ? "Yes" : "No"}
-                          </td>
-                          <td>
-                            {mainObj.bdeName !== mainObj.bdmName
-                              ? mainObj.bdmType === "closeby"
-                                ? `Closed by ${mainObj.bdmName}`
-                                : `Supported by ${mainObj.bdmName}`
-                              : `Self Closed`}{" "}
-                          </td>
-                          <td>{mainObj.paymentRemarks}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <th colSpan={3}>
-                          <strong>Total</strong>
-                        </th>
-                        <th>-</th>
-                        <th>-</th>
-                        <th>-</th>
-                        <th>
-                          ₹
-                          {filteredBooking
-                            .reduce((total, obj) => {
-                              return obj.bdeName === obj.bdmName
-                                ? total + obj.originalTotalPayment
-                                : total + obj.originalTotalPayment / 2;
-                            }, 0)
-                            .toLocaleString()}
-                        </th>
-                        <th>
-                          ₹
-                          {filteredBooking
-                            .reduce((total, obj) => {
-                              return obj.bdeName === obj.bdmName
-                                ? obj.firstPayment === 0
-                                  ? total + obj.originalTotalPayment
-                                  : total + obj.firstPayment
-                                : obj.firstPayment === 0
-                                ? total + obj.originalTotalPayment / 2
-                                : total + obj.firstPayment / 2;
-                            }, 0)
-                            .toLocaleString()}
-                        </th>
-                        <th>
-                          ₹
-                          {filteredBooking
-                            .reduce((total, obj) => {
-                              return obj.bdeName === obj.bdmName
-                                ? obj.firstPayment === 0
-                                  ? total + obj.originalTotalPayment
-                                  : total + obj.firstPayment
-                                : obj.firstPayment === 0
-                                ? total + obj.originalTotalPayment / 2
-                                : total + obj.firstPayment / 2;
-                            }, 0)
-                            .toLocaleString()}
-                        </th>
-                        <th>-</th>
-                        <th>-</th>
-                        <th>-</th>
-                      </tr>
-                    </tfoot>
-                  </>
-                ) : filteredBooking &&
-                  filteredBooking.length === 0 &&
-                  loading ? (
-                  <tr>
-                    <td
-                      colSpan={12}
-                      style={{
-                        position: "absolute",
-                        left: "50%",
-                        textAlign: "center",
-                        verticalAlign: "middle",
-                      }}
-                    >
-                      <ScaleLoader
-                        color="lightgrey"
-                        loading
-                        cssOverride={override}
-                        size={10}
-                        height="25"
-                        width="2"
-                        aria-label="Loading Spinner"
-                        data-testid="loader"
-                      />
-                    </td>
-                  </tr>
-                ) : (
-                  <tr>
-                    <td colSpan={12} style={{ textAlign: "center" }}>
-                      <Nodata />
-                    </td>
-                  </tr>
-                )}
-              </table>
             </div>
           </div>
         </div>

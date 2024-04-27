@@ -117,12 +117,14 @@ function AdminEmployeeTeamLeads() {
     const [dataStatus, setdataStatus] = useState("All");
     const [currentPage, setCurrentPage] = useState(0);
     const [formOpen, setFormOpen] = useState(false);
+    const [maturedID, setMaturedID] = useState("");
     const secretKey = process.env.REACT_APP_SECRET_KEY;
     const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
     const itemsPerPage = 500;
     const [currentData, setCurrentData] = useState([])
     const [BDMrequests, setBDMrequests] = useState(null);
     const startIndex = currentPage * itemsPerPage;
+    const [currentForm, setCurrentForm] = useState(null);
     const endIndex = startIndex + itemsPerPage;
     const [teamleadsData, setTeamLeadsData] = useState([]);
     const [teamData, setTeamData] = useState([])
@@ -777,6 +779,28 @@ function AdminEmployeeTeamLeads() {
             setOpenAnchor(true);
         }, 1000);
     };
+    const closeAnchor = () => {
+        setOpenAnchor(false);
+      };
+      const fetchRedesignedFormData = async () => {
+        try {
+          console.log(maturedID);
+          const response = await axios.get(
+            `${secretKey}/redesigned-final-leadData`
+          );
+          const data = response.data.find((obj) => obj.company === maturedID);
+          console.log(data);
+          setCurrentForm(data);
+        } catch (error) {
+          console.error("Error fetching data:", error.message);
+        }
+      };
+      useEffect(() => {
+        console.log("Matured ID Changed", maturedID);
+        if (maturedID) {
+          fetchRedesignedFormData();
+        }
+      }, [maturedID]);
 
     const handleDelete = async (company) => {
         const companyName = company;
@@ -2183,6 +2207,7 @@ function AdminEmployeeTeamLeads() {
                                                 <th>
                                                     Bde Forward Date
                                                 </th>
+                                                {(bdmNewStatus === "Untouched" || bdmNewStatus === "Matured") && <th>Action</th>}
                                                 {/* {bdmNewStatus === "Untouched" && <th>Action</th>} */}
                                                 {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                                                     <th>Add Projection</th>
@@ -2294,8 +2319,8 @@ function AdminEmployeeTeamLeads() {
                                                         bdmNewStatus === "NotInterested") && (
                                                             <>
                                                                 <td>
-                                                                    {company.bdmStatus === "Matured" || company.bdmOnRequest ? (
-                                                                        <span>{company.bdmStatus} {"("}{company.bdmOnRequest && "Requested"}{")"}</span>
+                                                                    {company.bdmStatus === "Matured"  ? (
+                                                                        <span>{company.bdmStatus} </span>
                                                                     ) : (
                                                                         <select
                                                                             style={{
@@ -2440,6 +2465,30 @@ function AdminEmployeeTeamLeads() {
                                                             </td>
                                                         )
                                                     } */}
+                                                     {
+                                                        bdmNewStatus === "Matured" && <>
+                                                        <td>
+                                                        <IconButton
+                                          style={{ marginRight: "5px" }}
+                                          onClick={() => {
+                                            setMaturedID(company._id);
+
+                                            functionopenAnchor();
+                                          }}
+                                        >
+                                          <IconEye
+                                            style={{
+                                              width: "14px",
+                                              height: "14px",
+                                              color: "#d6a10c",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </IconButton>
+
+                                                        </td>
+                                                        </>
+                                                    }
                                                     {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                                                         <td>
                                                             {company &&
@@ -3354,6 +3403,34 @@ function AdminEmployeeTeamLeads() {
                     </div>
                 </Drawer>
             </div>
+              {/*  --------------------------------     Bookings View Sidebar   --------------------------------------------- */}
+              <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
+        <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
+          <div className="LeadFormPreviewDrawar-header">
+            <div className="Container">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <h2 className="title m-0 ml-1">
+                    {currentForm ? currentForm["Company Name"] : "Company Name"}
+                  </h2>
+                </div>
+                <div>
+                  <IconButton onClick={closeAnchor}>
+                    <CloseIcon />
+                  </IconButton>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <LeadFormPreview
+              setOpenAnchor={setOpenAnchor}
+              currentLeadForm={currentForm}
+            />
+          </div>
+        </div>
+      </Drawer>
+
 
 
         </div>
