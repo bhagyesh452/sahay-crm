@@ -2223,7 +2223,7 @@ function EmployeeParticular() {
                                       </td>
                                     </>
                                   )}
-                                  {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints || company.feedbackRemarks) && (
+                                  {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints.length !== 0 || company.feedbackRemarks) && (
                                     <td>
                                       <IconButton onClick={() => {
                                         handleViewFeedback(
@@ -2238,7 +2238,7 @@ function EmployeeParticular() {
                                           width: "17px",
                                           height: "17px",
                                         }}
-                                          color="grey" /></IconButton>
+                                          color="#fbb900" /></IconButton>
                                     </td>
                                   )}
                                 </tr>
@@ -2679,60 +2679,97 @@ function EmployeeParticular() {
         maxWidth="xs"
       >
         <DialogTitle>
-          <span style={{ fontSize: "14px" }}>{feedbackCompany}</span>
-          <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
-            <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
+          <div className="d-flex align-items-center justify-content-between">
+            <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" > {feedbackCompany}</span></div>
+            <div>
+            <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
+              <CloseIcon color="primary"></CloseIcon>
+            </IconButton>{" "}
+            </div>
+          </div>
         </DialogTitle>
         <DialogContent>
           <div className="remarks-content">
-            {feedbackRemarks || feedbakPoints ? (
+            {(feedbackRemarks || feedbakPoints) && (
               <div className="col-sm-12">
+                <div className="card RemarkCard position-relative">
+                  <div>A. How was the quality of Information?</div>
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints[0]}
+                    min={0}
+                    max={10}
+                    valueLabelDisplay="on"
+                  />
+                </div>
+                <div className="card RemarkCard position-relative">
+                  <div>B. How was the clarity of communication with lead?</div>
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints[1]}
+                    min={0}
+                    max={10}
+                    valueLabelDisplay="on"
+                  />
+                </div>
+                <div className="card RemarkCard position-relative">
+                  <div>C. How was the accuracy of lead qualification?</div>
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints[2]}
+                    min={0}
+                    max={10}
+                    valueLabelDisplay="on"
+                  />
+                </div>
+                <div className="card RemarkCard position-relative">
+                  <div>D. How was engagement level of lead?</div>
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints[3]}
+                    min={0}
+                    max={10}
+                    valueLabelDisplay="on"
+                  />
+                </div>
+                <div className="card RemarkCard position-relative">
+                  <div>E. Payment Chances?</div>
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints[3]}
+                    min={0}
+                    max={100}
+                    valueLabelDisplay="on"
+                  />
+                </div>
+                <div className="card RemarkCard position-relative">
+                  <div>e. Payment Chances</div>
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints[4]}
+                    min={0}
+                    max={100}
+                    valueLabelDisplay="on"
+                  />
+                </div>
                 <div className="card RemarkCard position-relative">
                   <div className="d-flex justify-content-between">
                     <div className="reamrk-card-innerText">
-                      <pre className="mt-5 pt-4">
-                        {/* <Slider
-                        defaultValue={feedbakPoints}
-                        //getAriaValueText={feedbakPoints} 
-                        //value={valueSlider}
-                        //onChange={(e) => { handleSliderChange(e.target.value) }}
-                        sx={{ zIndex: "99999999", color: "#ffb900" }}
-                        min={0}
-                        max={10}
-                        disabled
-                        aria-label="Disabled slider"
-                        valueLabelDisplay="on" 
-                        valueLabelFormat={feedbakPoints}
-                        /> */}
-                        <IOSSlider
-                          aria-label="ios slider"
-                          disabled
-                          defaultValue={feedbakPoints}
-                          min={0}
-                          max={10}
-                          valueLabelDisplay="on"
-                        />
-                      </pre>
                       <pre className="remark-text">{feedbackRemarks}</pre>
                     </div>
                   </div>
-
-                  {/* <div className="d-flex card-dateTime justify-content-between">
-                      <div className="date">{historyItem.date}</div>
-                      <div className="time">{historyItem.time}</div>
-                    </div> */}
                 </div>
-              </div>
-            ) : (
-              <div className="text-center overflow-hidden">
-                No Remarks History
               </div>
             )}
           </div>
         </DialogContent>
       </Dialog>
-
 
       {/* View Bookings Page */}
       <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>

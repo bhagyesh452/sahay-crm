@@ -1135,7 +1135,7 @@ app.post("/api/post-feedback-remarks/:companyId", async (req, res) => {
   const companyId = req.params.companyId;
   const feedbackPoints = req.body.feedbackPoints;
   const feedbackRemarks = req.body.feedbackRemarks;
-  console.log("feedbackPoints" , feedbackPoints)
+  //console.log("feedbackPoints" , feedbackPoints)
   try {
     await TeamLeadsModel.findByIdAndUpdate(companyId, {
       feedbackPoints: feedbackPoints,
