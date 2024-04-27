@@ -2,7 +2,14 @@ body {
   margin: 0;
   overflow: overlay;
 }
-
+.page-wrapper {
+  display: flex;
+  flex: 1 1;
+  flex-direction: column;
+  height: calc(100vh - 112px)  !important;
+  overflow: hidden  !important;
+  overflow-y: scroll !important;
+}
 /* Firefox */
 * {
   scrollbar-width: thin;
@@ -1016,8 +1023,8 @@ color: #4e884e;
 /******************************STEPER CSS FOR LIVE*****************************/
 .css-1uvydh2
 {
-  padding: 6px 4px 6px 11px  !important;
-  font-size: 14px !important;
+  font-size: 12px !important;
+  padding: 11px 4px 11px 11px !important;
 }
 .css-1tewkwq
 {
@@ -1601,6 +1608,86 @@ color: #4e884e;
 .feedback-slider{
   z-index: 9999;
 }
+
+/******************** Dashboard Start ********************/
+
+.dashboard-headings
+{
+  padding: 10px 15px;
+}
+.dash-card-1
+{
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.dash-card-1-head {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 12px;
+  font-weight: bold;
+  color: #5d5d5d;
+}
+.dash-card-1-body {
+  padding: 2px 10px;
+  border-bottom: 1px solid #eee;
+  font-weight: bold;
+  color: #585858;
+}
+.dash-card-1-num
+{
+  font-size: 24px;
+}
+.dash-card-1-icon
+{
+
+}
+.clr-1ac9bd
+{
+  color: #1ac9bd;
+}
+.clr-ffb900
+{
+  color: #ffb900;
+}
+.clr-4299e1
+{
+  color: #4299e1;
+}
+.clr-1cba19
+{
+  color:#1cba19
+}
+.clr-e65b5b
+{
+  color: #e65b5b;
+}
+.clr-00d19d
+{
+  color: #00d19d;
+}
+.dash-card-1-head2
+{
+  font-size: 12px;
+  font-weight: 500;
+  padding: 10px 0px;
+}
+.dashIconImg
+{
+  opacity: 0.2;
+  /* position: absolute;
+  right: -10px;
+  bottom: -10px; */
+}
+.dashIconImg img
+{
+  width: 52px;
+  /* rotate: 346deg; */
+}
+/******************** Dashboard End ********************/
+
 .hide-placeholder::-webkit-input-placeholder {
   color: transparent !important;
 }

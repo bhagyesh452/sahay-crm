@@ -4903,38 +4903,59 @@ app.post(
     
           <!--Step 3 Start-->
           <div style="width: 98%; margin: 10px auto">
-            <!-- Step's heading -->
-            <div style="display: flex; align-items: center">
-              <div style="
-                    width: 30px;
-                    height: 30px;
-                    line-height: 30px;
-                    border-radius: 100px;
-                    background: #fbb900;
-                    text-align: center;
-                    font-weight: bold;
-                    color: #fff;
-                  ">
-                3
-              </div>
-              <div style="margin-left: 10px">Services And Payment Details</div>
-            </div>
-            <!-- Step's Table -->
+          <!-- Step's heading -->
+          <div style="display: flex; align-items: center">
             <div style="
-                  background: #f7f7f7;
-                  padding: 15px;
-                  border-radius: 10px;
-                  position: relative;
-                  margin-top: 15px;
+                  width: 30px;
+                  height: 30px;
+                  line-height: 30px;
+                  border-radius: 100px;
+                  background: #fbb900;
+                  text-align: center;
+                  font-weight: bold;
+                  color: #fff;
                 ">
-              <div style="display: flex; flex-wrap: wrap">
+              3
+            </div>
+            <div style="margin-left: 10px">Services And Payment Details</div>
+          </div>
+          <!-- Step's Table -->
+          <div style="
+                background: #f7f7f7;
+                padding: 15px;
+                border-radius: 10px;
+                position: relative;
+                margin-top: 15px;
+              ">
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  Total Selected Services
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.services.length}
+                </div>
+              </div>
+            </div>
+           ${servicesHtmlContent}
+            <div style="display: flex; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    Total Selected Services
+                    CA Case
                   </div>
                 </div>
                 <div style="width: 75%">
@@ -4943,14 +4964,73 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                      ${newData.services.length}
+                      ${newData.caCase}
                   </div>
                 </div>
-              </div>
-             ${servicesHtmlContent}
-             
             </div>
+             <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Number
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caNumber}
+                  </div>
+                </div>
+            </div>
+            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Email
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caEmail}
+                  </div>
+                </div>
+            </div>
+            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Commission
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caCommission}
+                  </div>
+                </div>
+            </div>
+
           </div>
+        </div>
           <!-- Step 3 Ends -->
     
           <!--Step 4 Start-->
@@ -7250,6 +7330,86 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
               </div>
             </div>
            ${servicesHtmlContent}
+            <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Case
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caCase}
+                  </div>
+                </div>
+            </div>
+             <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Number
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caNumber}
+                  </div>
+                </div>
+            </div>
+            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Email
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caEmail}
+                  </div>
+                </div>
+            </div>
+            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Commission
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caCommission}
+                  </div>
+                </div>
+            </div>
 
           </div>
         </div>

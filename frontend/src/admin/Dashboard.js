@@ -2713,7 +2713,7 @@ function Dashboard() {
                                         (item) =>
                                           item.designation ===
                                           "Sales Executive" &&
-                                          item.targetDetails.length !== 0
+                                          item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
                                       )
                                       .map((obj, index) => (
                                         <>
