@@ -88,12 +88,18 @@ const CompanySchema = new mongoose.Schema({
     type:Boolean,
     default : false
   },
+  // feedbackPoints:{
+  //   type:Number
+  // },
   feedbackPoints:{
-    type:Number
+    type:Array,
   },
   feedbackRemarks:{
     type:String
-  }
+  },
+  bdmNextFollowUpDate:{
+    type:Date
+  },
 });
 
 const TeamLeadsModel = mongoose.model('teamleadsmodel', CompanySchema);

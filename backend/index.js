@@ -50,6 +50,7 @@ const crypto = require("crypto");
 const TeamModel = require("./models/TeamModel.js");
 const TeamLeadsModel = require("./models/TeamLeads.js");
 const RequestMaturedModel = require("./models/RequestMatured.js");
+const InformBDEModel = require("./models/InformBDE.js");
 // const { Cashfree } = require('cashfree-pg');
 
 // const http = require('http');
@@ -722,7 +723,7 @@ app.post("/api/update-remarks/:id", async (req, res) => {
     // Update remarks and fetch updated data in a single operation
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
 
-    await TeamLeadsModel.findByIdAndUpdate(id, { bdmRemarks: Remarks });
+    await TeamLeadsModel.findByIdAndUpdate(id, { Remarks: Remarks ,  bdmRemarks: Remarks });
 
     // Fetch updated data and remarks history
     const updatedCompany = await CompanyModel.findById(id);
@@ -1028,13 +1029,14 @@ app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
 
 app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
-  const { bdmAcceptStatus } = req.body;
+  const { bdmAcceptStatus , bdmName } = req.body;
   try {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
 
     await CompanyModel.findByIdAndUpdate(id, {
       bdmAcceptStatus: bdmAcceptStatus,
+      bdmName:bdmName
     }); // Corrected update
 
     res.status(200).json({ message: "Status updated successfully" });
@@ -1131,8 +1133,9 @@ app.put("/api/teaminfo/:teamId" , async(req , res)=>{
 
 app.post("/api/post-feedback-remarks/:companyId", async (req, res) => {
   const companyId = req.params.companyId;
-  const { feedbackPoints, feedbackRemarks } = req.body;
-
+  const feedbackPoints = req.body.feedbackPoints;
+  const feedbackRemarks = req.body.feedbackRemarks;
+  console.log("feedbackPoints" , feedbackPoints)
   try {
     await TeamLeadsModel.findByIdAndUpdate(companyId, {
       feedbackPoints: feedbackPoints,
@@ -1606,6 +1609,44 @@ app.post("/api/postData", async (req, res) => {
   res.json({ message: "Data posted successfully" });
 });
 
+app.post(`/api/post-bdenextfollowupdate/:id` , async(req , res)=>{
+  const companyId = req.params.id;
+ 
+  const bdeNextFollowUpDate = new Date(req.body.bdeNextFollowUpDate)
+
+  console.log(bdeNextFollowUpDate)
+  
+  try{
+    await CompanyModel.findByIdAndUpdate(companyId , {bdeNextFollowUpDate : bdeNextFollowUpDate})
+
+    
+    res.status(200).json({ message: "Date Updated successfully"});
+
+  }catch(error){
+    console.error("Error fetching Date:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
+
+app.post(`/api/post-bdmnextfollowupdate/:id` , async(req , res)=>{
+  const companyId = req.params.id;
+ 
+  const bdmNextFollowUpDate = new Date(req.body.bdmNextFollowUpDate)
+
+  console.log(bdmNextFollowUpDate)
+  
+  try{
+    await TeamLeadsModel.findByIdAndUpdate(companyId , {bdmNextFollowUpDate : bdmNextFollowUpDate})
+
+    
+    res.status(200).json({ message: "Date Updated successfully"});
+
+  }catch(error){
+    console.error("Error fetching Date:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
+
 app.get("/api/recent-updates", async (req, res) => {
   try {
     // Fetch all data from the RecentUpdatesModel
@@ -1678,6 +1719,8 @@ app.post("/api/assign-leads-newbdm", async (req, res) => {
   
       // Update TeamLeadsModel for the specific data
       await TeamLeadsModel.updateOne({ _id: data._id }, updatedObj);
+
+      await CompanyModel.findByIdAndUpdate({_id:data._id} , {bdmName : newemployeeSelection} )
   
       // Delete objects from RemarksHistory collection that match the "Company Name"
       //await RemarksHistory.deleteMany({ companyID: data._id });
@@ -1694,7 +1737,8 @@ app.post("/api/assign-leads-newbdm", async (req, res) => {
         ...data,
         ename: newemployeeSelection,
         AssignDate: new Date(),
-        bdmAcceptStatus : bdmAcceptStatus
+        bdmAcceptStatus : bdmAcceptStatus,
+        bdmName:"NoOne"
         
       };
       //console.log("updated" , updatedObj)
@@ -4859,38 +4903,59 @@ app.post(
     
           <!--Step 3 Start-->
           <div style="width: 98%; margin: 10px auto">
-            <!-- Step's heading -->
-            <div style="display: flex; align-items: center">
-              <div style="
-                    width: 30px;
-                    height: 30px;
-                    line-height: 30px;
-                    border-radius: 100px;
-                    background: #fbb900;
-                    text-align: center;
-                    font-weight: bold;
-                    color: #fff;
-                  ">
-                3
-              </div>
-              <div style="margin-left: 10px">Services And Payment Details</div>
-            </div>
-            <!-- Step's Table -->
+          <!-- Step's heading -->
+          <div style="display: flex; align-items: center">
             <div style="
-                  background: #f7f7f7;
-                  padding: 15px;
-                  border-radius: 10px;
-                  position: relative;
-                  margin-top: 15px;
+                  width: 30px;
+                  height: 30px;
+                  line-height: 30px;
+                  border-radius: 100px;
+                  background: #fbb900;
+                  text-align: center;
+                  font-weight: bold;
+                  color: #fff;
                 ">
-              <div style="display: flex; flex-wrap: wrap">
+              3
+            </div>
+            <div style="margin-left: 10px">Services And Payment Details</div>
+          </div>
+          <!-- Step's Table -->
+          <div style="
+                background: #f7f7f7;
+                padding: 15px;
+                border-radius: 10px;
+                position: relative;
+                margin-top: 15px;
+              ">
+            <div style="display: flex; flex-wrap: wrap">
+              <div style="width: 25%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                  Total Selected Services
+                </div>
+              </div>
+              <div style="width: 75%">
+                <div style="
+                      border: 1px solid #ccc;
+                      font-size: 12px;
+                      padding: 5px 10px;
+                    ">
+                    ${newData.services.length}
+                </div>
+              </div>
+            </div>
+           ${servicesHtmlContent}
+            <div style="display: flex; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    Total Selected Services
+                    CA Case
                   </div>
                 </div>
                 <div style="width: 75%">
@@ -4899,14 +4964,73 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                      ${newData.services.length}
+                      ${newData.caCase}
                   </div>
                 </div>
-              </div>
-             ${servicesHtmlContent}
-             
             </div>
+             <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Number
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caNumber}
+                  </div>
+                </div>
+            </div>
+            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Email
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caEmail}
+                  </div>
+                </div>
+            </div>
+            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Commission
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caCommission}
+                  </div>
+                </div>
+            </div>
+
           </div>
+        </div>
           <!-- Step 3 Ends -->
     
           <!--Step 4 Start-->
@@ -5492,9 +5616,22 @@ app.post("/api/matured-case-request", async (req, res) => {
   }
 });
 
-app.get("/api/matured-get-requests", async (req, res) => {
+// app.get("/api/matured-get-requests", async (req, res) => {
+//   try {
+//     const request = await RequestMaturedModel.find();
+//     res.status(200).json(request);
+//   } catch (error) {
+//     res
+//       .status(400)
+//       .json({ success: false, message: "Error fetching the data" });
+//   }
+// });
+app.get("/api/inform-bde-requests/:bdeName", async (req, res) => {
   try {
-    const request = await RequestMaturedModel.find();
+    const bdeName = req.params.bdeName;
+    const request = await InformBDEModel.find({
+      bdeName
+    });
     res.status(200).json(request);
   } catch (error) {
     res
@@ -5562,21 +5699,39 @@ app.post("/api/update-bdm-Request/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-app.delete("/api/delete-bdm-Request/:id", async (req, res) => {
+// app.delete("/api/delete-bdm-Request/:id", async (req, res) => {
+//   try {
+//     const _id = req.params.id;
+
+//     // Find the BDM request by ID and delete it
+//     const deletedRequest = await RequestMaturedModel.findByIdAndDelete(_id);
+//     const changeStatus = await TeamLeadsModel.findOneAndUpdate(
+//       {
+//         "Company Name": deletedRequest["Company Name"],
+//       },
+//       {
+//         bdmOnRequest: false,
+//       },
+//       { new: true }
+//     );
+
+//     if (!deletedRequest) {
+//       return res.status(404).json({ message: "BDM request not found" });
+//     }
+
+//     res.status(200).json({ message: "BDM request deleted successfully" });
+//   } catch (error) {
+//     console.error("Error deleting BDM request:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
+app.delete("/api/delete-inform-Request/:id", async (req, res) => {
   try {
     const _id = req.params.id;
 
     // Find the BDM request by ID and delete it
-    const deletedRequest = await RequestMaturedModel.findByIdAndDelete(_id);
-    const changeStatus = await TeamLeadsModel.findOneAndUpdate(
-      {
-        "Company Name": deletedRequest["Company Name"],
-      },
-      {
-        bdmOnRequest: false,
-      },
-      { new: true }
-    );
+    const deletedRequest = await InformBDEModel.findByIdAndDelete(_id);
+  
 
     if (!deletedRequest) {
       return res.status(404).json({ message: "BDM request not found" });
@@ -6537,6 +6692,13 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         },
         { new: true }
       );
+      const date = new Date()
+      await InformBDEModel.create({
+        bdeName : teamData.ename,
+        bdmName : teamData.bdmName,
+        "Company Name": teamData["Company Name"],
+        date:date
+      })
      
     }
 
@@ -6776,8 +6938,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const recipients = [
       newData.bdeEmail,
       newData.bdmEmail,
-      // "bookings@startupsahay.com",
-      // "documents@startupsahay.com",
+      "bookings@startupsahay.com",
+      "documents@startupsahay.com",
       
     ];
     const serviceNames = newData.services
@@ -7168,6 +7330,86 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
               </div>
             </div>
            ${servicesHtmlContent}
+            <div style="display: flex; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Case
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caCase}
+                  </div>
+                </div>
+            </div>
+             <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Number
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caNumber}
+                  </div>
+                </div>
+            </div>
+            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Email
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caEmail}
+                  </div>
+                </div>
+            </div>
+            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+                <div style="width: 25%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                    CA Commission
+                  </div>
+                </div>
+                <div style="width: 75%">
+                  <div style="
+                        border: 1px solid #ccc;
+                        font-size: 12px;
+                        padding: 5px 10px;
+                      ">
+                      ${newData.caCommission}
+                  </div>
+                </div>
+            </div>
 
           </div>
         </div>

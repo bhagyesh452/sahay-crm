@@ -3582,8 +3582,8 @@ const mainAdminName =  localStorage.getItem("adminName");
                       <th>State</th>
                       <th>Company Email</th>
                       <th>Status</th>
-                      <th>Remarks</th>
-                      {dataStatus !== "Unassigned" && <th>Assigned to</th>}
+                      {dataStatus !== "Unassigned" && <th>Remarks</th>}
+                    
                       <th>Uploaded By</th>
                       {dataStatus!=="Unassigned" &&  <th>Assigned to</th>}
 
@@ -3663,7 +3663,7 @@ const mainAdminName =  localStorage.getItem("adminName");
                           <td>{company["State"]}</td>
                           <td>{company["Company Email"]}</td>
                           <td>{company["Status"]}</td>
-                          <td >
+                          {dataStatus!=="Unassigned" && <td >
                             <div style={{ width: "100px" }} className="d-flex align-items-center justify-content-between">
                               <p className="rematkText text-wrap m-0">
                                 {company["Remarks"]}{" "}
@@ -3683,8 +3683,8 @@ const mainAdminName =  localStorage.getItem("adminName");
                                 />
                               </div>
                             </div>
-                          </td>
-                          {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
+                          </td>}
+                          
                           <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
                          {dataStatus !== "Unassigned" && <td>{company["ename"]}</td>}
                           <td>{formatDateFinal(company["AssignDate"])}</td>
