@@ -36,6 +36,35 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import moment from "moment";
 import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
 import dayjs from "dayjs";
+import { GoDatabase } from "react-icons/go";
+import { ChartContainer } from '@mui/x-charts';
+import {
+  LinePlot,
+  MarkPlot,
+  lineElementClasses,
+  markElementClasses,
+} from '@mui/x-charts/LineChart';
+import successImg from "../static/my-images/success.png"
+import TotalAmount from "../static/my-images/salary.png"
+import advance from "../static/my-images/advance.png"
+import pending from "../static/my-images/pending.png"
+import yesterday from "../static/my-images/yesterday.png"
+import target from "../static/my-images/target.png"
+import booking_date from "../static/my-images/booking_date.png"
+import achivement from "../static/my-images/achivement.png"
+import ratio from "../static/my-images/ratio.png"
+
+
+const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
+const xLabels = [
+  'Page A',
+  'Page B',
+  'Page C',
+  'Page D',
+  'Page E',
+  'Page F',
+  'Page G',
+];
 
 function EmployeeDashboard() {
   const { userId } = useParams();
@@ -1744,20 +1773,318 @@ today.setDate(boom.getDate() - 1);
     <div>
       <Header name={data.ename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
-      <div className="container-xl mt-2">
+      <div className="page-wrapper">
+        {/* Lead Report Dashboard Numbers */}
+        <div className="dashboard-headings container-xl">
+          <h3 className="m-0">Leads Report</h3>
+        </div>
+        <div className="dashboard-dtl-main">
+          <div className="container-xl">
+            <div className="row">
+              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div className="dash-card-1">
+                  <div className="dash-card-1-head">TOTAL LEADS</div>
+                  <div className="dash-card-1-body">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="dash-card-1-num clr-1ac9bd">
+                        500
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div className="dash-card-1">
+                  <div className="dash-card-1-head">INTERESTED LEADS</div>
+                  <div className="dash-card-1-body">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="dash-card-1-num clr-ffb900">
+                        12
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div className="dash-card-1">
+                  <div className="dash-card-1-head">FOLLOW UP LEADS</div>
+                  <div className="dash-card-1-body">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="dash-card-1-num clr-4299e1">
+                        20
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div className="dash-card-1">
+                  <div className="dash-card-1-head">MATURED LEADS</div>
+                  <div className="dash-card-1-body">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="dash-card-1-num clr-1cba19">
+                        05
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div className="dash-card-1">
+                  <div className="dash-card-1-head">NOT INTERESTED LEADS</div>
+                  <div className="dash-card-1-body">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="dash-card-1-num clr-e65b5b">
+                        100
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div className="dash-card-1">
+                  <div className="dash-card-1-head">BDE FORWARDED LEADS</div>
+                  <div className="dash-card-1-body">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="dash-card-1-num clr-00d19d" >
+                        50
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Today's Report in Numbers */}
+        <div className="dashboard-headings container-xl">
+          <h3 className="m-0">Today's Report</h3>
+        </div>
+        <div className="dashboard-dtl-main">
+          <div className="container-xl">
+            <div className="row">
+              <div class="col">
+                <div class="dash-card-1">
+                  <div class="dash-card-1-body">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-1-head2">MATURED CASES</div>
+                        </div>
+                        <div className="dash-card-1-num mb-1 clr-e65b5b" >
+                          50
+                        </div>
+                      </div>
+                      <div className="dashIconImg">
+                        <img src={successImg}/>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="dash-card-1">
+                  <div class="dash-card-1-body">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-1-head2">TOTAL REVENUE</div>
+                        </div>
+                        <div className="dash-card-1-num mb-1 clr-1cba19" >
+                          ₹ 2,000
+                        </div>
+                      </div>
+                      <div className="dashIconImg">
+                        <img src={TotalAmount}/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="dash-card-1">
+                  <div class="dash-card-1-body">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-1-head2">ADVANCE COLLECTED</div>
+                        </div>
+                        <div className="dash-card-1-num mb-1 clr-1ac9bd" >
+                          ₹ 2,000
+                        </div>
+                      </div>
+                      <div className="dashIconImg">
+                        <img src={advance}/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="dash-card-1">
+                  <div class="dash-card-1-body">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-1-head2">REMAINING PAYMENT</div>
+                        </div>
+                        <div className="dash-card-1-num mb-1 clr-ffb900" >
+                          ₹ 2,000
+                        </div>
+                      </div>
+                      <div className="dashIconImg">
+                        <img src={pending}/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="dash-card-1">
+                  <div class="dash-card-1-body">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-1-head2">YESTERDAY'S COLLECTIONS</div>
+                        </div>
+                        <div className="dash-card-1-num mb-1 clr-4299e1" >
+                          ₹ 2,000
+                        </div>
+                      </div>
+                      <div className="dashIconImg">
+                        <img src={yesterday}/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Current Month Reports Report in Numbers */}
+        <div className="dashboard-headings container-xl">
+          <h3 className="m-0">Current Month Report</h3>
+        </div>
+        <div className="dashboard-dtl-main">
+          <div className="container-xl">
+            <div className="row">
+              <div class="col">
+                <div class="dash-card-1">
+                  <div class="dash-card-1-body">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-1-head2">TOTAL MATURED CASES</div>
+                        </div>
+                        <div className="dash-card-1-num mb-1 clr-e65b5b" >
+                          50
+                        </div>
+                      </div>
+                      <div className="dashIconImg">
+                        <img src={successImg}/>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="dash-card-1">
+                  <div class="dash-card-1-body">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-1-head2">TARGET</div>
+                        </div>
+                        <div className="dash-card-1-num mb-1 clr-1cba19" >
+                          ₹ 5,20,000
+                        </div>
+                      </div>
+                      <div className="dashIconImg">
+                        <img src={target}/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="dash-card-1">
+                  <div class="dash-card-1-body">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-1-head2">ACHIEVED TARGET</div>
+                        </div>
+                        <div className="dash-card-1-num mb-1 clr-1ac9bd" >
+                          ₹ 2,000
+                        </div>
+                      </div>
+                      <div className="dashIconImg">
+                        <img src={achivement}/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="dash-card-1">
+                  <div class="dash-card-1-body">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-1-head2">ACHIEVED TARGET RATIO</div>
+                        </div>
+                        <div className="dash-card-1-num mb-1 clr-ffb900" >
+                          66%
+                        </div>
+                      </div>
+                      <div className="dashIconImg">
+                        <img src={ratio}/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="dash-card-1">
+                  <div class="dash-card-1-body">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-1-head2">LAST BOOKING DATE</div>
+                        </div>
+                        <div className="dash-card-1-num mb-1 clr-4299e1" >
+                          02/06/2023
+                        </div>
+                      </div>
+                      <div className="dashIconImg">
+                        <img src={booking_date}/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="container-xl mt-2" style={{display: "none"}}>
         <div className="row row-deck row-cards mt-2">
           <div className="dashboard-header">
             <h1>Leads Report</h1>
           </div>
-          <div style={{width:"20%"}}  class="col-sm-6 col-lg-2 ">
+          <div class="col-sm-6 col-lg-2 ">
             <div class="card firstClass">
+              <div class="card-header subheader">
+              Total Leads
+              </div>
               <div class="card-body">
                 <div class="d-flex align-items-center">
                   <div
                     class="subheader"
                     style={{ color: "black", fontSize: "20px" }}
                   >
-                    Total Leads
                   </div>
                   {/* <GrDocumentStore style={{ width: "50px", height: "50px" }} /> */}
                 </div>
@@ -2971,7 +3298,7 @@ today.setDate(boom.getDate() - 1);
       </div> */}
       {/* --------------------------------------------------projection dashboard new------------------------------------ */}
 
-      <div className="container-xl mt-2">
+      <div className="container-xl mt-2" style={{display: "none"}}>
         <div className="row">
           <div className="col-12" id="projectiontotalsummary">
             <div className="card">
@@ -3483,7 +3810,7 @@ today.setDate(boom.getDate() - 1);
 
       {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
 
-      <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard">
+      <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard" style={{display: "none"}}>
         <div className="card">
           <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
             <div>
