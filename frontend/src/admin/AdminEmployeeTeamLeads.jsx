@@ -1094,8 +1094,7 @@ function AdminEmployeeTeamLeads() {
          console.log(newemployeeSelection , data , bdmAcceptStatus)
           // Add the promise for updating CompanyModel to the array
           updatePromises.push(
-            axios.post(`${secretKey}/assign-leads-newbdm`, {
-               
+            axios.post(`${secretKey}/assign-leads-newbdm`, { 
               newemployeeSelection,
               data: updatedObj,
               bdmAcceptStatus ,
@@ -1110,6 +1109,7 @@ function AdminEmployeeTeamLeads() {
     
           // Clear the selection
           setnewEmployeeSelection("Not Alloted");
+          fetchTeamLeadsData();
     
           Swal.fire({
             title: "Data Sent!",
@@ -1346,6 +1346,15 @@ function AdminEmployeeTeamLeads() {
         // Initiate drag selection
         setStartRowIndex(filteredData.findIndex((row) => row._id === id));
     };
+
+    function formatDateNow(timestamp) {
+        const date = new Date(timestamp);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+        const year = date.getFullYear();
+        return `${year}-${month}-${day}`;
+      }
+    
 
 
 
@@ -2133,6 +2142,7 @@ function AdminEmployeeTeamLeads() {
                                                 <th>BDE Name</th>
                                                 <th>Company Number</th>
                                                 <th>BDE Status</th>
+                                                {bdmNewStatus === "FollowUp" && (<th>Next FollowUp Date</th>)}
                                                 <th>Remarks</th>
                                                 {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "NotInterested") && (
                                                     <>
@@ -2214,6 +2224,7 @@ function AdminEmployeeTeamLeads() {
                                                     <td>
                                                         {company.Status}
                                                     </td>
+                                                    {bdmNewStatus === "FollowUp" && (<td>{formatDateNew(company.bdmNextFollowUpDate)}</td>)}
                                                     <td>
                                                         <div
                                                             key={company._id}

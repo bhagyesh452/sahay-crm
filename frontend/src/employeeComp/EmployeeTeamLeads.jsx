@@ -178,9 +178,9 @@ function EmployeeTeamLeads() {
 
     const fetchTeamLeadsData = async (status) => {
         const bdmName = data.ename
-        try {
+        try {  
             const response = await axios.get(`${secretKey}/forwardedbybdedata/${bdmName}`)
-
+            console.log(response.data)
 
 
 
@@ -344,6 +344,7 @@ function EmployeeTeamLeads() {
             if (isDeleted) {
                 const response = await axios.post(`${secretKey}/teamleads-rejectdata/${cid}`, {
                     bdmAcceptStatus: "NotForwarded",
+                    bdmName: "NoOne"
                 })
                 const response2 = await axios.post(`${secretKey}/update-remarks/${cid}`, {
                     Remarks,
@@ -890,17 +891,25 @@ function EmployeeTeamLeads() {
     const [openFeedback, setOpenFeedback] = useState(false)
     const [feedbackCompanyName, setFeedbackCompanyName] = useState("")
     const [valueSlider, setValueSlider] = useState(0)
+    const [valueSlider2, setValueSlider2] = useState(0)
+    const [valueSlider3, setValueSlider3] = useState(0)
+    const [valueSlider4, setValueSlider4] = useState(0)
+    const [valueSlider5, setValueSlider5] = useState(0)
     const [feedbackRemarks, setFeedbackRemarks] = useState("")
     const [companyFeedbackId, setCompanyFeedbackId] = useState("")
     const [isEditFeedback, setIsEditFeedback] = useState(false)
 
-    const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackRemarks, bdmStatus) => {
+    const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints,companyFeedbackPoints2,companyFeedbackPoints3,companyFeedbackPoints4,companyFeedbackPoints5, companyFeedbackRemarks, bdmStatus) => {
         setOpenFeedback(true)
         setFeedbackCompanyName(companyName)
         setCompanyFeedbackId(companyId)
         //setFeedbackRemarks(companyFeedbackRemarks)
         debouncedFeedbackRemarks(companyFeedbackRemarks)
         setValueSlider(companyFeedbackPoints)
+        setValueSlider2(companyFeedbackPoints2)
+        setValueSlider3(companyFeedbackPoints3)
+        setValueSlider4(companyFeedbackPoints4)
+        setValueSlider5(companyFeedbackPoints5)
         setBdmNewStatus(bdmStatus)
         //setIsEditFeedback(true)
     }
@@ -916,12 +925,30 @@ function EmployeeTeamLeads() {
         setIsEditFeedback(false)
     }
 
-    const handleSliderChange = (valueSlider) => {
-        setValueSlider(valueSlider)
+    const handleSliderChange = (value, sliderNumber) => {
+        switch (sliderNumber) {
+            case 1:
+                setValueSlider(value);
+                break;
+            case 2:
+                setValueSlider2(value);
+                break;
+            case 3:
+                setValueSlider3(value);
+                break;
+            case 4:
+                setValueSlider4(value);
+                break;
+            case 5:
+                setValueSlider5(value);
+                break;
+            default:
+                break;
+        }
+    };
+    
 
-    }
-
-    //console.log("valueSlider", valueSlider, feedbackRemarks)
+    console.log("valueSlider", valueSlider, valueSlider2, valueSlider3, valueSlider4, valueSlider5)
 
 
 
@@ -934,28 +961,55 @@ function EmployeeTeamLeads() {
     );
 
     const handleFeedbackSubmit = async () => {
-        const response = await axios.post(`${secretKey}/post-feedback-remarks/${companyFeedbackId}`, {
-            feedbackPoints: valueSlider,
+        const data = {
+            feedbackPoints: [valueSlider,valueSlider2,valueSlider3,valueSlider4,valueSlider5],
             feedbackRemarks: feedbackRemarks,
-        })
-
+        };
+    
         try {
+            const response = await axios.post(`${secretKey}/post-feedback-remarks/${companyFeedbackId}`, data
+            );
+    
             if (response.status === 200) {
-                Swal.fire("Feedback Updated")
+                Swal.fire("Feedback Updated");
                 fetchTeamLeadsData(bdmNewStatus);
                 setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmNewStatus)
-                    .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
-                handleCloseFeedback()
+                    .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)));
+                handleCloseFeedback();
                 //setdataStatus(bdmNewStatus)
             }
+        } catch (error) {
+            Swal.fire("Error sending feedback");
+            console.log("error", error.message);
+        }
+    };
+    
+
+    const [nextFollowUpdate, setNextFollowUpDate] = useState(null)
+
+    const functionSubmitNextFollowUpDate = async (nextFollowUpdate, companyId, companyStatus) => {
+
+        const data = {
+            bdmNextFollowUpDate: nextFollowUpdate
+        }
+        try {
+            const resposne = await axios.post(`${secretKey}/post-bdmnextfollowupdate/${companyId}`, data)
+
+            console.log(resposne.data)
+            fetchTeamLeadsData(companyStatus)
 
         } catch (error) {
-
-            Swal.fire("Error sending feedback")
-            console.log("error", error.message)
-
+            console.log("Error submitting Date", error)
         }
 
+    }
+
+    function formatDateNow(timestamp) {
+        const date = new Date(timestamp);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+        const year = date.getFullYear();
+        return `${year}-${month}-${day}`;
     }
 
   //  ----------------------------------------  Filterization Process ---------------------------------------------
@@ -1769,6 +1823,11 @@ function EmployeeTeamLeads() {
                                                         <th>Bdm Remarks</th>
                                                     </>
                                                 )}
+
+                                                {bdmNewStatus === "FollowUp" && (
+                                                    <th>Next FollowUp Date</th>
+                                                )}
+
                                                 <th>
                                                     Incorporation Date
                                                 </th>
@@ -1967,6 +2026,20 @@ function EmployeeTeamLeads() {
 
                                                             </>
                                                         )}
+                                                    {bdmNewStatus === "FollowUp" && (
+                                                        <td> <input style={{ border: "none" }}
+                                                            type="date"
+                                                            value={formatDateNow(company.bdmNextFollowUpDate)}
+                                                            onChange={(e) => {
+                                                                //setNextFollowUpDate(e.target.value);
+                                                                functionSubmitNextFollowUpDate(e.target.value,
+                                                                    company._id,
+                                                                    company.bdmStatus
+                                                                );
+                                                            }}
+                                                        //className="hide-placeholder"
+                                                        /></td>
+                                                    )}
                                                     <td>
                                                         {formatDateNew(
                                                             company["Company Incorporation Date  "]
@@ -2077,7 +2150,11 @@ function EmployeeTeamLeads() {
                                                                         handleOpenFeedback(
                                                                             company["Company Name"],
                                                                             company._id,
-                                                                            company.feedbackPoints,
+                                                                            company.feedbackPoints[0],
+                                                                            company.feedbackPoints[1],
+                                                                            company.feedbackPoints[2],
+                                                                            company.feedbackPoints[3],
+                                                                            company.feedbackPoints[4],
                                                                             company.feedbackRemarks,
                                                                             company.bdmStatus
                                                                         )
@@ -2260,7 +2337,7 @@ function EmployeeTeamLeads() {
                         // matured={true}
                         // companysId={companyId}
                         // setDataStatus={setdataStatus}
-                      
+
                         setFormOpen={setFormOpen}
                         companysName={maturedBooking["Company Name"]}
                         companysEmail={maturedBooking["Company Email"]}
@@ -2434,7 +2511,7 @@ function EmployeeTeamLeads() {
             </Dialog>
             {/* --------------------------------------------------------- dialog for feedback----------------------------------------- */}
 
-            <Dialog
+            {/* <Dialog
                 open={openFeedback}
                 onClose={handleCloseFeedback}
                 fullWidth
@@ -2498,7 +2575,135 @@ function EmployeeTeamLeads() {
                     </div>
 
                 </DialogContent>
+            </Dialog> */}
+
+            <Dialog
+                open={openFeedback}
+                onClose={handleCloseFeedback}
+                fullWidth
+                maxWidth="xs">
+                <DialogTitle>
+                    <span style={{ fontSize: "11px" }}>
+                        BDM Feedback for {feedbackCompanyName}
+                    </span>
+                    <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
+                        <CloseIcon color="primary" style={{ width: "16px", height: "16px" }}></CloseIcon>
+                    </IconButton>{" "}
+                    {(valueSlider && feedbackRemarks) ? (<IconButton
+                        onClick={() => {
+                            setIsEditFeedback(true);
+                        }}
+                        style={{ float: "right" }}>
+                        <EditIcon color="grey" style={{ width: "16px", height: "16px" }}></EditIcon>
+                    </IconButton>) : (null)}
+                </DialogTitle>
+                <DialogContent>
+
+                    <div className="card-body mt-5">
+                        <div className="mt-1">
+                            <div>a. How was the quality of Information?</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 1) }} // Pass slider number as 1
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={10}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled={!isEditFeedback} />
+                            </div>
+                        </div>
+                        <div className="mt-1">
+                            <div>b. How was the clarity of communication with lead?</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider2}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 2) }} // Pass slider number as 2
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={10}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled={!isEditFeedback} />
+                            </div>
+                        </div>
+                        <div className="mt-1">
+                            <div>c. How was the accuracy of lead qualification?</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider3}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 3) }} // Pass slider number as 3
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={10}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled={!isEditFeedback} />
+                            </div>
+                        </div>
+                        <div className="mt-1">
+                            <div>d. How was engagement level of lead?</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider4}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 4) }} // Pass slider number as 4
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={10}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled={!isEditFeedback} />
+                            </div>
+                        </div>
+                        <div className="mt-1">
+                            <div>e. Payment Chances</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider5}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 5) }} // Pass slider number as 5
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={100}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled={!isEditFeedback} />
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer mt-4">
+                        <div class="mb-3 remarks-input">
+                            <textarea
+                                placeholder="Add Remarks Here...  "
+                                className="form-control"
+                                id="remarks-input"
+                                rows="3"
+                                value={feedbackRemarks}
+                                onChange={(e) => {
+                                    debouncedFeedbackRemarks(e.target.value);
+                                }}
+                                disabled={!isEditFeedback}
+                            ></textarea>
+                        </div>
+                        <button
+                            onClick={handleFeedbackSubmit}
+                            type="submit"
+                            className="btn btn-primary"
+                            style={{ width: "100%" }}
+                        >
+                            Submit
+                        </button>
+                    </div>
+
+                </DialogContent>
             </Dialog>
+
 
 
 

@@ -723,7 +723,7 @@ app.post("/api/update-remarks/:id", async (req, res) => {
     // Update remarks and fetch updated data in a single operation
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
 
-    await TeamLeadsModel.findByIdAndUpdate(id, { bdmRemarks: Remarks });
+    await TeamLeadsModel.findByIdAndUpdate(id, { Remarks: Remarks ,  bdmRemarks: Remarks });
 
     // Fetch updated data and remarks history
     const updatedCompany = await CompanyModel.findById(id);
@@ -1029,13 +1029,14 @@ app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
 
 app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
-  const { bdmAcceptStatus } = req.body;
+  const { bdmAcceptStatus , bdmName } = req.body;
   try {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
 
     await CompanyModel.findByIdAndUpdate(id, {
       bdmAcceptStatus: bdmAcceptStatus,
+      bdmName:bdmName
     }); // Corrected update
 
     res.status(200).json({ message: "Status updated successfully" });
@@ -1132,8 +1133,9 @@ app.put("/api/teaminfo/:teamId" , async(req , res)=>{
 
 app.post("/api/post-feedback-remarks/:companyId", async (req, res) => {
   const companyId = req.params.companyId;
-  const { feedbackPoints, feedbackRemarks } = req.body;
-
+  const feedbackPoints = req.body.feedbackPoints;
+  const feedbackRemarks = req.body.feedbackRemarks;
+  console.log("feedbackPoints" , feedbackPoints)
   try {
     await TeamLeadsModel.findByIdAndUpdate(companyId, {
       feedbackPoints: feedbackPoints,
@@ -1607,6 +1609,44 @@ app.post("/api/postData", async (req, res) => {
   res.json({ message: "Data posted successfully" });
 });
 
+app.post(`/api/post-bdenextfollowupdate/:id` , async(req , res)=>{
+  const companyId = req.params.id;
+ 
+  const bdeNextFollowUpDate = new Date(req.body.bdeNextFollowUpDate)
+
+  console.log(bdeNextFollowUpDate)
+  
+  try{
+    await CompanyModel.findByIdAndUpdate(companyId , {bdeNextFollowUpDate : bdeNextFollowUpDate})
+
+    
+    res.status(200).json({ message: "Date Updated successfully"});
+
+  }catch(error){
+    console.error("Error fetching Date:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
+
+app.post(`/api/post-bdmnextfollowupdate/:id` , async(req , res)=>{
+  const companyId = req.params.id;
+ 
+  const bdmNextFollowUpDate = new Date(req.body.bdmNextFollowUpDate)
+
+  console.log(bdmNextFollowUpDate)
+  
+  try{
+    await TeamLeadsModel.findByIdAndUpdate(companyId , {bdmNextFollowUpDate : bdmNextFollowUpDate})
+
+    
+    res.status(200).json({ message: "Date Updated successfully"});
+
+  }catch(error){
+    console.error("Error fetching Date:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
+
 app.get("/api/recent-updates", async (req, res) => {
   try {
     // Fetch all data from the RecentUpdatesModel
@@ -1679,6 +1719,8 @@ app.post("/api/assign-leads-newbdm", async (req, res) => {
   
       // Update TeamLeadsModel for the specific data
       await TeamLeadsModel.updateOne({ _id: data._id }, updatedObj);
+
+      await CompanyModel.findByIdAndUpdate({_id:data._id} , {bdmName : newemployeeSelection} )
   
       // Delete objects from RemarksHistory collection that match the "Company Name"
       //await RemarksHistory.deleteMany({ companyID: data._id });
@@ -1695,7 +1737,8 @@ app.post("/api/assign-leads-newbdm", async (req, res) => {
         ...data,
         ename: newemployeeSelection,
         AssignDate: new Date(),
-        bdmAcceptStatus : bdmAcceptStatus
+        bdmAcceptStatus : bdmAcceptStatus,
+        bdmName:"NoOne"
         
       };
       //console.log("updated" , updatedObj)

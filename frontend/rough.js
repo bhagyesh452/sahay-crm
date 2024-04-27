@@ -477,3 +477,16 @@
 
 // export default Team;
 
+ {/* <Slider
+                        defaultValue={feedbakPoints}
+                        //getAriaValueText={feedbakPoints} 
+                        //value={valueSlider}
+                        //onChange={(e) => { handleSliderChange(e.target.value) }}
+                        sx={{ zIndex: "99999999", color: "#ffb900" }}
+                        min={0}
+                        max={10}
+                        disabled
+                        aria-label="Disabled slider"
+                        valueLabelDisplay="on" 
+                        valueLabelFormat={feedbakPoints}
+                        /> */}

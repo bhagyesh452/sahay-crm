@@ -196,12 +196,15 @@ function EmployeePanel() {
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const { userId } = useParams();
+  const [nextFollowUpdate, setNextFollowUpDate] = useState(null)
   //console.log(userId);
 
   const playNotificationSound = () => {
     const audio = new Audio(notificationSound);
     audio.play();
   };
+
+  console.log(nextFollowUpdate)
 
   function convertDateFormat(dateString) {
     // Check if dateString is undefined or null
@@ -396,24 +399,41 @@ function EmployeePanel() {
   // console.log("currentcompanyname", currentCompanyName);
 
   const [opeRemarksEdit, setOpenRemarksEdit] = useState(false);
+  const [openPopupByBdm, setOpenPopupByBdm] = useState(false)
 
   const functionopenpopupremarksEdit = (
     companyID,
     companyStatus,
     companyName
   ) => {
-    setOpenRemarksEdit(true);
-    setFilteredRemarks(
-      remarksHistory.filter((obj) => obj.companyID === companyID)
-    );
-    // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
-    setcid(companyID);
-    setCstat(companyStatus);
-    setCurrentCompanyName(companyName);
+    if (openPopupByBdm) {
+      setOpenRemarksEdit(true);
+      setFilteredRemarks(
+        remarksHistory.filter((obj) => obj.companyID === companyID && !obj.bdmName)
+      );
+      // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+      setcid(companyID);
+      setCstat(companyStatus);
+      setCurrentCompanyName(companyName);
+
+
+    } else {
+      setOpenRemarksEdit(true);
+      setFilteredRemarks(
+        remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName)
+      );
+      // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+      setcid(companyID);
+      setCstat(companyStatus);
+      setCurrentCompanyName(companyName);
+
+    }
+
   };
 
   const closePopUpRemarksEdit = () => {
     setOpenRemarksEdit(false);
+    //setOpenPopupByBdm(false);
   };
   const debouncedSetChangeRemarks = useCallback(
     debounce((value) => {
@@ -473,11 +493,17 @@ function EmployeePanel() {
       setData(userData);
       setmoreFilteredData(userData);
 
-      const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork)
+      console.log(userData.bdmName)
 
-      setBdmNames(bdmNames.map((obj) => obj.ename))
-
-
+      if (userData.bdmWork) {
+        const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork && !userData.ename.includes(employee.ename))
+        console.log(bdmNames)
+        setBdmNames(bdmNames.map((obj) => obj.ename))
+      } else {
+        const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork)
+        setBdmNames(bdmNames.map((obj) => obj.ename))
+        console.log(bdmNames)
+      }
 
       //console.log("data" , userData)
 
@@ -1079,6 +1105,15 @@ function EmployeePanel() {
     return `${day}/${month}/${year}`;
   }
 
+  function formatDateNow(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  }
+
+
   // Request form for Employees
 
   const [selectedYear, setSelectedYear] = useState("");
@@ -1162,7 +1197,7 @@ function EmployeePanel() {
     setSelectedOption(event.target.value);
   };
 
-  const handleSubmitData = async(e) => {
+  const handleSubmitData = async (e) => {
     e.preventDefault();
 
     if (cname === "") {
@@ -1209,21 +1244,21 @@ function EmployeePanel() {
         Swal.fire({
           title: "Lead Request Sent!",
           text: "Your Request has been sent to the Data Manager!",
-          html:'Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896', 
+          html: 'Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896',
           icon: "success",
         });
         fetchNewData();
         closepopupNew();
       })
-      .catch((error) => {
-        console.error("Error sending data:", error);
-        Swal.fire({
-          title: "This lead already exists in the Start-Up Sahay's database.",
-          text: "For further assistance, please contact the Data Analyst.",
-          html: `Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896`,
+        .catch((error) => {
+          console.error("Error sending data:", error);
+          Swal.fire({
+            title: "This lead already exists in the Start-Up Sahay's database.",
+            text: "For further assistance, please contact the Data Analyst.",
+            html: `Data Analyst Details:<br>Name: PavanSinh Vaghela<br>Number: 9998954896`,
+          });
+
         });
-        
-      });
       // axios
       //   .post(`${secretKey}/manual`, {
       //     "Company Name": cname.toUpperCase().trim(),
@@ -1246,7 +1281,7 @@ function EmployeePanel() {
       //     "Director Email(Third)": directorEmailThird,
       //     "UploadedBy": data.ename
       //   })
-     
+
     }
   };
 
@@ -1428,7 +1463,7 @@ function EmployeePanel() {
   //   console.log(formatDateFromExcel(item["Company Incorporation Date  "]))
   // })
 
-  
+
   const handleUploadData = async (e) => {
     const name = data.ename;
     const updatedCsvdata = csvdata.map((data) => ({
@@ -2119,12 +2154,16 @@ function EmployeePanel() {
   const [feedbackRemarks, setFeedbackRemarks] = useState("")
   const [feedbackPopupOpen, setFeedbackPopupOpen] = useState(false)
   const [feedbackCompany, setFeedbackCompany] = useState("")
+
   const handleViewFeedback = (companyId, companyName, companyFeedbackRemarks, companyFeedbackPoints) => {
     setFeedbackPopupOpen(true)
     setFeedbackPoints(companyFeedbackPoints)
     setFeedbackRemarks(companyFeedbackRemarks)
     setFeedbackCompany(companyName)
   }
+
+  console.log(feedbakPoints)
+
   const closeFeedbackPopup = () => {
     setFeedbackPopupOpen(false)
   }
@@ -2340,7 +2379,7 @@ function EmployeePanel() {
         bdmAcceptStatus: bdmNewAcceptStatus,
         bdeForwardDate: new Date(),
         bdeOldStatus: bdeOldStatus,
-                          // Assuming bdmName is defined elsewhere in your component
+        // Assuming bdmName is defined elsewhere in your component
       });
       Swal.fire('Company Forwarded', '', 'success');
       //setdataStatus("Forwarded"); 
@@ -2387,7 +2426,7 @@ function EmployeePanel() {
           {
             companyName,
             bdmAcceptStatus: "NotForwarded",
-            bdmName:"NoOne" // Corrected parameter name
+            bdmName: "NoOne" // Corrected parameter name
           }
         );
         // console.log("response", response.data);
@@ -2574,6 +2613,26 @@ function EmployeePanel() {
       // Handle the error or display a message to the user
     }
   };
+
+
+  // ------------------------------- Next Follow Up Date -------------------------------------------------------------------
+
+  const functionSubmitNextFollowUpDate = async (nextFollowUpdate, companyId, companyStatus) => {
+
+    const data = {
+      bdeNextFollowUpDate: nextFollowUpdate
+    }
+    try {
+      const resposne = await axios.post(`${secretKey}/post-bdenextfollowupdate/${companyId}`, data)
+
+      console.log(resposne.data)
+      fetchNewData(companyStatus)
+
+    } catch (error) {
+      console.log("Error submitting Date", error)
+    }
+
+  }
 
 
 
@@ -3079,7 +3138,7 @@ function EmployeePanel() {
                           </a>
                         </div>
                       </div>
-                      <div className="request" style={{ marginRight: "15px"  }}>
+                      <div className="request" style={{ marginRight: "15px" }}>
                         <div className="btn-list">
                           <button
                             onClick={functionopenpopupNew}
@@ -3406,8 +3465,10 @@ function EmployeePanel() {
                             <th className="th-sticky1">Company Name</th>
                             <th>Company Number</th>
                             <th>Status</th>
+                            {dataStatus === "FollowUp" && (<th>Next FollowUp Date</th>)}
                             {dataStatus === "Forwarded" && <th>Bdm Status</th>}
-                            <th>Remarks</th>
+                            {dataStatus === "Forwarded" ? (<th>BDE Remarks</th>) : (<th>Remarks</th>)}
+                            {dataStatus === "Forwarded" && <th>BDM Remarks</th>}
 
                             <th>
                               Incorporation Date
@@ -3607,7 +3668,7 @@ function EmployeePanel() {
                             {dataStatus === "Forwarded" && (<>
                               <th>BDM Name</th>
                               <th>Forwarded Date</th>
-                          </>  )}
+                            </>)}
 
                             {(dataStatus === "Forwarded" ||
                               dataStatus === "Interested" ||
@@ -3819,6 +3880,19 @@ function EmployeePanel() {
                                     )} */}
                                   </td>
                                 )}
+                                {dataStatus === "FollowUp" && <td>
+                                  <input style={{ border: "none" }}
+                                    type="date"
+                                    value={formatDateNow(company.bdeNextFollowUpDate)}
+                                    onChange={(e) => {
+                                      //setNextFollowUpDate(e.target.value);
+                                      functionSubmitNextFollowUpDate(e.target.value,
+                                        company._id,
+                                        company["Status"]
+                                      );
+                                    }}
+                                  //className="hide-placeholder"
+                                  /></td>}
                                 <td>
                                   <div
                                     key={company._id}
@@ -3846,6 +3920,7 @@ function EmployeePanel() {
                                             company.Status,
                                             company["Company Name"]
                                           );
+                                          setOpenPopupByBdm(false);
                                           setCurrentRemarks(company.Remarks);
                                           setCompanyId(company._id);
                                         }}
@@ -3857,6 +3932,7 @@ function EmployeePanel() {
                                               company.Status,
                                               company["Company Name"]
                                             );
+                                            setOpenPopupByBdm(false);
                                             setCurrentRemarks(company.Remarks);
                                             setCompanyId(company._id);
                                           }}
@@ -3875,6 +3951,7 @@ function EmployeePanel() {
                                             company.Status,
                                             company["Company Name"]
                                           );
+                                          setOpenPopupByBdm(false);
                                           setCurrentRemarks(company.Remarks);
                                           setCompanyId(company._id);
                                         }}
@@ -3891,6 +3968,30 @@ function EmployeePanel() {
                                     )}
                                   </div>
                                 </td>
+                                {dataStatus === "Forwarded" && <td>
+                                  {company.Remarks}
+                                  <IconButton
+                                    onClick={() => {
+                                      functionopenpopupremarksEdit(
+                                        company._id,
+                                        company.Status,
+                                        company["Company Name"]
+                                      );
+                                      setOpenPopupByBdm(true);
+                                      setCurrentRemarks(company.Remarks);
+                                      setCompanyId(company._id);
+                                    }}
+                                  >
+                                    <IconEye
+                                      style={{
+                                        width: "14px",
+                                        height: "14px",
+                                        color: "#d6a10c",
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  </IconButton>
+                                </td>}
 
                                 <td>
                                   {formatDateNew(
@@ -3984,9 +4085,9 @@ function EmployeePanel() {
                                     </>
                                   )}
                                 {dataStatus === "Forwarded" && (<>
-                                  {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) :(<td></td>)}
+                                  {company.bdmName !== "NoOne" ? (<td>{company.bdmName}</td>) : (<td></td>)}
                                   <td>{formatDateNew(company.bdeForwardDate)}</td>
-                               </> )}
+                                </>)}
                                 {/* {dataStatus === "Forwarded" && (
                                   <td>
                                     {company.bdmAcceptStatus ===
@@ -5409,40 +5510,66 @@ function EmployeePanel() {
             {feedbackRemarks || feedbakPoints ? (
               <div className="col-sm-12">
                 <div className="card RemarkCard position-relative">
+                <div>a. How was the quality of Information?</div>
                   <IOSSlider className="mt-4"
                     aria-label="ios slider"
                     disabled
-                    defaultValue={feedbakPoints}
+                    defaultValue={feedbakPoints[0]}
                     min={0}
                     max={10}
                     valueLabelDisplay="on"
                   />
+                </div>
+                <div className="card RemarkCard position-relative">
+                <div>b. How was the clarity of communication with lead?</div>
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints[1]}
+                    min={0}
+                    max={10}
+                    valueLabelDisplay="on"
+                  />
+                </div>
+                <div className="card RemarkCard position-relative">
+                <div>c. How was the accuracy of lead qualification?</div>
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints[2]}
+                    min={0}
+                    max={10}
+                    valueLabelDisplay="on"
+                  />
+                </div>
+                <div className="card RemarkCard position-relative">
+                <div>d. How was engagement level of lead?</div>
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints[3]}
+                    min={0}
+                    max={10}
+                    valueLabelDisplay="on"
+                  />
+                </div>
+                <div className="card RemarkCard position-relative">
+                <div>e. Payment Chances</div>
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints[4]}
+                    min={0}
+                    max={100}
+                    valueLabelDisplay="on"
+                  />
+                </div>
+                <div className="card RemarkCard position-relative">
                   <div className="d-flex justify-content-between">
                     <div className="reamrk-card-innerText">
-                      <pre className="pt-4">
-                        {/* <Slider
-                        defaultValue={feedbakPoints}
-                        //getAriaValueText={feedbakPoints} 
-                        //value={valueSlider}
-                        //onChange={(e) => { handleSliderChange(e.target.value) }}
-                        sx={{ zIndex: "99999999", color: "#ffb900" }}
-                        min={0}
-                        max={10}
-                        disabled
-                        aria-label="Disabled slider"
-                        valueLabelDisplay="on" 
-                        valueLabelFormat={feedbakPoints}
-                        /> */}
-
-                      </pre>
                       <pre className="remark-text">{feedbackRemarks}</pre>
                     </div>
                   </div>
-
-                  {/* <div className="d-flex card-dateTime justify-content-between">
-                      <div className="date">{historyItem.date}</div>
-                      <div className="time">{historyItem.time}</div>
-                    </div> */}
                 </div>
               </div>
             ) : (
@@ -5451,6 +5578,7 @@ function EmployeePanel() {
               </div>
             )}
           </div>
+
         </DialogContent>
       </Dialog>
 
