@@ -126,7 +126,7 @@ function Header({ name, designation}) {
             </a>
           </h1>
           <div style={{display:"flex" , alignItems:"center"}} className="navbar-nav flex-row order-md-last">
-          <Bellicon data={requestData} gdata = {requestGData} adata={mapArray}/>
+          <Bellicon isAdmin={adminName ? true : false} data={requestData} gdata = {requestGData} adata={mapArray}/>
           <Avatar sx={{ width: 32, height: 32 }}/>
             <div className="nav-item dropdown">
               <button

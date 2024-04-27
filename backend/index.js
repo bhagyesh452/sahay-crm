@@ -1812,7 +1812,12 @@ app.get("/api/employees/:ename", async (req, res) => {
     const employeeName = req.params.ename;
 
     // Fetch data from companyModel where ename matches employeeName
-    const data = await CompanyModel.find({ ename: employeeName });
+    const data = await CompanyModel.find({
+      $or:[
+        {ename:employeeName},
+        {maturedBdmName:employeeName}
+      ]
+     });
     //console.log(data)
     res.json(data);
   } catch (error) {
@@ -2098,13 +2103,13 @@ app.post("/api/remarks-history/:companyId", async (req, res) => {
 
     // Save the new entry to MongoDB
     await newRemarksHistory.save();
-
     res.json({ success: true, message: "Remarks history added successfully" });
   } catch (error) {
     console.error("Error adding remarks history:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
+
 app.get("/api/remarks-history", async (req, res) => {
   try {
     const remarksHistory = await RemarksHistory.find();
@@ -6690,6 +6695,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         Status: "Matured",
         lastActionDate: date,
         ename: newData.bdeName,
+        maturedBdmName:newData.bdmName
       });
     }
     if (teamData) {
