@@ -6940,6 +6940,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       newData.bdmEmail,
       "bookings@startupsahay.com",
       "documents@startupsahay.com",
+      "aakashseth452@gmail.com"
     ];
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
