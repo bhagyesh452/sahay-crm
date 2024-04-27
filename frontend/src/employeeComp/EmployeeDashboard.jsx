@@ -483,9 +483,14 @@ function EmployeeDashboard() {
     fetchFollowUpData();
   }, [data]);
 
-  const functionopenprojection = (comName) => {
+  const [bdeNameProjection , setbdeNameProjection] = useState(" ")
+  const [enameProjection , setEnameProjection] = useState("")
+
+  const functionopenprojection = (comName , bdeName , ename) => {
     setProjectingCompany(comName);
     setOpenProjection(true);
+    setbdeNameProjection(bdeName)
+    setEnameProjection(ename)
     const findOneprojection =
       followData.length !== 0 &&
       followData.find((item) => item.companyName === comName);
@@ -2551,9 +2556,25 @@ function EmployeeDashboard() {
                                     <td>{obj.lastFollowUpdate}</td>
                                     <td>{obj.estPaymentDate}</td>
                                     <td>
+                                      {obj.ename && obj.bdeName && obj.ename !== obj.bdeName ?(
+                                      <IconButton
+                                        onClick={() => {
+                                          functionopenprojection(obj.companyName , obj.bdeName , obj.ename);
+                                          setIsEditProjection(false)
+                                        }}
+                                      >
+                                        <RiEditCircleFill
+                                          color="lightgrey"
+                                          style={{
+                                            width: "17px",
+                                            height: "17px",
+                                          }}
+                                        ></RiEditCircleFill>
+                                      </IconButton>):(
                                       <IconButton
                                         onClick={() => {
                                           functionopenprojection(obj.companyName);
+                                         
                                         }}
                                       >
                                         <RiEditCircleFill
@@ -2561,9 +2582,10 @@ function EmployeeDashboard() {
                                           style={{
                                             width: "17px",
                                             height: "17px",
+                                            
                                           }}
                                         ></RiEditCircleFill>
-                                      </IconButton>
+                                      </IconButton>)}
                                     </td>
                                   </tr>
                                 ))}
@@ -3217,10 +3239,10 @@ function EmployeeDashboard() {
                     setIsEditProjection(true);
                   }}
                 >
-                  <EditIcon
+                  {bdeNameProjection === enameProjection && (<EditIcon
                     color="grey"
                     style={{ width: "17px", height: "17px" }}
-                  ></EditIcon>
+                  ></EditIcon>)}
                 </IconButton>
                 <IconButton>
                   <IoClose

@@ -112,6 +112,8 @@ function EmployeePanel() {
   const [bdmName, setBdmName] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
+  
+  
   const handleTogglePopup = () => {
     setIsOpen(false);
   };
@@ -359,6 +361,7 @@ function EmployeePanel() {
   //   }
   // };
   console.log(socketID, "If this shows then boom");
+  
   const closeProjection = () => {
     setOpenProjection(false);
     setProjectingCompany("");

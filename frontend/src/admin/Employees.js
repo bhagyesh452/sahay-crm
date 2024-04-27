@@ -306,6 +306,9 @@ function Employees({ onEyeButtonClick }) {
       console.error("Error fetching data:", error.message);
     }
   };
+
+  const [bdmWork , setBdmWork] = useState(false)
+  
   const handleSubmit = async (e) => {
     console.log(jdate);
     // const referenceId = uuidv4();
@@ -319,7 +322,9 @@ function Employees({ onEyeButtonClick }) {
         jdate: jdate,
         AddedOn: AddedOn,
         branchOffice: branchOffice,
-        targetDetails: targetObjects
+        targetDetails: targetObjects,
+        bdmWork,
+        
       };
       let dataToSendUpdated = {
         email: email,
@@ -329,7 +334,8 @@ function Employees({ onEyeButtonClick }) {
         jdate: jdate,
         designation: designation,
         branchOffice: branchOffice,
-        targetDetails: targetObjects
+        targetDetails: targetObjects,
+        bdmWork,
       };
 
 
@@ -339,6 +345,12 @@ function Employees({ onEyeButtonClick }) {
       } else {
         dataToSend.designation = designation;
       }
+      if(designation === "Sales Manager"){
+        dataToSend.bdmWork = true
+      }else{
+        dataToSend.bdmWork = false
+      }
+      
 
       if (isUpdateMode) {
         await axios.put(
