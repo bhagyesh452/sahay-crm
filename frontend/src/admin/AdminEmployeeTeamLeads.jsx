@@ -142,9 +142,9 @@ function AdminEmployeeTeamLeads() {
     const [projectionData, setProjectionData] = useState([]);
     const [eData, seteData] = useState([]);
     const [bdmWorkOn, setBdmWorkOn] = useState(false)
-    const [bdmNames , setBdmNames] = useState([])
-    const [branchOffice , setBranchOffice] = useState("")
-    const [empData , setEmpData] = useState([])
+    const [bdmNames, setBdmNames] = useState([])
+    const [branchOffice, setBranchOffice] = useState("")
+    const [empData, setEmpData] = useState([])
 
     const fetchData = async () => {
         try {
@@ -163,8 +163,8 @@ function AdminEmployeeTeamLeads() {
             setBdmNames(tempData
                 .filter((obj) => obj.bdmWork && obj.branchOffice === branchOffice && !userData.ename.includes(obj.ename))
                 .map((employee) => employee.ename)
-              );
-              
+            );
+
             setBdmWorkOn(tempData.find((item) => item._id === id)?.bdmWork || null);
             //console.log((tempData.find((item)=>item._id === id))?.bdmWork || null)
             //setmoreFilteredData(userData);
@@ -174,7 +174,7 @@ function AdminEmployeeTeamLeads() {
     };
     //console.log(eData)
     //console.log(data)
-   
+
     // useEffect(()=>{
     //     fetchData()
     //     setBdmNames(empData
@@ -900,17 +900,25 @@ function AdminEmployeeTeamLeads() {
     const [openFeedback, setOpenFeedback] = useState(false)
     const [feedbackCompanyName, setFeedbackCompanyName] = useState("")
     const [valueSlider, setValueSlider] = useState(0)
+    const [valueSlider2, setValueSlider2] = useState(0)
+    const [valueSlider3, setValueSlider3] = useState(0)
+    const [valueSlider4, setValueSlider4] = useState(0)
+    const [valueSlider5, setValueSlider5] = useState(0)
     const [feedbackRemarks, setFeedbackRemarks] = useState("")
     const [companyFeedbackId, setCompanyFeedbackId] = useState("")
     const [isEditFeedback, setIsEditFeedback] = useState(false)
 
-    const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackRemarks, bdmStatus) => {
+    const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackPoints2, companyFeedbackPoints3, companyFeedbackPoints4, companyFeedbackPoints5, companyFeedbackRemarks, bdmStatus) => {
         setOpenFeedback(true)
         setFeedbackCompanyName(companyName)
         setCompanyFeedbackId(companyId)
         //setFeedbackRemarks(companyFeedbackRemarks)
         debouncedFeedbackRemarks(companyFeedbackRemarks)
         setValueSlider(companyFeedbackPoints)
+        setValueSlider2(companyFeedbackPoints2)
+        setValueSlider3(companyFeedbackPoints3)
+        setValueSlider4(companyFeedbackPoints4)
+        setValueSlider5(companyFeedbackPoints5)
         setBdmNewStatus(bdmStatus)
         //setIsEditFeedback(true)
     }
@@ -926,10 +934,27 @@ function AdminEmployeeTeamLeads() {
         setIsEditFeedback(false)
     }
 
-    const handleSliderChange = (valueSlider) => {
-        setValueSlider(valueSlider)
-
-    }
+    const handleSliderChange = (value, sliderNumber) => {
+        switch (sliderNumber) {
+            case 1:
+                setValueSlider(value);
+                break;
+            case 2:
+                setValueSlider2(value);
+                break;
+            case 3:
+                setValueSlider3(value);
+                break;
+            case 4:
+                setValueSlider4(value);
+                break;
+            case 5:
+                setValueSlider5(value);
+                break;
+            default:
+                break;
+        }
+    };
 
     //console.log("valueSlider", valueSlider, feedbackRemarks)
 
@@ -944,29 +969,28 @@ function AdminEmployeeTeamLeads() {
     );
 
     const handleFeedbackSubmit = async () => {
-        const response = await axios.post(`${secretKey}/post-feedback-remarks/${companyFeedbackId}`, {
-            feedbackPoints: valueSlider,
+        const data = {
+            feedbackPoints: [valueSlider, valueSlider2, valueSlider3, valueSlider4, valueSlider5],
             feedbackRemarks: feedbackRemarks,
-        })
+        };
 
         try {
+            const response = await axios.post(`${secretKey}/post-feedback-remarks/${companyFeedbackId}`, data
+            );
+
             if (response.status === 200) {
-                Swal.fire("Feedback Updated")
+                Swal.fire("Feedback Updated");
                 fetchTeamLeadsData(bdmNewStatus);
                 setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmNewStatus)
-                    .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
-                handleCloseFeedback()
+                    .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)));
+                handleCloseFeedback();
                 //setdataStatus(bdmNewStatus)
             }
-
         } catch (error) {
-
-            Swal.fire("Error sending feedback")
-            console.log("error", error.message)
-
+            Swal.fire("Error sending feedback");
+            console.log("error", error.message);
         }
-
-    }
+    };
 
     const handleChangeUrlPrev = () => {
         const currId = id;
@@ -1048,93 +1072,93 @@ function AdminEmployeeTeamLeads() {
 
     const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
-      };
-    
-  
+    };
+
+
 
     const handleUploadData = async (e) => {
         //console.log("Uploading data");
-    
+
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
         const bdmAcceptStatus = "NotForwarded"
-    
-    
+
+
         const csvdata = teamleadsData
-          .filter((employee) => selectedRows.includes(employee._id))
-          .map((employee) => {
-            if (
-              employee.bdmStatus === "Interested" ||
-              employee.bdmStatus === "FollowUp"
-            ) {
-              // If Status is "Interested" or "FollowUp", don't change Status and Remarks
-              return { ...employee };
-            } else {
-              // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
-              return {
-                ...employee,
-                bdmStatus: "Untouched",
-                Remarks: "No Remarks Added",
-              };
-            }
-          });
-    
+            .filter((employee) => selectedRows.includes(employee._id))
+            .map((employee) => {
+                if (
+                    employee.bdmStatus === "Interested" ||
+                    employee.bdmStatus === "FollowUp"
+                ) {
+                    // If Status is "Interested" or "FollowUp", don't change Status and Remarks
+                    return { ...employee };
+                } else {
+                    // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
+                    return {
+                        ...employee,
+                        bdmStatus: "Untouched",
+                        Remarks: "No Remarks Added",
+                    };
+                }
+            });
+
         // Create an array to store promises for updating CompanyModel
         const updatePromises = [];
-    
-        for (const data of csvdata) {
-          const updatedObj = {
-            ...data,
-            date: currentDate,
-            time: currentTime,
-            bdmName : newemployeeSelection,
-            companyName: data["Company Name"],
-            bdmAcceptStatus,
-          };
-         console.log(newemployeeSelection , data , bdmAcceptStatus)
-          // Add the promise for updating CompanyModel to the array
-          updatePromises.push(
-            axios.post(`${secretKey}/assign-leads-newbdm`, { 
-              newemployeeSelection,
-              data: updatedObj,
-              bdmAcceptStatus ,
-            })
-          );
-        }
-    
-        try {
-          // Wait for all update promises to resolve
-          await Promise.all(updatePromises);
-          //console.log("Employee data updated!");
-    
-          // Clear the selection
-          setnewEmployeeSelection("Not Alloted");
-          fetchTeamLeadsData();
-    
-          Swal.fire({
-            title: "Data Sent!",
-            text: "Data sent successfully!",
-            icon: "success",
-          });
-    
-          // Fetch updated employee details and new data
-          //fetchEmployeeDetails();
-          //fetchNewData();
-          closepopupAssign();
-        } catch (error) {
-          console.error("Error updating employee data:", error);
-    
-          Swal.fire({
-            title: "Error!",
-            text: "Failed to update employee data. Please try again later.",
-            icon: "error",
-          });
-        }
-      };
 
-      //console.log("new" , newemployeeSelection)
-    
-      const handleFieldChange = (event) => {
+        for (const data of csvdata) {
+            const updatedObj = {
+                ...data,
+                date: currentDate,
+                time: currentTime,
+                bdmName: newemployeeSelection,
+                companyName: data["Company Name"],
+                bdmAcceptStatus,
+            };
+            console.log(newemployeeSelection, data, bdmAcceptStatus)
+            // Add the promise for updating CompanyModel to the array
+            updatePromises.push(
+                axios.post(`${secretKey}/assign-leads-newbdm`, {
+                    newemployeeSelection,
+                    data: updatedObj,
+                    bdmAcceptStatus,
+                })
+            );
+        }
+
+        try {
+            // Wait for all update promises to resolve
+            await Promise.all(updatePromises);
+            //console.log("Employee data updated!");
+
+            // Clear the selection
+            setnewEmployeeSelection("Not Alloted");
+            fetchTeamLeadsData();
+
+            Swal.fire({
+                title: "Data Sent!",
+                text: "Data sent successfully!",
+                icon: "success",
+            });
+
+            // Fetch updated employee details and new data
+            //fetchEmployeeDetails();
+            //fetchNewData();
+            closepopupAssign();
+        } catch (error) {
+            console.error("Error updating employee data:", error);
+
+            Swal.fire({
+                title: "Error!",
+                text: "Failed to update employee data. Please try again later.",
+                icon: "error",
+            });
+        }
+    };
+
+    //console.log("new" , newemployeeSelection)
+
+    const handleFieldChange = (event) => {
         if (event.target.value === "Company Incorporation Date  ") {
             setSelectedField(event.target.value);
             setVisibility("block");
@@ -1353,8 +1377,8 @@ function AdminEmployeeTeamLeads() {
         const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
         const year = date.getFullYear();
         return `${year}-${month}-${day}`;
-      }
-    
+    }
+
 
 
 
@@ -2458,13 +2482,17 @@ function AdminEmployeeTeamLeads() {
                                                             )}
                                                         </td>
                                                         <td>
-                                                            {(company.feedbackRemarks || company.feedbackPoints) ? (<IconButton>
+                                                            {(company.feedbackRemarks || company.feedbackPoints) && (<IconButton>
                                                                 <IoAddCircle
                                                                     onClick={() => {
                                                                         handleOpenFeedback(
                                                                             company["Company Name"],
                                                                             company._id,
-                                                                            company.feedbackPoints,
+                                                                            company.feedbackPoints[0],
+                                                                            company.feedbackPoints[1],
+                                                                            company.feedbackPoints[2],
+                                                                            company.feedbackPoints[3],
+                                                                            company.feedbackPoints[4],
                                                                             company.feedbackRemarks,
                                                                             company.bdmStatus
                                                                         )
@@ -2475,27 +2503,7 @@ function AdminEmployeeTeamLeads() {
                                                                         height: "17px",
                                                                         color: "#fbb900"
                                                                     }} />
-                                                            </IconButton>) : (
-                                                                <IconButton>
-                                                                    <IoAddCircle
-                                                                        onClick={() => {
-                                                                            handleOpenFeedback(
-                                                                                company["Company Name"],
-                                                                                company._id,
-                                                                                company.feedbackPoints,
-                                                                                company.feedbackRemarks,
-                                                                                company.bdmStatus
-                                                                            )
-                                                                            setIsEditFeedback(true)
-                                                                        }}
-                                                                        style={{
-                                                                            cursor: "pointer",
-                                                                            width: "17px",
-                                                                            height: "17px",
-                                                                        }} />
-                                                                </IconButton>
-
-                                                            )}
+                                                            </IconButton>)}
                                                         </td>
                                                     </>)}
 
@@ -2827,39 +2835,92 @@ function AdminEmployeeTeamLeads() {
                 fullWidth
                 maxWidth="xs">
                 <DialogTitle>
-                    <span style={{ fontSize: "11px" }}>
-                        BDM Feedback for {feedbackCompanyName}
-                    </span>
-                    <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
-                        <CloseIcon color="primary" style={{ width: "16px", height: "16px" }}></CloseIcon>
-                    </IconButton>{" "}
-                    {(valueSlider && feedbackRemarks) ? (<IconButton
-                        onClick={() => {
-                            setIsEditFeedback(true);
-                        }}
-                        style={{ float: "right" }}>
-                        <EditIcon color="grey" style={{ width: "16px", height: "16px" }}></EditIcon>
-                    </IconButton>) : (null)}
+                    <div className="d-flex align-items-center justify-content-between">
+                        <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" >{feedbackCompanyName}</span></div>
+                        <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
+                            <CloseIcon color="primary"></CloseIcon>
+                        </IconButton>{" "}
+                    </div>
                 </DialogTitle>
                 <DialogContent>
-
                     <div className="card-body mt-5">
-                        <div className="feedback-slider">
-                            <Slider
-                                defaultValue={0}
-                                //getAriaValueText={valuetext} 
-                                value={valueSlider}
-                                onChange={(e) => { handleSliderChange(e.target.value) }}
-                                sx={{ zIndex: "99999999", color: "#ffb900" }}
-                                min={0}
-                                max={10}
-                                aria-label="Default"
-                                valueLabelDisplay="auto"
-                                disabled={!isEditFeedback} />
+                        <div className="mt-1">
+                            <div>A. How was the quality of Information?</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 1) }} // Pass slider number as 1
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={10}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled />
+                            </div>
+                        </div>
+                        <div className="mt-1">
+                            <div>B. How was the clarity of communication with lead?</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider2}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 2) }} // Pass slider number as 2
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={10}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled />
+                            </div>
+                        </div>
+                        <div className="mt-1">
+                            <div>C. How was the accuracy of lead qualification?</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider3}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 3) }} // Pass slider number as 3
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={10}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled />
+                            </div>
+                        </div>
+                        <div className="mt-1">
+                            <div>D. How was engagement level of lead?</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider4}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 4) }} // Pass slider number as 4
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={10}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled />
+                            </div>
+                        </div>
+                        <div className="mt-1">
+                            <div>E. Payment Chances</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider5}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 5) }} // Pass slider number as 5
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={100}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled />
+                            </div>
                         </div>
 
                     </div>
-
                     <div class="card-footer mt-4">
                         <div class="mb-3 remarks-input">
                             <textarea
@@ -2871,22 +2932,21 @@ function AdminEmployeeTeamLeads() {
                                 onChange={(e) => {
                                     debouncedFeedbackRemarks(e.target.value);
                                 }}
-                                disabled={!isEditFeedback}
+                                disabled
                             ></textarea>
                         </div>
-                        <button
+                        {/* <button
                             onClick={handleFeedbackSubmit}
                             type="submit"
                             className="btn btn-primary"
                             style={{ width: "100%" }}
                         >
                             Submit
-                        </button>
+                        </button> */}
                     </div>
 
                 </DialogContent>
             </Dialog>
-
             {/* --------------------------------dialog for assign data-------------------------------- */}
             <Dialog
                 open={openAssign}

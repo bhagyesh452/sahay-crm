@@ -89,6 +89,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
 import { GrStatusGood } from "react-icons/gr";
 import { IoAddCircle } from "react-icons/io5";
+//import { find } from "../../../backend/models/Leads.js";
 
 
 
@@ -178,10 +179,10 @@ function EmployeeTeamLeads() {
 
     const fetchTeamLeadsData = async (status) => {
         const bdmName = data.ename
-        try {  
+        try {
             const response = await axios.get(`${secretKey}/forwardedbybdedata/${bdmName}`)
             console.log(response.data)
-
+            //console.log(bdmName)
 
 
             setTeamData(response.data)
@@ -684,6 +685,7 @@ function EmployeeTeamLeads() {
     const [currentProjection, setCurrentProjection] = useState({
         companyName: "",
         ename: "",
+        bdeName:"",
         offeredPrize: 0,
         offeredServices: [],
         lastFollowUpdate: "",
@@ -699,17 +701,31 @@ function EmployeeTeamLeads() {
     const [isEditProjection, setIsEditProjection] = useState(false);
     const [openAnchor, setOpenAnchor] = useState(false);
 
+    const [bdeNameProjection , setBdeNameProjection] = useState("")
 
     const functionopenprojection = (comName) => {
+        const getBdeName = teamleadsData.filter((company) => company["Company Name"] === comName);
+
+        // Check if getBdeName array has an object
+        if (getBdeName.length > 0) {
+            const bdeName = getBdeName[0].ename;
+            setBdeNameProjection(bdeName) // Accessing the 'ename' field from the first (and only) object
+            console.log("bdeename:", bdeName);
+        } else {
+            console.log("No matching company found.");
+        }
+
         setProjectingCompany(comName);
         setOpenProjection(true);
         const findOneprojection =
             projectionData.length !== 0 &&
             projectionData.find((item) => item.companyName === comName);
+        console.log(findOneprojection)
         if (findOneprojection) {
             setCurrentProjection({
                 companyName: findOneprojection.companyName,
                 ename: findOneprojection.ename,
+                bdeName:bdeNameProjection ? bdeNameProjection : findOneprojection.ename,
                 offeredPrize: findOneprojection.offeredPrize,
                 offeredServices: findOneprojection.offeredServices,
                 lastFollowUpdate: findOneprojection.lastFollowUpdate,
@@ -730,6 +746,7 @@ function EmployeeTeamLeads() {
         setCurrentProjection({
             companyName: "",
             ename: "",
+            bdeName:"",
             offeredPrize: "",
             offeredServices: "",
             totalPayment: 0,
@@ -748,26 +765,26 @@ function EmployeeTeamLeads() {
     };
     const closeAnchor = () => {
         setOpenAnchor(false);
-      };
-      const fetchRedesignedFormData = async () => {
+    };
+    const fetchRedesignedFormData = async () => {
         try {
-          console.log(maturedID);
-          const response = await axios.get(
-            `${secretKey}/redesigned-final-leadData`
-          );
-          const data = response.data.find((obj) => obj.company === maturedID);
-          console.log(data);
-          setCurrentForm(data);
+            console.log(maturedID);
+            const response = await axios.get(
+                `${secretKey}/redesigned-final-leadData`
+            );
+            const data = response.data.find((obj) => obj.company === maturedID);
+            console.log(data);
+            setCurrentForm(data);
         } catch (error) {
-          console.error("Error fetching data:", error.message);
+            console.error("Error fetching data:", error.message);
         }
-      };
-      useEffect(() => {
+    };
+    useEffect(() => {
         console.log("Matured ID Changed", maturedID);
         if (maturedID) {
-          fetchRedesignedFormData();
+            fetchRedesignedFormData();
         }
-      }, [maturedID]);
+    }, [maturedID]);
 
     const handleDelete = async (company) => {
         const companyName = company;
@@ -784,6 +801,7 @@ function EmployeeTeamLeads() {
             setCurrentProjection({
                 companyName: "",
                 ename: "",
+                bdeName:"",
                 offeredPrize: 0,
                 offeredServices: [],
                 lastFollowUpdate: "",
@@ -813,9 +831,12 @@ function EmployeeTeamLeads() {
                 ...currentProjection,
                 companyName: projectingCompany,
                 ename: data.ename,
+                bdeName:bdeNameProjection ? bdeNameProjection : data.ename,
                 offeredServices: selectedValues,
                 editCount: currentProjection.editCount + 1, // Increment editCount
             };
+
+            //console.log("finalData" , finalData)
 
             if (finalData.offeredServices.length === 0) {
                 Swal.fire({ title: "Services is required!", icon: "warning" });
@@ -850,11 +871,15 @@ function EmployeeTeamLeads() {
                     `${secretKey}/update-followup`,
                     finalData
                 );
+
+                //console.log("projection response" , response.data)
+                
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
                 setOpenProjection(false);
                 setCurrentProjection({
                     companyName: "",
                     ename: "",
+                    bdeName:"",
                     offeredPrize: 0,
                     offeredServices: [],
                     lastFollowUpdate: "",
@@ -899,7 +924,7 @@ function EmployeeTeamLeads() {
     const [companyFeedbackId, setCompanyFeedbackId] = useState("")
     const [isEditFeedback, setIsEditFeedback] = useState(false)
 
-    const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints,companyFeedbackPoints2,companyFeedbackPoints3,companyFeedbackPoints4,companyFeedbackPoints5, companyFeedbackRemarks, bdmStatus) => {
+    const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackPoints2, companyFeedbackPoints3, companyFeedbackPoints4, companyFeedbackPoints5, companyFeedbackRemarks, bdmStatus) => {
         setOpenFeedback(true)
         setFeedbackCompanyName(companyName)
         setCompanyFeedbackId(companyId)
@@ -946,7 +971,7 @@ function EmployeeTeamLeads() {
                 break;
         }
     };
-    
+
 
     console.log("valueSlider", valueSlider, valueSlider2, valueSlider3, valueSlider4, valueSlider5)
 
@@ -962,14 +987,14 @@ function EmployeeTeamLeads() {
 
     const handleFeedbackSubmit = async () => {
         const data = {
-            feedbackPoints: [valueSlider,valueSlider2,valueSlider3,valueSlider4,valueSlider5],
+            feedbackPoints: [valueSlider, valueSlider2, valueSlider3, valueSlider4, valueSlider5],
             feedbackRemarks: feedbackRemarks,
         };
-    
+
         try {
             const response = await axios.post(`${secretKey}/post-feedback-remarks/${companyFeedbackId}`, data
             );
-    
+
             if (response.status === 200) {
                 Swal.fire("Feedback Updated");
                 fetchTeamLeadsData(bdmNewStatus);
@@ -983,7 +1008,7 @@ function EmployeeTeamLeads() {
             console.log("error", error.message);
         }
     };
-    
+
 
     const [nextFollowUpdate, setNextFollowUpDate] = useState(null)
 
@@ -1012,98 +1037,98 @@ function EmployeeTeamLeads() {
         return `${year}-${month}-${day}`;
     }
 
-  //  ----------------------------------------  Filterization Process ---------------------------------------------
+    //  ----------------------------------------  Filterization Process ---------------------------------------------
 
-  const handleFieldChange = (event) => {
-    if (
-      event.target.value === "Company Incorporation Date  " ||
-      event.target.value === "AssignDate"
-    ) {
-      setSelectedField(event.target.value);
-      setVisibility("block");
-      setVisibilityOther("none");
-      setSubFilterValue("");
-      setVisibilityOthernew("none");
-    } else if (event.target.value === "Status") {
-      setSelectedField(event.target.value);
-      setVisibility("none");
-      setVisibilityOther("none");
-      setSubFilterValue("");
-      setVisibilityOthernew("block");
-    } else {
-      setSelectedField(event.target.value);
-      setVisibility("none");
-      setVisibilityOther("block");
-      setSubFilterValue("");
-      setVisibilityOthernew("none");
-    }
+    const handleFieldChange = (event) => {
+        if (
+            event.target.value === "Company Incorporation Date  " ||
+            event.target.value === "AssignDate"
+        ) {
+            setSelectedField(event.target.value);
+            setVisibility("block");
+            setVisibilityOther("none");
+            setSubFilterValue("");
+            setVisibilityOthernew("none");
+        } else if (event.target.value === "Status") {
+            setSelectedField(event.target.value);
+            setVisibility("none");
+            setVisibilityOther("none");
+            setSubFilterValue("");
+            setVisibilityOthernew("block");
+        } else {
+            setSelectedField(event.target.value);
+            setVisibility("none");
+            setVisibilityOther("block");
+            setSubFilterValue("");
+            setVisibilityOthernew("none");
+        }
 
-    //console.log(selectedField);
-  };
+        //console.log(selectedField);
+    };
 
-  const handleDateChange = (e) => {
-    const dateValue = e.target.value;
-    setCurrentPage(0);
+    const handleDateChange = (e) => {
+        const dateValue = e.target.value;
+        setCurrentPage(0);
 
-    // Check if the dateValue is not an empty string
-    if (dateValue) {
-      const dateObj = new Date(dateValue);
-      const formattedDate = dateObj.toISOString().split("T")[0];
-      setSearchText(formattedDate);
-    } else {
-      // Handle the case when the date is cleared
-      setSearchText("");
-    }
-  };
+        // Check if the dateValue is not an empty string
+        if (dateValue) {
+            const dateObj = new Date(dateValue);
+            const formattedDate = dateObj.toISOString().split("T")[0];
+            setSearchText(formattedDate);
+        } else {
+            // Handle the case when the date is cleared
+            setSearchText("");
+        }
+    };
 
-  const filteredData = teamleadsData.filter((company) => {
-    const fieldValue = company[selectedField];
+    const filteredData = teamleadsData.filter((company) => {
+        const fieldValue = company[selectedField];
 
-    if (selectedField === "State" && citySearch) {
-      // Handle filtering by both State and City
-      const stateMatches = fieldValue
-        .toLowerCase()
-        .includes(searchText.toLowerCase());
-      const cityMatches = company.City.toLowerCase().includes(
-        citySearch.toLowerCase()
-      );
-      return stateMatches && cityMatches;
-    } else if (selectedField === "Company Incorporation Date  ") {
-      // Assuming you have the month value in a variable named `month`
-      if (month == 0) {
-        return fieldValue.includes(searchText);
-      } else if (year == 0) {
-        return fieldValue.includes(searchText);
-      }
-      const selectedDate = new Date(fieldValue);
-      const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
-      const selectedYear = selectedDate.getFullYear();
+        if (selectedField === "State" && citySearch) {
+            // Handle filtering by both State and City
+            const stateMatches = fieldValue
+                .toLowerCase()
+                .includes(searchText.toLowerCase());
+            const cityMatches = company.City.toLowerCase().includes(
+                citySearch.toLowerCase()
+            );
+            return stateMatches && cityMatches;
+        } else if (selectedField === "Company Incorporation Date  ") {
+            // Assuming you have the month value in a variable named `month`
+            if (month == 0) {
+                return fieldValue.includes(searchText);
+            } else if (year == 0) {
+                return fieldValue.includes(searchText);
+            }
+            const selectedDate = new Date(fieldValue);
+            const selectedMonth = selectedDate.getMonth() + 1; // Months are 0-indexed
+            const selectedYear = selectedDate.getFullYear();
 
-      // Use the provided month variable in the comparison
-      return (
-        selectedMonth.toString().includes(month) &&
-        selectedYear.toString().includes(year)
-      );
-    } else if (selectedField === "AssignDate") {
-      // Assuming you have the month value in a variable named `month`
-      return fieldValue.includes(searchText);
-    } else if (selectedField === "Status" && searchText === "All") {
-      // Display all data when Status is "All"
-      return true;
-    } else {
-      // Your existing filtering logic for other fields
-      if (typeof fieldValue === "string") {
-        return fieldValue.toLowerCase().includes(searchText.toLowerCase());
-      } else if (typeof fieldValue === "number") {
-        return fieldValue.toString().includes(searchText);
-      } else if (fieldValue instanceof Date) {
-        // Handle date fields
-        return fieldValue.includes(searchText);
-      }
+            // Use the provided month variable in the comparison
+            return (
+                selectedMonth.toString().includes(month) &&
+                selectedYear.toString().includes(year)
+            );
+        } else if (selectedField === "AssignDate") {
+            // Assuming you have the month value in a variable named `month`
+            return fieldValue.includes(searchText);
+        } else if (selectedField === "Status" && searchText === "All") {
+            // Display all data when Status is "All"
+            return true;
+        } else {
+            // Your existing filtering logic for other fields
+            if (typeof fieldValue === "string") {
+                return fieldValue.toLowerCase().includes(searchText.toLowerCase());
+            } else if (typeof fieldValue === "number") {
+                return fieldValue.toString().includes(searchText);
+            } else if (fieldValue instanceof Date) {
+                // Handle date fields
+                return fieldValue.includes(searchText);
+            }
 
-      return false;
-    }
-  });
+            return false;
+        }
+    });
 
 
 
@@ -1165,22 +1190,22 @@ function EmployeeTeamLeads() {
                         </div>
                     </div>
                 </div> */}
-               
+
                 <div className="page-body" onCopy={(e) => {
                     e.preventDefault();
                 }}>
                     <div className="container-xl">
-                         {/*  ----------------------------------------- Filter Starts from here...  ----------------------------------------------- */}
-                <div className="row g-2 align-items-center mb-2">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                    className="features"
-                  >
-                    <div style={{ display: "flex" }} className="feature1">
-                      {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
+                        {/*  ----------------------------------------- Filter Starts from here...  ----------------------------------------------- */}
+                        <div className="row g-2 align-items-center mb-2">
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                }}
+                                className="features"
+                            >
+                                <div style={{ display: "flex" }} className="feature1">
+                                    {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
                         Gmail SignIn
                     </button>
                     <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
@@ -1197,371 +1222,371 @@ function EmployeeTeamLeads() {
 
                     </Dialog> */}
 
-                      <div
-                        className="form-control"
-                        style={{ height: "fit-content", width: "auto" }}
-                      >
-                        <select
-                          style={{
-                            border: "none",
-                            outline: "none",
-                            width: "fit-content",
-                          }}
-                          value={selectedField}
-                          onChange={handleFieldChange}
-                        >
-                          <option value="Company Name">Company Name</option>
-                          <option value="Company Number">Company Number</option>
-                          <option value="Company Email">Company Email</option>
-                          <option value="Company Incorporation Date  ">
-                            Company Incorporation Date
-                          </option>
-                          <option value="City">City</option>
-                          <option value="State">State</option>
-                          <option value="Status">Status</option>
-                          <option value="AssignDate">Assigned Date</option>
-                        </select>
-                      </div>
-                      {visibility === "block" && (
-                        <div>
-                          <input
-                            onChange={handleDateChange}
-                            style={{
-                              display: visibility,
-                              width: "83%",
-                              marginLeft: "10px",
-                            }}
-                            type="date"
-                            className="form-control"
-                          />
-                        </div>
-                      )}
+                                    <div
+                                        className="form-control"
+                                        style={{ height: "fit-content", width: "auto" }}
+                                    >
+                                        <select
+                                            style={{
+                                                border: "none",
+                                                outline: "none",
+                                                width: "fit-content",
+                                            }}
+                                            value={selectedField}
+                                            onChange={handleFieldChange}
+                                        >
+                                            <option value="Company Name">Company Name</option>
+                                            <option value="Company Number">Company Number</option>
+                                            <option value="Company Email">Company Email</option>
+                                            <option value="Company Incorporation Date  ">
+                                                Company Incorporation Date
+                                            </option>
+                                            <option value="City">City</option>
+                                            <option value="State">State</option>
+                                            <option value="Status">Status</option>
+                                            <option value="AssignDate">Assigned Date</option>
+                                        </select>
+                                    </div>
+                                    {visibility === "block" && (
+                                        <div>
+                                            <input
+                                                onChange={handleDateChange}
+                                                style={{
+                                                    display: visibility,
+                                                    width: "83%",
+                                                    marginLeft: "10px",
+                                                }}
+                                                type="date"
+                                                className="form-control"
+                                            />
+                                        </div>
+                                    )}
 
-                      {visibilityOther === "block" ? (
-                        <div
-                          style={{
-                            //width: "20vw",
-                            margin: "0px 0px 0px 9px",
-                            display: visibilityOther,
-                          }}
-                          className="input-icon"
-                        >
-                          <span className="input-icon-addon">
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="20"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              stroke-width="2"
-                              stroke="currentColor"
-                              fill="none"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                              <path d="M21 21l-6 -6" />
-                            </svg>
-                          </span>
-                          <input
-                            type="text"
-                            value={searchText}
-                            onChange={(e) => {
-                              setSearchText(e.target.value);
-                              setCurrentPage(0);
-                            }}
-                            className="form-control"
-                            placeholder="Search…"
-                            aria-label="Search in website"
-                            style={{ width: "60%" }}
-                          />
-                        </div>
-                      ) : (
-                        <div></div>
-                      )}
-                      {visibilityOthernew === "block" ? (
-                        <div
-                          style={{
-                            //width: "20vw",
-                            margin: "0px 0px 0px 9px",
-                            display: visibilityOthernew,
-                          }}
-                          className="input-icon"
-                        >
-                          <select
-                            value={searchText}
-                            onChange={(e) => {
-                              setSearchText(e.target.value);
-                              // Set dataStatus based on selected option
-                              if (
-                                e.target.value === "All" ||
-                                e.target.value === "Busy" ||
-                                e.target.value === "Not Picked Up"
-                              ) {
-                                setdataStatus("All");
-                                setTeamLeadsData(
-                                  teamData.filter(
-                                    (obj) =>
-                                      obj.Status === "Busy" ||
-                                      obj.Status === "Not Picked Up" ||
-                                      obj.Status === "Untouched"
-                                  )
-                                );
-                              } else if (
-                                e.target.value === "Junk" ||
-                                e.target.value === "Not Interested"
-                              ) {
-                                setdataStatus("NotInterested");
-                                setTeamLeadsData(
-                                  teamData.filter(
-                                    (obj) =>
-                                      obj.Status === "Not Interested" ||
-                                      obj.Status === "Junk"
-                                  )
-                                );
-                              } else if (e.target.value === "Interested") {
-                                setdataStatus("Interested");
-                                setTeamLeadsData(
-                                  teamData.filter(
-                                    (obj) => obj.Status === "Interested"
-                                  )
-                                );
-                              } else if (e.target.value === "Untouched") {
-                                setdataStatus("All");
-                                setTeamLeadsData(
-                                  teamData.filter(
-                                    (obj) => obj.Status === "Untouched"
-                                  )
-                                );
-                              }
-                            }}
-                            className="form-select"
-                          >
-                            <option value="All">All </option>
-                            <option value="Busy">Busy </option>
-                            <option value="Not Picked Up">
-                              Not Picked Up{" "}
-                            </option>
-                            <option value="Junk">Junk</option>
-                            <option value="Interested">Interested</option>
-                            <option value="Not Interested">
-                              Not Interested
-                            </option>
-                            <option value="Untouched">Untouched</option>
-                          </select>
-                        </div>
-                      ) : (
-                        <div></div>
-                      )}
-                      {searchText !== "" && (
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "end",
-                            fontsize: "10px",
-                            fontfamily: "Poppins",
-                            //marginLeft: "-70px"
-                          }}
-                          className="results"
-                        >
-                          {filteredData.length} results found
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      style={{ display: "flex", alignItems: "center" }}
-                      className="feature2"
-                    >
-                      <div
-                        className="form-control mr-1 sort-by"
-                        style={{ width: "190px" }}
-                      >
-                        <label htmlFor="sort-by">Sort By:</label>
-                        <select
-                          style={{
-                            border: "none",
-                            outline: "none",
-                            color: "#666a66",
-                          }}
-                          name="sort-by"
-                          id="sort-by"
-                          onChange={(e) => {
-                            setSortStatus(e.target.value);
-                            const selectedOption = e.target.value;
+                                    {visibilityOther === "block" ? (
+                                        <div
+                                            style={{
+                                                //width: "20vw",
+                                                margin: "0px 0px 0px 9px",
+                                                display: visibilityOther,
+                                            }}
+                                            className="input-icon"
+                                        >
+                                            <span className="input-icon-addon">
+                                                {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="icon"
+                                                    width="20"
+                                                    height="24"
+                                                    viewBox="0 0 24 24"
+                                                    stroke-width="2"
+                                                    stroke="currentColor"
+                                                    fill="none"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                >
+                                                    <path
+                                                        stroke="none"
+                                                        d="M0 0h24v24H0z"
+                                                        fill="none"
+                                                    />
+                                                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                                                    <path d="M21 21l-6 -6" />
+                                                </svg>
+                                            </span>
+                                            <input
+                                                type="text"
+                                                value={searchText}
+                                                onChange={(e) => {
+                                                    setSearchText(e.target.value);
+                                                    setCurrentPage(0);
+                                                }}
+                                                className="form-control"
+                                                placeholder="Search…"
+                                                aria-label="Search in website"
+                                                style={{ width: "60%" }}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div></div>
+                                    )}
+                                    {visibilityOthernew === "block" ? (
+                                        <div
+                                            style={{
+                                                //width: "20vw",
+                                                margin: "0px 0px 0px 9px",
+                                                display: visibilityOthernew,
+                                            }}
+                                            className="input-icon"
+                                        >
+                                            <select
+                                                value={searchText}
+                                                onChange={(e) => {
+                                                    setSearchText(e.target.value);
+                                                    // Set dataStatus based on selected option
+                                                    if (
+                                                        e.target.value === "All" ||
+                                                        e.target.value === "Busy" ||
+                                                        e.target.value === "Not Picked Up"
+                                                    ) {
+                                                        setdataStatus("All");
+                                                        setTeamLeadsData(
+                                                            teamData.filter(
+                                                                (obj) =>
+                                                                    obj.Status === "Busy" ||
+                                                                    obj.Status === "Not Picked Up" ||
+                                                                    obj.Status === "Untouched"
+                                                            )
+                                                        );
+                                                    } else if (
+                                                        e.target.value === "Junk" ||
+                                                        e.target.value === "Not Interested"
+                                                    ) {
+                                                        setdataStatus("NotInterested");
+                                                        setTeamLeadsData(
+                                                            teamData.filter(
+                                                                (obj) =>
+                                                                    obj.Status === "Not Interested" ||
+                                                                    obj.Status === "Junk"
+                                                            )
+                                                        );
+                                                    } else if (e.target.value === "Interested") {
+                                                        setdataStatus("Interested");
+                                                        setTeamLeadsData(
+                                                            teamData.filter(
+                                                                (obj) => obj.Status === "Interested"
+                                                            )
+                                                        );
+                                                    } else if (e.target.value === "Untouched") {
+                                                        setdataStatus("All");
+                                                        setTeamLeadsData(
+                                                            teamData.filter(
+                                                                (obj) => obj.Status === "Untouched"
+                                                            )
+                                                        );
+                                                    }
+                                                }}
+                                                className="form-select"
+                                            >
+                                                <option value="All">All </option>
+                                                <option value="Busy">Busy </option>
+                                                <option value="Not Picked Up">
+                                                    Not Picked Up{" "}
+                                                </option>
+                                                <option value="Junk">Junk</option>
+                                                <option value="Interested">Interested</option>
+                                                <option value="Not Interested">
+                                                    Not Interested
+                                                </option>
+                                                <option value="Untouched">Untouched</option>
+                                            </select>
+                                        </div>
+                                    ) : (
+                                        <div></div>
+                                    )}
+                                    {searchText !== "" && (
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "end",
+                                                fontsize: "10px",
+                                                fontfamily: "Poppins",
+                                                //marginLeft: "-70px"
+                                            }}
+                                            className="results"
+                                        >
+                                            {filteredData.length} results found
+                                        </div>
+                                    )}
+                                </div>
+                                <div
+                                    style={{ display: "flex", alignItems: "center" }}
+                                    className="feature2"
+                                >
+                                    <div
+                                        className="form-control mr-1 sort-by"
+                                        style={{ width: "190px" }}
+                                    >
+                                        <label htmlFor="sort-by">Sort By:</label>
+                                        <select
+                                            style={{
+                                                border: "none",
+                                                outline: "none",
+                                                color: "#666a66",
+                                            }}
+                                            name="sort-by"
+                                            id="sort-by"
+                                            onChange={(e) => {
+                                                setSortStatus(e.target.value);
+                                                const selectedOption = e.target.value;
 
-                            switch (selectedOption) {
-                              case "Busy":
-                              case "Untouched":
-                              case "Not Picked Up":
-                                setdataStatus("All");
-                                setTeamLeadsData(
-                                  teamData
-                                    .filter((data) =>
-                                      [
-                                        "Busy",
-                                        "Untouched",
-                                        "Not Picked Up",
-                                      ].includes(data.Status)
-                                    )
-                                    .sort((a, b) => {
-                                      if (a.Status === selectedOption)
-                                        return -1;
-                                      if (b.Status === selectedOption) return 1;
-                                      return 0;
-                                    })
-                                );
-                                break;
-                              case "Interested":
-                                setdataStatus("Interested");
-                                setTeamLeadsData(
-                                  teamData
-                                    .filter(
-                                      (data) => data.Status === "Interested"
-                                    )
-                                    .sort((a, b) =>
-                                      a.AssignDate.localeCompare(b.AssignDate)
-                                    )
-                                );
-                                break;
-                              case "Not Interested":
-                                setdataStatus("NotInterested");
-                                setTeamLeadsData(
-                                  teamData
-                                    .filter((data) =>
-                                      ["Not Interested", "Junk"].includes(
-                                        data.Status
-                                      )
-                                    )
-                                    .sort((a, b) =>
-                                      a.AssignDate.localeCompare(b.AssignDate)
-                                    )
-                                );
-                                break;
-                              case "FollowUp":
-                                setdataStatus("FollowUp");
-                                setTeamLeadsData(
-                                  teamData
-                                    .filter(
-                                      (data) => data.Status === "FollowUp"
-                                    )
-                                    .sort((a, b) =>
-                                      a.AssignDate.localeCompare(b.AssignDate)
-                                    )
-                                );
-                                break;
+                                                switch (selectedOption) {
+                                                    case "Busy":
+                                                    case "Untouched":
+                                                    case "Not Picked Up":
+                                                        setdataStatus("All");
+                                                        setTeamLeadsData(
+                                                            teamData
+                                                                .filter((data) =>
+                                                                    [
+                                                                        "Busy",
+                                                                        "Untouched",
+                                                                        "Not Picked Up",
+                                                                    ].includes(data.Status)
+                                                                )
+                                                                .sort((a, b) => {
+                                                                    if (a.Status === selectedOption)
+                                                                        return -1;
+                                                                    if (b.Status === selectedOption) return 1;
+                                                                    return 0;
+                                                                })
+                                                        );
+                                                        break;
+                                                    case "Interested":
+                                                        setdataStatus("Interested");
+                                                        setTeamLeadsData(
+                                                            teamData
+                                                                .filter(
+                                                                    (data) => data.Status === "Interested"
+                                                                )
+                                                                .sort((a, b) =>
+                                                                    a.AssignDate.localeCompare(b.AssignDate)
+                                                                )
+                                                        );
+                                                        break;
+                                                    case "Not Interested":
+                                                        setdataStatus("NotInterested");
+                                                        setTeamLeadsData(
+                                                            teamData
+                                                                .filter((data) =>
+                                                                    ["Not Interested", "Junk"].includes(
+                                                                        data.Status
+                                                                    )
+                                                                )
+                                                                .sort((a, b) =>
+                                                                    a.AssignDate.localeCompare(b.AssignDate)
+                                                                )
+                                                        );
+                                                        break;
+                                                    case "FollowUp":
+                                                        setdataStatus("FollowUp");
+                                                        setTeamLeadsData(
+                                                            teamData
+                                                                .filter(
+                                                                    (data) => data.Status === "FollowUp"
+                                                                )
+                                                                .sort((a, b) =>
+                                                                    a.AssignDate.localeCompare(b.AssignDate)
+                                                                )
+                                                        );
+                                                        break;
 
-                              default:
-                                // No filtering if default option selected
-                                setdataStatus("All");
-                                setTeamLeadsData(
-                                  teamData.sort((a, b) => {
-                                    if (a.Status === selectedOption) return -1;
-                                    if (b.Status === selectedOption) return 1;
-                                    return 0;
-                                  })
-                                );
-                                break;
-                            }
-                          }}
-                        >
-                          <option value="" disabled selected>
-                            Select Status
-                          </option>
-                          <option value="Untouched">Untouched</option>
-                          <option value="Busy">Busy</option>
-                          <option value="Not Picked Up">Not Picked Up</option>
-                          <option value="FollowUp">Follow Up</option>
-                          <option value="Interested">Interested</option>
-                          <option value="Not Interested">Not Interested</option>
-                        </select>
-                      </div>
+                                                    default:
+                                                        // No filtering if default option selected
+                                                        setdataStatus("All");
+                                                        setTeamLeadsData(
+                                                            teamData.sort((a, b) => {
+                                                                if (a.Status === selectedOption) return -1;
+                                                                if (b.Status === selectedOption) return 1;
+                                                                return 0;
+                                                            })
+                                                        );
+                                                        break;
+                                                }
+                                            }}
+                                        >
+                                            <option value="" disabled selected>
+                                                Select Status
+                                            </option>
+                                            <option value="Untouched">Untouched</option>
+                                            <option value="Busy">Busy</option>
+                                            <option value="Not Picked Up">Not Picked Up</option>
+                                            <option value="FollowUp">Follow Up</option>
+                                            <option value="Interested">Interested</option>
+                                            <option value="Not Interested">Not Interested</option>
+                                        </select>
+                                    </div>
 
-                      {selectedField === "State" && (
-                        <div style={{ width: "15vw" }} className="input-icon">
-                          <span className="input-icon-addon">
-                            {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon"
-                              width="20"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              stroke-width="2"
-                              stroke="currentColor"
-                              fill="none"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            >
-                              <path
-                                stroke="none"
-                                d="M0 0h24v24H0z"
-                                fill="none"
-                              />
-                              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                              <path d="M21 21l-6 -6" />
-                            </svg>
-                          </span>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={citySearch}
-                            onChange={(e) => {
-                              setcitySearch(e.target.value);
-                              setCurrentPage(0);
-                            }}
-                            placeholder="Search City"
-                            aria-label="Search in website"
-                          />
-                        </div>
-                      )}
-                      {selectedField === "Company Incorporation Date  " && (
-                        <>
-                          <div
-                            style={{ width: "fit-content" }}
-                            className="form-control"
-                          >
-                            <select
-                              style={{
-                                border: "none",
-                                outline: "none",
-                                marginRight: "10px",
-                                width: "115px",
-                                paddingLeft: "10px",
-                              }}
-                              onChange={(e) => {
-                                setMonth(e.target.value);
-                                setCurrentPage(0);
-                              }}
-                            >
-                              <option value="" disabled selected>
-                                Select Month
-                              </option>
-                              <option value="12">December</option>
-                              <option value="11">November</option>
-                              <option value="10">October</option>
-                              <option value="9">September</option>
-                              <option value="8">August</option>
-                              <option value="7">July</option>
-                              <option value="6">June</option>
-                              <option value="5">May</option>
-                              <option value="4">April</option>
-                              <option value="3">March</option>
-                              <option value="2">February</option>
-                              <option value="1">January</option>
-                            </select>
-                          </div>
-                          <div
-                            className="input-icon  form-control"
-                            style={{ margin: "0px 10px", width: "110px" }}
-                          >
-                            {/* <input
+                                    {selectedField === "State" && (
+                                        <div style={{ width: "15vw" }} className="input-icon">
+                                            <span className="input-icon-addon">
+                                                {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="icon"
+                                                    width="20"
+                                                    height="24"
+                                                    viewBox="0 0 24 24"
+                                                    stroke-width="2"
+                                                    stroke="currentColor"
+                                                    fill="none"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                >
+                                                    <path
+                                                        stroke="none"
+                                                        d="M0 0h24v24H0z"
+                                                        fill="none"
+                                                    />
+                                                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                                                    <path d="M21 21l-6 -6" />
+                                                </svg>
+                                            </span>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                value={citySearch}
+                                                onChange={(e) => {
+                                                    setcitySearch(e.target.value);
+                                                    setCurrentPage(0);
+                                                }}
+                                                placeholder="Search City"
+                                                aria-label="Search in website"
+                                            />
+                                        </div>
+                                    )}
+                                    {selectedField === "Company Incorporation Date  " && (
+                                        <>
+                                            <div
+                                                style={{ width: "fit-content" }}
+                                                className="form-control"
+                                            >
+                                                <select
+                                                    style={{
+                                                        border: "none",
+                                                        outline: "none",
+                                                        marginRight: "10px",
+                                                        width: "115px",
+                                                        paddingLeft: "10px",
+                                                    }}
+                                                    onChange={(e) => {
+                                                        setMonth(e.target.value);
+                                                        setCurrentPage(0);
+                                                    }}
+                                                >
+                                                    <option value="" disabled selected>
+                                                        Select Month
+                                                    </option>
+                                                    <option value="12">December</option>
+                                                    <option value="11">November</option>
+                                                    <option value="10">October</option>
+                                                    <option value="9">September</option>
+                                                    <option value="8">August</option>
+                                                    <option value="7">July</option>
+                                                    <option value="6">June</option>
+                                                    <option value="5">May</option>
+                                                    <option value="4">April</option>
+                                                    <option value="3">March</option>
+                                                    <option value="2">February</option>
+                                                    <option value="1">January</option>
+                                                </select>
+                                            </div>
+                                            <div
+                                                className="input-icon  form-control"
+                                                style={{ margin: "0px 10px", width: "110px" }}
+                                            >
+                                                {/* <input
                             type="number"
                             value={year}
                             defaultValue="Select Year"
@@ -1572,37 +1597,37 @@ function EmployeeTeamLeads() {
                             }}
                             aria-label="Search in website"
                           /> */}
-                            <select
-                              select
-                              style={{ border: "none", outline: "none" }}
-                              value={year}
-                              onChange={(e) => {
-                                setYear(e.target.value);
-                                setCurrentPage(0); // Reset page when year changes
-                              }}
-                            >
-                              <option value="">Select Year</option>
-                              {[...Array(15)].map((_, index) => {
-                                const yearValue = 2024 - index;
-                                return (
-                                  <option key={yearValue} value={yearValue}>
-                                    {yearValue}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
-                        </>
-                      )}
+                                                <select
+                                                    select
+                                                    style={{ border: "none", outline: "none" }}
+                                                    value={year}
+                                                    onChange={(e) => {
+                                                        setYear(e.target.value);
+                                                        setCurrentPage(0); // Reset page when year changes
+                                                    }}
+                                                >
+                                                    <option value="">Select Year</option>
+                                                    {[...Array(15)].map((_, index) => {
+                                                        const yearValue = 2024 - index;
+                                                        return (
+                                                            <option key={yearValue} value={yearValue}>
+                                                                {yearValue}
+                                                            </option>
+                                                        );
+                                                    })}
+                                                </select>
+                                            </div>
+                                        </>
+                                    )}
 
-                     
-                    </div>
-                  </div>
 
-                  {/* <!-- Page title actions --> */}
-                </div>
+                                </div>
+                            </div>
 
-                {/* -----------------------------------------    Table Starts from here   ------------------------------------------------ */}
+                            {/* <!-- Page title actions --> */}
+                        </div>
+
+                        {/* -----------------------------------------    Table Starts from here   ------------------------------------------------ */}
                         <div class="card-header my-tab">
                             <ul class="nav nav-tabs card-header-tabs nav-fill p-0"
                                 data-bs-toggle="tabs">
@@ -1837,7 +1862,7 @@ function EmployeeTeamLeads() {
                                                 <th>
                                                     Bde Forward Date
                                                 </th>
-                                               
+
                                                 {(bdmNewStatus === "Untouched" || bdmNewStatus === "Matured") && <th>Action</th>}
                                                 {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
                                                     <th>Add Projection</th>
@@ -1918,7 +1943,7 @@ function EmployeeTeamLeads() {
                                                         bdmNewStatus === "NotInterested") && (
                                                             <>
                                                                 <td>
-                                                                    {company.bdmStatus === "Matured"? (
+                                                                    {company.bdmStatus === "Matured" ? (
                                                                         <span>{company.bdmStatus}</span>
                                                                     ) : (
                                                                         <select
@@ -2080,26 +2105,26 @@ function EmployeeTeamLeads() {
                                                     }
                                                     {
                                                         bdmNewStatus === "Matured" && <>
-                                                        <td>
-                                                        <IconButton
-                                          style={{ marginRight: "5px" }}
-                                          onClick={() => {
-                                            setMaturedID(company._id);
+                                                            <td>
+                                                                <IconButton
+                                                                    style={{ marginRight: "5px" }}
+                                                                    onClick={() => {
+                                                                        setMaturedID(company._id);
 
-                                            functionopenAnchor();
-                                          }}
-                                        >
-                                          <IconEye
-                                            style={{
-                                              width: "14px",
-                                              height: "14px",
-                                              color: "#d6a10c",
-                                              cursor: "pointer",
-                                            }}
-                                          />
-                                        </IconButton>
+                                                                        functionopenAnchor();
+                                                                    }}
+                                                                >
+                                                                    <IconEye
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#d6a10c",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </IconButton>
 
-                                                        </td>
+                                                            </td>
                                                         </>
                                                     }
                                                     {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
@@ -2274,7 +2299,7 @@ function EmployeeTeamLeads() {
                                         {teamleadsData.length === 0 && (
                                             <tbody>
                                                 <tr>
-                                                    <td colSpan={bdmNewStatus==="Interested" || bdmNewStatus==="FollowUp" ? "15" : "11"} className="p-2 particular">
+                                                    <td colSpan={bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" ? "15" : "11"} className="p-2 particular">
                                                         <Nodata />
                                                     </td>
                                                 </tr>
@@ -2583,25 +2608,24 @@ function EmployeeTeamLeads() {
                 fullWidth
                 maxWidth="xs">
                 <DialogTitle>
-                    <span style={{ fontSize: "11px" }}>
-                        BDM Feedback for {feedbackCompanyName}
-                    </span>
-                    <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
-                        <CloseIcon color="primary" style={{ width: "16px", height: "16px" }}></CloseIcon>
-                    </IconButton>{" "}
-                    {(valueSlider && feedbackRemarks) ? (<IconButton
-                        onClick={() => {
-                            setIsEditFeedback(true);
-                        }}
-                        style={{ float: "right" }}>
-                        <EditIcon color="grey" style={{ width: "16px", height: "16px" }}></EditIcon>
-                    </IconButton>) : (null)}
+                    <div className="d-flex align-items-center justify-content-between">
+                        <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" >{feedbackCompanyName}</span></div>
+                        <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
+                            <CloseIcon color="primary"></CloseIcon>
+                        </IconButton>{" "}
+                        {(valueSlider && feedbackRemarks) ? (<IconButton
+                            onClick={() => {
+                                setIsEditFeedback(true);
+                            }}
+                            style={{ float: "right" }}>
+                            <EditIcon color="grey" ></EditIcon>
+                        </IconButton>) : (null)}
+                    </div>
                 </DialogTitle>
                 <DialogContent>
-
                     <div className="card-body mt-5">
                         <div className="mt-1">
-                            <div>a. How was the quality of Information?</div>
+                            <div>A. How was the quality of Information?</div>
                             <div className="feedback-slider">
                                 <Slider
                                     defaultValue={0}
@@ -2616,7 +2640,7 @@ function EmployeeTeamLeads() {
                             </div>
                         </div>
                         <div className="mt-1">
-                            <div>b. How was the clarity of communication with lead?</div>
+                            <div>B. How was the clarity of communication with lead?</div>
                             <div className="feedback-slider">
                                 <Slider
                                     defaultValue={0}
@@ -2631,7 +2655,7 @@ function EmployeeTeamLeads() {
                             </div>
                         </div>
                         <div className="mt-1">
-                            <div>c. How was the accuracy of lead qualification?</div>
+                            <div>C. How was the accuracy of lead qualification?</div>
                             <div className="feedback-slider">
                                 <Slider
                                     defaultValue={0}
@@ -2646,7 +2670,7 @@ function EmployeeTeamLeads() {
                             </div>
                         </div>
                         <div className="mt-1">
-                            <div>d. How was engagement level of lead?</div>
+                            <div>D. How was engagement level of lead?</div>
                             <div className="feedback-slider">
                                 <Slider
                                     defaultValue={0}
@@ -2661,7 +2685,7 @@ function EmployeeTeamLeads() {
                             </div>
                         </div>
                         <div className="mt-1">
-                            <div>e. Payment Chances</div>
+                            <div>E. Payment Chances</div>
                             <div className="feedback-slider">
                                 <Slider
                                     defaultValue={0}
@@ -2986,31 +3010,31 @@ function EmployeeTeamLeads() {
 
             {/*  --------------------------------     Bookings View Sidebar   --------------------------------------------- */}
             <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
-        <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
-          <div className="LeadFormPreviewDrawar-header">
-            <div className="Container">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <h2 className="title m-0 ml-1">
-                    {currentForm ? currentForm["Company Name"] : "Company Name"}
-                  </h2>
+                <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
+                    <div className="LeadFormPreviewDrawar-header">
+                        <div className="Container">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h2 className="title m-0 ml-1">
+                                        {currentForm ? currentForm["Company Name"] : "Company Name"}
+                                    </h2>
+                                </div>
+                                <div>
+                                    <IconButton onClick={closeAnchor}>
+                                        <CloseIcon />
+                                    </IconButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <LeadFormPreview
+                            setOpenAnchor={setOpenAnchor}
+                            currentLeadForm={currentForm}
+                        />
+                    </div>
                 </div>
-                <div>
-                  <IconButton onClick={closeAnchor}>
-                    <CloseIcon />
-                  </IconButton>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <LeadFormPreview
-              setOpenAnchor={setOpenAnchor}
-              currentLeadForm={currentForm}
-            />
-          </div>
-        </div>
-      </Drawer>
+            </Drawer>
 
 
         </div>

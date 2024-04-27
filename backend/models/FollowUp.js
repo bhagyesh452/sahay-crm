@@ -46,6 +46,9 @@ const CompanySchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  bdeName:{
+    type:String,
+  },
   history: [{
     modifiedAt: { type: String, default: Date.now() },
     data: {

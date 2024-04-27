@@ -2601,7 +2601,7 @@ function EmployeePanel() {
       const response = await axios.delete(
         `${secretKey}/delete-inform-Request/${id}`
       );
-     
+
       setOpenbdmRequest(false);
       fetchBDMbookingRequests()
       console.log(response.data); // Log the response data if needed
@@ -2634,6 +2634,7 @@ function EmployeePanel() {
 
   }
 
+  console.log(feedbackRemarks , feedbakPoints)
 
 
   return (
@@ -2651,7 +2652,7 @@ function EmployeePanel() {
                   <div className="request-bdm-card">
                     <div className="request-title m-2 d-flex justify-content-between">
                       <div className="request-content mr-2">
-                       {BDMrequests.bdmName} has Matured the case of{" "}
+                        {BDMrequests.bdmName} has Matured the case of{" "}
                         <b>{BDMrequests["Company Name"]}</b>.
                       </div>
                       <div className="request-time">
@@ -2672,7 +2673,7 @@ function EmployeePanel() {
                       >
                         Ok
                       </button>
-                      
+
                     </div>
                   </div>
                 </DialogContent>
@@ -4179,7 +4180,7 @@ function EmployeePanel() {
 
                                   )
                                 }
-                                {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints || company.feedbackRemarks) && (
+                                {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (company.feedbackPoints.length !== 0 || company.feedbackRemarks) && (
                                   <td>
                                     <IconButton onClick={() => {
                                       handleViewFeedback(
@@ -4194,7 +4195,7 @@ function EmployeePanel() {
                                         width: "17px",
                                         height: "17px",
                                       }}
-                                        color="grey" /></IconButton>
+                                        color="#fbb900" /></IconButton>
                                   </td>
                                 )}
                                 {dataStatus === "Matured" && (
@@ -5500,17 +5501,21 @@ function EmployeePanel() {
         maxWidth="xs"
       >
         <DialogTitle>
-          <span style={{ fontSize: "14px" }}>{feedbackCompany}</span>
-          <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
-            <CloseIcon color="primary"></CloseIcon>
-          </IconButton>{" "}
+          <div className="d-flex align-items-center justify-content-between">
+            <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" > {feedbackCompany}</span></div>
+            <div>
+            <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
+              <CloseIcon color="primary"></CloseIcon>
+            </IconButton>{" "}
+            </div>
+          </div>
         </DialogTitle>
         <DialogContent>
           <div className="remarks-content">
-            {feedbackRemarks || feedbakPoints ? (
+            {(feedbackRemarks || feedbakPoints) && (
               <div className="col-sm-12">
                 <div className="card RemarkCard position-relative">
-                <div>a. How was the quality of Information?</div>
+                  <div>A. How was the quality of Information?</div>
                   <IOSSlider className="mt-4"
                     aria-label="ios slider"
                     disabled
@@ -5521,7 +5526,7 @@ function EmployeePanel() {
                   />
                 </div>
                 <div className="card RemarkCard position-relative">
-                <div>b. How was the clarity of communication with lead?</div>
+                  <div>B. How was the clarity of communication with lead?</div>
                   <IOSSlider className="mt-4"
                     aria-label="ios slider"
                     disabled
@@ -5532,7 +5537,7 @@ function EmployeePanel() {
                   />
                 </div>
                 <div className="card RemarkCard position-relative">
-                <div>c. How was the accuracy of lead qualification?</div>
+                  <div>C. How was the accuracy of lead qualification?</div>
                   <IOSSlider className="mt-4"
                     aria-label="ios slider"
                     disabled
@@ -5543,7 +5548,7 @@ function EmployeePanel() {
                   />
                 </div>
                 <div className="card RemarkCard position-relative">
-                <div>d. How was engagement level of lead?</div>
+                  <div>D. How was engagement level of lead?</div>
                   <IOSSlider className="mt-4"
                     aria-label="ios slider"
                     disabled
@@ -5554,7 +5559,18 @@ function EmployeePanel() {
                   />
                 </div>
                 <div className="card RemarkCard position-relative">
-                <div>e. Payment Chances</div>
+                  <div>E. Payment Chances?</div>
+                  <IOSSlider className="mt-4"
+                    aria-label="ios slider"
+                    disabled
+                    defaultValue={feedbakPoints[3]}
+                    min={0}
+                    max={100}
+                    valueLabelDisplay="on"
+                  />
+                </div>
+                <div className="card RemarkCard position-relative">
+                  <div>e. Payment Chances</div>
                   <IOSSlider className="mt-4"
                     aria-label="ios slider"
                     disabled
@@ -5572,13 +5588,8 @@ function EmployeePanel() {
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="text-center overflow-hidden">
-                No Remarks History
-              </div>
             )}
           </div>
-
         </DialogContent>
       </Dialog>
 
