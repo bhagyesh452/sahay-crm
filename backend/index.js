@@ -8064,7 +8064,7 @@ app.delete(
   async (req, res) => {
     try {
       const companyName = req.params.CompanyName;
-      const deleteFormRequest = await Edit.findOneAndDelete({
+      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
         "Company Name": companyName,
       });
       res.status(200).json({ message: "Document updated successfully" });
