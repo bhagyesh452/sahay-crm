@@ -2508,9 +2508,9 @@ function Dashboard() {
     <div>
       <Header />
       <Navbar />
-      <div className="d-flex align-items-center">
+      <div className="page-wrapper">
         <div>
-          <div className="page-wrapper">
+          <div className="">
             {/* <div className="recent-updates-icon">
               <IconButton
                 style={{ backgroundColor: "#ffb900", color: "white" }}
