@@ -262,11 +262,16 @@ function EmployeeTeamLeads() {
         setOpenRemarksEdit(false)
 
     }
-    const functionopenpopupremarks = (companyID, companyStatus, companyName) => {
+
+    const [filteredRemarksBde , setfilteredRemarksBde] = useState([])
+
+    const functionopenpopupremarks = (companyID, companyStatus, companyName , bdmName , ename) => {
         setOpenRemarks(true);
-        setFilteredRemarks(
-            remarksHistory.filter((obj) => obj.companyID === companyID)
+        setfilteredRemarksBde(
+            remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
         );
+
+        console.log("companyId" , companyID)
         // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
         setcid(companyID);
         setCstat(companyStatus);
@@ -274,17 +279,22 @@ function EmployeeTeamLeads() {
 
     };
 
+    console.log(filteredRemarksBde, "bderemarks")
+
 
 
 
     const [openRemarksEdit, setOpenRemarksEdit] = useState(false)
     const [remarksBdmName, setRemarksBdmName] = useState("")
+    
 
     const functionopenpopupremarksEdit = (companyID, companyStatus, companyName, bdmName) => {
         setOpenRemarksEdit(true);
         setFilteredRemarks(
-            remarksHistory.filter((obj) => obj.companyID === companyID)
+            remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
         );
+
+        console.log("companyId" , companyID)
         // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
         setcid(companyID);
         setCstat(companyStatus);
@@ -346,14 +356,15 @@ function EmployeeTeamLeads() {
                     bdmAcceptStatus: "NotForwarded",
                     bdmName: "NoOne"
                 })
-                const response2 = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+                const response2 = await axios.post(`${secretKey}/update-remarks-bdm/${cid}`, {
                     Remarks,
                 });
                 const response3 = await axios.post(
-                    `${secretKey}/remarks-history/${cid}`,
+                    `${secretKey}/remarks-history-bdm/${cid}`,
                     {
                         Remarks,
                         remarksBdmName,
+                        currentCompanyName,
 
                     }
                 );
@@ -363,7 +374,7 @@ function EmployeeTeamLeads() {
                     setChangeRemarks("");
                     // If successful, update the employeeData state or fetch data again to reflect changes
                     //fetchNewData(cstat);
-                    //setCurrentRemarksBdm(changeRemarks)
+                    setCurrentRemarks(changeRemarks)
                     fetchTeamLeadsData(cstat)
                     fetchRemarksHistory();
                     // setCstat("");
@@ -379,11 +390,11 @@ function EmployeeTeamLeads() {
                 setIsDeleted(false)
 
             } else {
-                const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+                const response = await axios.post(`${secretKey}/update-remarks-bdm/${cid}`, {
                     Remarks,
                 });
                 const response2 = await axios.post(
-                    `${secretKey}/remarks-history/${cid}`,
+                    `${secretKey}/remarks-history-bdm/${cid}`,
                     {
                         Remarks,
                         remarksBdmName,
@@ -666,11 +677,12 @@ function EmployeeTeamLeads() {
             // Send a delete request to the backend to delete the item with the specified ID
             await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
             if (mainRemarks) {
-                await axios.delete(`${secretKey}/remarks-delete/${companyId}`);
+                await axios.delete(`${secretKey}/remarks-delete-bdm/${companyId}`);
             }
             // Set the deletedItemId state to trigger re-fetching of remarks history
             Swal.fire("Remarks Deleted");
             fetchRemarksHistory();
+            fetchTeamLeadsData(cstat)
             //fetchNewData(cstat);
         } catch (error) {
             console.error("Error deleting remarks:", error);
@@ -1923,9 +1935,13 @@ function EmployeeTeamLeads() {
                                                                     functionopenpopupremarks(
                                                                         company._id,
                                                                         company.Status,
-                                                                        company["Company Name"]
+                                                                        company["Company Name"],
+                                                                        company.bdmName,
+                                                                        company.ename
                                                                     );
-                                                                    setCurrentRemarks(company.Remarks);
+                                                                    //
+                                                                    
+                                                                    //setCurrentRemarks(company.Remarks);
                                                                     //setCurrentRemarksBdm(company.bdmRemarks)
                                                                     setCompanyId(company._id);
                                                                 }}
@@ -2038,7 +2054,7 @@ function EmployeeTeamLeads() {
                                                                                     company["Company Name"],
                                                                                     company.bdmName
                                                                                 );
-                                                                                setCurrentRemarks(company.Remarks);
+                                                                                  setCurrentRemarks(company.bdmRemarks);
                                                                                 //setCurrentRemarksBdm(company.Remarks)
                                                                                 setCompanyId(company._id);
                                                                             }}>
@@ -2391,29 +2407,14 @@ function EmployeeTeamLeads() {
                 </DialogTitle>
                 <DialogContent>
                     <div className="remarks-content">
-                        {filteredRemarks.length !== 0 ? (
-                            filteredRemarks.slice().map((historyItem) => (
+                        {filteredRemarksBde.length !== 0 ? (
+                            filteredRemarksBde.slice().map((historyItem) => (
                                 <div className="col-sm-12" key={historyItem._id}>
                                     <div className="card RemarkCard position-relative">
                                         <div className="d-flex justify-content-between">
                                             <div className="reamrk-card-innerText">
                                                 <pre className="remark-text">{historyItem.remarks}</pre>
                                             </div>
-                                            {/* <div className="dlticon">
-                        <DeleteIcon
-                          style={{
-                            cursor: "pointer",
-                            color: "#f70000",
-                            width: "14px",
-                          }}
-                          onClick={() => {
-                            handleDeleteRemarks(
-                              historyItem._id,
-                              historyItem.remarks
-                            );
-                          }}
-                        />
-                      </div> */}
                                         </div>
 
                                         <div className="d-flex card-dateTime justify-content-between">
@@ -2429,31 +2430,9 @@ function EmployeeTeamLeads() {
                             </div>
                         )}
                     </div>
-
-                    {/* <div class="card-footer">
-            <div class="mb-3 remarks-input">
-              <textarea
-                placeholder="Add Remarks Here...  "
-                className="form-control"
-                id="remarks-input"
-                rows="3"
-                onChange={(e) => {
-                  debouncedSetChangeRemarks(e.target.value);
-                }}
-              ></textarea>
-            </div>
-            <button
-              onClick={handleUpdate}
-              type="submit"
-              className="btn btn-primary"
-              style={{ width: "100%" }}
-            >
-              Submit
-            </button>
-          </div> */}
                 </DialogContent>
             </Dialog>
-            {/* ----------------------------------------------------dialog for editing popup--------------------------------------------- */}
+            {/* ----------------------------------------------------dialog for editing popup by bdm--------------------------------------------- */}
 
             <Dialog
                 open={openRemarksEdit}
@@ -2476,7 +2455,7 @@ function EmployeeTeamLeads() {
                                     <div className="card RemarkCard position-relative">
                                         <div className="d-flex justify-content-between">
                                             <div className="reamrk-card-innerText">
-                                                <pre className="remark-text">{historyItem.remarks}</pre>
+                                                <pre className="remark-text">{historyItem.bdmRemarks}</pre>
                                             </div>
                                             <div className="dlticon">
                                                 <DeleteIcon
@@ -2488,7 +2467,7 @@ function EmployeeTeamLeads() {
                                                     onClick={() => {
                                                         handleDeleteRemarks(
                                                             historyItem._id,
-                                                            historyItem.remarks
+                                                            historyItem.bdmRemarks
                                                         );
                                                     }}
                                                 />

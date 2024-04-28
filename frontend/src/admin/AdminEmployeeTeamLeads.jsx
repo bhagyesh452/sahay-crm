@@ -300,10 +300,10 @@ function AdminEmployeeTeamLeads() {
         setOpenRemarksEdit(false)
 
     }
-    const functionopenpopupremarks = (companyID, companyStatus, companyName) => {
+    const functionopenpopupremarks = (companyID, companyStatus, companyName ,ename) => {
         setOpenRemarks(true);
         setFilteredRemarks(
-            remarksHistory.filter((obj) => obj.companyID === companyID)
+            remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
         );
         // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
         setcid(companyID);
@@ -317,11 +317,12 @@ function AdminEmployeeTeamLeads() {
 
     const [openRemarksEdit, setOpenRemarksEdit] = useState(false)
     const [remarksBdmName, setRemarksBdmName] = useState("")
+    const [filteredRemarksBdm , setFilteredRemarksBdm] = useState([])
 
     const functionopenpopupremarksEdit = (companyID, companyStatus, companyName, bdmName) => {
         setOpenRemarksEdit(true);
-        setFilteredRemarks(
-            remarksHistory.filter((obj) => obj.companyID === companyID)
+        setFilteredRemarksBdm(
+            remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
         );
         // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
         setcid(companyID);
@@ -2195,11 +2196,11 @@ function AdminEmployeeTeamLeads() {
                                                 <th>Company Number</th>
                                                 <th>BDE Status</th>
                                                 {bdmNewStatus === "FollowUp" && (<th>Next FollowUp Date</th>)}
-                                                <th>Remarks</th>
+                                                <th>Bde Remarks</th>
                                                 {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "NotInterested") && (
                                                     <>
                                                         <th>BDM Status</th>
-                                                        {/* <th>BDM Remarks</th> */}
+                                                        <th>BDM Remarks</th>
                                                     </>
                                                 )}
                                                 <th>
@@ -2300,7 +2301,8 @@ function AdminEmployeeTeamLeads() {
                                                                     functionopenpopupremarks(
                                                                         company._id,
                                                                         company.Status,
-                                                                        company["Company Name"]
+                                                                        company["Company Name"],
+                                                                        company.ename
                                                                     );
                                                                     setCurrentRemarks(company.Remarks);
                                                                     //setCurrentRemarksBdm(company.bdmRemarks)
@@ -2387,7 +2389,7 @@ function AdminEmployeeTeamLeads() {
                                                                         </select>
                                                                     )}
                                                                 </td>
-                                                                {/* <td>
+                                                                <td>
                                                                     <div
                                                                         key={company._id}
                                                                         style={{
@@ -2419,15 +2421,18 @@ function AdminEmployeeTeamLeads() {
                                                                                 //setCurrentRemarksBdm(company.Remarks)
                                                                                 setCompanyId(company._id);
                                                                             }}>
-                                                                            <EditIcon
+                                                                            <IconEye
                                                                                 style={{
                                                                                     width: "12px",
                                                                                     height: "12px",
+                                                                                    color:"#fbb900"
                                                                                 }}
+                                                                    
+                                                                                
                                                                             />
                                                                         </IconButton>
                                                                     </div>
-                                                                </td> */}
+                                                                </td>
 
                                                             </>
                                                         )}
@@ -2813,13 +2818,13 @@ function AdminEmployeeTeamLeads() {
                 </DialogTitle>
                 <DialogContent>
                     <div className="remarks-content">
-                        {filteredRemarks.length !== 0 ? (
-                            filteredRemarks.slice().map((historyItem) => (
+                        {filteredRemarksBdm.length !== 0 ? (
+                            filteredRemarksBdm.slice().map((historyItem) => (
                                 <div className="col-sm-12" key={historyItem._id}>
                                     <div className="card RemarkCard position-relative">
                                         <div className="d-flex justify-content-between">
                                             <div className="reamrk-card-innerText">
-                                                <pre className="remark-text">{historyItem.remarks}</pre>
+                                                <pre className="remark-text">{historyItem.bdmRemarks}</pre>
                                             </div>
                                             <div className="dlticon">
                                                 <DeleteIcon
@@ -2850,29 +2855,6 @@ function AdminEmployeeTeamLeads() {
                                 No Remarks History
                             </div>
                         )}
-                    </div>
-
-                    <div class="card-footer">
-                        <div class="mb-3 remarks-input">
-                            <textarea
-                                placeholder="Add Remarks Here...  "
-                                className="form-control"
-                                id="remarks-input"
-                                rows="3"
-                                value={changeRemarks}
-                                onChange={(e) => {
-                                    debouncedSetChangeRemarks(e.target.value);
-                                }}
-                            ></textarea>
-                        </div>
-                        <button
-                            onClick={handleUpdate}
-                            type="submit"
-                            className="btn btn-primary"
-                            style={{ width: "100%" }}
-                        >
-                            Submit
-                        </button>
                     </div>
                 </DialogContent>
             </Dialog>
