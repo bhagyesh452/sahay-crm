@@ -931,21 +931,25 @@ function AdminEmployeeTeamLeads() {
     const [feedbackRemarks, setFeedbackRemarks] = useState("")
     const [companyFeedbackId, setCompanyFeedbackId] = useState("")
     const [isEditFeedback, setIsEditFeedback] = useState(false)
+    const [feedbackPoints , setFeedbackPoints] = useState([])
+    
 
-    const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackPoints2, companyFeedbackPoints3, companyFeedbackPoints4, companyFeedbackPoints5, companyFeedbackRemarks, bdmStatus) => {
+    const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackRemarks, bdmStatus) => {
         setOpenFeedback(true)
         setFeedbackCompanyName(companyName)
         setCompanyFeedbackId(companyId)
+        setFeedbackPoints(companyFeedbackPoints)
         //setFeedbackRemarks(companyFeedbackRemarks)
         debouncedFeedbackRemarks(companyFeedbackRemarks)
-        setValueSlider(companyFeedbackPoints)
-        setValueSlider2(companyFeedbackPoints2)
-        setValueSlider3(companyFeedbackPoints3)
-        setValueSlider4(companyFeedbackPoints4)
-        setValueSlider5(companyFeedbackPoints5)
+        setValueSlider(companyFeedbackPoints[0])
+        setValueSlider2(companyFeedbackPoints[1])
+        setValueSlider3(companyFeedbackPoints[2])
+        setValueSlider4(companyFeedbackPoints[3])
+        setValueSlider5(companyFeedbackPoints[4])
         setBdmNewStatus(bdmStatus)
         //setIsEditFeedback(true)
     }
+    console.log("yahan locha h" , feedbackPoints.length)
 
 
 
@@ -2531,17 +2535,13 @@ function AdminEmployeeTeamLeads() {
                                                             )}
                                                         </td>
                                                         <td>
-                                                            {(company.feedbackRemarks || company.feedbackPoints) && (<IconButton>
+                                                            {(company.feedbackRemarks || company.feedbackPoints.length !== 0) && (<IconButton>
                                                                 <IoAddCircle
                                                                     onClick={() => {
                                                                         handleOpenFeedback(
                                                                             company["Company Name"],
                                                                             company._id,
-                                                                            company.feedbackPoints[0],
-                                                                            company.feedbackPoints[1],
-                                                                            company.feedbackPoints[2],
-                                                                            company.feedbackPoints[3],
-                                                                            company.feedbackPoints[4],
+                                                                            company.feedbackPoints,
                                                                             company.feedbackRemarks,
                                                                             company.bdmStatus
                                                                         )

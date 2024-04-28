@@ -779,6 +779,7 @@ app.post("/api/einfo", async (req, res) => {
   try {
     adminModel.create(req.body).then((respond) => {
       res.json(respond);
+      console.log("newemployee" , req.body)
       //console.log("respond" , respond)
     });
   } catch (error) {

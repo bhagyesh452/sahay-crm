@@ -112,8 +112,8 @@ function EmployeePanel() {
   const [bdmName, setBdmName] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
-  
-  
+
+
   const handleTogglePopup = () => {
     setIsOpen(false);
   };
@@ -361,7 +361,7 @@ function EmployeePanel() {
   //   }
   // };
   console.log(socketID, "If this shows then boom");
-  
+
   const closeProjection = () => {
     setOpenProjection(false);
     setProjectingCompany("");
@@ -2374,6 +2374,7 @@ function EmployeePanel() {
     const selectedDataWithBdm = currentData.filter(
       (company) => company["Company Name"] === forwardedCompany
     );
+    console.log("selecteddatawithbdm", selectedDataWithBdm)
     try {
       const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
         selectedData: selectedDataWithBdm,
@@ -2637,7 +2638,7 @@ function EmployeePanel() {
 
   }
 
-  console.log(feedbackRemarks , feedbakPoints)
+  console.log(feedbackRemarks, feedbakPoints)
 
 
   return (
@@ -3973,7 +3974,21 @@ function EmployeePanel() {
                                   </div>
                                 </td>
                                 {dataStatus === "Forwarded" && <td>
-                                  {company.Remarks}
+                                  <div    key={company._id}
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                      width: "100px",
+                                    }}>
+                                  <p
+                                    className="rematkText text-wrap m-0"
+                                    title={company.Remarks}
+                                  >
+                                    {!company["Remarks"]
+                                      ? "No Remarks"
+                                      : company.Remarks}
+                                  </p>
                                   <IconButton
                                     onClick={() => {
                                       functionopenpopupremarksEdit(
@@ -3995,6 +4010,7 @@ function EmployeePanel() {
                                       }}
                                     />
                                   </IconButton>
+                                  </div>
                                 </td>}
 
                                 <td>
@@ -5507,9 +5523,9 @@ function EmployeePanel() {
           <div className="d-flex align-items-center justify-content-between">
             <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" > {feedbackCompany}</span></div>
             <div>
-            <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
-              <CloseIcon color="primary"></CloseIcon>
-            </IconButton>{" "}
+              <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
+                <CloseIcon color="primary"></CloseIcon>
+              </IconButton>{" "}
             </div>
           </div>
         </DialogTitle>
@@ -5563,17 +5579,6 @@ function EmployeePanel() {
                 </div>
                 <div className="card RemarkCard position-relative">
                   <div>E. Payment Chances?</div>
-                  <IOSSlider className="mt-4"
-                    aria-label="ios slider"
-                    disabled
-                    defaultValue={feedbakPoints[3]}
-                    min={0}
-                    max={100}
-                    valueLabelDisplay="on"
-                  />
-                </div>
-                <div className="card RemarkCard position-relative">
-                  <div>e. Payment Chances</div>
                   <IOSSlider className="mt-4"
                     aria-label="ios slider"
                     disabled
@@ -5935,7 +5940,7 @@ function EmployeePanel() {
                 </button>
               </div>
               <div>
-                <button>Pay now</button>
+
                 {/* <button onClick={generatePaymentLink}>Generate Payment Link</button>
                 {paymentLink && <a href={paymentLink} target="_blank" rel="noopener noreferrer">Proceed to Payment</a>}
                 {error && <p>{error}</p>} */}

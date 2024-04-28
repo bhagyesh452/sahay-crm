@@ -922,21 +922,25 @@ function EmployeeTeamLeads() {
     const [feedbackRemarks, setFeedbackRemarks] = useState("")
     const [companyFeedbackId, setCompanyFeedbackId] = useState("")
     const [isEditFeedback, setIsEditFeedback] = useState(false)
+    const [feedbackPoints , setFeedbackPoints] = useState([])
 
-    const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackPoints2, companyFeedbackPoints3, companyFeedbackPoints4, companyFeedbackPoints5, companyFeedbackRemarks, bdmStatus) => {
+
+    const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackRemarks, bdmStatus) => {
         setOpenFeedback(true)
         setFeedbackCompanyName(companyName)
         setCompanyFeedbackId(companyId)
+        setFeedbackPoints(companyFeedbackPoints)
         //setFeedbackRemarks(companyFeedbackRemarks)
         debouncedFeedbackRemarks(companyFeedbackRemarks)
-        setValueSlider(companyFeedbackPoints)
-        setValueSlider2(companyFeedbackPoints2)
-        setValueSlider3(companyFeedbackPoints3)
-        setValueSlider4(companyFeedbackPoints4)
-        setValueSlider5(companyFeedbackPoints5)
+        setValueSlider(companyFeedbackPoints[0])
+        setValueSlider2(companyFeedbackPoints[1])
+        setValueSlider3(companyFeedbackPoints[2])
+        setValueSlider4(companyFeedbackPoints[3])
+        setValueSlider5(companyFeedbackPoints[4])
         setBdmNewStatus(bdmStatus)
         //setIsEditFeedback(true)
     }
+    console.log("yahan locha h" , feedbackPoints.length)
 
 
 
@@ -2168,17 +2172,13 @@ function EmployeeTeamLeads() {
                                                             )}
                                                         </td>
                                                         <td>
-                                                            {(company.feedbackRemarks || company.feedbackPoints) ? (<IconButton>
+                                                            {(company.feedbackRemarks || company.feedbackPoints.length !==0) ? (<IconButton>
                                                                 <IoAddCircle
                                                                     onClick={() => {
                                                                         handleOpenFeedback(
                                                                             company["Company Name"],
                                                                             company._id,
-                                                                            company.feedbackPoints[0],
-                                                                            company.feedbackPoints[1],
-                                                                            company.feedbackPoints[2],
-                                                                            company.feedbackPoints[3],
-                                                                            company.feedbackPoints[4],
+                                                                            company.feedbackPoints,
                                                                             company.feedbackRemarks,
                                                                             company.bdmStatus
                                                                         )
@@ -2609,16 +2609,16 @@ function EmployeeTeamLeads() {
                 <DialogTitle>
                     <div className="d-flex align-items-center justify-content-between">
                         <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" >{feedbackCompanyName}</span></div>
-                        <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
-                            <CloseIcon color="primary"></CloseIcon>
-                        </IconButton>{" "}
-                        {(valueSlider && feedbackRemarks) ? (<IconButton
+                        {(feedbackPoints.length !==0 || feedbackRemarks) ? (<IconButton
                             onClick={() => {
                                 setIsEditFeedback(true);
                             }}
                             style={{ float: "right" }}>
                             <EditIcon color="grey" ></EditIcon>
                         </IconButton>) : (null)}
+                        <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
+                            <CloseIcon color="primary"></CloseIcon>
+                        </IconButton>{" "}
                     </div>
                 </DialogTitle>
                 <DialogContent>
@@ -2996,12 +2996,10 @@ function EmployeeTeamLeads() {
                                     Submit
                                 </button>
                             </div>
-                            <div>
+                            {/* <div>
                                 <button>Pay now</button>
-                                {/* <button onClick={generatePaymentLink}>Generate Payment Link</button>
-                {paymentLink && <a href={paymentLink} target="_blank" rel="noopener noreferrer">Proceed to Payment</a>}
-                {error && <p>{error}</p>} */}
-                            </div>
+                               
+                            </div> */}
                         </div>
                     </div>
                 </Drawer>

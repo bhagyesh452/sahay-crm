@@ -2741,17 +2741,6 @@ function EmployeeParticular() {
                   <IOSSlider className="mt-4"
                     aria-label="ios slider"
                     disabled
-                    defaultValue={feedbakPoints[3]}
-                    min={0}
-                    max={100}
-                    valueLabelDisplay="on"
-                  />
-                </div>
-                <div className="card RemarkCard position-relative">
-                  <div>e. Payment Chances</div>
-                  <IOSSlider className="mt-4"
-                    aria-label="ios slider"
-                    disabled
                     defaultValue={feedbakPoints[4]}
                     min={0}
                     max={100}
