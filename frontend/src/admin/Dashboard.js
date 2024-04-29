@@ -2468,8 +2468,9 @@ function Dashboard() {
 
   function functionGetLastBookingDate(bdeName) {
     // Filter objects based on bdeName
+
     const filteredRedesignedData = redesignedData.filter(
-      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by")
+      (obj) => (obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") ) && monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth
     );
 
     // Initialize variable to store the latest booking date
