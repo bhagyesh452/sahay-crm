@@ -145,7 +145,7 @@ function EmployeeDashboard() {
 
   const [tempData, setTempData] = useState([]);
   const [loadingNew, setLoadingNew] = useState([]);
-  const [moreEmpData , setmoreEmpData] = useState([])
+  const [moreEmpData, setmoreEmpData] = useState([])
 
   // -------------------------api for contact number-------------------------------------------------------
 
@@ -1531,7 +1531,7 @@ function EmployeeDashboard() {
     { label: "Reset", getValue: () => [null, null] },
   ];
   const [redesignedData, setRedesignedData] = useState([]);
- 
+
   const fetchRedesignedBookings = async () => {
     try {
       const response = await axios.get(
@@ -1546,7 +1546,7 @@ function EmployeeDashboard() {
     }
   };
 
-  console.log("redesigneddata" , redesignedData)
+  console.log("redesigneddata", redesignedData)
 
   // -------------------------------------------  Calculations --------------------------------------------------------
 
@@ -1836,6 +1836,15 @@ function EmployeeDashboard() {
     return count;
   };
 
+  // ---------------------------------------------- forwarded by bdm function-------------------------------------------
+
+  const functionProjectedRevenue = () => {
+    const todaysBdmCompanies = followDataToday.filter((obj) => obj.bdeName === data.ename)
+    console.log(todaysBdmCompanies)
+    const projectedRevenue = todaysBdmCompanies.reduce((total, obj) => total + obj.totalPayment, 0)
+    console.log(projectedRevenue)
+  }
+
 
 
 
@@ -1902,7 +1911,7 @@ function EmployeeDashboard() {
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-1cba19">
-                      {
+                        {
                           empData.filter(
                             (partObj) => partObj.Status === "Matured"
                           ).length
@@ -2189,12 +2198,12 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-1ac9bd">
-                             {moreEmpData.filter(
-                              (obj) =>
-                                obj.bdmAcceptStatus !== "NotForwarded" &&
-                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                                obj.Status !== "Matured"
-                            ).length}
+                                {moreEmpData.filter(
+                                  (obj) =>
+                                    obj.bdmAcceptStatus !== "NotForwarded" &&
+                                    obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                    obj.Status !== "Matured"
+                                ).length}
                               </div>
                             </div>
                           </div>
@@ -2206,7 +2215,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-ffb900">
-                                {moreEmpData.filter((obj)=>obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Interested").length}
+                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Interested").length}
                               </div>
                             </div>
                           </div>
@@ -2218,7 +2227,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-4299e1">
-                              {moreEmpData.filter((obj)=>obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "FollowUp").length}
+                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "FollowUp").length}
                               </div>
                             </div>
                           </div>
@@ -2230,7 +2239,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-1ac9bd">
-                              {moreEmpData.filter((obj)=>obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Matured").length}
+                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Matured").length}
                               </div>
                             </div>
                           </div>
@@ -2242,7 +2251,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-e65b5b">
-                              {moreEmpData.filter((obj)=>obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Not Interested").length}
+                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Not Interested").length}
                               </div>
                             </div>
                           </div>
@@ -2254,7 +2263,9 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-1cba19">
-                                20
+                              ₹{(followDataToday
+                                  .filter(obj => obj.bdeName === data.ename)
+                                  .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
                               </div>
                             </div>
                           </div>
@@ -2266,7 +2277,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-e65b5b">
-                              ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
+                                ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
                               </div>
                             </div>
                           </div>
@@ -2275,7 +2286,7 @@ function EmployeeDashboard() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div class="tab-pane fade" id="receivedAsBDM" role="tabpanel" aria-labelledby="receivedAsBDM-tab">
                   <div className="mt-3 mb-3">
                     <div className="row m-0">
@@ -2287,6 +2298,80 @@ function EmployeeDashboard() {
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-1ac9bd">
                                 20
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">INTERESTED</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-ffb900">
+                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Interested").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">FOLLOW UP</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-4299e1">
+                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "FollowUp").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">MATURED</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Matured").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">NOT INTERESTED</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-e65b5b">
+                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Not Interested").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">PROJECTED REVENUE</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1cba19">
+                              ₹{(followDataToday
+                                  .filter(obj => obj.bdeName === data.ename)
+                                  .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">GENERATED REVENUE</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-e65b5b">
+                                ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
                               </div>
                             </div>
                           </div>
@@ -2516,19 +2601,36 @@ function EmployeeDashboard() {
                                     <td>{obj.lastFollowUpdate}</td>
                                     <td>{obj.estPaymentDate}</td>
                                     <td>
-                                      <IconButton
-                                        onClick={() => {
-                                          functionopenprojection(obj.companyName);
-                                        }}
-                                      >
-                                        <RiEditCircleFill
-                                          color="grey"
-                                          style={{
-                                            width: "17px",
-                                            height: "17px",
+                                      {obj.ename && obj.bdeName && obj.ename !== obj.bdeName ? (
+                                        <IconButton
+                                          onClick={() => {
+                                            functionopenprojection(obj.companyName, obj.bdeName, obj.ename);
+                                            setIsEditProjection(false)
                                           }}
-                                        />
-                                      </IconButton>
+                                        >
+                                          <RiEditCircleFill
+                                            color="lightgrey"
+                                            style={{
+                                              width: "17px",
+                                              height: "17px",
+                                            }}
+                                          ></RiEditCircleFill>
+                                        </IconButton>) : (
+                                        <IconButton
+                                          onClick={() => {
+                                            functionopenprojection(obj.companyName);
+
+                                          }}
+                                        >
+                                          <RiEditCircleFill
+                                            color="grey"
+                                            style={{
+                                              width: "17px",
+                                              height: "17px",
+
+                                            }}
+                                          ></RiEditCircleFill>
+                                        </IconButton>)}
                                     </td>
                                   </tr>
                                 ))}

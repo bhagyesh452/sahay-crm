@@ -696,6 +696,7 @@ function EmployeeTeamLeads() {
     const [currentProjection, setCurrentProjection] = useState({
         companyName: "",
         ename: "",
+        bdeName:"",
         offeredPrize: 0,
         offeredServices: [],
         lastFollowUpdate: "",
@@ -710,18 +711,34 @@ function EmployeeTeamLeads() {
     const [selectedValues, setSelectedValues] = useState([]);
     const [isEditProjection, setIsEditProjection] = useState(false);
     const [openAnchor, setOpenAnchor] = useState(false);
+    const [bdeNameProjection , setBdeNameProjection] = useState("")
 
 
     const functionopenprojection = (comName) => {
+
+        const getBdeName = teamleadsData.filter((company) => company["Company Name"] === comName);
+        console.log(getBdeName)
+
+        if (getBdeName.length > 0) {
+            const bdeName = getBdeName[0].ename;
+            setBdeNameProjection(bdeName) // Accessing the 'ename' field from the first (and only) object
+            console.log("bdeename:", bdeName);
+        } else {
+            console.log("No matching company found.");
+        }
+
+
         setProjectingCompany(comName);
         setOpenProjection(true);
         const findOneprojection =
             projectionData.length !== 0 &&
             projectionData.find((item) => item.companyName === comName);
+            console.log(findOneprojection)
         if (findOneprojection) {
             setCurrentProjection({
                 companyName: findOneprojection.companyName,
                 ename: findOneprojection.ename,
+                bdeName:bdeNameProjection ? bdeNameProjection : findOneprojection.ename,
                 offeredPrize: findOneprojection.offeredPrize,
                 offeredServices: findOneprojection.offeredServices,
                 lastFollowUpdate: findOneprojection.lastFollowUpdate,
@@ -736,12 +753,14 @@ function EmployeeTeamLeads() {
         }
     };
 
+
     const closeProjection = () => {
         setOpenProjection(false);
         setProjectingCompany("");
         setCurrentProjection({
             companyName: "",
             ename: "",
+            bdeName:"",
             offeredPrize: "",
             offeredServices: "",
             totalPayment: 0,
@@ -753,11 +772,15 @@ function EmployeeTeamLeads() {
         setIsEditProjection(false);
         setSelectedValues([]);
     };
+
+
     const functionopenAnchor = () => {
         setTimeout(() => {
             setOpenAnchor(true);
         }, 1000);
     };
+
+
     const closeAnchor = () => {
         setOpenAnchor(false);
       };
@@ -825,6 +848,7 @@ function EmployeeTeamLeads() {
                 ...currentProjection,
                 companyName: projectingCompany,
                 ename: data.ename,
+                bdeName:bdeNameProjection ? bdeNameProjection : data.ename,
                 offeredServices: selectedValues,
                 editCount: currentProjection.editCount + 1, // Increment editCount
             };
@@ -862,11 +886,14 @@ function EmployeeTeamLeads() {
                     `${secretKey}/update-followup`,
                     finalData
                 );
+
+                console.log(response.data)
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
                 setOpenProjection(false);
                 setCurrentProjection({
                     companyName: "",
                     ename: "",
+                    bdeName:"",
                     offeredPrize: 0,
                     offeredServices: [],
                     lastFollowUpdate: "",
@@ -2952,10 +2979,6 @@ function EmployeeTeamLeads() {
                                     Submit
                                 </button>
                             </div>
-                            {/* <div>
-                                <button>Pay now</button>
-                               
-                            </div> */}
                         </div>
                     </div>
                 </Drawer>
