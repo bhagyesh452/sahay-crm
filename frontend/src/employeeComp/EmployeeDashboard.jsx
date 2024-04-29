@@ -1815,6 +1815,22 @@ function EmployeeDashboard() {
   };
 
   //console.log("filtered" , filteredBooking)
+  const functionCalculateMaturedLeads = () => {
+    let count = 0;
+    const maturedObj = empData.filter(partObj => partObj.Status === "Matured");
+    const calculatedObj = maturedObj.map(obj => {
+      if (obj.ename === obj.maturedBdmName) {
+        count++;
+      } else {
+        count += 0.5;
+      }
+    });
+  
+    // Join the calculatedObj array with commas to get a string with numeric values
+    return count;
+  };
+  
+  
 
 
 
@@ -1881,9 +1897,8 @@ function EmployeeDashboard() {
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-1cba19">
                         {
-                          empData.filter(
-                            (partObj) => partObj.Status === "Matured"
-                          ).length
+                          functionCalculateMaturedLeads()
+                          
                         }
                       </div>
                     </div>
@@ -2137,6 +2152,66 @@ function EmployeeDashboard() {
             </div>
           </div>
         </div>
+        {/* AS BDE AND BDM DASHBOARD */}
+        <div className="as-bde-bdm-daSH mt-4 mb-2">
+          <div className="container-xl">
+            <div className="as-bde-bdm-daSH-inner">
+              <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="ForwardedToBDM-tab" data-bs-toggle="tab" data-bs-target="#ForwardedToBDM" type="button" role="tab" aria-controls="ForwardedToBDM" aria-selected="true">
+                    ForwardedToBDM
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="receivedAsBDM-tab" data-bs-toggle="tab" data-bs-target="#receivedAsBDM" type="button" role="tab" aria-controls="receivedAsBDM" aria-selected="false">
+                    receivedAsBDM
+                  </button>
+                </li>
+              </ul>
+              <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="ForwardedToBDM" role="tabpanel" aria-labelledby="ForwardedToBDM-tab">
+                  <div className="mt-3 mb-3">
+                    <div className="row m-0">
+                      {/*ForwardedToBDM loop */}
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">TOTAL</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                                20
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="receivedAsBDM" role="tabpanel" aria-labelledby="receivedAsBDM-tab">
+                  <div className="mt-3 mb-3">
+                  <div className="row m-0">
+                      {/*receivedAsBDM loop */}
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">TOTAL</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                                20
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* --------------------------------------------------projection dashboard new------------------------------------ */}
         <div className="container-xl mt-4">
           <div className="row">

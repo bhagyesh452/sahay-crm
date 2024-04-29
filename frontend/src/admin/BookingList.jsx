@@ -703,13 +703,13 @@ function BookingList() {
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_amount d-flex">
                                 <div className="amount total_amount_bg">
-                                  Total: ₹ {calculateTotalAmount(obj)}
+                                  Total: ₹ {parseInt(calculateTotalAmount(obj)).toLocaleString()}
                                 </div>
                                 <div className="amount receive_amount_bg">
-                                  Receive: ₹ {calculateReceivedAmount(obj)}
+                                  Receive: ₹ {parseInt(calculateReceivedAmount(obj)).toLocaleString()}
                                 </div>
                                 <div className="amount pending_amount_bg">
-                                  Pending: ₹ {calculatePendingAmount(obj)}
+                                  Pending: ₹ {parseInt(calculatePendingAmount(obj)).toLocaleString()}
                                 </div>
                               </div>
                               <div className="b_BDE_name">{obj.bdeName}</div>
