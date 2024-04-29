@@ -1739,15 +1739,35 @@ function EmployeeDashboard() {
 
   };
 
+ 
+
+
+  const currentYear = new Date().getFullYear();
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const currentMonth = monthNames[new Date().getMonth()];
   function functionGetLastBookingDate() {
     // Filter objects based on bdeName
 
 
     // Initialize variable to store the latest booking date
     let lastBookingDate = null;
+    const finalData = redesignedData.filter((obj) => ( monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth))
 
     // Iterate through filtered data
-    redesignedData.forEach((obj) => {
+    finalData.forEach((obj) => {
       if (obj.moreBookings && obj.moreBookings.length > 0) {
         // If moreBookings exist, find the latest bookingDate
         const latestBookingDate = obj.moreBookings.reduce(
@@ -1774,24 +1794,6 @@ function EmployeeDashboard() {
     // Return the formatted date string or an empty string if lastBookingDate is null
     return lastBookingDate ? formatDateFinal(lastBookingDate) : "N/A";
   }
-
-
-  const currentYear = new Date().getFullYear();
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  const currentMonth = monthNames[new Date().getMonth()];
 
   const functionGetAmount = () => {
     if (data.length === 0) {
