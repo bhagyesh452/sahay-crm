@@ -53,6 +53,7 @@ import target from "../static/my-images/target.png"
 import booking_date from "../static/my-images/booking_date.png"
 import achivement from "../static/my-images/achivement.png"
 import ratio from "../static/my-images/ratio.png"
+import { set } from "date-fns";
 
 
 const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
@@ -144,6 +145,7 @@ function EmployeeDashboard() {
 
   const [tempData, setTempData] = useState([]);
   const [loadingNew, setLoadingNew] = useState([]);
+  const [moreEmpData , setmoreEmpData] = useState([])
 
   // -------------------------api for contact number-------------------------------------------------------
 
@@ -152,6 +154,7 @@ function EmployeeDashboard() {
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
       setTempData(tempData);
+      setmoreEmpData(tempData)
     } catch (error) {
       console.error("Error fetching new data:", error);
     }
@@ -483,10 +486,10 @@ function EmployeeDashboard() {
     fetchFollowUpData();
   }, [data]);
 
-  const [bdeNameProjection , setbdeNameProjection] = useState(" ")
-  const [enameProjection , setEnameProjection] = useState("")
+  const [bdeNameProjection, setbdeNameProjection] = useState(" ")
+  const [enameProjection, setEnameProjection] = useState("")
 
-  const functionopenprojection = (comName , bdeName , ename) => {
+  const functionopenprojection = (comName, bdeName, ename) => {
     setProjectingCompany(comName);
     setOpenProjection(true);
     setbdeNameProjection(bdeName)
@@ -1825,12 +1828,12 @@ function EmployeeDashboard() {
         count += 0.5;
       }
     });
-  
+
     // Join the calculatedObj array with commas to get a string with numeric values
     return count;
   };
-  
-  
+
+
 
 
 
@@ -1898,7 +1901,7 @@ function EmployeeDashboard() {
                       <div className="dash-card-1-num clr-1cba19">
                         {
                           functionCalculateMaturedLeads()
-                          
+
                         }
                       </div>
                     </div>
@@ -1956,7 +1959,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-head2">MATURED CASES</div>
                         </div>
                         <div className="dash-card-1-num mb-1 clr-e65b5b" >
-                         {functionCalculateMatured(true)}
+                          {functionCalculateMatured(true)}
                         </div>
                       </div>
                       <div className="dashIconImg">
@@ -2159,16 +2162,19 @@ function EmployeeDashboard() {
               <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
                   <button class="nav-link active" id="ForwardedToBDM-tab" data-bs-toggle="tab" data-bs-target="#ForwardedToBDM" type="button" role="tab" aria-controls="ForwardedToBDM" aria-selected="true">
-                    ForwardedToBDM
+                    Forwarded To BDM Case Report
                   </button>
                 </li>
-                <li class="nav-item" role="presentation">
+                {data.bdmWork && (<li class="nav-item" role="presentation">
                   <button class="nav-link" id="receivedAsBDM-tab" data-bs-toggle="tab" data-bs-target="#receivedAsBDM" type="button" role="tab" aria-controls="receivedAsBDM" aria-selected="false">
-                    receivedAsBDM
+                    Recieved As BDM Case Report
                   </button>
-                </li>
+                </li>)}
               </ul>
               <div class="tab-content" id="myTabContent">
+                <div className="dashboard-headings">
+                  <h3 className="m-0">Today's Report</h3>
+                </div>
                 <div class="tab-pane fade show active" id="ForwardedToBDM" role="tabpanel" aria-labelledby="ForwardedToBDM-tab">
                   <div className="mt-3 mb-3">
                     <div className="row m-0">
@@ -2176,6 +2182,83 @@ function EmployeeDashboard() {
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                         <div className="dash-card-1">
                           <div className="dash-card-1-head">TOTAL</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                             {moreEmpData.filter(
+                              (obj) =>
+                                obj.bdmAcceptStatus !== "NotForwarded" &&
+                                obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                obj.Status !== "Matured"
+                            ).length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">INTERESTED</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                                {moreEmpData.filter((obj)=>obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Interested").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">FOLLOW UP</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                              {moreEmpData.filter((obj)=>obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "FollowUp").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">MATURED</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                              {moreEmpData.filter((obj)=>obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Matured").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">NOT INTERESTED</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                              {moreEmpData.filter((obj)=>obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Not Interested").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">PROJECTED REVENUE</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                                20
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">GENERATED REVENUE</div>
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-1ac9bd">
@@ -2188,9 +2271,10 @@ function EmployeeDashboard() {
                     </div>
                   </div>
                 </div>
+                
                 <div class="tab-pane fade" id="receivedAsBDM" role="tabpanel" aria-labelledby="receivedAsBDM-tab">
                   <div className="mt-3 mb-3">
-                  <div className="row m-0">
+                    <div className="row m-0">
                       {/*receivedAsBDM loop */}
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                         <div className="dash-card-1">
@@ -2631,36 +2715,36 @@ function EmployeeDashboard() {
                                     <td>{obj.lastFollowUpdate}</td>
                                     <td>{obj.estPaymentDate}</td>
                                     <td>
-                                      {obj.ename && obj.bdeName && obj.ename !== obj.bdeName ?(
-                                      <IconButton
-                                        onClick={() => {
-                                          functionopenprojection(obj.companyName , obj.bdeName , obj.ename);
-                                          setIsEditProjection(false)
-                                        }}
-                                      >
-                                        <RiEditCircleFill
-                                          color="lightgrey"
-                                          style={{
-                                            width: "17px",
-                                            height: "17px",
+                                      {obj.ename && obj.bdeName && obj.ename !== obj.bdeName ? (
+                                        <IconButton
+                                          onClick={() => {
+                                            functionopenprojection(obj.companyName, obj.bdeName, obj.ename);
+                                            setIsEditProjection(false)
                                           }}
-                                        ></RiEditCircleFill>
-                                      </IconButton>):(
-                                      <IconButton
-                                        onClick={() => {
-                                          functionopenprojection(obj.companyName);
-                                         
-                                        }}
-                                      >
-                                        <RiEditCircleFill
-                                          color="grey"
-                                          style={{
-                                            width: "17px",
-                                            height: "17px",
-                                            
+                                        >
+                                          <RiEditCircleFill
+                                            color="lightgrey"
+                                            style={{
+                                              width: "17px",
+                                              height: "17px",
+                                            }}
+                                          ></RiEditCircleFill>
+                                        </IconButton>) : (
+                                        <IconButton
+                                          onClick={() => {
+                                            functionopenprojection(obj.companyName);
+
                                           }}
-                                        ></RiEditCircleFill>
-                                      </IconButton>)}
+                                        >
+                                          <RiEditCircleFill
+                                            color="grey"
+                                            style={{
+                                              width: "17px",
+                                              height: "17px",
+
+                                            }}
+                                          ></RiEditCircleFill>
+                                        </IconButton>)}
                                     </td>
                                   </tr>
                                 ))}
@@ -3114,7 +3198,7 @@ function EmployeeDashboard() {
                             <td>{mainObj["Company Number"]}</td>
                             <td>{mainObj["Company Email"]}</td>
                             <td>
-                              { followDataToday &&
+                              {followDataToday &&
                                 followDataToday.some(
                                   (item) =>
                                     item.companyName ===
