@@ -63,6 +63,13 @@ function Employees({ onEyeButtonClick }) {
   const [nowFetched, setNowFetched] = useState(false);
   const [otherdesignation, setotherDesignation] = useState("");
   const [companyData, setCompanyData] = useState([]);
+  const defaultObject = {
+    year: "",
+    month: "",
+    amount: 0
+  }
+  const [targetObjects, setTargetObjects] = useState([defaultObject]);
+  const [targetCount, setTargetCount] = useState(1);
 
   const [open, openchange] = useState(false);
 
@@ -250,6 +257,8 @@ function Employees({ onEyeButtonClick }) {
       });
     }
   };
+
+
   useEffect(() => {
     // Fetch data from the Node.js server
     setFilteredData(data);
@@ -354,6 +363,8 @@ function Employees({ onEyeButtonClick }) {
       
 
       if (isUpdateMode) {
+        console.log(dataToSend , "Bhoom");
+        
         await axios.put(
           `${secretKey}/einfo/${selectedDataId}`,
           dataToSendUpdated
@@ -404,6 +415,7 @@ function Employees({ onEyeButtonClick }) {
       setJdate(null);
       setIsUpdateMode(false);
       setTargetCount(1);
+      setTargetObjects([defaultObject])
       fetchData();
       closepopup();
       console.log("Data sent successfully");
@@ -524,25 +536,37 @@ function Employees({ onEyeButtonClick }) {
   }
 
   // -------------------------------------------------    ADD Target Section   --------------------------------------------------
-  const defaultObject = {
-    year: "",
-    month: "",
-    amount: 0
+ 
+  console.log("This is anytime Target Objects :" , targetObjects)
+  // useEffect(() => {
+  //   // Create new services array based on totalServices
+  //   if (!nowFetched) {
+    
+  //     // const totalTargets = Array.from({ length: targetCount }, () => ({
+  //     //   ...defaultObject,
+  //     // }));
+  //     const newTargets = targetObjects ;
+  //     newTargets.push(defaultObject);
+     
+  //     setTargetObjects(newTargets);
+     
+  //   } else {
+  //     setNowFetched(false)
+  //   }
+  // }, [targetCount]);
+  const handleAddTarget = ()=>{
+    const totalTargets = targetObjects;
+    totalTargets.push(defaultObject);
+    setTargetCount(targetCount+1);
+    setTargetObjects(totalTargets);
+
   }
-  const [targetObjects, setTargetObjects] = useState([defaultObject]);
-  const [targetCount, setTargetCount] = useState(1);
-  useEffect(() => {
-    // Create new services array based on totalServices
-    if (!nowFetched) {
-      const totalTargets = Array.from({ length: targetCount }, () => ({
-        ...defaultObject,
-      }));
-      setTargetObjects(totalTargets);
-      console.log("Fetch After changing Services", totalTargets);
-    } else {
-      setNowFetched(false)
-    }
-  }, [targetCount]);
+  const handleRemoveTarget = ()=>{
+    const totalTargets = targetObjects;
+    totalTargets.pop();
+    setTargetCount(targetCount-1);
+    setTargetObjects(totalTargets);
+  }
   console.log("target objects:", targetObjects)
 
   // ----------------------------------------- material ui bdm work switch---------------------------------------
@@ -927,7 +951,7 @@ function Employees({ onEyeButtonClick }) {
                   </div>
                   <div className="col-lg-1">
                     <div className="mb-3 d-flex">
-                      <IconButton style={{ float: "right" }} onClick={() => setTargetCount(targetCount + 1)}>
+                      <IconButton style={{ float: "right" }} onClick={handleAddTarget}>
                         <MdOutlineAddCircle
                           color="primary"
                           style={{
@@ -938,7 +962,7 @@ function Employees({ onEyeButtonClick }) {
 
                         ></MdOutlineAddCircle>
                       </IconButton>
-                      <IconButton style={{ float: "right" }} onClick={() => setTargetCount(targetCount - 1)}>
+                      <IconButton style={{ float: "right" }} onClick={handleRemoveTarget}>
                         <MdDelete
                           color="primary"
                           style={{

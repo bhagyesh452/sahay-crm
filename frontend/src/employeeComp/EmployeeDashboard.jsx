@@ -1531,6 +1531,7 @@ function EmployeeDashboard() {
     { label: "Reset", getValue: () => [null, null] },
   ];
   const [redesignedData, setRedesignedData] = useState([]);
+ 
   const fetchRedesignedBookings = async () => {
     try {
       const response = await axios.get(
@@ -1539,11 +1540,13 @@ function EmployeeDashboard() {
       const bookingsData = response.data;
 
 
-      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename));
+      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by")));
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
     }
   };
+
+  console.log("redesigneddata" , redesignedData)
 
   // -------------------------------------------  Calculations --------------------------------------------------------
 
@@ -1899,9 +1902,10 @@ function EmployeeDashboard() {
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-1cba19">
-                        {
-                          functionCalculateMaturedLeads()
-
+                      {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Matured"
+                          ).length
                         }
                       </div>
                     </div>
@@ -1978,7 +1982,7 @@ function EmployeeDashboard() {
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="dash-card-1-head2">TOTAL REVENUE</div>
                         </div>
-                        <div className="dash-card-1-num mb-1 clr-1cba19" >
+                        <div className="dash-card-1-num mb-1 clr-00d19d" >
                           ₹ {functionCalculateTotalRevenue(true).toLocaleString()}
                         </div>
                       </div>
@@ -2201,7 +2205,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-head">INTERESTED</div>
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
+                              <div className="dash-card-1-num clr-ffb900">
                                 {moreEmpData.filter((obj)=>obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Interested").length}
                               </div>
                             </div>
@@ -2213,7 +2217,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-head">FOLLOW UP</div>
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
+                              <div className="dash-card-1-num clr-4299e1">
                               {moreEmpData.filter((obj)=>obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "FollowUp").length}
                               </div>
                             </div>
@@ -2237,7 +2241,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-head">NOT INTERESTED</div>
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
+                              <div className="dash-card-1-num clr-e65b5b">
                               {moreEmpData.filter((obj)=>obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Not Interested").length}
                               </div>
                             </div>
@@ -2249,7 +2253,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-head">PROJECTED REVENUE</div>
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
+                              <div className="dash-card-1-num clr-1cba19">
                                 20
                               </div>
                             </div>
@@ -2261,8 +2265,8 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-head">GENERATED REVENUE</div>
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
-                                20
+                              <div className="dash-card-1-num clr-e65b5b">
+                              ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
                               </div>
                             </div>
                           </div>

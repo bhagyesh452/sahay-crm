@@ -228,10 +228,7 @@ function EmployeePanel() {
     return formattedDate;
   }
 
-  const connectionString =
-    secretKey === "http://localhost:3001/api"
-      ? "http://localhost:3001"
-      : "/socket.io";
+
   useEffect(() => {
     const socket = io("https://localhost:3001"); // Connects to the same host and port as the client
     socket.on("connect", () => {
