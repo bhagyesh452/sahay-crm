@@ -50,6 +50,31 @@ const ServiceSchema = new mongoose.Schema({
   },
 });
 
+const RemainingPaymentSchema = new mongoose.Schema({
+  serviceName : {
+    type:String
+  },
+  remainingAmount:{
+    type:Number
+  },
+  paymentMethod:{
+    type:String
+  },
+  extraRemarks :{
+    type:String
+  },
+  totalPayment:{
+    type:Number
+  },
+  receivedPayment:{
+    type:Number
+  },
+  pendingPayment:{
+    type:Number
+  }
+
+})
+
 const TempSchema = new mongoose.Schema({
 
   bdeName: {
@@ -137,6 +162,7 @@ const TempSchema = new mongoose.Schema({
     default:false
   },
 });
+
 const RedesignedLeadformSchema = new mongoose.Schema({
     company: {
         type: mongoose.Schema.Types.ObjectId,
@@ -235,7 +261,9 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   pendingAmount: {
     type: Number,
   },
-  moreBookings:[TempSchema]
+  moreBookings:[TempSchema],
+  remainingPayments : [RemainingPaymentSchema]
+  
 });
 
 const RedesignedLeadformModel = mongoose.model(

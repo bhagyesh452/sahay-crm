@@ -3110,300 +3110,302 @@ const debouncedSetCompanyName = debounce((value) => {
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* table body */}
-            <div className="page-body">
-                <div className="container-xl">
-                    <div class="card-header  my-tab">
-                        <ul
-                            class="nav nav-tabs card-header-tabs nav-fill p-0"
-                            data-bs-toggle="tabs"
-                        >
-                            <li class="nav-item data-heading">
-                                <a
-                                    href="#tabs-home-5"
-                                    className={
-                                        dataStatus === "Unassigned"
-                                            ? "nav-link active item-act"
-                                            : "nav-link"
-                                    }
-                                    data-bs-toggle="tab"
-                                    onClick={() => {
-                                        debouncedFilterData("Unassigned")
-                                    }}
-                                >
-                                    UnAssigned
-                                    <span className="no_badge">
-                                        {data.filter((item) => item.ename === "Not Alloted").length}
-                                    </span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a
-                                    href="#tabs-home-5"
-                                    className={
-                                        dataStatus === "Assigned"
-                                            ? "nav-link active item-act"
-                                            : "nav-link"
-                                    }
-                                    data-bs-toggle="tab"
-                                    onClick={() => {
-                                        debouncedFilterData("Assigned")
-                                    }}
-                                >
-                                    Assigned
-                                    <span className="no_badge">
-                                        {data.filter((item) => item.ename !== "Not Alloted").length}
-                                    </span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className="card">
-                        <div className="card-body p-0">
-                            <div
-                                id="table-default"
-                                style={{
-                                    overflowX: "auto",
-                                    overflowY: "auto",
-                                    maxHeight: "60vh",
-                                }}
+                {/* table body */}
+                <div className="page-body">
+                    <div className="container-xl">
+                        <div class="card-header  my-tab">
+                            <ul
+                                class="nav nav-tabs card-header-tabs nav-fill p-0"
+                                data-bs-toggle="tabs"
                             >
-                                <table
+                                <li class="nav-item data-heading">
+                                    <a
+                                        href="#tabs-home-5"
+                                        className={
+                                            dataStatus === "Unassigned"
+                                                ? "nav-link active item-act"
+                                                : "nav-link"
+                                        }
+                                        data-bs-toggle="tab"
+                                        onClick={() => {
+                                            debouncedFilterData("Unassigned")
+                                        }}
+                                    >
+                                        UnAssigned
+                                        <span className="no_badge">
+                                            {data.filter((item) => item.ename === "Not Alloted").length}
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a
+                                        href="#tabs-home-5"
+                                        className={
+                                            dataStatus === "Assigned"
+                                                ? "nav-link active item-act"
+                                                : "nav-link"
+                                        }
+                                        data-bs-toggle="tab"
+                                        onClick={() => {
+                                            debouncedFilterData("Assigned")
+                                        }}
+                                    >
+                                        Assigned
+                                        <span className="no_badge">
+                                            {data.filter((item) => item.ename !== "Not Alloted").length}
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="card">
+                            <div className="card-body p-0">
+                                <div
+                                    id="table-default"
                                     style={{
-                                        width: "100%",
-                                        borderCollapse: "collapse",
-                                        border: "1px solid #ddd",
+                                        overflowX: "auto",
+                                        overflowY: "auto",
+                                        maxHeight: "60vh",
                                     }}
-                                    className="table-vcenter table-nowrap "
                                 >
-                                    <thead>
-                                        <tr className="tr-sticky">
-                                            <th>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedRows.length === data.length}
-                                                    onChange={() => handleCheckboxChange("all")}
-                                                />
-                                            </th>
-                                            <th>Sr.No</th>
-                                            <th>Company Name</th>
-                                            <th>Company Number</th>
-
-                                            <th>
-                                                Incorporation Date
-                                                <FilterListIcon
-                                                    style={{
-                                                        height: "14px",
-                                                        width: "14px",
-                                                        cursor: "pointer",
-                                                        marginLeft: "4px",
-                                                    }}
-                                                    onClick={handleFilterIncoDate}
-                                                />
-                                                {openIncoDate && <div className="inco-filter">
-                                                    <div
-
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSort("oldest")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        Oldest
-                                                    </div>
-
-                                                    <div
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSort("newest")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        Newest
-                                                    </div>
-
-                                                    <div
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSort("none")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        None
-                                                    </div>
-                                                </div>}
-                                            </th>
-                                            <th>City</th>
-                                            <th>State</th>
-                                            <th>Company Email</th>
-                                            <th>Status</th>
-                                            <th>Uploaded By</th>
-                                            <th>Assigned to</th>
-
-                                            <th>
-                                                Assigned on
-                                                <FilterListIcon
-                                                    style={{
-                                                        height: "14px",
-                                                        width: "14px",
-                                                        cursor: "pointer",
-                                                        marginLeft: "4px",
-                                                    }}
-                                                    onClick={handleFilterAssignDate}
-                                                />
-                                                {openAssign && <div className="inco-filter">
-                                                    <div
-
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSortAssign("oldest")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        Oldest
-                                                    </div>
-
-                                                    <div
-                                                        className="inco-subFilter"
-                                                        onClick={(e) => handleSortAssign("newest")}
-                                                    >
-                                                        <SwapVertIcon style={{ height: "14px" }} />
-                                                        Newest
-                                                    </div>
-
-
-                                                </div>}
-                                            </th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    {currentDataLoading ? (
-                                        <tbody>
-                                            <tr>
-                                                <td colSpan="13" className="LoaderTDSatyle">
-                                                    <ClipLoader
-                                                        color="lightgrey"
-                                                        loading
-                                                        size={30}
-                                                        aria-label="Loading Spinner"
-                                                        data-testid="loader"
+                                    <table
+                                        style={{
+                                            width: "100%",
+                                            borderCollapse: "collapse",
+                                            border: "1px solid #ddd",
+                                        }}
+                                        className="table-vcenter table-nowrap "
+                                    >
+                                        <thead>
+                                            <tr className="tr-sticky">
+                                                <th>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedRows.length === data.length}
+                                                        onChange={() => handleCheckboxChange("all")}
                                                     />
-                                                </td>
+                                                </th>
+                                                <th>Sr.No</th>
+                                                <th>Company Name</th>
+                                                <th>Company Number</th>
+
+                                                <th>
+                                                    Incorporation Date
+                                                    <FilterListIcon
+                                                        style={{
+                                                            height: "14px",
+                                                            width: "14px",
+                                                            cursor: "pointer",
+                                                            marginLeft: "4px",
+                                                        }}
+                                                        onClick={handleFilterIncoDate}
+                                                    />
+                                                    {openIncoDate && <div className="inco-filter">
+                                                        <div
+
+                                                            className="inco-subFilter"
+                                                            onClick={(e) => handleSort("oldest")}
+                                                        >
+                                                            <SwapVertIcon style={{ height: "14px" }} />
+                                                            Oldest
+                                                        </div>
+
+                                                        <div
+                                                            className="inco-subFilter"
+                                                            onClick={(e) => handleSort("newest")}
+                                                        >
+                                                            <SwapVertIcon style={{ height: "14px" }} />
+                                                            Newest
+                                                        </div>
+
+                                                        <div
+                                                            className="inco-subFilter"
+                                                            onClick={(e) => handleSort("none")}
+                                                        >
+                                                            <SwapVertIcon style={{ height: "14px" }} />
+                                                            None
+                                                        </div>
+                                                    </div>}
+                                                </th>
+                                                <th>City</th>
+                                                <th>State</th>
+                                                <th>Company Email</th>
+                                                <th>Status</th>
+                                                <th>Uploaded By</th>
+                                                <th>Assigned to</th>
+
+                                                <th>
+                                                    Assigned on
+                                                    <FilterListIcon
+                                                        style={{
+                                                            height: "14px",
+                                                            width: "14px",
+                                                            cursor: "pointer",
+                                                            marginLeft: "4px",
+                                                        }}
+                                                        onClick={handleFilterAssignDate}
+                                                    />
+                                                    {openAssign && <div className="inco-filter">
+                                                        <div
+
+                                                            className="inco-subFilter"
+                                                            onClick={(e) => handleSortAssign("oldest")}
+                                                        >
+                                                            <SwapVertIcon style={{ height: "14px" }} />
+                                                            Oldest
+                                                        </div>
+
+                                                        <div
+                                                            className="inco-subFilter"
+                                                            onClick={(e) => handleSortAssign("newest")}
+                                                        >
+                                                            <SwapVertIcon style={{ height: "14px" }} />
+                                                            Newest
+                                                        </div>
+
+
+                                                    </div>}
+                                                </th>
+                                                <th>Action</th>
                                             </tr>
-                                        </tbody>
-                                    ) : (
-                                        <tbody style={{ userSelect: "none" }} onContextMenu={(e) => e.preventDefault()}>
-                                            {currentData.map((company, index) => (
-                                                <tr
-                                                    key={index}
-                                                    className={selectedRows.includes(company._id) ? "selected" : ""}
-                                                    style={{ border: "1px solid #ddd" }}
-                                                >
-                                                    <td>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedRows.includes(company._id)}
-                                                            onChange={() => handleCheckboxChange(company._id)}
-                                                            onMouseDown={() => handleMouseDown(company._id)}
-                                                            onMouseEnter={() => handleMouseEnter(company._id)}
-                                                            onMouseUp={handleMouseUp}
+                                        </thead>
+                                        {currentDataLoading ? (
+                                            <tbody>
+                                                <tr>
+                                                    <td colSpan="13" className="LoaderTDSatyle">
+                                                        <ClipLoader
+                                                            color="lightgrey"
+                                                            loading
+                                                            size={30}
+                                                            aria-label="Loading Spinner"
+                                                            data-testid="loader"
                                                         />
                                                     </td>
-                                                    <td>{startIndex + index + 1}</td>
-                                                    <td>{company["Company Name"]}</td>
-                                                    <td>{company["Company Number"]}</td>
-                                                    <td>{formatDate(company["Company Incorporation Date  "])}</td>
-                                                    <td>{company["City"]}</td>
-                                                    <td>{company["State"]}</td>
-                                                    <td>{company["Company Email"]}</td>
-                                                    <td>{company["Status"]}</td>
-                                                    <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
-                                                    <td>{company["ename"]}</td>
-                                                    <td>{formatDate(company["AssignDate"])}</td>
-                                                    <td>
-                                                        <IconButton onClick={() => {
-                                                            functionopenModifyPopup();
-                                                            handleUpdateClick(company._id);
-                                                        }}>
-                                                            < ModeEditIcon
-                                                                style={{
-                                                                    width: "14px",
-                                                                    height: "14px",
-                                                                    color: "grey",
-                                                                }}
-                                                            >
-                                                                Delete
-                                                            </ ModeEditIcon>
-                                                        </IconButton>
-                                                        <Link to={`/datamanager/leads/${company._id}`}>
-                                                            <IconButton>
-                                                                <IconEye
+                                                </tr>
+                                            </tbody>
+                                        ) : (
+                                            <tbody style={{ userSelect: "none" }} onContextMenu={(e) => e.preventDefault()}>
+                                                {currentData.map((company, index) => (
+                                                    <tr
+                                                        key={index}
+                                                        className={selectedRows.includes(company._id) ? "selected" : ""}
+                                                        style={{ border: "1px solid #ddd" }}
+                                                    >
+                                                        <td>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedRows.includes(company._id)}
+                                                                onChange={() => handleCheckboxChange(company._id)}
+                                                                onMouseDown={() => handleMouseDown(company._id)}
+                                                                onMouseEnter={() => handleMouseEnter(company._id)}
+                                                                onMouseUp={handleMouseUp}
+                                                            />
+                                                        </td>
+                                                        <td>{startIndex + index + 1}</td>
+                                                        <td>{company["Company Name"]}</td>
+                                                        <td>{company["Company Number"]}</td>
+                                                        <td>{formatDate(company["Company Incorporation Date  "])}</td>
+                                                        <td>{company["City"]}</td>
+                                                        <td>{company["State"]}</td>
+                                                        <td>{company["Company Email"]}</td>
+                                                        <td>{company["Status"]}</td>
+                                                        <td>{company["UploadedBy"] ? company["UploadedBy"] : "-"}</td>
+                                                        <td>{company["ename"]}</td>
+                                                        <td>{formatDate(company["AssignDate"])}</td>
+                                                        <td>
+                                                            <IconButton onClick={() => {
+                                                                functionopenModifyPopup();
+                                                                handleUpdateClick(company._id);
+                                                            }}>
+                                                                < ModeEditIcon
                                                                     style={{
                                                                         width: "14px",
                                                                         height: "14px",
-                                                                        color: "#d6a10c",
-                                                                        cursor: "pointer",
+                                                                        color: "grey",
                                                                     }}
-                                                                />
+                                                                >
+                                                                    Delete
+                                                                </ ModeEditIcon>
                                                             </IconButton>
-                                                        </Link>
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                                            <Link to={`/datamanager/leads/${company._id}`}>
+                                                                <IconButton>
+                                                                    <IconEye
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#d6a10c",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </IconButton>
+                                                            </Link>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        )}
+                                    </table>
+                                </div>
+                            </div>
+                            {currentData.length === 0 && !currentDataLoading &&
+                                (
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td colSpan="13" className="p-2 particular">
+                                                    <Nodata />
+                                                </td>
+                                            </tr>
                                         </tbody>
-                                    )}
-                                </table>
-                            </div>
-                        </div>
-                        {currentData.length === 0 && !currentDataLoading &&
-                            (
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="13" className="p-2 particular">
-                                                <Nodata />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            )}
-                        {currentData.length !== 0 && (
-                            <div
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    margin: "10px",
-                                }}
-                                className="pagination"
-                            >
-                                <IconButton
-                                    onClick={() =>
-                                        setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))
-                                    }
-                                    disabled={currentPage === 0}
+                                    </table>
+                                )}
+                            {currentData.length !== 0 && (
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        margin: "10px",
+                                    }}
+                                    className="pagination"
                                 >
-                                    <IconChevronLeft />
-                                </IconButton>
-                                <span>
-                                    Page {currentPage + 1} of{" "}
-                                    {Math.ceil(filteredData.length / itemsPerPage)}
-                                </span>
+                                    <IconButton
+                                        onClick={() =>
+                                            setCurrentPage((prevPage) => Math.max(prevPage - 1, 0))
+                                        }
+                                        disabled={currentPage === 0}
+                                    >
+                                        <IconChevronLeft />
+                                    </IconButton>
+                                    <span>
+                                        Page {currentPage + 1} of{" "}
+                                        {Math.ceil(filteredData.length / itemsPerPage)}
+                                    </span>
 
-                                <IconButton
-                                    onClick={() =>
-                                        setCurrentPage((prevPage) =>
-                                            Math.min(
-                                                prevPage + 1,
-                                                Math.ceil(filteredData.length / itemsPerPage) - 1
+                                    <IconButton
+                                        onClick={() =>
+                                            setCurrentPage((prevPage) =>
+                                                Math.min(
+                                                    prevPage + 1,
+                                                    Math.ceil(filteredData.length / itemsPerPage) - 1
+                                                )
                                             )
-                                        )
-                                    }
-                                    disabled={
-                                        currentPage ===
-                                        Math.ceil(filteredData.length / itemsPerPage) - 1
-                                    }
-                                >
-                                    <IconChevronRight />
-                                </IconButton>
-                            </div>
-                        )}
+                                        }
+                                        disabled={
+                                            currentPage ===
+                                            Math.ceil(filteredData.length / itemsPerPage) - 1
+                                        }
+                                    >
+                                        <IconChevronRight />
+                                    </IconButton>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
+                 
             </div>
+
         </div>
     );
 }

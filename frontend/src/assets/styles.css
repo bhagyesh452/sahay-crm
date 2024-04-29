@@ -1591,6 +1591,14 @@ color: #4e884e;
   color: #ffb900;
 }
 /************BookingList Page Css End*************/
+/************Remainning page BookingList Page Css Start*************/
+
+.f-12
+{
+  font-size: 12px;
+}
+
+/************Remainning page BookingList Page Css End*************/
 .wApp a
 {
   text-decoration: none !important;
@@ -1697,3 +1705,4 @@ color: #4e884e;
 .hide-placeholder::-webkit-input-placeholder {
   color: transparent !important;
 }
+
