@@ -2801,7 +2801,7 @@ function AdminEmployeeTeamLeads() {
           </div> */}
                 </DialogContent>
             </Dialog>
-            {/* ----------------------------------------------------dialog for editing popup--------------------------------------------- */}
+            {/* ----------------------------------------------------dialog for bdm remarks popup--------------------------------------------- */}
 
             <Dialog
                 open={openRemarksEdit}
@@ -2825,21 +2825,6 @@ function AdminEmployeeTeamLeads() {
                                         <div className="d-flex justify-content-between">
                                             <div className="reamrk-card-innerText">
                                                 <pre className="remark-text">{historyItem.bdmRemarks}</pre>
-                                            </div>
-                                            <div className="dlticon">
-                                                <DeleteIcon
-                                                    style={{
-                                                        cursor: "pointer",
-                                                        color: "#f70000",
-                                                        width: "14px",
-                                                    }}
-                                                    onClick={() => {
-                                                        handleDeleteRemarks(
-                                                            historyItem._id,
-                                                            historyItem.remarks
-                                                        );
-                                                    }}
-                                                />
                                             </div>
                                         </div>
 
