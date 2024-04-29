@@ -2361,7 +2361,7 @@ function Dashboard() {
   const functionCalculateMatured = (bdeName) => {
     let maturedCount = 0;
     const filteredRedesignedData = redesignedData.filter(
-      (obj) => obj.bdeName === bdeName
+      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by")
     );
 
     filteredRedesignedData.forEach((obj) => {
@@ -2396,7 +2396,7 @@ function Dashboard() {
   const functionCalculateAchievedAmount = (bdeName) => {
     let achievedAmount = 0;
     const filteredRedesignedData = redesignedData.filter(
-      (obj) => obj.bdeName === bdeName
+      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by")
     );
 
     filteredRedesignedData.forEach((obj) => {
@@ -2469,7 +2469,7 @@ function Dashboard() {
   function functionGetLastBookingDate(bdeName) {
     // Filter objects based on bdeName
     const filteredRedesignedData = redesignedData.filter(
-      (obj) => obj.bdeName === bdeName
+      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by")
     );
 
     // Initialize variable to store the latest booking date
@@ -2695,7 +2695,7 @@ function Dashboard() {
                                 }}
                               >
                                 <th style={{ lineHeight: "32px" }}>SR.NO</th>
-                                <th>BDE NAME</th>
+                                <th>BDE/BDM NAME</th>
                                 <th>BRANCH</th>
                                 <th>MATURED CASES</th>
                                 <th>TARGET AMOUNT</th>
