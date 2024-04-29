@@ -7047,10 +7047,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const visibility = newData.bookingSource !== "Other" && "none";
     // Send email to recipients
     const recipients = [
-      newData.bdeEmail,
-      newData.bdmEmail,
-      "bookings@startupsahay.com",
-      "documents@startupsahay.com",
+      // newData.bdeEmail,
+      // newData.bdmEmail,
+      // "bookings@startupsahay.com",
+      // "documents@startupsahay.com",
       "aakashseth452@gmail.com"
     ];
 
