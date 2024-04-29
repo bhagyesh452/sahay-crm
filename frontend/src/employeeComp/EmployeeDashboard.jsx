@@ -2171,7 +2171,7 @@ function EmployeeDashboard() {
           </div>
         </div>
         {/* AS BDE AND BDM DASHBOARD */}
-        <div className="as-bde-bdm-daSH mt-4 mb-2">
+        <div className="as-bde-bdm-daSH mt-4 mb-2" style={{display:'none'}}>
           <div className="container-xl">
             <div className="as-bde-bdm-daSH-inner">
               <ul class="nav nav-tabs" id="myTab" role="tablist">
