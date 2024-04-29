@@ -1815,6 +1815,22 @@ function EmployeeDashboard() {
   };
 
   //console.log("filtered" , filteredBooking)
+  const functionCalculateMaturedLeads = () => {
+    let count = 0;
+    const maturedObj = empData.filter(partObj => partObj.Status === "Matured");
+    const calculatedObj = maturedObj.map(obj => {
+      if (obj.ename === obj.maturedBdmName) {
+        count++;
+      } else {
+        count += 0.5;
+      }
+    });
+  
+    // Join the calculatedObj array with commas to get a string with numeric values
+    return count;
+  };
+  
+  
 
 
 
@@ -1881,9 +1897,8 @@ function EmployeeDashboard() {
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-1cba19">
                         {
-                          empData.filter(
-                            (partObj) => partObj.Status === "Matured"
-                          ).length
+                          functionCalculateMaturedLeads()
+                          
                         }
                       </div>
                     </div>
