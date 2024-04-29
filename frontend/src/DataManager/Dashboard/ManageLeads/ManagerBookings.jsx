@@ -2102,7 +2102,7 @@ function ManagerBookings() {
 
                       {/*---------- Total Payment Summry and Remainnig Payment Collection Show Section ----------*/}
 
-                      <div className="booking_Total_Summary" style={{display:'none'}}>
+                      <div className="booking_Total_Summary">
                         <div className="d-flex align-items-center m-0 justify-content-between mt-2 mb-1">
                           <div className="mul-booking-card-inner-head">
                             <b>Paymnet summary And Remaining payment data</b>
