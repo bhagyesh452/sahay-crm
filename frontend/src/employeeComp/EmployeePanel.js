@@ -112,8 +112,8 @@ function EmployeePanel() {
   const [bdmName, setBdmName] = useState("");
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
-  
-  
+
+
   const handleTogglePopup = () => {
     setIsOpen(false);
   };
@@ -361,7 +361,7 @@ function EmployeePanel() {
   //   }
   // };
   console.log(socketID, "If this shows then boom");
-  
+
   const closeProjection = () => {
     setOpenProjection(false);
     setProjectingCompany("");
@@ -388,49 +388,42 @@ function EmployeePanel() {
   const [cid, setcid] = useState("");
   const [cstat, setCstat] = useState("");
   const [currentCompanyName, setCurrentCompanyName] = useState("");
+  const [bdeName, setBdeName] = useState("");
 
-  const functionopenpopupremarks = (companyID, companyStatus, companyName) => {
+  const functionopenpopupremarks = (companyID, companyStatus, companyName,ename) => {
     openchangeRemarks(true);
     setFilteredRemarks(
-      remarksHistory.filter((obj) => obj.companyID === companyID)
+      remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
     );
     // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
     setcid(companyID);
     setCstat(companyStatus);
     setCurrentCompanyName(companyName);
+    setBdeName(ename)
   };
   // console.log("currentcompanyname", currentCompanyName);
 
   const [opeRemarksEdit, setOpenRemarksEdit] = useState(false);
   const [openPopupByBdm, setOpenPopupByBdm] = useState(false)
+  const [filteredRemarksBdm , setFilteredRemarksBdm] = useState([])
+  const [filteredRemarksBde , setFilteredRemarksBde] = useState([])
+  
+
 
   const functionopenpopupremarksEdit = (
     companyID,
     companyStatus,
-    companyName
+    companyName,
+    ename
   ) => {
-    if (openPopupByBdm) {
       setOpenRemarksEdit(true);
-      setFilteredRemarks(
-        remarksHistory.filter((obj) => obj.companyID === companyID && !obj.bdmName)
+      setFilteredRemarksBde(
+        remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
       );
       // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
       setcid(companyID);
       setCstat(companyStatus);
       setCurrentCompanyName(companyName);
-
-
-    } else {
-      setOpenRemarksEdit(true);
-      setFilteredRemarks(
-        remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName)
-      );
-      // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
-      setcid(companyID);
-      setCstat(companyStatus);
-      setCurrentCompanyName(companyName);
-
-    }
 
   };
 
@@ -438,6 +431,36 @@ function EmployeePanel() {
     setOpenRemarksEdit(false);
     //setOpenPopupByBdm(false);
   };
+
+
+ const [openRemarksBdm, setOpenRemarksBdm] = useState(false)
+
+  const functionopenpopupremarksBdm = (
+    companyID,
+    companyStatus,
+    companyName,
+    bdmName
+  ) => {
+      setOpenRemarksBdm(true);
+      setFilteredRemarksBdm(
+        remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
+      );
+      // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+      setcid(companyID);
+      setCstat(companyStatus);
+      setCurrentCompanyName(companyName);
+
+  };
+
+  const closePopUpRemarksBdm = () => {
+    setOpenRemarksBdm(false);
+    //setOpenPopupByBdm(false);
+  };
+
+
+
+
+
   const debouncedSetChangeRemarks = useCallback(
     debounce((value) => {
       setChangeRemarks(value);
@@ -1040,6 +1063,8 @@ function EmployeePanel() {
         `${secretKey}/remarks-history/${cid}`,
         {
           Remarks,
+          bdeName,
+          currentCompanyName
         }
       );
 
@@ -2368,12 +2393,18 @@ function EmployeePanel() {
 
 
   const handleForwardBdm = async () => {
-
-
-    //console.log("selectedData", currentData, forwardedCompany);
+    // Check if selectedBDM is not empty
+    if (!selectedBDM) {
+      // If selectedBDM is empty, show an error message
+      Swal.fire("Error", "Please select at least one BDM", "error");
+      return; // Exit the function early
+    }
+  
     const selectedDataWithBdm = currentData.filter(
       (company) => company["Company Name"] === forwardedCompany
     );
+    console.log("selecteddatawithbdm", selectedDataWithBdm);
+  
     try {
       const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
         selectedData: selectedDataWithBdm,
@@ -2384,19 +2415,16 @@ function EmployeePanel() {
         bdeOldStatus: bdeOldStatus,
         // Assuming bdmName is defined elsewhere in your component
       });
-      Swal.fire('Company Forwarded', '', 'success');
-      //setdataStatus("Forwarded"); 
-      console.log("bdeoldstatus", bdeOldStatus)
-      fetchNewData(bdeOldStatus)
-      closeBdmNamePopup()
-
-      //setNewStatus(true)
-
+      Swal.fire("Company Forwarded", "", "success");
+      console.log("bdeoldstatus", bdeOldStatus);
+      fetchNewData(bdeOldStatus);
+      closeBdmNamePopup();
     } catch (error) {
       console.log(error);
       Swal.fire("Error Assigning Data");
     }
   };
+  
 
   const [openBdmNamePopup, setOpenBdmNamePopoup] = useState(false)
   const [selectedBDM, setSelectedBDM] = useState("")
@@ -2637,7 +2665,7 @@ function EmployeePanel() {
 
   }
 
-  console.log(feedbackRemarks , feedbakPoints)
+  console.log(feedbackRemarks, feedbakPoints)
 
 
   return (
@@ -3922,9 +3950,10 @@ function EmployeePanel() {
                                           functionopenpopupremarks(
                                             company._id,
                                             company.Status,
-                                            company["Company Name"]
+                                            company["Company Name"],
+                                            company.ename
                                           );
-                                          setOpenPopupByBdm(false);
+                                          //setOpenPopupByBdm(false);
                                           setCurrentRemarks(company.Remarks);
                                           setCompanyId(company._id);
                                         }}
@@ -3936,7 +3965,7 @@ function EmployeePanel() {
                                               company.Status,
                                               company["Company Name"]
                                             );
-                                            setOpenPopupByBdm(false);
+                                            //setOpenPopupByBdm(false);
                                             setCurrentRemarks(company.Remarks);
                                             setCompanyId(company._id);
                                           }}
@@ -3953,10 +3982,11 @@ function EmployeePanel() {
                                           functionopenpopupremarksEdit(
                                             company._id,
                                             company.Status,
-                                            company["Company Name"]
+                                            company["Company Name"],
+                                            company.ename
                                           );
-                                          setOpenPopupByBdm(false);
-                                          setCurrentRemarks(company.Remarks);
+                                          //setOpenPopupByBdm(false);
+                                          //setCurrentRemarks(company.Remarks);
                                           setCompanyId(company._id);
                                         }}
                                       >
@@ -3973,16 +4003,31 @@ function EmployeePanel() {
                                   </div>
                                 </td>
                                 {dataStatus === "Forwarded" && <td>
-                                  {company.Remarks}
+                                  <div    key={company._id}
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                      width: "100px",
+                                    }}>
+                                  <p
+                                    className="rematkText text-wrap m-0"
+                                    title={company.bdmRemarks}
+                                  >
+                                    {!company.bdmRemarks
+                                      ? "No Remarks"
+                                      : company.bdmRemarks}
+                                  </p>
                                   <IconButton
                                     onClick={() => {
-                                      functionopenpopupremarksEdit(
+                                      functionopenpopupremarksBdm(
                                         company._id,
                                         company.Status,
-                                        company["Company Name"]
+                                        company["Company Name"],
+                                        company.bdmName
                                       );
-                                      setOpenPopupByBdm(true);
-                                      setCurrentRemarks(company.Remarks);
+                                      //setOpenPopupByBdm(true);
+                                      //setCurrentRemarks(company.Remarks);
                                       setCompanyId(company._id);
                                     }}
                                   >
@@ -3995,6 +4040,7 @@ function EmployeePanel() {
                                       }}
                                     />
                                   </IconButton>
+                                  </div>
                                 </td>}
 
                                 <td>
@@ -4901,32 +4947,17 @@ function EmployeePanel() {
         </DialogTitle>
         <DialogContent>
           <div className="remarks-content">
-            {filteredRemarks.length !== 0 ? (
-              filteredRemarks.slice().map((historyItem) => (
+            {filteredRemarksBde.length !== 0 ? (
+              filteredRemarksBde.slice().map((historyItem) => (
                 <div className="col-sm-12" key={historyItem._id}>
                   <div className="card RemarkCard position-relative">
                     <div className="d-flex justify-content-between">
                       <div className="reamrk-card-innerText">
                         <pre className="remark-text">{historyItem.remarks}</pre>
-                        {historyItem.bdmName !== undefined && (
+                        {/* {historyItem.bdmName !== undefined && (
                           <pre className="remark-text">By BDM</pre>
-                        )}
+                        )} */}
                       </div>
-                      {/* <div className="dlticon">
-                        <DeleteIcon
-                          style={{
-                            cursor: "pointer",
-                            color: "#f70000",
-                            width: "14px",
-                          }}
-                          onClick={() => {
-                            handleDeleteRemarks(
-                              historyItem._id,
-                              historyItem.remarks
-                            );
-                          }}
-                        />
-                      </div> */}
                     </div>
 
                     <div className="d-flex card-dateTime justify-content-between">
@@ -4942,28 +4973,55 @@ function EmployeePanel() {
               </div>
             )}
           </div>
+        </DialogContent>
+      </Dialog>
 
-          {/* <div class="card-footer">
-            <div class="mb-3 remarks-input">
-              <textarea
-                placeholder="Add Remarks Here...  "
-                className="form-control"
-                id="remarks-input"
-                rows="3"
-                onChange={(e) => {
-                  debouncedSetChangeRemarks(e.target.value);
-                }}
-              ></textarea>
-            </div>
-            <button
-              onClick={handleUpdate}
-              type="submit"
-              className="btn btn-primary"
-              style={{ width: "100%" }}
-            >
-              Submit
-            </button>
-          </div> */}
+      {/* ----------------------------------------dialog to view bdm remarks--------------------------------------------- */}
+      <Dialog
+        open={openRemarksBdm}
+        onClose={closePopUpRemarksBdm}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          <span style={{ fontSize: "14px" }}>
+            {currentCompanyName}'s Remarks
+          </span>
+          <IconButton
+            onClick={closePopUpRemarksBdm}
+            style={{ float: "right" }}
+          >
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="remarks-content">
+            {filteredRemarksBdm.length !== 0 ? (
+              filteredRemarksBdm.slice().map((historyItem) => (
+                <div className="col-sm-12" key={historyItem._id}>
+                  <div className="card RemarkCard position-relative">
+                    <div className="d-flex justify-content-between">
+                      <div className="reamrk-card-innerText">
+                        <pre className="remark-text">{historyItem.bdmRemarks}</pre>
+                        {/* {historyItem.bdmName !== undefined && (
+                          <pre className="remark-text">By BDM</pre>
+                        )} */}
+                      </div>
+                    </div>
+
+                    <div className="d-flex card-dateTime justify-content-between">
+                      <div className="date">{historyItem.date}</div>
+                      <div className="time">{historyItem.time}</div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center overflow-hidden">
+                No Remarks History
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -5507,9 +5565,9 @@ function EmployeePanel() {
           <div className="d-flex align-items-center justify-content-between">
             <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" > {feedbackCompany}</span></div>
             <div>
-            <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
-              <CloseIcon color="primary"></CloseIcon>
-            </IconButton>{" "}
+              <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
+                <CloseIcon color="primary"></CloseIcon>
+              </IconButton>{" "}
             </div>
           </div>
         </DialogTitle>
@@ -5563,17 +5621,6 @@ function EmployeePanel() {
                 </div>
                 <div className="card RemarkCard position-relative">
                   <div>E. Payment Chances?</div>
-                  <IOSSlider className="mt-4"
-                    aria-label="ios slider"
-                    disabled
-                    defaultValue={feedbakPoints[3]}
-                    min={0}
-                    max={100}
-                    valueLabelDisplay="on"
-                  />
-                </div>
-                <div className="card RemarkCard position-relative">
-                  <div>e. Payment Chances</div>
                   <IOSSlider className="mt-4"
                     aria-label="ios slider"
                     disabled
@@ -5935,7 +5982,7 @@ function EmployeePanel() {
                 </button>
               </div>
               <div>
-                <button>Pay now</button>
+
                 {/* <button onClick={generatePaymentLink}>Generate Payment Link</button>
                 {paymentLink && <a href={paymentLink} target="_blank" rel="noopener noreferrer">Proceed to Payment</a>}
                 {error && <p>{error}</p>} */}

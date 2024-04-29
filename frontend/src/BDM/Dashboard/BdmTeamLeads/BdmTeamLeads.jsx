@@ -785,21 +785,31 @@ function BdmTeamLeads() {
   const [openFeedback, setOpenFeedback] = useState(false)
   const [feedbackCompanyName, setFeedbackCompanyName] = useState("")
   const [valueSlider, setValueSlider] = useState(0)
+  const [valueSlider2, setValueSlider2] = useState(0)
+  const [valueSlider3, setValueSlider3] = useState(0)
+  const [valueSlider4, setValueSlider4] = useState(0)
+  const [valueSlider5, setValueSlider5] = useState(0)
   const [feedbackRemarks, setFeedbackRemarks] = useState("")
   const [companyFeedbackId, setCompanyFeedbackId] = useState("")
   const [isEditFeedback, setIsEditFeedback] = useState(false)
+  const [feedbackPoints , setFeedbackPoints] = useState([])
 
   const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackRemarks, bdmStatus) => {
     setOpenFeedback(true)
     setFeedbackCompanyName(companyName)
     setCompanyFeedbackId(companyId)
+    setFeedbackPoints(companyFeedbackPoints)
     //setFeedbackRemarks(companyFeedbackRemarks)
     debouncedFeedbackRemarks(companyFeedbackRemarks)
-    setValueSlider(companyFeedbackPoints)
+    setValueSlider(companyFeedbackPoints[0])
+    setValueSlider2(companyFeedbackPoints[1])
+    setValueSlider3(companyFeedbackPoints[2])
+    setValueSlider4(companyFeedbackPoints[3])
+    setValueSlider5(companyFeedbackPoints[4])
     setBdmNewStatus(bdmStatus)
     //setIsEditFeedback(true)
-  }
-
+}
+console.log("yahan locha h" , feedbackPoints.length)
 
 
   const handleCloseFeedback = () => {
@@ -811,11 +821,27 @@ function BdmTeamLeads() {
     setIsEditFeedback(false)
   }
 
-  const handleSliderChange = (valueSlider) => {
-    setValueSlider(valueSlider)
-
-  }
-
+  const handleSliderChange = (value, sliderNumber) => {
+    switch (sliderNumber) {
+        case 1:
+            setValueSlider(value);
+            break;
+        case 2:
+            setValueSlider2(value);
+            break;
+        case 3:
+            setValueSlider3(value);
+            break;
+        case 4:
+            setValueSlider4(value);
+            break;
+        case 5:
+            setValueSlider5(value);
+            break;
+        default:
+            break;
+    }
+};
   //console.log("valueSlider", valueSlider, feedbackRemarks)
 
 
@@ -829,29 +855,29 @@ function BdmTeamLeads() {
   );
 
   const handleFeedbackSubmit = async () => {
-    const response = await axios.post(`${secretKey}/post-feedback-remarks/${companyFeedbackId}`, {
-      feedbackPoints: valueSlider,
-      feedbackRemarks: feedbackRemarks,
-    })
+    const data = {
+        feedbackPoints: [valueSlider, valueSlider2, valueSlider3, valueSlider4, valueSlider5],
+        feedbackRemarks: feedbackRemarks,
+    };
 
     try {
-      if (response.status === 200) {
-        Swal.fire("Feedback Updated")
-        fetchTeamLeadsData(bdmNewStatus);
-        setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmNewStatus)
-          .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
-        handleCloseFeedback()
-        //setdataStatus(bdmNewStatus)
-      }
+        const response = await axios.post(`${secretKey}/post-feedback-remarks/${companyFeedbackId}`, data
+        );
 
+        if (response.status === 200) {
+            Swal.fire("Feedback Updated");
+            fetchTeamLeadsData(bdmNewStatus);
+            setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmNewStatus)
+                .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)));
+            handleCloseFeedback();
+            //setdataStatus(bdmNewStatus)
+        }
     } catch (error) {
-
-      Swal.fire("Error sending feedback")
-      console.log("error", error.message)
-
+        Swal.fire("Error sending feedback");
+        console.log("error", error.message);
     }
+};
 
-  }
 
 
 
@@ -1416,7 +1442,7 @@ function BdmTeamLeads() {
                               )}
                             </td>
                             <td>
-                              {(company.feedbackRemarks || company.feedbackPoints) ? (<IconButton>
+                              {(company.feedbackRemarks || company.feedbackPoints.length !== 0) ? (<IconButton>
                                 <IoAddCircle
                                   onClick={() => {
                                     handleOpenFeedback(
@@ -1778,7 +1804,7 @@ function BdmTeamLeads() {
       </Dialog>
       {/* --------------------------------------------------------- dialog for feedback----------------------------------------- */}
 
-      <Dialog
+      {/* <Dialog
         open={openFeedback}
         onClose={handleCloseFeedback}
         fullWidth
@@ -1842,7 +1868,133 @@ function BdmTeamLeads() {
           </div>
 
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
+
+<Dialog
+                open={openFeedback}
+                onClose={handleCloseFeedback}
+                fullWidth
+                maxWidth="xs">
+                <DialogTitle>
+                    <div className="d-flex align-items-center justify-content-between">
+                        <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" >{feedbackCompanyName}</span></div>
+                        {(feedbackPoints.length !==0 || feedbackRemarks) ? (<IconButton
+                            onClick={() => {
+                                setIsEditFeedback(true);
+                            }}
+                            style={{ float: "right" }}>
+                            <EditIcon color="grey" ></EditIcon>
+                        </IconButton>) : (null)}
+                        <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
+                            <CloseIcon color="primary"></CloseIcon>
+                        </IconButton>{" "}
+                    </div>
+                </DialogTitle>
+                <DialogContent>
+                    <div className="card-body mt-5">
+                        <div className="mt-1">
+                            <div>A. How was the quality of Information?</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 1) }} // Pass slider number as 1
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={10}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled={!isEditFeedback} />
+                            </div>
+                        </div>
+                        <div className="mt-1">
+                            <div>B. How was the clarity of communication with lead?</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider2}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 2) }} // Pass slider number as 2
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={10}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled={!isEditFeedback} />
+                            </div>
+                        </div>
+                        <div className="mt-1">
+                            <div>C. How was the accuracy of lead qualification?</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider3}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 3) }} // Pass slider number as 3
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={10}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled={!isEditFeedback} />
+                            </div>
+                        </div>
+                        <div className="mt-1">
+                            <div>D. How was engagement level of lead?</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider4}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 4) }} // Pass slider number as 4
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={10}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled={!isEditFeedback} />
+                            </div>
+                        </div>
+                        <div className="mt-1">
+                            <div>E. Payment Chances</div>
+                            <div className="feedback-slider">
+                                <Slider
+                                    defaultValue={0}
+                                    value={valueSlider5}
+                                    onChange={(e) => { handleSliderChange(e.target.value, 5) }} // Pass slider number as 5
+                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
+                                    min={0}
+                                    max={100}
+                                    aria-label="Default"
+                                    valueLabelDisplay="auto"
+                                    disabled={!isEditFeedback} />
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer mt-4">
+                        <div class="mb-3 remarks-input">
+                            <textarea
+                                placeholder="Add Remarks Here...  "
+                                className="form-control"
+                                id="remarks-input"
+                                rows="3"
+                                value={feedbackRemarks}
+                                onChange={(e) => {
+                                    debouncedFeedbackRemarks(e.target.value);
+                                }}
+                                disabled={!isEditFeedback}
+                            ></textarea>
+                        </div>
+                        <button
+                            onClick={handleFeedbackSubmit}
+                            type="submit"
+                            className="btn btn-primary"
+                            style={{ width: "100%" }}
+                        >
+                            Submit
+                        </button>
+                    </div>
+
+                </DialogContent>
+            </Dialog>
 
 
 

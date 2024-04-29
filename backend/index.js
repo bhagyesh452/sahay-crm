@@ -723,7 +723,7 @@ app.post("/api/update-remarks/:id", async (req, res) => {
     // Update remarks and fetch updated data in a single operation
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
 
-    await TeamLeadsModel.findByIdAndUpdate(id, { Remarks: Remarks ,  bdmRemarks: Remarks });
+    await TeamLeadsModel.findByIdAndUpdate(id, { Remarks: Remarks});
 
     // Fetch updated data and remarks history
     const updatedCompany = await CompanyModel.findById(id);
@@ -735,6 +735,63 @@ app.post("/api/update-remarks/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// ------------------------------------------update-remarks-bdm-------------------------
+
+app.post("/api/update-remarks-bdm/:id", async (req, res) => {
+  const { id } = req.params;
+  const { Remarks } = req.body;
+
+  try {
+    // Update remarks and fetch updated data in a single operation
+    await CompanyModel.findByIdAndUpdate(id, { bdmRemarks: Remarks });
+
+    await TeamLeadsModel.findByIdAndUpdate(id, { bdmRemarks: Remarks });
+
+    // Fetch updated data and remarks history
+    const updatedCompany = await CompanyModel.findById(id);
+    const remarksHistory = await RemarksHistory.find({ companyId: id });
+
+    res.status(200).json({ updatedCompany, remarksHistory });
+  } catch (error) {
+    console.error("Error updating remarks:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// --------------------------------remarks-history-bdm-------------------------------------
+
+app.post("/api/remarks-history-bdm/:companyId", async (req, res) => {
+  const { companyId } = req.params;
+  const { Remarks, remarksBdmName ,currentCompanyName } = req.body;
+
+  // Get the current date and time
+  const currentDate = new Date();
+  const time = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+  const date = currentDate.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
+
+  try {
+    // Create a new RemarksHistory instance
+    const newRemarksHistory = new RemarksHistory({
+      time,
+      date,
+      companyID: companyId,
+      bdmRemarks: Remarks,
+      bdmName: remarksBdmName,
+      companyName:currentCompanyName
+    });
+
+    await TeamLeadsModel.findByIdAndUpdate(companyId, { bdmRemarks: Remarks });
+
+    // Save the new entry to MongoDB
+    await newRemarksHistory.save();
+    res.json({ success: true, message: "Remarks history added successfully" });
+  } catch (error) {
+    console.error("Error adding remarks history:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
+
 app.delete("/api/delete-remarks-history/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -775,10 +832,47 @@ app.delete("/api/remarks-delete/:companyId", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// -------------------------------bdm-remarks-delete--------------------------------------
+
+app.delete("/api/remarks-delete-bdm/:companyId", async (req, res) => {
+  const { companyId } = req.params;
+
+  try {
+    // Find the company by companyId and update the remarks field
+    const updatedCompany = await TeamLeadsModel.findByIdAndUpdate(
+      companyId,
+      { bdmRemarks: "No Remarks Added" },
+      { new: true }
+    );
+
+    const updatedCompanyMainModel = await CompanyModel.findByIdAndUpdate(
+      companyId,
+      {bdmRemarks : "No Remarks Added" },
+      {new : true}
+    )
+
+    if (!updatedCompany || !updatedCompanyMainModel) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Remarks deleted successfully", updatedCompany });
+  } catch (error) {
+    console.error("Error deleting remarks:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+
 app.post("/api/einfo", async (req, res) => {
   try {
     adminModel.create(req.body).then((respond) => {
       res.json(respond);
+      console.log("newemployee" , req.body)
       //console.log("respond" , respond)
     });
   } catch (error) {
@@ -2082,7 +2176,7 @@ app.delete("/api/newcompanynamedelete/:id", async (req, res) => {
 });
 app.post("/api/remarks-history/:companyId", async (req, res) => {
   const { companyId } = req.params;
-  const { Remarks, remarksBdmName } = req.body;
+  const { Remarks,bdeName,currentCompanyName} = req.body;
 
   // Get the current date and time
   const currentDate = new Date();
@@ -2096,10 +2190,12 @@ app.post("/api/remarks-history/:companyId", async (req, res) => {
       date,
       companyID: companyId,
       remarks: Remarks,
-      bdmName: remarksBdmName,
+      bdeName:bdeName,
+      companyName:currentCompanyName
+      //bdmName: remarksBdmName,
     });
 
-    await TeamLeadsModel.findByIdAndUpdate(companyId, { bdmRemarks: Remarks });
+    //await TeamLeadsModel.findByIdAndUpdate(companyId, { bdmRemarks: Remarks });
 
     // Save the new entry to MongoDB
     await newRemarksHistory.save();

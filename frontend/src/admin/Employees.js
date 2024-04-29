@@ -326,6 +326,7 @@ function Employees({ onEyeButtonClick }) {
         bdmWork,
         
       };
+
       let dataToSendUpdated = {
         email: email,
         number: number,
@@ -346,7 +347,7 @@ function Employees({ onEyeButtonClick }) {
         dataToSend.designation = designation;
       }
       if(designation === "Sales Manager"){
-        dataToSend.bdmWork = true
+       dataToSend.bdmWork = true
       }else{
         dataToSend.bdmWork = false
       }

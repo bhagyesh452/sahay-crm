@@ -673,7 +673,7 @@ function EmployeeParticular() {
   const fetchRemarksHistory = async () => {
     try {
       const response = await axios.get(`${secretKey}/remarks-history`);
-      setRemarksHistory(response.data);
+      setRemarksHistory(response.data.reverse());
       setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
       //console.log(response.data);
@@ -681,10 +681,10 @@ function EmployeeParticular() {
       console.error("Error fetching remarks history:", error);
     }
   };
-  const functionopenpopupremarks = (companyID, companyStatus) => {
+  const functionopenpopupremarks = (companyID, companyStatus,ename) => {
     openchangeRemarks(true);
     setFilteredRemarks(
-      remarksHistory.filter((obj) => obj.companyID === companyID)
+      remarksHistory.filter((obj) => obj.companyID === companyID  && obj.bdeName === ename)
     );
     // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
 
@@ -1001,6 +1001,34 @@ function EmployeeParticular() {
     const year = date.getFullYear();
     return `${year}-${month}-${day}`;
   }
+
+  // ---------------------------bdmpopupremarks----------------------------
+
+  const [openRemarksBdm, setOpenRemarksBdm] = useState(false)
+  const[filteredRemarksBdm , setFilteredRemarksBdm] = useState([])
+  const[currentCompanyName , setCurrentCompanyName] = useState("")
+
+  const functionopenpopupremarksBdm = (
+    companyID,
+    companyStatus,
+    companyName,
+    bdmName
+  ) => {
+      setOpenRemarksBdm(true);
+      setFilteredRemarksBdm(
+        remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
+      );
+      // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+      //setcid(companyID);
+      //setCstat(companyStatus);
+      setCurrentCompanyName(companyName);
+
+  };
+
+  const closePopUpRemarksBdm = () => {
+    setOpenRemarksBdm(false);
+    //setOpenPopupByBdm(false);
+  };
 
 
 
@@ -1882,6 +1910,14 @@ function EmployeeParticular() {
                           {dataStatus === "FollowUp" && <th>Next FollowUp Date</th>}
                           {dataStatus === "Forwarded" && <th>Bdm Status</th>}
                           <th>Remarks</th>
+                          {dataStatus === "Forwarded" &&
+                            (dataStatus !== "Interested" ||
+                              dataStatus !== "FollowUp" ||
+                              dataStatus !== "Untouched" ||
+                              dataStatus !== "Matured" ||
+                              dataStatus !== "Not Interested") && (
+                              <th>BDM Remarks</th>
+                            )}
 
                           <th>
                             Incorporation Date
@@ -2101,7 +2137,8 @@ function EmployeeParticular() {
                                           onClick={() => {
                                             functionopenpopupremarks(
                                               company._id,
-                                              company.Status
+                                              company.Status,
+                                              company.ename
                                             );
                                           }}
                                         >
@@ -2115,6 +2152,50 @@ function EmployeeParticular() {
                                       </span>
                                     </div>
                                   </td>
+                                  {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && ( 
+                                    <td>
+                                    <div    key={company._id}
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        width: "100px",
+                                      }}>
+                                    <p
+                                      className="rematkText text-wrap m-0"
+                                      title={company.bdmRemarks}
+                                    >
+                                      {!company.bdmRemarks
+                                        ? "No Remarks"
+                                        : company.bdmRemarks}
+                                    </p>
+                                    <IconButton
+                                      onClick={() => {
+                                        functionopenpopupremarksBdm(
+                                          company._id,
+                                          company.Status,
+                                          company["Company Name"],
+                                          company.bdmName
+                                        );
+                                        //setOpenPopupByBdm(true);
+                                        //setCurrentRemarks(company.Remarks);
+                                        //setCompanyId(company._id);
+                                      }}
+                                    >
+                                      <IconEye
+                                        style={{
+                                          width: "14px",
+                                          height: "14px",
+                                          color: "#d6a10c",
+                                          cursor: "pointer",
+                                        }}
+                                      />
+                                    </IconButton>
+                                    </div>
+                                  </td>
+
+                                  )}
+
 
                                   <td>
                                     {formatDateNew(
@@ -2324,7 +2405,8 @@ function EmployeeParticular() {
                                           onClick={() => {
                                             functionopenpopupremarks(
                                               company._id,
-                                              company.Status
+                                              company.Status,
+                                              company.ename
                                             );
                                           }}
                                         />
@@ -2669,6 +2751,55 @@ function EmployeeParticular() {
         </DialogContent>
       </Dialog>
 
+      {/* ----------------------------------------dialog to view bdm remarks--------------------------------------------- */}
+      <Dialog
+        open={openRemarksBdm}
+        onClose={closePopUpRemarksBdm}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          <span style={{ fontSize: "14px" }}>
+            {currentCompanyName}'s Remarks
+          </span>
+          <IconButton
+            onClick={closePopUpRemarksBdm}
+            style={{ float: "right" }}
+          >
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          <div className="remarks-content">
+            {filteredRemarksBdm.length !== 0 ? (
+              filteredRemarksBdm.slice().map((historyItem) => (
+                <div className="col-sm-12" key={historyItem._id}>
+                  <div className="card RemarkCard position-relative">
+                    <div className="d-flex justify-content-between">
+                      <div className="reamrk-card-innerText">
+                        <pre className="remark-text">{historyItem.bdmRemarks}</pre>
+                        {/* {historyItem.bdmName !== undefined && (
+                          <pre className="remark-text">By BDM</pre>
+                        )} */}
+                      </div>
+                    </div>
+
+                    <div className="d-flex card-dateTime justify-content-between">
+                      <div className="date">{historyItem.date}</div>
+                      <div className="time">{historyItem.time}</div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center overflow-hidden">
+                No Remarks History
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
 
       {/* -------------------------------------------------------------------------dialog for feedback remarks-------------------------------------- */}
 
@@ -2738,17 +2869,6 @@ function EmployeeParticular() {
                 </div>
                 <div className="card RemarkCard position-relative">
                   <div>E. Payment Chances?</div>
-                  <IOSSlider className="mt-4"
-                    aria-label="ios slider"
-                    disabled
-                    defaultValue={feedbakPoints[3]}
-                    min={0}
-                    max={100}
-                    valueLabelDisplay="on"
-                  />
-                </div>
-                <div className="card RemarkCard position-relative">
-                  <div>e. Payment Chances</div>
                   <IOSSlider className="mt-4"
                     aria-label="ios slider"
                     disabled
