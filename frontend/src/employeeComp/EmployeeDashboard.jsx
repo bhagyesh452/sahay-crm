@@ -1536,7 +1536,7 @@ function EmployeeDashboard() {
       const bookingsData = response.data;
 
 
-      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename));
+      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by")));
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
     }
@@ -1896,9 +1896,10 @@ function EmployeeDashboard() {
                   <div className="dash-card-1-body">
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-1cba19">
-                        {
-                          functionCalculateMaturedLeads()
-                          
+                      {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Matured"
+                          ).length
                         }
                       </div>
                     </div>
