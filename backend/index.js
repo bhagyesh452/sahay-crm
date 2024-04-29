@@ -7053,6 +7053,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       "documents@startupsahay.com",
       "aakashseth452@gmail.com"
     ];
+
     const serviceNames = newData.services
       .map((service, index) => `${service.serviceName}`)
       .join(" , ");
