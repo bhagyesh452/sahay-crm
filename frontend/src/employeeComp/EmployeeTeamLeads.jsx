@@ -2164,7 +2164,7 @@ function EmployeeTeamLeads() {
                                                             )}
                                                         </td>
                                                         <td>
-                                                            {(company.feedbackRemarks || company.feedbackPoints.length !==0) ? (<IconButton>
+                                                            {(company.feedbackRemarks || company.feedbackPoints.length !==0 ) ? (<IconButton>
                                                                 <IoAddCircle
                                                                     onClick={() => {
                                                                         handleOpenFeedback(
