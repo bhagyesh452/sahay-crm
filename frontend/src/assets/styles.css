@@ -1686,6 +1686,12 @@ color: #4e884e;
   width: 52px;
   /* rotate: 346deg; */
 }
+.as-bde-bdm-daSH-inner
+{
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+}
 /******************** Dashboard End ********************/
 
 .hide-placeholder::-webkit-input-placeholder {
