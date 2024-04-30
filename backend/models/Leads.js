@@ -105,6 +105,12 @@ const CompanySchema = new mongoose.Schema({
   bdmRemarks:{
     type:String
   },
+  bdmStatusChangeDate:{
+    type:String,
+  },
+  bdmStatusChangeTime:{
+    type:String,
+  }
 
 });
 

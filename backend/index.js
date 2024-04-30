@@ -1065,14 +1065,16 @@ app.get("/api/forwardedbybdedata/:bdmName", async (req, res) => {
 
 app.post("/api/update-bdm-status/:id", async (req, res) => {
   const { id } = req.params;
-  const { newBdmStatus, companyId, oldStatus, bdmAcceptStatus } = req.body; // Destructure the required properties from req.body
+  const { newBdmStatus, companyId, oldStatus, bdmAcceptStatus,bdmStatusChangeDate , bdmStatusChangeTime} = req.body; // Destructure the required properties from req.body
 
   try {
     // Update the status field in the database based on the employee id
-    await TeamLeadsModel.findByIdAndUpdate(id, { bdmStatus: oldStatus });
+    await TeamLeadsModel.findByIdAndUpdate(id, { bdmStatus: oldStatus , bdmStatusChangeDate:new Date(bdmStatusChangeDate) , bdmStatusChangeTime : bdmStatusChangeTime });
 
     await CompanyModel.findByIdAndUpdate(id, {
       bdmAcceptStatus: bdmAcceptStatus,
+      bdmStatusChangeDate:new Date(bdmStatusChangeDate) , 
+      bdmStatusChangeTime : bdmStatusChangeTime 
     });
 
     res.status(200).json({ message: "Status updated successfully" });
@@ -1084,16 +1086,18 @@ app.post("/api/update-bdm-status/:id", async (req, res) => {
 
 app.post("/api/bdm-status-change/:id", async (req, res) => {
   const { id } = req.params;
-  const { bdeStatus, bdmnewstatus, title, date, time } = req.body; // Destructure the required properties from req.body
+  const { bdeStatus, bdmnewstatus, title, date, time, bdmStatusChangeDate} = req.body; // Destructure the required properties from req.body
 
   try {
     // Update the status field in the database based on the employee id
     await TeamLeadsModel.findByIdAndUpdate(id, {
       bdmStatus: bdmnewstatus,
       Status: bdmnewstatus,
+      bdmStatusChangeDate : new Date(bdmStatusChangeDate),
+      bdmStatusChangeTime: time
     });
 
-    await CompanyModel.findByIdAndUpdate(id, { Status: bdmnewstatus });
+    await CompanyModel.findByIdAndUpdate(id, { Status: bdmnewstatus , bdmStatusChangeDate : new Date(bdmStatusChangeDate) ,bdmStatusChangeTime : time });
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {

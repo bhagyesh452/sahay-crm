@@ -498,12 +498,16 @@ function EmployeeTeamLeads() {
         oldStatus,
         newBdmStatus
     ) => {
+
+        const DT = new Date();
         try {
             const response = await axios.post(`${secretKey}/update-bdm-status/${companyId}`, {
                 newBdmStatus,
                 companyId,
                 oldStatus,
                 bdmAcceptStatus: "Accept",
+                bdmStatusChangeDate : new Date(),
+                bdmStatusChangeTime : DT.toLocaleTimeString()
             })
 
             if (response.status === 200) {
@@ -569,7 +573,8 @@ function EmployeeTeamLeads() {
         const DT = new Date();
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
-        console.log("bdmnewstatus", bdmnewstatus)
+        const bdmStatusChangeDate = new Date();
+        console.log("bdmnewstatus", bdmnewstatus , date,time , bdmStatusChangeDate)
         try {
 
             if (bdmnewstatus !== "Matured" && bdmnewstatus !== "Busy" && bdmnewstatus !== "Not Picked Up") {
@@ -581,6 +586,7 @@ function EmployeeTeamLeads() {
                         title,
                         date,
                         time,
+                        bdmStatusChangeDate,
                     }
                 )
                 console.log("yahan dikha ", bdmnewstatus)
@@ -598,7 +604,7 @@ function EmployeeTeamLeads() {
                     console.error("Failed to update status:", response.data.message);
                 }
 
-            } else if (bdmnewstatus === "Busy" || bdmnewstatus === "Not Picked Up") {
+            }else if (bdmnewstatus === "Busy" || bdmnewstatus === "Not Picked Up") {
 
                 const response = await axios.delete(
                     `${secretKey}/delete-bdm-busy/${companyId}`)
@@ -624,42 +630,7 @@ function EmployeeTeamLeads() {
                 setMaturedBooking(currentObject);
                 setFormOpen(true)
 
-                // Use SweetAlert to confirm the "Matured" status
-                // const requestData = {
-                //     companyName: cname,
-                //     requestStatus: "Pending",
-                //     bdeName: bdeName,
-                //     bdmName: data.ename,
-                //     date: new Date(),
-                //     time: new Date().toLocaleTimeString(), // Assuming you want the current time
-                // };
-
-                // Make API call to send the request
-                // axios
-                //     .post(`${secretKey}/matured-case-request`, requestData)
-                //     .then((response) => {
-                //         if (response.status === 200) {
-                //             // Assuming fetchData is a function to fetch updated employee data
-                //             fetchTeamLeadsData(bdmnewstatus);
-                //             setBdmNewStatus(bdmnewstatus);
-                //             setTeamLeadsData(
-                //                 teamData.filter((obj) => obj.bdmStatus === bdmnewstatus)
-                //             );
-                //             Swal.fire(
-                //                 "Request Sent",
-                //                 "Request has been successfully sent to the BDE",
-                //                 "success"
-                //             );
-                //         } else {
-                //             Swal.fire("Error", "Failed to sent Request", "error");
-                //             console.error("Failed to update status:", response.data.message);
-                //         }
-                //     })
-                //     .catch((error) => {
-                //         console.error("Error sending request to backend:", error);
-                //     });
             }
-            // Make an API call to update the employee status in the database
 
         } catch (error) {
             // Handle any errors that occur during the API call

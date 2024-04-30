@@ -54,6 +54,11 @@ import booking_date from "../static/my-images/booking_date.png"
 import achivement from "../static/my-images/achivement.png"
 import ratio from "../static/my-images/ratio.png"
 import { set } from "date-fns";
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+//import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 
 const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
@@ -218,9 +223,35 @@ function EmployeeDashboard() {
         console.error("Error fetching data:", error);
       });
   };
+
+// --------------------------------fetching team leads data--------------------------------------------------
+
+const [teamLeadsData , setTeamLeadsData] = useState([])
+const [teamData , setTeamData] = useState([])
+
+const fetchTeamLeadsData = async()=>{
+  
+  try{
+    const response = await axios.get(`${secretKey}/forwardedbybdedata/${data.ename}`)
+    setTeamLeadsData(response.data)
+    setTeamData(response.data)
+
+  }catch(error){
+    console.log("Error fetching data" , error.message)
+  }
+}
+
+console.log(teamLeadsData)
+
+useEffect(() => {
+  fetchTeamLeadsData()
+},[data.ename])
+
+
+
   //console.log("empData", empData)
 
-  console.log("ajki", todayFollowUpDateData)
+  //console.log("ajki", todayFollowUpDateData)
 
   // const fetchEmployeeData = async () => {
   //   try {
@@ -1739,7 +1770,18 @@ function EmployeeDashboard() {
 
   };
 
- 
+  console.log(followData
+    .filter(obj => obj.bdeName === data.ename)
+    .reduce((total, obj) => total + obj.totalPayment, 0))
+
+  console.log(followDataToday
+    .filter(obj => obj.bdeName === data.ename)
+    .reduce((total, obj) => total + obj.totalPayment, 0))
+
+  console.log("followData", followData.filter(obj => obj.bdeName === data.ename))
+
+  console.log("followDataToday", followDataToday.filter(obj => obj.bdeName === data.ename))
+
 
 
   const currentYear = new Date().getFullYear();
@@ -1764,7 +1806,7 @@ function EmployeeDashboard() {
 
     // Initialize variable to store the latest booking date
     let lastBookingDate = null;
-    const finalData = redesignedData.filter((obj) => ( monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth))
+    const finalData = redesignedData.filter((obj) => (monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth))
 
     // Iterate through filtered data
     finalData.forEach((obj) => {
@@ -1838,6 +1880,7 @@ function EmployeeDashboard() {
     return count;
   };
 
+
   // ---------------------------------------------- forwarded by bdm function-------------------------------------------
 
   const functionProjectedRevenue = () => {
@@ -1846,6 +1889,21 @@ function EmployeeDashboard() {
     const projectedRevenue = todaysBdmCompanies.reduce((total, obj) => total + obj.totalPayment, 0)
     console.log(projectedRevenue)
   }
+
+  const [age , setAge] = useState("")
+
+  const handleChange = (selectedOption) => {
+    setAge(selectedOption.value);
+  };
+
+  const monthOptions = [
+    { value: 'today', label: 'Today' },
+    { value: 'this_month', label: 'This Month' },
+    { value: 'total', label: 'Total' }
+  ];
+
+  console.log(teamLeadsData)
+
 
 
 
@@ -2170,7 +2228,11 @@ function EmployeeDashboard() {
             </div>
           </div>
         </div>
+
+
+
         {/* AS BDE AND BDM DASHBOARD */}
+
         <div className="as-bde-bdm-daSH mt-4 mb-2">
           <div className="container-xl">
             <div className="as-bde-bdm-daSH-inner">
@@ -2187,12 +2249,123 @@ function EmployeeDashboard() {
                 </li>)}
               </ul>
               <div class="tab-content" id="myTabContent">
-                <div className="dashboard-headings">
-                  <h3 className="m-0">Today's Report</h3>
-                </div>
                 <div class="tab-pane fade show active" id="ForwardedToBDM" role="tabpanel" aria-labelledby="ForwardedToBDM-tab">
                   <div className="mt-3 mb-3">
                     <div className="row m-0">
+                      <div className="dashboard-headings">
+                        <h3 className="m-0">Today's Report</h3>
+                      </div>
+                      {/*ForwardedToBDM loop */}
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">TOTAL</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                                {moreEmpData.filter(
+                                  (obj) =>
+                                    formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) &&
+                                    obj.bdmAcceptStatus !== "NotForwarded" &&
+                                    obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                    obj.Status !== "Matured"
+                                ).length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">INTERESTED</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-ffb900">
+                                {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">FOLLOW UP</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-4299e1">
+                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "FollowUp").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">MATURED</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">NOT INTERESTED</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-e65b5b">
+                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Not Interested").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12 mt-2">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">PROJECTED REVENUE</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1cba19">
+                                ₹{(followDataToday
+                                  .filter(obj => obj.bdeName === data.ename)
+                                  .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">GENERATED REVENUE</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-e65b5b">
+                                ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/*total forwarded to bdm report */}
+                  <div className="mt-3 mb-3">
+                    <div className="row m-0">
+                      <div className="dashboard-headings d-flex align-items-center justify-content-between">
+                        <div>
+                          <h3 className="m-0">Total Report</h3>
+                        </div>
+                        <div>
+                          <Select
+                            options={monthOptions}
+                            placeholder="Select..."
+                            onChange={handleChange}
+                            value={monthOptions.find(option => option.value === age)}
+                          />
+                        </div>
+                      </div>
                       {/*ForwardedToBDM loop */}
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                         <div className="dash-card-1">
@@ -2265,7 +2438,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-1cba19">
-                              ₹{(followDataToday
+                                ₹{(followData
                                   .filter(obj => obj.bdeName === data.ename)
                                   .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
                               </div>
@@ -2273,7 +2446,7 @@ function EmployeeDashboard() {
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12 mt-2">
                         <div className="dash-card-1">
                           <div className="dash-card-1-head">GENERATED REVENUE</div>
                           <div className="dash-card-1-body">
@@ -2289,10 +2462,16 @@ function EmployeeDashboard() {
                   </div>
                 </div>
 
+
+                {/* ------------------------bdm todays report------------------------------------------- */}
+
                 <div class="tab-pane fade" id="receivedAsBDM" role="tabpanel" aria-labelledby="receivedAsBDM-tab">
                   <div className="mt-3 mb-3">
                     <div className="row m-0">
-                      {/*receivedAsBDM loop */}
+                      <div className="dashboard-headings">
+                        <h3 className="m-0">Today's Report</h3>
+                      </div>
+                      {/* recieved bdm report */}
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                         <div className="dash-card-1">
                           <div className="dash-card-1-head">TOTAL</div>
@@ -2359,7 +2538,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-1cba19">
-                              ₹{(followDataToday
+                                ₹{(followDataToday
                                   .filter(obj => obj.bdeName === data.ename)
                                   .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
                               </div>
@@ -2367,7 +2546,111 @@ function EmployeeDashboard() {
                           </div>
                         </div>
                       </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12 mt-2">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">GENERATED REVENUE</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-e65b5b">
+                                ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 mb-3">
+                    <div className="row m-0">
+                    <div className="dashboard-headings d-flex align-items-center justify-content-between">
+                        <div>
+                          <h3 className="m-0">Total Report</h3>
+                        </div>
+                        <div>
+                          <Select
+                            options={monthOptions}
+                            placeholder="Select..."
+                            onChange={handleChange}
+                            value={monthOptions.find(option => option.value === age)}
+                          />
+                        </div>
+                      </div>
+                      {/* recieved bdm report */}
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">TOTAL</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                                {teamData.length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">INTERESTED</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-ffb900">
+                               {teamData.filter((obj)=>obj.bdmStatus === "Interested").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">FOLLOW UP</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-4299e1">
+                              {teamData.filter((obj)=>obj.bdmStatus === "FollowUp").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">MATURED</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1ac9bd">
+                              {teamData.filter((obj)=>obj.bdmStatus === "Matured").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">NOT INTERESTED</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-e65b5b">
+                              {teamData.filter((obj)=>obj.bdmStatus === "Not Interested").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-1">
+                          <div className="dash-card-1-head">PROJECTED REVENUE</div>
+                          <div className="dash-card-1-body">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="dash-card-1-num clr-1cba19">
+                                ₹{(followData
+                                  .filter(obj => obj.ename === data.ename && obj.bdeName)
+                                  .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12 mt-2">
                         <div className="dash-card-1">
                           <div className="dash-card-1-head">GENERATED REVENUE</div>
                           <div className="dash-card-1-body">
