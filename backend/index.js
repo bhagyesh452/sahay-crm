@@ -617,41 +617,41 @@ app.get("/api/specific-company/:companyId", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-app.get("/api/insert-bdmName", async (req, res) => {
-  try {
-    // Find RedesignedLeadformModel documents where bdmName and bdeName are not the same
-    const redesignedData = await RedesignedLeadformModel.find({
-      $expr: { $ne: ["$bdmName", "$bdeName"] }
-    });
+// app.get("/api/insert-bdmName", async (req, res) => {
+//   try {
+//     // Find RedesignedLeadformModel documents where bdmName and bdeName are not the same
+//     const redesignedData = await RedesignedLeadformModel.find({
+//       $expr: { $ne: ["$bdmName", "$bdeName"] }
+//     });
 
-    // Iterate over each document in redesignedData
-    for (const doc of redesignedData) {
-      // Update the corresponding CompanyModel document with maturedBdmName
-      await CompanyModel.findByIdAndUpdate(
-        { _id: doc.company },
-        { $set: { maturedBdmName: doc.bdmName } }
-      );
-    }
-    const remarksHistories = await RemarksHistory.find();
-    for(const doc of remarksHistories){
-     const obj = await CompanyModel.findById({
-        _id: doc.companyID
-      });
-      if(obj){
-        await RemarksHistory.findByIdAndUpdate({_id:doc._id},{$set:{bdeName:obj.ename}});
-      }
-    }
+//     // Iterate over each document in redesignedData
+//     for (const doc of redesignedData) {
+//       // Update the corresponding CompanyModel document with maturedBdmName
+//       await CompanyModel.findByIdAndUpdate(
+//         { _id: doc.company },
+//         { $set: { maturedBdmName: doc.bdmName } }
+//       );
+//     }
+//     const remarksHistories = await RemarksHistory.find();
+//     for(const doc of remarksHistories){
+//      const obj = await CompanyModel.findById({
+//         _id: doc.companyID
+//       });
+//       if(obj){
+//         await RemarksHistory.findByIdAndUpdate({_id:doc._id},{$set:{bdeName:obj.ename}});
+//       }
+//     }
 
 
 
-    // Send the updated redesignedData as a response
-    res.json(redesignedData);
+//     // Send the updated redesignedData as a response
+//     res.json(redesignedData);
 
-  } catch (error) {
-    console.error("Error fetching company:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//   } catch (error) {
+//     console.error("Error fetching company:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 app.post("/api/requestCompanyData", async (req, res) => {
   const csvData = req.body;
