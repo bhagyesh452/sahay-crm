@@ -1164,7 +1164,7 @@ app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
 
 app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
-  const { bdmAcceptStatus , bdmName } = req.body;
+  const { bdmAcceptStatus , bdmName, remarks } = req.body;
   try {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
@@ -1172,7 +1172,11 @@ app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
     await CompanyModel.findByIdAndUpdate(id, {
       bdmAcceptStatus: bdmAcceptStatus,
       bdmName:bdmName
-    }); // Corrected update
+    }); 
+    
+    await RemarksHistory.findByIdAndUpdate(id,{
+      remarks : remarks ,
+    })// Corrected update
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {

@@ -48,6 +48,7 @@ import EmployeeTeamLeads from "./employeeComp/EmployeeTeamLeads.jsx";
 import AdminEmployeeLeads from "./admin/AdminEmployeeLeads.jsx";
 import AdminEmployeeTeamLeads from "./admin/AdminEmployeeTeamLeads.jsx";
 import NotificationDM from "./DataManager/Dashboard/ManageLeads/NotificationDM.jsx";
+import EmployeeMaturedBookings from "./employeeComp/EmployeeMaturedBookings.jsx";
 
 
 
@@ -81,9 +82,11 @@ function App() {
             path="/employee-dashboard/:userId/"
             element={newtoken ? <EmployeeDashboard /> : <Navigate to="/" />}></Route>
 
-            <Route path="/employee-team-leads/:userId" element={newtoken ? <EmployeeTeamLeads/> : <Navigate to="/" />}>
+          <Route path="/employee-team-leads/:userId" element={newtoken ? <EmployeeTeamLeads/> : <Navigate to="/" />}>
             </Route>
 
+            <Route path="/employee-bookings/:userId" element={newtoken ? <EmployeeMaturedBookings/> : <Navigate to="/" />}>
+            </Route>
 
 
 
