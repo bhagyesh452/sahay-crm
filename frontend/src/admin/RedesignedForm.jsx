@@ -689,6 +689,17 @@ export default function RedesignedForm({
               : acc + parseInt(curr.firstPayment);
           }, 0);
           const pendingAmount = totalAmount - receivedAmount;
+          const generatedTotalAmount = leadData.services.reduce(
+            (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
+            0
+          );
+          const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
+            return curr.paymentTerms === "Full Advanced"
+              ? acc + parseInt(curr.totalPaymentWOGST)
+              : curr.withGST ? acc + parseInt(curr.firstPayment - parseInt(curr.firstPayment)*18/100) : acc + parseInt(curr.firstPayment)
+          }, 0);
+
+          // console.log("This are generated total and received amount:-",generatedTotalAmount , generatedReceivedAmount)
           const servicestoSend = leadData.services.map((service) => ({
             ...service,
             secondPaymentRemarks:
@@ -715,6 +726,8 @@ export default function RedesignedForm({
             totalAmount: totalAmount,
             receivedAmount: receivedAmount,
             pendingAmount: pendingAmount,
+            generatedReceivedAmount:generatedReceivedAmount,
+            generatedTotalAmount:generatedTotalAmount
           };
           console.log("This is sending", dataToSend);
           try {
@@ -792,6 +805,8 @@ export default function RedesignedForm({
 
       if (activeStep === 4) {
         try {
+
+         
           const response = await axios.post(
             `${secretKey}/redesigned-final-leadData/${companysName}`,
             leadData
@@ -2810,7 +2825,7 @@ export default function RedesignedForm({
                                   <div className="row m-0">
                                     <div className="col-sm-3 p-0">
                                       <div className="form-label-name">
-                                        <b>Compnay name</b>
+                                        <b>Company name</b>
                                       </div>
                                     </div>
                                     <div className="col-sm-9 p-0">
