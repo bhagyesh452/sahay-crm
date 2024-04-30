@@ -452,6 +452,15 @@ export default function AdminBookingForm({
               : acc + curr.firstPayment;
           }, 0);
           const pendingAmount = totalAmount - receivedAmount;
+          const generatedTotalAmount = leadData.services.reduce(
+            (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
+            0
+          );
+          const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
+            return curr.paymentTerms === "Full Advanced"
+              ? acc + parseInt(curr.totalPaymentWOGST)
+              : curr.withGST ? acc + parseInt(curr.firstPayment - parseInt(curr.firstPayment)*18/100) : acc + parseInt(curr.firstPayment)
+          }, 0);
           const servicestoSend = leadData.services.map((service) => ({
             ...service,
             secondPaymentRemarks:
@@ -478,6 +487,8 @@ export default function AdminBookingForm({
             totalAmount: totalAmount,
             receivedAmount: receivedAmount,
             pendingAmount: pendingAmount,
+            generatedReceivedAmount:generatedReceivedAmount,
+            generatedTotalAmount:generatedTotalAmount
           };
           console.log("This is sending", dataToSend);
           try {
