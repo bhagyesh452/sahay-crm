@@ -138,6 +138,12 @@ const TempSchema = new mongoose.Schema({
   pendingAmount: {
     type: Number,
   },
+  generatedTotalAmount:{
+    type:Number,
+  },
+  generatedReceivedAmount:{
+    type:Number,
+  },
   otherDocs : {
     type : Array
   },
@@ -260,6 +266,12 @@ const RedesignedLeadformSchema = new mongoose.Schema({
   },
   pendingAmount: {
     type: Number,
+  },
+  generatedTotalAmount:{
+    type:Number,
+  },
+  generatedReceivedAmount:{
+    type:Number,
   },
   moreBookings:[TempSchema],
   remainingPayments : [RemainingPaymentSchema]

@@ -111,6 +111,9 @@ const TempSchema = new mongoose.Schema({
   pendingAmount: {
     type: Number,
   },
+  generatedAmount:{
+    type:Number,
+  },
   otherDocs : {
     type : Array
   },
@@ -215,6 +218,12 @@ const RedesignedDraftModelSchema = new mongoose.Schema({
   },
   pendingAmount: {
     type: Number,
+  },
+  generatedTotalAmount:{
+    type:Number,
+  },
+  generatedReceivedAmount:{
+    type:Number,
   },
   otherDocs : {
     type : Array
