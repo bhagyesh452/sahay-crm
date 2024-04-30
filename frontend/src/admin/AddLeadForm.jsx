@@ -179,6 +179,8 @@ export default function AddLeadForm({
           bookingDate: booking.bookingDate,
           bookingSource: booking.bookingSource,
           otherBookingSource: booking.otherBookingSource,
+          generatedReceivedAmount:booking.generatedReceivedAmount,
+          generatedTotalAmount:booking.generatedTotalAmount
           };
           setActiveStep(3);
           setCompleted({ 0: true, 1: true , 2 : true });
@@ -688,6 +690,13 @@ let isValid = true;
               ? acc + parseInt(curr.totalPaymentWOGST)
               : curr.withGST ? acc + parseInt(curr.firstPayment - parseInt(curr.firstPayment)*18/100) : acc + parseInt(curr.firstPayment)
           }, 0);
+          setLeadData({
+            ...leadData,
+            generatedTotalAmount: generatedTotalAmount,
+            generatedReceivedAmount: generatedReceivedAmount // Check if foundUser exists before accessing email
+          });
+
+          
           dataToSend = {
             services: servicestoSend,
             numberOfServices: totalServices,

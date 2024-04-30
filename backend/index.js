@@ -1950,7 +1950,8 @@ app.get("/api/employees/:ename", async (req, res) => {
     const data = await CompanyModel.find({
       $or:[
         {ename:employeeName},
-        {maturedBdmName:employeeName}
+        {maturedBdmName:employeeName},
+        { multiBdmName: { $in: [employeeName] } }
       ]
      });
     //console.log(data)
@@ -4392,6 +4393,13 @@ app.post(
                 "moreBookings.receivedAmount":
                   newData.receivedAmount ||
                   existingData.moreBookings.receivedAmount,
+                  
+                "moreBookings.generatedReceivedAmount":
+                  newData.generatedReceivedAmount ||
+                  existingData.moreBookings.generatedReceivedAmount,
+                "moreBookings.generatedTotalAmount":
+                  newData.generatedTotalAmount ||
+                  existingData.moreBookings.generatedTotalAmount,
                 "moreBookings.Step3Status": true,
               },
             },
@@ -4453,6 +4461,21 @@ app.post(
         const existingData = await RedesignedLeadformModel.findOne({
           "Company Name": companyName,
         });
+        const companyData = await CompanyModel.findOne({
+          "Company Name": newData["Company Name"],
+        });
+      if (companyData) {
+        const multiBdmName = [] 
+        if(companyData.maturedBdmName !== newData.bdmName ){
+          multiBdmName.push(newData.bdmName);
+          await CompanyModel.findByIdAndUpdate(companyData._id, {
+            
+            multiBdmName : multiBdmName
+            
+          });
+        }
+        
+        }
         if (existingData) {
           const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
             { "Company Name": companyName },
