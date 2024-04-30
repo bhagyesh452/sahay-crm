@@ -100,6 +100,12 @@ const CompanySchema = new mongoose.Schema({
   bdmNextFollowUpDate:{
     type:Date
   },
+  bdmStatusChangeDate:{
+    type:String
+  },
+  bdmStatusChangeTime:{
+    type:String,
+  }
 });
 
 const TeamLeadsModel = mongoose.model('teamleadsmodel', CompanySchema);
