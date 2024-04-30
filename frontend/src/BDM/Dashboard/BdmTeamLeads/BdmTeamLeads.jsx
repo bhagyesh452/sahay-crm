@@ -107,23 +107,23 @@ function BdmTeamLeads() {
 
       setTeamData(response.data)
       if (bdmNewStatus === "Untouched") {
-        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a,b)=> new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
+        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Untouched").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
         setBdmNewStatus("Untouched")
       }
       if (status === "Interested") {
-        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Interested").sort((a,b)=> new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
+        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Interested").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
         setBdmNewStatus("Interested")
       }
       if (status === "FollowUp") {
-        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "FollowUp").sort((a,b)=> new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
+        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "FollowUp").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
         setBdmNewStatus("FollowUp")
       }
       if (status === "Matured") {
-        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Matured").sort((a,b)=> new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
+        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Matured").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
         setBdmNewStatus("Matured")
       }
       if (status === "Not Interested") {
-        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Not Interested").sort((a,b)=> new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
+        setTeamLeadsData(response.data.filter((obj) => obj.bdmStatus === "Not Interested").sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
         setBdmNewStatus("NotInterested")
       }
 
@@ -183,10 +183,13 @@ function BdmTeamLeads() {
     setOpenRemarksEdit(false)
 
   }
-  const functionopenpopupremarks = (companyID, companyStatus, companyName) => {
+
+  const [filteredRemarksBde , setfilteredRemarksBde] = useState([])
+
+  const functionopenpopupremarks = (companyID, companyStatus, companyName,bdmName , ename) => {
     setOpenRemarks(true);
-    setFilteredRemarks(
-      remarksHistory.filter((obj) => obj.companyID === companyID)
+    setfilteredRemarksBde(
+      remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
     );
     // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
     setcid(companyID);
@@ -200,13 +203,15 @@ function BdmTeamLeads() {
 
   const [openRemarksEdit, setOpenRemarksEdit] = useState(false)
   const [remarksBdmName, setRemarksBdmName] = useState("")
+  const [bdeNameReject, setBdeNameReject] = useState("")
 
-  const functionopenpopupremarksEdit = (companyID, companyStatus, companyName, bdmName) => {
+  const functionopenpopupremarksEdit = (companyID, companyStatus, companyName, bdmName ,bdeName) => {
     setOpenRemarksEdit(true);
     setFilteredRemarks(
-      remarksHistory.filter((obj) => obj.companyID === companyID)
+      remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
     );
     // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+    setBdeNameReject(bdeName)
     setcid(companyID);
     setCstat(companyStatus);
     setCurrentCompanyName(companyName);
@@ -266,7 +271,7 @@ function BdmTeamLeads() {
         const response = await axios.post(`${secretKey}/teamleads-rejectdata/${cid}`, {
           bdmAcceptStatus: "NotForwarded",
         })
-        const response2 = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+        const response2 = await axios.post(`${secretKey}/update-remarks-bdm/${cid}`, {
           Remarks,
         });
         const response3 = await axios.post(
@@ -274,9 +279,20 @@ function BdmTeamLeads() {
           {
             Remarks,
             remarksBdmName,
-
+            currentCompanyName,
           }
         );
+        const response4 = await axios.post(
+          `${secretKey}/remarks-history/${cid}`, {
+          Remarks,
+          bdeName: bdeNameReject,
+          currentCompanyName
+
+      }
+      )
+
+        
+
         console.log("remarks", Remarks)
         if (response.status === 200) {
           Swal.fire("Remarks updated!");
@@ -299,11 +315,11 @@ function BdmTeamLeads() {
         setIsDeleted(false)
 
       } else {
-        const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
+        const response = await axios.post(`${secretKey}/update-remarks-bdm/${cid}`, {
           Remarks,
         });
         const response2 = await axios.post(
-          `${secretKey}/remarks-history/${cid}`,
+          `${secretKey}/remarks-history-bdm/${cid}`,
           {
             Remarks,
             remarksBdmName,
@@ -342,58 +358,6 @@ function BdmTeamLeads() {
     //   // After updating, you can disable the button
   };
 
-  // const handleUpdate = async () => {
-  //   // Now you have the updated Status and Remarks, perform the update logic
-  //   console.log(cid, cstat, changeRemarks);
-  //   const Remarks = changeRemarks;
-  //   if (Remarks === "") {
-  //     Swal.fire({ title: "Empty Remarks!", icon: "warning" });
-  //     return true;
-  //   }
-  //   try {
-  //     // Make an API call to update the remarks in the database
-  //     const response = await axios.post(`${secretKey}/update-remarks/${cid}`, {
-  //       Remarks,
-  //     });
-
-  //     console.log("remarks", Remarks);
-
-  //     // Check if the API call to update remarks was successful
-  //     if (response.status === 200) {
-  //       // If successful, proceed with rejecting the data
-  //       Swal.fire("updated")
-  //       const response2 = await axios.post(`${secretKey}/teamleads-rejectdata/${cid}`, {
-  //         bdmAcceptStatus: "NotForwarded",
-  //       });
-
-  //       // Check if the API call to reject data was successful
-  //       if (response2.status === 200) {
-  //         // If both API calls were successful, fetch updated team leads data
-  //         fetchTeamLeadsData();
-  //         Swal.fire("Remarks updated and data rejected!");
-  //         closePopUpRemarks(); // Close the remarks dialog
-  //       } else {
-  //         console.error("Failed to reject data:", response2.data.message);
-  //       }
-  //     } else {
-  //       console.error("Failed to update remarks:", response.data.message);
-  //     }
-  //   } catch (error) {
-  //     // Handle any errors that occur during the API calls
-  //     console.error("Error updating remarks or rejecting data:", error.message);
-  //   }
-
-  //   setUpdateData((prevData) => ({
-  //     ...prevData,
-  //     [companyId]: {
-  //       ...prevData[companyId],
-  //       isButtonEnabled: false,
-  //     },
-  //   }));
-  //   }));
-  // };
-
-
 
 
 
@@ -407,12 +371,15 @@ function BdmTeamLeads() {
     oldStatus,
     newBdmStatus
   ) => {
+    const DT = new Date();
     try {
       const response = await axios.post(`${secretKey}/update-bdm-status/${companyId}`, {
         newBdmStatus,
         companyId,
         oldStatus,
         bdmAcceptStatus: "Accept",
+        bdmStatusChangeDate: new Date(),
+        bdmStatusChangeTime: DT.toLocaleTimeString()
       })
 
       if (response.status === 200) {
@@ -427,7 +394,7 @@ function BdmTeamLeads() {
     }
   }
 
-  console.log("bdmNewStatus", bdmNewStatus)
+  //console.log("bdmNewStatus", bdmNewStatus)
 
 
 
@@ -478,7 +445,8 @@ function BdmTeamLeads() {
     const DT = new Date();
     const date = DT.toLocaleDateString();
     const time = DT.toLocaleTimeString();
-    console.log("bdmnewstatus", bdmnewstatus)
+    const bdmStatusChangeDate = new Date();
+    //console.log("bdmnewstatus", bdmnewstatus)
     try {
 
       if (bdmnewstatus !== "Matured" && bdmnewstatus !== "Busy" && bdmnewstatus !== "Not Picked Up") {
@@ -490,16 +458,17 @@ function BdmTeamLeads() {
             title,
             date,
             time,
+            bdmStatusChangeDate,
           }
         )
-        console.log("yahan dikha ", bdmnewstatus)
+        //console.log("yahan dikha ", bdmnewstatus)
         // Check if the API call was successful
         if (response.status === 200) {
           // Assuming fetchData is a function to fetch updated employee data
 
           fetchTeamLeadsData(bdmnewstatus);
           setBdmNewStatus(bdmnewstatus)
-          setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmnewstatus).sort((a,b)=> new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
+          setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmnewstatus).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
 
 
         } else {
@@ -511,14 +480,14 @@ function BdmTeamLeads() {
 
         const response = await axios.delete(
           `${secretKey}/delete-bdm-busy/${companyId}`)
-        console.log("yahan dikha", bdmnewstatus)
+        //console.log("yahan dikha", bdmnewstatus)
         // Check if the API call was successful
         if (response.status === 200) {
           // Assuming fetchData is a function to fetch updated employee data
 
           fetchTeamLeadsData(bdmnewstatus);
           setBdmNewStatus(bdmnewstatus)
-          setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmnewstatus).sort((a,b)=> new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
+          setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmnewstatus).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
 
 
         } else {
@@ -529,43 +498,13 @@ function BdmTeamLeads() {
 
 
       } else {
-        // Use SweetAlert to confirm the "Matured" status
-        const requestData = {
-          companyName: cname,
-          requestStatus: "Pending",
-          bdeName: bdeName,
-          bdmName: data.ename,
-          date: new Date(),
-          time: new Date().toLocaleTimeString(), // Assuming you want the current time
-        };
+        const currentObject = teamData.find(obj => obj["Company Name"] === cname);
+        setMaturedBooking(currentObject);
+        setFormOpen(true)
 
-        // Make API call to send the request
-        axios
-          .post(`${secretKey}/matured-case-request`, requestData)
-          .then((response) => {
-            if (response.status === 200) {
-              // Assuming fetchData is a function to fetch updated employee data
-              fetchTeamLeadsData(bdmnewstatus);
-              setBdmNewStatus(bdmnewstatus);
-              setTeamLeadsData(
-                teamData.filter((obj) => obj.bdmStatus === bdmnewstatus)
-              );
-              Swal.fire(
-                "Request Sent",
-                "Request has been successfully sent to the BDE",
-                "success"
-              );
-            } else {
-              Swal.fire("Error", "Failed to sent Request", "error");
-              console.error("Failed to update status:", response.data.message);
-            }
-          })
-          .catch((error) => {
-            console.error("Error sending request to backend:", error);
-          });
       }
-      // Make an API call to update the employee status in the database
-
+      // Make API call to send the reques
+      // Make an API call to update the employee status in the databas
     } catch (error) {
       // Handle any errors that occur during the API call
       console.error("Error updating status:", error.message);
@@ -582,7 +521,7 @@ function BdmTeamLeads() {
       // Send a delete request to the backend to delete the item with the specified ID
       await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
       if (mainRemarks) {
-        await axios.delete(`${secretKey}/remarks-delete/${companyId}`);
+        await axios.delete(`${secretKey}/remarks-delete-bdm/${companyId}`);
       }
       // Set the deletedItemId state to trigger re-fetching of remarks history
       Swal.fire("Remarks Deleted");
@@ -600,6 +539,7 @@ function BdmTeamLeads() {
   const [currentProjection, setCurrentProjection] = useState({
     companyName: "",
     ename: "",
+    bdeName: "",
     offeredPrize: 0,
     offeredServices: [],
     lastFollowUpdate: "",
@@ -614,9 +554,18 @@ function BdmTeamLeads() {
   const [selectedValues, setSelectedValues] = useState([]);
   const [isEditProjection, setIsEditProjection] = useState(false);
   const [openAnchor, setOpenAnchor] = useState(false);
+  const [bdeNameProjection, setBdeNameProjection] = useState("")
 
 
   const functionopenprojection = (comName) => {
+    const getBdeName = teamleadsData.filter((company) => company["Company Name"] === comName)
+    if (getBdeName.length > 0) {
+      const bdeName = getBdeName[0].ename;
+      setBdeNameProjection(bdeName) // Accessing the 'ename' field from the first (and only) object
+      console.log("bdeename:", bdeName);
+    } else {
+      console.log("No matching company found.");
+    }
     setProjectingCompany(comName);
     setOpenProjection(true);
     const findOneprojection =
@@ -626,6 +575,7 @@ function BdmTeamLeads() {
       setCurrentProjection({
         companyName: findOneprojection.companyName,
         ename: findOneprojection.ename,
+        bdeName: bdeNameProjection ? bdeNameProjection : findOneprojection.ename,
         offeredPrize: findOneprojection.offeredPrize,
         offeredServices: findOneprojection.offeredServices,
         lastFollowUpdate: findOneprojection.lastFollowUpdate,
@@ -646,6 +596,7 @@ function BdmTeamLeads() {
     setCurrentProjection({
       companyName: "",
       ename: "",
+      bdeName: "",
       offeredPrize: "",
       offeredServices: "",
       totalPayment: 0,
@@ -707,6 +658,7 @@ function BdmTeamLeads() {
         ...currentProjection,
         companyName: projectingCompany,
         ename: data.ename,
+        bdeName: bdeNameProjection ? bdeNameProjection : data.ename,
         offeredServices: selectedValues,
         editCount: currentProjection.editCount + 1, // Increment editCount
       };
@@ -749,6 +701,7 @@ function BdmTeamLeads() {
         setCurrentProjection({
           companyName: "",
           ename: "",
+          bdeName: "",
           offeredPrize: 0,
           offeredServices: [],
           lastFollowUpdate: "",
@@ -792,7 +745,7 @@ function BdmTeamLeads() {
   const [feedbackRemarks, setFeedbackRemarks] = useState("")
   const [companyFeedbackId, setCompanyFeedbackId] = useState("")
   const [isEditFeedback, setIsEditFeedback] = useState(false)
-  const [feedbackPoints , setFeedbackPoints] = useState([])
+  const [feedbackPoints, setFeedbackPoints] = useState([])
 
   const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackRemarks, bdmStatus) => {
     setOpenFeedback(true)
@@ -808,8 +761,8 @@ function BdmTeamLeads() {
     setValueSlider5(companyFeedbackPoints[4])
     setBdmNewStatus(bdmStatus)
     //setIsEditFeedback(true)
-}
-console.log("yahan locha h" , feedbackPoints.length)
+  }
+  console.log("yahan locha h", feedbackPoints.length)
 
 
   const handleCloseFeedback = () => {
@@ -823,25 +776,25 @@ console.log("yahan locha h" , feedbackPoints.length)
 
   const handleSliderChange = (value, sliderNumber) => {
     switch (sliderNumber) {
-        case 1:
-            setValueSlider(value);
-            break;
-        case 2:
-            setValueSlider2(value);
-            break;
-        case 3:
-            setValueSlider3(value);
-            break;
-        case 4:
-            setValueSlider4(value);
-            break;
-        case 5:
-            setValueSlider5(value);
-            break;
-        default:
-            break;
+      case 1:
+        setValueSlider(value);
+        break;
+      case 2:
+        setValueSlider2(value);
+        break;
+      case 3:
+        setValueSlider3(value);
+        break;
+      case 4:
+        setValueSlider4(value);
+        break;
+      case 5:
+        setValueSlider5(value);
+        break;
+      default:
+        break;
     }
-};
+  };
   //console.log("valueSlider", valueSlider, feedbackRemarks)
 
 
@@ -856,27 +809,54 @@ console.log("yahan locha h" , feedbackPoints.length)
 
   const handleFeedbackSubmit = async () => {
     const data = {
-        feedbackPoints: [valueSlider, valueSlider2, valueSlider3, valueSlider4, valueSlider5],
-        feedbackRemarks: feedbackRemarks,
+      feedbackPoints: [valueSlider, valueSlider2, valueSlider3, valueSlider4, valueSlider5],
+      feedbackRemarks: feedbackRemarks,
     };
 
     try {
-        const response = await axios.post(`${secretKey}/post-feedback-remarks/${companyFeedbackId}`, data
-        );
+      const response = await axios.post(`${secretKey}/post-feedback-remarks/${companyFeedbackId}`, data
+      );
 
-        if (response.status === 200) {
-            Swal.fire("Feedback Updated");
-            fetchTeamLeadsData(bdmNewStatus);
-            setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmNewStatus)
-                .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)));
-            handleCloseFeedback();
-            //setdataStatus(bdmNewStatus)
-        }
+      if (response.status === 200) {
+        Swal.fire("Feedback Updated");
+        fetchTeamLeadsData(bdmNewStatus);
+        setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmNewStatus)
+          .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)));
+        handleCloseFeedback();
+        //setdataStatus(bdmNewStatus)
+      }
     } catch (error) {
-        Swal.fire("Error sending feedback");
-        console.log("error", error.message);
+      Swal.fire("Error sending feedback");
+      console.log("error", error.message);
     }
-};
+  };
+
+  const [nextFollowUpdate, setNextFollowUpDate] = useState(null)
+
+  const functionSubmitNextFollowUpDate = async (nextFollowUpdate, companyId, companyStatus) => {
+
+    const data = {
+      bdmNextFollowUpDate: nextFollowUpdate
+    }
+    try {
+      const resposne = await axios.post(`${secretKey}/post-bdmnextfollowupdate/${companyId}`, data)
+
+      console.log(resposne.data)
+      fetchTeamLeadsData(companyStatus)
+
+    } catch (error) {
+      console.log("Error submitting Date", error)
+    }
+
+  }
+
+  function formatDateNow(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  }
 
 
 
@@ -1165,6 +1145,9 @@ console.log("yahan locha h" , feedbackPoints.length)
                             <th>Bdm Remarks</th>
                           </>
                         )}
+                        {bdmNewStatus === "FollowUp" && (
+                          <th>Next FollowUp Date</th>
+                        )}
                         <th>
                           Incorporation Date
                         </th>
@@ -1231,9 +1214,11 @@ console.log("yahan locha h" , feedbackPoints.length)
                                   functionopenpopupremarks(
                                     company._id,
                                     company.Status,
-                                    company["Company Name"]
+                                    company["Company Name"],
+                                    company.bdmName,
+                                    company.ename
                                   );
-                                  setCurrentRemarks(company.Remarks);
+                                  //setCurrentRemarks(company.Remarks);
                                   //setCurrentRemarksBdm(company.bdmRemarks)
                                   setCompanyId(company._id);
                                 }}
@@ -1254,8 +1239,8 @@ console.log("yahan locha h" , feedbackPoints.length)
                             bdmNewStatus === "NotInterested") && (
                               <>
                                 <td>
-                                  {company.bdmStatus === "Matured" || company.bdmOnRequest ? (
-                                    <span>{company.bdmStatus} {"("}{company.bdmOnRequest && "Requested"}{")"}</span>
+                                  {company.bdmStatus === "Matured" ? (
+                                    <span>{company.bdmStatus} </span>
                                   ) : (
                                     <select
                                       style={{
@@ -1337,16 +1322,16 @@ console.log("yahan locha h" , feedbackPoints.length)
                                         : company.bdmRemarks}
 
                                     </p>
-
                                     <IconButton
                                       onClick={() => {
                                         functionopenpopupremarksEdit(
                                           company._id,
                                           company.Status,
                                           company["Company Name"],
-                                          company.bdmName
+                                          company.bdmName,
+                                          company.ename
                                         );
-                                        setCurrentRemarks(company.Remarks);
+                                        setCurrentRemarks(company.bdmRemarks);
                                         //setCurrentRemarksBdm(company.Remarks)
                                         setCompanyId(company._id);
                                       }}>
@@ -1362,6 +1347,20 @@ console.log("yahan locha h" , feedbackPoints.length)
 
                               </>
                             )}
+                          {bdmNewStatus === "FollowUp" && (
+                            <td> <input style={{ border: "none" }}
+                              type="date"
+                              value={formatDateNow(company.bdmNextFollowUpDate)}
+                              onChange={(e) => {
+                                //setNextFollowUpDate(e.target.value);
+                                functionSubmitNextFollowUpDate(e.target.value,
+                                  company._id,
+                                  company.bdmStatus
+                                );
+                              }}
+                            //className="hide-placeholder"
+                            /></td>
+                          )}
                           <td>
                             {formatDateNew(
                               company["Company Incorporation Date  "]
@@ -1393,7 +1392,9 @@ console.log("yahan locha h" , feedbackPoints.length)
                                   functionopenpopupremarksEdit(company._id,
                                     company.Status,
                                     company["Company Name"],
-                                    company.bdmName)
+                                    company.bdmName,
+                                  company.ename
+                                )
                                   handleRejectData(company._id)
                                 }}>
                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>
@@ -1482,86 +1483,6 @@ console.log("yahan locha h" , feedbackPoints.length)
                               )}
                             </td>
                           </>)}
-
-                          {/* {dataStatus === "Matured" && (
-                            <>
-                              <td>
-                                <div className="d-flex">
-                                  <IconButton
-                                    style={{ marginRight: "5px" }}
-                                    onClick={() => {
-                                      setMaturedID(company._id);
-
-                                      functionopenAnchor();
-                                    }}
-                                  >
-                                    <IconEye
-                                      style={{
-                                        width: "14px",
-                                        height: "14px",
-                                        color: "#d6a10c",
-                                        cursor: "pointer",
-                                      }}
-                                    />
-                                  </IconButton>
-
-                                  <IconButton
-                                    onClick={() => {
-                                      handleRequestDelete(
-                                        company._id,
-                                        company["Company Name"]
-                                      );
-                                    }}
-                                    disabled={requestDeletes.some(
-                                      (item) =>
-                                        item.companyId === company._id &&
-                                        item.request === undefined
-                                    )}
-                                  >
-                                    <DeleteIcon
-                                      style={{
-                                        cursor: "pointer",
-                                        color: "#f70000",
-                                        width: "14px",
-                                        height: "14px",
-                                      }}
-                                    />
-                                  </IconButton>
-                                  <IconButton
-                                    onClick={() => {
-                                      handleEditClick(company._id)
-                                    }}
-                                  >
-                                    <Edit
-                                      style={{
-                                        cursor: "pointer",
-                                        color: "#109c0b",
-                                        width: "14px",
-                                        height: "14px",
-                                      }}
-                                    />
-                                  </IconButton>
-                                  <IconButton
-                                    onClick={() => {
-                                      setCompanyName(
-                                        company["Company Name"]
-                                      );
-                                      setAddFormOpen(true);
-                                    }}
-                                  >
-                                    <AddCircleIcon
-                                      style={{
-                                        cursor: "pointer",
-                                        color: "#4f5b74",
-                                        width: "14px",
-                                        height: "14px",
-                                      }}
-                                    />
-                                  </IconButton>
-                                </div>
-                              </td>
-                            </>
-                          )} */}
                         </tr>
                       ))}
                     </tbody>
@@ -1660,29 +1581,14 @@ console.log("yahan locha h" , feedbackPoints.length)
         </DialogTitle>
         <DialogContent>
           <div className="remarks-content">
-            {filteredRemarks.length !== 0 ? (
-              filteredRemarks.slice().map((historyItem) => (
+            {filteredRemarksBde.length !== 0 ? (
+              filteredRemarksBde.slice().map((historyItem) => (
                 <div className="col-sm-12" key={historyItem._id}>
                   <div className="card RemarkCard position-relative">
                     <div className="d-flex justify-content-between">
                       <div className="reamrk-card-innerText">
                         <pre className="remark-text">{historyItem.remarks}</pre>
                       </div>
-                      {/* <div className="dlticon">
-                        <DeleteIcon
-                          style={{
-                            cursor: "pointer",
-                            color: "#f70000",
-                            width: "14px",
-                          }}
-                          onClick={() => {
-                            handleDeleteRemarks(
-                              historyItem._id,
-                              historyItem.remarks
-                            );
-                          }}
-                        />
-                      </div> */}
                     </div>
 
                     <div className="d-flex card-dateTime justify-content-between">
@@ -1698,28 +1604,6 @@ console.log("yahan locha h" , feedbackPoints.length)
               </div>
             )}
           </div>
-
-          {/* <div class="card-footer">
-            <div class="mb-3 remarks-input">
-              <textarea
-                placeholder="Add Remarks Here...  "
-                className="form-control"
-                id="remarks-input"
-                rows="3"
-                onChange={(e) => {
-                  debouncedSetChangeRemarks(e.target.value);
-                }}
-              ></textarea>
-            </div>
-            <button
-              onClick={handleUpdate}
-              type="submit"
-              className="btn btn-primary"
-              style={{ width: "100%" }}
-            >
-              Submit
-            </button>
-          </div> */}
         </DialogContent>
       </Dialog>
       {/* ----------------------------------------------------dialog for editing popup--------------------------------------------- */}
@@ -1745,7 +1629,7 @@ console.log("yahan locha h" , feedbackPoints.length)
                   <div className="card RemarkCard position-relative">
                     <div className="d-flex justify-content-between">
                       <div className="reamrk-card-innerText">
-                        <pre className="remark-text">{historyItem.remarks}</pre>
+                        <pre className="remark-text">{historyItem.bdmRemarks}</pre>
                       </div>
                       <div className="dlticon">
                         <DeleteIcon
@@ -1757,7 +1641,7 @@ console.log("yahan locha h" , feedbackPoints.length)
                           onClick={() => {
                             handleDeleteRemarks(
                               historyItem._id,
-                              historyItem.remarks
+                              historyItem.bdmRemarks
                             );
                           }}
                         />
@@ -1870,131 +1754,131 @@ console.log("yahan locha h" , feedbackPoints.length)
         </DialogContent>
       </Dialog> */}
 
-<Dialog
-                open={openFeedback}
-                onClose={handleCloseFeedback}
-                fullWidth
-                maxWidth="xs">
-                <DialogTitle>
-                    <div className="d-flex align-items-center justify-content-between">
-                        <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" >{feedbackCompanyName}</span></div>
-                        {(feedbackPoints.length !==0 || feedbackRemarks) ? (<IconButton
-                            onClick={() => {
-                                setIsEditFeedback(true);
-                            }}
-                            style={{ float: "right" }}>
-                            <EditIcon color="grey" ></EditIcon>
-                        </IconButton>) : (null)}
-                        <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
-                            <CloseIcon color="primary"></CloseIcon>
-                        </IconButton>{" "}
-                    </div>
-                </DialogTitle>
-                <DialogContent>
-                    <div className="card-body mt-5">
-                        <div className="mt-1">
-                            <div>A. How was the quality of Information?</div>
-                            <div className="feedback-slider">
-                                <Slider
-                                    defaultValue={0}
-                                    value={valueSlider}
-                                    onChange={(e) => { handleSliderChange(e.target.value, 1) }} // Pass slider number as 1
-                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
-                                    min={0}
-                                    max={10}
-                                    aria-label="Default"
-                                    valueLabelDisplay="auto"
-                                    disabled={!isEditFeedback} />
-                            </div>
-                        </div>
-                        <div className="mt-1">
-                            <div>B. How was the clarity of communication with lead?</div>
-                            <div className="feedback-slider">
-                                <Slider
-                                    defaultValue={0}
-                                    value={valueSlider2}
-                                    onChange={(e) => { handleSliderChange(e.target.value, 2) }} // Pass slider number as 2
-                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
-                                    min={0}
-                                    max={10}
-                                    aria-label="Default"
-                                    valueLabelDisplay="auto"
-                                    disabled={!isEditFeedback} />
-                            </div>
-                        </div>
-                        <div className="mt-1">
-                            <div>C. How was the accuracy of lead qualification?</div>
-                            <div className="feedback-slider">
-                                <Slider
-                                    defaultValue={0}
-                                    value={valueSlider3}
-                                    onChange={(e) => { handleSliderChange(e.target.value, 3) }} // Pass slider number as 3
-                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
-                                    min={0}
-                                    max={10}
-                                    aria-label="Default"
-                                    valueLabelDisplay="auto"
-                                    disabled={!isEditFeedback} />
-                            </div>
-                        </div>
-                        <div className="mt-1">
-                            <div>D. How was engagement level of lead?</div>
-                            <div className="feedback-slider">
-                                <Slider
-                                    defaultValue={0}
-                                    value={valueSlider4}
-                                    onChange={(e) => { handleSliderChange(e.target.value, 4) }} // Pass slider number as 4
-                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
-                                    min={0}
-                                    max={10}
-                                    aria-label="Default"
-                                    valueLabelDisplay="auto"
-                                    disabled={!isEditFeedback} />
-                            </div>
-                        </div>
-                        <div className="mt-1">
-                            <div>E. Payment Chances</div>
-                            <div className="feedback-slider">
-                                <Slider
-                                    defaultValue={0}
-                                    value={valueSlider5}
-                                    onChange={(e) => { handleSliderChange(e.target.value, 5) }} // Pass slider number as 5
-                                    sx={{ zIndex: "99999999", color: "#ffb900" }}
-                                    min={0}
-                                    max={100}
-                                    aria-label="Default"
-                                    valueLabelDisplay="auto"
-                                    disabled={!isEditFeedback} />
-                            </div>
-                        </div>
+      <Dialog
+        open={openFeedback}
+        onClose={handleCloseFeedback}
+        fullWidth
+        maxWidth="xs">
+        <DialogTitle>
+          <div className="d-flex align-items-center justify-content-between">
+            <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" >{feedbackCompanyName}</span></div>
+            {(feedbackPoints.length !== 0 || feedbackRemarks) ? (<IconButton
+              onClick={() => {
+                setIsEditFeedback(true);
+              }}
+              style={{ float: "right" }}>
+              <EditIcon color="grey" ></EditIcon>
+            </IconButton>) : (null)}
+            <IconButton onClick={handleCloseFeedback} style={{ float: "right" }}>
+              <CloseIcon color="primary"></CloseIcon>
+            </IconButton>{" "}
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <div className="card-body mt-5">
+            <div className="mt-1">
+              <div>A. How was the quality of Information?</div>
+              <div className="feedback-slider">
+                <Slider
+                  defaultValue={0}
+                  value={valueSlider}
+                  onChange={(e) => { handleSliderChange(e.target.value, 1) }} // Pass slider number as 1
+                  sx={{ zIndex: "99999999", color: "#ffb900" }}
+                  min={0}
+                  max={10}
+                  aria-label="Default"
+                  valueLabelDisplay="auto"
+                  disabled={!isEditFeedback} />
+              </div>
+            </div>
+            <div className="mt-1">
+              <div>B. How was the clarity of communication with lead?</div>
+              <div className="feedback-slider">
+                <Slider
+                  defaultValue={0}
+                  value={valueSlider2}
+                  onChange={(e) => { handleSliderChange(e.target.value, 2) }} // Pass slider number as 2
+                  sx={{ zIndex: "99999999", color: "#ffb900" }}
+                  min={0}
+                  max={10}
+                  aria-label="Default"
+                  valueLabelDisplay="auto"
+                  disabled={!isEditFeedback} />
+              </div>
+            </div>
+            <div className="mt-1">
+              <div>C. How was the accuracy of lead qualification?</div>
+              <div className="feedback-slider">
+                <Slider
+                  defaultValue={0}
+                  value={valueSlider3}
+                  onChange={(e) => { handleSliderChange(e.target.value, 3) }} // Pass slider number as 3
+                  sx={{ zIndex: "99999999", color: "#ffb900" }}
+                  min={0}
+                  max={10}
+                  aria-label="Default"
+                  valueLabelDisplay="auto"
+                  disabled={!isEditFeedback} />
+              </div>
+            </div>
+            <div className="mt-1">
+              <div>D. How was engagement level of lead?</div>
+              <div className="feedback-slider">
+                <Slider
+                  defaultValue={0}
+                  value={valueSlider4}
+                  onChange={(e) => { handleSliderChange(e.target.value, 4) }} // Pass slider number as 4
+                  sx={{ zIndex: "99999999", color: "#ffb900" }}
+                  min={0}
+                  max={10}
+                  aria-label="Default"
+                  valueLabelDisplay="auto"
+                  disabled={!isEditFeedback} />
+              </div>
+            </div>
+            <div className="mt-1">
+              <div>E. Payment Chances</div>
+              <div className="feedback-slider">
+                <Slider
+                  defaultValue={0}
+                  value={valueSlider5}
+                  onChange={(e) => { handleSliderChange(e.target.value, 5) }} // Pass slider number as 5
+                  sx={{ zIndex: "99999999", color: "#ffb900" }}
+                  min={0}
+                  max={100}
+                  aria-label="Default"
+                  valueLabelDisplay="auto"
+                  disabled={!isEditFeedback} />
+              </div>
+            </div>
 
-                    </div>
-                    <div class="card-footer mt-4">
-                        <div class="mb-3 remarks-input">
-                            <textarea
-                                placeholder="Add Remarks Here...  "
-                                className="form-control"
-                                id="remarks-input"
-                                rows="3"
-                                value={feedbackRemarks}
-                                onChange={(e) => {
-                                    debouncedFeedbackRemarks(e.target.value);
-                                }}
-                                disabled={!isEditFeedback}
-                            ></textarea>
-                        </div>
-                        <button
-                            onClick={handleFeedbackSubmit}
-                            type="submit"
-                            className="btn btn-primary"
-                            style={{ width: "100%" }}
-                        >
-                            Submit
-                        </button>
-                    </div>
+          </div>
+          <div class="card-footer mt-4">
+            <div class="mb-3 remarks-input">
+              <textarea
+                placeholder="Add Remarks Here...  "
+                className="form-control"
+                id="remarks-input"
+                rows="3"
+                value={feedbackRemarks}
+                onChange={(e) => {
+                  debouncedFeedbackRemarks(e.target.value);
+                }}
+                disabled={!isEditFeedback}
+              ></textarea>
+            </div>
+            <button
+              onClick={handleFeedbackSubmit}
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: "100%" }}
+            >
+              Submit
+            </button>
+          </div>
 
-                </DialogContent>
-            </Dialog>
+        </DialogContent>
+      </Dialog>
 
 
 

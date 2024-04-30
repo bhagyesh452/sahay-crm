@@ -13,6 +13,8 @@ import BellEmp from "./BellEmp";
 
 
 function Header({ name, designation}) {
+
+  console.log(name)
   
   return (
     <div>
