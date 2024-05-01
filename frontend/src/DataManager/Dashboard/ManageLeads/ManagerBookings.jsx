@@ -923,7 +923,7 @@ function ManagerBookings() {
                                   </div>
                                 </div>
                                 <div className="row m-0 bdr-btm-eee">
-                                  <div className="col-lg-5 col-sm-5 p-0">
+                                  <div className="col-lg-6 col-sm-6 p-0">
                                     <div class="row m-0">
                                       <div class="col-sm-4 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h h-100">
@@ -937,32 +937,18 @@ function ManagerBookings() {
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="col-lg-5 col-sm-5 p-0">
+                                  <div className="col-lg-6 col-sm-6 p-0">
                                     <div class="row m-0">
-                                      <div class="col-sm-3 align-self-stretch p-0">
+                                      <div class="col-sm-4 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h h-100 bdr-left-eee">
                                           Notes
                                         </div>
                                       </div>
-                                      <div class="col-sm-9 align-self-stretch p-0">
+                                      <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                           {obj.paymentRemarks
                                             ? obj.paymentRemarks
                                             : "N/A"}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="col-lg-2 col-sm-2 p-0">
-                                    <div class="row m-0">
-                                      <div class="col-sm-6 align-self-stretch p-0">
-                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                          Expanses
-                                        </div>
-                                      </div>
-                                      <div class="col-sm-6 align-self-stretch p-0">
-                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                          - ₹ 500
                                         </div>
                                       </div>
                                     </div>
@@ -1015,7 +1001,7 @@ function ManagerBookings() {
                                                 {")"}
                                               </div>
                                               <div>
-                                                <div className="add-remaining-amnt" title="Add Remaining Payment">+</div>
+                                                <div className="add-remaining-amnt" title="Add Remaining Payment" >+</div>
                                               </div>
                                             </div>
                                           </div>
@@ -1828,7 +1814,7 @@ function ManagerBookings() {
                                       </div>
                                     </div>
                                     <div className="row m-0 bdr-btm-eee">
-                                      <div className="col-lg-5 col-sm-6 p-0">
+                                      <div className="col-lg-6 col-sm-6 p-0">
                                         <div class="row m-0">
                                           <div class="col-sm-4 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_h h-100">
@@ -1842,32 +1828,18 @@ function ManagerBookings() {
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="col-lg-5 col-sm-6 p-0">
+                                      <div className="col-lg-6 col-sm-6 p-0">
                                         <div class="row m-0">
-                                          <div class="col-sm-3 align-self-stretch p-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_h h-100 bdr-left-eee">
                                               Notes
                                             </div>
                                           </div>
-                                          <div class="col-sm-9 align-self-stretch p-0">
+                                          <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                               {obj.paymentRemarks
                                                 ? obj.paymentRemarks
                                                 : "N/A"}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="col-lg-2 col-sm-2 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-6 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                              Expanses
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-6 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                              - ₹ 500
                                             </div>
                                           </div>
                                         </div>
@@ -2438,11 +2410,9 @@ function ManagerBookings() {
         <DialogContent>
           <div className="container">
             <div className="row mb-1">
-              <div className="col-sm-6 d-flex align-items-center">
-                <div className="col-sm-5">
-                <label htmlFor="remaining-service-name"><b>Service Name :</b></label>
-                </div>
-                <div className="col-sm-7">
+              <div className="col-sm-6">
+              <label htmlFor="remaining-service-name" className="form-label">Service Name :</label>
+                <div className="col">
                   <select name="remaining-service-name" id="remaining-service-name" className="form-select">
                     <option value="" selected disabled >Select Service :</option>
                     <option value="" >Service 1</option>
@@ -2454,23 +2424,19 @@ function ManagerBookings() {
              
              
               </div>
-              <div className="col-sm-6 d-flex align-items-center">
-                <div className="col-sm-7">
-                  <label htmlFor="remaining-payment-proper"> <b>Remaining Payment :</b></label>
-                </div>
-                <div className="col-sm-5">
+              <div className="col-sm-6">
+              <label htmlFor="remaining-payment-proper" className="form-label">Remaining Payment :</label>
+                <div className="col">
                   <input type="number" className="form-control" name="remaining-payment-proper" id="remaining-payment-proper" placeholder="Remaining Payment" />
                 </div>
 
               </div>
               
             </div>
-            <div className="row mt-1">
-              <div className="col-sm-12 d-flex align-items-center">
-                <div className="col-sm-5">
-                <label htmlFor="remaining-paymentmethod"><b>Payment Method :</b></label>
-                </div>
-                <div className="col-sm-7">
+            <div className="row mt-2">
+              <div className="col-sm-6">
+              <label htmlFor="remaining-paymentmethod" className="form-label">Payment Method :</label>
+                <div className="col">
                   <select name="remaining-paymentmethod" id="remaining-paymentmethod" className="form-select">
                     <option value="" selected disabled >Select Payment Method :</option>
                     <option value="" >Service 1</option>
@@ -2482,8 +2448,26 @@ function ManagerBookings() {
              
              
               </div>
+              <div className="col-sm-6">
+                <div className="col">
+                <label htmlFor="remaining-paymentmethod"><b>Upload Receipt :</b></label>
+                </div>
+                <div className="col form-control">
+                 <input type="file" name="upload-remaining-receipt" id="upload-remaining-receipt" />
+               
+                </div>
+             
+             
+              </div>
               
               
+            </div>
+
+            <div className="row mt-2">
+            <div className="mb-3">
+  <label htmlFor="remainingControlTextarea1" className="form-label">Any Remarks</label>
+  <textarea className="form-control" id="remainingControlTextarea1" rows="3" placeholder="Write your remarks here..."></textarea>
+</div>
             </div>
           </div>
         </DialogContent>

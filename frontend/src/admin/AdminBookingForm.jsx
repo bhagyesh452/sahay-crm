@@ -3122,6 +3122,60 @@ export default function AdminBookingForm({
                                           )}
                                         </>
                                       )}
+                                       <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Case</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.caCase
+                                              }
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {obj.caCase &&  <>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Number</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.caNumber
+                                              }
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Email</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.caEmail
+                                              }
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Commission</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.caCommission
+                                              }
+                                          </div>
+                                        </div>
+                                      </div>
+                                      </>}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">

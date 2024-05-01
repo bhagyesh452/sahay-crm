@@ -2162,7 +2162,7 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col">
+              <div className="col-lg-3 col-md-4 col-sm-6 col-12">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">BDE FORWARDED LEADS</div>
                   <div className="dash-card-1-body">
@@ -2404,12 +2404,12 @@ console.log(selectedMonthOptionForBdm)
               <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
                   <button class="nav-link active" id="ForwardedToBDM-tab" data-bs-toggle="tab" data-bs-target="#ForwardedToBDM" type="button" role="tab" aria-controls="ForwardedToBDM" aria-selected="true">
-                    Forwarded To BDM Case Report
+                    Forwarded to BDM cases report
                   </button>
                 </li>
                 {data.bdmWork && (<li class="nav-item" role="presentation">
                   <button class="nav-link" id="receivedAsBDM-tab" data-bs-toggle="tab" data-bs-target="#receivedAsBDM" type="button" role="tab" aria-controls="receivedAsBDM" aria-selected="false">
-                    Recieved As BDM Case Report
+                    Recieved as BDM cases report
                   </button>
                 </li>)}
               </ul>
