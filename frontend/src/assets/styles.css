@@ -1657,6 +1657,13 @@ color: #4e884e;
 {
   background: #fffafa;
 }
+.btn-small
+{
+  padding: 0px 4px;
+  font-size: 10px;
+  background: #fff9c5;
+  color: #ffb900;
+}
 
 /************************* Icons  ***************************************/
 

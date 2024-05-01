@@ -900,16 +900,23 @@ function ManagerBookings() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                          ₹{" "}
-                                          {parseInt(
-                                            obj.totalPaymentWGST
-                                          ).toLocaleString()}{" "}
-                                          {"("}
-                                          {obj.totalPaymentWGST !==
-                                          obj.totalPaymentWOGST
-                                            ? "With GST"
-                                            : "Without GST"}
-                                          {")"}
+                                          <div className="d-flex align-items-center justify-content-between">
+                                            <div> 
+                                              ₹{" "}
+                                              {parseInt(
+                                                obj.totalPaymentWGST
+                                              ).toLocaleString()}{" "}
+                                              {"("}
+                                              {obj.totalPaymentWGST !==
+                                              obj.totalPaymentWOGST
+                                                ? "With GST"
+                                                : "Without GST"}
+                                              {")"}
+                                            </div>
+                                            <div>
+                                              <button className="btn btn-link btn-small">+ Expanse</button>
+                                            </div>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
@@ -1784,16 +1791,23 @@ function ManagerBookings() {
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                              ₹{" "}
-                                              {parseInt(
-                                                obj.totalPaymentWGST
-                                              ).toLocaleString()}
-                                              {"("}
-                                              {obj.totalPaymentWGST !==
-                                              obj.totalPaymentWOGST
-                                                ? "With GST"
-                                                : "Without GST"}
-                                              {")"}
+                                              <div className="d-flex align-item-center justify-content-between">
+                                                <div>
+                                                  ₹{" "}
+                                                  {parseInt(
+                                                    obj.totalPaymentWGST
+                                                  ).toLocaleString()}
+                                                  {"("}
+                                                  {obj.totalPaymentWGST !==
+                                                  obj.totalPaymentWOGST
+                                                    ? "With GST"
+                                                    : "Without GST"}
+                                                  {")"}
+                                                </div>
+                                                <div>
+                                                  <button className="btn btn-link btn-small">+ Expanse</button>
+                                                </div>
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
