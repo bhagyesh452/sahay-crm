@@ -2419,7 +2419,7 @@ console.log(selectedMonthOptionForBdm)
                     <div className="dashboard-headings">
                       <h3 className="m-0">Today's Report</h3>
                     </div>
-                    {/*ForwardedToBDM loop */}
+                    {/*ForwardedToBDM todays report */}
                     <div className="col-lg-2 mb-2 col-md-4 col-sm-6 col-12">
                       <div className="dash-card-2">
                         <div className="d-flex justify-content-between align-items-center">
@@ -2444,7 +2444,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-2-head">GENERAL</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
+                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending")).length}
                             </div>
                           </div>
                         </div>
@@ -2566,7 +2566,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-2-head">GENERAL</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
+                              {moreEmpData.filter((obj) =>(obj.bdmAcceptStatus === "Pending")).length}
                             </div>
                           </div>
                         </div>
@@ -2677,7 +2677,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">GENERAL</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                                {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
+                              {teamData.filter((obj)=>formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Untouched").length}
                               </div>
                             </div>
                           </div>
@@ -2775,6 +2775,9 @@ console.log(selectedMonthOptionForBdm)
                           /> */}
                         </div>
                       </div>
+
+
+
                      {/* recieved bdm report total */}
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                         <div className="dash-card-2">
@@ -2794,7 +2797,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">GENERAL</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                                {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
+                               {teamData.filter((obj)=>obj.bdmStatus === "Untouched").length}
                               </div>
                             </div>
                           </div>
