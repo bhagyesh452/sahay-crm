@@ -2148,12 +2148,12 @@ function BdmTeamLeads() {
                   Submit
                 </button>
               </div>
-              <div>
+              {/* <div>
                 <button>Pay now</button>
-                {/* <button onClick={generatePaymentLink}>Generate Payment Link</button>
+                <button onClick={generatePaymentLink}>Generate Payment Link</button>
                 {paymentLink && <a href={paymentLink} target="_blank" rel="noopener noreferrer">Proceed to Payment</a>}
-                {error && <p>{error}</p>} */}
-              </div>
+                {error && <p>{error}</p>}
+              </div> */}
             </div>
           </div>
         </Drawer>
