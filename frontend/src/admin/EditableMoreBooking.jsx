@@ -953,7 +953,7 @@ export default function EditableMoreBooking({
     const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
       return curr.paymentTerms === "Full Advanced"
         ? acc + parseInt(curr.totalPaymentWOGST)
-        : curr.withGST ? acc + parseInt(curr.firstPayment - parseInt(curr.firstPayment)*18/100) : acc + parseInt(curr.firstPayment)
+        : curr.withGST ? acc + parseInt(curr.firstPayment)/1.18 : acc + parseInt(curr.firstPayment)
     }, 0);
     console.log("Data sending to change:-", leadData);
     const dataToSend = {...leadData, requestBy:employeeName , bookingSource:selectedValues, generatedTotalAmount : generatedTotalAmount , generatedReceivedAmount:generatedReceivedAmount  ,  receivedAmount : parseInt( leadData.services
@@ -1011,7 +1011,7 @@ export default function EditableMoreBooking({
     const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
       return curr.paymentTerms === "Full Advanced"
         ? acc + parseInt(curr.totalPaymentWOGST)
-        : curr.withGST ? acc + parseInt(curr.firstPayment - parseInt(curr.firstPayment)*18/100) : acc + parseInt(curr.firstPayment)
+        : curr.withGST ? acc + parseInt(curr.firstPayment)/1.18 : acc + parseInt(curr.firstPayment)
     }, 0);
     const dataToSend = {...leadData,generatedTotalAmount : generatedTotalAmount , generatedReceivedAmount:generatedReceivedAmount  ,  bookingSource:selectedValues , step4changed : step4changed , receivedAmount : parseInt( leadData.services
       .reduce(
@@ -3318,6 +3318,60 @@ export default function EditableMoreBooking({
                                           )}
                                         </>
                                       )}
+                                       <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Case</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.caCase
+                                              }
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {obj.caCase &&  <>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Number</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.caNumber
+                                              }
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Email</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.caEmail
+                                              }
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="row m-0">
+                                        <div className="col-sm-3 p-0">
+                                          <div className="form-label-name">
+                                            <b>CA Commission</b>
+                                          </div>
+                                        </div>
+                                        <div className="col-sm-9 p-0">
+                                          <div className="form-label-data">
+                                            {obj.caCommission
+                                              }
+                                          </div>
+                                        </div>
+                                      </div>
+                                      </>}
                                       <div className="row m-0">
                                         <div className="col-sm-3 p-0">
                                           <div className="form-label-name">

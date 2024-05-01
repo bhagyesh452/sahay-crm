@@ -467,6 +467,7 @@ function Employees({ onEyeButtonClick }) {
       setFilteredData(sortedData);
     }
   };
+  const adminName = localStorage.getItem("adminName")
   const sortDateByAddedOn = () => {
     if (sortedFormat.addedOn === "ascending") {
       setSortedFormat({
@@ -1260,7 +1261,7 @@ function Employees({ onEyeButtonClick }) {
                         </td>
                         <td>
                           <div className="d-flex justify-content-center align-items-center">
-                            <div className="icons-btn">
+                            {(adminName === "Nimesh" || adminName==="Ronak" || adminName === "Aakash" || adminName === "shivangi")  &&<div className="icons-btn">
                               <IconButton
                                 onClick={() =>
                                   handleDeleteClick(item._id, item.ename)
@@ -1275,7 +1276,7 @@ function Employees({ onEyeButtonClick }) {
                                   }}
                                 />
                               </IconButton>
-                            </div>
+                            </div>}
                             <div className="icons-btn">
                               <IconButton
                                 onClick={() => {

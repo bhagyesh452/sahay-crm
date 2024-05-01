@@ -2357,6 +2357,22 @@ function Dashboard() {
   let totalMaturedCount = 0;
   let totalTargetAmount = 0;
   let totalAchievedAmount = 0;
+  const currentYear = new Date().getFullYear();
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const currentMonth = monthNames[new Date().getMonth()];
 
   const functionCalculateMatured = (bdeName) => {
     let maturedCount = 0;
@@ -2364,7 +2380,8 @@ function Dashboard() {
       (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length!==0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
     );
     
-    filteredRedesignedData.forEach((obj) => {
+    const moreFilteredData = filteredRedesignedData.filter(obj => monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth)
+    moreFilteredData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
           maturedCount += 0.5;
@@ -2402,7 +2419,9 @@ function Dashboard() {
       (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length!==0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
     );
 
-    filteredRedesignedData.forEach((obj) => {
+    const moreFilteredData = filteredRedesignedData.filter(obj => monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth)
+
+    moreFilteredData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
           achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
@@ -2432,22 +2451,7 @@ function Dashboard() {
     return achievedAmount;
   };
 
-  const currentYear = new Date().getFullYear();
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  const currentMonth = monthNames[new Date().getMonth()];
+
 
   const functionGetAmount = (object) => {
     if (object.targetDetails.length !== 0) {

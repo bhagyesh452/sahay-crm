@@ -1362,6 +1362,7 @@ color: #4e884e;
   border-radius: 5px;
   box-shadow: 2px 2px 10px -3px #ebebeb;
   background: #fff;
+  overflow: hidden;
 }
 .my-card-head
 {
@@ -1383,6 +1384,10 @@ color: #4e884e;
 {
   padding: 4px 10px;
   font-size: 12px;
+}
+.bdr-top-eee
+{
+  border-top: 1px solid #eee;
 }
 .bdr-btm-eee
 {
@@ -1597,7 +1602,45 @@ color: #4e884e;
 {
   font-size: 12px;
 }
-
+.add-remaining-amnt
+{
+  cursor: pointer;
+  background: #63b463;
+  color: #fff;
+  width: 15px;
+  height: 15px;
+  text-align: center;
+  font-weight: bold;
+  line-height: 12px;
+  border-radius: 100px;
+  font-size: 14px;
+}
+.add-remaining-amnt:hover
+{
+  background: #468846;
+  color: #fff;
+}
+.add-remaining-amnt:active
+{
+  background: #90ce90;
+  color: #000;
+}
+.bdr-none
+{
+  border: none;
+}
+.accordion-button
+{
+  cursor: pointer;
+}
+.w-95
+{
+  width: 95%;
+}
+.pr-10
+{
+  padding-right: 10px !important;
+}
 /************Remainning page BookingList Page Css End*************/
 .wApp a
 {
@@ -1609,6 +1652,17 @@ color: #4e884e;
 {
   transform: scale(1.3);
   color: #000 !important;
+}
+.bg-fffafa
+{
+  background: #fffafa;
+}
+.btn-small
+{
+  padding: 0px 4px;
+  font-size: 10px;
+  background: #fff9c5;
+  color: #ffb900;
 }
 
 /************************* Icons  ***************************************/
@@ -1646,7 +1700,7 @@ color: #4e884e;
 }
 .dash-card-1-num
 {
-  font-size: 24px;
+  font-size: 20px;
 }
 .dash-card-1-icon
 {
@@ -1676,6 +1730,10 @@ color: #4e884e;
 {
   color: #00d19d;
 }
+.clr-a0b1ad
+{
+  color:#a0b1ad;
+}
 .dash-card-1-head2
 {
   font-size: 12px;
@@ -1684,7 +1742,7 @@ color: #4e884e;
 }
 .dashIconImg
 {
-  opacity: 0.2;
+  opacity: 0;
   /* position: absolute;
   right: -10px;
   bottom: -10px; */
@@ -1699,6 +1757,32 @@ color: #4e884e;
   background: #fff;
   border-radius: 6px;
   overflow: hidden;
+}
+.dash-card-2
+{
+  background: #f7f7f7;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  padding: 6px 10px;
+}
+.dash-card-2-head
+{
+  font-size: 12px;
+  font-weight: 500;
+  color: #858585;
+}
+.dash-card-2-num
+{
+  font-size: 16px;
+  font-weight: 500;
+  margin-left: 10px;
+  color: #000;
+}
+.form-select-sm
+{
+  width: 200px;
 }
 /******************** Dashboard End ********************/
 

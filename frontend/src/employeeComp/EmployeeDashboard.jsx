@@ -1639,24 +1639,24 @@ useEffect(() => {
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.totalAmount / 2);
+          achievedAmount += parseInt(obj.generatedTotalAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.totalAmount);
+          achievedAmount += parseInt(obj.generatedTotalAmount);
         }
       } else {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.totalAmount / 2);
+          achievedAmount += parseInt(obj.generatedTotalAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.totalAmount);
+          achievedAmount += parseInt(obj.generatedTotalAmount);
         }
         obj.moreBookings.forEach((booking) => {
           if (
             booking.bdeName !== booking.bdmName &&
             booking.bdmType === "Close-by"
           ) {
-            achievedAmount += parseInt(obj.totalAmount / 2);
+            achievedAmount += parseInt(obj.generatedTotalAmount / 2);
           } else {
-            achievedAmount += parseInt(obj.totalAmount);
+            achievedAmount += parseInt(obj.generatedTotalAmount);
           }
         });
       }
@@ -1675,24 +1675,24 @@ useEffect(() => {
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.receivedAmount / 2);
+          achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.receivedAmount);
+          achievedAmount += parseInt(obj.generatedReceivedAmount);
         }
       } else {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.receivedAmount / 2);
+          achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.receivedAmount);
+          achievedAmount += parseInt(obj.generatedReceivedAmount);
         }
         obj.moreBookings.forEach((booking) => {
           if (
             booking.bdeName !== booking.bdmName &&
             booking.bdmType === "Close-by"
           ) {
-            achievedAmount += parseInt(obj.receivedAmount / 2);
+            achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
           } else {
-            achievedAmount += parseInt(obj.receivedAmount);
+            achievedAmount += parseInt(obj.generatedReceivedAmount);
           }
         });
       }
@@ -1800,6 +1800,41 @@ useEffect(() => {
     "December",
   ];
   const currentMonth = monthNames[new Date().getMonth()];
+
+  function functionCalculateGeneratedRevenue(isBdm){
+    
+    let generatedRevenue = 0;
+   const requiredObj = moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && ( obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+  requiredObj.forEach((object)=>{
+    const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename);
+    if(newObject){
+      generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount ;
+    }
+  
+  });
+
+  return generatedRevenue;
+  //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
+  //  console.log("This is generated Revenue",requiredObj);
+
+  } 
+  function functionCalculateGeneratedTotalRevenue(isBdm){
+    let generatedRevenue = 0;
+   const requiredObj = moreEmpData.filter((obj) => ( obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+  requiredObj.forEach((object)=>{
+    const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename): redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename );
+    if(newObject){
+      generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount ;
+    }
+    
+  });
+
+  return generatedRevenue;
+  //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
+  //  console.log("This is generated Revenue",requiredObj);
+
+  } 
+  
   function functionGetLastBookingDate() {
     // Filter objects based on bdeName
 
@@ -1893,45 +1928,49 @@ useEffect(() => {
   ];
 
 
-const filterTeamLeadsDataByMonth = (teamData, followData, selectedMonthOption) => {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-
-  let filteredTeamData = [];
-  let filteredFollowData = [];
-
-  switch (selectedMonthOption) {
-    case 'current_month':
-      filteredTeamData = teamData.filter(obj => {
-        const objDate = new Date(obj.bdeForwardDate);
-        return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
-      });
-      filteredFollowData = followData.filter(obj => {
-        const objDate = new Date(obj.estPaymentDate);
-        return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
-      });
-      break;
-    case 'last_month':
-      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-      const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
-      filteredTeamData = teamData.filter(obj => {
-        const objDate = new Date(obj.bdeForwardDate);
-        return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
-      });
-      break;
-    case 'total':
-      filteredTeamData = teamData;
-      filteredFollowData = followData;
-      break;
-    default:
-      filteredTeamData = teamData;
-      filteredFollowData = followData;
-      break;
-  }
-
-  return { filteredTeamData, filteredFollowData };
-};
+  const filterTeamLeadsDataByMonth = (teamData, followData, selectedMonthOption) => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+  
+    let filteredTeamData = [];
+    let filteredFollowData = [];
+  
+    switch (selectedMonthOption) {
+      case 'current_month':
+        filteredTeamData = teamData.filter(obj => {
+          const objDate = new Date(obj.bdeForwardDate);
+          return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
+        });
+        filteredFollowData = followDataFilter.filter(obj => {
+          const objDate = new Date(obj.estPaymentDate);
+          return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
+        });
+        break;
+      case 'last_month':
+        const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+        const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
+        filteredTeamData = teamData.filter(obj => {
+          const objDate = new Date(obj.bdeForwardDate);
+          return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
+        });
+        filteredFollowData = followDataFilter.filter(obj => {
+          const objDate = new Date(obj.estPaymentDate);
+          return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
+        })
+        break;
+      case 'total':
+        filteredTeamData = teamData;
+        filteredFollowData = followData;
+        break;
+      default:
+        filteredTeamData = teamData;
+        filteredFollowData = followData;
+        break;
+    }
+  
+    return { filteredTeamData, filteredFollowData };
+  };
 
 const handleChangeForBdm = (selectedOption) => {
   console.log(selectedOption);
@@ -1976,6 +2015,10 @@ const filterMoreEmpDataDataByMonth = (tempData, followDataFilter, selectedMonthO
         const objDate = new Date(obj.bdeForwardDate);
         return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
       });
+      filteredFollowData = followDataFilter.filter(obj => {
+        const objDate = new Date(obj.estPaymentDate);
+        return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear
+      })
       break;
     case 'total':
       filteredMoreEmpData = tempData;
@@ -2027,7 +2070,7 @@ console.log(selectedMonthOptionForBdm)
         <div className="dashboard-dtl-main">
           <div className="container-xl">
             <div className="row">
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">TOTAL LEADS</div>
                   <div className="dash-card-1-body">
@@ -2039,7 +2082,23 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col">
+                <div className="dash-card-1">
+                  <div className="dash-card-1-head">GENERAL LEADS</div>
+                  <div className="dash-card-1-body">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="dash-card-1-num clr-a0b1ad">
+                        {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Untouched" || partObj.Status === "Busy" || partObj.Status === "Not Picked Up"
+                          ).length
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">INTERESTED LEADS</div>
                   <div className="dash-card-1-body">
@@ -2055,7 +2114,7 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">FOLLOW UP LEADS</div>
                   <div className="dash-card-1-body">
@@ -2071,7 +2130,7 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">MATURED LEADS</div>
                   <div className="dash-card-1-body">
@@ -2087,7 +2146,7 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">NOT INTERESTED LEADS</div>
                   <div className="dash-card-1-body">
@@ -2103,7 +2162,7 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">BDE FORWARDED LEADS</div>
                   <div className="dash-card-1-body">
@@ -2345,111 +2404,121 @@ console.log(selectedMonthOptionForBdm)
               <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
                   <button class="nav-link active" id="ForwardedToBDM-tab" data-bs-toggle="tab" data-bs-target="#ForwardedToBDM" type="button" role="tab" aria-controls="ForwardedToBDM" aria-selected="true">
-                    Forwarded To BDM Case Report
+                    Forwarded to BDM cases report
                   </button>
                 </li>
                 {data.bdmWork && (<li class="nav-item" role="presentation">
                   <button class="nav-link" id="receivedAsBDM-tab" data-bs-toggle="tab" data-bs-target="#receivedAsBDM" type="button" role="tab" aria-controls="receivedAsBDM" aria-selected="false">
-                    Recieved As BDM Case Report
+                    Recieved as BDM cases report
                   </button>
                 </li>)}
               </ul>
               <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="ForwardedToBDM" role="tabpanel" aria-labelledby="ForwardedToBDM-tab">
-                  <div className="mt-3 mb-3">
-                    <div className="row m-0">
-                      <div className="dashboard-headings">
-                        <h3 className="m-0">Today's Report</h3>
-                      </div>
-                      {/*ForwardedToBDM loop */}
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">TOTAL</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
-                                {moreEmpData.filter(
-                                  (obj) =>
-                                    formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) &&
-                                    obj.bdmAcceptStatus !== "NotForwarded" &&
-                                    obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                                    obj.Status !== "Matured"
-                                ).length}
-                              </div>
+                <div class="tab-pane fade show active pb-3" id="ForwardedToBDM" role="tabpanel" aria-labelledby="ForwardedToBDM-tab">
+                  <div className="row m-0">
+                    <div className="dashboard-headings">
+                      <h3 className="m-0">Today's Report</h3>
+                    </div>
+                    {/*ForwardedToBDM loop */}
+                    <div className="col-lg-2 mb-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">TOTAL</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num">
+                              {moreEmpData.filter(
+                                (obj) =>
+                                  formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) &&
+                                  obj.bdmAcceptStatus !== "NotForwarded" &&
+                                  obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                  obj.Status !== "Matured"
+                              ).length}
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">INTERESTED</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-ffb900">
-                                {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
-                              </div>
+                    </div>
+                    <div className="col-lg-2 mb-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">GENERAL</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num">
+                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">FOLLOW UP</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-4299e1">
+                    </div>
+                    <div className="col-lg-2 mb-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">INTERESTED</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num">
+                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-lg-2 mb-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">FOLLOW UP</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num">
                               {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "FollowUp").length}
-                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">MATURED</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
+                    </div>
+                    <div className="col-lg-2 mb-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">MATURED</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num">
                               {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured").length}
-                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">NOT INTERESTED</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-e65b5b">
+                    </div>
+                    <div className="col-lg-2 mb-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">NOT INTERESTED</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num">
                               {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Not Interested").length}
-                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12 mt-2">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">PROJECTED REVENUE</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1cba19">
-                                ₹{(followDataToday
-                                  .filter(obj => obj.bdeName === data.ename)
-                                  .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
-                              </div>
+                    </div>
+                    <div className="col-lg-2 mb-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">PROJECTED REVENUE</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num">
+                            ₹{(followDataToday
+                                .filter(obj => obj.bdeName === data.ename)
+                                .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">GENERATED REVENUE</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-e65b5b">
-                                ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
-                              </div>
+                    </div>
+                    <div className="col-lg-2 mb-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">GENERATED REVENUE</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num">
+                              ₹ {functionCalculateGeneratedRevenue().toLocaleString()}
                             </div>
                           </div>
                         </div>
@@ -2457,109 +2526,121 @@ console.log(selectedMonthOptionForBdm)
                     </div>
                   </div>
                   {/*total forwarded to bdm report */}
-                  <div className="mt-3 mb-3">
-                    <div className="row m-0">
-                      <div className="dashboard-headings d-flex align-items-center justify-content-between">
-                        <div>
-                          <h3 className="m-0">Total Report</h3>
-                        </div>
-                        <div>
-                          <Select
-                            options={monthOptions}
-                            placeholder="Select..."
-                            onChange={handleChange}
-                            value={monthOptions.find(option => option.value === selectedMonthOption)}
-                          />
-                        </div>
+                  <div className="row m-0">
+                    
+                    <div className="d-flex align-items-center justify-content-between p-0">
+                      <div className="dashboard-headings">
+                        <h3 className="m-0">Total Report</h3>
                       </div>
-                      {/*ForwardedToBDM loop */}
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">TOTAL</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
-                                {moreEmpData.filter(
+                      {/* <div className="pr-1">
+                        <Select
+                          options={monthOptions}
+                          placeholder="Select..."
+                          onChange={handleChange}
+                          value={monthOptions.find(option => option.value === selectedMonthOption)}
+                        />
+                      </div> */}
+                    </div>
+                
+                    {/*ForwardedToBDM loop */}
+                    <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">TOTAL</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num clr-1ac9bd">
+                              {moreEmpData.filter(
                                   (obj) =>
                                     obj.bdmAcceptStatus !== "NotForwarded" &&
                                     obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
                                     obj.Status !== "Matured"
                                 ).length}
-                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">INTERESTED</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-ffb900">
-                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "Interested").length}
-                              </div>
+                    </div>
+                    <div className="col-lg-2 mb-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">GENERAL</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num">
+                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">FOLLOW UP</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-4299e1">
-                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "FollowUp").length}
-                              </div>
+                    </div>
+                    <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">INTERESTED</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num clr-1ac9bd">
+                              {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "Interested").length}
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">MATURED</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
-                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "Matured").length}
-                              </div>
+                    </div>
+                    <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">FOLLOW UP</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num clr-4299e1">
+                              {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "FollowUp").length}
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">NOT INTERESTED</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-e65b5b">
-                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "Not Interested").length}
-                              </div>
+                    </div>
+                    <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">MATURED</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num clr-1ac9bd">
+                              {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "Matured").length}
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">PROJECTED REVENUE</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1cba19">
-                                ₹{(followData
-                                  .filter(obj => obj.bdeName === data.ename)
-                                  .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
-                              </div>
+                    </div>
+                    <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">NOT INTERESTE</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num clr-e65b5b">
+                              {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "Not Interested").length}
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12 mt-2">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">GENERATED REVENUE</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-e65b5b">
-                                ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
-                              </div>
+                    </div>
+                    <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">PROJECTED REVENUE</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num clr-1cba19">
+                             ₹{(followData
+                                .filter(obj => obj.bdeName === data.ename)
+                                .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                      <div className="dash-card-2">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="dash-card-2-head">GENERATED REVENUE</div>
+                          <div className="dash-card-2-body">
+                            <div className="dash-card-2-num clr-e65b5b">
+                              ₹ {functionCalculateGeneratedTotalRevenue().toLocaleString()}
                             </div>
                           </div>
                         </div>
@@ -2579,71 +2660,83 @@ console.log(selectedMonthOptionForBdm)
                       </div>
                       {/* recieved bdm report today */}
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">TOTAL</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">TOTAL</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
                                 {teamData.filter((obj)=>formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10)).length}
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">INTERESTED</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-ffb900">
-                                {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Interested").length}
+                      <div className="col-lg-2 mb-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">GENERAL</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
+                                {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">FOLLOW UP</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-4299e1">
-                              {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "FollowUp").length}
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">INTERESTED</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
+                                 {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Interested").length}
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">MATURED</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
-                                {/* {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Matured").length} */}
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">FOLLOW UP</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
+                                {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "FollowUp").length}
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">NOT INTERESTED</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-e65b5b">
-                              {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Not Interested").length}
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">MATURED</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
+                               {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Matured").length}
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">PROJECTED REVENUE</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1cba19">
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">NOT INTERESTED</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
+                                {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Not Interested").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">PROJECTED REVENUE</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
                                 ₹{(followDataToday
                                   .filter(obj => obj.ename === data.ename)
                                   .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
@@ -2652,12 +2745,13 @@ console.log(selectedMonthOptionForBdm)
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12 mt-2">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">GENERATED REVENUE</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-e65b5b">
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">GENERATED REVENUE</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
+                              ₹ {functionCalculateGeneratedRevenue(true).toLocaleString()}
                                 {/* ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()} */}
                               </div>
                             </div>
@@ -2668,38 +2762,50 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                   <div className="mt-3 mb-3">
                     <div className="row m-0">
-                    <div className="dashboard-headings d-flex align-items-center justify-content-between">
-                        <div>
+                      <div className="d-flex align-items-center justify-content-between p-0">
+                        <div className="dashboard-headings ">
                           <h3 className="m-0">Total Report</h3>
                         </div>
-                        <div>
-                          <Select
+                        <div className="pr-1">
+                          {/* <Select
                             options={monthOptions}
                             placeholder="Select..."
                             onChange={handleChangeForBdm}
                             value={monthOptions.find(option => option.value === selectedMonthOptionForBdm)}
-                          />
+                          /> */}
                         </div>
                       </div>
                      {/* recieved bdm report total */}
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">TOTAL</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">TOTAL</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
                                 {teamData.length}
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
+                      <div className="col-lg-2 mb-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">GENERAL</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
+                                {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">INTERESTED</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-ffb900">
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">INTERESTED</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
                                {teamData.filter((obj)=>obj.bdmStatus === "Interested").length}
                               </div>
                             </div>
@@ -2707,47 +2813,47 @@ console.log(selectedMonthOptionForBdm)
                         </div>
                       </div>
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">FOLLOW UP</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-4299e1">
-                              {teamData.filter((obj)=>obj.bdmStatus === "FollowUp").length}
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">FOLLOW UP</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
+                                {teamData.filter((obj)=>obj.bdmStatus === "FollowUp").length}
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">MATURED</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1ac9bd">
-                              {teamData.filter((obj)=>obj.bdmStatus === "Matured").length}
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">MATURED</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
+                               {teamData.filter((obj)=>obj.bdmStatus === "Matured").length}
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">NOT INTERESTED</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-e65b5b">
-                              {teamData.filter((obj)=>obj.bdmStatus === "Not Interested").length}
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">NOT INTERESTED</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
+                                {teamData.filter((obj)=>obj.bdmStatus === "Not Interested").length}
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">PROJECTED REVENUE</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-1cba19">
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">PROJECTED REVENUE</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
                                 ₹{(followData
                                   .filter(obj => obj.ename === data.ename && obj.bdeName)
                                   .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
@@ -2756,13 +2862,13 @@ console.log(selectedMonthOptionForBdm)
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-2 col-md-4 col-sm-6 col-12 mt-2">
-                        <div className="dash-card-1">
-                          <div className="dash-card-1-head">GENERATED REVENUE</div>
-                          <div className="dash-card-1-body">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="dash-card-1-num clr-e65b5b">
-                                ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
+                      <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                        <div className="dash-card-2">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="dash-card-2-head">GENERATED REVENUE</div>
+                            <div className="dash-card-2-body">
+                              <div className="dash-card-2-num">
+                                 ₹ {functionCalculateGeneratedTotalRevenue(true).toLocaleString()}
                               </div>
                             </div>
                           </div>
