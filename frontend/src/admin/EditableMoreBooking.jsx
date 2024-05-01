@@ -946,9 +946,17 @@ export default function EditableMoreBooking({
     
     }
   if(activeStep===4 && !isAdmin){
-
+    const generatedTotalAmount = leadData.services.reduce(
+      (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
+      0
+    );
+    const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
+      return curr.paymentTerms === "Full Advanced"
+        ? acc + parseInt(curr.totalPaymentWOGST)
+        : curr.withGST ? acc + parseInt(curr.firstPayment - parseInt(curr.firstPayment)*18/100) : acc + parseInt(curr.firstPayment)
+    }, 0);
     console.log("Data sending to change:-", leadData);
-    const dataToSend = {...leadData, requestBy:employeeName , bookingSource:selectedValues,  receivedAmount : parseInt( leadData.services
+    const dataToSend = {...leadData, requestBy:employeeName , bookingSource:selectedValues, generatedTotalAmount : generatedTotalAmount , generatedReceivedAmount:generatedReceivedAmount  ,  receivedAmount : parseInt( leadData.services
       .reduce(
         (total, service) =>
           service.paymentTerms ===
@@ -996,7 +1004,16 @@ export default function EditableMoreBooking({
       Swal.fire("Request Failed!","Failed to Request Admin","error");
     }
   }else if(activeStep === 4 && isAdmin){
-    const dataToSend = {...leadData,  bookingSource:selectedValues , step4changed : step4changed , receivedAmount : parseInt( leadData.services
+    const generatedTotalAmount = leadData.services.reduce(
+      (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
+      0
+    );
+    const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
+      return curr.paymentTerms === "Full Advanced"
+        ? acc + parseInt(curr.totalPaymentWOGST)
+        : curr.withGST ? acc + parseInt(curr.firstPayment - parseInt(curr.firstPayment)*18/100) : acc + parseInt(curr.firstPayment)
+    }, 0);
+    const dataToSend = {...leadData,generatedTotalAmount : generatedTotalAmount , generatedReceivedAmount:generatedReceivedAmount  ,  bookingSource:selectedValues , step4changed : step4changed , receivedAmount : parseInt( leadData.services
       .reduce(
         (total, service) =>
           service.paymentTerms ===

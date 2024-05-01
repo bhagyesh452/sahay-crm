@@ -4221,6 +4221,8 @@ app.post(
                   newData.pendingAmount || existingData.pendingAmount,
                 receivedAmount:
                   newData.receivedAmount || existingData.receivedAmount,
+                generatedTotalAmount:newData.generatedTotalAmount || existingData.generatedTotalAmount,
+                generatedReceivedAmount:newData.generatedReceivedAmount || existingData.generatedReceivedAmount,
                 Step3Status: true,
               },
             },

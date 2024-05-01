@@ -34,9 +34,10 @@ function ManagerBookings() {
   const [sendingIndex, setSendingIndex] = useState(0);
   const [EditBookingOpen, setEditBookingOpen] = useState(false);
   const [addFormOpen, setAddFormOpen] = useState(false);
+  const [openRemainingPayment, setOpenRemainingPayment] = useState(false);
   const [infiniteBooking, setInfiniteBooking] = useState([]);
   const [bookingIndex, setbookingIndex] = useState(-1);
-  const [currentCompanyName , setCurrentCompanyName] = useState("");
+  const [currentCompanyName, setCurrentCompanyName] = useState("");
   const [searchText, setSearchText] = useState("");
   const [nowToFetch, setNowToFetch] = useState(false);
   const [leadFormData, setLeadFormData] = useState([]);
@@ -73,14 +74,13 @@ function ManagerBookings() {
     }
   };
   useEffect(() => {
-    if(currentCompanyName === ""){
+    if (currentCompanyName === "") {
       setCurrentLeadform(leadFormData[0]);
-    }else {
-      setCurrentLeadform(leadFormData.find(obj => obj["Company Name"] === currentCompanyName));
+    } else {
+      setCurrentLeadform(
+        leadFormData.find((obj) => obj["Company Name"] === currentCompanyName)
+      );
     }
-
-     
-
   }, [leadFormData]);
 
   useEffect(() => {
@@ -169,18 +169,18 @@ function ManagerBookings() {
     const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
     return `${number}${suffix}`;
   };
-  const handleViewPdfReciepts = (paymentreciept , companyName) => {
+  const handleViewPdfReciepts = (paymentreciept, companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
     window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
-  const handleViewPdOtherDocs = (pdfurl , companyName) => {
+  const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
     window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
   };
-  const dataManagerName = localStorage.getItem("dataManagerName")
+  const dataManagerName = localStorage.getItem("dataManagerName");
   // ------------------------------------------------- Delete booking ----------------------------------------------
 
   const handleDeleteBooking = async (company, id) => {
@@ -193,7 +193,7 @@ function ManagerBookings() {
       cancelButtonText: "No, cancel!",
       reverseButtons: true,
     });
-   
+
     if (confirmation.isConfirmed) {
       if (id) {
         fetch(
@@ -276,7 +276,7 @@ function ManagerBookings() {
         formData.append("otherDocs", files[i]);
       }
       console.log(formData);
-      setCurrentCompanyName(currentLeadform["Company Name"])
+      setCurrentCompanyName(currentLeadform["Company Name"]);
       const response = await fetch(
         `${secretKey}/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
         {
@@ -294,8 +294,6 @@ function ManagerBookings() {
         setSelectedDocuments([]);
         setOpenOtherDocs(false);
         fetchRedesignedFormData();
-        
-        
       } else {
         Swal.fire({
           title: "Error uploading file",
@@ -399,7 +397,6 @@ function ManagerBookings() {
                                 : "bookings_Company_Name"
                             }
                             onClick={() =>
-
                               setCurrentLeadform(
                                 leadFormData.find(
                                   (data) =>
@@ -782,7 +779,10 @@ function ManagerBookings() {
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       <span>
-                                        <i>{currentLeadform && currentLeadform.bdmType}</i>
+                                        <i>
+                                          {currentLeadform &&
+                                            currentLeadform.bdmType}
+                                        </i>
                                       </span>{" "}
                                       {currentLeadform &&
                                         currentLeadform.bdmName}
@@ -1075,80 +1075,127 @@ function ManagerBookings() {
                                 </div>
                               </div>
                               {/* Remaining Payment Viwe Sections */}
-                              <div className="my-card-body bg-fffafa accordion" id="accordionExample">
+                              <div className="my-card-body accordion" id="accordionExample">
                                 <div class="accordion-item bdr-none">
                                   <div id="headingOne accordion-header" className="pr-10">
                                     <div className="row m-0 bdr-btm-eee accordion-button p-0" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                       <div className="w-95 p-0">
-                                        <div className="d-flex align-items-center justify-content-between booking_inner_dtl_h h-100">
-                                          <div>Remaining Payment (Second Payment) </div>
-                                          <div>26/03/2024</div>
+                                        <div className="booking_inner_dtl_h h-100">
+                                          <div>Remaining Payment </div>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
                                   <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                    <div class="accordion-body bdr-none p-0">  
-                                      <div className="row m-0 bdr-btm-eee bdr-top-eee">
-                                        <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
-                                          <div class="row m-0 h-100">
-                                            <div class="col-sm-5 align-self-stretc p-0">
-                                                <div class="booking_inner_dtl_h h-100">Amount</div>
-                                            </div>
-                                            <div class="col-sm-7 align-self-stretc p-0">
-                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div className="col-lg-6 col-sm-4 p-0 align-self-stretc">
-                                          <div class="row m-0 h-100">
-                                            <div class="col-sm-4 align-self-stretc p-0">
-                                                <div class="booking_inner_dtl_h h-100 bdr-left-eee">Payment Method</div>
-                                            </div>
-                                            <div class="col-sm-8 align-self-stretc p-0">
-                                                <div class="booking_inner_dtl_b h-100 bdr-left-eee">ICICI Bank</div>
+                                    <div class="accordion-body bdr-none p-0">
+                                      <div>
+                                        <div className="row m-0 bdr-btm-eee bdr-top-eee"> 
+                                          <div className="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
+                                            <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
+                                              <div>
+                                                Second Remaining Payment
+                                              </div>
+                                              <div>
+                                                2/12/2023
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
-                                        <div className="col-lg-4 col-sm-4 p-0 align-self-stretc">
-                                          <div class="row m-0 h-100">
-                                            <div class="col-sm-4 align-self-stretc p-0">
-                                                <div class="booking_inner_dtl_h h-100 bdr-left-eee">Extra Remarks</div>
+                                        <div className="row m-0 bdr-btm-eee"> 
+                                          <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-5 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h h-100">Amount</div>
+                                              </div>
+                                              <div class="col-sm-7 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
+                                              </div>
                                             </div>
-                                            <div class="col-sm-8 align-self-stretc p-0">
-                                                <div class="booking_inner_dtl_b h-100 bdr-left-eee">no</div>
+                                          </div>
+                                          <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-5 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending</div>
+                                              </div>
+                                              <div class="col-sm-7 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-5 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">Payment Method</div>
+                                              </div>
+                                              <div class="col-sm-7 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">ICICI Bank</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className="col-lg-3 col-sm-4 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-6 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">Extra Remarks</div>
+                                              </div>
+                                              <div class="col-sm-6 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">no</div>
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="row m-0 bdr-btm-eee">
-                                        <div className="col-lg-4 col-sm-6 p-0">
-                                          <div class="row m-0">
-                                            <div class="col-sm-5 align-self-stretc p-0">
-                                                <div class="booking_inner_dtl_h h-100">Total Amount</div>
-                                            </div>
-                                            <div class="col-sm-7 align-self-stretc p-0">
-                                                <div class="booking_inner_dtl_b h-100 bdr-left-eee">₹ 22000</div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div className="col-lg-4 col-sm-6 p-0">
-                                          <div class="row m-0">
-                                            <div class="col-sm-5 align-self-stretc p-0">
-                                                <div class="booking_inner_dtl_h bdr-left-eee h-100">Received Amount</div>
-                                            </div>
-                                            <div class="col-sm-7 align-self-stretc p-0">
-                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 22000</div>
+                                      <div>
+                                        <div className="row m-0 bdr-btm-eee bdr-top-eee"> 
+                                          <div className="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
+                                            <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
+                                              <div>
+                                                Third Remaining Payment
+                                              </div>
+                                              <div>
+                                                2/12/2023
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
-                                        <div className="col-lg-4 col-sm-6 p-0">
-                                          <div class="row m-0">
-                                            <div class="col-sm-5 align-self-stretc p-0">
-                                                <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending Amount</div>
+                                        <div className="row m-0 bdr-btm-eee"> 
+                                          <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-5 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h h-100">Amount</div>
+                                              </div>
+                                              <div class="col-sm-7 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
+                                              </div>
                                             </div>
-                                            <div class="col-sm-7 align-self-stretc p-0">
-                                                <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 22000</div>
+                                          </div>
+                                          <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-5 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending</div>
+                                              </div>
+                                              <div class="col-sm-7 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-5 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">Payment Method</div>
+                                              </div>
+                                              <div class="col-sm-7 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">ICICI Bank</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className="col-lg-3 col-sm-4 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-6 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">Extra Remarks</div>
+                                              </div>
+                                              <div class="col-sm-6 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">no</div>
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
@@ -1345,9 +1392,9 @@ function ManagerBookings() {
                                         className="booking-docs-preview-img"
                                         onClick={() =>
                                           handleViewPdfReciepts(
-                                           
-                                             currentLeadform.paymentReceipt[0]
-                                                .filename , currentLeadform["Company Name"]
+                                            currentLeadform.paymentReceipt[0]
+                                              .filename,
+                                            currentLeadform["Company Name"]
                                           )
                                         }
                                       >
@@ -1362,7 +1409,9 @@ function ManagerBookings() {
                                                 currentLeadform
                                                   .paymentReceipt[0].filename
                                               }
-                                              companyName = {currentLeadform["Company Name"]}
+                                              companyName={
+                                                currentLeadform["Company Name"]
+                                              }
                                             />
                                           ) : currentLeadform.paymentReceipt[0].filename.endsWith(
                                               ".png"
@@ -1399,14 +1448,19 @@ function ManagerBookings() {
                                         <div
                                           className="booking-docs-preview-img"
                                           onClick={() =>
-                                            handleViewPdOtherDocs(obj.filename , currentLeadform["Company Name"])
+                                            handleViewPdOtherDocs(
+                                              obj.filename,
+                                              currentLeadform["Company Name"]
+                                            )
                                           }
                                         >
                                           {obj.filename.endsWith(".pdf") ? (
                                             <PdfImageViewerAdmin
                                               type="pdf"
                                               path={obj.filename}
-                                              companyName = {currentLeadform["Company Name"]}
+                                              companyName={
+                                                currentLeadform["Company Name"]
+                                              }
                                             />
                                           ) : (
                                             <img
@@ -2072,11 +2126,9 @@ function ManagerBookings() {
                                   </div>
                                 </div>
                               </div>
-                          
+
                               <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                                <b>
-                                  Payment Receipt and Additional Documents:
-                                </b>
+                                <b>Payment Receipt and Additional Documents:</b>
                               </div>
 
                               <div className="row">
@@ -2089,7 +2141,8 @@ function ManagerBookings() {
                                           onClick={() =>
                                             handleViewPdfReciepts(
                                               objMain.paymentReceipt[0]
-                                                .filename, currentLeadform["Company Name"]
+                                                .filename,
+                                              currentLeadform["Company Name"]
                                             )
                                           }
                                         >
@@ -2102,7 +2155,9 @@ function ManagerBookings() {
                                                 objMain.paymentReceipt[0]
                                                   .filename
                                               }
-                                              companyName = {currentLeadform["Company Name"]}
+                                              companyName={
+                                                currentLeadform["Company Name"]
+                                              }
                                             />
                                           ) : (
                                             <img
@@ -2126,7 +2181,8 @@ function ManagerBookings() {
                                         className="booking-docs-preview-img"
                                         onClick={() =>
                                           handleViewPdOtherDocs(
-                                            obj.filename , currentLeadform["Company Name"]
+                                            obj.filename,
+                                            currentLeadform["Company Name"]
                                           )
                                         }
                                       >
@@ -2134,7 +2190,9 @@ function ManagerBookings() {
                                           <PdfImageViewerAdmin
                                             type="pdf"
                                             path={obj.filename}
-                                            companyName = {currentLeadform["Company Name"]}
+                                            companyName={
+                                              currentLeadform["Company Name"]
+                                            }
                                           />
                                         ) : (
                                           <img
@@ -2155,113 +2213,112 @@ function ManagerBookings() {
                                   </div>
                                 ))}
 
-<div className="col-sm-2 mb-1">
-                              <div
-                                className="booking-docs-preview"
-                                title="Upload More Documents"
-                              >
-                                <div
-                                  className="upload-Docs-BTN"
-                                  onClick={() => {
-                                    setOpenOtherDocs(true);
-                                    setSendingIndex(index+1);
-                                  }}
-                                >
-                                  <IoAdd />
-                                </div>
-                              </div>
-                            </div>
-
-                            <Dialog
-                              open={openOtherDocs}
-                              onClose={closeOtherDocsPopup}
-                              fullWidth
-                              maxWidth="sm"
-                            >
-                              <DialogTitle>
-                                Upload Your Attachments
-                                <IconButton
-                                  onClick={closeOtherDocsPopup}
-                                  style={{ float: "right" }}
-                                >
-                                  <CloseIcon color="primary"></CloseIcon>
-                                </IconButton>{" "}
-                              </DialogTitle>
-                              <DialogContent>
-                                <div className="maincon">
-                                  {/* Single file input for multiple documents */}
+                                <div className="col-sm-2 mb-1">
                                   <div
-                                    style={{
-                                      justifyContent: "space-between",
-                                    }}
-                                    className="con1 d-flex"
+                                    className="booking-docs-preview"
+                                    title="Upload More Documents"
                                   >
                                     <div
-                                      style={{ paddingTop: "9px" }}
-                                      className="uploadcsv"
+                                      className="upload-Docs-BTN"
+                                      onClick={() => {
+                                        setOpenOtherDocs(true);
+                                        setSendingIndex(index + 1);
+                                      }}
                                     >
-                                      <label
-                                        style={{
-                                          margin: "0px 0px 6px 0px",
-                                        }}
-                                        htmlFor="attachmentfile"
-                                      >
-                                        Upload Files
-                                      </label>
+                                      <IoAdd />
                                     </div>
                                   </div>
-                                  <div
-                                    style={{ margin: "5px 0px 0px 0px" }}
-                                    className="form-control"
-                                  >
-                                    <input
-                                      type="file"
-                                      name="attachmentfile"
-                                      id="attachmentfile"
-                                      onChange={(e) => {
-                                        handleOtherDocsUpload(
-                                          e.target.files
-                                        );
-                                      }}
-                                      multiple // Allow multiple files selection
-                                    />
-                                    {selectedDocuments &&
-                                      selectedDocuments.length > 0 && (
-                                        <div className="uploaded-filename-main d-flex flex-wrap">
-                                          {selectedDocuments.map(
-                                            (file, index) => (
-                                              <div
-                                                className="uploaded-fileItem d-flex align-items-center"
-                                                key={index}
-                                              >
-                                                <p className="m-0">
-                                                  {file.name}
-                                                </p>
-                                                <button
-                                                  className="fileItem-dlt-btn"
-                                                  onClick={() =>
-                                                    handleRemoveFile(index)
-                                                  }
-                                                >
-                                                  <IconX className="close-icon" />
-                                                </button>
-                                              </div>
-                                            )
-                                          )}
-                                        </div>
-                                      )}
-                                  </div>
                                 </div>
-                              </DialogContent>
-                              <button
-                                className="btn btn-primary"
-                                onClick={handleotherdocsAttachment}
-                              >
-                                Submit
-                              </button>
-                            </Dialog>
+
+                                <Dialog
+                                  open={openOtherDocs}
+                                  onClose={closeOtherDocsPopup}
+                                  fullWidth
+                                  maxWidth="sm"
+                                >
+                                  <DialogTitle>
+                                    Upload Your Attachments
+                                    <IconButton
+                                      onClick={closeOtherDocsPopup}
+                                      style={{ float: "right" }}
+                                    >
+                                      <CloseIcon color="primary"></CloseIcon>
+                                    </IconButton>{" "}
+                                  </DialogTitle>
+                                  <DialogContent>
+                                    <div className="maincon">
+                                      {/* Single file input for multiple documents */}
+                                      <div
+                                        style={{
+                                          justifyContent: "space-between",
+                                        }}
+                                        className="con1 d-flex"
+                                      >
+                                        <div
+                                          style={{ paddingTop: "9px" }}
+                                          className="uploadcsv"
+                                        >
+                                          <label
+                                            style={{
+                                              margin: "0px 0px 6px 0px",
+                                            }}
+                                            htmlFor="attachmentfile"
+                                          >
+                                            Upload Files
+                                          </label>
+                                        </div>
+                                      </div>
+                                      <div
+                                        style={{ margin: "5px 0px 0px 0px" }}
+                                        className="form-control"
+                                      >
+                                        <input
+                                          type="file"
+                                          name="attachmentfile"
+                                          id="attachmentfile"
+                                          onChange={(e) => {
+                                            handleOtherDocsUpload(
+                                              e.target.files
+                                            );
+                                          }}
+                                          multiple // Allow multiple files selection
+                                        />
+                                        {selectedDocuments &&
+                                          selectedDocuments.length > 0 && (
+                                            <div className="uploaded-filename-main d-flex flex-wrap">
+                                              {selectedDocuments.map(
+                                                (file, index) => (
+                                                  <div
+                                                    className="uploaded-fileItem d-flex align-items-center"
+                                                    key={index}
+                                                  >
+                                                    <p className="m-0">
+                                                      {file.name}
+                                                    </p>
+                                                    <button
+                                                      className="fileItem-dlt-btn"
+                                                      onClick={() =>
+                                                        handleRemoveFile(index)
+                                                      }
+                                                    >
+                                                      <IconX className="close-icon" />
+                                                    </button>
+                                                  </div>
+                                                )
+                                              )}
+                                            </div>
+                                          )}
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                  <button
+                                    className="btn btn-primary"
+                                    onClick={handleotherdocsAttachment}
+                                  >
+                                    Submit
+                                  </button>
+                                </Dialog>
                               </div>
-                             
                             </div>
                           </>
                         ))}
@@ -2318,6 +2375,77 @@ function ManagerBookings() {
           />
         </>
       )}
+      <Dialog
+        open={openRemainingPayment}
+        onClose={() => setOpenRemainingPayment(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          <div className="d-flex align-items-center justify-content-between">
+            <div className="remaining-payment-heading">
+              <h2 className="m-0"> Remaining Payment</h2>
+            </div>
+            <div className="remaining-payment-close">
+              <IconButton onClick={() => setOpenRemainingPayment(false)}>
+                <CloseIcon />
+              </IconButton>
+            </div>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <div className="container">
+            <div className="row mb-1">
+              <div className="col-sm-6 d-flex align-items-center">
+                <div className="col-sm-5">
+                <label htmlFor="remaining-service-name"><b>Service Name :</b></label>
+                </div>
+                <div className="col-sm-7">
+                  <select name="remaining-service-name" id="remaining-service-name" className="form-select">
+                    <option value="" selected disabled >Select Service :</option>
+                    <option value="" >Service 1</option>
+                    <option value="" >Service 2</option>
+                    <option value="" >Service 3</option>
+                  </select>
+               
+                </div>
+             
+             
+              </div>
+              <div className="col-sm-6 d-flex align-items-center">
+                <div className="col-sm-7">
+                  <label htmlFor="remaining-payment-proper"> <b>Remaining Payment :</b></label>
+                </div>
+                <div className="col-sm-5">
+                  <input type="number" className="form-control" name="remaining-payment-proper" id="remaining-payment-proper" placeholder="Remaining Payment" />
+                </div>
+
+              </div>
+              
+            </div>
+            <div className="row mt-1">
+              <div className="col-sm-12 d-flex align-items-center">
+                <div className="col-sm-5">
+                <label htmlFor="remaining-paymentmethod"><b>Payment Method :</b></label>
+                </div>
+                <div className="col-sm-7">
+                  <select name="remaining-paymentmethod" id="remaining-paymentmethod" className="form-select">
+                    <option value="" selected disabled >Select Payment Method :</option>
+                    <option value="" >Service 1</option>
+                    <option value="" >Service 2</option>
+                    <option value="" >Service 3</option>
+                  </select>
+               
+                </div>
+             
+             
+              </div>
+              
+              
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
