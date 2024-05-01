@@ -2162,7 +2162,7 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col-lg-3 col-md-4 col-sm-6 col-12">
+              <div className="col">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">BDE FORWARDED LEADS</div>
                   <div className="dash-card-1-body">
