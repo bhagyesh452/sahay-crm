@@ -2070,7 +2070,7 @@ console.log(selectedMonthOptionForBdm)
         <div className="dashboard-dtl-main">
           <div className="container-xl">
             <div className="row">
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col-lg-3 col-md-4 col-sm-6 col-12">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">TOTAL LEADS</div>
                   <div className="dash-card-1-body">
@@ -2082,7 +2082,7 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col-lg-3 col-md-4 col-sm-6 col-12">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">GENERAL LEADS</div>
                   <div className="dash-card-1-body">
@@ -2098,7 +2098,7 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col-lg-3 col-md-4 col-sm-6 col-12">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">INTERESTED LEADS</div>
                   <div className="dash-card-1-body">
@@ -2114,7 +2114,7 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col-lg-3 col-md-4 col-sm-6 col-12">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">FOLLOW UP LEADS</div>
                   <div className="dash-card-1-body">
@@ -2130,7 +2130,7 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col-lg-3 col-md-4 col-sm-6 col-12">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">MATURED LEADS</div>
                   <div className="dash-card-1-body">
@@ -2146,7 +2146,7 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col-lg-3 col-md-4 col-sm-6 col-12">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">NOT INTERESTED LEADS</div>
                   <div className="dash-card-1-body">
@@ -2162,7 +2162,7 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                 </div>
               </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+              <div className="col-lg-3 col-md-4 col-sm-6 col-12">
                 <div className="dash-card-1">
                   <div className="dash-card-1-head">BDE FORWARDED LEADS</div>
                   <div className="dash-card-1-body">

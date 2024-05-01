@@ -2389,11 +2389,9 @@ function ManagerBookings() {
         <DialogContent>
           <div className="container">
             <div className="row mb-1">
-              <div className="col-sm-6 d-flex align-items-center">
-                <div className="col-sm-5">
-                <label htmlFor="remaining-service-name"><b>Service Name :</b></label>
-                </div>
-                <div className="col-sm-7">
+              <div className="col-sm-6">
+              <label htmlFor="remaining-service-name" className="form-label">Service Name :</label>
+                <div className="col">
                   <select name="remaining-service-name" id="remaining-service-name" className="form-select">
                     <option value="" selected disabled >Select Service :</option>
                     <option value="" >Service 1</option>
@@ -2405,23 +2403,19 @@ function ManagerBookings() {
              
              
               </div>
-              <div className="col-sm-6 d-flex align-items-center">
-                <div className="col-sm-7">
-                  <label htmlFor="remaining-payment-proper"> <b>Remaining Payment :</b></label>
-                </div>
-                <div className="col-sm-5">
+              <div className="col-sm-6">
+              <label htmlFor="remaining-payment-proper" className="form-label">Remaining Payment :</label>
+                <div className="col">
                   <input type="number" className="form-control" name="remaining-payment-proper" id="remaining-payment-proper" placeholder="Remaining Payment" />
                 </div>
 
               </div>
               
             </div>
-            <div className="row mt-1">
-              <div className="col-sm-12 d-flex align-items-center">
-                <div className="col-sm-5">
-                <label htmlFor="remaining-paymentmethod"><b>Payment Method :</b></label>
-                </div>
-                <div className="col-sm-7">
+            <div className="row mt-2">
+              <div className="col-sm-6">
+              <label htmlFor="remaining-paymentmethod" className="form-label">Payment Method :</label>
+                <div className="col">
                   <select name="remaining-paymentmethod" id="remaining-paymentmethod" className="form-select">
                     <option value="" selected disabled >Select Payment Method :</option>
                     <option value="" >Service 1</option>
@@ -2433,8 +2427,26 @@ function ManagerBookings() {
              
              
               </div>
+              <div className="col-sm-6">
+                <div className="col">
+                <label htmlFor="remaining-paymentmethod"><b>Upload Receipt :</b></label>
+                </div>
+                <div className="col form-control">
+                 <input type="file" name="upload-remaining-receipt" id="upload-remaining-receipt" />
+               
+                </div>
+             
+             
+              </div>
               
               
+            </div>
+
+            <div className="row mt-2">
+            <div className="mb-3">
+  <label htmlFor="remainingControlTextarea1" className="form-label">Any Remarks</label>
+  <textarea className="form-control" id="remainingControlTextarea1" rows="3" placeholder="Write your remarks here..."></textarea>
+</div>
             </div>
           </div>
         </DialogContent>
