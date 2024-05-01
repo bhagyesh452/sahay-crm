@@ -1881,30 +1881,136 @@ useEffect(() => {
   };
 
 
-  // ---------------------------------------------- forwarded by bdm function-------------------------------------------
+  // ---------------------------------------------------------------------------filter for bdm function--------------------------------------
 
-  const functionProjectedRevenue = () => {
-    const todaysBdmCompanies = followDataToday.filter((obj) => obj.bdeName === data.ename)
-    console.log(todaysBdmCompanies)
-    const projectedRevenue = todaysBdmCompanies.reduce((total, obj) => total + obj.totalPayment, 0)
-    console.log(projectedRevenue)
-  }
-
-  const [age , setAge] = useState("")
-
-  const handleChange = (selectedOption) => {
-    setAge(selectedOption.value);
-  };
+  const [selectedMonthOption , setSelectedMonthOption] = useState("")
+  const [selectedMonthOptionForBdm , setSelectedMonthOptionForBdm] = useState("")
 
   const monthOptions = [
-    { value: 'today', label: 'Today' },
-    { value: 'this_month', label: 'This Month' },
+    { value: 'current_month', label: 'Current Month' },
+    { value: 'last_month', label: 'Last Month' },
     { value: 'total', label: 'Total' }
   ];
 
-  console.log(teamLeadsData)
+
+const filterTeamLeadsDataByMonth = (teamData, followData, selectedMonthOption) => {
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+
+  let filteredTeamData = [];
+  let filteredFollowData = [];
+
+  switch (selectedMonthOption) {
+    case 'current_month':
+      filteredTeamData = teamData.filter(obj => {
+        const objDate = new Date(obj.bdeForwardDate);
+        return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
+      });
+      filteredFollowData = followData.filter(obj => {
+        const objDate = new Date(obj.estPaymentDate);
+        return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
+      });
+      break;
+    case 'last_month':
+      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
+      filteredTeamData = teamData.filter(obj => {
+        const objDate = new Date(obj.bdeForwardDate);
+        return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
+      });
+      break;
+    case 'total':
+      filteredTeamData = teamData;
+      filteredFollowData = followData;
+      break;
+    default:
+      filteredTeamData = teamData;
+      filteredFollowData = followData;
+      break;
+  }
+
+  return { filteredTeamData, filteredFollowData };
+};
+
+const handleChangeForBdm = (selectedOption) => {
+  console.log(selectedOption);
+  setSelectedMonthOptionForBdm(selectedOption.value);
+
+  if (selectedOption.value === "current_month" || selectedOption.value === "last_month") {
+    const { filteredTeamData, filteredFollowData } = filterTeamLeadsDataByMonth(teamLeadsData, followDataFilter, selectedOption.value);
+    setTeamData(filteredTeamData);
+    setFollowData(filteredFollowData);
+  } else {
+    // Handle 'total' case
+    // If 'total', no need to filter, so you can directly set the team data
+    setTeamData(teamLeadsData);
+    setFollowData(followDataFilter);
+  }
+}
 
 
+const filterMoreEmpDataDataByMonth = (tempData, followDataFilter, selectedMonthOption) => {
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+
+  let filteredMoreEmpData  = [];
+  let filteredFollowData = [];
+
+  switch (selectedMonthOption) {
+    case 'current_month':
+      filteredMoreEmpData = tempData.filter(obj => {
+        const objDate = new Date(obj.bdeForwardDate);
+        return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
+      });
+      filteredFollowData = followDataFilter.filter(obj => {
+        const objDate = new Date(obj.estPaymentDate);
+        return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
+      });
+      break;
+    case 'last_month':
+      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
+      filteredMoreEmpData = tempData.filter(obj => {
+        const objDate = new Date(obj.bdeForwardDate);
+        return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
+      });
+      break;
+    case 'total':
+      filteredMoreEmpData = tempData;
+      filteredFollowData = followDataFilter;
+      break;
+    default:
+      filteredMoreEmpData = tempData;
+      filteredFollowData = followDataFilter;
+      break;
+  }
+
+  return { filteredMoreEmpData, filteredFollowData };
+};
+
+const handleChange = (selectedOption) => {
+  console.log(selectedOption);
+  setSelectedMonthOptionForBdm(selectedOption.value);
+
+  if (selectedOption.value === "current_month" || selectedOption.value === "last_month") {
+    const { filteredMoreEmpData, filteredFollowData } = filterMoreEmpDataDataByMonth(tempData, followDataFilter, selectedOption.value);
+    setmoreEmpData(filteredMoreEmpData);
+    setFollowData(filteredFollowData);
+  } else {
+    // Handle 'total' case
+    // If 'total', no need to filter, so you can directly set the team data
+    setmoreEmpData(tempData);
+    setFollowData(followDataFilter);
+  }
+}
+
+
+
+
+
+console.log(selectedMonthOptionForBdm)
 
 
 
@@ -2362,7 +2468,7 @@ useEffect(() => {
                             options={monthOptions}
                             placeholder="Select..."
                             onChange={handleChange}
-                            value={monthOptions.find(option => option.value === age)}
+                            value={monthOptions.find(option => option.value === selectedMonthOption)}
                           />
                         </div>
                       </div>
@@ -2463,7 +2569,7 @@ useEffect(() => {
                 </div>
 
 
-                {/* ------------------------bdm todays report------------------------------------------- */}
+                {/* ------------------------recieved as bdm report------------------------------------------- */}
 
                 <div class="tab-pane fade" id="receivedAsBDM" role="tabpanel" aria-labelledby="receivedAsBDM-tab">
                   <div className="mt-3 mb-3">
@@ -2471,14 +2577,14 @@ useEffect(() => {
                       <div className="dashboard-headings">
                         <h3 className="m-0">Today's Report</h3>
                       </div>
-                      {/* recieved bdm report */}
+                      {/* recieved bdm report today */}
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                         <div className="dash-card-1">
                           <div className="dash-card-1-head">TOTAL</div>
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-1ac9bd">
-                                20
+                                {teamData.filter((obj)=>formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10)).length}
                               </div>
                             </div>
                           </div>
@@ -2490,7 +2596,7 @@ useEffect(() => {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-ffb900">
-                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Interested").length}
+                                {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Interested").length}
                               </div>
                             </div>
                           </div>
@@ -2502,7 +2608,7 @@ useEffect(() => {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-4299e1">
-                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "FollowUp").length}
+                              {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "FollowUp").length}
                               </div>
                             </div>
                           </div>
@@ -2514,7 +2620,7 @@ useEffect(() => {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-1ac9bd">
-                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Matured").length}
+                                {/* {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Matured").length} */}
                               </div>
                             </div>
                           </div>
@@ -2526,7 +2632,7 @@ useEffect(() => {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-e65b5b">
-                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Not Interested").length}
+                              {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Not Interested").length}
                               </div>
                             </div>
                           </div>
@@ -2539,7 +2645,7 @@ useEffect(() => {
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-1cba19">
                                 ₹{(followDataToday
-                                  .filter(obj => obj.bdeName === data.ename)
+                                  .filter(obj => obj.ename === data.ename)
                                   .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
                               </div>
                             </div>
@@ -2552,7 +2658,7 @@ useEffect(() => {
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-e65b5b">
-                                ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
+                                {/* ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()} */}
                               </div>
                             </div>
                           </div>
@@ -2570,12 +2676,12 @@ useEffect(() => {
                           <Select
                             options={monthOptions}
                             placeholder="Select..."
-                            onChange={handleChange}
-                            value={monthOptions.find(option => option.value === age)}
+                            onChange={handleChangeForBdm}
+                            value={monthOptions.find(option => option.value === selectedMonthOptionForBdm)}
                           />
                         </div>
                       </div>
-                      {/* recieved bdm report */}
+                     {/* recieved bdm report total */}
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                         <div className="dash-card-1">
                           <div className="dash-card-1-head">TOTAL</div>
