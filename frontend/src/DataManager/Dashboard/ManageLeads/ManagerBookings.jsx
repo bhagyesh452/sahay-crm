@@ -525,7 +525,16 @@ function ManagerBookings() {
                     <div className="booking-deatils-body">
                       {/* --------Basic Information Which is Common For all bookingdd  ---------*/}
                       <div className="my-card mt-2">
-                        <div className="my-card-head">Basic Informations:</div>
+                        <div className="my-card-head">
+                          <div className="d-flex align-items-center justify-content-between">
+                            <div>
+                              Basic Informations
+                            </div>
+                            <div>
+                              Total Services: 4
+                            </div>
+                          </div>
+                        </div>
                         <div className="my-card-body">
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
@@ -650,6 +659,38 @@ function ManagerBookings() {
                                       ? leadFormData[0].gstNumber
                                       : "-"}
                                   </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h h-100">Total</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">₹ 2,00,000</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">Received</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending</div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
                                 </div>
                               </div>
                             </div>
@@ -859,16 +900,23 @@ function ManagerBookings() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                          ₹{" "}
-                                          {parseInt(
-                                            obj.totalPaymentWGST
-                                          ).toLocaleString()}{" "}
-                                          {"("}
-                                          {obj.totalPaymentWGST !==
-                                          obj.totalPaymentWOGST
-                                            ? "With GST"
-                                            : "Without GST"}
-                                          {")"}
+                                          <div className="d-flex align-items-center justify-content-between">
+                                            <div> 
+                                              ₹{" "}
+                                              {parseInt(
+                                                obj.totalPaymentWGST
+                                              ).toLocaleString()}{" "}
+                                              {"("}
+                                              {obj.totalPaymentWGST !==
+                                              obj.totalPaymentWOGST
+                                                ? "With GST"
+                                                : "Without GST"}
+                                              {")"}
+                                            </div>
+                                            <div>
+                                              <button className="btn btn-link btn-small">+ Expanse</button>
+                                            </div>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
@@ -936,19 +984,26 @@ function ManagerBookings() {
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            ₹
-                                            {parseInt(
-                                              obj.secondPayment
-                                            ).toLocaleString()}
-                                            {"("}
-                                            {isNaN(
-                                              new Date(obj.secondPaymentRemarks)
-                                            )
-                                              ? obj.secondPaymentRemarks
-                                              : "On " +
-                                                obj.secondPaymentRemarks +
-                                                ")"}
-                                            {")"}
+                                            <div className="d-flex align-items-center justify-content-between"> 
+                                              <div>
+                                                ₹
+                                                {parseInt(
+                                                  obj.secondPayment
+                                                ).toLocaleString()}
+                                                {"("}
+                                                {isNaN(
+                                                  new Date(obj.secondPaymentRemarks)
+                                                )
+                                                  ? obj.secondPaymentRemarks
+                                                  : "On " +
+                                                    obj.secondPaymentRemarks +
+                                                    ")"}
+                                                {")"}
+                                              </div>
+                                              <div>
+                                                <div className="add-remaining-amnt" title="Add Remaining Payment">+</div>
+                                              </div>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
@@ -966,18 +1021,25 @@ function ManagerBookings() {
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            ₹{" "}
-                                            {parseInt(
-                                              obj.thirdPayment
-                                            ).toLocaleString()}
-                                            {"("}
-                                            {isNaN(
-                                              new Date(obj.thirdPaymentRemarks)
-                                            )
-                                              ? obj.thirdPaymentRemarks
-                                              : "On " +
-                                                obj.thirdPaymentRemarks +
-                                                ")"}
+                                            <div className="d-flex align-items-center justify-content-between">
+                                              <div>
+                                                ₹{" "}
+                                                {parseInt(
+                                                  obj.thirdPayment
+                                                ).toLocaleString()}
+                                                {"("}
+                                                {isNaN(
+                                                  new Date(obj.thirdPaymentRemarks)
+                                                )
+                                                  ? obj.thirdPaymentRemarks
+                                                  : "On " +
+                                                    obj.thirdPaymentRemarks +
+                                                    ")"}
+                                              </div>
+                                              <div>
+                                                <div className="add-remaining-amnt" title="Add Remaining Payment">+</div>
+                                              </div>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
@@ -993,23 +1055,160 @@ function ManagerBookings() {
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            ₹{" "}
-                                            {parseInt(
-                                              obj.fourthPayment
-                                            ).toLocaleString()}{" "}
-                                            {"("}
-                                            {isNaN(
-                                              new Date(obj.fourthPaymentRemarks)
-                                            )
-                                              ? obj.fourthPaymentRemarks
-                                              : "On " +
-                                                obj.fourthPaymentRemarks +
-                                                ")"}
+                                            <div className="d-flex align-items-center justify-content-between">
+                                              <div>
+                                                ₹{" "}
+                                                {parseInt(
+                                                  obj.fourthPayment
+                                                ).toLocaleString()}{" "}
+                                                {"("}
+                                                {isNaN(
+                                                  new Date(obj.fourthPaymentRemarks)
+                                                )
+                                                  ? obj.fourthPaymentRemarks
+                                                  : "On " +
+                                                    obj.fourthPaymentRemarks +
+                                                    ")"}
+                                              </div>
+                                              <div>
+                                                <div className="add-remaining-amnt" title="Add Remaining Payment">+</div>
+                                              </div>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
                                     </div>
                                   )}
+                                </div>
+                              </div>
+                              {/* Remaining Payment Viwe Sections */}
+                              <div className="my-card-body accordion" id="accordionExample">
+                                <div class="accordion-item bdr-none">
+                                  <div id="headingOne accordion-header" className="pr-10">
+                                    <div className="row m-0 bdr-btm-eee accordion-button p-0" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                      <div className="w-95 p-0">
+                                        <div className="booking_inner_dtl_h h-100">
+                                          <div>Remaining Payment </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body bdr-none p-0">
+                                      <div>
+                                        <div className="row m-0 bdr-btm-eee bdr-top-eee"> 
+                                          <div className="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
+                                            <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
+                                              <div>
+                                                Second Remaining Payment
+                                              </div>
+                                              <div>
+                                                2/12/2023
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0 bdr-btm-eee"> 
+                                          <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-5 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h h-100">Amount</div>
+                                              </div>
+                                              <div class="col-sm-7 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-5 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending</div>
+                                              </div>
+                                              <div class="col-sm-7 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-5 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">Payment Method</div>
+                                              </div>
+                                              <div class="col-sm-7 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">ICICI Bank</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className="col-lg-3 col-sm-4 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-6 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">Extra Remarks</div>
+                                              </div>
+                                              <div class="col-sm-6 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">no</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <div className="row m-0 bdr-btm-eee bdr-top-eee"> 
+                                          <div className="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
+                                            <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
+                                              <div>
+                                                Third Remaining Payment
+                                              </div>
+                                              <div>
+                                                2/12/2023
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="row m-0 bdr-btm-eee"> 
+                                          <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-5 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h h-100">Amount</div>
+                                              </div>
+                                              <div class="col-sm-7 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-5 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending</div>
+                                              </div>
+                                              <div class="col-sm-7 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-5 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">Payment Method</div>
+                                              </div>
+                                              <div class="col-sm-7 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">ICICI Bank</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className="col-lg-3 col-sm-4 p-0 align-self-stretc">
+                                            <div class="row m-0 h-100">
+                                              <div class="col-sm-6 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">Extra Remarks</div>
+                                              </div>
+                                              <div class="col-sm-6 align-self-stretc p-0">
+                                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">no</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -1592,16 +1791,23 @@ function ManagerBookings() {
                                           </div>
                                           <div class="col-sm-8 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                              ₹{" "}
-                                              {parseInt(
-                                                obj.totalPaymentWGST
-                                              ).toLocaleString()}
-                                              {"("}
-                                              {obj.totalPaymentWGST !==
-                                              obj.totalPaymentWOGST
-                                                ? "With GST"
-                                                : "Without GST"}
-                                              {")"}
+                                              <div className="d-flex align-item-center justify-content-between">
+                                                <div>
+                                                  ₹{" "}
+                                                  {parseInt(
+                                                    obj.totalPaymentWGST
+                                                  ).toLocaleString()}
+                                                  {"("}
+                                                  {obj.totalPaymentWGST !==
+                                                  obj.totalPaymentWOGST
+                                                    ? "With GST"
+                                                    : "Without GST"}
+                                                  {")"}
+                                                </div>
+                                                <div>
+                                                  <button className="btn btn-link btn-small">+ Expanse</button>
+                                                </div>
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
@@ -1670,20 +1876,27 @@ function ManagerBookings() {
                                             </div>
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                ₹
-                                                {parseInt(
-                                                  obj.secondPayment
-                                                ).toLocaleString()}
-                                                /- {"("}
-                                                {isNaN(
-                                                  new Date(
-                                                    obj.secondPaymentRemarks
-                                                  )
-                                                )
-                                                  ? obj.secondPaymentRemarks
-                                                  : "On " +
-                                                    obj.secondPaymentRemarks +
-                                                    ")"}
+                                                <div className="d-flex align-items-center justify-content-between">
+                                                  <div>
+                                                    ₹
+                                                    {parseInt(
+                                                      obj.secondPayment
+                                                    ).toLocaleString()}
+                                                    /- {"("}
+                                                    {isNaN(
+                                                      new Date(
+                                                        obj.secondPaymentRemarks
+                                                      )
+                                                    )
+                                                      ? obj.secondPaymentRemarks
+                                                      : "On " +
+                                                        obj.secondPaymentRemarks +
+                                                        ")"}
+                                                  </div>
+                                                  <div>
+                                                    <div className="add-remaining-amnt" title="Add Remaining Payment">+</div>
+                                                  </div>
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
@@ -1701,20 +1914,27 @@ function ManagerBookings() {
                                             </div>
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                ₹{" "}
-                                                {parseInt(
-                                                  obj.thirdPayment
-                                                ).toLocaleString()}
-                                                /- {"("}
-                                                {isNaN(
-                                                  new Date(
-                                                    obj.thirdPaymentRemarks
-                                                  )
-                                                )
-                                                  ? obj.thirdPaymentRemarks
-                                                  : "On " +
-                                                    obj.thirdPaymentRemarks +
-                                                    ")"}
+                                                <div className="d-flex align-items-center justify-content-between">
+                                                  <div>
+                                                    ₹{" "}
+                                                    {parseInt(
+                                                      obj.thirdPayment
+                                                    ).toLocaleString()}
+                                                    /- {"("}
+                                                    {isNaN(
+                                                      new Date(
+                                                        obj.thirdPaymentRemarks
+                                                      )
+                                                    )
+                                                      ? obj.thirdPaymentRemarks
+                                                      : "On " +
+                                                        obj.thirdPaymentRemarks +
+                                                        ")"}
+                                                  </div>
+                                                  <div>
+                                                    <div className="add-remaining-amnt" title="Add Remaining Payment">+</div>
+                                                  </div>
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
@@ -1730,20 +1950,27 @@ function ManagerBookings() {
                                             </div>
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                ₹{" "}
-                                                {parseInt(
-                                                  obj.fourthPayment
-                                                ).toLocaleString()}{" "}
-                                                /- {"("}
-                                                {isNaN(
-                                                  new Date(
-                                                    obj.fourthPaymentRemarks
-                                                  )
-                                                )
-                                                  ? obj.fourthPaymentRemarks
-                                                  : "On " +
-                                                    obj.fourthPaymentRemarks +
-                                                    ")"}
+                                                <div className="d-flex align-items-center justify-content-between">
+                                                  <div>
+                                                    ₹{" "}
+                                                    {parseInt(
+                                                      obj.fourthPayment
+                                                    ).toLocaleString()}{" "}
+                                                    /- {"("}
+                                                    {isNaN(
+                                                      new Date(
+                                                        obj.fourthPaymentRemarks
+                                                      )
+                                                    )
+                                                      ? obj.fourthPaymentRemarks
+                                                      : "On " +
+                                                        obj.fourthPaymentRemarks +
+                                                        ")"}
+                                                  </div>
+                                                  <div>
+                                                    <div className="add-remaining-amnt" title="Add Remaining Payment">+</div>
+                                                  </div>
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
@@ -2110,212 +2337,6 @@ function ManagerBookings() {
                           </>
                         ))}
 
-                      {/*---------- Total Payment Summry and Remainnig Payment Collection Show Section ----------*/}
-
-                      <div className="booking_Total_Summary">
-                        <div className="d-flex align-items-center m-0 justify-content-between mt-2 mb-1">
-                          <div className="mul-booking-card-inner-head">
-                            <b>Paymnet summary And Remaining payment data</b>
-                          </div>
-                          <div className="mul-booking-card-inner-head">
-                            <button
-                              className="btn btn-sm btn-link"
-                              onClick={() => setOpenRemainingPayment(true)}
-                            >
-                              + Add Remaining paymnet
-                            </button>
-                          </div>
-                        </div>
-                        <div className="mul-booking-card mt-2">
-                          <div className="my-card">
-                            <div className="my-card-head f-12">
-                              <div className="d-flex align-items-center m-0 justify-content-between">
-                                <div>Payment Details</div>
-                                <div>
-                                  No Of Services: <b>3</b>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="my-card-body">
-                              <div className="row m-0 bdr-btm-eee">
-                                <div className="col-lg-4 col-sm-6 p-0">
-                                  <div class="row m-0">
-                                    <div class="col-sm-4 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h h-100 total_amount_bg">
-                                        Total
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-8 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b h-100 bdr-left-eee total_amount_bg">
-                                        ₹ 2,00,000
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-4 col-sm-6 p-0">
-                                  <div class="row m-0">
-                                    <div class="col-sm-4 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100 receive_amount_bg">
-                                        Received
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-8 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100 receive_amount_bg">
-                                        ₹ 50,000
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-4 col-sm-6 p-0">
-                                  <div class="row m-0">
-                                    <div class="col-sm-4 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100 pending_amount_bg">
-                                        Pending
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-8 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100 pending_amount_bg">
-                                        ₹ 50,000
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="my-card mt-2">
-                            <div className="my-card-head f-12">
-                              <div className="d-flex align-items-center m-0 justify-content-between">
-                                <div>Remaining Payment 1</div>
-                                <div>26/03/2024</div>
-                              </div>
-                            </div>
-                            <div className="my-card-body">
-                              <div className="row m-0 bdr-btm-eee">
-                                <div className="col-lg-6 col-sm-6 p-0">
-                                  <div class="row m-0">
-                                    <div class="col-sm-4 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h h-100">
-                                        Services Name
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-8 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">
-                                        Seedfund
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-4 col-sm-6 p-0">
-                                  <div class="row m-0">
-                                    <div class="col-sm-6 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                        Remaining Amount
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-6 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                        ₹ 50,000
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="row m-0 bdr-btm-eee">
-                                <div className="col-lg-6 col-sm-6 p-0">
-                                  <div class="row m-0">
-                                    <div class="col-sm-4 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h h-100">
-                                        Payment Method
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-8 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                        ICICI Bank
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-6 col-sm-6 p-0">
-                                  <div class="row m-0">
-                                    <div class="col-sm-4 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                        Extra Remarks
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-8 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                        no
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="row m-0 bdr-btm-eee">
-                                <div className="col-lg-4 col-sm-6 p-0">
-                                  <div class="row m-0">
-                                    <div class="col-sm-5 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h h-100">
-                                        Total Amount
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-7 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                        ₹ 22000
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-4 col-sm-6 p-0">
-                                  <div class="row m-0">
-                                    <div class="col-sm-5 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                        Received Amount
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-7 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                        ₹ 22000
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-4 col-sm-6 p-0">
-                                  <div class="row m-0">
-                                    <div class="col-sm-5 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                        Pending Amount
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-7 align-self-stretc p-0">
-                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                        ₹ 22000
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                            <b>Payment Receipt</b>
-                          </div>
-                          <div className="row">
-                            <div className="col-sm-2 mb-1">
-                              <div className="booking-docs-preview">
-                                <div className="booking-docs-preview-img">
-                                  <img src={pdfimg}></img>
-                                </div>
-                                <div className="booking-docs-preview-text">
-                                  <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                    recipt.pdf
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
