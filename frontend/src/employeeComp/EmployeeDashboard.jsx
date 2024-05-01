@@ -1639,24 +1639,24 @@ useEffect(() => {
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.totalAmount / 2);
+          achievedAmount += parseInt(obj.generatedTotalAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.totalAmount);
+          achievedAmount += parseInt(obj.generatedTotalAmount);
         }
       } else {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.totalAmount / 2);
+          achievedAmount += parseInt(obj.generatedTotalAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.totalAmount);
+          achievedAmount += parseInt(obj.generatedTotalAmount);
         }
         obj.moreBookings.forEach((booking) => {
           if (
             booking.bdeName !== booking.bdmName &&
             booking.bdmType === "Close-by"
           ) {
-            achievedAmount += parseInt(obj.totalAmount / 2);
+            achievedAmount += parseInt(obj.generatedTotalAmount / 2);
           } else {
-            achievedAmount += parseInt(obj.totalAmount);
+            achievedAmount += parseInt(obj.generatedTotalAmount);
           }
         });
       }
@@ -1675,24 +1675,24 @@ useEffect(() => {
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.receivedAmount / 2);
+          achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.receivedAmount);
+          achievedAmount += parseInt(obj.generatedReceivedAmount);
         }
       } else {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.receivedAmount / 2);
+          achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.receivedAmount);
+          achievedAmount += parseInt(obj.generatedReceivedAmount);
         }
         obj.moreBookings.forEach((booking) => {
           if (
             booking.bdeName !== booking.bdmName &&
             booking.bdmType === "Close-by"
           ) {
-            achievedAmount += parseInt(obj.receivedAmount / 2);
+            achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
           } else {
-            achievedAmount += parseInt(obj.receivedAmount);
+            achievedAmount += parseInt(obj.generatedReceivedAmount);
           }
         });
       }
@@ -1800,6 +1800,41 @@ useEffect(() => {
     "December",
   ];
   const currentMonth = monthNames[new Date().getMonth()];
+
+  function functionCalculateGeneratedRevenue(isBdm){
+    
+    let generatedRevenue = 0;
+   const requiredObj = moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && ( obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+  requiredObj.forEach((object)=>{
+    const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename);
+    if(newObject){
+      generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount ;
+    }
+  
+  });
+
+  return generatedRevenue;
+  //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
+  //  console.log("This is generated Revenue",requiredObj);
+
+  } 
+  function functionCalculateGeneratedTotalRevenue(isBdm){
+    let generatedRevenue = 0;
+   const requiredObj = moreEmpData.filter((obj) => ( obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+  requiredObj.forEach((object)=>{
+    const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename): redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename );
+    if(newObject){
+      generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount ;
+    }
+    
+  });
+
+  return generatedRevenue;
+  //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
+  //  console.log("This is generated Revenue",requiredObj);
+
+  } 
+  
   function functionGetLastBookingDate() {
     // Filter objects based on bdeName
 
@@ -1893,45 +1928,49 @@ useEffect(() => {
   ];
 
 
-const filterTeamLeadsDataByMonth = (teamData, followData, selectedMonthOption) => {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-
-  let filteredTeamData = [];
-  let filteredFollowData = [];
-
-  switch (selectedMonthOption) {
-    case 'current_month':
-      filteredTeamData = teamData.filter(obj => {
-        const objDate = new Date(obj.bdeForwardDate);
-        return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
-      });
-      filteredFollowData = followData.filter(obj => {
-        const objDate = new Date(obj.estPaymentDate);
-        return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
-      });
-      break;
-    case 'last_month':
-      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-      const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
-      filteredTeamData = teamData.filter(obj => {
-        const objDate = new Date(obj.bdeForwardDate);
-        return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
-      });
-      break;
-    case 'total':
-      filteredTeamData = teamData;
-      filteredFollowData = followData;
-      break;
-    default:
-      filteredTeamData = teamData;
-      filteredFollowData = followData;
-      break;
-  }
-
-  return { filteredTeamData, filteredFollowData };
-};
+  const filterTeamLeadsDataByMonth = (teamData, followData, selectedMonthOption) => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+  
+    let filteredTeamData = [];
+    let filteredFollowData = [];
+  
+    switch (selectedMonthOption) {
+      case 'current_month':
+        filteredTeamData = teamData.filter(obj => {
+          const objDate = new Date(obj.bdeForwardDate);
+          return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
+        });
+        filteredFollowData = followDataFilter.filter(obj => {
+          const objDate = new Date(obj.estPaymentDate);
+          return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
+        });
+        break;
+      case 'last_month':
+        const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+        const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
+        filteredTeamData = teamData.filter(obj => {
+          const objDate = new Date(obj.bdeForwardDate);
+          return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
+        });
+        filteredFollowData = followDataFilter.filter(obj => {
+          const objDate = new Date(obj.estPaymentDate);
+          return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
+        })
+        break;
+      case 'total':
+        filteredTeamData = teamData;
+        filteredFollowData = followData;
+        break;
+      default:
+        filteredTeamData = teamData;
+        filteredFollowData = followData;
+        break;
+    }
+  
+    return { filteredTeamData, filteredFollowData };
+  };
 
 const handleChangeForBdm = (selectedOption) => {
   console.log(selectedOption);
@@ -1976,6 +2015,10 @@ const filterMoreEmpDataDataByMonth = (tempData, followDataFilter, selectedMonthO
         const objDate = new Date(obj.bdeForwardDate);
         return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
       });
+      filteredFollowData = followDataFilter.filter(obj => {
+        const objDate = new Date(obj.estPaymentDate);
+        return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear
+      })
       break;
     case 'total':
       filteredMoreEmpData = tempData;
@@ -2034,6 +2077,22 @@ console.log(selectedMonthOptionForBdm)
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="dash-card-1-num clr-1ac9bd">
                         {empData.length}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-2 col-md-4 col-sm-6 col-12">
+                <div className="dash-card-1">
+                  <div className="dash-card-1-head">GENERAL LEADS</div>
+                  <div className="dash-card-1-body">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="dash-card-1-num clr-ffb900">
+                        {
+                          empData.filter(
+                            (partObj) => partObj.Status === "Untouched" || partObj.Status === "Busy" || partObj.Status === "Not Picked Up"
+                          ).length
+                        }
                       </div>
                     </div>
                   </div>
@@ -2448,7 +2507,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-e65b5b">
-                                ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
+                                ₹ {functionCalculateGeneratedRevenue().toLocaleString()}
                               </div>
                             </div>
                           </div>
@@ -2558,7 +2617,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-e65b5b">
-                                ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
+                                ₹ {functionCalculateGeneratedTotalRevenue().toLocaleString()}
                               </div>
                             </div>
                           </div>
@@ -2620,7 +2679,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-1ac9bd">
-                                {/* {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Matured").length} */}
+                              {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Matured").length}
                               </div>
                             </div>
                           </div>
@@ -2658,6 +2717,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-e65b5b">
+                              ₹ {functionCalculateGeneratedRevenue(true).toLocaleString()}
                                 {/* ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()} */}
                               </div>
                             </div>
@@ -2762,7 +2822,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-e65b5b">
-                                ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()}
+                                ₹ {functionCalculateGeneratedTotalRevenue(true).toLocaleString()}
                               </div>
                             </div>
                           </div>
