@@ -459,7 +459,7 @@ export default function AdminBookingForm({
           const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
             return curr.paymentTerms === "Full Advanced"
               ? acc + parseInt(curr.totalPaymentWOGST)
-              : curr.withGST ? acc + parseInt(curr.firstPayment - parseInt(curr.firstPayment)*18/100) : acc + parseInt(curr.firstPayment)
+              : curr.withGST ? acc + parseInt(curr.firstPayment)/1.18 : acc + parseInt(curr.firstPayment)
           }, 0);
           const servicestoSend = leadData.services.map((service) => ({
             ...service,
