@@ -1700,7 +1700,7 @@ color: #4e884e;
 }
 .dash-card-1-num
 {
-  font-size: 24px;
+  font-size: 20px;
 }
 .dash-card-1-icon
 {
@@ -1730,6 +1730,10 @@ color: #4e884e;
 {
   color: #00d19d;
 }
+.clr-a0b1ad
+{
+  color:#a0b1ad;
+}
 .dash-card-1-head2
 {
   font-size: 12px;
@@ -1738,7 +1742,7 @@ color: #4e884e;
 }
 .dashIconImg
 {
-  opacity: 0.2;
+  opacity: 0;
   /* position: absolute;
   right: -10px;
   bottom: -10px; */
@@ -1753,6 +1757,32 @@ color: #4e884e;
   background: #fff;
   border-radius: 6px;
   overflow: hidden;
+}
+.dash-card-2
+{
+  background: #f7f7f7;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  padding: 6px 10px;
+}
+.dash-card-2-head
+{
+  font-size: 12px;
+  font-weight: 500;
+  color: #858585;
+}
+.dash-card-2-num
+{
+  font-size: 16px;
+  font-weight: 500;
+  margin-left: 10px;
+  color: #000;
+}
+.form-select-sm
+{
+  width: 200px;
 }
 /******************** Dashboard End ********************/
 
