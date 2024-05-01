@@ -113,7 +113,7 @@ function EmpNav({ userId, bdmWork }) {
 
                   </li>
                 )}
-                 {/* <li 
+                 <li 
                  className={
                     location.pathname === `/employee-bookings/${userId}` ? "nav-item active" : "nav-item"
                   }
@@ -144,7 +144,7 @@ function EmpNav({ userId, bdmWork }) {
                       <span className="nav-link-title">My Bookings</span>
                     </a>
 
-                  </li> */}
+                  </li>
               </ul>
 
             </div>

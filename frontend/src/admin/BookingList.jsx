@@ -40,7 +40,7 @@ function BookingList() {
   const [excelData, setExcelData] = useState([]);
   const [infiniteBooking, setInfiniteBooking] = useState([]);
   const [bookingIndex, setbookingIndex] = useState(-1);
-  const [currentCompanyName , setCurrentCompanyName] = useState("");
+  const [currentCompanyName, setCurrentCompanyName] = useState("");
   const [searchText, setSearchText] = useState("");
   const [nowToFetch, setNowToFetch] = useState(false);
   const [leadFormData, setLeadFormData] = useState([]);
@@ -77,13 +77,13 @@ function BookingList() {
     }
   };
   useEffect(() => {
-    if(currentCompanyName === ""){
+    if (currentCompanyName === "") {
       setCurrentLeadform(leadFormData[0]);
-    }else {
+    } else {
       setCurrentLeadform(leadFormData.find(obj => obj["Company Name"] === currentCompanyName));
     }
 
-     
+
 
   }, [leadFormData]);
 
@@ -135,7 +135,7 @@ function BookingList() {
   const closepopup = () => {
     openchange(false);
 
-    
+
   };
   const calculateTotalAmount = (obj) => {
     let total = Number(obj.totalAmount);
@@ -183,13 +183,13 @@ function BookingList() {
     const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
     return `${number}${suffix}`;
   };
-  const handleViewPdfReciepts = (paymentreciept , companyName) => {
+  const handleViewPdfReciepts = (paymentreciept, companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
     window.open(`${secretKey}/recieptpdf/${companyName}/${pathname}`, "_blank");
   };
 
-  const handleViewPdOtherDocs = (pdfurl , companyName) => {
+  const handleViewPdOtherDocs = (pdfurl, companyName) => {
     const pathname = pdfurl;
     console.log(pathname);
     window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
@@ -301,68 +301,68 @@ function BookingList() {
           .map((row) => ({
             "Sr. No": row[0],
             "Company Name": row[1],
-            "Company Email" : row[2],
+            "Company Email": row[2],
             "Company Number": row[3],
             "incoDate": formatDateFromExcel(row[4]),
             "panNumber": row[5],
-            "gstNumber":row[6],
+            "gstNumber": row[6],
             "bdeName": row[7],
             "bdeEmail": row[8],
             "bdmName": row[9],
             "bdmEmail": row[10], // Assuming the date is in column 'E' (0-based)
             "bdmType": row[11],
             "bookingDate": formatDateFromExcel(row[12]),
-            "leadSource":row[13],
-            "otherLeadSource":row[14],
-            "1serviceName":row[15],
-            "1TotalAmount":row[16],
-            "1GST":row[17],
-            "1PaymentTerms":row[18],
-            "1FirstPayment":row[19],
-            "1SecondPayment":row[20],
-            "1ThirdPayment":row[21],
-            "1FourthPayment":row[22],
-            "1PaymentRemarks":row[23],
+            "leadSource": row[13],
+            "otherLeadSource": row[14],
+            "1serviceName": row[15],
+            "1TotalAmount": row[16],
+            "1GST": row[17],
+            "1PaymentTerms": row[18],
+            "1FirstPayment": row[19],
+            "1SecondPayment": row[20],
+            "1ThirdPayment": row[21],
+            "1FourthPayment": row[22],
+            "1PaymentRemarks": row[23],
             // -------------- 2nd Service --------------------------------
-            "2serviceName":row[24],
-            "2TotalAmount":row[25],
-            "2GST":row[26],
-            "2PaymentTerms":row[27],
-            "2FirstPayment":row[28],
-            "2SecondPayment":row[29],
-            "2ThirdPayment":row[30],
-            "2FourthPayment":row[31],
-            "2PaymentRemarks":row[32],
+            "2serviceName": row[24],
+            "2TotalAmount": row[25],
+            "2GST": row[26],
+            "2PaymentTerms": row[27],
+            "2FirstPayment": row[28],
+            "2SecondPayment": row[29],
+            "2ThirdPayment": row[30],
+            "2FourthPayment": row[31],
+            "2PaymentRemarks": row[32],
             // ----------------------- 3rd Service ---------------------------------
-            "3serviceName":row[33],
-            "3TotalAmount":row[34],
-            "3GST":row[35],
-            "3PaymentTerms":row[36],
-            "3FirstPayment":row[37],
-            "3SecondPayment":row[38],
-            "3ThirdPayment":row[39],
-            "3FourthPayment":row[40],
-            "3PaymentRemarks":row[41],
+            "3serviceName": row[33],
+            "3TotalAmount": row[34],
+            "3GST": row[35],
+            "3PaymentTerms": row[36],
+            "3FirstPayment": row[37],
+            "3SecondPayment": row[38],
+            "3ThirdPayment": row[39],
+            "3FourthPayment": row[40],
+            "3PaymentRemarks": row[41],
             // ----------------------- 4th Service --------------------------------------
-            "4serviceName":row[42],
-            "4TotalAmount":row[43],
-            "4GST":row[44],
-            "4PaymentTerms":row[45],
-            "4FirstPayment":row[46],
-            "4SecondPayment":row[47],
-            "4ThirdPayment":row[48],
-            "4FourthPayment":row[49],
-            "4PaymentRemarks":row[50],
-          // ----------------------   5th Service  --------------------------------------
-          "5serviceName":row[51],
-          "5TotalAmount":row[52],
-          "5GST":row[53],
-          "5PaymentTerms":row[54],
-          "5FirstPayment":row[55],
-          "5SecondPayment":row[56],
-          "5ThirdPayment":row[57],
-          "5FourthPayment":row[58],
-          "5PaymentRemarks":row[59],
+            "4serviceName": row[42],
+            "4TotalAmount": row[43],
+            "4GST": row[44],
+            "4PaymentTerms": row[45],
+            "4FirstPayment": row[46],
+            "4SecondPayment": row[47],
+            "4ThirdPayment": row[48],
+            "4FourthPayment": row[49],
+            "4PaymentRemarks": row[50],
+            // ----------------------   5th Service  --------------------------------------
+            "5serviceName": row[51],
+            "5TotalAmount": row[52],
+            "5GST": row[53],
+            "5PaymentTerms": row[54],
+            "5FirstPayment": row[55],
+            "5SecondPayment": row[56],
+            "5ThirdPayment": row[57],
+            "5FourthPayment": row[58],
+            "5PaymentRemarks": row[59],
             "caCase": row[60],
             "caNumber": row[61],
             "caEmail": row[62],
@@ -376,8 +376,8 @@ function BookingList() {
         const newFormattedData = formattedJsonData.filter((obj) => {
           return obj["Company Name"] !== "" && obj["Company Name"] !== null && obj["Company Name"] !== undefined;
         });
-        setExcelData(newFormattedData); 
-        
+        setExcelData(newFormattedData);
+
       };
 
       reader.readAsArrayBuffer(file);
@@ -398,21 +398,21 @@ function BookingList() {
     }
   };
   const handleSubmitImport = async () => {
-    if(excelData.length!==0){
+    if (excelData.length !== 0) {
       try {
         const response = await axios.post(`${secretKey}/redesigned-importData`, excelData);
         Swal.fire("Success", "Bookings Uploaded Successfully", "success");
         fetchRedesignedFormData();
         closepopup();
-        
+
       } catch (error) {
         console.error("Error importing data:", error);
-        Swal.fire("Error", "Failed to Upload Data" , "error");
+        Swal.fire("Error", "Failed to Upload Data", "error");
       }
-    }else{
-      Swal.fire('Upload Data First','','warning')
+    } else {
+      Swal.fire('Upload Data First', '', 'warning')
     }
-  
+
   };
 
 
@@ -475,8 +475,8 @@ function BookingList() {
         setSelectedDocuments([]);
         setOpenOtherDocs(false);
         fetchRedesignedFormData();
-        
-        
+
+
       } else {
         Swal.fire({
           title: "Error uploading file",
@@ -544,48 +544,48 @@ function BookingList() {
                       Import CSV
                     </button>
                     <Dialog open={open} onClose={closepopup} fullWidth maxWidth="sm">
-                <DialogTitle>
-                  Import CSV DATA{" "}
-                  <IconButton onClick={closepopup} style={{ float: "right" }}>
-                    <CloseIcon color="primary"></CloseIcon>
-                  </IconButton>{" "}
-                </DialogTitle>
-                <DialogContent>
-                  <div className="maincon">
-                    <div
-                      style={{ justifyContent: "space-between" }}
-                      className="con1 d-flex"
-                    >
-                      <div style={{ paddingTop: "9px" }} className="uploadcsv">
-                        <label
-                          style={{ margin: "0px 0px 6px 0px" }}
-                          htmlFor="upload"
-                        >
-                          Upload CSV File
-                        </label>
-                      </div>
-                      <a href={frontendKey + "/BookingExample.xlsx"} download>
-                        Download Sample
-                      </a>
-                    </div>
-                    <div
-                      style={{ margin: "5px 0px 0px 0px" }}
-                      className="form-control"
-                    >
-                      <input
-                        type="file"
-                        name="csvfile
+                      <DialogTitle>
+                        Import CSV DATA{" "}
+                        <IconButton onClick={closepopup} style={{ float: "right" }}>
+                          <CloseIcon color="primary"></CloseIcon>
+                        </IconButton>{" "}
+                      </DialogTitle>
+                      <DialogContent>
+                        <div className="maincon">
+                          <div
+                            style={{ justifyContent: "space-between" }}
+                            className="con1 d-flex"
+                          >
+                            <div style={{ paddingTop: "9px" }} className="uploadcsv">
+                              <label
+                                style={{ margin: "0px 0px 6px 0px" }}
+                                htmlFor="upload"
+                              >
+                                Upload CSV File
+                              </label>
+                            </div>
+                            <a href={frontendKey + "/BookingExample.xlsx"} download>
+                              Download Sample
+                            </a>
+                          </div>
+                          <div
+                            style={{ margin: "5px 0px 0px 0px" }}
+                            className="form-control"
+                          >
+                            <input
+                              type="file"
+                              name="csvfile
                           "
-                        id="csvfile"
-                        onChange={handleFileInputChange}
-                      />
-                    </div>
-                  </div>
-                </DialogContent>
-                <button onClick={handleSubmitImport} className="btn btn-primary">
-                  Submit
-                </button>
-              </Dialog>
+                              id="csvfile"
+                              onChange={handleFileInputChange}
+                            />
+                          </div>
+                        </div>
+                      </DialogContent>
+                      <button onClick={handleSubmitImport} className="btn btn-primary">
+                        Submit
+                      </button>
+                    </Dialog>
                     <button className="btn btn-primary mr-1" disabled>
                       Export CSV
                     </button>
@@ -617,7 +617,7 @@ function BookingList() {
                           <div
                             className={
                               currentLeadform &&
-                              currentLeadform["Company Name"] ===
+                                currentLeadform["Company Name"] ===
                                 obj["Company Name"]
                                 ? "bookings_Company_Name activeBox"
                                 : "bookings_Company_Name"
@@ -642,8 +642,8 @@ function BookingList() {
                                     obj.moreBookings &&
                                       obj.moreBookings.length !== 0
                                       ? obj.moreBookings[
-                                          obj.moreBookings.length - 1
-                                        ].bookingDate // Get the latest bookingDate from moreBookings
+                                        obj.moreBookings.length - 1
+                                      ].bookingDate // Get the latest bookingDate from moreBookings
                                       : obj.bookingDate
                                   ) // Use obj.bookingDate if moreBookings is empty or not present
                                 }
@@ -674,15 +674,15 @@ function BookingList() {
                                         {index === 2 &&
                                           Math.max(
                                             obj.services.length +
-                                              obj.moreBookings.length -
-                                              3,
+                                            obj.moreBookings.length -
+                                            3,
                                             0
                                           ) !== 0 && (
                                             <div className="sname mb-1">
                                               {`+${Math.max(
                                                 obj.services.length +
-                                                  obj.moreBookings.length -
-                                                  3,
+                                                obj.moreBookings.length -
+                                                3,
                                                 0
                                               )}`}
                                             </div>
@@ -734,11 +734,11 @@ function BookingList() {
                       <div className="d-flex justify-content-between align-items-center">
                         <div className="b_dtl_C_name">
                           {currentLeadform &&
-                          Object.keys(currentLeadform).length !== 0
+                            Object.keys(currentLeadform).length !== 0
                             ? currentLeadform["Company Name"]
                             : leadFormData && leadFormData.length !== 0
-                            ? leadFormData[0]["Company Name"]
-                            : "-"}
+                              ? leadFormData[0]["Company Name"]
+                              : "-"}
                         </div>
                         <div
                           className="bookings_add_more"
@@ -765,12 +765,12 @@ function BookingList() {
                                 <div class="col-sm-8 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                     {currentLeadform &&
-                                    Object.keys(currentLeadform).length !== 0
+                                      Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Name"]
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                      ? leadFormData[0]["Company Name"]
-                                      : "-"}
+                                        ? leadFormData[0]["Company Name"]
+                                        : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -785,12 +785,12 @@ function BookingList() {
                                 <div class="col-sm-6 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                     {currentLeadform &&
-                                    Object.keys(currentLeadform).length !== 0
+                                      Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Email"]
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                      ? leadFormData[0]["Company Email"]
-                                      : "-"}
+                                        ? leadFormData[0]["Company Email"]
+                                        : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -807,12 +807,12 @@ function BookingList() {
                                 <div class="col-sm-6 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                     {currentLeadform &&
-                                    Object.keys(currentLeadform).length !== 0
+                                      Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Number"]
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                      ? leadFormData[0]["Company Number"]
-                                      : "-"}
+                                        ? leadFormData[0]["Company Number"]
+                                        : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -833,8 +833,8 @@ function BookingList() {
                                           ? currentLeadform.incoDate
                                           : leadFormData &&
                                             leadFormData.length !== 0
-                                          ? leadFormData[0].incoDate
-                                          : "-"
+                                            ? leadFormData[0].incoDate
+                                            : "-"
                                       )}
                                   </div>
                                 </div>
@@ -850,12 +850,12 @@ function BookingList() {
                                 <div class="col-sm-7 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                     {currentLeadform &&
-                                    Object.keys(currentLeadform).length !== 0
+                                      Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform.panNumber
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                      ? leadFormData[0].panNumber
-                                      : "-"}
+                                        ? leadFormData[0].panNumber
+                                        : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -966,7 +966,7 @@ function BookingList() {
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       <span>
                                         <i>  {currentLeadform &&
-                                        currentLeadform.bdmType === "Close-by" ? "Closed-by" : "Supported-by"}</i>
+                                          currentLeadform.bdmType === "Close-by" ? "Closed-by" : "Supported-by"}</i>
                                       </span>{" "}
                                       {currentLeadform &&
                                         currentLeadform.bdmName}
@@ -1017,7 +1017,7 @@ function BookingList() {
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       {currentLeadform &&
                                         (currentLeadform.bookingSource ===
-                                        "Other"
+                                          "Other"
                                           ? currentLeadform.otherBookingSource
                                           : currentLeadform.bookingSource)}
                                     </div>
@@ -1069,7 +1069,7 @@ function BookingList() {
                                           {obj.serviceName}{" "}
                                           {obj.withDSC &&
                                             obj.serviceName ===
-                                              "Start-Up India Certificate" &&
+                                            "Start-Up India Certificate" &&
                                             "With DSC"}
                                         </div>
                                       </div>
@@ -1090,7 +1090,7 @@ function BookingList() {
                                           ).toLocaleString()}{" "}
                                           {"("}
                                           {obj.totalPaymentWGST !==
-                                          obj.totalPaymentWOGST
+                                            obj.totalPaymentWOGST
                                             ? "With GST"
                                             : "Without GST"}
                                           {")"}
@@ -1171,8 +1171,8 @@ function BookingList() {
                                             )
                                               ? obj.secondPaymentRemarks
                                               : "On " +
-                                                obj.secondPaymentRemarks +
-                                                ")"}
+                                              obj.secondPaymentRemarks +
+                                              ")"}
                                             {")"}
                                           </div>
                                         </div>
@@ -1198,11 +1198,11 @@ function BookingList() {
                                             {"("}
                                             {isNaN(
                                               new Date(obj.thirdPaymentRemarks)
-                                            ) 
+                                            )
                                               ? obj.thirdPaymentRemarks
                                               : "On " +
-                                                obj.thirdPaymentRemarks +
-                                                ")"}
+                                              obj.thirdPaymentRemarks +
+                                              ")"}
                                           </div>
                                         </div>
                                       </div>
@@ -1228,8 +1228,8 @@ function BookingList() {
                                             )
                                               ? obj.fourthPaymentRemarks
                                               : "On " +
-                                                obj.fourthPaymentRemarks +
-                                                ")"}
+                                              obj.fourthPaymentRemarks +
+                                              ")"}
                                           </div>
                                         </div>
                                       </div>
@@ -1419,59 +1419,59 @@ function BookingList() {
                               <div className="row">
                                 {currentLeadform.paymentReceipt.length !==
                                   0 && (
-                                  <div className="col-sm-2 mb-1">
-                                    <div className="booking-docs-preview">
-                                      <div
-                                        className="booking-docs-preview-img"
-                                        onClick={() =>
-                                          handleViewPdfReciepts(
-                                           
-                                             currentLeadform.paymentReceipt[0]
-                                                .filename , currentLeadform["Company Name"]
-                                          )
-                                        }
-                                      >
-                                        {currentLeadform &&
-                                          currentLeadform.paymentReceipt[0] &&
-                                          (currentLeadform.paymentReceipt[0].filename.endsWith(
-                                            ".pdf"
-                                          ) ? (
-                                            <PdfImageViewerAdmin
-                                              type="paymentrecieptpdf"
-                                              path={
-                                                currentLeadform
-                                                  .paymentReceipt[0].filename
-                                              }
-                                              companyName = {currentLeadform["Company Name"]}
-                                            />
-                                          ) : currentLeadform.paymentReceipt[0].filename.endsWith(
+                                    <div className="col-sm-2 mb-1">
+                                      <div className="booking-docs-preview">
+                                        <div
+                                          className="booking-docs-preview-img"
+                                          onClick={() =>
+                                            handleViewPdfReciepts(
+
+                                              currentLeadform.paymentReceipt[0]
+                                                .filename, currentLeadform["Company Name"]
+                                            )
+                                          }
+                                        >
+                                          {currentLeadform &&
+                                            currentLeadform.paymentReceipt[0] &&
+                                            (currentLeadform.paymentReceipt[0].filename.endsWith(
+                                              ".pdf"
+                                            ) ? (
+                                              <PdfImageViewerAdmin
+                                                type="paymentrecieptpdf"
+                                                path={
+                                                  currentLeadform
+                                                    .paymentReceipt[0].filename
+                                                }
+                                                companyName={currentLeadform["Company Name"]}
+                                              />
+                                            ) : currentLeadform.paymentReceipt[0].filename.endsWith(
                                               ".png"
                                             ) ||
-                                            currentLeadform.paymentReceipt[0].filename.endsWith(
-                                              ".jpg"
-                                            ) ||
-                                            currentLeadform.paymentReceipt[0].filename.endsWith(
-                                              ".jpeg"
-                                            ) ? (
-                                            <img
-                                              src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
-                                              alt="Receipt Image"
-                                            />
-                                          ) : (
-                                            <img
-                                              src={wordimg}
-                                              alt="Default Image"
-                                            />
-                                          ))}
-                                      </div>
-                                      <div className="booking-docs-preview-text">
-                                        <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                          Receipt
-                                        </p>
+                                              currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                ".jpg"
+                                              ) ||
+                                              currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                ".jpeg"
+                                              ) ? (
+                                              <img
+                                                src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                alt="Receipt Image"
+                                              />
+                                            ) : (
+                                              <img
+                                                src={wordimg}
+                                                alt="Default Image"
+                                              />
+                                            ))}
+                                        </div>
+                                        <div className="booking-docs-preview-text">
+                                          <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                            Receipt
+                                          </p>
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                )}
+                                  )}
                                 {currentLeadform &&
                                   currentLeadform.otherDocs.map((obj) => (
                                     <div className="col-sm-2 mb-1">
@@ -1479,14 +1479,14 @@ function BookingList() {
                                         <div
                                           className="booking-docs-preview-img"
                                           onClick={() =>
-                                            handleViewPdOtherDocs(obj.filename , currentLeadform["Company Name"])
+                                            handleViewPdOtherDocs(obj.filename, currentLeadform["Company Name"])
                                           }
                                         >
                                           {obj.filename.endsWith(".pdf") ? (
                                             <PdfImageViewerAdmin
                                               type="pdf"
                                               path={obj.filename}
-                                              companyName = {currentLeadform["Company Name"]}
+                                              companyName={currentLeadform["Company Name"]}
                                             />
                                           ) : (
                                             <img
@@ -1795,7 +1795,7 @@ function BookingList() {
                                               {obj.serviceName}{" "}
                                               {obj.withDSC &&
                                                 obj.serviceName ===
-                                                  "Start Up Certificate" &&
+                                                "Start Up Certificate" &&
                                                 "With DSC"}
                                             </div>
                                           </div>
@@ -1816,7 +1816,7 @@ function BookingList() {
                                               ).toLocaleString()}
                                               {"("}
                                               {obj.totalPaymentWGST !==
-                                              obj.totalPaymentWOGST
+                                                obj.totalPaymentWOGST
                                                 ? "With GST"
                                                 : "Without GST"}
                                               {")"}
@@ -1900,8 +1900,8 @@ function BookingList() {
                                                 )
                                                   ? obj.secondPaymentRemarks
                                                   : "On " +
-                                                    obj.secondPaymentRemarks +
-                                                    ")"}
+                                                  obj.secondPaymentRemarks +
+                                                  ")"}
                                               </div>
                                             </div>
                                           </div>
@@ -1931,8 +1931,8 @@ function BookingList() {
                                                 )
                                                   ? obj.thirdPaymentRemarks
                                                   : "On " +
-                                                    obj.thirdPaymentRemarks +
-                                                    ")"}
+                                                  obj.thirdPaymentRemarks +
+                                                  ")"}
                                               </div>
                                             </div>
                                           </div>
@@ -1960,8 +1960,8 @@ function BookingList() {
                                                 )
                                                   ? obj.fourthPaymentRemarks
                                                   : "On " +
-                                                    obj.fourthPaymentRemarks +
-                                                    ")"}
+                                                  obj.fourthPaymentRemarks +
+                                                  ")"}
                                               </div>
                                             </div>
                                           </div>
@@ -2131,90 +2131,90 @@ function BookingList() {
                                   </div>
                                 </div>
                               </div>
-                          
-                                  <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                                    <b>
-                                      Payment Receipt and Additional Documents:
-                                    </b>
-                                  </div>
 
-                                  <div className="row">
-                                    {objMain.paymentReceipt &&
-                                      objMain.paymentReceipt.length !== 0 && (
-                                        <div className="col-sm-2 mb-1">
-                                          <div className="booking-docs-preview">
-                                            <div
-                                              className="booking-docs-preview-img"
-                                              onClick={() =>
-                                                handleViewPdfReciepts(
-                                                  objMain.paymentReceipt[0]
-                                                    .filename, currentLeadform["Company Name"]
-                                                )
+                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                                <b>
+                                  Payment Receipt and Additional Documents:
+                                </b>
+                              </div>
+
+                              <div className="row">
+                                {objMain.paymentReceipt &&
+                                  objMain.paymentReceipt.length !== 0 && (
+                                    <div className="col-sm-2 mb-1">
+                                      <div className="booking-docs-preview">
+                                        <div
+                                          className="booking-docs-preview-img"
+                                          onClick={() =>
+                                            handleViewPdfReciepts(
+                                              objMain.paymentReceipt[0]
+                                                .filename, currentLeadform["Company Name"]
+                                            )
+                                          }
+                                        >
+                                          {objMain.paymentReceipt[0].filename.endsWith(
+                                            ".pdf"
+                                          ) ? (
+                                            <PdfImageViewerAdmin
+                                              type="paymentrecieptpdf"
+                                              path={
+                                                objMain.paymentReceipt[0]
+                                                  .filename
                                               }
-                                            >
-                                              {objMain.paymentReceipt[0].filename.endsWith(
-                                                ".pdf"
-                                              ) ? (
-                                                <PdfImageViewerAdmin
-                                                  type="paymentrecieptpdf"
-                                                  path={
-                                                    objMain.paymentReceipt[0]
-                                                      .filename
-                                                  }
-                                                  companyName = {currentLeadform["Company Name"]}
-                                                />
-                                              ) : (
-                                                <img
-                                                  src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
-                                                  alt={"MyImg"}
-                                                ></img>
-                                              )}
-                                            </div>
-                                            <div className="booking-docs-preview-text">
-                                              <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
-                                                Receipt.pdf
-                                              </p>
-                                            </div>
-                                          </div>
+                                              companyName={currentLeadform["Company Name"]}
+                                            />
+                                          ) : (
+                                            <img
+                                              src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
+                                              alt={"MyImg"}
+                                            ></img>
+                                          )}
                                         </div>
-                                      )}
-                                    {objMain.otherDocs.map((obj) => (
-                                      <div className="col-sm-2 mb-1">
-                                        <div className="booking-docs-preview">
-                                          <div
-                                            className="booking-docs-preview-img"
-                                            onClick={() =>
-                                              handleViewPdOtherDocs(
-                                                obj.filename , currentLeadform["Company Name"]
-                                              )
-                                            }
-                                          >
-                                            {obj.filename.endsWith(".pdf") ? (
-                                              <PdfImageViewerAdmin
-                                                type="pdf"
-                                                path={obj.filename}
-                                                companyName = {currentLeadform["Company Name"]}
-                                              />
-                                            ) : (
-                                              <img
-                                                src={`${secretKey}/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
-                                                alt={pdfimg}
-                                              ></img>
-                                            )}
-                                          </div>
-                                          <div className="booking-docs-preview-text">
-                                            <p
-                                              className="booking-img-name-txtwrap text-wrap m-auto m-0"
-                                              title={obj.originalname}
-                                            >
-                                              {obj.originalname}
-                                            </p>
-                                          </div>
+                                        <div className="booking-docs-preview-text">
+                                          <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                            Receipt.pdf
+                                          </p>
                                         </div>
                                       </div>
-                                    ))}
+                                    </div>
+                                  )}
+                                {objMain.otherDocs.map((obj) => (
+                                  <div className="col-sm-2 mb-1">
+                                    <div className="booking-docs-preview">
+                                      <div
+                                        className="booking-docs-preview-img"
+                                        onClick={() =>
+                                          handleViewPdOtherDocs(
+                                            obj.filename, currentLeadform["Company Name"]
+                                          )
+                                        }
+                                      >
+                                        {obj.filename.endsWith(".pdf") ? (
+                                          <PdfImageViewerAdmin
+                                            type="pdf"
+                                            path={obj.filename}
+                                            companyName={currentLeadform["Company Name"]}
+                                          />
+                                        ) : (
+                                          <img
+                                            src={`${secretKey}/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                            alt={pdfimg}
+                                          ></img>
+                                        )}
+                                      </div>
+                                      <div className="booking-docs-preview-text">
+                                        <p
+                                          className="booking-img-name-txtwrap text-wrap m-auto m-0"
+                                          title={obj.originalname}
+                                        >
+                                          {obj.originalname}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
 
-<div className="col-sm-2 mb-1">
+                                <div className="col-sm-2 mb-1">
                                   <div
                                     className="booking-docs-preview"
                                     title="Upload More Documents"
@@ -2223,7 +2223,7 @@ function BookingList() {
                                       className="upload-Docs-BTN"
                                       onClick={() => {
                                         setOpenOtherDocs(true);
-                                        setSendingIndex(index+1);
+                                        setSendingIndex(index + 1);
                                       }}
                                     >
                                       <IoAdd />
@@ -2319,8 +2319,8 @@ function BookingList() {
                                     Submit
                                   </button>
                                 </Dialog>
-                                  </div>
-                             
+                              </div>
+
                             </div>
                           </>
                         ))}
@@ -2344,9 +2344,9 @@ function BookingList() {
             // companysEmail={companyEmail}
             // companyNumber={companyNumber}
             setNowToFetch={setNowToFetch}
-            // companysInco={companyInco}
-            // employeeName={data.ename}
-            // employeeEmail={data.email}
+          // companysInco={companyInco}
+          // employeeName={data.ename}
+          // employeeEmail={data.email}
           />
         </>
       )}
