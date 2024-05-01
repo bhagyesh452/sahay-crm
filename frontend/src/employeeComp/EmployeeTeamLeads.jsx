@@ -1121,20 +1121,6 @@ function EmployeeTeamLeads() {
                         </DialogContent>
                     </Dialog>
                 )}
-                {/* <div className="page-header d-print-none">
-                    <div className="container-xl">
-                        <div className="row">
-                            <div className="col-sm-3">
-                                <div class="input-icon">
-                                    <span class="input-icon-addon">
-                                        {/* <CiSearch /> 
-                                    </span>
-                                    <input type="text" value="" class="form-control" placeholder="Search…" aria-label="Search in website" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> */}
 
                 <div className="page-body" onCopy={(e) => {
                     e.preventDefault();
@@ -1150,23 +1136,6 @@ function EmployeeTeamLeads() {
                                 className="features"
                             >
                                 <div style={{ display: "flex" }} className="feature1">
-                                    {/* <button className="btn btn-primary" onClick={handleGoogleLogin} >
-                        Gmail SignIn
-                    </button>
-                    <Dialog open={openLogin} onClose={()=>setOpenLogin(false)} >
-                      <DialogTitle>
-                      <h1>Login Page</h1>
-                      </DialogTitle>
-                      <DialogContent>
-                      <div className="sign-in-google">
-
-                           <p>Please sign in with your Google account.</p>
-                          <button onClick={handleGoogleLogin} >Sign in with Google</button>
-                               </div>
-                      </DialogContent>
-
-                    </Dialog> */}
-
                                     <div
                                         className="form-control"
                                         style={{ height: "fit-content", width: "auto" }}
