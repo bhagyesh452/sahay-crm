@@ -2196,7 +2196,7 @@ console.log(selectedMonthOptionForBdm)
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="dash-card-1-head2">MATURED CASES</div>
                         </div>
-                        <div className="dash-card-1-num mb-1 clr-e65b5b" >
+                        <div className="dash-card-1-num clr-e65b5b" >
                           {functionCalculateMatured(true)}
                         </div>
                       </div>
@@ -2216,7 +2216,7 @@ console.log(selectedMonthOptionForBdm)
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="dash-card-1-head2">TOTAL REVENUE</div>
                         </div>
-                        <div className="dash-card-1-num mb-1 clr-00d19d" >
+                        <div className="dash-card-1-num clr-00d19d" >
                           ₹ {functionCalculateTotalRevenue(true).toLocaleString()}
                         </div>
                       </div>
@@ -2235,7 +2235,7 @@ console.log(selectedMonthOptionForBdm)
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="dash-card-1-head2">ADVANCE COLLECTED</div>
                         </div>
-                        <div className="dash-card-1-num mb-1 clr-1ac9bd" >
+                        <div className="dash-card-1-num clr-1ac9bd" >
                           ₹ {functionCalculateAchievedRevenue(true).toLocaleString()}
                         </div>
                       </div>
@@ -2254,7 +2254,7 @@ console.log(selectedMonthOptionForBdm)
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="dash-card-1-head2">REMAINING PAYMENT</div>
                         </div>
-                        <div className="dash-card-1-num mb-1 clr-ffb900" >
+                        <div className="dash-card-1-num clr-ffb900" >
                           ₹ {functionCalculatePendingRevenue(true).toLocaleString()}
                         </div>
                       </div>
@@ -2273,7 +2273,7 @@ console.log(selectedMonthOptionForBdm)
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="dash-card-1-head2">YESTERDAY'S COLLECTIONS</div>
                         </div>
-                        <div className="dash-card-1-num mb-1 clr-4299e1" >
+                        <div className="dash-card-1-num clr-4299e1" >
                           ₹ {functionCalculateYesterdayRevenue().toLocaleString()}
                         </div>
                       </div>
@@ -2302,7 +2302,7 @@ console.log(selectedMonthOptionForBdm)
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="dash-card-1-head2">TOTAL MATURED CASES</div>
                         </div>
-                        <div className="dash-card-1-num mb-1 clr-e65b5b" >
+                        <div className="dash-card-1-num clr-e65b5b" >
                           {functionCalculateMatured()}
                         </div>
                       </div>
@@ -2322,7 +2322,7 @@ console.log(selectedMonthOptionForBdm)
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="dash-card-1-head2">TARGET</div>
                         </div>
-                        <div className="dash-card-1-num mb-1 clr-1cba19" >
+                        <div className="dash-card-1-num clr-1cba19" >
                           ₹ {functionGetAmount().toLocaleString()}
                         </div>
                       </div>
@@ -2341,7 +2341,7 @@ console.log(selectedMonthOptionForBdm)
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="dash-card-1-head2">ACHIEVED TARGET</div>
                         </div>
-                        <div className="dash-card-1-num mb-1 clr-1ac9bd" >
+                        <div className="dash-card-1-num clr-1ac9bd" >
                           ₹ {functionCalculateAchievedRevenue().toLocaleString()}
                         </div>
                       </div>
@@ -2360,7 +2360,7 @@ console.log(selectedMonthOptionForBdm)
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="dash-card-1-head2">ACHIEVED TARGET RATIO</div>
                         </div>
-                        <div className="dash-card-1-num mb-1 clr-ffb900" >
+                        <div className="dash-card-1-num clr-ffb900" >
                           {(functionCalculateAchievedRevenue() / functionGetAmount() * 100).toFixed(2)} %
                         </div>
                       </div>
@@ -2379,7 +2379,7 @@ console.log(selectedMonthOptionForBdm)
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="dash-card-1-head2">LAST BOOKING DATE</div>
                         </div>
-                        <div className="dash-card-1-num mb-1 clr-4299e1" >
+                        <div className="dash-card-1-num clr-4299e1" >
                           {functionGetLastBookingDate()}
                         </div>
                       </div>
