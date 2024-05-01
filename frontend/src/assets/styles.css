@@ -1686,9 +1686,9 @@ color: #4e884e;
   overflow: hidden;
 }
 .dash-card-1-head {
-  padding: 8px 10px;
+  padding: 6px 10px;
   border-bottom: 1px solid #eee;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
   color: #5d5d5d;
 }
@@ -1700,7 +1700,7 @@ color: #4e884e;
 }
 .dash-card-1-num
 {
-  font-size: 20px;
+  font-size: 18px;
 }
 .dash-card-1-icon
 {
@@ -1736,9 +1736,9 @@ color: #4e884e;
 }
 .dash-card-1-head2
 {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  padding: 10px 0px;
+  padding: 4px 0px;
 }
 .dashIconImg
 {
