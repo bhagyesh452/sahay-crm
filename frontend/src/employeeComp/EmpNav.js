@@ -25,6 +25,10 @@ function EmpNav({ userId, bdmWork }) {
     window.location.replace(`/employee-data/${userId}`);
   };
 
+  const handleClickMyBookings = ()=>{
+    window.location.replace(`/employee-bookings/${userId}`)
+  }
+
   return (
     <div>
       <header className="navbar-expand-md">
@@ -81,9 +85,7 @@ function EmpNav({ userId, bdmWork }) {
                   <li className={
                     location.pathname === `/employee-team-leads/${userId}` ? "nav-item active" : "nav-item"
                   }
-                    onClick={handleConvertedLeadsClick}
-
-                  >
+                    onClick={handleConvertedLeadsClick}>
 
                     <a className="nav-link" href="#">
                       <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -110,10 +112,39 @@ function EmpNav({ userId, bdmWork }) {
                     </a>
 
                   </li>
-                )
+                )}
+                 {/* <li 
+                 className={
+                    location.pathname === `/employee-bookings/${userId}` ? "nav-item active" : "nav-item"
+                  }
+                    onClick={handleClickMyBookings}
+                    >
 
-                }
+                    <a className="nav-link" href="#">
+                      <span className="nav-link-icon d-md-none d-lg-inline-block">
 
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="icon"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          stroke-width="2"
+                          stroke="currentColor"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
+                          <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+                          <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+                        </svg>
+                      </span>
+                      <span className="nav-link-title">My Bookings</span>
+                    </a>
+
+                  </li> */}
               </ul>
 
             </div>

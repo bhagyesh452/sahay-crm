@@ -206,7 +206,7 @@ function EmployeePanel() {
     audio.play();
   };
 
-  console.log(nextFollowUpdate)
+  //console.log(nextFollowUpdate)
 
   function convertDateFormat(dateString) {
     // Check if dateString is undefined or null
@@ -455,9 +455,6 @@ function EmployeePanel() {
   };
 
 
-
-
-
   const debouncedSetChangeRemarks = useCallback(
     debounce((value) => {
       setChangeRemarks(value);
@@ -505,6 +502,8 @@ function EmployeePanel() {
 
   const [bdmNames, setBdmNames] = useState([])
 
+  //console.log(userId)
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`${secretKey}/einfo`);
@@ -512,7 +511,7 @@ function EmployeePanel() {
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
-      //console.log(tempData);
+      console.log(userData);
       setData(userData);
       setmoreFilteredData(userData);
 

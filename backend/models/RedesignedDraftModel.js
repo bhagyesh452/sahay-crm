@@ -111,7 +111,10 @@ const TempSchema = new mongoose.Schema({
   pendingAmount: {
     type: Number,
   },
-  generatedAmount:{
+  generatedTotalAmount:{
+    type:Number,
+  },
+  generatedReceivedAmount:{
     type:Number,
   },
   otherDocs : {

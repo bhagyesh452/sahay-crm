@@ -2496,7 +2496,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-ffb900">
-                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Interested").length}
+                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "Interested").length}
                               </div>
                             </div>
                           </div>
@@ -2508,7 +2508,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-4299e1">
-                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "FollowUp").length}
+                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "FollowUp").length}
                               </div>
                             </div>
                           </div>
@@ -2520,7 +2520,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-1ac9bd">
-                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Matured").length}
+                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "Matured").length}
                               </div>
                             </div>
                           </div>
@@ -2532,7 +2532,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-1-body">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="dash-card-1-num clr-e65b5b">
-                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && obj.Status === "Not Interested").length}
+                                {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "Not Interested").length}
                               </div>
                             </div>
                           </div>

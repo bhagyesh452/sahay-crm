@@ -1164,7 +1164,7 @@ app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
 
 app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
-  const { bdmAcceptStatus , bdmName } = req.body;
+  const { bdmAcceptStatus , bdmName, remarks } = req.body;
   try {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
@@ -1172,7 +1172,11 @@ app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
     await CompanyModel.findByIdAndUpdate(id, {
       bdmAcceptStatus: bdmAcceptStatus,
       bdmName:bdmName
-    }); // Corrected update
+    }); 
+    
+    await RemarksHistory.findByIdAndUpdate(id,{
+      remarks : remarks ,
+    })// Corrected update
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -1950,7 +1954,8 @@ app.get("/api/employees/:ename", async (req, res) => {
     const data = await CompanyModel.find({
       $or:[
         {ename:employeeName},
-        {maturedBdmName:employeeName}
+        {maturedBdmName:employeeName},
+        { multiBdmName: { $in: [employeeName] } }
       ]
      });
     //console.log(data)
@@ -4392,6 +4397,13 @@ app.post(
                 "moreBookings.receivedAmount":
                   newData.receivedAmount ||
                   existingData.moreBookings.receivedAmount,
+                  
+                "moreBookings.generatedReceivedAmount":
+                  newData.generatedReceivedAmount ||
+                  existingData.moreBookings.generatedReceivedAmount,
+                "moreBookings.generatedTotalAmount":
+                  newData.generatedTotalAmount ||
+                  existingData.moreBookings.generatedTotalAmount,
                 "moreBookings.Step3Status": true,
               },
             },
@@ -4453,6 +4465,21 @@ app.post(
         const existingData = await RedesignedLeadformModel.findOne({
           "Company Name": companyName,
         });
+        const companyData = await CompanyModel.findOne({
+          "Company Name": newData["Company Name"],
+        });
+      if (companyData) {
+        const multiBdmName = [] 
+        if(companyData.maturedBdmName !== newData.bdmName ){
+          multiBdmName.push(newData.bdmName);
+          await CompanyModel.findByIdAndUpdate(companyData._id, {
+            
+            multiBdmName : multiBdmName
+            
+          });
+        }
+        
+        }
         if (existingData) {
           const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
             { "Company Name": companyName },

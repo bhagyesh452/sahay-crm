@@ -179,6 +179,8 @@ export default function AddLeadForm({
           bookingDate: booking.bookingDate,
           bookingSource: booking.bookingSource,
           otherBookingSource: booking.otherBookingSource,
+          generatedReceivedAmount:booking.generatedReceivedAmount,
+          generatedTotalAmount:booking.generatedTotalAmount
           };
           setActiveStep(3);
           setCompleted({ 0: true, 1: true , 2 : true });
@@ -679,7 +681,22 @@ let isValid = true;
                 ? fourthTempRemarks
                 : service.fourthPaymentRemarks,
           }));
+          const generatedTotalAmount = leadData.services.reduce(
+            (acc, curr) => acc + parseInt(curr.totalPaymentWOGST),
+            0
+          );
+          const generatedReceivedAmount = leadData.services.reduce((acc, curr) => {
+            return curr.paymentTerms === "Full Advanced"
+              ? acc + parseInt(curr.totalPaymentWOGST)
+              : curr.withGST ? acc + parseInt(curr.firstPayment - parseInt(curr.firstPayment)*18/100) : acc + parseInt(curr.firstPayment)
+          }, 0);
+          setLeadData({
+            ...leadData,
+            generatedTotalAmount: generatedTotalAmount,
+            generatedReceivedAmount: generatedReceivedAmount // Check if foundUser exists before accessing email
+          });
 
+          
           dataToSend = {
             services: servicestoSend,
             numberOfServices: totalServices,
@@ -690,6 +707,8 @@ let isValid = true;
             totalAmount: totalAmount,
             receivedAmount: receivedAmount,
             pendingAmount: pendingAmount,
+            generatedReceivedAmount:generatedReceivedAmount,
+            generatedTotalAmount:generatedTotalAmount
           };
           console.log("This is sending", dataToSend);
           try {
@@ -764,8 +783,6 @@ let isValid = true;
         //     `${secretKey}/redesigned-final-leadData/${companysName}`,
         //     leadData
         //   );
-        
-
         
           const response = await axios.post(
             `${secretKey}/redesigned-addmore-booking/${companysName}/step5`, leadData

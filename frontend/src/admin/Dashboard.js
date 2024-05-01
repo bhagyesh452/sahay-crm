@@ -2357,78 +2357,6 @@ function Dashboard() {
   let totalMaturedCount = 0;
   let totalTargetAmount = 0;
   let totalAchievedAmount = 0;
-
-  const functionCalculateMatured = (bdeName) => {
-    let maturedCount = 0;
-    const filteredRedesignedData = redesignedData.filter(
-      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by")
-    );
-
-    filteredRedesignedData.forEach((obj) => {
-      if (obj.moreBookings.length === 0) {
-        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          maturedCount += 0.5;
-        } else {
-          maturedCount += 1;
-        }
-      } else {
-        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          maturedCount += 0.5;
-        } else {
-          maturedCount += 1;
-        }
-
-        obj.moreBookings.forEach((booking) => {
-          if (
-            booking.bdeName !== booking.bdmName &&
-            booking.bdmType === "Close-by"
-          ) {
-            maturedCount += 0.5;
-          } else {
-            maturedCount += 1;
-          }
-        });
-      }
-    });
-    totalMaturedCount = totalMaturedCount + maturedCount;
-    return maturedCount;
-  };
-  const functionCalculateAchievedAmount = (bdeName) => {
-    let achievedAmount = 0;
-    const filteredRedesignedData = redesignedData.filter(
-      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by")
-    );
-
-    filteredRedesignedData.forEach((obj) => {
-      if (obj.moreBookings.length === 0) {
-        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.receivedAmount / 2);
-        } else {
-          achievedAmount += parseInt(obj.receivedAmount);
-        }
-      } else {
-        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.receivedAmount / 2);
-        } else {
-          achievedAmount += parseInt(obj.receivedAmount);
-        }
-        obj.moreBookings.forEach((booking) => {
-          if (
-            booking.bdeName !== booking.bdmName &&
-            booking.bdmType === "Close-by"
-          ) {
-            achievedAmount += parseInt(obj.receivedAmount / 2);
-          } else {
-            achievedAmount += parseInt(obj.receivedAmount);
-          }
-        });
-      }
-    });
-    totalAchievedAmount =
-      parseInt(totalAchievedAmount) + parseInt(achievedAmount);
-    return achievedAmount;
-  };
-
   const currentYear = new Date().getFullYear();
   const monthNames = [
     "January",
@@ -2445,6 +2373,85 @@ function Dashboard() {
     "December",
   ];
   const currentMonth = monthNames[new Date().getMonth()];
+
+  const functionCalculateMatured = (bdeName) => {
+    let maturedCount = 0;
+    const filteredRedesignedData = redesignedData.filter(
+      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length!==0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
+    );
+    
+    const moreFilteredData = filteredRedesignedData.filter(obj => monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth)
+    moreFilteredData.forEach((obj) => {
+      if (obj.moreBookings.length === 0) {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          maturedCount += 0.5;
+        } else {
+          maturedCount += 1;
+        }
+      } else {
+        if(obj.bdeName === bdeName || obj.bdmName === bdeName){
+          if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+            maturedCount += 0.5;
+          } else {
+            maturedCount += 1;
+          }
+        }
+       
+
+        obj.moreBookings.forEach((booking) => {
+         if(booking.bdeName === bdeName || booking.bdmName === bdeName){ if (
+            booking.bdeName !== booking.bdmName &&
+            booking.bdmType === "Close-by"
+          ) {
+            maturedCount += 0.5;
+          } else if(booking.bdeName === bdeName) {
+            maturedCount += 1;
+          }}
+        });
+      }
+    });
+    totalMaturedCount = totalMaturedCount + maturedCount;
+    return maturedCount;
+  };
+  const functionCalculateAchievedAmount = (bdeName) => {
+    let achievedAmount = 0;
+    const filteredRedesignedData = redesignedData.filter(
+      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length!==0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
+    );
+
+    const moreFilteredData = filteredRedesignedData.filter(obj => monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth)
+
+    moreFilteredData.forEach((obj) => {
+      if (obj.moreBookings.length === 0) {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.generatedReceivedAmount);
+        }
+      } else {
+        if(obj.bdeName === bdeName || obj.bdmName === bdeName){if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.generatedReceivedAmount);
+        }}
+        obj.moreBookings.forEach((booking) => {
+         if(booking.bdeName === bdeName || booking.bdmName === bdeName){ if (
+            booking.bdeName !== booking.bdmName &&
+            booking.bdmType === "Close-by"
+          ) {
+            achievedAmount += parseInt(booking.generatedReceivedAmount / 2);
+          } else {
+            achievedAmount += parseInt(booking.generatedReceivedAmount);
+          }}
+        });
+      }
+    });
+    totalAchievedAmount =
+      parseInt(totalAchievedAmount) + parseInt(achievedAmount);
+    return achievedAmount;
+  };
+
+
 
   const functionGetAmount = (object) => {
     if (object.targetDetails.length !== 0) {

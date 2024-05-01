@@ -102,6 +102,9 @@ const CompanySchema = new mongoose.Schema({
   maturedBdmName:{
     type:String
   },
+  multiBdmName:{
+    type:Array
+  },
   bdmRemarks:{
     type:String
   },
