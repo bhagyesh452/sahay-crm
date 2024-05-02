@@ -1426,6 +1426,21 @@ app.get("/api/projection-data", async (req, res) => {
   }
 });
 
+app.get(`/api/projection-data-company/:companyName` , async(req,res)=>{
+   const companyName = req.params.companyName;
+
+   try{
+    const response =  await FollowUpModel.find({
+      companyName : companyName
+    })
+    res.json(response);
+
+   }catch(error){
+    res.status(500).json({error : "Internal Server Error" })
+   }
+
+})
+
 app.get("/api/card-leads", async (req, res) => {
   try {
     const { dAmount } = req.query; // Get the dAmount parameter from the query

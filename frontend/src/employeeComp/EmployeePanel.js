@@ -3694,7 +3694,7 @@ function EmployeePanel() {
                               />
                             </th>
 
-                            {(dataStatus === "Matured" && <th>Action</th>) ||
+                            {
                               (dataStatus === "FollowUp" && (
                                 <th>Add Projection</th>
                               )) ||
@@ -4252,7 +4252,7 @@ function EmployeePanel() {
                                         color="#fbb900" /></IconButton>
                                   </td>
                                 )}
-                                {dataStatus === "Matured" && (
+                                {/* {dataStatus === "Matured" && (
                                   <>
                                     <td>
                                       <div className="d-flex">
@@ -4341,7 +4341,7 @@ function EmployeePanel() {
                                       </div>
                                     </td>
                                   </>
-                                )}
+                                )} */}
                                 {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
                               </tr>
                             ))}
