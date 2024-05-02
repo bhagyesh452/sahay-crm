@@ -283,10 +283,11 @@ function ShowNotification() {
                   deleteData.map((company) => (
                     <DeleteBookingsCard
                       request={company.request}
-                      companyId={company.companyId}
+                      Id={company.companyID}
                       name={company.ename}
                       companyName={company.companyName}
                       date={company.date}
+                      bookingIndex={company.bookingIndex}
                       time={company.time}
                     />
                   ))}

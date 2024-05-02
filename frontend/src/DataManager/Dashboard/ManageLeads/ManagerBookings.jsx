@@ -310,7 +310,40 @@ function ManagerBookings() {
       console.error("Error uploading file:", error);
     }
   };
-  return (
+
+  // --------------------------------------------------  ADD REMAINING PAYMENT SECTION ----------------------------------------------------------
+  const [remainingObject, setRemainingObject] = useState({
+    "Company Name":"",
+     paymentCount : "",
+     bookingIndex:0,
+     serviceName:"",
+     paymentMethod:'',
+     extraRemarks:'',
+     paymentDate:null,
+     pendingAmount:0,
+     receivedAmount : 0,
+     remainingAmount : 0,
+     remainingPaymentReceipt:null
+  })
+  const functionOpenRemainingPayment = (object , paymentNumber , companyName , bookingIndex )=>{
+    const serviceName = object.serviceName ;
+    const pendingPayment = object.secondPayment;
+    setRemainingObject({
+      "Company Name":companyName,
+      paymentCount : paymentNumber,
+      bookingIndex:bookingIndex,
+      serviceName:serviceName,
+      pendingAmount:pendingPayment,
+      receivedAmount : pendingPayment,
+      remainingAmount : 0
+    });
+    setOpenRemainingPayment(true)
+  }
+
+  const handleSubmitMorePayments = async()=>{
+    
+  }
+   return (
     <div>
       <Header name={dataManagerName} />
       <Navbar name={dataManagerName} />
@@ -932,7 +965,7 @@ function ManagerBookings() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                          {obj.paymentTerms}
+                                          {obj.paymentTerms === 'two-part' ? 'Part-Payment' : 'Full Advanced'}
                                         </div>
                                       </div>
                                     </div>
@@ -1001,7 +1034,7 @@ function ManagerBookings() {
                                                 {")"}
                                               </div>
                                               <div>
-                                                <div className="add-remaining-amnt" title="Add Remaining Payment" >+</div>
+                                                <div className="add-remaining-amnt" title="Add Remaining Payment" onClick={()=> functionOpenRemainingPayment(obj , "secondPayment", currentLeadform["Company Name"] , 0)}>+</div>
                                               </div>
                                             </div>
                                           </div>
@@ -1037,7 +1070,7 @@ function ManagerBookings() {
                                                     ")"}
                                               </div>
                                               <div>
-                                                <div className="add-remaining-amnt" title="Add Remaining Payment">+</div>
+                                                <div className="add-remaining-amnt" title="Add Remaining Payment" onClick={()=> functionOpenRemainingPayment(obj , "thirdPayment", currentLeadform["Company Name"] , 0)}>+</div>
                                               </div>
                                             </div>
                                           </div>
@@ -1071,7 +1104,7 @@ function ManagerBookings() {
                                                     ")"}
                                               </div>
                                               <div>
-                                                <div className="add-remaining-amnt" title="Add Remaining Payment">+</div>
+                                                <div className="add-remaining-amnt" title="Add Remaining Payment" onClick={()=> functionOpenRemainingPayment(obj , "fourthPayment" , currentLeadform["Company Name"] , 0)}>+</div>
                                               </div>
                                             </div>
                                           </div>
@@ -1894,7 +1927,7 @@ function ManagerBookings() {
                                                         ")"}
                                                   </div>
                                                   <div>
-                                                    <div className="add-remaining-amnt" title="Add Remaining Payment">+</div>
+                                                    <div className="add-remaining-amnt" title="Add Remaining Payment" onClick={()=> functionOpenRemainingPayment(obj , "secondPayment" , currentLeadform["Company Name"] , index+1)}>+</div>
                                                   </div>
                                                 </div>
                                               </div>
@@ -1932,7 +1965,7 @@ function ManagerBookings() {
                                                         ")"}
                                                   </div>
                                                   <div>
-                                                    <div className="add-remaining-amnt" title="Add Remaining Payment">+</div>
+                                                    <div className="add-remaining-amnt" title="Add Remaining Payment" onClick={()=> functionOpenRemainingPayment(obj , "thirdPayment"  , currentLeadform["Company Name"] , index+1)}>+</div>
                                                   </div>
                                                 </div>
                                               </div>
@@ -1968,7 +2001,7 @@ function ManagerBookings() {
                                                         ")"}
                                                   </div>
                                                   <div>
-                                                    <div className="add-remaining-amnt" title="Add Remaining Payment">+</div>
+                                                    <div className="add-remaining-amnt" title="Add Remaining Payment" onClick={()=> functionOpenRemainingPayment(obj , "fourthPayment", currentLeadform["Company Name"] , index+1)}>+</div>
                                                   </div>
                                                 </div>
                                               </div>
@@ -2413,21 +2446,23 @@ function ManagerBookings() {
               <div className="col-sm-6">
               <label htmlFor="remaining-service-name" className="form-label">Service Name :</label>
                 <div className="col">
-                  <select name="remaining-service-name" id="remaining-service-name" className="form-select">
-                    <option value="" selected disabled >Select Service :</option>
-                    <option value="" >Service 1</option>
-                    <option value="" >Service 2</option>
-                    <option value="" >Service 3</option>
+                  <select value={remainingObject["Company Name"] !== "" && remainingObject.serviceName} name="remaining-service-name" id="remaining-service-name" className="form-select" disabled>
+                    <option value={remainingObject["Company Name"] !== "" && remainingObject.serviceName} selected disabled >{remainingObject["Company Name"] !== "" && remainingObject.serviceName}</option>
+                 
                   </select>
                
                 </div>
-             
+            
              
               </div>
               <div className="col-sm-6">
               <label htmlFor="remaining-payment-proper" className="form-label">Remaining Payment :</label>
                 <div className="col">
-                  <input type="number" className="form-control" name="remaining-payment-proper" id="remaining-payment-proper" placeholder="Remaining Payment" />
+                  <input value={remainingObject["Company Name"] !== "" && remainingObject.receivedAmount} onChange={(e) => setRemainingObject({
+                    ...remainingObject,
+                    receivedAmount:e.target.value,
+                   
+                  })} type="number" className="form-control" name="remaining-payment-proper" id="remaining-payment-proper" placeholder="Remaining Payment" />
                 </div>
 
               </div>
@@ -2437,11 +2472,29 @@ function ManagerBookings() {
               <div className="col-sm-6">
               <label htmlFor="remaining-paymentmethod" className="form-label">Payment Method :</label>
                 <div className="col">
-                  <select name="remaining-paymentmethod" id="remaining-paymentmethod" className="form-select">
-                    <option value="" selected disabled >Select Payment Method :</option>
-                    <option value="" >Service 1</option>
-                    <option value="" >Service 2</option>
-                    <option value="" >Service 3</option>
+                  <select name="remaining-paymentmethod" value={remainingObject["Company Name"] !== "" && remainingObject.paymentMethod} id="remaining-paymentmethod" className="form-select" onChange={(e) => setRemainingObject({
+                    ...remainingObject,
+                    paymentMethod:e.target.value
+                  })}>
+                     <option value="" disabled selected>
+                                          Select Payment Option
+                                        </option>
+                                        <option value="ICICI Bank">
+                                          ICICI Bank
+                                        </option>
+                                        <option value="SRK Seedfund(Non GST)/IDFC first Bank">
+                                          SRK Seedfund(Non GST)/IDFC first Bank
+                                        </option>
+                                        <option value="STARTUP SAHAY SERVICES/ADVISORY(Non GST)/ IDFC First Bank">
+                                          STARTUP SAHAY SERVICES/ADVISORY(Non
+                                          GST)/ IDFC First Bank
+                                        </option>
+                                        <option value="Razorpay">
+                                          Razorpay
+                                        </option>
+                                        <option value="PayU">PayU</option>
+                                        <option value="Cashfree">Cashfree</option>
+                                        <option value="Other">Other</option>
                   </select>
                
                 </div>
@@ -2453,7 +2506,10 @@ function ManagerBookings() {
                 <label htmlFor="remaining-paymentmethod"><b>Upload Receipt :</b></label>
                 </div>
                 <div className="col form-control">
-                 <input type="file" name="upload-remaining-receipt" id="upload-remaining-receipt" />
+                 <input type="file" name="upload-remaining-receipt" id="upload-remaining-receipt" onChange={(e) => setRemainingObject({
+                    ...remainingObject,
+                   paymentReceipt:e.target.files[0]
+                  })}/>
                
                 </div>
              
@@ -2466,11 +2522,29 @@ function ManagerBookings() {
             <div className="row mt-2">
             <div className="mb-3">
   <label htmlFor="remainingControlTextarea1" className="form-label">Any Remarks</label>
-  <textarea className="form-control" id="remainingControlTextarea1" rows="3" placeholder="Write your remarks here..."></textarea>
+  <textarea className="form-control" id="remainingControlTextarea1" rows="3" placeholder="Write your remarks here..." value={remainingObject.extraRemarks} onChange={(e) => setRemainingObject({
+                    ...remainingObject,
+                   extraRemarks:e.target.value
+                  })}></textarea>
+                  
+</div>
+            </div>
+            <div className="row mt-2">
+            <div className="mb-3">
+  <label htmlFor="remainingDate" className="form-label">Payment Date</label>
+ <input className="form-control" type="date" name="remainingDate" id="remainingDate" onChange={(e)=> setRemainingObject({
+  ...remainingObject ,
+  paymentDate:e.target.value
+ })}/>
+                  
 </div>
             </div>
           </div>
+         
         </DialogContent>
+        <div className="remaining-footer">
+            <button className="btn btn-primary w-100" onClick={handleSubmitMorePayments}> Submit</button>
+          </div>
       </Dialog>
     </div>
   );

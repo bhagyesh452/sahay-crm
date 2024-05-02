@@ -172,7 +172,7 @@ function EmployeeMaturedBookings() {
 
   console.log("currentLeadForm", currentLeadform)
 
-  const handleRequestDelete = async (companyId, companyName) => {
+  const handleRequestDelete = async (Id, companyID, companyName , index) => {
     const confirmDelete = await Swal.fire({
       title: "Are you sure?",
       text: "You are about to send a delete request. Are you sure you want to proceed?",
@@ -188,28 +188,30 @@ function EmployeeMaturedBookings() {
       try {
         const sendingData = {
           companyName,
-          companyId,
+          Id,
+          companyID,
           time: new Date().toLocaleTimeString(),
           date: new Date().toLocaleDateString(),
-          ename: data.ename, // Replace 'Your Ename Value' with the actual value
+          ename: data.ename,
+
+          bookingIndex : index // Replace 'Your Ename Value' with the actual value
         };
-
-        const response = await fetch(`${secretKey}/deleterequestbybde`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(sendingData),
-        });
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
+          
+        // const response = await fetch(`${secretKey}/deleterequestbybde`, {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify(sendingData),
+        // });
+        const response = await axios.post(`${secretKey}/deleterequestbybde` , sendingData);
+       
+       
         Swal.fire({ title: "Delete Request Sent", icon: "success" });
-        const responseData = await response.json();
-        console.log(responseData.message); // Log the response message
+        // Log the response message
       } catch (error) {
-        Swal.fire({ title: "Failed to send Request", icon: "error" });
+      
+        Swal.fire({ title: "Request Already Exists!", icon: "error" });
         console.error("Error creating delete request:", error);
         // Handle the error as per your application's requirements
       }
@@ -222,15 +224,16 @@ function EmployeeMaturedBookings() {
   const [bookingIndex, setBookingIndex] = useState(0);
   const [editMoreOpen, setEditMoreOpen] = useState(false);
 
-  const handleEditClick = async (company) => {
+  const handleEditClick = async (company , index) => {
     try {
       const response = await axios.get(
         `${secretKey}/redesigned-final-leadData`
       );
       const data = response.data.find((obj) => obj.company === company);
       setCurrentForm(data);
-
-      setOpenBooking(true);
+      setBookingIndex(index)
+      setEditMoreOpen(true)
+      // setOpenBooking(true);
 
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -289,16 +292,13 @@ function EmployeeMaturedBookings() {
       for (let i = 0; i < files.length; i++) {
         formData.append("otherDocs", files[i]);
       }
-      console.log(formData);
+      console.log(currentLeadform["Company Name"] , sendingIndex);
       setCurrentCompanyName(currentLeadform["Company Name"])
-      const response = await fetch(
+      const response = await axios.post(
         `${secretKey}/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
-        {
-          method: "POST",
-          body: formData,
-        }
+       formData
       );
-      if (response.ok) {
+      
         Swal.fire({
           title: "Success!",
           html: `<small> File Uploaded successfully </small>
@@ -310,14 +310,7 @@ function EmployeeMaturedBookings() {
         fetchRedesignedFormData1();
 
 
-      } else {
-        Swal.fire({
-          title: "Error uploading file",
-
-          icon: "error",
-        });
-        console.error("Error uploading file");
-      }
+      
     } catch (error) {
       Swal.fire({
         title: "Error uploading file",
@@ -332,7 +325,7 @@ function EmployeeMaturedBookings() {
     <div>
       <Header name={data.ename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
-      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
+      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !editMoreOpen && (
         <div className="booking-list-main">
           <div className="container-xl">
             <div className="booking_list_Dtl_box">
@@ -641,14 +634,14 @@ function EmployeeMaturedBookings() {
                             <div
                               className="Services_Preview_action_edit mr-1"
                               onClick={() => {
-                                handleEditClick(currentLeadform._id)
+                                handleEditClick(currentLeadform._id , 0  )
                               }}
                             >
                               <MdModeEdit />
                             </div>
                             <div
                               onClick={() =>
-                                handleRequestDelete(currentLeadform._id, currentLeadform.company)
+                                handleRequestDelete(currentLeadform._id, currentLeadform.company , currentLeadform["Company Name"] , 0)
                               }
                               className="Services_Preview_action_delete"
                             >
@@ -1372,19 +1365,15 @@ function EmployeeMaturedBookings() {
                                   <div
                                     className="Services_Preview_action_edit mr-2"
                                     onClick={() => {
-                                      //setbookingIndex(index + 1);
-                                      setEditBookingOpen(true);
+                                      handleEditClick(currentLeadform._id , index+1)
                                     }}
                                   >
                                     <MdModeEdit />
                                   </div>
                                   <div
-                                    // onClick={() =>
-                                    //   handleDeleteBooking(
-                                    //     currentLeadform.company,
-                                    //     objMain._id
-                                    //   )
-                                    // }
+                                    onClick={() =>
+                                      handleRequestDelete(currentLeadform._id, currentLeadform.company , currentLeadform["Company Name"] , index+1)
+                                    }
                                     className="Services_Preview_action_delete"
                                   >
                                     <MdDelete />
@@ -2084,10 +2073,10 @@ function EmployeeMaturedBookings() {
           />
         </>
       )}
-      {EditBookingOpen && bookingIndex !== -1 && (
+      {editMoreOpen && bookingIndex !== -1 && (
         <>
           <EditableMoreBooking
-            setFormOpen={setEditBookingOpen}
+            setFormOpen={setEditMoreOpen}
             bookingIndex={bookingIndex}
             //isAdmin={isAdmin}
             setNowToFetch={setNowToFetch}

@@ -3215,24 +3215,32 @@ app.delete("/api/company-delete/:id", async (req, res) => {
 
 app.post("/api/deleterequestbybde", async (req, res) => {
   try {
-    const { companyName, companyId, time, date, request, ename } = req.body;
-    // console.log(req.body);
-    // Create a new instance of the RequestDeleteByBDE model
+    const { companyName, Id, companyID, time, date, request, ename, bookingIndex } = req.body;
+
+    // Check if the request already exists
+    const findRequest = await RequestDeleteByBDE.findOne({ companyName, bookingIndex , request : false });
+    if (findRequest) {
+      return res.status(400).json({ message: "Request already exists" });
+    }
+
+    // Create a new delete request object
     const deleteRequest = new RequestDeleteByBDE({
       companyName,
-      companyId,
+      Id,
+      companyID,
       time,
       date,
       request,
       ename,
+      bookingIndex
     });
-    socketIO.emit("DeleteRequest");
+
     // Save the delete request to the database
     await deleteRequest.save();
 
-    res.json({ message: "Delete request created successfully" });
+    res.status(200).json({ message: "Delete request created successfully" });
   } catch (error) {
-    console.error(error);
+    console.error("Error creating delete request:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -3691,6 +3699,7 @@ app.post(
     { name: "paymentReceipt", maxCount: 1 },
   ]),
   async (req, res) => {
+   
     try {
       const companyName = req.params.CompanyName;
       const bookingIndex = parseInt(req.params.bookingIndex); // Convert to integer
@@ -3699,7 +3708,7 @@ app.post(
       if (!companyName) {
         return res.status(404).send("Company name not provided");
       }
-
+     
       // Find the company by its name
       const company = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
@@ -6803,6 +6812,57 @@ app.delete("/api/redesigned-delete-booking/:companyId", async (req, res) => {
     } else {
       return res.status(404).send("Booking not found");
     }
+    res.status(200).send("Booking deleted successfully");
+  } catch (error) {
+    console.error("Error deleting booking:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+app.delete("/api/redesigned-delete-all-booking/:companyId/:bookingIndex", async (req, res) => {
+  
+  try {
+    const companyID = req.params.companyId;
+    const bookingIndex = req.params.bookingIndex;
+    // Find and delete the booking with the given companyId
+    if(bookingIndex == 0){
+      console.log("I am here in 0 index")
+      const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
+        company: companyID,
+      });
+      const updateMainBooking = await CompanyModel.findByIdAndUpdate(
+        companyID,
+        { $set: { Status: "Interested" } },
+        { new: true }
+      );
+      if (deletedBooking) {
+        const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
+          "Company Name": deletedBooking["Company Name"],
+        });
+        const deleterequest = await RequestDeleteByBDE.findOneAndUpdate({companyName : deletedBooking["Company Name"] , request : false , bookingIndex:0} , {$set:{
+          request:true
+        }})
+        
+      } else {
+        return res.status(404).send("Booking not found");
+      }
+    }else {
+      console.log("I am here in 1 index")
+      const moreObject = await RedesignedLeadformModel.findOne({company:companyID});
+      const moreID = moreObject.moreBookings[bookingIndex-1]._id;
+      const deletedBooking = await RedesignedLeadformModel.findOneAndUpdate(
+        { company: companyID },
+        { $pull: { moreBookings: { _id: moreID } } },
+        { new: true }
+      );
+      const deleterequest = await RequestDeleteByBDE.findOneAndUpdate({companyName : moreObject["Company Name"] , request : false , bookingIndex : bookingIndex} , {$set:{
+        request:true
+      }})
+
+      return res.status(200).send("booking Deleted Successfuly")
+    }
+  
+    
+   
     res.status(200).send("Booking deleted successfully");
   } catch (error) {
     console.error("Error deleting booking:", error);

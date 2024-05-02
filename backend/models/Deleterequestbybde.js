@@ -5,7 +5,11 @@ const deleteSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  companyId: {
+  Id:{
+    type:String,
+    required:true
+  },
+  companyID: {
     type: String,
     required: true,
   },
@@ -19,11 +23,15 @@ const deleteSchema = new mongoose.Schema({
   },
   request: {
     type: Boolean,
-    required: false,
+    default:false,
   },
   ename:{
     type:String,
     required:true,
+  },
+  bookingIndex:{
+    type : Number,
+    required:true
   }
 });
 
