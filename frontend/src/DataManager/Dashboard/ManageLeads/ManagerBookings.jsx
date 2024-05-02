@@ -340,8 +340,10 @@ function ManagerBookings() {
     setOpenRemainingPayment(true)
   }
 
-  console.log("This is remaining Object",remainingObject)
-  return (
+  const handleSubmitMorePayments = async()=>{
+    
+  }
+   return (
     <div>
       <Header name={dataManagerName} />
       <Navbar name={dataManagerName} />
@@ -2541,7 +2543,7 @@ function ManagerBookings() {
          
         </DialogContent>
         <div className="remaining-footer">
-            <button className="btn btn-primary w-100"> Submit</button>
+            <button className="btn btn-primary w-100" onClick={handleSubmitMorePayments}> Submit</button>
           </div>
       </Dialog>
     </div>

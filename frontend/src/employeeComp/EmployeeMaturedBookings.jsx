@@ -332,7 +332,7 @@ console.log("abhi hua")
     <div>
       <Header name={data.ename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
-      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
+      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !editMoreOpen && (
         <div className="booking-list-main">
           <div className="container-xl">
             <div className="booking_list_Dtl_box">
@@ -2082,7 +2082,7 @@ console.log("abhi hua")
           />
         </>
       )}
-      {EditBookingOpen && bookingIndex !== -1 && (
+      {editMoreOpen && bookingIndex !== -1 && (
         <>
           <EditableMoreBooking
             setFormOpen={setEditBookingOpen}
