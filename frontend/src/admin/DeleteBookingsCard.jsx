@@ -14,8 +14,9 @@ function DeleteBookingsCard({
   companyName,
   date,
   time,
-  companyId,
+  Id,
   request,
+  bookingIndex
 }) {
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const [undoOption, setUndoOption] = useState(false);
@@ -36,7 +37,7 @@ function DeleteBookingsCard({
     // Assuming you have an API endpoint for deleting a company
     try {
       const response = await fetch(
-        `${secretKey}/redesigned-delete-booking/${companyId}`,
+        `${secretKey}/redesigned-delete-all-booking/${Id}/${bookingIndex}`,
         {
           method: "DELETE",
           headers: {
@@ -44,12 +45,7 @@ function DeleteBookingsCard({
           },
         }
       );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const response2 = await axios.delete(
-        `${secretKey}/deleterequestbybde/${companyName}`,
-      );
+     
       Swal.fire({
         title: "Booking Deleted Successfully",
         icon: "success",
