@@ -3684,6 +3684,7 @@ app.post(
     { name: "paymentReceipt", maxCount: 1 },
   ]),
   async (req, res) => {
+   
     try {
       const companyName = req.params.CompanyName;
       const bookingIndex = parseInt(req.params.bookingIndex); // Convert to integer
@@ -3692,7 +3693,7 @@ app.post(
       if (!companyName) {
         return res.status(404).send("Company name not provided");
       }
-
+     
       // Find the company by its name
       const company = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,

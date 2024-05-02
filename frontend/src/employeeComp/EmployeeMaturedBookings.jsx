@@ -292,16 +292,13 @@ function EmployeeMaturedBookings() {
       for (let i = 0; i < files.length; i++) {
         formData.append("otherDocs", files[i]);
       }
-      console.log(formData);
+      console.log(currentLeadform["Company Name"] , sendingIndex);
       setCurrentCompanyName(currentLeadform["Company Name"])
-      const response = await fetch(
+      const response = await axios.post(
         `${secretKey}/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
-        {
-          method: "POST",
-          body: formData,
-        }
+       formData
       );
-      if (response.ok) {
+      
         Swal.fire({
           title: "Success!",
           html: `<small> File Uploaded successfully </small>
@@ -313,14 +310,7 @@ function EmployeeMaturedBookings() {
         fetchRedesignedFormData1();
 
 
-      } else {
-        Swal.fire({
-          title: "Error uploading file",
-
-          icon: "error",
-        });
-        console.error("Error uploading file");
-      }
+      
     } catch (error) {
       Swal.fire({
         title: "Error uploading file",
