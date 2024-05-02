@@ -5,18 +5,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+      body
+      {
+        font-size:12px !important;
+        padding:0px;
+        margin:0px;
+        font-family: Arial, sans-serif;
+      }
       .PDF_main
       {
-        width: 95%;
+        width: 83%;
         margin: 0 auto;
         position: relative;
-        padding: 10px;
+        padding: 40px 40px;
         page-break-after: always;
-        height: 930px;
+        height: 680px;
+      }
+      .mt-2
+      {
+        margin-top:20px
+      }
+      p,h4,table,th,td
+      {
+        font-size:9px !important;
       }
       .date_div
       {
         width: 100%;
+        font-size:10px !important;
       }
       .date_div p
       {
@@ -27,6 +43,7 @@
       {
         text-align: center;
         width: 100%;
+        margin-top: 20px;
       }
       .pdf_heading h4
       {
@@ -38,13 +55,13 @@
       }
       .Declaration_text_head
       {
-        color: #4d4d4d;
+        color: #373737;
         font-size: 14px;
       }
       .Declaration_text_data
       {
         font-size: 14px;
-        color: #5f5f5f;
+        color: #4f4f4f;
         line-height: 18px;
       }
       .section_footer
@@ -52,10 +69,12 @@
         width: 100%;
         position: absolute;
         bottom: 0;
+        left:0;
       }
       .Signature
       {
         margin-bottom: 10px;
+        margin-left: 40px;
       }
       .table-data
       {
@@ -76,7 +95,7 @@
       .table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
           border: 1px solid #ddd;
           font-size: 12px;
-          padding: 4px;
+          padding:6px;
       }
       .text-left
       {
@@ -93,16 +112,17 @@
   </style>
 </head>
 <body>
+  {{Main-page}}
   <div class="PDF_main">
     <section>
       <div class="date_div">
         <p>20/05/2023</p>
       </div>
       <div class="pdf_heading">
-        <h4>Self Declaration</h4>
+        <h3>Self Declaration</h3>
       </div>
       <div class="Declaration_text">
-        <p class="Declaration_text_head">
+        <p class="Declaration_text_head mt-2">
           <b>
             Start-Up India Certification Support Service Acknowledgement:
           </b>
@@ -138,9 +158,11 @@
   </div>
   <div class="PDF_main">
     <section>
-      <div class="pdf_heading">
-        <h4>Service And Payment Terms Acknowledgment</h4>
-      </div>
+      <p class="Declaration_text_head">
+        <b>
+          Service And Payment Terms Acknowledgment
+        </b>
+      </p>
       <!-- service provider -->
       <div class="table-data">
         <table class="table table-bordered">
@@ -155,12 +177,12 @@
             <tr>
               <td class="text-left s_Provider_left">Contact Details:</td>
               <td class="text-left s_Provider_right">
-                Mo: 992428350 | Email: nimesh@incscale.in
+                Mo: {{Authorized-Number}} | Email: {{Authorized-Email}}
               </td>
             </tr>
             <tr>
               <td class="text-left s_Provider_left">Authorized Person Name:</td>
-              <td class="text-left s_Provider_right">NimeshParekh</td>
+              <td class="text-left s_Provider_right">{{Authorized-Person}}</td>
             </tr>
             <tr>
               <td class="text-left s_Provider_left">Authorized Person Designation:</td>
