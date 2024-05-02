@@ -5584,44 +5584,51 @@ app.post(
                 newData.services[i].serviceName === "Start-Up India Certificate"
               ) {
                 servicesHtml = `
-              <p>
-                <b>Start-Up India Certification Support Service Acknowledgement:</b>
+                <p class="Declaration_text_head mt-2">
+                <b>
+                  Start-Up India Certification Support Service Acknowledgement:
+                </b>
               </p>
-              <p>
-                I, Director of <b> ${newData["Company Name"]} </b>, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing consultancy services. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-up India certificate is issued free of charge by the government, and I have not been charged for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
+              <p class="Declaration_text_data">
+                I, Director of ${newData["Company Name"]} , acknowledge that START-UP
+                SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing
+                consultancy services. These services involve preparing necessary documents and content for
+                the application, utilizing their infrastructure, experience, manpower, and expertise. I
+      
+                understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-
+                up India certificate is issued free of charge by the government, and I have not been charged
+      
+                for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
               </p>
-              <br>
+              
               `;
               } else if (
                 allowedServiceNames.includes(newData.services[i].serviceName)
               ) {
                 fundingServicesArray += `${newData.services[i].serviceName},`;
                 fundingServices = `
-              <p>
-              <b>
+                <p class="Declaration_text_head mt-2">
+                <b>
                 ${newData.services[i].serviceName} Support Services Acknowledgement:   
-              </b>
-            </p>
-            <p>
+                </b>
+              </p>
+              <p class="Declaration_text_data">
               I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-            </p>
-            <br>
+              </p>
+              
               `;
               } else if (
                 newData.services[i].serviceName === "Income Tax Excemption"
               ) {
                 incomeTaxServices = `
-            <p>
-                <p>
-                  <b>
-                    Income Tax Exemption Services Acknowledgement:   
-                  </b>
-                </p>
-                <p>
-                  I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
-                </p>
+                <p class="Declaration_text_head mt-2">
+                <b>
+                Income Tax Exemption Services Acknowledgement:   
+                </b>
               </p>
-              <br>
+              <p class="Declaration_text_data">
+              I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+              </p>
             `;
               } else {
                 servicesHtml += `
@@ -5632,29 +5639,25 @@ app.post(
 
             if (fundingServicesArray !== "") {
               servicesHtml += `
-          <p>
-          <b>
-            ${fundingServicesArray} Support Services Acknowledgement:   
-          </b>
-        </p>
-        <p>
-          I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-        </p>
-        <br>
+              <p class="Declaration_text_head mt-2">
+              <b>
+              ${fundingServicesArray} Support Services Acknowledgement:    
+              </b>
+            </p>
+            <p class="Declaration_text_data">
+            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+            </p>
           `;
             } else if (incomeTaxServices !== "") {
               servicesHtml += `
-          <p>
-          <p>
-            <b>
-              Income Tax Exemption Services Acknowledgement:   
-            </b>
-          </p>
-          <p>
+              <p class="Declaration_text_head mt-2">
+              <b>
+              Income Tax Exemption Services Acknowledgement:     
+              </b>
+            </p>
+            <p class="Declaration_text_data">
             I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
-          </p>
-        </p>
-        <br>
+            </p>
         `;
             }
             return servicesHtml;
@@ -5663,42 +5666,34 @@ app.post(
           const serviceKawali = renderServiceKawali();
           const todaysDate = new Date().toLocaleDateString();
           const mainPageHtml = `
-      <div class="page">
-        <div class="container position-relative">
-          <div class="front-page">
-            <div class="page-heading">
-              <div class="date">Date: ${todaysDate}</div>
-              <div class="acknowledgement">
-                <b> Self Declaration </b>
-              </div>
+          <div class="PDF_main">
+          <section>
+            <div class="date_div">
+              <p>${todaysDate}</p>
             </div>
-            <div class="page-body">
+            <div class="pdf_heading">
+              <h3>Self Declaration</h3>
+            </div>
+            <div class="Declaration_text">
               ${serviceKawali}
-              <p>
-                I, understands that because of government regulations and portal,
-                I have no objections if the process takes longer than initially
-                committed, knowing it's just how government schemes related
-                process works.
+              <p class="Declaration_text_data">
+                I, understands that because of government regulations and portal, I have no objections if the
+                process takes longer than initially committed, knowing it's just how government schemes
+                related process works.
               </p>
-              <p>
-                I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up
-                India certificate application if required on my behalf, as I am
-                not familiar with the process.
+              <p class="Declaration_text_data">
+                I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up India certificate
+                application if required on my behalf, as I am not familiar with the process.
               </p>
             </div>
-  
-            <div class="page-footer">
-              <span>
-                Client's Signature: ___________________________________
-              </span>
+            <div class="section_footer">
+              <p class="Declaration_text_data Signature">
+                Client's Signature:__________________________________
+              </p>
+              <p style="text-align: center;">Page 1/2</p>
             </div>
-  
-            <div class="pagination">
-              <span class="pagination-text"> Page 1/2 </span>
-            </div>
-          </div>
+          </section>
         </div>
-      </div>
       `;
 
           const mainPage =
@@ -5718,7 +5713,7 @@ app.post(
               : existingData.moreBookings.length + 1;
 
           const htmlTemplate = fs.readFileSync(
-            "./helpers/template.html",
+            "./helpers/template2.html",
             "utf-8"
           );
 
@@ -8047,80 +8042,85 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       let incomeTaxServices = "";
 
       for (let i = 0; i < newData.services.length; i++) {
-        if (newData.services[i].serviceName === "Start-Up India Certificate") {
+        if (
+          newData.services[i].serviceName === "Start-Up India Certificate"
+        ) {
           servicesHtml = `
-            <p>
-              <b>Start-Up India Certification Support Service Acknowledgement:</b>
-            </p>
-            <p>
-              I, Director of <b> ${newData["Company Name"]} </b>, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing consultancy services. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-up India certificate is issued free of charge by the government, and I have not been charged for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
-            </p>
-            <br>
-            `;
+          <p class="Declaration_text_head mt-2">
+          <b>
+            Start-Up India Certification Support Service Acknowledgement:
+          </b>
+        </p>
+        <p class="Declaration_text_data">
+          I, Director of ${newData["Company Name"]} , acknowledge that START-UP
+          SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing
+          consultancy services. These services involve preparing necessary documents and content for
+          the application, utilizing their infrastructure, experience, manpower, and expertise. I
+
+          understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-
+          up India certificate is issued free of charge by the government, and I have not been charged
+
+          for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
+        </p>
+        
+        `;
         } else if (
           allowedServiceNames.includes(newData.services[i].serviceName)
         ) {
           fundingServicesArray += `${newData.services[i].serviceName},`;
           fundingServices = `
-            <p>
-            <b>
-              ${newData.services[i].serviceName} Support Services Acknowledgement:   
-            </b>
-          </p>
-          <p>
-            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-          </p>
-          <br>
-            `;
+          <p class="Declaration_text_head mt-2">
+          <b>
+          ${newData.services[i].serviceName} Support Services Acknowledgement:   
+          </b>
+        </p>
+        <p class="Declaration_text_data">
+        I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+        </p>
+        
+        `;
         } else if (
           newData.services[i].serviceName === "Income Tax Excemption"
         ) {
           incomeTaxServices = `
-          <p>
-              <p>
-                <b>
-                  Income Tax Exemption Services Acknowledgement:   
-                </b>
-              </p>
-              <p>
-                I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
-              </p>
-            </p>
-            <br>
-          `;
+          <p class="Declaration_text_head mt-2">
+          <b>
+          Income Tax Exemption Services Acknowledgement:   
+          </b>
+        </p>
+        <p class="Declaration_text_data">
+        I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+        </p>
+      `;
         } else {
           servicesHtml += `
-          <br>
-          `;
+      <br>
+      `;
         }
       }
 
       if (fundingServicesArray !== "") {
         servicesHtml += `
-        <p>
+        <p class="Declaration_text_head mt-2">
         <b>
-          ${fundingServicesArray} Support Services Acknowledgement:   
+        ${fundingServicesArray} Support Services Acknowledgement:    
         </b>
       </p>
-      <p>
-        I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+      <p class="Declaration_text_data">
+      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
-      <br>
-        `;
+    `;
       } else if (incomeTaxServices !== "") {
         servicesHtml += `
-        <p>
-        <p>
-          <b>
-            Income Tax Exemption Services Acknowledgement:   
-          </b>
-        </p>
-        <p>
-          I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
-        </p>
+        <p class="Declaration_text_head mt-2">
+        <b>
+        Income Tax Exemption Services Acknowledgement:     
+        </b>
       </p>
-      <br>
-      `;
+      <p class="Declaration_text_data">
+      I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+      </p>
+  `;
       }
       return servicesHtml;
     };
@@ -8128,43 +8128,35 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const serviceKawali = renderServiceKawali();
     const todaysDate = new Date().toLocaleDateString();
     const mainPageHtml = `
-    <div class="page">
-      <div class="container position-relative">
-        <div class="front-page">
-          <div class="page-heading">
-            <div class="date">Date: ${todaysDate}</div>
-            <div class="acknowledgement">
-              <b> Self Declaration </b>
+          <div class="PDF_main">
+          <section>
+            <div class="date_div">
+              <p>${todaysDate}</p>
             </div>
-          </div>
-          <div class="page-body">
-            ${serviceKawali}
-            <p>
-              I, understands that because of government regulations and portal,
-              I have no objections if the process takes longer than initially
-              committed, knowing it's just how government schemes related
-              process works.
-            </p>
-            <p>
-              I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up
-              India certificate application if required on my behalf, as I am
-              not familiar with the process.
-            </p>
-          </div>
-
-          <div class="page-footer">
-            <span>
-              Client's Signature: ___________________________________
-            </span>
-          </div>
-
-          <div class="pagination">
-            <span class="pagination-text"> Page 1/2 </span>
-          </div>
+            <div class="pdf_heading">
+              <h3>Self Declaration</h3>
+            </div>
+            <div class="Declaration_text">
+              ${serviceKawali}
+              <p class="Declaration_text_data">
+                I, understands that because of government regulations and portal, I have no objections if the
+                process takes longer than initially committed, knowing it's just how government schemes
+                related process works.
+              </p>
+              <p class="Declaration_text_data">
+                I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up India certificate
+                application if required on my behalf, as I am not familiar with the process.
+              </p>
+            </div>
+            <div class="section_footer">
+              <p class="Declaration_text_data Signature">
+                Client's Signature:__________________________________
+              </p>
+              <p style="text-align: center;">Page 1/2</p>
+            </div>
+          </section>
         </div>
-      </div>
-    </div>
-    `;
+      `;
 
     const mainPage =
       newPageDisplay === 'style="display:block' ? mainPageHtml : "";
@@ -8180,7 +8172,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
 
     const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
-    const filledHtml = htmlTemplate
+    const filledHtml = htmlNewTemplate
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
