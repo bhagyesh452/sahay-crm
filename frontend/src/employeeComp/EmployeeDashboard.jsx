@@ -1577,7 +1577,7 @@ function EmployeeDashboard() {
     }
   };
 
-  console.log("redesigneddata", redesignedData)
+  //console.log("redesigneddata", redesignedData)
 
   // -------------------------------------------  Calculations --------------------------------------------------------
 

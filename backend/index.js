@@ -51,6 +51,7 @@ const TeamModel = require("./models/TeamModel.js");
 const TeamLeadsModel = require("./models/TeamLeads.js");
 const RequestMaturedModel = require("./models/RequestMatured.js");
 const InformBDEModel = require("./models/InformBDE.js");
+const { dataform_v1beta1 } = require("googleapis");
 // const { Cashfree } = require('cashfree-pg');
 
 // const http = require('http');
@@ -1099,6 +1100,17 @@ app.get("/api/forwardedbybdedata/:bdmName", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+app.get("/api/teamleadsdata",async(req,res)=>{
+  try{
+    const data = await TeamLeadsModel.find()
+    res.status(200).send(data)
+
+  }catch(error){
+    console.log("error fetching team leads data" , error.message)
+    res.status(500).json({error : "Internal server error"})
+  }
+})
 
 app.post("/api/update-bdm-status/:id", async (req, res) => {
   const { id } = req.params;
