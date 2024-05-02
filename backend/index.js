@@ -7924,14 +7924,14 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
-         <tr>
+        <tr>
          <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
          <td>${newData.services[i].thirdPaymentRemarks}</td>
-         </tr>
-         <tr>
+        </tr>
+        <tr>
          <td>₹${Number(newData.services[i].fourthPayment).toFixed(2)}/-</td>
          <td>${newData.services[i].fourthPaymentRemarks}</td>
-         </tr>
+        </tr>
         `;
         } else if (rowSpan === 2) {
           paymentServices = `
@@ -7957,7 +7957,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         `;
         }
         servicesHtml += `
-        <table style="margin-top:20px">
+        <table class="table table-bordered">
             <thead>
               <td colspan="4">Service Name : ${
                 newData.services[i].serviceName
