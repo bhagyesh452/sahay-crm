@@ -8194,7 +8194,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
 
     pdf
-      .create(htmlNewTemplate, {
+      .create(filledHtml, {
         format: "Letter",
         childProcessOptions: {
           env: {
