@@ -71,6 +71,9 @@ const RemainingPaymentSchema = new mongoose.Schema({
   },
   pendingPayment:{
     type:Number
+  },
+  paymentReceipt:{
+    type:Array
   }
 
 })
@@ -167,6 +170,7 @@ const TempSchema = new mongoose.Schema({
     type: Boolean,
     default:false
   },
+  remainingPayments : [RemainingPaymentSchema]
 });
 
 const RedesignedLeadformSchema = new mongoose.Schema({
