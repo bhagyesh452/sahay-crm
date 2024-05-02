@@ -1346,7 +1346,6 @@ function EmployeePanel() {
   };
 
   // Function for Parsing Excel File
-
   const handleRequestDelete = async (companyId, companyName) => {
     const confirmDelete = await Swal.fire({
       title: "Are you sure?",
@@ -1562,28 +1561,7 @@ function EmployeePanel() {
     }
   }, [maturedID]);
 
-//   const [formData , setFormData] = useState([])
-
-
-//   const fetchRedesignedFormData1 = async () => {
-//     try {
-//       console.log(maturedID);
-//       const response = await axios.get(
-//         `${secretKey}/redesigned-final-leadData`
-//       );
-//       const data = response.data
-//       console.log(data);
-//       setFormData(data);
-//     } catch (error) {
-//       console.error("Error fetching data:", error.message);
-//     }
-//   };
-//   useEffect(() => {
-   
-//     fetchRedesignedFormData1();
-    
-//   }, []);
-// console.log("formData" , formData)
+  
 
 
 
@@ -3716,7 +3694,7 @@ function EmployeePanel() {
                               />
                             </th>
 
-                            {
+                            {(dataStatus === "Matured" && <th>Action</th>) ||
                               (dataStatus === "FollowUp" && (
                                 <th>Add Projection</th>
                               )) ||
@@ -4274,7 +4252,7 @@ function EmployeePanel() {
                                         color="#fbb900" /></IconButton>
                                   </td>
                                 )}
-                                {/* {dataStatus === "Matured" && (
+                                {dataStatus === "Matured" && (
                                   <>
                                     <td>
                                       <div className="d-flex">
@@ -4363,8 +4341,8 @@ function EmployeePanel() {
                                       </div>
                                     </td>
                                   </>
-                                )} */}
-                             
+                                )}
+                                {/* <td onClick={()=>setIsOpen(true)}><MailOutlineIcon style={{cursor:'pointer'}}/></td> */}
                               </tr>
                             ))}
                           </tbody>

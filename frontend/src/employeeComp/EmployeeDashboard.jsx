@@ -2551,9 +2551,9 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-num clr-1ac9bd">
                               {moreEmpData.filter(
                                   (obj) =>
-                                    obj.bdmAcceptStatus !== "NotForwarded" &&
-                                    obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                                    obj.Status !== "Matured"
+                                    obj.bdmAcceptStatus !== "NotForwarded"
+                                    // obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                    // obj.Status !== "Matured"
                                 ).length}
                             </div>
                           </div>
@@ -2611,7 +2611,7 @@ console.log(selectedMonthOptionForBdm)
                     <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                       <div className="dash-card-2">
                         <div className="d-flex justify-content-between align-items-center">
-                          <div className="dash-card-2-head">NOT INTERESTE</div>
+                          <div className="dash-card-2-head">NOT INTERESTED</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num clr-e65b5b">
                               {moreEmpData.filter((obj) => obj.bdmAcceptStatus === "Accept" && obj.Status === "Not Interested").length}
