@@ -76,7 +76,6 @@ app.use(
 // app.use(passport.initialize())
 // app.use(passport.session());
 
-
 var http = require("http").createServer(app);
 var socketIO = require("socket.io")(http, {
   cors: {
@@ -643,8 +642,6 @@ app.get("/api/specific-company/:companyId", async (req, res) => {
 //       }
 //     }
 
-
-
 //     // Send the updated redesignedData as a response
 //     res.json(redesignedData);
 
@@ -657,14 +654,14 @@ app.get("/api/specific-company/:companyId", async (req, res) => {
 app.post("/api/requestCompanyData", async (req, res) => {
   const csvData = req.body;
   let dataArray = [];
-if (Array.isArray(csvData)) {
+  if (Array.isArray(csvData)) {
     dataArray = csvData;
-} else if (typeof csvData === 'object' && csvData !== null) {
+  } else if (typeof csvData === "object" && csvData !== null) {
     dataArray.push(csvData);
-} else {
+  } else {
     // Handle invalid input
-    console.error('Invalid input: csvData must be an array or an object.');
-}
+    console.error("Invalid input: csvData must be an array or an object.");
+  }
 
   try {
     for (const employeeData of dataArray) {
@@ -692,21 +689,21 @@ if (Array.isArray(csvData)) {
   }
 });
 
-app.post('/api/change-edit-request/:companyName', async (req, res) => {
+app.post("/api/change-edit-request/:companyName", async (req, res) => {
   const companyName = req.params.companyName;
   const companyObject = req.body;
 
   try {
-      const updatedCompany = await CompanyRequestModel.findOneAndUpdate(
-          { "Company Name": companyName },
-          { $set: companyObject },
-          { new: true }
-      );
+    const updatedCompany = await CompanyRequestModel.findOneAndUpdate(
+      { "Company Name": companyName },
+      { $set: companyObject },
+      { new: true }
+    );
 
-      res.status(200).json(updatedCompany);
+    res.status(200).json(updatedCompany);
   } catch (error) {
-      console.error("Error updating company:", error);
-      res.status(500).json({ error: "Error updating company" });
+    console.error("Error updating company:", error);
+    res.status(500).json({ error: "Error updating company" });
   }
 });
 
@@ -752,7 +749,6 @@ app.post("/api/update-status/:id", async (req, res) => {
   }
 });
 
-
 app.post("/api/update-remarks/:id", async (req, res) => {
   const { id } = req.params;
   const { Remarks } = req.body;
@@ -761,7 +757,7 @@ app.post("/api/update-remarks/:id", async (req, res) => {
     // Update remarks and fetch updated data in a single operation
     await CompanyModel.findByIdAndUpdate(id, { Remarks: Remarks });
 
-    await TeamLeadsModel.findByIdAndUpdate(id, { Remarks: Remarks});
+    await TeamLeadsModel.findByIdAndUpdate(id, { Remarks: Remarks });
 
     // Fetch updated data and remarks history
     const updatedCompany = await CompanyModel.findById(id);
@@ -801,7 +797,7 @@ app.post("/api/update-remarks-bdm/:id", async (req, res) => {
 
 app.post("/api/remarks-history-bdm/:companyId", async (req, res) => {
   const { companyId } = req.params;
-  const { Remarks, remarksBdmName ,currentCompanyName } = req.body;
+  const { Remarks, remarksBdmName, currentCompanyName } = req.body;
 
   // Get the current date and time
   const currentDate = new Date();
@@ -816,7 +812,7 @@ app.post("/api/remarks-history-bdm/:companyId", async (req, res) => {
       companyID: companyId,
       bdmRemarks: Remarks,
       bdmName: remarksBdmName,
-      companyName:currentCompanyName
+      companyName: currentCompanyName,
     });
 
     await TeamLeadsModel.findByIdAndUpdate(companyId, { bdmRemarks: Remarks });
@@ -886,9 +882,9 @@ app.delete("/api/remarks-delete-bdm/:companyId", async (req, res) => {
 
     const updatedCompanyMainModel = await CompanyModel.findByIdAndUpdate(
       companyId,
-      {bdmRemarks : "No Remarks Added" },
-      {new : true}
-    )
+      { bdmRemarks: "No Remarks Added" },
+      { new: true }
+    );
 
     if (!updatedCompany || !updatedCompanyMainModel) {
       return res.status(404).json({ message: "Company not found" });
@@ -903,14 +899,11 @@ app.delete("/api/remarks-delete-bdm/:companyId", async (req, res) => {
   }
 });
 
-
-
-
 app.post("/api/einfo", async (req, res) => {
   try {
     adminModel.create(req.body).then((respond) => {
       res.json(respond);
-      console.log("newemployee" , req.body)
+      console.log("newemployee", req.body);
       //console.log("respond" , respond)
     });
   } catch (error) {
@@ -929,10 +922,10 @@ app.get("/api/einfo", async (req, res) => {
   }
 });
 
-app.post('/api/post-bdmwork-request/:eid', async (req, res) => {
+app.post("/api/post-bdmwork-request/:eid", async (req, res) => {
   const eid = req.params.eid;
   const { bdmWork } = req.body;
-  
+
   //console.log("bdmwork" , bdmWork)// Extract bdmWork from req.body
   try {
     await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork });
@@ -944,22 +937,19 @@ app.post('/api/post-bdmwork-request/:eid', async (req, res) => {
   }
 });
 
-app.post('/api/post-bdmwork-revoke/:eid' , async(req,res)=>{
+app.post("/api/post-bdmwork-revoke/:eid", async (req, res) => {
   const eid = req.params.eid;
   const { bdmWork } = req.body;
 
-  try{
-    await adminModel.findByIdAndUpdate(eid , {bdmWork : bdmWork})
+  try {
+    await adminModel.findByIdAndUpdate(eid, { bdmWork: bdmWork });
 
-    res.status(200).json({message : "Status Updated Successfully"})
-
-  }catch(error){
-    console.error("error updating bdm work" , error)
-    res.status(500).json({error: "Internal Server Error"})
+    res.status(200).json({ message: "Status Updated Successfully" });
+  } catch (error) {
+    console.error("error updating bdm work", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-
-})
-
+});
 
 // --------------------------api for teams----------------------------------------
 
@@ -1062,21 +1052,33 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
     companyId,
     bdmAcceptStatus,
     bdeForwardDate,
-    bdeOldStatus
+    bdeOldStatus,
   } = req.body;
   //console.log("selectedData", selectedData);
 
   try {
     // Assuming TeamLeadsModel has a schema similar to the selectedData structure
-    const newLeads = await Promise.all(selectedData.map(async (data) => {
-      
-      const newData = { ...data, bdmName , bdeForwardDate : new Date(bdeForwardDate)}; // Add bdmName to each data object
-      return await TeamLeadsModel.create(newData);
-    }));
+    const newLeads = await Promise.all(
+      selectedData.map(async (data) => {
+        const newData = {
+          ...data,
+          bdmName,
+          bdeForwardDate: new Date(bdeForwardDate),
+        }; // Add bdmName to each data object
+        return await TeamLeadsModel.create(newData);
+      })
+    );
 
-    await CompanyModel.findByIdAndUpdate({_id : companyId }, {bdmAcceptStatus : bdmAcceptStatus , bdeForwardDate:new Date(bdeForwardDate) , bdeOldStatus : bdeOldStatus , bdmName:bdmName})
-    
-    
+    await CompanyModel.findByIdAndUpdate(
+      { _id: companyId },
+      {
+        bdmAcceptStatus: bdmAcceptStatus,
+        bdeForwardDate: new Date(bdeForwardDate),
+        bdeOldStatus: bdeOldStatus,
+        bdmName: bdmName,
+      }
+    );
+
     //console.log("newLeads", newLeads);
     res.status(201).json(newLeads);
   } catch (error) {
@@ -1114,16 +1116,27 @@ app.get("/api/teamleadsdata",async(req,res)=>{
 
 app.post("/api/update-bdm-status/:id", async (req, res) => {
   const { id } = req.params;
-  const { newBdmStatus, companyId, oldStatus, bdmAcceptStatus,bdmStatusChangeDate , bdmStatusChangeTime} = req.body; // Destructure the required properties from req.body
+  const {
+    newBdmStatus,
+    companyId,
+    oldStatus,
+    bdmAcceptStatus,
+    bdmStatusChangeDate,
+    bdmStatusChangeTime,
+  } = req.body; // Destructure the required properties from req.body
 
   try {
     // Update the status field in the database based on the employee id
-    await TeamLeadsModel.findByIdAndUpdate(id, { bdmStatus: oldStatus , bdmStatusChangeDate:new Date(bdmStatusChangeDate) , bdmStatusChangeTime : bdmStatusChangeTime });
+    await TeamLeadsModel.findByIdAndUpdate(id, {
+      bdmStatus: oldStatus,
+      bdmStatusChangeDate: new Date(bdmStatusChangeDate),
+      bdmStatusChangeTime: bdmStatusChangeTime,
+    });
 
     await CompanyModel.findByIdAndUpdate(id, {
       bdmAcceptStatus: bdmAcceptStatus,
-      bdmStatusChangeDate:new Date(bdmStatusChangeDate) , 
-      bdmStatusChangeTime : bdmStatusChangeTime 
+      bdmStatusChangeDate: new Date(bdmStatusChangeDate),
+      bdmStatusChangeTime: bdmStatusChangeTime,
     });
 
     res.status(200).json({ message: "Status updated successfully" });
@@ -1135,18 +1148,23 @@ app.post("/api/update-bdm-status/:id", async (req, res) => {
 
 app.post("/api/bdm-status-change/:id", async (req, res) => {
   const { id } = req.params;
-  const { bdeStatus, bdmnewstatus, title, date, time, bdmStatusChangeDate} = req.body; // Destructure the required properties from req.body
+  const { bdeStatus, bdmnewstatus, title, date, time, bdmStatusChangeDate } =
+    req.body; // Destructure the required properties from req.body
 
   try {
     // Update the status field in the database based on the employee id
     await TeamLeadsModel.findByIdAndUpdate(id, {
       bdmStatus: bdmnewstatus,
       Status: bdmnewstatus,
-      bdmStatusChangeDate : new Date(bdmStatusChangeDate),
-      bdmStatusChangeTime: time
+      bdmStatusChangeDate: new Date(bdmStatusChangeDate),
+      bdmStatusChangeTime: time,
     });
 
-    await CompanyModel.findByIdAndUpdate(id, { Status: bdmnewstatus , bdmStatusChangeDate : new Date(bdmStatusChangeDate) ,bdmStatusChangeTime : time });
+    await CompanyModel.findByIdAndUpdate(id, {
+      Status: bdmnewstatus,
+      bdmStatusChangeDate: new Date(bdmStatusChangeDate),
+      bdmStatusChangeTime: time,
+    });
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -1157,14 +1175,14 @@ app.post("/api/bdm-status-change/:id", async (req, res) => {
 
 app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
-  const { companyName, bdmAcceptStatus , bdmName } = req.body;
+  const { companyName, bdmAcceptStatus, bdmName } = req.body;
   try {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
 
-    await CompanyModel.findByIdAndUpdate(id, { 
+    await CompanyModel.findByIdAndUpdate(id, {
       bdmAcceptStatus: bdmAcceptStatus,
-      bdmName : bdmName
+      bdmName: bdmName,
     }); // Corrected update
 
     res.status(200).json({ message: "Status updated successfully" });
@@ -1176,19 +1194,19 @@ app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
 
 app.post(`/api/teamleads-rejectdata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
-  const { bdmAcceptStatus , bdmName, remarks } = req.body;
+  const { bdmAcceptStatus, bdmName, remarks } = req.body;
   try {
     // Assuming TeamLeadsModel and CompanyModel are Mongoose models
     await TeamLeadsModel.findByIdAndDelete(id); // Corrected update
 
     await CompanyModel.findByIdAndUpdate(id, {
       bdmAcceptStatus: bdmAcceptStatus,
-      bdmName:bdmName
-    }); 
-    
-    await RemarksHistory.findByIdAndUpdate(id,{
-      remarks : remarks ,
-    })// Corrected update
+      bdmName: bdmName,
+    });
+
+    await RemarksHistory.findByIdAndUpdate(id, {
+      remarks: remarks,
+    }); // Corrected update
 
     res.status(200).json({ message: "Status updated successfully" });
   } catch (error) {
@@ -1240,11 +1258,11 @@ app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
 
 app.delete(`/api/delete-bdm-busy/:companyId`, async (req, res) => {
   const companyId = req.params.companyId; // Correctly access teamId from req.params
-  
+
   try {
     const existingData = await TeamLeadsModel.findById(companyId);
     console.log(existingData);
-   
+
     if (existingData) {
       await TeamLeadsModel.findByIdAndDelete(companyId); // Use findByIdAndDelete to delete by ID
       res.status(200).json({ message: "Deleted Successfully" });
@@ -1256,8 +1274,8 @@ app.delete(`/api/delete-bdm-busy/:companyId`, async (req, res) => {
   }
 });
 
-app.put("/api/teaminfo/:teamId" , async(req , res)=>{
-  const teamId = req.params.teamId
+app.put("/api/teaminfo/:teamId", async (req, res) => {
+  const teamId = req.params.teamId;
 
   const dataToUpdated = req.body;
 
@@ -1479,9 +1497,9 @@ app.get("/api/projection-data/:ename", async (req, res) => {
     const followUps = await FollowUpModel.find({
       $or: [
         { ename: ename }, // First condition
-        { bdeName: ename } // Second condition
+        { bdeName: ename }, // Second condition
         // Add more conditions if needed
-      ]
+      ],
     });
     // Return the data as JSON response
     res.json(followUps);
@@ -1781,43 +1799,43 @@ app.post("/api/postData", async (req, res) => {
   res.json({ message: "Data posted successfully" });
 });
 
-app.post(`/api/post-bdenextfollowupdate/:id` , async(req , res)=>{
+app.post(`/api/post-bdenextfollowupdate/:id`, async (req, res) => {
   const companyId = req.params.id;
- 
-  const bdeNextFollowUpDate = new Date(req.body.bdeNextFollowUpDate)
 
-  console.log(bdeNextFollowUpDate)
-  
-  try{
-    await CompanyModel.findByIdAndUpdate(companyId , {bdeNextFollowUpDate : bdeNextFollowUpDate})
+  const bdeNextFollowUpDate = new Date(req.body.bdeNextFollowUpDate);
 
-    
-    res.status(200).json({ message: "Date Updated successfully"});
+  console.log(bdeNextFollowUpDate);
 
-  }catch(error){
+  try {
+    await CompanyModel.findByIdAndUpdate(companyId, {
+      bdeNextFollowUpDate: bdeNextFollowUpDate,
+    });
+
+    res.status(200).json({ message: "Date Updated successfully" });
+  } catch (error) {
     console.error("Error fetching Date:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-})
+});
 
-app.post(`/api/post-bdmnextfollowupdate/:id` , async(req , res)=>{
+app.post(`/api/post-bdmnextfollowupdate/:id`, async (req, res) => {
   const companyId = req.params.id;
- 
-  const bdmNextFollowUpDate = new Date(req.body.bdmNextFollowUpDate)
 
-  console.log(bdmNextFollowUpDate)
-  
-  try{
-    await TeamLeadsModel.findByIdAndUpdate(companyId , {bdmNextFollowUpDate : bdmNextFollowUpDate})
+  const bdmNextFollowUpDate = new Date(req.body.bdmNextFollowUpDate);
 
-    
-    res.status(200).json({ message: "Date Updated successfully"});
+  console.log(bdmNextFollowUpDate);
 
-  }catch(error){
+  try {
+    await TeamLeadsModel.findByIdAndUpdate(companyId, {
+      bdmNextFollowUpDate: bdmNextFollowUpDate,
+    });
+
+    res.status(200).json({ message: "Date Updated successfully" });
+  } catch (error) {
     console.error("Error fetching Date:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-})
+});
 
 app.get("/api/recent-updates", async (req, res) => {
   try {
@@ -1873,32 +1891,34 @@ app.post("/api/assign-new", async (req, res) => {
 });
 
 app.post("/api/assign-leads-newbdm", async (req, res) => {
-  const { newemployeeSelection, data , bdmAcceptStatus} = req.body;
+  const { newemployeeSelection, data, bdmAcceptStatus } = req.body;
 
-  console.log(newemployeeSelection , data , bdmAcceptStatus)
-  
-  if(newemployeeSelection !== "Not Alloted"){
+  console.log(newemployeeSelection, data, bdmAcceptStatus);
+
+  if (newemployeeSelection !== "Not Alloted") {
     try {
       // Add AssignDate property with the current date
       const updatedObj = {
         ...data,
         bdmName: newemployeeSelection,
         AssignDate: new Date(),
-        
       };
-  
+
       //console.log("updated" , updatedObj)
-  
+
       // Update TeamLeadsModel for the specific data
       await TeamLeadsModel.updateOne({ _id: data._id }, updatedObj);
 
-      await CompanyModel.findByIdAndUpdate({_id:data._id} , {bdmName : newemployeeSelection} )
-  
+      await CompanyModel.findByIdAndUpdate(
+        { _id: data._id },
+        { bdmName: newemployeeSelection }
+      );
+
       // Delete objects from RemarksHistory collection that match the "Company Name"
       //await RemarksHistory.deleteMany({ companyID: data._id });
-  
+
       res.status(200).json({ message: "Data updated successfully" });
-    }  catch (error) {
+    } catch (error) {
       console.error("Error updating data:", error);
       res.status(500).json({ message: "Internal Server Error" });
     }
@@ -1909,31 +1929,26 @@ app.post("/api/assign-leads-newbdm", async (req, res) => {
         ...data,
         ename: newemployeeSelection,
         AssignDate: new Date(),
-        bdmAcceptStatus : bdmAcceptStatus,
-        bdmName:"NoOne"
-        
+        bdmAcceptStatus: bdmAcceptStatus,
+        bdmName: "NoOne",
       };
       //console.log("updated" , updatedObj)
       // Delete the record from TeamLeadsModel
-      await TeamLeadsModel.findByIdAndDelete({_id: data._id});
+      await TeamLeadsModel.findByIdAndDelete({ _id: data._id });
 
       // Update the record in CompanyModel
-      await CompanyModel.findByIdAndUpdate({_id: data._id}, updatedObj);
+      await CompanyModel.findByIdAndUpdate({ _id: data._id }, updatedObj);
 
       // Delete records from RemarksHistory collection that match the companyID
       await RemarksHistory.deleteMany({ companyID: data._id });
 
       res.status(200).json({ message: "Data updated successfully" });
-    } catch(error) {
+    } catch (error) {
       console.error("Error updating data:", error);
       res.status(500).json({ message: "Internal Server Error" });
     }
   }
 });
-
-
-
-
 
 app.post("/api/company", async (req, res) => {
   const { newemployeeSelection, csvdata } = req.body;
@@ -1979,12 +1994,12 @@ app.get("/api/employees/:ename", async (req, res) => {
 
     // Fetch data from companyModel where ename matches employeeName
     const data = await CompanyModel.find({
-      $or:[
-        {ename:employeeName},
-        {maturedBdmName:employeeName},
-        { multiBdmName: { $in: [employeeName] } }
-      ]
-     });
+      $or: [
+        { ename: employeeName },
+        { maturedBdmName: employeeName },
+        { multiBdmName: { $in: [employeeName] } },
+      ],
+    });
     //console.log(data)
     res.json(data);
   } catch (error) {
@@ -2219,15 +2234,14 @@ app.put("/api/requestgData/:id", async (req, res) => {
 app.get("/api/edata-particular/:ename", async (req, res) => {
   try {
     const { ename } = req.params;
-    const filteredEmployeeData = await CompanyModel.find({  $or:[
-      {ename:ename},
-      {maturedBdmName:ename}
-    ] });
+    const filteredEmployeeData = await CompanyModel.find({
+      $or: [{ ename: ename }, { maturedBdmName: ename }],
+    });
     res.json(filteredEmployeeData);
   } catch (error) {
     console.error("Error fetching employee data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 app.delete("/api/newcompanynamedelete/:id", async (req, res) => {
@@ -2249,7 +2263,7 @@ app.delete("/api/newcompanynamedelete/:id", async (req, res) => {
 });
 app.post("/api/remarks-history/:companyId", async (req, res) => {
   const { companyId } = req.params;
-  const { Remarks,bdeName,currentCompanyName} = req.body;
+  const { Remarks, bdeName, currentCompanyName } = req.body;
 
   // Get the current date and time
   const currentDate = new Date();
@@ -2263,8 +2277,8 @@ app.post("/api/remarks-history/:companyId", async (req, res) => {
       date,
       companyID: companyId,
       remarks: Remarks,
-      bdeName:bdeName,
-      companyName:currentCompanyName
+      bdeName: bdeName,
+      companyName: currentCompanyName,
       //bdmName: remarksBdmName,
     });
 
@@ -3227,10 +3241,23 @@ app.delete("/api/company-delete/:id", async (req, res) => {
 
 app.post("/api/deleterequestbybde", async (req, res) => {
   try {
-    const { companyName, Id, companyID, time, date, request, ename, bookingIndex } = req.body;
+    const {
+      companyName,
+      Id,
+      companyID,
+      time,
+      date,
+      request,
+      ename,
+      bookingIndex,
+    } = req.body;
 
     // Check if the request already exists
-    const findRequest = await RequestDeleteByBDE.findOne({ companyName, bookingIndex , request : false });
+    const findRequest = await RequestDeleteByBDE.findOne({
+      companyName,
+      bookingIndex,
+      request: false,
+    });
     if (findRequest) {
       return res.status(400).json({ message: "Request already exists" });
     }
@@ -3244,7 +3271,7 @@ app.post("/api/deleterequestbybde", async (req, res) => {
       date,
       request,
       ename,
-      bookingIndex
+      bookingIndex,
     });
 
     // Save the delete request to the database
@@ -3711,7 +3738,6 @@ app.post(
     { name: "paymentReceipt", maxCount: 1 },
   ]),
   async (req, res) => {
-   
     try {
       const companyName = req.params.CompanyName;
       const bookingIndex = parseInt(req.params.bookingIndex); // Convert to integer
@@ -3720,7 +3746,7 @@ app.post(
       if (!companyName) {
         return res.status(404).send("Company name not provided");
       }
-     
+
       // Find the company by its name
       const company = await RedesignedLeadformModel.findOne({
         "Company Name": companyName,
@@ -4262,8 +4288,12 @@ app.post(
                   newData.pendingAmount || existingData.pendingAmount,
                 receivedAmount:
                   newData.receivedAmount || existingData.receivedAmount,
-                generatedTotalAmount:newData.generatedTotalAmount || existingData.generatedTotalAmount,
-                generatedReceivedAmount:newData.generatedReceivedAmount || existingData.generatedReceivedAmount,
+                generatedTotalAmount:
+                  newData.generatedTotalAmount ||
+                  existingData.generatedTotalAmount,
+                generatedReceivedAmount:
+                  newData.generatedReceivedAmount ||
+                  existingData.generatedReceivedAmount,
                 Step3Status: true,
               },
             },
@@ -4433,7 +4463,7 @@ app.post(
                 "moreBookings.receivedAmount":
                   newData.receivedAmount ||
                   existingData.moreBookings.receivedAmount,
-                  
+
                 "moreBookings.generatedReceivedAmount":
                   newData.generatedReceivedAmount ||
                   existingData.moreBookings.generatedReceivedAmount,
@@ -4504,17 +4534,14 @@ app.post(
         const companyData = await CompanyModel.findOne({
           "Company Name": newData["Company Name"],
         });
-      if (companyData) {
-        const multiBdmName = [] 
-        if(companyData.maturedBdmName !== newData.bdmName ){
-          multiBdmName.push(newData.bdmName);
-          await CompanyModel.findByIdAndUpdate(companyData._id, {
-            
-            multiBdmName : multiBdmName
-            
-          });
-        }
-        
+        if (companyData) {
+          const multiBdmName = [];
+          if (companyData.maturedBdmName !== newData.bdmName) {
+            multiBdmName.push(newData.bdmName);
+            await CompanyModel.findByIdAndUpdate(companyData._id, {
+              multiBdmName: multiBdmName,
+            });
+          }
         }
         if (existingData) {
           const updatedData = await RedesignedLeadformModel.findOneAndUpdate(
@@ -4599,7 +4626,9 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString()}
+                ₹ ${parseInt(
+                  newData.services[i].totalPaymentWGST
+                ).toLocaleString()}
             </div>
           </div>
         </div>
@@ -4640,7 +4669,11 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ${newData.services[i].paymentTerms === "Full Advanced" ? "Full Advanced" : "Part-Payment"}
+                ${
+                  newData.services[i].paymentTerms === "Full Advanced"
+                    ? "Full Advanced"
+                    : "Part-Payment"
+                }
             </div>
           </div>
         </div>
@@ -4680,7 +4713,9 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ₹ ${parseInt(newData.services[i].secondPayment).toLocaleString()} - ${
+                ₹ ${parseInt(
+                  newData.services[i].secondPayment
+                ).toLocaleString()} - ${
                 isNaN(new Date(newData.services[i].secondPaymentRemarks))
                   ? newData.services[i].secondPaymentRemarks
                   : `Payment On ${newData.services[i].secondPaymentRemarks}`
@@ -4732,7 +4767,9 @@ app.post(
                   font-size: 12px;
                   padding: 5px 10px;
                 ">
-                ₹ ${parseInt(newData.services[i].fourthPayment).toLocaleString()} - ${
+                ₹ ${parseInt(
+                  newData.services[i].fourthPayment
+                ).toLocaleString()} - ${
                 isNaN(new Date(newData.services[i].fourthPaymentRemarks))
                   ? newData.services[i].fourthPaymentRemarks
                   : `Payment On ${newData.services[i].fourthPaymentRemarks}`
@@ -5066,7 +5103,11 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                       ${newData.bdmType === "Close-by" ? "Closed-by" : "Supported-by"} 
+                       ${
+                         newData.bdmType === "Close-by"
+                           ? "Closed-by"
+                           : "Supported-by"
+                       } 
                   </div>
                 </div>
               </div>
@@ -5184,7 +5225,9 @@ app.post(
                   </div>
                 </div>
             </div>
-             <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+             <div style="display: ${
+               newData.caCase === "Yes" ? "flex" : "none"
+             }; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
@@ -5204,7 +5247,9 @@ app.post(
                   </div>
                 </div>
             </div>
-            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+            <div style="display: ${
+              newData.caCase === "Yes" ? "flex" : "none"
+            }; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
@@ -5224,7 +5269,9 @@ app.post(
                   </div>
                 </div>
             </div>
-            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+            <div style="display: ${
+              newData.caCase === "Yes" ? "flex" : "none"
+            }; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
@@ -5376,7 +5423,7 @@ app.post(
                         font-size: 12px;
                         padding: 5px 10px;
                       ">
-                    ${newData.extraNotes!== "" ? newData.extraNotes : "N/A"}
+                    ${newData.extraNotes !== "" ? newData.extraNotes : "N/A"}
                   </div>
                 </div>
               </div>
@@ -5564,44 +5611,51 @@ app.post(
                 newData.services[i].serviceName === "Start-Up India Certificate"
               ) {
                 servicesHtml = `
-              <p>
-                <b>Start-Up India Certification Support Service Acknowledgement:</b>
+                <p class="Declaration_text_head mt-2">
+                <b>
+                  Start-Up India Certification Support Service Acknowledgement:
+                </b>
               </p>
-              <p>
-                I, Director of <b> ${newData["Company Name"]} </b>, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing consultancy services. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-up India certificate is issued free of charge by the government, and I have not been charged for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
+              <p class="Declaration_text_data">
+                I, Director of ${newData["Company Name"]} , acknowledge that START-UP
+                SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing
+                consultancy services. These services involve preparing necessary documents and content for
+                the application, utilizing their infrastructure, experience, manpower, and expertise. I
+      
+                understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-
+                up India certificate is issued free of charge by the government, and I have not been charged
+      
+                for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
               </p>
-              <br>
+              
               `;
               } else if (
                 allowedServiceNames.includes(newData.services[i].serviceName)
               ) {
                 fundingServicesArray += `${newData.services[i].serviceName},`;
                 fundingServices = `
-              <p>
-              <b>
+                <p class="Declaration_text_head mt-2">
+                <b>
                 ${newData.services[i].serviceName} Support Services Acknowledgement:   
-              </b>
-            </p>
-            <p>
+                </b>
+              </p>
+              <p class="Declaration_text_data">
               I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-            </p>
-            <br>
+              </p>
+              
               `;
               } else if (
                 newData.services[i].serviceName === "Income Tax Excemption"
               ) {
                 incomeTaxServices = `
-            <p>
-                <p>
-                  <b>
-                    Income Tax Exemption Services Acknowledgement:   
-                  </b>
-                </p>
-                <p>
-                  I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
-                </p>
+                <p class="Declaration_text_head mt-2">
+                <b>
+                Income Tax Exemption Services Acknowledgement:   
+                </b>
               </p>
-              <br>
+              <p class="Declaration_text_data">
+              I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+              </p>
             `;
               } else {
                 servicesHtml += `
@@ -5612,29 +5666,25 @@ app.post(
 
             if (fundingServicesArray !== "") {
               servicesHtml += `
-          <p>
-          <b>
-            ${fundingServicesArray} Support Services Acknowledgement:   
-          </b>
-        </p>
-        <p>
-          I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-        </p>
-        <br>
+              <p class="Declaration_text_head mt-2">
+              <b>
+              ${fundingServicesArray} Support Services Acknowledgement:    
+              </b>
+            </p>
+            <p class="Declaration_text_data">
+            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+            </p>
           `;
             } else if (incomeTaxServices !== "") {
               servicesHtml += `
-          <p>
-          <p>
-            <b>
-              Income Tax Exemption Services Acknowledgement:   
-            </b>
-          </p>
-          <p>
+              <p class="Declaration_text_head mt-2">
+              <b>
+              Income Tax Exemption Services Acknowledgement:     
+              </b>
+            </p>
+            <p class="Declaration_text_data">
             I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
-          </p>
-        </p>
-        <br>
+            </p>
         `;
             }
             return servicesHtml;
@@ -5643,42 +5693,34 @@ app.post(
           const serviceKawali = renderServiceKawali();
           const todaysDate = new Date().toLocaleDateString();
           const mainPageHtml = `
-      <div class="page">
-        <div class="container position-relative">
-          <div class="front-page">
-            <div class="page-heading">
-              <div class="date">Date: ${todaysDate}</div>
-              <div class="acknowledgement">
-                <b> Self Declaration </b>
-              </div>
+          <div class="PDF_main">
+          <section>
+            <div class="date_div">
+              <p>${todaysDate}</p>
             </div>
-            <div class="page-body">
+            <div class="pdf_heading">
+              <h3>Self Declaration</h3>
+            </div>
+            <div class="Declaration_text">
               ${serviceKawali}
-              <p>
-                I, understands that because of government regulations and portal,
-                I have no objections if the process takes longer than initially
-                committed, knowing it's just how government schemes related
-                process works.
+              <p class="Declaration_text_data">
+                I, understands that because of government regulations and portal, I have no objections if the
+                process takes longer than initially committed, knowing it's just how government schemes
+                related process works.
               </p>
-              <p>
-                I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up
-                India certificate application if required on my behalf, as I am
-                not familiar with the process.
+              <p class="Declaration_text_data">
+                I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up India certificate
+                application if required on my behalf, as I am not familiar with the process.
               </p>
             </div>
-  
-            <div class="page-footer">
-              <span>
-                Client's Signature: ___________________________________
-              </span>
+            <div class="section_footer">
+              <p class="Declaration_text_data Signature">
+                Client's Signature:__________________________________
+              </p>
+              <p style="text-align: center;">Page 1/2</p>
             </div>
-  
-            <div class="pagination">
-              <span class="pagination-text"> Page 1/2 </span>
-            </div>
-          </div>
+          </section>
         </div>
-      </div>
       `;
 
           const mainPage =
@@ -5698,7 +5740,7 @@ app.post(
               : existingData.moreBookings.length + 1;
 
           const htmlTemplate = fs.readFileSync(
-            "./helpers/template.html",
+            "./helpers/template2.html",
             "utf-8"
           );
 
@@ -5846,7 +5888,7 @@ app.get("/api/inform-bde-requests/:bdeName", async (req, res) => {
   try {
     const bdeName = req.params.bdeName;
     const request = await InformBDEModel.find({
-      bdeName
+      bdeName,
     });
     res.status(200).json(request);
   } catch (error) {
@@ -5947,7 +5989,6 @@ app.delete("/api/delete-inform-Request/:id", async (req, res) => {
 
     // Find the BDM request by ID and delete it
     const deletedRequest = await InformBDEModel.findByIdAndDelete(_id);
-  
 
     if (!deletedRequest) {
       return res.status(404).json({ message: "BDM request not found" });
@@ -6830,57 +6871,76 @@ app.delete("/api/redesigned-delete-booking/:companyId", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-app.delete("/api/redesigned-delete-all-booking/:companyId/:bookingIndex", async (req, res) => {
-  
-  try {
-    const companyID = req.params.companyId;
-    const bookingIndex = req.params.bookingIndex;
-    // Find and delete the booking with the given companyId
-    if(bookingIndex == 0){
-      console.log("I am here in 0 index")
-      const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
-        company: companyID,
-      });
-      const updateMainBooking = await CompanyModel.findByIdAndUpdate(
-        companyID,
-        { $set: { Status: "Interested" } },
-        { new: true }
-      );
-      if (deletedBooking) {
-        const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
-          "Company Name": deletedBooking["Company Name"],
+app.delete(
+  "/api/redesigned-delete-all-booking/:companyId/:bookingIndex",
+  async (req, res) => {
+    try {
+      const companyID = req.params.companyId;
+      const bookingIndex = req.params.bookingIndex;
+      // Find and delete the booking with the given companyId
+      if (bookingIndex == 0) {
+        console.log("I am here in 0 index");
+        const deletedBooking = await RedesignedLeadformModel.findOneAndDelete({
+          company: companyID,
         });
-        const deleterequest = await RequestDeleteByBDE.findOneAndUpdate({companyName : deletedBooking["Company Name"] , request : false , bookingIndex:0} , {$set:{
-          request:true
-        }})
-        
+        const updateMainBooking = await CompanyModel.findByIdAndUpdate(
+          companyID,
+          { $set: { Status: "Interested" } },
+          { new: true }
+        );
+        if (deletedBooking) {
+          const deleteDraft = await RedesignedDraftModel.findOneAndDelete({
+            "Company Name": deletedBooking["Company Name"],
+          });
+          const deleterequest = await RequestDeleteByBDE.findOneAndUpdate(
+            {
+              companyName: deletedBooking["Company Name"],
+              request: false,
+              bookingIndex: 0,
+            },
+            {
+              $set: {
+                request: true,
+              },
+            }
+          );
+        } else {
+          return res.status(404).send("Booking not found");
+        }
       } else {
-        return res.status(404).send("Booking not found");
-      }
-    }else {
-      console.log("I am here in 1 index")
-      const moreObject = await RedesignedLeadformModel.findOne({company:companyID});
-      const moreID = moreObject.moreBookings[bookingIndex-1]._id;
-      const deletedBooking = await RedesignedLeadformModel.findOneAndUpdate(
-        { company: companyID },
-        { $pull: { moreBookings: { _id: moreID } } },
-        { new: true }
-      );
-      const deleterequest = await RequestDeleteByBDE.findOneAndUpdate({companyName : moreObject["Company Name"] , request : false , bookingIndex : bookingIndex} , {$set:{
-        request:true
-      }})
+        console.log("I am here in 1 index");
+        const moreObject = await RedesignedLeadformModel.findOne({
+          company: companyID,
+        });
+        const moreID = moreObject.moreBookings[bookingIndex - 1]._id;
+        const deletedBooking = await RedesignedLeadformModel.findOneAndUpdate(
+          { company: companyID },
+          { $pull: { moreBookings: { _id: moreID } } },
+          { new: true }
+        );
+        const deleterequest = await RequestDeleteByBDE.findOneAndUpdate(
+          {
+            companyName: moreObject["Company Name"],
+            request: false,
+            bookingIndex: bookingIndex,
+          },
+          {
+            $set: {
+              request: true,
+            },
+          }
+        );
 
-      return res.status(200).send("booking Deleted Successfuly")
+        return res.status(200).send("booking Deleted Successfuly");
+      }
+
+      res.status(200).send("Booking deleted successfully");
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      res.status(500).send("Internal Server Error");
     }
-  
-    
-   
-    res.status(200).send("Booking deleted successfully");
-  } catch (error) {
-    console.error("Error deleting booking:", error);
-    res.status(500).send("Internal Server Error");
   }
-});
+);
 
 // Deleting booking for particular id
 app.delete(
@@ -6948,7 +7008,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         Status: "Matured",
         lastActionDate: date,
         ename: newData.bdeName,
-        maturedBdmName:newData.bdmName
+        maturedBdmName: newData.bdmName,
       });
     }
     if (teamData) {
@@ -6960,14 +7020,13 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         },
         { new: true }
       );
-      const date = new Date()
+      const date = new Date();
       await InformBDEModel.create({
-        bdeName : teamData.ename,
-        bdmName : teamData.bdmName,
+        bdeName: teamData.ename,
+        bdmName: teamData.bdmName,
         "Company Name": teamData["Company Name"],
-        date:date
-      })
-     
+        date: date,
+      });
     }
 
     const totalAmount = newData.services.reduce(
@@ -7032,7 +7091,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ₹ ${parseInt(newData.services[i].totalPaymentWGST).toLocaleString() }
+              ₹ ${parseInt(
+                newData.services[i].totalPaymentWGST
+              ).toLocaleString()}
           </div>
         </div>
       </div>
@@ -7073,7 +7134,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-           ${newData.services[i].paymentTerms === "Full Advanced" ? "Full Advanced" : "Part-Payment"}
+           ${
+             newData.services[i].paymentTerms === "Full Advanced"
+               ? "Full Advanced"
+               : "Part-Payment"
+           }
           </div>
         </div>
       </div>
@@ -7113,7 +7178,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ₹ ${parseInt(newData.services[i].secondPayment).toLocaleString()} - ${
+              ₹ ${parseInt(
+                newData.services[i].secondPayment
+              ).toLocaleString()} - ${
           isNaN(new Date(newData.services[i].secondPaymentRemarks))
             ? newData.services[i].secondPaymentRemarks
             : `Payment On ${newData.services[i].secondPaymentRemarks}`
@@ -7139,7 +7206,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ₹ ${parseInt(newData.services[i].thirdPayment).toLocaleString()} - ${
+              ₹ ${parseInt(
+                newData.services[i].thirdPayment
+              ).toLocaleString()} - ${
           isNaN(new Date(newData.services[i].thirdPaymentRemarks))
             ? newData.services[i].thirdPaymentRemarks
             : `Payment On ${newData.services[i].thirdPaymentRemarks}`
@@ -7165,7 +7234,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 font-size: 12px;
                 padding: 5px 10px;
               ">
-              ₹ ${parseInt(newData.services[i].fourthPayment).toLocaleString()} - ${
+              ₹ ${parseInt(
+                newData.services[i].fourthPayment
+              ).toLocaleString()} - ${
           isNaN(new Date(newData.services[i].fourthPaymentRemarks))
             ? newData.services[i].fourthPaymentRemarks
             : `Payment On ${newData.services[i].fourthPaymentRemarks}`
@@ -7503,7 +7574,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                       font-size: 12px;
                       padding: 5px 10px;
                     ">
-                    ${newData.bdmType === "Close-by" ? "Closed-by" : "Supported-by"}
+                    ${
+                      newData.bdmType === "Close-by"
+                        ? "Closed-by"
+                        : "Supported-by"
+                    }
                 </div>
               </div>
             </div>
@@ -7619,7 +7694,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   </div>
                 </div>
             </div>
-             <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+             <div style="display: ${
+               newData.caCase === "Yes" ? "flex" : "none"
+             }; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
@@ -7639,7 +7716,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   </div>
                 </div>
             </div>
-            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+            <div style="display: ${
+              newData.caCase === "Yes" ? "flex" : "none"
+            }; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
@@ -7659,7 +7738,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                   </div>
                 </div>
             </div>
-            <div style="display: ${newData.caCase === "Yes" ? "flex" : "none"}; flex-wrap: wrap">
+            <div style="display: ${
+              newData.caCase === "Yes" ? "flex" : "none"
+            }; flex-wrap: wrap">
                 <div style="width: 25%">
                   <div style="
                         border: 1px solid #ccc;
@@ -7865,14 +7946,14 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
           <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
-         <tr>
+        <tr>
          <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
          <td>${newData.services[i].thirdPaymentRemarks}</td>
-         </tr>
-         <tr>
+        </tr>
+        <tr>
          <td>₹${Number(newData.services[i].fourthPayment).toFixed(2)}/-</td>
          <td>${newData.services[i].fourthPaymentRemarks}</td>
-         </tr>
+        </tr>
         `;
         } else if (rowSpan === 2) {
           paymentServices = `
@@ -7898,7 +7979,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         `;
         }
         servicesHtml += `
-        <table style="margin-top:20px">
+        <table class="table table-bordered">
             <thead>
               <td colspan="4">Service Name : ${
                 newData.services[i].serviceName
@@ -7988,80 +8069,85 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       let incomeTaxServices = "";
 
       for (let i = 0; i < newData.services.length; i++) {
-        if (newData.services[i].serviceName === "Start-Up India Certificate") {
+        if (
+          newData.services[i].serviceName === "Start-Up India Certificate"
+        ) {
           servicesHtml = `
-            <p>
-              <b>Start-Up India Certification Support Service Acknowledgement:</b>
-            </p>
-            <p>
-              I, Director of <b> ${newData["Company Name"]} </b>, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing consultancy services. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-up India certificate is issued free of charge by the government, and I have not been charged for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
-            </p>
-            <br>
-            `;
+          <p class="Declaration_text_head mt-2">
+          <b>
+            Start-Up India Certification Support Service Acknowledgement:
+          </b>
+        </p>
+        <p class="Declaration_text_data">
+          I, Director of ${newData["Company Name"]} , acknowledge that START-UP
+          SAHAY PRIVATE LIMITED is assisting me in obtaining the Start-up India certificate by providing
+          consultancy services. These services involve preparing necessary documents and content for
+          the application, utilizing their infrastructure, experience, manpower, and expertise. I
+
+          understand that START-UP SAHAY charges a fee for these services. I am aware that the Start-
+          up India certificate is issued free of charge by the government, and I have not been charged
+
+          for its issuance. START-UP SAHAY PRIVATE LIMITED has not misled me regarding this matter.
+        </p>
+        
+        `;
         } else if (
           allowedServiceNames.includes(newData.services[i].serviceName)
         ) {
           fundingServicesArray += `${newData.services[i].serviceName},`;
           fundingServices = `
-            <p>
-            <b>
-              ${newData.services[i].serviceName} Support Services Acknowledgement:   
-            </b>
-          </p>
-          <p>
-            I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
-          </p>
-          <br>
-            `;
+          <p class="Declaration_text_head mt-2">
+          <b>
+          ${newData.services[i].serviceName} Support Services Acknowledgement:   
+          </b>
+        </p>
+        <p class="Declaration_text_data">
+        I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${newData.services[i].serviceName}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Concerned authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+        </p>
+        
+        `;
         } else if (
           newData.services[i].serviceName === "Income Tax Excemption"
         ) {
           incomeTaxServices = `
-          <p>
-              <p>
-                <b>
-                  Income Tax Exemption Services Acknowledgement:   
-                </b>
-              </p>
-              <p>
-                I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
-              </p>
-            </p>
-            <br>
-          `;
+          <p class="Declaration_text_head mt-2">
+          <b>
+          Income Tax Exemption Services Acknowledgement:   
+          </b>
+        </p>
+        <p class="Declaration_text_data">
+        I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+        </p>
+      `;
         } else {
           servicesHtml += `
-          <br>
-          `;
+      <br>
+      `;
         }
       }
 
       if (fundingServicesArray !== "") {
         servicesHtml += `
-        <p>
+        <p class="Declaration_text_head mt-2">
         <b>
-          ${fundingServicesArray} Support Services Acknowledgement:   
+        ${fundingServicesArray} Support Services Acknowledgement:    
         </b>
       </p>
-      <p>
-        I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
+      <p class="Declaration_text_data">
+      I, Director of ${newData["Company Name"]}, engage START-UP SAHAY PRIVATE LIMITED for ${fundingServicesArray}. They'll provide document creation and Application support, utilizing their resources and expertise. I understand there's a fee for their services, not as government fees, Approval of the application is up to the Seed Fund authorities. START-UP SAHAY PRIVATE LIMITED has not assured me of application approval.
       </p>
-      <br>
-        `;
+    `;
       } else if (incomeTaxServices !== "") {
         servicesHtml += `
-        <p>
-        <p>
-          <b>
-            Income Tax Exemption Services Acknowledgement:   
-          </b>
-        </p>
-        <p>
-          I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
-        </p>
+        <p class="Declaration_text_head mt-2">
+        <b>
+        Income Tax Exemption Services Acknowledgement:     
+        </b>
       </p>
-      <br>
-      `;
+      <p class="Declaration_text_data">
+      I, Director of ${newData["Company Name"]}, acknowledge that START-UP SAHAY PRIVATE LIMITED is assisting me in obtaining the Certificate of Eligibility for the 3-year tax exemption under the 80IAC Income Tax Act. These services involve preparing necessary documents and content for the application, utilizing their infrastructure, experience, manpower, and expertise. I understand there's a fee for their services, not as government fees. START-UP SAHAY PRIVATE LIMITED has provided accurate information regarding the approval process. The decision regarding the application approval rests with the concerned authorities.
+      </p>
+  `;
       }
       return servicesHtml;
     };
@@ -8069,43 +8155,35 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const serviceKawali = renderServiceKawali();
     const todaysDate = new Date().toLocaleDateString();
     const mainPageHtml = `
-    <div class="page">
-      <div class="container position-relative">
-        <div class="front-page">
-          <div class="page-heading">
-            <div class="date">Date: ${todaysDate}</div>
-            <div class="acknowledgement">
-              <b> Self Declaration </b>
+          <div class="PDF_main">
+          <section>
+            <div class="date_div">
+              <p>${todaysDate}</p>
             </div>
-          </div>
-          <div class="page-body">
-            ${serviceKawali}
-            <p>
-              I, understands that because of government regulations and portal,
-              I have no objections if the process takes longer than initially
-              committed, knowing it's just how government schemes related
-              process works.
-            </p>
-            <p>
-              I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up
-              India certificate application if required on my behalf, as I am
-              not familiar with the process.
-            </p>
-          </div>
-
-          <div class="page-footer">
-            <span>
-              Client's Signature: ___________________________________
-            </span>
-          </div>
-
-          <div class="pagination">
-            <span class="pagination-text"> Page 1/2 </span>
-          </div>
+            <div class="pdf_heading">
+              <h3>Self Declaration</h3>
+            </div>
+            <div class="Declaration_text">
+              ${serviceKawali}
+              <p class="Declaration_text_data">
+                I, understands that because of government regulations and portal, I have no objections if the
+                process takes longer than initially committed, knowing it's just how government schemes
+                related process works.
+              </p>
+              <p class="Declaration_text_data">
+                I, authorize START-UP SAHAY PRIVATE LIMITED to submit the Start-up India certificate
+                application if required on my behalf, as I am not familiar with the process.
+              </p>
+            </div>
+            <div class="section_footer">
+              <p class="Declaration_text_data Signature">
+                Client's Signature:__________________________________
+              </p>
+              <p style="text-align: center;">Page 1/2</p>
+            </div>
+          </section>
         </div>
-      </div>
-    </div>
-    `;
+      `;
 
     const mainPage =
       newPageDisplay === 'style="display:block' ? mainPageHtml : "";
@@ -8120,7 +8198,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const paymentDetails = renderPaymentDetails();
 
     const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
-    const filledHtml = htmlTemplate
+    const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
+    const filledHtml = htmlNewTemplate
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
@@ -8137,17 +8216,19 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
       .replace("{{Service-Details}}", paymentDetails)
       .replace("{{Company Number}}", newData["Company Number"]);
-    
-    //   console.log("This is html file reading:-", filledHtml);
-    const pdfFilePath = `./GeneratedDocs/${newData['Company Name']}.pdf`;
 
+    //   console.log("This is html file reading:-", filledHtml);
+    const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
 
     pdf
-      .create(filledHtml, { format: "Letter" , childProcessOptions:{
-        env:{
-          OPENSSL_CONF: './dev/null',
-        }
-      }})
+      .create(filledHtml, {
+        format: "Letter",
+        childProcessOptions: {
+          env: {
+            OPENSSL_CONF: "./dev/null",
+          },
+        },
+      })
       .toFile(pdfFilePath, async (err, response) => {
         if (err) {
           console.error("Error generating PDF:", err);
@@ -8226,52 +8307,61 @@ function generatePdf(htmlContent) {
       });
   }
 }
-app.post("/api/update-redesigned-final-form/:CompanyName",
-upload.fields([
-  { name: "otherDocs", maxCount: 50 },
-  { name: "paymentReceipt", maxCount: 1 },
-]), async (req, res) => {
-  // Assuming updatedBooking contains the updated data
-  const companyName = req.params.CompanyName; // Get the _id from the request parameters
-  const { _id,moreBookings,step4changed,otherDocs,paymentReceipt ,...updatedDocs } = req.body;
-  const newOtherDocs = req.files["otherDocs"] || []; 
-  const newPaymentReceipt = req.files["paymentReceipt"] || [];
-  const updatedDocWithoutId = {
-    ...updatedDocs,
-    otherDocs: newOtherDocs,
-    paymentReceipt: newPaymentReceipt,
-  };
-  const goingToUpdate = step4changed=== "true" ? updatedDocWithoutId : updatedDocs;
- 
-  
-  try {
-    // Find the document by _id and update it with the updatedBooking data
+app.post(
+  "/api/update-redesigned-final-form/:CompanyName",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    // Assuming updatedBooking contains the updated data
+    const companyName = req.params.CompanyName; // Get the _id from the request parameters
+    const {
+      _id,
+      moreBookings,
+      step4changed,
+      otherDocs,
+      paymentReceipt,
+      ...updatedDocs
+    } = req.body;
+    const newOtherDocs = req.files["otherDocs"] || [];
+    const newPaymentReceipt = req.files["paymentReceipt"] || [];
+    const updatedDocWithoutId = {
+      ...updatedDocs,
+      otherDocs: newOtherDocs,
+      paymentReceipt: newPaymentReceipt,
+    };
+    const goingToUpdate =
+      step4changed === "true" ? updatedDocWithoutId : updatedDocs;
 
-    const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
-      {
+    try {
+      // Find the document by _id and update it with the updatedBooking data
+
+      const updatedDocument = await RedesignedLeadformModel.findOneAndUpdate(
+        {
+          "Company Name": companyName,
+        },
+        goingToUpdate,
+        // Set all properties except "moreBookings"
+        { new: true } // Return the updated document
+      );
+
+      if (!updatedDocument) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+      const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
         "Company Name": companyName,
-      },
-      goingToUpdate, 
-   // Set all properties except "moreBookings"
-      { new: true } // Return the updated document
-    );
-  
+      });
 
-    if (!updatedDocument) {
-      return res.status(404).json({ error: "Document not found" });
+      res
+        .status(200)
+        .json({ message: "Document updated successfully", updatedDocument });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-    const deleteFormRequest = await EditableDraftModel.findOneAndDelete({
-      "Company Name": companyName,
-    });
-
-    res
-      .status(200)
-      .json({ message: "Document updated successfully", updatedDocument });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
   }
-});
+);
 app.put(
   "/api/update-more-booking/:CompanyName/:bookingIndex",
   upload.fields([
@@ -8281,13 +8371,17 @@ app.put(
   async (req, res) => {
     try {
       const { CompanyName, bookingIndex } = req.params;
-      const {otherDocs,paymentReceipt ,step4changed,...newData} = req.body;
-  
-      const newOtherDocs = req.files["otherDocs"] || []; 
-      const newPaymentReceipt = req.files["paymentReceipt"] || [];
-      const latestData = {...newData , otherDocs:newOtherDocs , paymentReceipt:newPaymentReceipt }
+      const { otherDocs, paymentReceipt, step4changed, ...newData } = req.body;
 
-      const dataToSend = step4changed === "true" ? latestData : newData
+      const newOtherDocs = req.files["otherDocs"] || [];
+      const newPaymentReceipt = req.files["paymentReceipt"] || [];
+      const latestData = {
+        ...newData,
+        otherDocs: newOtherDocs,
+        paymentReceipt: newPaymentReceipt,
+      };
+
+      const dataToSend = step4changed === "true" ? latestData : newData;
       // Find the document by companyName
       const existingDocument = await RedesignedLeadformModel.findOne({
         "Company Name": CompanyName,
@@ -8328,6 +8422,60 @@ app.delete(
     }
   }
 );
+
+//  ------------------------------------------- Update more bookings Payment -------------------------------------------------------------------
+
+app.post(
+  "/api/redesigned-submit-morePayments/:CompanyName",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const objectData = req.body;
+      console.log("Object Data:", objectData);
+
+      const newPaymentReceipt = req.files["paymentReceipt"] || [];
+      const companyName = objectData["Company Name"];
+      const bookingIndex = objectData.bookingIndex;
+      const sendingObject = {
+        serviceName: objectData.serviceName,
+        remainingAmount: objectData.remainingAmount,
+        paymentMethod: objectData.paymentMethod,
+        extraRemarks: objectData.extraRemarks,
+        totalPayment: objectData.pendingAmount,
+        receivedPayment: objectData.receivedAmount,
+        pendingPayment: objectData.remainingAmount,
+        paymentReceipt: newPaymentReceipt,
+      };
+      console.log("Sending Object:", sendingObject, bookingIndex);
+
+      if (bookingIndex == 0) {
+        console.log("Hi guyz");
+        // Handle updating RedesignedLeadformModel for bookingIndex 0
+        // Example code: Uncomment and replace with your logic
+        const object = await RedesignedLeadformModel.findOneAndUpdate(
+          {
+            "Company Name": companyName,
+          },
+          {
+            $push: { remainingPayments: sendingObject },
+          },
+          { new: true }
+        );
+
+        return res.status(200).send("Successfully submitted more payments.");
+      } else {
+        return res.status(400).send("Invalid booking index.");
+      }
+    } catch (error) {
+      console.error("Error submitting more payments:", error);
+      return res.status(500).send("Internal Server Error.");
+    }
+  }
+);
+
 app.post("/api/generate-pdf", async (req, res) => {
   const clientName = "Miya bhai";
   const clientAddress = "Ohio";
@@ -8379,8 +8527,6 @@ app.post("/api/generate-pdf", async (req, res) => {
     res.status(500).send("Error generating PDF");
   }
 });
-
-// Function to generate PDF
 
 http.listen(3001, function () {
   console.log("Server started...");

@@ -313,37 +313,90 @@ function ManagerBookings() {
 
   // --------------------------------------------------  ADD REMAINING PAYMENT SECTION ----------------------------------------------------------
   const [remainingObject, setRemainingObject] = useState({
-    "Company Name":"",
-     paymentCount : "",
-     bookingIndex:0,
-     serviceName:"",
-     paymentMethod:'',
-     extraRemarks:'',
-     paymentDate:null,
-     pendingAmount:0,
-     receivedAmount : 0,
-     remainingAmount : 0,
-     remainingPaymentReceipt:null
-  })
-  const functionOpenRemainingPayment = (object , paymentNumber , companyName , bookingIndex )=>{
-    const serviceName = object.serviceName ;
-    const pendingPayment = object.secondPayment;
-    setRemainingObject({
-      "Company Name":companyName,
-      paymentCount : paymentNumber,
-      bookingIndex:bookingIndex,
-      serviceName:serviceName,
-      pendingAmount:pendingPayment,
-      receivedAmount : pendingPayment,
-      remainingAmount : 0
-    });
-    setOpenRemainingPayment(true)
-  }
+    "Company Name": "",
+    paymentCount: "",
+    bookingIndex: 0,
+    serviceName: "",
+    paymentMethod: "",
+    extraRemarks: "",
+    paymentDate: null,
+    paymentRemarks: "",
+    pendingAmount: 0,
+    receivedAmount: 0,
+    remainingAmount: 0,
+    remainingPaymentReceipt: null,
+  });
+  const functionOpenRemainingPayment = (
+    object,
+    paymentNumber,
+    companyName,
+    bookingIndex
+  ) => {
+    const serviceName = object.serviceName;
+    let pendingPayment;
+    let paymentRemarks;
+    if (paymentNumber === "secondPayment") {
+      pendingPayment = object.secondPayment;
+      paymentRemarks = object.secondPaymentRemarks;
+    } else if (paymentNumber === "thirdPayment") {
+      pendingPayment = object.thirdPayment;
+      paymentRemarks = object.thirdPaymentRemarks;
+    } else {
+      pendingPayment = object.fourthPayment;
+      paymentRemarks = object.fourthPaymentRemarks;
+    }
 
-  const handleSubmitMorePayments = async()=>{
-    
-  }
-   return (
+    setRemainingObject({
+      "Company Name": companyName,
+      paymentCount: paymentNumber,
+      bookingIndex: bookingIndex,
+      serviceName: serviceName,
+      pendingAmount: pendingPayment,
+      receivedAmount: pendingPayment,
+      remainingAmount: 0,
+      paymentRemarks,
+    });
+    setOpenRemainingPayment(true);
+  };
+
+  const formData = new FormData();
+  formData.append("Company Name", remainingObject["Company Name"]);
+  formData.append("paymentCount", remainingObject["paymentCount"]);
+  formData.append("bookingIndex", remainingObject["bookingIndex"]);
+  formData.append("serviceName", remainingObject["serviceName"]);
+  formData.append("pendingAmount", remainingObject["pendingAmount"]);
+  formData.append("receivedAmount", remainingObject["receivedAmount"]);
+  formData.append("remainingAmount", remainingObject["remainingAmount"]);
+  formData.append("paymentMethod", remainingObject["paymentMethod"]);
+  formData.append("extraRemarks", remainingObject["extraRemarks"]);
+  formData.append("paymentRemarks", remainingObject["paymentRemarks"]);
+  formData.append("paymentReceipt", remainingObject["remainingPaymentReceipt"]);
+  const handleSubmitMorePayments = async () => {
+    try {
+      const response = await axios.post(
+        `${secretKey}/redesigned-submit-morePayments/${remainingObject["Company Name"]}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      Swal.fire(
+        "Payment Updated",
+        "Thank you, your payment has been updated successfully!",
+        "success"
+      );
+      setOpenRemainingPayment(false);
+    } catch (error) {
+      Swal.fire(
+        "Error Updating Payment!",
+        "Sorry, Unable to update the payment",
+        "error"
+      );
+    }
+  };
+  return (
     <div>
       <Header name={dataManagerName} />
       <Navbar name={dataManagerName} />
@@ -560,12 +613,8 @@ function ManagerBookings() {
                       <div className="my-card mt-2">
                         <div className="my-card-head">
                           <div className="d-flex align-items-center justify-content-between">
-                            <div>
-                              Basic Informations
-                            </div>
-                            <div>
-                              Total Services: 4
-                            </div>
+                            <div>Basic Informations</div>
+                            <div>Total Services: 4</div>
                           </div>
                         </div>
                         <div className="my-card-body">
@@ -700,30 +749,42 @@ function ManagerBookings() {
                             <div className="col-lg-4 col-sm-6 p-0">
                               <div class="row m-0">
                                 <div class="col-sm-4 align-self-stretc p-0">
-                                    <div class="booking_inner_dtl_h h-100">Total</div>
+                                  <div class="booking_inner_dtl_h h-100">
+                                    Total
+                                  </div>
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
-                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">₹ 2,00,000</div>
+                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                    ₹ 2,00,000
+                                  </div>
                                 </div>
                               </div>
                             </div>
                             <div className="col-lg-4 col-sm-6 p-0">
                               <div class="row m-0">
                                 <div class="col-sm-4 align-self-stretc p-0">
-                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">Received</div>
+                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                    Received
+                                  </div>
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
-                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
+                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                    ₹ 50,000
+                                  </div>
                                 </div>
                               </div>
                             </div>
                             <div className="col-lg-4 col-sm-6 p-0">
                               <div class="row m-0">
                                 <div class="col-sm-4 align-self-stretc p-0">
-                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending</div>
+                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                    Pending
+                                  </div>
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
-                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
+                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                    ₹ 50,000
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -934,7 +995,7 @@ function ManagerBookings() {
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                           <div className="d-flex align-items-center justify-content-between">
-                                            <div> 
+                                            <div>
                                               ₹{" "}
                                               {parseInt(
                                                 obj.totalPaymentWGST
@@ -947,7 +1008,9 @@ function ManagerBookings() {
                                               {")"}
                                             </div>
                                             <div>
-                                              <button className="btn btn-link btn-small">+ Expanse</button>
+                                              <button className="btn btn-link btn-small">
+                                                + Expanse
+                                              </button>
                                             </div>
                                           </div>
                                         </div>
@@ -956,7 +1019,7 @@ function ManagerBookings() {
                                   </div>
                                 </div>
                                 <div className="row m-0 bdr-btm-eee">
-                                  <div className="col-lg-6 col-sm-6 p-0">
+                                  <div className="col-lg-5 col-sm-5 p-0">
                                     <div class="row m-0">
                                       <div class="col-sm-4 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h h-100">
@@ -965,23 +1028,39 @@ function ManagerBookings() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                          {obj.paymentTerms === 'two-part' ? 'Part-Payment' : 'Full Advanced'}
+                                          {obj.paymentTerms === "two-part"
+                                            ? "Part-Payment"
+                                            : "Full Advanced"}
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="col-lg-6 col-sm-6 p-0">
+                                  <div className="col-lg-5 col-sm-5 p-0">
                                     <div class="row m-0">
-                                      <div class="col-sm-4 align-self-stretch p-0">
+                                      <div class="col-sm-3 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h h-100 bdr-left-eee">
                                           Notes
                                         </div>
                                       </div>
-                                      <div class="col-sm-8 align-self-stretch p-0">
+                                      <div class="col-sm-9 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                           {obj.paymentRemarks
                                             ? obj.paymentRemarks
                                             : "N/A"}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="col-lg-2 col-sm-2 p-0">
+                                    <div class="row m-0">
+                                      <div class="col-sm-6 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                          Expanses
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-6 align-self-stretch p-0">
+                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                          - ₹ 500
                                         </div>
                                       </div>
                                     </div>
@@ -1017,7 +1096,7 @@ function ManagerBookings() {
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            <div className="d-flex align-items-center justify-content-between"> 
+                                            <div className="d-flex align-items-center justify-content-between">
                                               <div>
                                                 ₹
                                                 {parseInt(
@@ -1025,7 +1104,9 @@ function ManagerBookings() {
                                                 ).toLocaleString()}
                                                 {"("}
                                                 {isNaN(
-                                                  new Date(obj.secondPaymentRemarks)
+                                                  new Date(
+                                                    obj.secondPaymentRemarks
+                                                  )
                                                 )
                                                   ? obj.secondPaymentRemarks
                                                   : "On " +
@@ -1034,7 +1115,30 @@ function ManagerBookings() {
                                                 {")"}
                                               </div>
                                               <div>
-                                                <div className="add-remaining-amnt" title="Add Remaining Payment" onClick={()=> functionOpenRemainingPayment(obj , "secondPayment", currentLeadform["Company Name"] , 0)}>+</div>
+                                                <div
+                                                  className="add-remaining-amnt"
+                                                  style={{
+                                                    display:
+                                                      currentLeadform
+                                                        .remainingPayments
+                                                        .length === 1
+                                                        ? "none"
+                                                        : "block",
+                                                  }}
+                                                  title="Add Remaining Payment"
+                                                  onClick={() =>
+                                                    functionOpenRemainingPayment(
+                                                      obj,
+                                                      "secondPayment",
+                                                      currentLeadform[
+                                                        "Company Name"
+                                                      ],
+                                                      0
+                                                    )
+                                                  }
+                                                >
+                                                  +
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
@@ -1062,7 +1166,9 @@ function ManagerBookings() {
                                                 ).toLocaleString()}
                                                 {"("}
                                                 {isNaN(
-                                                  new Date(obj.thirdPaymentRemarks)
+                                                  new Date(
+                                                    obj.thirdPaymentRemarks
+                                                  )
                                                 )
                                                   ? obj.thirdPaymentRemarks
                                                   : "On " +
@@ -1070,7 +1176,22 @@ function ManagerBookings() {
                                                     ")"}
                                               </div>
                                               <div>
-                                                <div className="add-remaining-amnt" title="Add Remaining Payment" onClick={()=> functionOpenRemainingPayment(obj , "thirdPayment", currentLeadform["Company Name"] , 0)}>+</div>
+                                                <div
+                                                  className="add-remaining-amnt"
+                                                  title="Add Remaining Payment"
+                                                  onClick={() =>
+                                                    functionOpenRemainingPayment(
+                                                      obj,
+                                                      "thirdPayment",
+                                                      currentLeadform[
+                                                        "Company Name"
+                                                      ],
+                                                      0
+                                                    )
+                                                  }
+                                                >
+                                                  +
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
@@ -1096,7 +1217,9 @@ function ManagerBookings() {
                                                 ).toLocaleString()}{" "}
                                                 {"("}
                                                 {isNaN(
-                                                  new Date(obj.fourthPaymentRemarks)
+                                                  new Date(
+                                                    obj.fourthPaymentRemarks
+                                                  )
                                                 )
                                                   ? obj.fourthPaymentRemarks
                                                   : "On " +
@@ -1104,7 +1227,22 @@ function ManagerBookings() {
                                                     ")"}
                                               </div>
                                               <div>
-                                                <div className="add-remaining-amnt" title="Add Remaining Payment" onClick={()=> functionOpenRemainingPayment(obj , "fourthPayment" , currentLeadform["Company Name"] , 0)}>+</div>
+                                                <div
+                                                  className="add-remaining-amnt"
+                                                  title="Add Remaining Payment"
+                                                  onClick={() =>
+                                                    functionOpenRemainingPayment(
+                                                      obj,
+                                                      "fourthPayment",
+                                                      currentLeadform[
+                                                        "Company Name"
+                                                      ],
+                                                      0
+                                                    )
+                                                  }
+                                                >
+                                                  +
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
@@ -1115,135 +1253,132 @@ function ManagerBookings() {
                                 </div>
                               </div>
                               {/* Remaining Payment Viwe Sections */}
-                              <div className="my-card-body accordion" id="accordionExample">
-                                <div class="accordion-item bdr-none">
-                                  <div id="headingOne accordion-header" className="pr-10">
-                                    <div className="row m-0 bdr-btm-eee accordion-button p-0" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                      <div className="w-95 p-0">
-                                        <div className="booking_inner_dtl_h h-100">
-                                          <div>Remaining Payment </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                    <div class="accordion-body bdr-none p-0">
-                                      <div>
-                                        <div className="row m-0 bdr-btm-eee bdr-top-eee"> 
-                                          <div className="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
-                                            <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
+                             
+                                  {currentLeadform.remainingPayments.length !==
+                                    0 &&
+                                    currentLeadform.remainingPayments.map(
+                                      (paymentObj, index) =>
+                                        paymentObj.serviceName ===
+                                        obj.serviceName ? (
+                                          <div
+                                          className="my-card-body accordion"
+                                          id="accordionExample"
+                                        >
+                                          <div class="accordion-item bdr-none">
+                                            <div
+                                              id="headingOne accordion-header"
+                                              className="pr-10"
+                                            >
+                                              <div
+                                                className="row m-0 bdr-btm-eee accordion-button p-0"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapseOne"
+                                                aria-expanded="true"
+                                                aria-controls="collapseOne"
+                                              >
+                                                <div className="w-95 p-0">
+                                                  <div className="booking_inner_dtl_h h-100">
+                                                    <div>Remaining Payment </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          <div
+                                            id="collapseOne"
+                                            class="accordion-collapse collapse show"
+                                            aria-labelledby="headingOne"
+                                            data-bs-parent="#accordionExample"
+                                            key={index} // Add a unique key prop for each rendered element
+                                          >
+                                            <div class="accordion-body bdr-none p-0">
                                               <div>
-                                                Second Remaining Payment
-                                              </div>
-                                              <div>
-                                                2/12/2023
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div className="row m-0 bdr-btm-eee"> 
-                                          <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
-                                            <div class="row m-0 h-100">
-                                              <div class="col-sm-5 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_h h-100">Amount</div>
-                                              </div>
-                                              <div class="col-sm-7 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
-                                            <div class="row m-0 h-100">
-                                              <div class="col-sm-5 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending</div>
-                                              </div>
-                                              <div class="col-sm-7 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
-                                            <div class="row m-0 h-100">
-                                              <div class="col-sm-5 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">Payment Method</div>
-                                              </div>
-                                              <div class="col-sm-7 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">ICICI Bank</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div className="col-lg-3 col-sm-4 p-0 align-self-stretc">
-                                            <div class="row m-0 h-100">
-                                              <div class="col-sm-6 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">Extra Remarks</div>
-                                              </div>
-                                              <div class="col-sm-6 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">no</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <div className="row m-0 bdr-btm-eee bdr-top-eee"> 
-                                          <div className="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
-                                            <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
-                                              <div>
-                                                Third Remaining Payment
-                                              </div>
-                                              <div>
-                                                2/12/2023
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div className="row m-0 bdr-btm-eee"> 
-                                          <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
-                                            <div class="row m-0 h-100">
-                                              <div class="col-sm-5 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_h h-100">Amount</div>
-                                              </div>
-                                              <div class="col-sm-7 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
-                                            <div class="row m-0 h-100">
-                                              <div class="col-sm-5 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">Pending</div>
-                                              </div>
-                                              <div class="col-sm-7 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">₹ 50,000</div>
+                                                <div className="row m-0 bdr-btm-eee bdr-top-eee">
+                                                  <div className="col-lg-12 col-sm-6 p-0 align-self-stretc bg-fffafa">
+                                                    <div class="booking_inner_dtl_h h-100 d-flex align-items-center justify-content-between">
+                                                      <div>
+                                                        {index === 0
+                                                          ? "Second"
+                                                          : "Third"}{" "}
+                                                        Remaining Payment
+                                                      </div>
+                                                      <div>2/12/2023</div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                <div className="row m-0 bdr-btm-eee">
+                                                  <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                                    <div class="row m-0 h-100">
+                                                      <div class="col-sm-5 align-self-stretc p-0">
+                                                        <div class="booking_inner_dtl_h h-100">
+                                                          Amount
+                                                        </div>
+                                                      </div>
+                                                      <div class="col-sm-7 align-self-stretc p-0">
+                                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                          ₹{" "}
+                                                          {paymentObj.receivedPayment.toLocaleString()}
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <div className="col-lg-2 col-sm-6 p-0 align-self-stretc">
+                                                    <div class="row m-0 h-100">
+                                                      <div class="col-sm-5 align-self-stretc p-0">
+                                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                                          Pending
+                                                        </div>
+                                                      </div>
+                                                      <div class="col-sm-7 align-self-stretc p-0">
+                                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                          ₹{" "}
+                                                          {
+                                                            paymentObj.pendingPayment
+                                                          }
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
+                                                    <div class="row m-0 h-100">
+                                                      <div class="col-sm-5 align-self-stretc p-0">
+                                                        <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                          Payment Method
+                                                        </div>
+                                                      </div>
+                                                      <div class="col-sm-7 align-self-stretc p-0">
+                                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                          {
+                                                            paymentObj.paymentMethod
+                                                          }
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <div className="col-lg-3 col-sm-4 p-0 align-self-stretc">
+                                                    <div class="row m-0 h-100">
+                                                      <div class="col-sm-6 align-self-stretc p-0">
+                                                        <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                          Extra Remarks
+                                                        </div>
+                                                      </div>
+                                                      <div class="col-sm-6 align-self-stretc p-0">
+                                                        <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                          {
+                                                            paymentObj.extraRemarks
+                                                          }
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
-                                          <div className="col-lg-5 col-sm-6 p-0 align-self-stretc">
-                                            <div class="row m-0 h-100">
-                                              <div class="col-sm-5 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">Payment Method</div>
-                                              </div>
-                                              <div class="col-sm-7 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">ICICI Bank</div>
-                                              </div>
-                                            </div>
                                           </div>
-                                          <div className="col-lg-3 col-sm-4 p-0 align-self-stretc">
-                                            <div class="row m-0 h-100">
-                                              <div class="col-sm-6 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_h h-100 bdr-left-eee">Extra Remarks</div>
-                                              </div>
-                                              <div class="col-sm-6 align-self-stretc p-0">
-                                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">no</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
                               </div>
+                                        ) : null // Render null for elements that don't match the condition
+                                    )}
+                              
                             </div>
                           ))}
                         {/* -------- CA Case -------- */}
@@ -1838,7 +1973,9 @@ function ManagerBookings() {
                                                   {")"}
                                                 </div>
                                                 <div>
-                                                  <button className="btn btn-link btn-small">+ Expanse</button>
+                                                  <button className="btn btn-link btn-small">
+                                                    + Expanse
+                                                  </button>
                                                 </div>
                                               </div>
                                             </div>
@@ -1847,7 +1984,7 @@ function ManagerBookings() {
                                       </div>
                                     </div>
                                     <div className="row m-0 bdr-btm-eee">
-                                      <div className="col-lg-6 col-sm-6 p-0">
+                                      <div className="col-lg-5 col-sm-5 p-0">
                                         <div class="row m-0">
                                           <div class="col-sm-4 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_h h-100">
@@ -1861,18 +1998,32 @@ function ManagerBookings() {
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="col-lg-6 col-sm-6 p-0">
+                                      <div className="col-lg-5 col-sm-5 p-0">
                                         <div class="row m-0">
-                                          <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="col-sm-3 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_h h-100 bdr-left-eee">
                                               Notes
                                             </div>
                                           </div>
-                                          <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="col-sm-9 align-self-stretch p-0">
                                             <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                               {obj.paymentRemarks
                                                 ? obj.paymentRemarks
                                                 : "N/A"}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-2 col-sm-2 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-6 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                              Expanses
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-6 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              - ₹ 500
                                             </div>
                                           </div>
                                         </div>
@@ -1927,7 +2078,22 @@ function ManagerBookings() {
                                                         ")"}
                                                   </div>
                                                   <div>
-                                                    <div className="add-remaining-amnt" title="Add Remaining Payment" onClick={()=> functionOpenRemainingPayment(obj , "secondPayment" , currentLeadform["Company Name"] , index+1)}>+</div>
+                                                    <div
+                                                      className="add-remaining-amnt"
+                                                      title="Add Remaining Payment"
+                                                      onClick={() =>
+                                                        functionOpenRemainingPayment(
+                                                          obj,
+                                                          "secondPayment",
+                                                          currentLeadform[
+                                                            "Company Name"
+                                                          ],
+                                                          index + 1
+                                                        )
+                                                      }
+                                                    >
+                                                      +
+                                                    </div>
                                                   </div>
                                                 </div>
                                               </div>
@@ -1965,7 +2131,22 @@ function ManagerBookings() {
                                                         ")"}
                                                   </div>
                                                   <div>
-                                                    <div className="add-remaining-amnt" title="Add Remaining Payment" onClick={()=> functionOpenRemainingPayment(obj , "thirdPayment"  , currentLeadform["Company Name"] , index+1)}>+</div>
+                                                    <div
+                                                      className="add-remaining-amnt"
+                                                      title="Add Remaining Payment"
+                                                      onClick={() =>
+                                                        functionOpenRemainingPayment(
+                                                          obj,
+                                                          "thirdPayment",
+                                                          currentLeadform[
+                                                            "Company Name"
+                                                          ],
+                                                          index + 1
+                                                        )
+                                                      }
+                                                    >
+                                                      +
+                                                    </div>
                                                   </div>
                                                 </div>
                                               </div>
@@ -2001,7 +2182,22 @@ function ManagerBookings() {
                                                         ")"}
                                                   </div>
                                                   <div>
-                                                    <div className="add-remaining-amnt" title="Add Remaining Payment" onClick={()=> functionOpenRemainingPayment(obj , "fourthPayment", currentLeadform["Company Name"] , index+1)}>+</div>
+                                                    <div
+                                                      className="add-remaining-amnt"
+                                                      title="Add Remaining Payment"
+                                                      onClick={() =>
+                                                        functionOpenRemainingPayment(
+                                                          obj,
+                                                          "fourthPayment",
+                                                          currentLeadform[
+                                                            "Company Name"
+                                                          ],
+                                                          index + 1
+                                                        )
+                                                      }
+                                                    >
+                                                      +
+                                                    </div>
                                                   </div>
                                                 </div>
                                               </div>
@@ -2369,7 +2565,6 @@ function ManagerBookings() {
                             </div>
                           </>
                         ))}
-
                     </div>
                   </div>
                 </div>
@@ -2444,107 +2639,187 @@ function ManagerBookings() {
           <div className="container">
             <div className="row mb-1">
               <div className="col-sm-6">
-              <label htmlFor="remaining-service-name" className="form-label">Service Name :</label>
+                <label htmlFor="remaining-service-name" className="form-label">
+                  Service Name :
+                </label>
                 <div className="col">
-                  <select value={remainingObject["Company Name"] !== "" && remainingObject.serviceName} name="remaining-service-name" id="remaining-service-name" className="form-select" disabled>
-                    <option value={remainingObject["Company Name"] !== "" && remainingObject.serviceName} selected disabled >{remainingObject["Company Name"] !== "" && remainingObject.serviceName}</option>
-                 
+                  <select
+                    value={
+                      remainingObject["Company Name"] !== "" &&
+                      remainingObject.serviceName
+                    }
+                    name="remaining-service-name"
+                    id="remaining-service-name"
+                    className="form-select"
+                    disabled
+                  >
+                    <option
+                      value={
+                        remainingObject["Company Name"] !== "" &&
+                        remainingObject.serviceName
+                      }
+                      selected
+                      disabled
+                    >
+                      {remainingObject["Company Name"] !== "" &&
+                        remainingObject.serviceName}
+                    </option>
                   </select>
-               
                 </div>
-            
-             
               </div>
               <div className="col-sm-6">
-              <label htmlFor="remaining-payment-proper" className="form-label">Remaining Payment :</label>
+                <label
+                  htmlFor="remaining-payment-proper"
+                  className="form-label"
+                >
+                  Remaining Payment :
+                </label>
                 <div className="col">
-                  <input value={remainingObject["Company Name"] !== "" && remainingObject.receivedAmount} onChange={(e) => setRemainingObject({
-                    ...remainingObject,
-                    receivedAmount:e.target.value,
-                   
-                  })} type="number" className="form-control" name="remaining-payment-proper" id="remaining-payment-proper" placeholder="Remaining Payment" />
+                  <input
+                    value={
+                      remainingObject["Company Name"] !== "" &&
+                      remainingObject.receivedAmount
+                    }
+                    onChange={(e) =>
+                      setRemainingObject({
+                        ...remainingObject,
+                        receivedAmount: e.target.value,
+                      })
+                    }
+                    type="number"
+                    className="form-control"
+                    name="remaining-payment-proper"
+                    id="remaining-payment-proper"
+                    placeholder="Remaining Payment"
+                  />
                 </div>
-
               </div>
-              
             </div>
             <div className="row mt-2">
               <div className="col-sm-6">
-              <label htmlFor="remaining-paymentmethod" className="form-label">Payment Method :</label>
+                <label htmlFor="remaining-paymentmethod" className="form-label">
+                  Payment Method :
+                </label>
                 <div className="col">
-                  <select name="remaining-paymentmethod" value={remainingObject["Company Name"] !== "" && remainingObject.paymentMethod} id="remaining-paymentmethod" className="form-select" onChange={(e) => setRemainingObject({
-                    ...remainingObject,
-                    paymentMethod:e.target.value
-                  })}>
-                     <option value="" disabled selected>
-                                          Select Payment Option
-                                        </option>
-                                        <option value="ICICI Bank">
-                                          ICICI Bank
-                                        </option>
-                                        <option value="SRK Seedfund(Non GST)/IDFC first Bank">
-                                          SRK Seedfund(Non GST)/IDFC first Bank
-                                        </option>
-                                        <option value="STARTUP SAHAY SERVICES/ADVISORY(Non GST)/ IDFC First Bank">
-                                          STARTUP SAHAY SERVICES/ADVISORY(Non
-                                          GST)/ IDFC First Bank
-                                        </option>
-                                        <option value="Razorpay">
-                                          Razorpay
-                                        </option>
-                                        <option value="PayU">PayU</option>
-                                        <option value="Cashfree">Cashfree</option>
-                                        <option value="Other">Other</option>
+                  <select
+                    name="remaining-paymentmethod"
+                    value={
+                      remainingObject["Company Name"] !== "" &&
+                      remainingObject.paymentMethod
+                    }
+                    id="remaining-paymentmethod"
+                    className="form-select"
+                    onChange={(e) =>
+                      setRemainingObject({
+                        ...remainingObject,
+                        paymentMethod: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="" disabled selected>
+                      Select Payment Option
+                    </option>
+                    <option value="ICICI Bank">ICICI Bank</option>
+                    <option value="SRK Seedfund(Non GST)/IDFC first Bank">
+                      SRK Seedfund(Non GST)/IDFC first Bank
+                    </option>
+                    <option value="STARTUP SAHAY SERVICES/ADVISORY(Non GST)/ IDFC First Bank">
+                      STARTUP SAHAY SERVICES/ADVISORY(Non GST)/ IDFC First Bank
+                    </option>
+                    <option value="Razorpay">Razorpay</option>
+                    <option value="PayU">PayU</option>
+                    <option value="Cashfree">Cashfree</option>
+                    <option value="Other">Other</option>
                   </select>
-               
                 </div>
-             
-             
               </div>
               <div className="col-sm-6">
-                <div className="col">
-                <label htmlFor="remaining-paymentmethod"><b>Upload Receipt :</b></label>
+                <label
+                  htmlFor="remaining-payment-remarks"
+                  className="form-label"
+                >
+                  Payment Remarks :
+                </label>
+                <div className="form-control">
+                  {remainingObject["Company Name"] !== "" &&
+                    remainingObject.paymentRemarks}
+                </div>
+              </div>
+            </div>
+
+            <div className="row mt-2">
+              <div className="mb-3 col-sm-6">
+                <label htmlFor="remainingDate" className="form-label">
+                  Payment Date
+                </label>
+                <input
+                  className="form-control"
+                  type="date"
+                  name="remainingDate"
+                  id="remainingDate"
+                  onChange={(e) =>
+                    setRemainingObject({
+                      ...remainingObject,
+                      paymentDate: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div className="col-sm-6">
+                <div className="mb-1 col">
+                  <label htmlFor="remaining-paymentmethod">
+                    <b>Upload Receipt :</b>
+                  </label>
                 </div>
                 <div className="col form-control">
-                 <input type="file" name="upload-remaining-receipt" id="upload-remaining-receipt" onChange={(e) => setRemainingObject({
-                    ...remainingObject,
-                   paymentReceipt:e.target.files[0]
-                  })}/>
-               
+                  <input
+                    type="file"
+                    name="upload-remaining-receipt"
+                    id="upload-remaining-receipt"
+                    onChange={(e) =>
+                      setRemainingObject({
+                        ...remainingObject,
+                        remainingPaymentReceipt: e.target.files[0],
+                      })
+                    }
+                  />
                 </div>
-             
-             
               </div>
-              
-              
-            </div>
-
-            <div className="row mt-2">
-            <div className="mb-3">
-  <label htmlFor="remainingControlTextarea1" className="form-label">Any Remarks</label>
-  <textarea className="form-control" id="remainingControlTextarea1" rows="3" placeholder="Write your remarks here..." value={remainingObject.extraRemarks} onChange={(e) => setRemainingObject({
-                    ...remainingObject,
-                   extraRemarks:e.target.value
-                  })}></textarea>
-                  
-</div>
             </div>
             <div className="row mt-2">
-            <div className="mb-3">
-  <label htmlFor="remainingDate" className="form-label">Payment Date</label>
- <input className="form-control" type="date" name="remainingDate" id="remainingDate" onChange={(e)=> setRemainingObject({
-  ...remainingObject ,
-  paymentDate:e.target.value
- })}/>
-                  
-</div>
+              <div className="mb-3">
+                <label
+                  htmlFor="remainingControlTextarea1"
+                  className="form-label"
+                >
+                  Any Remarks
+                </label>
+                <textarea
+                  className="form-control"
+                  id="remainingControlTextarea1"
+                  rows="3"
+                  placeholder="Write your remarks here..."
+                  value={remainingObject.extraRemarks}
+                  onChange={(e) =>
+                    setRemainingObject({
+                      ...remainingObject,
+                      extraRemarks: e.target.value,
+                    })
+                  }
+                ></textarea>
+              </div>
             </div>
           </div>
-         
         </DialogContent>
         <div className="remaining-footer">
-            <button className="btn btn-primary w-100" onClick={handleSubmitMorePayments}> Submit</button>
-          </div>
+          <button
+            className="btn btn-primary w-100"
+            onClick={handleSubmitMorePayments}
+          >
+            {" "}
+            Submit
+          </button>
+        </div>
       </Dialog>
     </div>
   );
