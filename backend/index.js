@@ -8179,6 +8179,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const paymentDetails = renderPaymentDetails();
 
     const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
+    const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlTemplate
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
@@ -8201,7 +8202,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
 
     pdf
-      .create(filledHtml, {
+      .create(htmlNewTemplate, {
         format: "Letter",
         childProcessOptions: {
           env: {
