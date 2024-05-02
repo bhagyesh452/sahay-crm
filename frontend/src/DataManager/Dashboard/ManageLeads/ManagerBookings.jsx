@@ -1253,35 +1253,36 @@ function ManagerBookings() {
                                 </div>
                               </div>
                               {/* Remaining Payment Viwe Sections */}
-                              <div
-                                className="my-card-body accordion"
-                                id="accordionExample"
-                              >
-                                <div class="accordion-item bdr-none">
-                                  <div
-                                    id="headingOne accordion-header"
-                                    className="pr-10"
-                                  >
-                                    <div
-                                      className="row m-0 bdr-btm-eee accordion-button p-0"
-                                      data-bs-toggle="collapse"
-                                      data-bs-target="#collapseOne"
-                                      aria-expanded="true"
-                                      aria-controls="collapseOne"
-                                    >
-                                      <div className="w-95 p-0">
-                                        <div className="booking_inner_dtl_h h-100">
-                                          <div>Remaining Payment </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
+                             
                                   {currentLeadform.remainingPayments.length !==
                                     0 &&
                                     currentLeadform.remainingPayments.map(
                                       (paymentObj, index) =>
                                         paymentObj.serviceName ===
                                         obj.serviceName ? (
+                                          <div
+                                          className="my-card-body accordion"
+                                          id="accordionExample"
+                                        >
+                                          <div class="accordion-item bdr-none">
+                                            <div
+                                              id="headingOne accordion-header"
+                                              className="pr-10"
+                                            >
+                                              <div
+                                                className="row m-0 bdr-btm-eee accordion-button p-0"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapseOne"
+                                                aria-expanded="true"
+                                                aria-controls="collapseOne"
+                                              >
+                                                <div className="w-95 p-0">
+                                                  <div className="booking_inner_dtl_h h-100">
+                                                    <div>Remaining Payment </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
                                           <div
                                             id="collapseOne"
                                             class="accordion-collapse collapse show"
@@ -1373,10 +1374,11 @@ function ManagerBookings() {
                                               </div>
                                             </div>
                                           </div>
+                                          </div>
+                              </div>
                                         ) : null // Render null for elements that don't match the condition
                                     )}
-                                </div>
-                              </div>
+                              
                             </div>
                           ))}
                         {/* -------- CA Case -------- */}
