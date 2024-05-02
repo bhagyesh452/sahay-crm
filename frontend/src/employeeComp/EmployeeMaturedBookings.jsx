@@ -44,7 +44,7 @@ function EmployeeMaturedBookings() {
   const { userId } = useParams();
   const secretKey = process.env.REACT_APP_SECRET_KEY;
   const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
-  
+
 
 
   console.log(userId)
@@ -77,11 +77,11 @@ function EmployeeMaturedBookings() {
 
   const fetchRedesignedFormData1 = async () => {
     try {
-console.log("abhi hua")
+      console.log("abhi hua")
       const response = await axios.get(
         `${secretKey}/redesigned-final-leadData`
       );
-      const redesignedData = response.data.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length!==0 && obj.moreBookings.some((boom)=>boom.bdeName === data.ename || boom.bdmName === data.ename)))
+      const redesignedData = response.data.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
       console.log(redesignedData);
       setFormData(redesignedData.reverse());
     } catch (error) {
@@ -117,7 +117,7 @@ console.log("abhi hua")
   //const [bookingIndex, setbookingIndex] = useState(-1);
   const [openOtherDocs, setOpenOtherDocs] = useState(false);
   const [companyName, setCompanyName] = useState("");
-  
+
 
 
   function formatDatePro(inputDate) {
@@ -170,7 +170,7 @@ console.log("abhi hua")
   };
 
 
-  console.log("currentLeadForm" , currentLeadform)
+  console.log("currentLeadForm", currentLeadform)
 
   const handleRequestDelete = async (companyId, companyName) => {
     const confirmDelete = await Swal.fire({
@@ -356,14 +356,15 @@ console.log("abhi hua")
                                 ? "bookings_Company_Name activeBox"
                                 : "bookings_Company_Name"
                             }
-                            onClick={() =>{
+                            onClick={() => {
                               setFetch(true)
                               setCurrentLeadform(
                                 formData.find(
                                   (data) =>
                                     data["Company Name"] === obj["Company Name"]
                                 )
-                              )}
+                              )
+                            }
                             }
                           >
                             <div className="d-flex justify-content-between align-items-center">
@@ -522,7 +523,7 @@ console.log("abhi hua")
                                       Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Email"]
                                       : formData &&
-                                      formData.length !== 0
+                                        formData.length !== 0
                                         ? formData[0]["Company Email"]
                                         : "-"}
                                   </div>
@@ -544,7 +545,7 @@ console.log("abhi hua")
                                       Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Number"]
                                       : formData &&
-                                      formData.length !== 0
+                                        formData.length !== 0
                                         ? formData[0]["Company Number"]
                                         : "-"}
                                   </div>
@@ -566,7 +567,7 @@ console.log("abhi hua")
                                           0
                                           ? currentLeadform.incoDate
                                           : formData &&
-                                          formData.length !== 0
+                                            formData.length !== 0
                                             ? formData[0].incoDate
                                             : "-"
                                       )}
@@ -587,7 +588,7 @@ console.log("abhi hua")
                                       Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform.panNumber
                                       : formData &&
-                                      formData.length !== 0
+                                        formData.length !== 0
                                         ? formData[0].panNumber
                                         : "-"}
                                   </div>
@@ -640,13 +641,14 @@ console.log("abhi hua")
                             <div
                               className="Services_Preview_action_edit mr-1"
                               onClick={() => {
-                                handleEditClick(currentLeadform._id)}}
+                                handleEditClick(currentLeadform._id)
+                              }}
                             >
                               <MdModeEdit />
                             </div>
                             <div
                               onClick={() =>
-                                handleRequestDelete(currentLeadform._id ,currentLeadform.company)
+                                handleRequestDelete(currentLeadform._id, currentLeadform.company)
                               }
                               className="Services_Preview_action_delete"
                             >
@@ -1273,7 +1275,7 @@ console.log("abhi hua")
                                   </DialogTitle>
                                   <DialogContent>
                                     <div className="maincon">
-                                      
+
                                       <div
                                         style={{
                                           justifyContent: "space-between",
@@ -1307,7 +1309,7 @@ console.log("abhi hua")
                                               e.target.files
                                             );
                                           }}
-                                          multiple 
+                                          multiple
                                         />
                                         {selectedDocuments &&
                                           selectedDocuments.length > 0 && (
@@ -1877,12 +1879,12 @@ console.log("abhi hua")
                                       <div className="booking-docs-preview">
                                         <div
                                           className="booking-docs-preview-img"
-                                          // onClick={() =>
-                                          //   handleViewPdfReciepts(
-                                          //     objMain.paymentReceipt[0]
-                                          //       .filename, currentLeadform["Company Name"]
-                                          //   )
-                                          // }
+                                        // onClick={() =>
+                                        //   handleViewPdfReciepts(
+                                        //     objMain.paymentReceipt[0]
+                                        //       .filename, currentLeadform["Company Name"]
+                                        //   )
+                                        // }
                                         >
                                           {objMain.paymentReceipt[0].filename.endsWith(
                                             ".pdf"
@@ -1915,11 +1917,11 @@ console.log("abhi hua")
                                     <div className="booking-docs-preview">
                                       <div
                                         className="booking-docs-preview-img"
-                                        // onClick={() =>
-                                        //   handleViewPdOtherDocs(
-                                        //     obj.filename, currentLeadform["Company Name"]
-                                        //   )
-                                        // }
+                                      // onClick={() =>
+                                      //   handleViewPdOtherDocs(
+                                      //     obj.filename, currentLeadform["Company Name"]
+                                      //   )
+                                      // }
                                       >
                                         {obj.filename.endsWith(".pdf") ? (<></>
                                           // <PdfImageViewerAdmin
@@ -1930,7 +1932,7 @@ console.log("abhi hua")
                                         ) : (
                                           <img
                                             src={`${secretKey}/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
-                                            //alt={pdfimg}
+                                          //alt={pdfimg}
                                           ></img>
                                         )}
                                       </div>
@@ -1980,7 +1982,7 @@ console.log("abhi hua")
                                   </DialogTitle>
                                   <DialogContent>
                                     <div className="maincon">
-                                     
+
                                       <div
                                         style={{
                                           justifyContent: "space-between",
@@ -2109,7 +2111,7 @@ console.log("abhi hua")
         </>
       )}
 
-<Dialog
+      <Dialog
         open={openBooking}
         onClose={() => {
           setOpenBooking(false);
