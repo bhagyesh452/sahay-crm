@@ -70,14 +70,20 @@ function BdmDashboard() {
   }
 
   const [teamLeadsData, setTeamLeadsData] = useState([])
+  const [teamLeadsData2, setTeamLeadsData2] = useState([])
   const [teamData, setTeamData] = useState([])
+  const [teamData2, setTeamData2] = useState([])
 
   const fetchTeamLeadsData = async () => {
 
     try {
       const response = await axios.get(`${secretKey}/forwardedbybdedata/${data.ename}`)
+      const response2 = await axios.get(`${secretKey}/teamleadsdata`)
+      
       setTeamLeadsData(response.data)
       setTeamData(response.data)
+      setTeamData2(response2.data)
+      setTeamLeadsData2(response2.data)
 
     } catch (error) {
       console.log("Error fetching data", error.message)
@@ -922,7 +928,14 @@ function BdmDashboard() {
                             {companyData.filter((company) => company.ename === obj.ename && (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept")).length}
                           </td>
                           <td >
-                            {teamLeadsData.filter((company) => company.bdmName === obj.ename).length}
+                            {
+                            teamLeadsData2.filter((company) =>
+                              company.bdmName === obj.ename &&
+                              forwardEmployeeDataNew.some(empObj =>
+                                empObj.companyId === company.id
+                              )
+                            ).length
+}
                           </td>
                           <td>₹{(FollowData
                             .filter(company => company.bdeName === obj.ename)
@@ -966,8 +979,8 @@ function BdmDashboard() {
 
                       </td>
                       <td>
-                      {teamLeadsData.filter(obj =>
-                          forwardEmployeeDataNew.some(empObj => empObj.branchOffice === "Sindhu Bhawan" || (obj.ename === empObj.ename && obj.bdmName === empObj.ename))
+                        {teamLeadsData2.filter(obj =>
+                          forwardEmployeeDataNew.some(empObj => empObj.branchOffice === "Sindhu Bhawan" && (obj.ename === empObj.ename || obj.bdmName === empObj.ename))
                         ).length}
 
                       </td>
