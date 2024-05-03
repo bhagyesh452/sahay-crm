@@ -8074,6 +8074,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         </tr>
         `;
         }
+        
         servicesHtml += `
         <table class="table table-bordered">
             <thead>
@@ -8275,14 +8276,31 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
             <p class="Declaration_text_data Signature">
               Client's Signature:__________________________________
             </p>
-            <p style="text-align: center;">Page 1/2</p>
+            <p style="text-align: center;">${newData.services.length > 1 ? "Page 1/3" : "Page 1/2"}</p>
           </div>
             
           </section>
         
         </div>
       `;
-
+const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
+<table class="table table-bordered">
+  <thead>
+    <th colspan="3">Total Payment Details</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Total Payment</td>
+      <td>Advanced Payment</td>
+      <td>Pending Payment</td>
+    </tr>
+    <tr>₹ ${parseInt(totalAmount).toLocaleString()}/-</td>
+      <td>₹ ${parseInt(receivedAmount).toLocaleString()}/-</td>
+      <td>₹ ${parseInt(pendingAmount).toLocaleString()}/-</td>
+    </tr>
+  </tbody>
+</table>
+</div>` : ""
     const mainPage =
       newPageDisplay === 'style="display:block' ? mainPageHtml : "";
     const bdNames =
@@ -8299,6 +8317,24 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const thirdPage = newData.services.length > 2 ? ` <div class="PDF_main">
     <section>
       ${morePaymentDetails}
+       <div class="table-data">
+<table class="table table-bordered">
+  <thead>
+    <th colspan="3">Total Payment Details</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Total Payment</td>
+      <td>Advanced Payment</td>
+      <td>Pending Payment</td>
+    </tr>
+    <tr>₹ ${parseInt(totalAmount).toLocaleString()}/-</td>
+      <td>₹ ${parseInt(receivedAmount).toLocaleString()}/-</td>
+      <td>₹ ${parseInt(pendingAmount).toLocaleString()}/-</td>
+    </tr>
+  </tbody>
+</table>
+</div>
       <div class="Declaration_text">
         <p class="Declaration_text_data">
           I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between {{Company Name}} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
@@ -8328,9 +8364,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{Authorized-Number}}", AuthorizedNumber)
       .replace("{{Authorized-Email}}", AuthorizedEmail)
       .replace("{{Main-page}}", mainPage)
-      .replace("{{TotalAmount}}", totalAmount.toFixed(2))
-      .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
-      .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
+      .replace("{{Total-Payment}}", totalPaymentHtml)
+    
       .replace("{{Service-Details}}", paymentDetails)
       .replace("{{Third-Page}}", thirdPage)
       .replace("{{Company Number}}", newData["Company Number"]);

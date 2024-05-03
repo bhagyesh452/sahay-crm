@@ -19,6 +19,7 @@
         position: relative;
         padding: 40px 40px;
         height: 680px;
+        page-break-after: always;
       }
       .mt-2
       {
@@ -67,9 +68,9 @@
       {
         width: 100%;
         position: absolute;
-        bottom: 0;
+        bottom: 30px;
         left:0;
-        page-break-after: always;
+       
       }
       .Signature
       {
@@ -220,25 +221,7 @@
       <div class="table-data">
         {{Service-Details}}
       </div>
-      <div class="table-data">
-        <table class="table table-bordered">
-          <thead>
-            <th colspan="3">Total Payment Details</th>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Total Payment</td>
-              <td>Advanced Payment</td>
-              <td>Pending Payment</td>
-            </tr>
-            <tr>
-              <td>₹ {{TotalAmount}}/-</td>
-              <td>₹ {{ReceivedAmount}}/-</td>
-              <td>₹ {{PendingAmount}}/-</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+     {{Total-Payment}}
       <div class="Declaration_text">
         <p class="Declaration_text_data">
           I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between {{Company Name}} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
