@@ -8366,7 +8366,6 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       .replace("{{Authorized-Email}}", AuthorizedEmail)
       .replace("{{Main-page}}", mainPage)
       .replace("{{Total-Payment}}", totalPaymentHtml)
-    
       .replace("{{Service-Details}}", paymentDetails)
       .replace("{{Third-Page}}", thirdPage)
       .replace("{{Company Number}}", newData["Company Number"]);
