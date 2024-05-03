@@ -8175,13 +8175,14 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 application if required on my behalf, as I am not familiar with the process.
               </p>
             </div>
-            <div class="section_footer">
+            
+          </section>
+          <div class="section_footer">
               <p class="Declaration_text_data Signature">
                 Client's Signature:__________________________________
               </p>
               <p style="text-align: center;">Page 1/2</p>
             </div>
-          </section>
         </div>
       `;
 
