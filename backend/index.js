@@ -8248,7 +8248,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
       return servicesHtml;
     };
-
+const conditional = newData.services.length < 2 ?  `<div class="Declaration_text">
+<p class="Declaration_text_data">
+  I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between {{Company Name}} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+</p>
+</div>` : ""
     const serviceKawali = renderServiceKawali();
     const todaysDate = new Date().toLocaleDateString();
     const mainPageHtml = `
@@ -8328,7 +8332,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       <td>Advanced Payment</td>
       <td>Pending Payment</td>
     </tr>
-    <tr>₹ ${parseInt(totalAmount).toLocaleString()}/-</td>
+    <tr> <td>  ₹ ${parseInt(totalAmount).toLocaleString()}/-</td>
       <td>₹ ${parseInt(receivedAmount).toLocaleString()}/-</td>
       <td>₹ ${parseInt(pendingAmount).toLocaleString()}/-</td>
     </tr>
@@ -8368,7 +8372,8 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       .replace("{{Total-Payment}}", totalPaymentHtml)
       .replace("{{Service-Details}}", paymentDetails)
       .replace("{{Third-Page}}", thirdPage)
-      .replace("{{Company Number}}", newData["Company Number"]);
+      .replace("{{Company Number}}", newData["Company Number"])
+      .replace("{{Conditional}}", conditional);
 
     //   console.log("This is html file reading:-", filledHtml);
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
