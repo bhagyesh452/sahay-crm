@@ -18,8 +18,8 @@
         margin: 0 auto;
         position: relative;
         padding: 40px 40px;
-        page-break-after: always;
         height: 680px;
+       
       }
       .mt-2
       {
@@ -68,8 +68,9 @@
       {
         width: 100%;
         position: absolute;
-        bottom: 0;
+        bottom: 30px;
         left:0;
+        page-break-after: always;       
       }
       .Signature
       {
@@ -113,7 +114,7 @@
 </head>
 <body>
   {{Main-page}}
-  <div class="PDF_main">
+  <!-- <div class="PDF_main">
     <section>
       <div class="date_div">
         <p>20/05/2023</p>
@@ -155,10 +156,10 @@
         <p style="text-align: center;">Page 1/2</p>
       </div>
     </section>
-  </div>
+  </div> -->
   <div class="PDF_main">
     <section>
-      <p class="Declaration_text_head">
+      <p class="Declaration_text_head" style="margin-top: 20px;">
         <b>
           Service And Payment Terms Acknowledgment
         </b>
@@ -220,37 +221,16 @@
       <div class="table-data">
         {{Service-Details}}
       </div>
-      <div class="table-data">
-        <table class="table table-bordered">
-          <thead>
-            <th colspan="3">Total Payment Details</th>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Total Payment</td>
-              <td>Advanced Payment</td>
-              <td>Pending Payment</td>
-            </tr>
-            <tr>
-              <td>₹ {{TotalAmount}}/-</td>
-              <td>₹ {{ReceivedAmount}}/-</td>
-              <td>₹ {{PendingAmount}}/-</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="Declaration_text">
-        <p class="Declaration_text_data">
-          I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between {{Company Name}} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
-        </p>
-      </div>
-      <div class="section_footer">
+     {{Total-Payment}}
+      {{Conditional}}
+      <div class="section_footer" style="margin-bottom: 20px;">
         <p class="Declaration_text_data Signature">
           Client's Signature:__________________________________
         </p>
-        <p style="text-align: center;">Page 2/2</p>
+        <p style="text-align: center;">{{pagination}}</p>
       </div>
     </section>
   </div>
+  {{Third-Page}}
 </body>
 </html>

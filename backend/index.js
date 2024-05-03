@@ -7931,7 +7931,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const renderPaymentDetails = () => {
       let servicesHtml = "";
       let paymentServices = "";
-      for (let i = 0; i < newData.services.length; i++) {
+      const serviceLength = newData.services.length > 1 ? 1 : newData.services.length
+      for (let i = 0; i < serviceLength; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
             ? newData.services[i].totalPaymentWGST
@@ -7954,33 +7955,33 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         if (rowSpan === 3) {
           paymentServices = `
         <tr>
-          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
         <tr>
-         <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+         <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
          <td>${newData.services[i].thirdPaymentRemarks}</td>
         </tr>
         <tr>
-         <td>₹${Number(newData.services[i].fourthPayment).toFixed(2)}/-</td>
+         <td>₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
          <td>${newData.services[i].fourthPaymentRemarks}</td>
         </tr>
         `;
         } else if (rowSpan === 2) {
           paymentServices = `
         <tr>
-          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
         <tr>
-          <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+          <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
           <td>${newData.services[i].thirdPaymentRemarks}</td>
         </tr>
         `;
         } else {
           paymentServices = `
         <tr>
-          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${
             newData.services[i].paymentTerms !== "Full Advanced"
               ? newData.services[i].secondPaymentRemarks
@@ -8004,15 +8005,107 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th style="vertical-align: top;" rowspan='4'>₹ ${
+                    <th rowspan='4'>₹ ${
                       newData.services[i].totalPaymentWGST
                     } /-</th>
-                    <th style="vertical-align: top;" rowspan='4'>₹ ${
+                    <th rowspan='4'>₹ ${
                       newData.services[i].paymentTerms === "Full Advanced"
-                        ? Number(newData.services[i].totalPaymentWGST).toFixed(
-                            2
-                          )
-                        : Number(newData.services[i].firstPayment).toFixed(2)
+                        ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+                        : parseInt(newData.services[i].firstPayment).toLocaleString()
+                    }/-</th>
+              </tr>
+              ${paymentServices}
+            </tbody>
+        </table>
+        `;
+      }
+      return servicesHtml;
+    };
+    const renderMorePaymentDetails = () => {
+      let servicesHtml = "";
+      let paymentServices = "";
+     
+      for (let i = 1; i < newData.services.length; i++) {
+        const Amount =
+          newData.services[i].paymentTerms === "Full Advanced"
+            ? newData.services[i].totalPaymentWGST
+            : newData.services[i].firstPayment;
+        let rowSpan;
+
+        if (newData.services[i].paymentTerms === "two-part") {
+          if (
+            newData.services[i].thirdPayment !== 0 &&
+            newData.services[i].fourthPayment === 0
+          ) {
+            rowSpan = 2;
+          } else if (newData.services[i].fourthPayment !== 0) {
+            rowSpan = 3;
+          }
+        } else {
+          rowSpan = 1;
+        }
+
+        if (rowSpan === 3) {
+          paymentServices = `
+        <tr>
+          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+          <td>${newData.services[i].secondPaymentRemarks}</td>
+        </tr>
+        <tr>
+         <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+         <td>${newData.services[i].thirdPaymentRemarks}</td>
+        </tr>
+        <tr>
+         <td>₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
+         <td>${newData.services[i].fourthPaymentRemarks}</td>
+        </tr>
+        `;
+        } else if (rowSpan === 2) {
+          paymentServices = `
+        <tr>
+          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+          <td>${newData.services[i].secondPaymentRemarks}</td>
+        </tr>
+        <tr>
+          <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
+          <td>${newData.services[i].thirdPaymentRemarks}</td>
+        </tr>
+        `;
+        } else {
+          paymentServices = `
+        <tr>
+          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
+          <td>${
+            newData.services[i].paymentTerms !== "Full Advanced"
+              ? newData.services[i].secondPaymentRemarks
+              : "100% Advance Payment"
+          }</td>
+        </tr>
+        `;
+        }
+        
+        servicesHtml += `
+        <table class="table table-bordered">
+            <thead>
+              <td colspan="4">Service Name : ${
+                newData.services[i].serviceName
+              }</td>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Total Payment</td>
+                <td>Advanced Payment</td>
+                <td>Pending payment</td>
+                <td>Remarks</td>
+              </tr>
+              <tr>
+                    <th rowspan='4'>₹ ${
+                     parseInt( newData.services[i].totalPaymentWGST).toLocaleString()
+                    } /-</th>
+                    <th rowspan='4'>₹ ${
+                      newData.services[i].paymentTerms === "Full Advanced"
+                        ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+                        : parseInt(newData.services[i].firstPayment).toLocaleString()
                     }/-</th>
               </tr>
               ${paymentServices}
@@ -8162,11 +8255,15 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       }
       return servicesHtml;
     };
-
+const conditional = newData.services.length < 2 ?  `<div class="Declaration_text">
+<p class="Declaration_text_data">
+  I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+</p>
+</div>` : "";
     const serviceKawali = renderServiceKawali();
     const todaysDate = new Date().toLocaleDateString();
     const mainPageHtml = `
-          <div class="PDF_main">
+        <div class="PDF_main" style="margin-top : 50px">
           <section>
             <div class="date_div">
               <p>${todaysDate}</p>
@@ -8186,31 +8283,88 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 application if required on my behalf, as I am not familiar with the process.
               </p>
             </div>
-            <div class="section_footer">
-              <p class="Declaration_text_data Signature">
-                Client's Signature:__________________________________
-              </p>
-              <p style="text-align: center;">Page 1/2</p>
-            </div>
+            <div class="section_footer" style="margin-bottom:50px , margin-top:0px">
+            <p class="Declaration_text_data Signature">
+              Client's Signature:__________________________________
+            </p>
+            <p style="text-align: center;">${newData.services.length > 1 ? "Page 1/3" : "Page 1/2"}</p>
+          </div>
+            
           </section>
+        
         </div>
       `;
-
+const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
+<table class="table table-bordered">
+  <thead>
+    <th colspan="3">Total Payment Details</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Total Payment</td>
+      <td>Advanced Payment</td>
+      <td>Pending Payment</td>
+    </tr>
+    <tr><td>₹ ${parseInt(totalAmount).toLocaleString()}/-</td>
+      <td>₹ ${parseInt(receivedAmount).toLocaleString()}/-</td>
+      <td>₹ ${parseInt(pendingAmount).toLocaleString()}/-</td>
+    </tr>
+  </tbody>
+</table>
+</div>` : ""
     const mainPage =
       newPageDisplay === 'style="display:block' ? mainPageHtml : "";
     const bdNames =
       newData.bdeName == newData.bdmName
         ? newData.bdeName
         : `${newData.bdeName} && ${newData.bdmName}`;
-    const pagination =
+    const waitpagination =
       newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
+      const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination
     // Render services HTML content
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
+    const morePaymentDetails = renderMorePaymentDetails();
+    const thirdPage = newData.services.length > 2 ? ` <div class="PDF_main" style="margin-top:40px">
+    <section>
+      ${morePaymentDetails}
+       <div class="table-data">
+<table class="table table-bordered">
+  <thead>
+    <th colspan="3">Total Payment Details</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Total Payment</td>
+      <td>Advanced Payment</td>
+      <td>Pending Payment</td>
+    </tr>
+    <tr> <td>  ₹ ${parseInt(totalAmount).toLocaleString()}/-</td>
+      <td>₹ ${parseInt(receivedAmount).toLocaleString()}/-</td>
+      <td>₹ ${parseInt(pendingAmount).toLocaleString()}/-</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+      <div class="Declaration_text">
+        <p class="Declaration_text_data">
+          I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+        </p>
+      </div>
+      <div class="section_footer">
+        <p class="Declaration_text_data Signature">
+          Client's Signature:__________________________________
+        </p>
+        <p style="text-align: center;">Page 3/3</p>
+      </div>
+
+    </section>
+  </div>` : "";
 
     const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlNewTemplate
+      .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
@@ -8222,11 +8376,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{Authorized-Number}}", AuthorizedNumber)
       .replace("{{Authorized-Email}}", AuthorizedEmail)
       .replace("{{Main-page}}", mainPage)
-      .replace("{{TotalAmount}}", totalAmount.toFixed(2))
-      .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
-      .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
+      .replace("{{Total-Payment}}", totalPaymentHtml)
       .replace("{{Service-Details}}", paymentDetails)
-      .replace("{{Company Number}}", newData["Company Number"]);
+      .replace("{{Third-Page}}", thirdPage)
+      .replace("{{Company Number}}", newData["Company Number"])
+      .replace("{{Conditional}}", conditional);
 
     //   console.log("This is html file reading:-", filledHtml);
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
@@ -8249,11 +8403,11 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
             setTimeout(() => {
               const mainBuffer = fs.readFileSync(pdfFilePath);
               sendMail2(
-                ["nimesh@incscale.in", "aakashseth452@gmail.com"],
+                ["nimesh@incscale.in", "bhagyesh@startupsahay.com"],
                 `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                 ``,
                 `
-                    <div class="container">
+                  <div class="container">
 
                     <p>Dear ${newData["Company Name"]},</p>
                     <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
@@ -8450,6 +8604,7 @@ app.post(
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
+      const currentDate = new Date();
       const sendingObject = {
         serviceName: objectData.serviceName,
         remainingAmount: objectData.remainingAmount,
@@ -8459,20 +8614,39 @@ app.post(
         receivedPayment: objectData.receivedAmount,
         pendingPayment: objectData.remainingAmount,
         paymentReceipt: newPaymentReceipt,
+        paymentDate:currentDate
       };
       console.log("Sending Object:", sendingObject, bookingIndex);
 
       if (bookingIndex == 0) {
         console.log("Hi guyz");
+        const findObject = await RedesignedLeadformModel.findOne({
+          "Company Name": companyName,
+        })
+        const findService = findObject.services.find((obj)=>obj.serviceName === objectData.serviceName)
+        const newReceivedAmount = parseInt(findObject.receivedAmount) + parseInt(objectData.receivedAmount);
+        const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
+        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount)/1.18 :  parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) ;
+       
+       
+        console.log(newReceivedAmount , newPendingAmount)
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
-        const object = await RedesignedLeadformModel.findOneAndUpdate(
+        await RedesignedLeadformModel.updateOne(
+          { "Company Name": companyName },
           {
-            "Company Name": companyName,
-          },
-          {
-            $push: { remainingPayments: sendingObject },
-          },
+            $set: {
+              receivedAmount: newReceivedAmount,
+              pendingAmount: newPendingAmount,
+              generatedReceivedAmount : newGeneratedReceivedAmount
+            },
+          }
+        );
+      
+        // Push sendingObject into remainingPayments array
+        const updatedObject = await RedesignedLeadformModel.findOneAndUpdate(
+          { "Company Name": companyName },
+          { $push: { remainingPayments: sendingObject } },
           { new: true }
         );
 
