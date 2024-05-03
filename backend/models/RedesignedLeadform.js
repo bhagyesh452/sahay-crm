@@ -74,6 +74,9 @@ const RemainingPaymentSchema = new mongoose.Schema({
   },
   paymentReceipt:{
     type:Array
+  },
+  paymentDate:{
+    type:Date
   }
 
 })

@@ -8593,6 +8593,7 @@ app.post(
       const newPaymentReceipt = req.files["paymentReceipt"] || [];
       const companyName = objectData["Company Name"];
       const bookingIndex = objectData.bookingIndex;
+      const currentDate = new Date();
       const sendingObject = {
         serviceName: objectData.serviceName,
         remainingAmount: objectData.remainingAmount,
@@ -8602,20 +8603,39 @@ app.post(
         receivedPayment: objectData.receivedAmount,
         pendingPayment: objectData.remainingAmount,
         paymentReceipt: newPaymentReceipt,
+        paymentDate:currentDate
       };
       console.log("Sending Object:", sendingObject, bookingIndex);
 
       if (bookingIndex == 0) {
         console.log("Hi guyz");
+        const findObject = await RedesignedLeadformModel.findOne({
+          "Company Name": companyName,
+        })
+        const findService = findObject.services.find((obj)=>obj.serviceName === objectData.serviceName)
+        const newReceivedAmount = parseInt(findObject.receivedAmount) + parseInt(objectData.receivedAmount);
+        const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
+        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount)/1.18 :  parseInt(findObject.generatedReceivedAmount) + parseInt(objectData.receivedAmount) ;
+       
+       
+        console.log(newReceivedAmount , newPendingAmount)
         // Handle updating RedesignedLeadformModel for bookingIndex 0
         // Example code: Uncomment and replace with your logic
-        const object = await RedesignedLeadformModel.findOneAndUpdate(
+        await RedesignedLeadformModel.updateOne(
+          { "Company Name": companyName },
           {
-            "Company Name": companyName,
-          },
-          {
-            $push: { remainingPayments: sendingObject },
-          },
+            $set: {
+              receivedAmount: newReceivedAmount,
+              pendingAmount: newPendingAmount,
+              generatedReceivedAmount : newGeneratedReceivedAmount
+            },
+          }
+        );
+      
+        // Push sendingObject into remainingPayments array
+        const updatedObject = await RedesignedLeadformModel.findOneAndUpdate(
+          { "Company Name": companyName },
+          { $push: { remainingPayments: sendingObject } },
           { new: true }
         );
 
