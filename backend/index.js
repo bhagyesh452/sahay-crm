@@ -8294,7 +8294,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
       <td>Advanced Payment</td>
       <td>Pending Payment</td>
     </tr>
-    <tr>₹ ${parseInt(totalAmount).toLocaleString()}/-</td>
+    <tr><td>₹ ${parseInt(totalAmount).toLocaleString()}/-</td>
       <td>₹ ${parseInt(receivedAmount).toLocaleString()}/-</td>
       <td>₹ ${parseInt(pendingAmount).toLocaleString()}/-</td>
     </tr>
@@ -8353,6 +8353,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
     const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
     const filledHtml = htmlNewTemplate
+      .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
       .replace("{{Company Name}}", newData["Company Name"])
