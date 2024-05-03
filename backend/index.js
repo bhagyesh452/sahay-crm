@@ -8238,7 +8238,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
             setTimeout(() => {
               const mainBuffer = fs.readFileSync(pdfFilePath);
               sendMail2(
-                ["nimesh@incscale.in", "aakashseth452@gmail.com"],
+                ["nimesh@incscale.in", "bhagyesh@startupsahay.com"],
                 `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                 ``,
                 `
