@@ -2389,13 +2389,6 @@ function EmployeePanel() {
     }
   };
 
-  // useEffect(() => {
-  //   if (confirmationPending) {
-  //     handleForwardBdm();
-  //     setConfirmationPending(false); // Reset confirmation status
-  //   }
-  // }, [confirmationPending]);
-
 
   const handleForwardBdm = async () => {
     // Check if selectedBDM is not empty
@@ -2418,10 +2411,11 @@ function EmployeePanel() {
         bdmAcceptStatus: bdmNewAcceptStatus,
         bdeForwardDate: new Date(),
         bdeOldStatus: bdeOldStatus,
+        companyName:forwardedCompany,
         // Assuming bdmName is defined elsewhere in your component
       });
       Swal.fire("Company Forwarded", "", "success");
-      console.log("bdeoldstatus", bdeOldStatus);
+     //console.log("bdeoldstatus", bdeOldStatus);
       fetchNewData(bdeOldStatus);
       closeBdmNamePopup();
     } catch (error) {

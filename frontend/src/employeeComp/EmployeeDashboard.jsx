@@ -1818,6 +1818,8 @@ function EmployeeDashboard() {
     //  console.log("This is generated Revenue",requiredObj);
 
   }
+
+  
   function functionCalculateGeneratedTotalRevenue(isBdm) {
     let generatedRevenue = 0;
     const requiredObj = moreEmpData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
@@ -2054,7 +2056,7 @@ function EmployeeDashboard() {
 
 
 
-  console.log(selectedMonthOptionForBdm)
+  //console.log(selectedMonthOptionForBdm)
 
 
 
@@ -2506,7 +2508,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
                               ₹{(followDataToday
-                                .filter(obj => obj.bdeName === data.ename)
+                                .filter(obj => (obj.bdeName === data.ename || obj.ename === data.ename || obj.ename === data.bdmName))
                                 .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
                             </div>
                           </div>
@@ -2647,7 +2649,7 @@ function EmployeeDashboard() {
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num clr-1cba19">
                               ₹{(followData
-                                .filter(obj => obj.bdeName === data.ename)
+                                .filter(obj => (obj.bdeName === data.ename || obj.ename === data.ename) && obj.bdmName)
                                 .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
                             </div>
                           </div>

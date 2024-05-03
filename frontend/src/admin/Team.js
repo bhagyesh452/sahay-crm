@@ -168,10 +168,10 @@ function Team() {
         setSelectedBdes(newSelectedBdes);
     };
 
-    console.log(selectedBdes)
+    //console.log(selectedBdes)
     //console.log(latestName)
 
-    console.log(ename, branchOffice, designation)
+    //console.log(ename, branchOffice, designation)
 
     const [errorMessage, setErrorMessage] = useState("")
     //console.log(errorMessage)

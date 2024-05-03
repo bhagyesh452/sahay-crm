@@ -52,6 +52,7 @@ import Edit from "@mui/icons-material/Edit";
 //import EditableLeadform from "../admin/EditableLeadform.jsx";
 //import AddLeadForm from "../admin/AddLeadForm.jsx";
 import { FaWhatsapp } from "react-icons/fa";
+import RedesignedForm from "../../../admin/RedesignedForm.jsx";
 // import DrawerComponent from "../components/Drawer.js";
 
 function BdmLeads() {
@@ -3316,7 +3317,7 @@ function BdmLeads() {
         )
       }
       {formOpen && (<>
-        {/* <RedesignedForm
+        <RedesignedForm
           // matured={true}
           // companysId={companyId}
           setDataStatus={setdataStatus}
@@ -3328,7 +3329,7 @@ function BdmLeads() {
           companysInco={companyInco}
           employeeName={data.ename}
           employeeEmail={data.email}
-        /> */}
+        />
       </>)}
       {
         editFormOpen && (<>

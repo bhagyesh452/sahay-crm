@@ -48,6 +48,7 @@ import moment from "moment";
 import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
 import dayjs from "dayjs";
 import { IoClose } from "react-icons/io5";
+import Select from "react-select";
 // import { LicenseInfo } from '@mui/x-date-pickers-pro';
 
 // LicenseInfo.setLicenseKey(
@@ -484,14 +485,16 @@ function Dashboard() {
   //   }, []);
 
   // console.log(projectionEname)
-  const[followDataFilter , setFollowDataFilter] = useState([])
+  const [followDataFilter, setFollowDataFilter] = useState([])
+  const [followDataNew, setFollowDataNew] = useState([])
 
   const fetchFollowUpData = async () => {
     try {
       const response = await fetch(`${secretKey}/projection-data`);
       const followdata = await response.json();
       setfollowData(followdata);
-      setFollowDataFilter(followData)
+      setFollowDataFilter(followdata)
+      setFollowDataNew(followdata)
       //console.log("followdata", followdata)
       setfollowDataToday(
         followdata
@@ -535,31 +538,159 @@ function Dashboard() {
     }
   };
 
-  const[selectedValue , setSelectedValue] = useState("")
+  const [selectedValue, setSelectedValue] = useState("")
 
-  const handleFilterForwardCaseBranchOffice =(branchName)=>{
+  const handleFilterForwardCaseBranchOffice = (branchName) => {
 
     console.log(branchName)
 
-    if(branchName === "none"){
+    if (branchName === "none") {
       setForwardEmployeeData(forwardEmployeeDataFilter)
       setCompanyData(companyDataFilter)
       setfollowData(followDataFilter)
       setTeamLeadsData(teamLeadsDataFilter)
-    }else{
-      const filteredData = forwardEmployeeDataNew.filter(obj=>obj.branchOffice === branchName)
-      const filteredFollowData = followDataFilter.filter((obj) =>employeeData.some((empObj) => empObj.branchOffice === branchName && (empObj.ename === obj.ename || empObj.bdeName === obj.ename)))
+    } else {
+      const filteredData = forwardEmployeeDataNew.filter(obj => obj.branchOffice === branchName);
+
+      //console.log("kuch to h" , filteredData , followDataFilter)
+
+      const filteredFollowDataforwarded = followDataFilter.filter((obj) =>
+        forwardEmployeeDataNew.some((empObj) =>
+          empObj.branchOffice === branchName &&
+          (empObj.ename === obj.bdeName)
+        )
+      );
+
+
+
+      //console.log(filteredFollowData)
+
+
       const filteredCompanyData = companyDataFilter.filter(obj => (
         (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
         forwardEmployeeDataNew.some(empObj => empObj.branchOffice === branchName && empObj.ename === obj.ename)
-    ));
-      const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj)=>forwardEmployeeDataNew.some((empObj)=>empObj.branchOffice === branchName && (empObj.ename === obj.ename || empObj.ename === obj.bdmName)))
+      ));
+
+      const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj) => forwardEmployeeDataNew.some((empObj) => empObj.branchOffice === branchName && (empObj.ename === obj.ename || empObj.ename === obj.bdmName)))
+
+
       setForwardEmployeeData(filteredData)
       setCompanyData(filteredCompanyData)
-      setfollowData(filteredFollowData)
+      setfollowData(filteredFollowDataforwarded)
+      setFollowDataNew(filteredFollowDataforwarded)
       setTeamLeadsData(filteredTeamLeadsData)
     }
   }
+
+
+  const debouncedFilterSearchForwardData = debounce(filterSearchForwardData, 100);
+  const [searchTermForwardData, setSearchTermForwardData] = useState("")
+
+  // Modified filterSearch function with debounce
+  function filterSearchForwardData(searchTerm) {
+    setSearchTermForwardData(searchTerm);
+
+    setForwardEmployeeData(
+      forwardEmployeeDataFilter.filter((company) =>
+        company.ename.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+
+    setCompanyData(
+      companyDataFilter.filter(
+        (obj) =>
+          (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
+          forwardEmployeeDataNew.some((empObj) => (obj.ename === empObj.ename) &&
+            empObj.ename.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+      )
+    );
+
+    setTeamLeadsData(
+      teamLeadsDataFilter.filter((obj) =>
+        forwardEmployeeDataNew.some(
+          (empObj) =>
+            (obj.bdmName === empObj.ename) &&
+            empObj.ename.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      )
+    );
+    // setfollowData(
+    //   followDataFilter.filter(obj =>
+    //     forwardEmployeeDataNew.some(empObj =>
+    //       (empObj.ename === obj.ename || empObj.bdeName === obj.ename) &&
+    //       (empObj.ename.toLowerCase().includes(searchTerm.toLowerCase()) || empObj.bdeName.toLowerCase().includes(searchTerm.toLowerCase()))
+    //     )
+    //   )
+    // );
+
+  }
+
+  //console.log("followData", followData, followDataFilter)
+
+  const [selectedValues, setSelectedValues] = useState([]);
+
+const options = forwardEmployeeDataNew.map((obj) => ({ value: obj.ename, label: obj.ename }));
+
+console.log("options", options);
+
+const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
+  console.log(selectedEmployeeNames, "selected employees");
+  // Assuming you have forwardEmployeeDataFilter, companyDataFilter, and teamLeadsDataFilter defined somewhere
+
+  const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) =>
+    selectedEmployeeNames.includes(company.ename)
+  );
+
+  setForwardEmployeeData(filteredForwardEmployeeData);
+
+  const filteredCompanyData = companyDataFilter.filter(
+    (obj) =>
+      (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
+      forwardEmployeeDataNew.some((empObj) => empObj.ename === obj.ename && selectedEmployeeNames.includes(empObj.ename))
+  );
+
+  setCompanyData(filteredCompanyData);
+
+  const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj) =>
+    selectedEmployeeNames.includes(obj.bdmName)
+  );
+
+  setTeamLeadsData(filteredTeamLeadsData);
+};
+
+  // const handleSelectForwardedEmployeeData = (employeeName) => {
+
+  //   console.log(employeeName, "employee ye h")
+
+  //   setForwardEmployeeData(
+  //     forwardEmployeeDataFilter.filter((company) =>
+  //       company.ename === employeeName)
+  //   )
+
+  //   setCompanyData(
+  //     companyDataFilter.filter(
+  //       (obj) =>
+  //         (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
+  //         forwardEmployeeDataNew.some((empObj) => (obj.ename === empObj.ename) &&
+  //           (empObj.ename === employeeName)
+  //         )
+  //     )
+  //   );
+
+  //   setTeamLeadsData(
+  //     teamLeadsDataFilter.filter((obj) =>
+  //       forwardEmployeeDataNew.some(
+  //         (empObj) =>
+  //           (obj.bdmName === empObj.ename) &&
+  //           empObj.ename === employeeName)
+  //     )
+  //   )
+  // }
+
+  
+
+
 
   //console.log(followDataToday)
 
@@ -2135,6 +2266,8 @@ function Dashboard() {
     );
   }
 
+
+
   //  ---------------------------------------------status info component-------------------------------------------------
 
   const numberFormatOptions = {
@@ -2570,6 +2703,8 @@ function Dashboard() {
     //  console.log("This is generated Revenue",requiredObj);
 
   }
+
+
 
   return (
     <div>
@@ -3952,7 +4087,7 @@ function Dashboard() {
                           </div>
                         </div>
                         <div className="d-flex gap-2">
-                          {/* <div className="general-searchbar form-control d-flex justify-content-center align-items-center input-icon">
+                          <div className="general-searchbar form-control d-flex justify-content-center align-items-center input-icon mt-1">
                             <span className="input-icon-addon">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -3976,9 +4111,9 @@ function Dashboard() {
                               </svg>
                             </span>
                             <input
-                              value={searchTerm}
+                              value={searchTermForwardData}
                               onChange={(e) =>
-                                debouncedFilterSearch(e.target.value)
+                                debouncedFilterSearchForwardData(e.target.value)
                               }
                               placeholder="Enter BDE Name..."
                               style={{
@@ -3990,9 +4125,9 @@ function Dashboard() {
                               name="bdeName-search"
                               id="bdeName-search"
                             />
-                          </div> */}
+                          </div>
                           <div
-                            style={{ m: 1, padding: "0px", marginRight: "30px" }}
+                            style={{ m: 1, padding: "0px" }}
                             className="filter-booking d-flex align-items-center"
                           >
                             <div className="filter-main">
@@ -4052,6 +4187,32 @@ function Dashboard() {
                               />
                             </DemoContainer>
                           </LocalizationProvider> */}
+                          {/* <div>
+                            <select className="form-select mt-1" 
+                              onChange={(e) => {
+                                handleSelectForwardedEmployeeData(e.target.value); // You missed passing the value to the function
+                              }}>
+                              <option disabled value="">Select...</option>
+                              {forwardEmployeeDataNew.map((obj) => (
+                                <option key={obj.id} value={obj.ename}>
+                                  {obj.ename}
+                                </option>
+                              ))}
+                            </select>
+                          </div> */}
+                          <div className="services mt-1 mr-3" style={{zIndex:"9999"}}>
+                            <Select
+                              isMulti
+                              options={options}
+                              onChange={(selectedOptions) => {
+                                setSelectedValues(selectedOptions.map((option) => option.value));
+                                const selectedEmployeeNames = selectedOptions.map((option) => option.label);
+                                handleSelectForwardedEmployeeData(selectedEmployeeNames);
+                              }}
+                              value={selectedValues.map((value) => ({ value, label: value }))}
+                              placeholder="Select..."
+                            />
+                          </div>
                         </div>
                       </div>
                       <div className='card-body'>
@@ -4116,7 +4277,7 @@ function Dashboard() {
                                       .filter(company => company.bdeName === obj.ename)
                                       .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}</td>
 
-                                    <td>₹{followData
+                                    <td>₹{followDataNew
                                       .filter(company => company.ename === obj.ename && company.bdeName)
                                       .reduce((total, obj) => total + obj.totalPayment, 0).toLocaleString()
                                     }</td>
@@ -4128,8 +4289,7 @@ function Dashboard() {
                                   </tr>
                                 ))}
                             </tbody>
-                            {forwardEmployeeData.length !== 0 &&
-                              companyData.length !== 0 && (
+                            
                                 <tfoot
                                   style={{
                                     position: "sticky", // Make the footer sticky
@@ -4167,7 +4327,7 @@ function Dashboard() {
                                       ₹{companyData
                                         .filter(company => company.bdmAcceptStatus === "Accept")
                                         .reduce((total, company) => {
-                                          const totalPayment = followData
+                                          const totalPayment = followDataNew
                                             .filter(followCompany => followCompany.companyName === company["Company Name"])
                                             .reduce((sum, obj) => sum + obj.totalPayment, 0);
                                           return total + totalPayment;
@@ -4182,7 +4342,6 @@ function Dashboard() {
                                     </td>
                                   </tr>
                                 </tfoot>
-                              )}
                           </table>
 
                         </div>

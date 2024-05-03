@@ -1053,9 +1053,10 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
     bdmAcceptStatus,
     bdeForwardDate,
     bdeOldStatus,
+    companyName,
   } = req.body;
   //console.log("selectedData", selectedData);
-
+  console.log(companyName)
   try {
     // Assuming TeamLeadsModel has a schema similar to the selectedData structure
     const newLeads = await Promise.all(
@@ -1077,7 +1078,17 @@ app.post("/api/forwardtobdmdata", async (req, res) => {
         bdeOldStatus: bdeOldStatus,
         bdmName: bdmName,
       }
+
     );
+  
+    // await FollowUpModel.findOneAndUpdate( { companyName : companyName },
+    // {
+    //   $set: {
+    //     bdmName: bdmName,
+    //   },
+    // },
+    // { new: true })
+    
 
     //console.log("newLeads", newLeads);
     res.status(201).json(newLeads);
