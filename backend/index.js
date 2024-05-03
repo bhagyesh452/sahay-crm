@@ -8289,8 +8289,9 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       newData.bdeName == newData.bdmName
         ? newData.bdeName
         : `${newData.bdeName} && ${newData.bdmName}`;
-    const pagination =
+    const waitpagination =
       newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
+      const pagination = newData.services.length > 2 ? "Page 2/3" : waitpagination
     // Render services HTML content
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
