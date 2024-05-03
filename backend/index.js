@@ -7944,33 +7944,33 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         if (rowSpan === 3) {
           paymentServices = `
         <tr>
-          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
         <tr>
-         <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+         <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
          <td>${newData.services[i].thirdPaymentRemarks}</td>
         </tr>
         <tr>
-         <td>₹${Number(newData.services[i].fourthPayment).toFixed(2)}/-</td>
+         <td>₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
          <td>${newData.services[i].fourthPaymentRemarks}</td>
         </tr>
         `;
         } else if (rowSpan === 2) {
           paymentServices = `
         <tr>
-          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
         <tr>
-          <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+          <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
           <td>${newData.services[i].thirdPaymentRemarks}</td>
         </tr>
         `;
         } else {
           paymentServices = `
         <tr>
-          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${
             newData.services[i].paymentTerms !== "Full Advanced"
               ? newData.services[i].secondPaymentRemarks
@@ -7999,10 +7999,8 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                     } /-</th>
                     <th style="vertical-align: top;" rowspan='4'>₹ ${
                       newData.services[i].paymentTerms === "Full Advanced"
-                        ? Number(newData.services[i].totalPaymentWGST).toFixed(
-                            2
-                          )
-                        : Number(newData.services[i].firstPayment).toFixed(2)
+                        ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+                        : parseInt(newData.services[i].firstPayment).toLocaleString()
                     }/-</th>
               </tr>
               ${paymentServices}
@@ -8039,33 +8037,33 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         if (rowSpan === 3) {
           paymentServices = `
         <tr>
-          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
         <tr>
-         <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+         <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
          <td>${newData.services[i].thirdPaymentRemarks}</td>
         </tr>
         <tr>
-         <td>₹${Number(newData.services[i].fourthPayment).toFixed(2)}/-</td>
+         <td>₹${parseInt(newData.services[i].fourthPayment).toLocaleString()}/-</td>
          <td>${newData.services[i].fourthPaymentRemarks}</td>
         </tr>
         `;
         } else if (rowSpan === 2) {
           paymentServices = `
         <tr>
-          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${newData.services[i].secondPaymentRemarks}</td>
         </tr>
         <tr>
-          <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+          <td>₹${parseInt(newData.services[i].thirdPayment).toLocaleString()}/-</td>
           <td>${newData.services[i].thirdPaymentRemarks}</td>
         </tr>
         `;
         } else {
           paymentServices = `
         <tr>
-          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>₹${parseInt(newData.services[i].secondPayment).toLocaleString()}/-</td>
           <td>${
             newData.services[i].paymentTerms !== "Full Advanced"
               ? newData.services[i].secondPaymentRemarks
@@ -8091,14 +8089,12 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
               </tr>
               <tr>
                     <th style="vertical-align: top;" rowspan='4'>₹ ${
-                      newData.services[i].totalPaymentWGST
+                     parseInt( newData.services[i].totalPaymentWGST)
                     } /-</th>
                     <th style="vertical-align: top;" rowspan='4'>₹ ${
                       newData.services[i].paymentTerms === "Full Advanced"
-                        ? Number(newData.services[i].totalPaymentWGST).toFixed(
-                            2
-                          )
-                        : Number(newData.services[i].firstPayment).toFixed(2)
+                        ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
+                        : parseInt(newData.services[i].firstPayment).toLocaleString()
                     }/-</th>
               </tr>
               ${paymentServices}
@@ -8250,13 +8246,13 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     };
 const conditional = newData.services.length < 2 ?  `<div class="Declaration_text">
 <p class="Declaration_text_data">
-  I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between {{Company Name}} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+  I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
 </p>
-</div>` : ""
+</div>` : "";
     const serviceKawali = renderServiceKawali();
     const todaysDate = new Date().toLocaleDateString();
     const mainPageHtml = `
-          <div class="PDF_main" style="margin-top : 50px">
+        <div class="PDF_main" style="margin-top : 50px">
           <section>
             <div class="date_div">
               <p>${todaysDate}</p>
@@ -8276,7 +8272,7 @@ const conditional = newData.services.length < 2 ?  `<div class="Declaration_text
                 application if required on my behalf, as I am not familiar with the process.
               </p>
             </div>
-            <div class="section_footer">
+            <div class="section_footer" style="margin-bottom:50px , margin-top:0px">
             <p class="Declaration_text_data Signature">
               Client's Signature:__________________________________
             </p>
@@ -8318,7 +8314,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
     const morePaymentDetails = renderMorePaymentDetails();
-    const thirdPage = newData.services.length > 2 ? ` <div class="PDF_main">
+    const thirdPage = newData.services.length > 2 ? ` <div class="PDF_main" style="margin-top:40px">
     <section>
       ${morePaymentDetails}
        <div class="table-data">
@@ -8341,7 +8337,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
 </div>
       <div class="Declaration_text">
         <p class="Declaration_text_data">
-          I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between {{Company Name}} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+          I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between ${newData["Company Name"]} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
         </p>
       </div>
       <div class="section_footer">
@@ -8400,7 +8396,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
                 `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                 ``,
                 `
-                    <div class="container">
+                  <div class="container">
 
                     <p>Dear ${newData["Company Name"]},</p>
                     <p style="margin-top:20px;">We are thrilled to extend a warm welcome to Start-Up Sahay Private Limited as our esteemed client!</p>
