@@ -2684,6 +2684,7 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
     return lastBookingDate ? formatDateFinal(lastBookingDate) : "N/A";
   }
 
+let generatedTotalRevenue = 0;
 
 
   function functionCalculateGeneratedTotalRevenue(ename) {
@@ -2697,7 +2698,7 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
       }
 
     });
-
+    generatedTotalRevenue = generatedTotalRevenue+ generatedRevenue;
     return generatedRevenue;
     //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
     //  console.log("This is generated Revenue",requiredObj);
@@ -4285,7 +4286,7 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
                                     <td>
                                       {companyData.filter((company) => company.ename === obj.ename && company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                                     </td>
-                                    <td>₹ {functionCalculateGeneratedTotalRevenue(obj.ename).toLocaleString()}</td>
+                                    <td>₹ {parseInt(functionCalculateGeneratedTotalRevenue(obj.ename)).toLocaleString()}</td>
                                   </tr>
                                 ))}
                             </tbody>
@@ -4338,7 +4339,7 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
                                       {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                                     </td>
                                     <td>
-                                      -
+                                    ₹ {parseInt(generatedTotalRevenue).toLocaleString()}
                                     </td>
                                   </tr>
                                 </tfoot>
