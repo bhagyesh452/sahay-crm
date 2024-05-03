@@ -7994,10 +7994,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th style="vertical-align: top;" rowspan='4'>₹ ${
+                    <th rowspan='4'>₹ ${
                       newData.services[i].totalPaymentWGST
                     } /-</th>
-                    <th style="vertical-align: top;" rowspan='4'>₹ ${
+                    <th rowspan='4'>₹ ${
                       newData.services[i].paymentTerms === "Full Advanced"
                         ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
                         : parseInt(newData.services[i].firstPayment).toLocaleString()
@@ -8088,10 +8088,10 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
                 <td>Remarks</td>
               </tr>
               <tr>
-                    <th style="vertical-align: top;" rowspan='4'>₹ ${
-                     parseInt( newData.services[i].totalPaymentWGST)
+                    <th rowspan='4'>₹ ${
+                     parseInt( newData.services[i].totalPaymentWGST).toLocaleString()
                     } /-</th>
-                    <th style="vertical-align: top;" rowspan='4'>₹ ${
+                    <th rowspan='4'>₹ ${
                       newData.services[i].paymentTerms === "Full Advanced"
                         ? parseInt(newData.services[i].totalPaymentWGST).toLocaleString()
                         : parseInt(newData.services[i].firstPayment).toLocaleString()
