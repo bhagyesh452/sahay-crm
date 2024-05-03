@@ -7920,7 +7920,103 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const renderPaymentDetails = () => {
       let servicesHtml = "";
       let paymentServices = "";
-      for (let i = 0; i < newData.services.length; i++) {
+      const serviceLength = newData.services.length > 2 ? 2 : newData.services.length
+      for (let i = 0; i < serviceLength; i++) {
+        const Amount =
+          newData.services[i].paymentTerms === "Full Advanced"
+            ? newData.services[i].totalPaymentWGST
+            : newData.services[i].firstPayment;
+        let rowSpan;
+
+        if (newData.services[i].paymentTerms === "two-part") {
+          if (
+            newData.services[i].thirdPayment !== 0 &&
+            newData.services[i].fourthPayment === 0
+          ) {
+            rowSpan = 2;
+          } else if (newData.services[i].fourthPayment !== 0) {
+            rowSpan = 3;
+          }
+        } else {
+          rowSpan = 1;
+        }
+
+        if (rowSpan === 3) {
+          paymentServices = `
+        <tr>
+          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>${newData.services[i].secondPaymentRemarks}</td>
+        </tr>
+        <tr>
+         <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+         <td>${newData.services[i].thirdPaymentRemarks}</td>
+        </tr>
+        <tr>
+         <td>₹${Number(newData.services[i].fourthPayment).toFixed(2)}/-</td>
+         <td>${newData.services[i].fourthPaymentRemarks}</td>
+        </tr>
+        `;
+        } else if (rowSpan === 2) {
+          paymentServices = `
+        <tr>
+          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>${newData.services[i].secondPaymentRemarks}</td>
+        </tr>
+        <tr>
+          <td>₹${Number(newData.services[i].thirdPayment).toFixed(2)}/-</td>
+          <td>${newData.services[i].thirdPaymentRemarks}</td>
+        </tr>
+        `;
+        } else {
+          paymentServices = `
+        <tr>
+          <td>₹${Number(newData.services[i].secondPayment).toFixed(2)}/-</td>
+          <td>${
+            newData.services[i].paymentTerms !== "Full Advanced"
+              ? newData.services[i].secondPaymentRemarks
+              : "100% Advance Payment"
+          }</td>
+        </tr>
+        `;
+        }
+        servicesHtml += `
+        <table class="table table-bordered">
+            <thead>
+              <td colspan="4">Service Name : ${
+                newData.services[i].serviceName
+              }</td>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Total Payment</td>
+                <td>Advanced Payment</td>
+                <td>Pending payment</td>
+                <td>Remarks</td>
+              </tr>
+              <tr>
+                    <th style="vertical-align: top;" rowspan='4'>₹ ${
+                      newData.services[i].totalPaymentWGST
+                    } /-</th>
+                    <th style="vertical-align: top;" rowspan='4'>₹ ${
+                      newData.services[i].paymentTerms === "Full Advanced"
+                        ? Number(newData.services[i].totalPaymentWGST).toFixed(
+                            2
+                          )
+                        : Number(newData.services[i].firstPayment).toFixed(2)
+                    }/-</th>
+              </tr>
+              ${paymentServices}
+            </tbody>
+        </table>
+        `;
+      }
+      return servicesHtml;
+    };
+    const renderMorePaymentDetails = () => {
+      let servicesHtml = "";
+      let paymentServices = "";
+     
+      for (let i = 2; i < newData.services.length; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
             ? newData.services[i].totalPaymentWGST
@@ -8198,6 +8294,24 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     // Render services HTML content
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
+    const morePaymentDetails = renderMorePaymentDetails();
+    const thirdPage = newData.services.length > 2 ? ` <div class="PDF_main">
+    <section>
+      ${morePaymentDetails}
+      <div class="Declaration_text">
+        <p class="Declaration_text_data">
+          I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between {{Company Name}} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
+        </p>
+      </div>
+      <div class="section_footer">
+        <p class="Declaration_text_data Signature">
+          Client's Signature:__________________________________
+        </p>
+        <p style="text-align: center;">Page 3/3</p>
+      </div>
+
+    </section>
+  </div>` : "";
 
     const htmlTemplate = fs.readFileSync("./helpers/template.html", "utf-8");
     const htmlNewTemplate = fs.readFileSync("./helpers/templatev2.html", "utf-8");
@@ -8217,6 +8331,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       .replace("{{ReceivedAmount}}", receivedAmount.toFixed(2))
       .replace("{{PendingAmount}}", pendingAmount.toFixed(2))
       .replace("{{Service-Details}}", paymentDetails)
+      .replace("{{Third-Page}}", thirdPage)
       .replace("{{Company Number}}", newData["Company Number"]);
 
     //   console.log("This is html file reading:-", filledHtml);
