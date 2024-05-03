@@ -7920,7 +7920,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const renderPaymentDetails = () => {
       let servicesHtml = "";
       let paymentServices = "";
-      const serviceLength = newData.services.length > 2 ? 2 : newData.services.length
+      const serviceLength = newData.services.length > 1 ? 1 : newData.services.length
       for (let i = 0; i < serviceLength; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
@@ -8016,7 +8016,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
       let servicesHtml = "";
       let paymentServices = "";
      
-      for (let i = 2; i < newData.services.length; i++) {
+      for (let i = 1; i < newData.services.length; i++) {
         const Amount =
           newData.services[i].paymentTerms === "Full Advanced"
             ? newData.services[i].totalPaymentWGST
@@ -8251,7 +8251,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const serviceKawali = renderServiceKawali();
     const todaysDate = new Date().toLocaleDateString();
     const mainPageHtml = `
-          <div class="PDF_main">
+          <div class="PDF_main" style="margin-top : 50px">
           <section>
             <div class="date_div">
               <p>${todaysDate}</p>
@@ -8291,7 +8291,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
         : `${newData.bdeName} && ${newData.bdmName}`;
     const waitpagination =
       newPageDisplay === 'style="display:block' ? "Page 2/2" : "Page 1/1";
-      const pagination = newData.services.length > 2 ? "Page 2/3" : waitpagination
+      const pagination = newData.services.length > 1 ? "Page 2/3" : waitpagination
     // Render services HTML content
     const serviceList = renderServiceList();
     const paymentDetails = renderPaymentDetails();
