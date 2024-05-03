@@ -20,11 +20,6 @@
         padding: 40px 40px;
         height: 680px;
       }
-      section
-      {
-        height: 80%;
-        page-break-after: always;
-      }
       .mt-2
       {
         margin-top:20px
@@ -71,11 +66,15 @@
       .section_footer
       {
         width: 100%;
-        height: 20%;
+        position: absolute;
+        bottom: 0;
+        left:0;
+        page-break-after: always;
       }
       .Signature
       {
         margin-bottom: 10px;
+        margin-left: 40px;
       }
       .table-data
       {
@@ -149,13 +148,13 @@
           application if required on my behalf, as I am not familiar with the process.
         </p>
       </div>
+      <div class="section_footer">
+        <p class="Declaration_text_data Signature">
+          Client's Signature:__________________________________
+        </p>
+        <p style="text-align: center;">Page 1/2</p>
+      </div>
     </section>
-    <div class="section_footer">
-      <p class="Declaration_text_data Signature">
-        Client's Signature:__________________________________
-      </p>
-      <p style="text-align: center;">Page 1/2</p>
-    </div>
   </div> -->
   <div class="PDF_main">
     <section>
@@ -245,13 +244,13 @@
           I confirm that the outlined payment details and terms accurately represent the agreed-upon arrangements between {{Company Name}} and START-UP SAHAY PRIVATE LIMITED. The charges are solely for specified services, and no additional services will be provided without separate payment, even in the case of rejection.
         </p>
       </div>
+      <div class="section_footer">
+        <p class="Declaration_text_data Signature">
+          Client's Signature:__________________________________
+        </p>
+        <p style="text-align: center;">{{pagination}}</p>
+      </div>
     </section>
-    <div class="section_footer">
-      <p class="Declaration_text_data Signature">
-        Client's Signature:__________________________________
-      </p>
-      <p style="text-align: center;">{{pagination}}</p>
-    </div>
   </div>
 </body>
 </html>
