@@ -180,7 +180,7 @@ function EmployeeTeamLeads() {
         const bdmName = data.ename
         try {
             const response = await axios.get(`${secretKey}/forwardedbybdedata/${bdmName}`)
-            console.log(response.data)
+            //console.log(response.data)
 
 
 
@@ -207,13 +207,13 @@ function EmployeeTeamLeads() {
             }
 
 
-            console.log("response", response.data)
+            //console.log("response", response.data)
         } catch (error) {
             console.log(error)
         }
     }
 
-    console.log("teamdata", teamleadsData)
+    //console.log("teamdata", teamleadsData)
 
     useEffect(() => {
         fetchData()
@@ -261,7 +261,7 @@ function EmployeeTeamLeads() {
             remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
         );
 
-        console.log("companyId", companyID)
+        //console.log("companyId", companyID)
         // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
         setcid(companyID);
         setCstat(companyStatus);
@@ -285,7 +285,7 @@ function EmployeeTeamLeads() {
             remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
         );
 
-        console.log("this is new", bdeName)
+        //console.log("this is new", bdeName)
 
         //console.log("companyId" , companyID)
         // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
@@ -296,7 +296,7 @@ function EmployeeTeamLeads() {
         setRemarksBdmName(bdmName)
     };
 
-    console.log("tum rejected data", bdeNameReject)
+    //console.log("tum rejected data", bdeNameReject)
 
     //console.log("filteredRemarks", filteredRemarks)
 
@@ -308,7 +308,7 @@ function EmployeeTeamLeads() {
             setRemarksHistory(response.data.reverse());
             setFilteredRemarks(response.data.filter((obj) => obj.companyID === cid));
 
-            console.log(response.data);
+            //console.log(response.data);
         } catch (error) {
             console.error("Error fetching remarks history:", error);
         }
@@ -340,7 +340,7 @@ function EmployeeTeamLeads() {
 
     const handleUpdate = async () => {
         // Now you have the updated Status and Remarks, perform the update logic
-        console.log(cid, cstat, changeRemarks, remarksBdmName);
+        //console.log(cid, cstat, changeRemarks, remarksBdmName);
         const Remarks = changeRemarks;
         if (Remarks === "") {
             Swal.fire({ title: "Empty Remarks!", icon: "warning" });
@@ -373,7 +373,7 @@ function EmployeeTeamLeads() {
 
                 }
                 )
-                console.log("remarks", Remarks)
+                //console.log("remarks", Remarks)
                 if (response.status === 200) {
                     Swal.fire("Remarks updated!");
                     setChangeRemarks("");
@@ -389,7 +389,7 @@ function EmployeeTeamLeads() {
                     console.error("Failed to update status:", response.data.message);
                 }
 
-                console.log("response", response.data);
+                //console.log("response", response.data);
                 fetchTeamLeadsData();
                 Swal.fire("Data Rejected");
                 setIsDeleted(false)
@@ -406,7 +406,7 @@ function EmployeeTeamLeads() {
 
                     }
                 );
-                console.log("remarks", Remarks)
+                //console.log("remarks", Remarks)
                 if (response.status === 200) {
                     Swal.fire("Remarks updated!");
                     setChangeRemarks("");
@@ -597,9 +597,9 @@ function EmployeeTeamLeads() {
 
     const handleDeleteRemarks = async (remarks_id, remarks_value) => {
         const mainRemarks = remarks_value === currentRemarks ? true : false;
-        console.log(mainRemarks);
+        //console.log(mainRemarks);
         const companyId = cid;
-        console.log("Deleting Remarks with", remarks_id);
+        //console.log("Deleting Remarks with", remarks_id);
         try {
             // Send a delete request to the backend to delete the item with the specified ID
             await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
@@ -639,29 +639,39 @@ function EmployeeTeamLeads() {
     const [isEditProjection, setIsEditProjection] = useState(false);
     const [openAnchor, setOpenAnchor] = useState(false);
     const [bdeNameProjection, setBdeNameProjection] = useState("")
+    const [bdeProjection, setBdeProjection] = useState([])
 
 
-    const functionopenprojection = (comName) => {
-
+    const functionopenprojection = async (comName) => {
+        let companyBdeProjection;
+        try {
+            const response = await axios.get(`${secretKey}/projection-data-company/${comName}`)
+            companyBdeProjection = response.data
+            setBdeProjection(response.data)
+            //console.log("responseprojection", response.data)
+    
+        } catch (error) {
+            console.log("error fetching details", error.message)
+        }
+    
         const getBdeName = teamleadsData.filter((company) => company["Company Name"] === comName);
-        console.log(getBdeName)
-
+        //console.log(getBdeName)
+    
         if (getBdeName.length > 0) {
             const bdeName = getBdeName[0].ename;
             setBdeNameProjection(bdeName) // Accessing the 'ename' field from the first (and only) object
-            console.log("bdeename:", bdeName);
+            //console.log("bdeename:", bdeName);
         } else {
-            console.log("No matching company found.");
+            //console.log("No matching company found.");
         }
-
-
         setProjectingCompany(comName);
         setOpenProjection(true);
-        const findOneprojection =
-            projectionData.length !== 0 &&
-            projectionData.find((item) => item.companyName === comName);
-        console.log(findOneprojection)
-        if (findOneprojection) {
+    
+        //console.log("bdeprojection", bdeProjection)
+        
+        if (companyBdeProjection && companyBdeProjection.length !== 0) {
+            const findOneprojection = companyBdeProjection[0]
+            setIsEditProjection(false)
             setCurrentProjection({
                 companyName: findOneprojection.companyName,
                 ename: findOneprojection.ename,
@@ -677,8 +687,47 @@ function EmployeeTeamLeads() {
                 editCount: findOneprojection.editCount,
             });
             setSelectedValues(findOneprojection.offeredServices);
+        } else {
+            const findOneprojection =
+                projectionData.length !== 0 &&
+                projectionData.find((item) => item.companyName === comName);
+            if (findOneprojection) {
+                setCurrentProjection({
+                    companyName: findOneprojection.companyName,
+                    ename: findOneprojection.ename,
+                    bdeName: bdeNameProjection ? bdeNameProjection : findOneprojection.ename,
+                    offeredPrize: findOneprojection.offeredPrize,
+                    offeredServices: findOneprojection.offeredServices,
+                    lastFollowUpdate: findOneprojection.lastFollowUpdate,
+                    estPaymentDate: findOneprojection.estPaymentDate,
+                    remarks: findOneprojection.remarks,
+                    totalPayment: findOneprojection.totalPayment,
+                    date: "",
+                    time: "",
+                    editCount: findOneprojection.editCount,
+                });
+                setSelectedValues(findOneprojection.offeredServices);
+            } else {
+                // Handle the case when no projection data is found
+                setCurrentProjection({
+                    companyName: "",
+                    ename: "",
+                    bdeName: bdeNameProjection ? bdeNameProjection : "",
+                    offeredPrize: "",
+                    offeredServices: "",
+                    lastFollowUpdate: "",
+                    estPaymentDate: "",
+                    remarks: "",
+                    totalPayment: "",
+                    date: "",
+                    time: "",
+                    editCount: "",
+                });
+                setSelectedValues([]);
+            }
         }
     };
+    
 
 
     const closeProjection = () => {
@@ -713,19 +762,19 @@ function EmployeeTeamLeads() {
     };
     const fetchRedesignedFormData = async () => {
         try {
-            console.log(maturedID);
+            //console.log(maturedID);
             const response = await axios.get(
                 `${secretKey}/redesigned-final-leadData`
             );
             const data = response.data.find((obj) => obj.company === maturedID);
-            console.log(data);
+            //console.log(data);
             setCurrentForm(data);
         } catch (error) {
             console.error("Error fetching data:", error.message);
         }
     };
     useEffect(() => {
-        console.log("Matured ID Changed", maturedID);
+        //console.log("Matured ID Changed", maturedID);
         if (maturedID) {
             fetchRedesignedFormData();
         }
@@ -733,16 +782,16 @@ function EmployeeTeamLeads() {
 
     const handleDelete = async (company) => {
         const companyName = company;
-        console.log(companyName);
+        //console.log(companyName);
 
         try {
             // Send a DELETE request to the backend API endpoint
             const response = await axios.delete(
                 `${secretKey}/delete-followup/${companyName}`
             );
-            console.log(response.data.message); // Log the response message
+            //console.log(response.data.message); // Log the response message
             // Show a success message after successful deletion
-            console.log("Deleted!", "Your data has been deleted.", "success");
+            //console.log("Deleted!", "Your data has been deleted.", "success");
             setCurrentProjection({
                 companyName: "",
                 ename: "",
@@ -814,7 +863,7 @@ function EmployeeTeamLeads() {
                     finalData
                 );
 
-                console.log(response.data)
+                //console.log(response.data)
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
                 setOpenProjection(false);
                 setCurrentProjection({
@@ -882,7 +931,7 @@ function EmployeeTeamLeads() {
         setBdmNewStatus(bdmStatus)
         //setIsEditFeedback(true)
     }
-    console.log("yahan locha h", feedbackPoints.length)
+    //console.log("yahan locha h", feedbackPoints.length)
 
 
 
@@ -918,7 +967,7 @@ function EmployeeTeamLeads() {
     };
 
 
-    console.log("valueSlider", valueSlider, valueSlider2, valueSlider3, valueSlider4, valueSlider5)
+    //console.log("valueSlider", valueSlider, valueSlider2, valueSlider3, valueSlider4, valueSlider5)
 
 
 
@@ -965,7 +1014,7 @@ function EmployeeTeamLeads() {
         try {
             const resposne = await axios.post(`${secretKey}/post-bdmnextfollowupdate/${companyId}`, data)
 
-            console.log(resposne.data)
+            //console.log(resposne.data)
             fetchTeamLeadsData(companyStatus)
 
         } catch (error) {
@@ -2556,11 +2605,11 @@ function EmployeeTeamLeads() {
                                 Projection Form
                             </h1>
                             <div>
-                                {projectingCompany &&
+                                {(bdeProjection && bdeProjection.some((item)=> item.companyName === projectingCompany)) || (projectingCompany &&
                                     projectionData &&
                                     projectionData.some(
                                         (item) => item.companyName === projectingCompany
-                                    ) ? (
+                                    )) ? (
                                     <>
                                         <IconButton
                                             onClick={() => {

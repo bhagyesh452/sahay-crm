@@ -33,7 +33,7 @@ function Header({ name, designation}) {
     fetchApproveRequests();
     socket.on("newRequest", (newRequest) => {
       // Handle the new request, e.g., update your state
-      console.log("New request received:", newRequest);
+      //console.log("New request received:", newRequest);
 
       // Fetch updated data when a new request is received
       fetchRequestDetails();

@@ -12,7 +12,7 @@ import { AiOutlineTeam } from "react-icons/ai";
 function EmpNav({ userId, bdmWork }) {
   const location = useLocation();
 
-  console.log("bdmWORKON NAV", bdmWork)
+  //console.log("bdmWORKON NAV", bdmWork)
 
   const frontendkey = process.env.REACT_APP_FRONTEND_KEY;
   const handleConvertedLeadsClick = () => {

@@ -133,14 +133,20 @@ function Dashboard() {
   };
 
   const [employeeInfo, setEmployeeInfo] = useState([])
+  const [forwardEmployeeData, setForwardEmployeeData] = useState([])
+  const [forwardEmployeeDataFilter, setForwardEmployeeDataFilter] = useState([])
+  const [forwardEmployeeDataNew, setForwardEmployeeDataNew] = useState([])
 
   const fetchEmployeeInfo = async () => {
     fetch(`${secretKey}/einfo`)
       .then((response) => response.json())
       .then((data) => {
-        setEmployeeData(data.filter((employee)=> employee.designation === "Sales Executive"));
-        setEmployeeDataFilter(data.filter((employee)=> employee.designation === "Sales Executive"));
-        setEmployeeInfo(data.filter((employee)=> employee.designation === "Sales Executive"))
+        setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive"));
+        setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive"));
+        setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive"))
+        setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+        setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+        setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
         // setEmployeeDataFilter(data.filter)
       })
       .catch((error) => {
@@ -148,7 +154,28 @@ function Dashboard() {
       });
   };
 
-  
+  const [teamLeadsData, setTeamLeadsData] = useState([])
+  const [teamLeadsDataFilter, setTeamLeadsDataFilter] = useState([])
+
+  const fetchTeamLeadsData = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/teamleadsdata`)
+      setTeamLeadsData(response.data)
+      setTeamLeadsDataFilter(response.data)
+
+      //console.log("teamleadsdata" , response.data)
+
+    } catch (error) {
+      console.log(error.messgae, "Error fetching team leads data")
+    }
+  }
+  //console.log("forwardemployeedata" , forwardEmployeeData)
+
+  useEffect(() => {
+    fetchTeamLeadsData()
+  }, [])
+
+
   const debounceDelay = 300;
 
   // Wrap the fetch functions with debounce
@@ -191,12 +218,15 @@ function Dashboard() {
     }
   };
 
+  const [bdeResegnedData, setBdeRedesignedData] = useState([])
+
   const fetchRedesignedBookings = async () => {
     try {
       const response = await axios.get(
         `${secretKey}/redesigned-final-leadData`
       );
       const bookingsData = response.data;
+      setBdeRedesignedData(response.data);
 
       const getBDEnames = new Set();
       bookingsData.forEach((obj) => {
@@ -454,12 +484,14 @@ function Dashboard() {
   //   }, []);
 
   // console.log(projectionEname)
+  const[followDataFilter , setFollowDataFilter] = useState([])
 
   const fetchFollowUpData = async () => {
     try {
       const response = await fetch(`${secretKey}/projection-data`);
       const followdata = await response.json();
       setfollowData(followdata);
+      setFollowDataFilter(followData)
       //console.log("followdata", followdata)
       setfollowDataToday(
         followdata
@@ -493,7 +525,7 @@ function Dashboard() {
         employeeData.some((empObj) => empObj.branchOffice === branchName && empObj.ename === obj.ename)
       );
 
-      const filteredemployeedata = employeeInfo.filter(obj=>obj.branchOffice === branchName)
+      const filteredemployeedata = employeeInfo.filter(obj => obj.branchOffice === branchName)
 
 
       setfollowDataToday(filteredFollowData);
@@ -502,6 +534,32 @@ function Dashboard() {
       //console.log(filteredemployeedata)
     }
   };
+
+  const[selectedValue , setSelectedValue] = useState("")
+
+  const handleFilterForwardCaseBranchOffice =(branchName)=>{
+
+    console.log(branchName)
+
+    if(branchName === "none"){
+      setForwardEmployeeData(forwardEmployeeDataFilter)
+      setCompanyData(companyDataFilter)
+      setfollowData(followDataFilter)
+      setTeamLeadsData(teamLeadsDataFilter)
+    }else{
+      const filteredData = forwardEmployeeDataNew.filter(obj=>obj.branchOffice === branchName)
+      const filteredFollowData = followDataFilter.filter((obj) =>employeeData.some((empObj) => empObj.branchOffice === branchName && (empObj.ename === obj.ename || empObj.bdeName === obj.ename)))
+      const filteredCompanyData = companyDataFilter.filter(obj => (
+        (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
+        forwardEmployeeDataNew.some(empObj => empObj.branchOffice === branchName && empObj.ename === obj.ename)
+    ));
+      const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj)=>forwardEmployeeDataNew.some((empObj)=>empObj.branchOffice === branchName && (empObj.ename === obj.ename || empObj.ename === obj.bdmName)))
+      setForwardEmployeeData(filteredData)
+      setCompanyData(filteredCompanyData)
+      setfollowData(filteredFollowData)
+      setTeamLeadsData(filteredTeamLeadsData)
+    }
+  }
 
   //console.log(followDataToday)
 
@@ -726,31 +784,6 @@ function Dashboard() {
     // Extract history from each object in followData
   };
 
-  // const handleViewHistoryNew = (companyName) => {
-
-  //   const companyHistoryName = companyName
-  //   setviewHistoryCompanyName(companyHistoryName)
-  //   setopenProjectionTable(false)
-  //   const companyDataProjectionNew = projectedDataDateRange.find(obj => obj.companyName === companyHistoryName);
-  //   console.log("companydataprojectionnew", companyDataProjectionNew)
-  //   // Check if the company data is found
-  //   if (companyDataProjectionNew) {
-  //     // Check if the company data has a history field
-  //     if (companyDataProjectionNew.history) {
-  //       // Access the history data
-  //       const historyData = companyDataProjectionNew.history;
-  //       console.log("History Data for", companyHistoryName, ":", historyData);
-  //       sethistoryDataCompany(historyData)
-  //       // Now you can use the historyData array as needed
-  //     } else {
-  //       console.log("No history found for", viewHistoryCompanyName);
-  //     }
-  //   } else {
-  //     console.log("Company", viewHistoryCompanyName, "not found in projectedDataToday");
-  //   }
-  //   setopenProjectionHistoryTable(true)
-  //   // Extract history from each object in followData
-  // };
 
   const latestDataForCompany = projectedDataToday.filter(
     (obj) => obj.companyName === viewHistoryCompanyName
@@ -2377,9 +2410,9 @@ function Dashboard() {
   const functionCalculateMatured = (bdeName) => {
     let maturedCount = 0;
     const filteredRedesignedData = redesignedData.filter(
-      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length!==0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
+      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
     );
-    
+
     const moreFilteredData = filteredRedesignedData.filter(obj => monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth)
     moreFilteredData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
@@ -2389,24 +2422,26 @@ function Dashboard() {
           maturedCount += 1;
         }
       } else {
-        if(obj.bdeName === bdeName || obj.bdmName === bdeName){
+        if (obj.bdeName === bdeName || obj.bdmName === bdeName) {
           if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
             maturedCount += 0.5;
           } else {
             maturedCount += 1;
           }
         }
-       
+
 
         obj.moreBookings.forEach((booking) => {
-         if(booking.bdeName === bdeName || booking.bdmName === bdeName){ if (
-            booking.bdeName !== booking.bdmName &&
-            booking.bdmType === "Close-by"
-          ) {
-            maturedCount += 0.5;
-          } else if(booking.bdeName === bdeName) {
-            maturedCount += 1;
-          }}
+          if (booking.bdeName === bdeName || booking.bdmName === bdeName) {
+            if (
+              booking.bdeName !== booking.bdmName &&
+              booking.bdmType === "Close-by"
+            ) {
+              maturedCount += 0.5;
+            } else if (booking.bdeName === bdeName) {
+              maturedCount += 1;
+            }
+          }
         });
       }
     });
@@ -2416,7 +2451,7 @@ function Dashboard() {
   const functionCalculateAchievedAmount = (bdeName) => {
     let achievedAmount = 0;
     const filteredRedesignedData = redesignedData.filter(
-      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length!==0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
+      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
     );
 
     const moreFilteredData = filteredRedesignedData.filter(obj => monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth)
@@ -2429,20 +2464,24 @@ function Dashboard() {
           achievedAmount += parseInt(obj.generatedReceivedAmount);
         }
       } else {
-        if(obj.bdeName === bdeName || obj.bdmName === bdeName){if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
-        } else {
-          achievedAmount += parseInt(obj.generatedReceivedAmount);
-        }}
-        obj.moreBookings.forEach((booking) => {
-         if(booking.bdeName === bdeName || booking.bdmName === bdeName){ if (
-            booking.bdeName !== booking.bdmName &&
-            booking.bdmType === "Close-by"
-          ) {
-            achievedAmount += parseInt(booking.generatedReceivedAmount / 2);
+        if (obj.bdeName === bdeName || obj.bdmName === bdeName) {
+          if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+            achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
           } else {
-            achievedAmount += parseInt(booking.generatedReceivedAmount);
-          }}
+            achievedAmount += parseInt(obj.generatedReceivedAmount);
+          }
+        }
+        obj.moreBookings.forEach((booking) => {
+          if (booking.bdeName === bdeName || booking.bdmName === bdeName) {
+            if (
+              booking.bdeName !== booking.bdmName &&
+              booking.bdmType === "Close-by"
+            ) {
+              achievedAmount += parseInt(booking.generatedReceivedAmount / 2);
+            } else {
+              achievedAmount += parseInt(booking.generatedReceivedAmount);
+            }
+          }
         });
       }
     });
@@ -2477,7 +2516,7 @@ function Dashboard() {
     // Filter objects based on bdeName
 
     const filteredRedesignedData = redesignedData.filter(
-      (obj) => (obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") ) && monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth
+      (obj) => (obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by")) && monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth
     );
 
     // Initialize variable to store the latest booking date
@@ -2510,6 +2549,26 @@ function Dashboard() {
 
     // Return the formatted date string or an empty string if lastBookingDate is null
     return lastBookingDate ? formatDateFinal(lastBookingDate) : "N/A";
+  }
+
+
+
+  function functionCalculateGeneratedTotalRevenue(ename) {
+    const filterData = bdeResegnedData.filter(obj => obj.bdeName === ename || (obj.bdmName === ename && obj.bdmType === "Close-by"));
+    let generatedRevenue = 0;
+    const requiredObj = companyData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+    requiredObj.forEach((object) => {
+      const newObject = filterData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === ename);
+      if (newObject) {
+        generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
+      }
+
+    });
+
+    return generatedRevenue;
+    //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
+    //  console.log("This is generated Revenue",requiredObj);
+
   }
 
   return (
@@ -2671,8 +2730,7 @@ function Dashboard() {
                             overflowY: "auto",
                             maxHeight: "60vh",
                             lineHeight: "32px",
-                          }}
-                        >
+                          }}>
                           <table
                             style={{
                               position: "sticky",
@@ -3038,8 +3096,7 @@ function Dashboard() {
                   {/* Employee side Dashboard Analysis */}
                   <div
                     className="employee-dashboard"
-                    id="employeedashboardadmin"
-                  >
+                    id="employeedashboardadmin">
                     <div className="card">
                       <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
                         <div className="d-flex justify-content-between">
@@ -3091,12 +3148,6 @@ function Dashboard() {
                               name="bdeName-search"
                               id="bdeName-search"
                             />
-                            {/* <CiSearch style={{
-                              width: "19px",
-                              height: "20px",
-                              marginRight: "5px",
-                              color: "grey"
-                            }} /> */}
                           </div>
                           {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
                             <div>{`${formatDate(startDateEmployee)} - ${formatDate(endDateEmployee)}`}</div>
@@ -3173,15 +3224,6 @@ function Dashboard() {
                             }}
                             className="table-vcenter table-nowrap"
                           >
-                            {/* <thead>
-                          <tr
-                            style={{
-                              backgroundColor: "#ffb900",
-                              color: "white",
-                              fontWeight: "bold",
-
-                            }}
-                          > */}
                             <thead
                               style={{
                                 position: "sticky", // Make the header sticky
@@ -3893,6 +3935,270 @@ function Dashboard() {
                       </div>
                     </div>
                   </div>
+
+                  {/* ----------------------------------Employees Forwarded Data Report Section----------------------------------------------- */}
+
+                  <div className="employee-dashboard">
+                    <div className="card">
+                      <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
+                        <div className="d-flex justify-content-between">
+                          <div
+                            style={{ minWidth: "14vw" }}
+                            className="dashboard-title"
+                          >
+                            <h2 style={{ marginBottom: "5px" }}>
+                              Employees Forwaded Data Report
+                            </h2>
+                          </div>
+                        </div>
+                        <div className="d-flex gap-2">
+                          {/* <div className="general-searchbar form-control d-flex justify-content-center align-items-center input-icon">
+                            <span className="input-icon-addon">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="icon"
+                                width="20"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                stroke-width="2"
+                                stroke="currentColor"
+                                fill="none"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              >
+                                <path
+                                  stroke="none"
+                                  d="M0 0h24v24H0z"
+                                  fill="none"
+                                />
+                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                                <path d="M21 21l-6 -6" />
+                              </svg>
+                            </span>
+                            <input
+                              value={searchTerm}
+                              onChange={(e) =>
+                                debouncedFilterSearch(e.target.value)
+                              }
+                              placeholder="Enter BDE Name..."
+                              style={{
+                                border: "none",
+                                padding: "0px 0px 0px 21px",
+                                width: "100%",
+                              }}
+                              type="text"
+                              name="bdeName-search"
+                              id="bdeName-search"
+                            />
+                          </div> */}
+                          <div
+                            style={{ m: 1, padding: "0px", marginRight: "30px" }}
+                            className="filter-booking d-flex align-items-center"
+                          >
+                            <div className="filter-main">
+                              <select
+                                className="form-select mt-1"
+                                id={`branch-filter`}
+                                value={selectedValue}
+                                onChange={(e) => {
+                                  setSelectedValue(e.target.value)
+                                  handleFilterForwardCaseBranchOffice(e.target.value)
+                                }}
+                              >
+                                <option value="" disabled selected>
+                                  Select Branch
+                                </option>
+
+                                <option value={"Gota"}>Gota</option>
+                                <option value={"Sindhu Bhawan"}>
+                                  Sindhu Bhawan
+                                </option>
+                                <option value={"none"}>None</option>
+                              </select>
+                            </div>
+                          </div>
+                          {/* <LocalizationProvider
+                            dateAdapter={AdapterDayjs}
+                            style={{ padding: "0px" }}
+                          >
+                            <DemoContainer
+                              components={["SingleInputDateRangeField"]}
+                            >
+                              <DateRangePicker
+                                onChange={(values) => {
+                                  const startDateEmp = moment(values[0]).format(
+                                    "DD/MM/YYYY"
+                                  );
+                                  const endDateEmp = moment(values[1]).format(
+                                    "DD/MM/YYYY"
+                                  );
+                                  setSelectedDateRangeEmployee([
+                                    startDateEmp,
+                                    endDateEmp,
+                                  ]);
+                                  handleSelectEmployee(values); // Call handleSelect with the selected values
+                                }}
+                                slots={{ field: SingleInputDateRangeField }}
+                                slotProps={{
+                                  shortcuts: {
+                                    items: shortcutsItems,
+                                  },
+                                  actionBar: { actions: [] },
+                                  textField: {
+                                    InputProps: { endAdornment: <Calendar /> },
+                                  },
+                                }}
+                              //calendars={1}
+                              />
+                            </DemoContainer>
+                          </LocalizationProvider> */}
+                        </div>
+                      </div>
+                      <div className='card-body'>
+                        <div className="row"
+                          style={{
+                            overflowX: "auto",
+                            overflowY: "auto",
+                            maxHeight: "60vh",
+                            lineHeight: "32px",
+                          }}>
+                          <table style={{
+                            width: "100%",
+                            borderCollapse: "collapse",
+                            border: "1px solid #ddd",
+                            marginBottom: "5px",
+                            lineHeight: "32px",
+                            position: "relative", // Make the table container relative
+                          }}
+                            className="table-vcenter table-nowrap">
+                            <thead style={{
+                              position: "sticky", // Make the header sticky
+                              top: "-1px", // Stick it at the top
+                              backgroundColor: "#ffb900",
+                              color: "black",
+                              fontWeight: "bold",
+                              zIndex: 1, // Ensure it's above other content
+                            }}>
+                              <tr>
+                                <th style={{
+                                  lineHeight: "32px",
+                                }}>
+                                  Sr.No
+                                </th>
+                                <th>BDE/BDM Name</th>
+                                <th >Branch Name</th>
+                                <th >Forwarded Cases</th>
+                                <th >Recieved Cases</th>
+                                <th >Forwarded Case Projection</th>
+                                <th >Recieved Case Projection</th>
+                                <th >Matured Case</th>
+                                <th>Generated Revenue</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {forwardEmployeeData.length !== 0 &&
+                                forwardEmployeeData.map((obj, index) => (
+                                  <tr key={`row-${index}`}>
+                                    <td style={{
+                                      lineHeight: "32px",
+                                      color: "black",
+                                      textDecoration: "none",
+                                    }} >{index + 1}</td>
+                                    <td >{obj.ename}</td>
+                                    <td>{obj.branchOffice}</td>
+                                    <td >
+                                      {companyData.filter((company) => company.ename === obj.ename && (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept")).length}
+                                    </td>
+                                    <td >
+                                      {teamLeadsData.filter((company) => company.bdmName === obj.ename).length}
+                                    </td>
+                                    <td>₹{(followData
+                                      .filter(company => company.bdeName === obj.ename)
+                                      .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}</td>
+
+                                    <td>₹{followData
+                                      .filter(company => company.ename === obj.ename && company.bdeName)
+                                      .reduce((total, obj) => total + obj.totalPayment, 0).toLocaleString()
+                                    }</td>
+
+                                    <td>
+                                      {companyData.filter((company) => company.ename === obj.ename && company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
+                                    </td>
+                                    <td>₹ {functionCalculateGeneratedTotalRevenue(obj.ename).toLocaleString()}</td>
+                                  </tr>
+                                ))}
+                            </tbody>
+                            {forwardEmployeeData.length !== 0 &&
+                              companyData.length !== 0 && (
+                                <tfoot
+                                  style={{
+                                    position: "sticky", // Make the footer sticky
+                                    bottom: -1, // Stick it at the bottom
+                                    backgroundColor: "#f6f2e9",
+                                    color: "black",
+                                    fontWeight: 500,
+                                    zIndex: 2, // Ensure it's above the content
+                                  }}
+                                >
+                                  <tr style={{ fontWeight: 500 }}>
+                                    <td
+                                      style={{ lineHeight: "32px" }}
+                                      colSpan="3"
+                                    >
+                                      Total
+                                    </td>
+                                    <td>
+                                      {companyData.filter(company => company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept").length}
+                                    </td>
+                                    <td>
+                                      {teamLeadsData.length}
+                                    </td>
+                                    <td>₹{companyData
+                                      .filter(company => company.bdmAcceptStatus === "Accept" || company.bdmAcceptStatus === "Pending")
+                                      .reduce((total, company) => {
+                                        const totalPayment = followData
+                                          .filter(followCompany => followCompany.companyName === company["Company Name"] && followCompany.bdeName)
+                                          .reduce((sum, obj) => sum + obj.totalPayment, 0);
+                                        return total + totalPayment;
+                                      }, 0)
+                                    }
+                                    </td>
+                                    <td>
+                                      ₹{companyData
+                                        .filter(company => company.bdmAcceptStatus === "Accept")
+                                        .reduce((total, company) => {
+                                          const totalPayment = followData
+                                            .filter(followCompany => followCompany.companyName === company["Company Name"])
+                                            .reduce((sum, obj) => sum + obj.totalPayment, 0);
+                                          return total + totalPayment;
+                                        }, 0)
+                                      }
+                                    </td>
+                                    <td>
+                                      {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
+                                    </td>
+                                    <td>
+                                      -
+                                    </td>
+                                  </tr>
+                                </tfoot>
+                              )}
+                          </table>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+
+
+
+
+
                 </div>
               </div>
             </div>
@@ -4509,20 +4815,6 @@ function Dashboard() {
                   }}
                   className="d-flex"
                 >
-                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={['SingleInputDateRangeField']}>
-                      <DateRangePicker className="mydatepickerinput"
-                        onChange={(values) => {
-                          const startDate = moment(values[0]).format('DD/MM/YYYY');
-                          const endDate = moment(values[1]).format('DD/MM/YYYY');
-                          setSelectedDateRange([startDate, endDate]);
-                          handleSelect(values); // Call handleSelect with the selected values
-                        }}
-                        slots={{ field: SingleInputDateRangeField }}
-                        slotProps={{ textField: { InputProps: { endAdornment: <Calendar /> } } }}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider> */}
                   <div
                     style={{ m: 1, padding: "0px", marginRight: "30px" }}
                     className="filter-booking d-flex align-items-center"
@@ -4800,7 +5092,7 @@ function Dashboard() {
                           ))}
                           {/* Map employeeData with default fields */}
                           {employeeData
-                            .filter((employee) =>(employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
+                            .filter((employee) => (employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
                             .map((employee, index) => (
                               <tr key={`employee-row-${index}`}>
                                 <td style={{ lineHeight: "32px" }}>{sortedData.length + index + 1}</td>
@@ -4825,25 +5117,25 @@ function Dashboard() {
                         employeeData
                           .filter((employee) => !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
                           .map((employee, index) => (
-                           
-                              <tr key={`employee-row-${index}`}>
-                                <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                                <td>{employee.ename}</td>
-                                <td>0 <FcDatabase
-                                  onClick={() => {
-                                    functionOpenProjectionTable(employee.ename);
-                                  }}
-                                  style={{
-                                    cursor: "pointer",
-                                    marginRight: "-71px",
-                                    marginLeft: "58px",
-                                  }}
-                                /></td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                              </tr>
-                           
+
+                            <tr key={`employee-row-${index}`}>
+                              <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                              <td>{employee.ename}</td>
+                              <td>0 <FcDatabase
+                                onClick={() => {
+                                  functionOpenProjectionTable(employee.ename);
+                                }}
+                                style={{
+                                  cursor: "pointer",
+                                  marginRight: "-71px",
+                                  marginLeft: "58px",
+                                }}
+                              /></td>
+                              <td>0</td>
+                              <td>0</td>
+                              <td>0</td>
+                            </tr>
+
                           ))
                       )}
                     </tbody>

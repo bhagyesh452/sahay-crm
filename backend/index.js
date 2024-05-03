@@ -51,6 +51,7 @@ const TeamModel = require("./models/TeamModel.js");
 const TeamLeadsModel = require("./models/TeamLeads.js");
 const RequestMaturedModel = require("./models/RequestMatured.js");
 const InformBDEModel = require("./models/InformBDE.js");
+const { dataform_v1beta1 } = require("googleapis");
 // const { Cashfree } = require('cashfree-pg');
 
 // const http = require('http');
@@ -1102,6 +1103,17 @@ app.get("/api/forwardedbybdedata/:bdmName", async (req, res) => {
   }
 });
 
+app.get("/api/teamleadsdata",async(req,res)=>{
+  try{
+    const data = await TeamLeadsModel.find()
+    res.status(200).send(data)
+
+  }catch(error){
+    console.log("error fetching team leads data" , error.message)
+    res.status(500).json({error : "Internal server error"})
+  }
+})
+
 app.post("/api/update-bdm-status/:id", async (req, res) => {
   const { id } = req.params;
   const {
@@ -1443,6 +1455,21 @@ app.get("/api/projection-data", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+app.get(`/api/projection-data-company/:companyName` , async(req,res)=>{
+   const companyName = req.params.companyName;
+
+   try{
+    const response =  await FollowUpModel.find({
+      companyName : companyName
+    })
+    res.json(response);
+
+   }catch(error){
+    res.status(500).json({error : "Internal Server Error" })
+   }
+
+})
 
 app.get("/api/card-leads", async (req, res) => {
   try {
@@ -8194,7 +8221,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
     const pdfFilePath = `./GeneratedDocs/${newData["Company Name"]}.pdf`;
 
     pdf
-      .create(htmlNewTemplate, {
+      .create(filledHtml, {
         format: "Letter",
         childProcessOptions: {
           env: {
@@ -8211,7 +8238,7 @@ app.post("/api/redesigned-final-leadData/:CompanyName", async (req, res) => {
             setTimeout(() => {
               const mainBuffer = fs.readFileSync(pdfFilePath);
               sendMail2(
-                ["nimesh@incscale.in", "aakashseth452@gmail.com"],
+                ["nimesh@incscale.in", "bhagyesh@startupsahay.com"],
                 `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                 ``,
                 `

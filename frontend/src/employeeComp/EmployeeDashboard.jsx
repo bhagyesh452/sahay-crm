@@ -224,28 +224,28 @@ function EmployeeDashboard() {
       });
   };
 
-// --------------------------------fetching team leads data--------------------------------------------------
+  // --------------------------------fetching team leads data--------------------------------------------------
 
-const [teamLeadsData , setTeamLeadsData] = useState([])
-const [teamData , setTeamData] = useState([])
+  const [teamLeadsData, setTeamLeadsData] = useState([])
+  const [teamData, setTeamData] = useState([])
 
-const fetchTeamLeadsData = async()=>{
-  
-  try{
-    const response = await axios.get(`${secretKey}/forwardedbybdedata/${data.ename}`)
-    setTeamLeadsData(response.data)
-    setTeamData(response.data)
+  const fetchTeamLeadsData = async () => {
 
-  }catch(error){
-    console.log("Error fetching data" , error.message)
+    try {
+      const response = await axios.get(`${secretKey}/forwardedbybdedata/${data.ename}`)
+      setTeamLeadsData(response.data)
+      setTeamData(response.data)
+
+    } catch (error) {
+      console.log("Error fetching data", error.message)
+    }
   }
-}
 
-console.log(teamLeadsData)
+  console.log(teamLeadsData)
 
-useEffect(() => {
-  fetchTeamLeadsData()
-},[data.ename])
+  useEffect(() => {
+    fetchTeamLeadsData()
+  }, [data.ename])
 
 
 
@@ -1577,7 +1577,7 @@ useEffect(() => {
     }
   };
 
-  console.log("redesigneddata", redesignedData)
+  //console.log("redesigneddata", redesignedData)
 
   // -------------------------------------------  Calculations --------------------------------------------------------
 
@@ -1801,40 +1801,40 @@ useEffect(() => {
   ];
   const currentMonth = monthNames[new Date().getMonth()];
 
-  function functionCalculateGeneratedRevenue(isBdm){
-    
+  function functionCalculateGeneratedRevenue(isBdm) {
+
     let generatedRevenue = 0;
-   const requiredObj = moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && ( obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
-  requiredObj.forEach((object)=>{
-    const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename);
-    if(newObject){
-      generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount ;
-    }
-  
-  });
+    const requiredObj = moreEmpData.filter((obj) => formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+    requiredObj.forEach((object) => {
+      const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename);
+      if (newObject) {
+        generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
+      }
 
-  return generatedRevenue;
-  //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
-  //  console.log("This is generated Revenue",requiredObj);
+    });
 
-  } 
-  function functionCalculateGeneratedTotalRevenue(isBdm){
+    return generatedRevenue;
+    //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
+    //  console.log("This is generated Revenue",requiredObj);
+
+  }
+  function functionCalculateGeneratedTotalRevenue(isBdm) {
     let generatedRevenue = 0;
-   const requiredObj = moreEmpData.filter((obj) => ( obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
-  requiredObj.forEach((object)=>{
-    const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename): redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename );
-    if(newObject){
-      generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount ;
-    }
-    
-  });
+    const requiredObj = moreEmpData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
+    requiredObj.forEach((object) => {
+      const newObject = isBdm ? redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdmName === data.ename) : redesignedData.find(value => value["Company Name"] === object["Company Name"] && value.bdeName === data.ename);
+      if (newObject) {
+        generatedRevenue = generatedRevenue + newObject.generatedReceivedAmount;
+      }
 
-  return generatedRevenue;
-  //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
-  //  console.log("This is generated Revenue",requiredObj);
+    });
 
-  } 
-  
+    return generatedRevenue;
+    //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
+    //  console.log("This is generated Revenue",requiredObj);
+
+  }
+
   function functionGetLastBookingDate() {
     // Filter objects based on bdeName
 
@@ -1918,8 +1918,8 @@ useEffect(() => {
 
   // ---------------------------------------------------------------------------filter for bdm function--------------------------------------
 
-  const [selectedMonthOption , setSelectedMonthOption] = useState("")
-  const [selectedMonthOptionForBdm , setSelectedMonthOptionForBdm] = useState("")
+  const [selectedMonthOption, setSelectedMonthOption] = useState("")
+  const [selectedMonthOptionForBdm, setSelectedMonthOptionForBdm] = useState("")
 
   const monthOptions = [
     { value: 'current_month', label: 'Current Month' },
@@ -1932,10 +1932,10 @@ useEffect(() => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
-  
+
     let filteredTeamData = [];
     let filteredFollowData = [];
-  
+
     switch (selectedMonthOption) {
       case 'current_month':
         filteredTeamData = teamData.filter(obj => {
@@ -1968,92 +1968,93 @@ useEffect(() => {
         filteredFollowData = followData;
         break;
     }
-  
-    return { filteredTeamData, filteredFollowData };
+
+    return { filteredTeamData, filteredFollowData };
   };
 
-const handleChangeForBdm = (selectedOption) => {
-  console.log(selectedOption);
-  setSelectedMonthOptionForBdm(selectedOption.value);
+  const handleChangeForBdm = (selectedOption) => {
+    console.log(selectedOption);
+    setSelectedMonthOptionForBdm(selectedOption.value);
 
-  if (selectedOption.value === "current_month" || selectedOption.value === "last_month") {
-    const { filteredTeamData, filteredFollowData } = filterTeamLeadsDataByMonth(teamLeadsData, followDataFilter, selectedOption.value);
-    setTeamData(filteredTeamData);
-    setFollowData(filteredFollowData);
-  } else {
-    // Handle 'total' case
-    // If 'total', no need to filter, so you can directly set the team data
-    setTeamData(teamLeadsData);
-    setFollowData(followDataFilter);
+    if (selectedOption === "current_month" || selectedOption === "last_month") {
+      const { filteredTeamData, filteredFollowData } = filterTeamLeadsDataByMonth(teamLeadsData, followDataFilter, selectedOption);
+      setTeamData(filteredTeamData);
+      setFollowData(filteredFollowData);
+    } else {
+      // Handle 'total' case
+      // If 'total', no need to filter, so you can directly set the team data
+      setTeamData(teamLeadsData);
+      setFollowData(followDataFilter);
+    }
   }
+
+
+  const filterMoreEmpDataDataByMonth = (tempData, followDataFilter, selectedMonthOption) => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
+    let filteredMoreEmpData = [];
+    let filteredFollowData = [];
+
+    switch (selectedMonthOption) {
+      case 'current_month':
+        filteredMoreEmpData = tempData.filter(obj => {
+          const objDate = new Date(obj.bdeForwardDate);
+          return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
+        });
+        filteredFollowData = followDataFilter.filter(obj => {
+          const objDate = new Date(obj.estPaymentDate);
+          return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
+        });
+        break;
+      case 'last_month':
+        const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+        const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
+        filteredMoreEmpData = tempData.filter(obj => {
+          const objDate = new Date(obj.bdeForwardDate);
+          return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
+        });
+        filteredFollowData = followDataFilter.filter(obj => {
+          const objDate = new Date(obj.estPaymentDate);
+          return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear
+        })
+        break;
+      case 'total':
+        filteredMoreEmpData = tempData;
+        filteredFollowData = followDataFilter;
+        break;
+      default:
+        filteredMoreEmpData = tempData;
+        filteredFollowData = followDataFilter;
+        break;
+    }
+
+    return { filteredMoreEmpData, filteredFollowData };
+  };
+
+  const handleChange = (selectedOption) => {
+    console.log(selectedOption);
+    setSelectedMonthOptionForBdm(selectedOption.value);
+
+    if (selectedOption === "current_month" || selectedOption === "last_month") {
+      const { filteredMoreEmpData, filteredFollowData } = filterMoreEmpDataDataByMonth(tempData, followDataFilter, selectedOption);
+      setmoreEmpData(filteredMoreEmpData);
+      setFollowData(filteredFollowData);
+    } else {
+      // Handle 'total' case
+      // If 'total', no need to filter, so you can directly set the team data
+      setmoreEmpData(tempData);
+      setFollowData(followDataFilter);
+    }
 }
 
 
-const filterMoreEmpDataDataByMonth = (tempData, followDataFilter, selectedMonthOption) => {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-
-  let filteredMoreEmpData  = [];
-  let filteredFollowData = [];
-
-  switch (selectedMonthOption) {
-    case 'current_month':
-      filteredMoreEmpData = tempData.filter(obj => {
-        const objDate = new Date(obj.bdeForwardDate);
-        return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
-      });
-      filteredFollowData = followDataFilter.filter(obj => {
-        const objDate = new Date(obj.estPaymentDate);
-        return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
-      });
-      break;
-    case 'last_month':
-      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-      const lastMonthYear = lastMonth === 11 ? currentYear - 1 : currentYear;
-      filteredMoreEmpData = tempData.filter(obj => {
-        const objDate = new Date(obj.bdeForwardDate);
-        return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
-      });
-      filteredFollowData = followDataFilter.filter(obj => {
-        const objDate = new Date(obj.estPaymentDate);
-        return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear
-      })
-      break;
-    case 'total':
-      filteredMoreEmpData = tempData;
-      filteredFollowData = followDataFilter;
-      break;
-    default:
-      filteredMoreEmpData = tempData;
-      filteredFollowData = followDataFilter;
-      break;
-  }
-
-  return { filteredMoreEmpData, filteredFollowData };
-};
-
-const handleChange = (selectedOption) => {
-  console.log(selectedOption);
-  setSelectedMonthOptionForBdm(selectedOption.value);
-
-  if (selectedOption.value === "current_month" || selectedOption.value === "last_month") {
-    const { filteredMoreEmpData, filteredFollowData } = filterMoreEmpDataDataByMonth(tempData, followDataFilter, selectedOption.value);
-    setmoreEmpData(filteredMoreEmpData);
-    setFollowData(filteredFollowData);
-  } else {
-    // Handle 'total' case
-    // If 'total', no need to filter, so you can directly set the team data
-    setmoreEmpData(tempData);
-    setFollowData(followDataFilter);
-  }
-}
 
 
 
 
-
-console.log(selectedMonthOptionForBdm)
+  console.log(selectedMonthOptionForBdm)
 
 
 
@@ -2444,7 +2445,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-2-head">GENERAL</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending")).length}
+                              {moreEmpData.filter((obj) => formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending")).length}
                             </div>
                           </div>
                         </div>
@@ -2456,7 +2457,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-2-head">INTERESTED</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
+                              {moreEmpData.filter((obj) => formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Interested").length}
                             </div>
                           </div>
                         </div>
@@ -2468,7 +2469,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-2-head">FOLLOW UP</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "FollowUp").length}
+                              {moreEmpData.filter((obj) => formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "FollowUp").length}
                             </div>
                           </div>
                         </div>
@@ -2480,7 +2481,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-2-head">MATURED</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured").length}
+                              {moreEmpData.filter((obj) => formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured").length}
                             </div>
                           </div>
                         </div>
@@ -2492,7 +2493,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-2-head">NOT INTERESTED</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              {moreEmpData.filter((obj) =>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Not Interested").length}
+                              {moreEmpData.filter((obj) => formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") && obj.Status === "Not Interested").length}
                             </div>
                           </div>
                         </div>
@@ -2504,7 +2505,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-2-head">PROJECTED REVENUE</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                            ₹{(followDataToday
+                              ₹{(followDataToday
                                 .filter(obj => obj.bdeName === data.ename)
                                 .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
                             </div>
@@ -2527,12 +2528,31 @@ console.log(selectedMonthOptionForBdm)
                   </div>
                   {/*total forwarded to bdm report */}
                   <div className="row m-0">
-                    
+
                     <div className="d-flex align-items-center justify-content-between p-0">
                       <div className="dashboard-headings">
                         <h3 className="m-0">Total Report</h3>
                       </div>
-                      {/* <div className="pr-1">
+                      <div className="pr-1">
+                      <select
+                        style={{
+                          border: "none",
+                          outline: "none",
+                         
+                        }}
+                        value={monthOptions.find(option => option.value === selectedMonthOption)}
+                        onChange={(e) => handleChange(e.target.value)}
+                      >
+                        <option disabled value="">Select...</option>
+                        {monthOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      </div>
+
+                      {/* 
                         <Select
                           options={monthOptions}
                           placeholder="Select..."
@@ -2541,7 +2561,7 @@ console.log(selectedMonthOptionForBdm)
                         />
                       </div> */}
                     </div>
-                
+
                     {/*ForwardedToBDM loop */}
                     <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                       <div className="dash-card-2">
@@ -2550,11 +2570,11 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num clr-1ac9bd">
                               {moreEmpData.filter(
-                                  (obj) =>
-                                    obj.bdmAcceptStatus !== "NotForwarded"
-                                    // obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
-                                    // obj.Status !== "Matured"
-                                ).length}
+                                (obj) =>
+                                  obj.bdmAcceptStatus !== "NotForwarded"
+                                // obj.Status !== "Not Interested" && obj.Status !== "Busy" && obj.Status !== "Junk" && obj.Status !== "Not Picked Up" && obj.Status !== "Busy" &&
+                                // obj.Status !== "Matured"
+                              ).length}
                             </div>
                           </div>
                         </div>
@@ -2566,7 +2586,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-2-head">GENERAL</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              {moreEmpData.filter((obj) =>(obj.bdmAcceptStatus === "Pending")).length}
+                              {moreEmpData.filter((obj) => (obj.bdmAcceptStatus === "Pending")).length}
                             </div>
                           </div>
                         </div>
@@ -2626,7 +2646,7 @@ console.log(selectedMonthOptionForBdm)
                           <div className="dash-card-2-head">PROJECTED REVENUE</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num clr-1cba19">
-                             ₹{(followData
+                              ₹{(followData
                                 .filter(obj => obj.bdeName === data.ename)
                                 .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
                             </div>
@@ -2665,7 +2685,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">TOTAL</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                                {teamData.filter((obj)=>formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10)).length}
+                                {teamData.filter((obj) => formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10)).length}
                               </div>
                             </div>
                           </div>
@@ -2677,7 +2697,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">GENERAL</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                              {teamData.filter((obj)=>formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Untouched").length}
+                                {teamData.filter((obj) => formatDateNow(obj.bdeForwardDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Untouched").length}
                               </div>
                             </div>
                           </div>
@@ -2689,7 +2709,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">INTERESTED</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                                 {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Interested").length}
+                                {teamData.filter((obj) => formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Interested").length}
                               </div>
                             </div>
                           </div>
@@ -2701,7 +2721,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">FOLLOW UP</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                                {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "FollowUp").length}
+                                {teamData.filter((obj) => formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "FollowUp").length}
                               </div>
                             </div>
                           </div>
@@ -2713,7 +2733,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">MATURED</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                               {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Matured").length}
+                                {teamData.filter((obj) => formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Matured").length}
                               </div>
                             </div>
                           </div>
@@ -2725,7 +2745,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">NOT INTERESTED</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                                {teamData.filter((obj)=>formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Not Interested").length}
+                                {teamData.filter((obj) => formatDateNow(obj.bdmStatusChangeDate) === new Date().toISOString().slice(0, 10) && obj.bdmStatus === "Not Interested").length}
                               </div>
                             </div>
                           </div>
@@ -2751,7 +2771,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">GENERATED REVENUE</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                              ₹ {functionCalculateGeneratedRevenue(true).toLocaleString()}
+                                ₹ {functionCalculateGeneratedRevenue(true).toLocaleString()}
                                 {/* ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()} */}
                               </div>
                             </div>
@@ -2767,6 +2787,23 @@ console.log(selectedMonthOptionForBdm)
                           <h3 className="m-0">Total Report</h3>
                         </div>
                         <div className="pr-1">
+                        <select className="pr-2"
+                        style={{
+                          border: "none",
+                          outline: "none",
+                         
+                        }}
+                        value={monthOptions.find(option => option.value === selectedMonthOption)}
+                        onChange={(e) => handleChangeForBdm(e.target.value)}
+                      >
+                        <option disabled value="">Select...</option>
+                        {monthOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+
                           {/* <Select
                             options={monthOptions}
                             placeholder="Select..."
@@ -2778,7 +2815,7 @@ console.log(selectedMonthOptionForBdm)
 
 
 
-                     {/* recieved bdm report total */}
+                      {/* recieved bdm report total */}
                       <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                         <div className="dash-card-2">
                           <div className="d-flex justify-content-between align-items-center">
@@ -2797,7 +2834,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">GENERAL</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                               {teamData.filter((obj)=>obj.bdmStatus === "Untouched").length}
+                                {teamData.filter((obj) => obj.bdmStatus === "Untouched").length}
                               </div>
                             </div>
                           </div>
@@ -2809,7 +2846,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">INTERESTED</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                               {teamData.filter((obj)=>obj.bdmStatus === "Interested").length}
+                                {teamData.filter((obj) => obj.bdmStatus === "Interested").length}
                               </div>
                             </div>
                           </div>
@@ -2821,7 +2858,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">FOLLOW UP</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                                {teamData.filter((obj)=>obj.bdmStatus === "FollowUp").length}
+                                {teamData.filter((obj) => obj.bdmStatus === "FollowUp").length}
                               </div>
                             </div>
                           </div>
@@ -2833,7 +2870,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">MATURED</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                               {teamData.filter((obj)=>obj.bdmStatus === "Matured").length}
+                                {teamData.filter((obj) => obj.bdmStatus === "Matured").length}
                               </div>
                             </div>
                           </div>
@@ -2845,7 +2882,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">NOT INTERESTED</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                                {teamData.filter((obj)=>obj.bdmStatus === "Not Interested").length}
+                                {teamData.filter((obj) => obj.bdmStatus === "Not Interested").length}
                               </div>
                             </div>
                           </div>
@@ -2871,7 +2908,7 @@ console.log(selectedMonthOptionForBdm)
                             <div className="dash-card-2-head">GENERATED REVENUE</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                                 ₹ {functionCalculateGeneratedTotalRevenue(true).toLocaleString()}
+                                ₹ {functionCalculateGeneratedTotalRevenue(true).toLocaleString()}
                               </div>
                             </div>
                           </div>
