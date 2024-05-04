@@ -8487,6 +8487,7 @@ app.post(
       step4changed,
       otherDocs,
       paymentReceipt,
+      remainingPayments,
       ...updatedDocs
     } = req.body;
     const newOtherDocs = req.files["otherDocs"] || [];
