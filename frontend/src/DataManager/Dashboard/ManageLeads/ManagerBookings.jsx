@@ -1645,54 +1645,35 @@ function ManagerBookings() {
                                   0 &&
                                   currentLeadform.remainingPayments.some(
                                     (obj) => obj.paymentReceipt.length !== 0
-                                  ).length !== 0 &&
-                                  currentLeadform.remainingPayments.map(
-                                    (remainingObject, index) => (
-                                      <div className="col-sm-2 mb-1">
+                                  ) &&
+                                  currentLeadform.remainingPayments.map((remainingObject, index) => (
+                                    remainingObject.paymentReceipt.length !== 0 && (
+                                      <div className="col-sm-2 mb-1" key={index}>
                                         <div className="booking-docs-preview">
                                           <div
                                             className="booking-docs-preview-img"
                                             onClick={() =>
                                               handleViewPdfReciepts(
-                                                remainingObject
-                                                  .paymentReceipt[0].filename,
+                                                remainingObject.paymentReceipt[0].filename,
                                                 currentLeadform["Company Name"]
                                               )
                                             }
                                           >
-                                            {remainingObject.paymentReceipt[0].filename.endsWith(
-                                              ".pdf"
-                                            ) ? (
+                                            {remainingObject.paymentReceipt[0].filename.endsWith(".pdf") ? (
                                               <PdfImageViewerAdmin
                                                 type="paymentrecieptpdf"
-                                                path={
-                                                  remainingObject
-                                                    .paymentReceipt[0].filename
-                                                }
-                                                companyName={
-                                                  currentLeadform[
-                                                  "Company Name"
-                                                  ]
-                                                }
+                                                path={remainingObject.paymentReceipt[0].filename}
+                                                companyName={currentLeadform["Company Name"]}
                                               />
-                                            ) : remainingObject.paymentReceipt[0].filename.endsWith(
-                                              ".png"
-                                            ) ||
-                                              remainingObject.paymentReceipt[0].filename.endsWith(
-                                                ".jpg"
-                                              ) ||
-                                              remainingObject.paymentReceipt[0].filename.endsWith(
-                                                ".jpeg"
-                                              ) ? (
+                                            ) : remainingObject.paymentReceipt[0].filename.endsWith(".png") ||
+                                              remainingObject.paymentReceipt[0].filename.endsWith(".jpg") ||
+                                              remainingObject.paymentReceipt[0].filename.endsWith(".jpeg") ? (
                                               <img
                                                 src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${remainingObject.paymentReceipt[0].filename}`}
                                                 alt="Receipt Image"
                                               />
                                             ) : (
-                                              <img
-                                                src={wordimg}
-                                                alt="Default Image"
-                                              />
+                                              <img src={wordimg} alt="Default Image" />
                                             )}
                                           </div>
                                           <div className="booking-docs-preview-text">
@@ -1703,7 +1684,8 @@ function ManagerBookings() {
                                         </div>
                                       </div>
                                     )
-                                  )}
+                                  ))}
+                                  
                                 {currentLeadform &&
                                   currentLeadform.otherDocs.map((obj) => (
                                     <div className="col-sm-2 mb-1">
