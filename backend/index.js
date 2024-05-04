@@ -8403,7 +8403,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
             setTimeout(() => {
               const mainBuffer = fs.readFileSync(pdfFilePath);
               sendMail2(
-                ["nimesh@incscale.in", "bhagyesh@startupsahay.com"],
+                ["nimesh@incscale.in", "bhagyesh@startupsahay.com","kumarronak597@gmail.com"],
                 `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                 ``,
                 `
