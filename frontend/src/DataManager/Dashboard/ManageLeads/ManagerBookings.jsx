@@ -31,6 +31,8 @@ import {
 
 function ManagerBookings() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const [tempUpdateMode, setTempUpdateMode] = useState(false);
   const [sendingIndex, setSendingIndex] = useState(0);
   const [EditBookingOpen, setEditBookingOpen] = useState(false);
   const [addFormOpen, setAddFormOpen] = useState(false);
@@ -313,7 +315,8 @@ function ManagerBookings() {
   };
 
   // --------------------------------------------------  ADD REMAINING PAYMENT SECTION ----------------------------------------------------------
-  const [isUpdateMode, setIsUpdateMode] = useState(false)
+
+
   const [remainingObject, setRemainingObject] = useState({
     "Company Name": "",
     paymentCount: "",
@@ -397,28 +400,59 @@ function ManagerBookings() {
   formData.append("paymentRemarks", remainingObject["paymentRemarks"]);
   formData.append("paymentReceipt", remainingObject["remainingPaymentReceipt"]);
   const handleSubmitMorePayments = async () => {
-    try {
-      const response = await axios.post(
-        `${secretKey}/redesigned-submit-morePayments/${remainingObject["Company Name"]}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      Swal.fire(
-        "Payment Updated",
-        "Thank you, your payment has been updated successfully!",
-        "success"
-      );
-      setOpenRemainingPayment(false);
-    } catch (error) {
-      Swal.fire(
-        "Error Updating Payment!",
-        "Sorry, Unable to update the payment",
-        "error"
-      );
+    if(!remainingObject.paymentDate || !remainingObject.paymentMethod   ){
+      Swal.fire("Incorrect Details!" , "Please Enter Details Properly" , "warning");
+      return true;
+    }
+    if(!tempUpdateMode){
+      try {
+        const response = await axios.post(
+          `${secretKey}/redesigned-submit-morePayments/${remainingObject["Company Name"]}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        Swal.fire(
+          "Payment Updated",
+          "Thank you, your payment has been updated successfully!",
+          "success"
+        );
+        setOpenRemainingPayment(false);
+      } catch (error) {
+        Swal.fire(
+          "Error Updating Payment!",
+          "Sorry, Unable to update the payment",
+          "error"
+        );
+      }
+    }else{
+      try {
+        const response = await axios.post(
+          `${secretKey}/redesigned-update-morePayments/${remainingObject["Company Name"]}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        Swal.fire(
+          "Payment Updated",
+          "Thank you, your payment has been updated successfully!",
+          "success"
+        );
+        setOpenRemainingPayment(false);
+        setTempUpdateMode(false);
+      } catch (error) {
+        Swal.fire(
+          "Error Updating Payment!",
+          "Sorry, Unable to update the payment",
+          "error"
+        );
+      }
     }
   };
 
@@ -1213,7 +1247,19 @@ function ManagerBookings() {
                                                 </div>
                                               </div>
                                               {currentLeadform.remainingPayments.length === 1 && <div className="edit-remaining">
-                                                  <IconButton>
+                                                  <IconButton onClick={() => {
+                                                        setIsUpdateMode(true)
+                                                        setTempUpdateMode(true)
+                                                        functionOpenRemainingPayment(
+                                                          obj,
+                                                          "secondPayment",
+                                                          currentLeadform[
+                                                          "Company Name"
+                                                          ],0,
+                                                          currentLeadform.remainingPayments[0],                                                          
+                                                        )
+                                                  }
+                                                      }>
                                                     <MdModeEdit style={{height:'14px' , width:'14px'}}/>
                                                   </IconButton>
                                               </div>}
@@ -1279,7 +1325,19 @@ function ManagerBookings() {
                                                 </div>
                                               </div>
                                               {currentLeadform.remainingPayments.length === 2 && <div className="edit-remaining">
-                                                  <IconButton>
+                                                  <IconButton onClick={() => {
+                                                        setIsUpdateMode(true)
+                                                        setTempUpdateMode(true)
+                                                        functionOpenRemainingPayment(
+                                                          obj,
+                                                          "thirdPayment",
+                                                          currentLeadform[
+                                                          "Company Name"
+                                                          ],0,
+                                                          currentLeadform.remainingPayments[1],                                                          
+                                                        )
+                                                  }
+                                                      }>
                                                     <MdModeEdit style={{height:'14px' , width:'14px'}}/>
                                                   </IconButton>
                                               </div>}
@@ -1342,20 +1400,19 @@ function ManagerBookings() {
                                                   +
                                                 </div>
                                               </div>
-                                              {currentLeadform.remainingPayments.length === 3 && <div className="edit-remaining">
+                                            {currentLeadform.remainingPayments.length === 3 && <div className="edit-remaining">
                                                   <IconButton onClick={() => {
                                                         setIsUpdateMode(true)
+                                                        setTempUpdateMode(true)
                                                         functionOpenRemainingPayment(
                                                           obj,
                                                           "fourthPayment",
                                                           currentLeadform[
                                                           "Company Name"
                                                           ],0,
-                                                          currentLeadform.remainingPayments[2],
-                                                          
+                                                          currentLeadform.remainingPayments[2],                                                          
                                                         )
                                                   }
-                                                      
                                                       }>
                                                     <MdModeEdit style={{height:'14px' , width:'14px'}}/>
                                                   </IconButton>
@@ -2822,6 +2879,9 @@ function ManagerBookings() {
               <h2 className="m-0"> Remaining Payment</h2>
             </div>
             <div className="remaining-payment-close">
+              {tempUpdateMode && <IconButton onClick={()=>setIsUpdateMode(false)}>
+                <MdModeEdit/>
+              </IconButton>}
               <IconButton onClick={() => setOpenRemainingPayment(false)}>
                 <CloseIcon />
               </IconButton>
@@ -2881,6 +2941,7 @@ function ManagerBookings() {
                     }
                     type="number"
                     className="form-control"
+                    disabled={isUpdateMode}
                     name="remaining-payment-proper"
                     id="remaining-payment-proper"
                     placeholder="Remaining Payment"
@@ -2891,7 +2952,7 @@ function ManagerBookings() {
             <div className="row mt-2">
               <div className="col-sm-6">
                 <label htmlFor="remaining-paymentmethod" className="form-label">
-                  Payment Method :
+                  Payment Method {<span style={{ color: "red" }}>*</span>} :
                 </label>
                 <div className="col">
                   <select
@@ -2902,6 +2963,7 @@ function ManagerBookings() {
                     }
                     id="remaining-paymentmethod"
                     className="form-select"
+                    disabled={isUpdateMode}
                     onChange={(e) =>
                       setRemainingObject({
                         ...remainingObject,
@@ -2943,7 +3005,7 @@ function ManagerBookings() {
             <div className="row mt-2">
               <div className="mb-3 col-sm-6">
                 <label htmlFor="remainingDate" className="form-label">
-                  Payment Date
+                  Payment Date {<span style={{ color: "red" }}>*</span>} :
                 </label>
                 <input
                   className="form-control"
@@ -2951,6 +3013,7 @@ function ManagerBookings() {
                   type="date"
                   name="remainingDate"
                   id="remainingDate"
+                  disabled={isUpdateMode}
                   onChange={(e) =>
                     setRemainingObject({
                       ...remainingObject,
@@ -2968,6 +3031,7 @@ function ManagerBookings() {
                 <div className="col form-control">
                   <input
                     type="file"
+                    disabled={isUpdateMode}
                     name="upload-remaining-receipt"
                     id="upload-remaining-receipt"
                     onChange={(e) =>
@@ -3000,6 +3064,7 @@ function ManagerBookings() {
                       extraRemarks: e.target.value,
                     })
                   }
+                  disabled={isUpdateMode}
                 ></textarea>
               </div>
             </div>
@@ -3009,6 +3074,7 @@ function ManagerBookings() {
           <button
             className="btn btn-primary w-100"
             onClick={handleSubmitMorePayments}
+            disabled={isUpdateMode}
           >
             {" "}
             Submit
