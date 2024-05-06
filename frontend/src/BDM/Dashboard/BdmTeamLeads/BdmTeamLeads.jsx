@@ -449,7 +449,7 @@ function BdmTeamLeads() {
     //console.log("bdmnewstatus", bdmnewstatus)
     try {
 
-      if (bdmnewstatus !== "Matured" && bdmnewstatus !== "Busy" && bdmnewstatus !== "Not Picked Up") {
+      if (bdmnewstatus !== "Matured") {
         const response = await axios.post(
           `${secretKey}/bdm-status-change/${companyId}`,
           {
@@ -476,28 +476,7 @@ function BdmTeamLeads() {
           console.error("Failed to update status:", response.data.message);
         }
 
-      } else if (bdmnewstatus === "Busy" || bdmnewstatus === "Not Picked Up") {
-
-        const response = await axios.delete(
-          `${secretKey}/delete-bdm-busy/${companyId}`)
-        //console.log("yahan dikha", bdmnewstatus)
-        // Check if the API call was successful
-        if (response.status === 200) {
-          // Assuming fetchData is a function to fetch updated employee data
-
-          fetchTeamLeadsData(bdmnewstatus);
-          setBdmNewStatus(bdmnewstatus)
-          setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmnewstatus).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
-
-
-        } else {
-          // Handle the case where the API call was not successful
-          console.error("Failed to update status:", response.data.message);
-        }
-
-
-
-      } else {
+      }else {
         const currentObject = teamData.find(obj => obj["Company Name"] === cname);
         setMaturedBooking(currentObject);
         setFormOpen(true)
@@ -990,38 +969,6 @@ function BdmTeamLeads() {
                         ).length
                       }
                     </span>
-
-                    {/* <span className="no_badge">
-                      <li class="nav-item">
-                        <a
-                          href="#tabs-activity-5"
-                          // onClick={() => {
-                          //   setdataStatus("FollowUp");
-                          //   setCurrentPage(0);
-                          //   setEmployeeData(
-                          //     moreEmpData.filter(
-                          //       (obj) => obj.Status === "FollowUp"
-                          //     )
-                          //   );
-                          // }}
-                          className={
-                            dataStatus === "FollowUp"
-                              ? "nav-link active item-act"
-                              : "nav-link"
-                          }
-                          data-bs-toggle="tab"
-                        >
-                           Follow Up{" "} 
-                          <span className="no_badge">
-                            {
-                              teamData.filter(
-                                (obj) => obj.Status === "FollowUp"
-                              ).length
-                            }
-                          </span>
-                        </a>
-                      </li>
-                    </span> */}
                   </a>
                 </li>
                 <li class="nav-item">
@@ -1092,8 +1039,10 @@ function BdmTeamLeads() {
                       setTeamLeadsData(
                         teamData.filter(
                           (obj) =>
-                            obj.bdmStatus === "Not Interested" ||
-                            obj.bdmStatus === "Junk"
+                            obj.bdmStatus === "Not Interested" || 
+                          obj.bdmStatus === "Busy" || 
+                          obj.bdmStatus === "Not Picked Up" ||
+                          obj.bdmStatus === "Junk"
                         )
                       );
                     }}
@@ -1109,7 +1058,9 @@ function BdmTeamLeads() {
                       {
                         teamData.filter(
                           (obj) =>
-                            obj.bdmStatus === "Not Interested" ||
+                            obj.bdmStatus === "Not Interested" || 
+                            obj.bdmStatus === "Busy" || 
+                            obj.bdmStatus === "Not Picked Up" ||
                             obj.bdmStatus === "Junk"
                         ).length
                       }
@@ -1300,6 +1251,12 @@ function BdmTeamLeads() {
                                           </option>
                                         </>
                                       )}
+                                      {bdmNewStatus === "NotInterested" && (
+                                                                                <>
+                                                                                <option value="Interested">Interested</option>
+                                                                                <option value="FollowUp">Follow Up</option>
+                                                                                </>
+                                                                            )}
                                     </select>
                                   )}
                                 </td>

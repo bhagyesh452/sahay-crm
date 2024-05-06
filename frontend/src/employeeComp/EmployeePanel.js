@@ -519,12 +519,12 @@ function EmployeePanel() {
 
       if (userData.bdmWork) {
         const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork && !userData.ename.includes(employee.ename))
-        console.log(bdmNames)
+        //console.log(bdmNames)
         setBdmNames(bdmNames.map((obj) => obj.ename))
       } else {
         const bdmNames = response.data.filter((employee) => employee.branchOffice === userData.branchOffice && employee.bdmWork)
         setBdmNames(bdmNames.map((obj) => obj.ename))
-        console.log(bdmNames)
+        //console.log(bdmNames)
       }
 
       //console.log("data" , userData)
@@ -534,7 +534,7 @@ function EmployeePanel() {
     }
   };
 
-  console.log("bdmNames", bdmNames)
+  //console.log("bdmNames", bdmNames)
 
 
 
@@ -599,8 +599,8 @@ function EmployeePanel() {
       setEmployeeData(
         tempData.filter(
           (obj) =>
-            obj.Status === "Busy" ||
-            obj.Status === "Not Picked Up" ||
+            //obj.Status === "Busy" ||
+            //obj.Status === "Not Picked Up" ||
             obj.Status === "Untouched"
         )
       );
@@ -609,7 +609,8 @@ function EmployeePanel() {
         setEmployeeData(
           sortedData
             .filter((data) =>
-              ["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
+              //["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
+              ["Untouched"].includes(data.Status)
             )
             .sort((a, b) => {
               if (a.Status === "Untouched") return -1;
@@ -622,7 +623,8 @@ function EmployeePanel() {
         setEmployeeData(
           sortedData
             .filter((data) =>
-              ["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
+              //["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
+              ["Busy","Not Picked Up"].includes(data.Status)
             )
             .sort((a, b) => {
               if (a.Status === "Busy") return -1;
@@ -637,10 +639,10 @@ function EmployeePanel() {
       }
 
 
-      if (status === "Not Interested" || status === "Junk") {
+      if (status === "Not Interested" || status === "Junk" || status === "Busy" || status === "Not Picked Up") {
         setEmployeeData(
           tempData.filter(
-            (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+            (obj) => obj.Status === "Not Interested" || obj.Status === "Junk" ||status === "Busy" || status === "Not Picked Up"
           )
         );
         setdataStatus("NotInterested");
@@ -800,7 +802,7 @@ function EmployeePanel() {
     }
   };
 
-  console.log(remarksHistory);
+  //console.log(remarksHistory);
 
   // const [locationAccess, setLocationAccess] = useState(false);
   useEffect(() => {
@@ -923,9 +925,11 @@ function EmployeePanel() {
     cemail,
     cindate,
     cnum,
-    oldStatus
+    oldStatus,
+    bdmAcceptStatus
   ) => {
     if (newStatus === "Matured") {
+      // Assuming these are setter functions to update state or perform some action
       setCompanyName(cname);
       setCompanyEmail(cemail);
       setCompanyInco(cindate);
@@ -934,26 +938,71 @@ function EmployeePanel() {
       setFormOpen(true);
       return true;
     }
+  
+    // Assuming `data` is defined somewhere in your code
     const title = `${data.ename} changed ${cname} status from ${oldStatus} to ${newStatus}`;
     const DT = new Date();
     const date = DT.toLocaleDateString();
     const time = DT.toLocaleTimeString();
+  
+    //console.log(bdmAcceptStatus, "bdmAcceptStatus");
+  
     try {
-      // Make an API call to update the employee status in the database
-      const response = await axios.post(
-        `${secretKey}/update-status/${employeeId}`,
-        {
-          newStatus,
-          title,
-          date,
-          time,
-        }
-      );
+      let response;
+  
+      if (bdmAcceptStatus === "Accept") {
+        if (newStatus === "Interested" || newStatus === "FollowUp") {
+          response = await axios.delete(`${secretKey}/post-deletecompany-interested/${employeeId}`);
+          const response2 = await axios.post(
+            `${secretKey}/update-status/${employeeId}`,
+            {
+              newStatus,
+              title,
+              date,
+              time,
+              
+            })
+            const response3 = await axios.post(`${secretKey}/post-bdmAcceptStatusupate/${employeeId}` , {
+              bdmAcceptStatus : "NotForwarded"
+            })
+          
+          
+        } else if (newStatus === "Busy" || newStatus === "Junk" || newStatus === "Not Picked Up") {
+          response = await axios.post(`${secretKey}/post-update-bdmstatusfrombde/${employeeId}` , {
+            newStatus
+          });
 
+          //console.log(response.data)
+         
+          const response2 = await axios.post(
+            `${secretKey}/update-status/${employeeId}`,
+            {
+              newStatus,
+              title,
+              date,
+              time,
+            }
+          );
+          
+        }
+      }
+  
+      // If response is not already defined, make the default API call
+      if (!response) {
+        response = await axios.post(
+          `${secretKey}/update-status/${employeeId}`,
+          {
+            newStatus,
+            title,
+            date,
+            time,
+          }
+        );
+      }
+  
       // Check if the API call was successful
       if (response.status === 200) {
-        // Assuming fetchData is a function to fetch updated employee data
-
+        // Assuming `fetchNewData` is a function to fetch updated employee data
         fetchNewData(oldStatus);
       } else {
         // Handle the case where the API call was not successful
@@ -964,6 +1013,8 @@ function EmployeePanel() {
       console.error("Error updating status:", error.message);
     }
   };
+  
+  
   const fetchBookingDeleteRequests = async () => {
     try {
       const response = await axios.get(`${secretKey}/deleterequestbybde`);
@@ -1021,9 +1072,9 @@ function EmployeePanel() {
 
   const handleDeleteRemarks = async (remarks_id, remarks_value) => {
     const mainRemarks = remarks_value === currentRemarks ? true : false;
-    console.log(mainRemarks);
+    //console.log(mainRemarks);
     const companyId = cid;
-    console.log("Deleting Remarks with", remarks_id);
+    //console.log("Deleting Remarks with", remarks_id);
     try {
       // Send a delete request to the backend to delete the item with the specified ID
       await axios.delete(`${secretKey}/remarks-history/${remarks_id}`);
@@ -1044,7 +1095,7 @@ function EmployeePanel() {
 
   const handleUpdate = async () => {
     // Now you have the updated Status and Remarks, perform the update logic
-    console.log(cid, cstat, changeRemarks);
+    //console.log(cid, cstat, changeRemarks);
     const Remarks = changeRemarks;
     if (Remarks === "") {
       Swal.fire({ title: "Empty Remarks!", icon: "warning" });
@@ -1188,7 +1239,7 @@ function EmployeePanel() {
           }
         );
 
-        console.log("Data sent successfully:", response.data);
+        //console.log("Data sent successfully:", response.data);
         Swal.fire("Request sent!");
         closepopup();
       } catch (error) {
@@ -1205,7 +1256,7 @@ function EmployeePanel() {
           cDate,
         });
 
-        console.log("Data sent successfully:", response.data);
+        //console.log("Data sent successfully:", response.data);
         Swal.fire("Request sent!");
         closepopup();
       } catch (error) {
@@ -1263,7 +1314,7 @@ function EmployeePanel() {
         "UploadedBy": data.ename
       }
       await axios.post(`${secretKey}/requestCompanyData`, dataToSend).then((response) => {
-        console.log("response", response);
+        //console.log("response", response);
         console.log("Data sent Successfully");
         Swal.fire({
           title: "Lead Request Sent!",
@@ -1494,7 +1545,7 @@ function EmployeePanel() {
       ...data,
       ename: name,
     }));
-    console.log("updatedcsv", updatedCsvdata);
+    //console.log("updatedcsv", updatedCsvdata);
 
     if (updatedCsvdata.length !== 0) {
       // Move setLoading outside of the loop
@@ -1543,19 +1594,19 @@ function EmployeePanel() {
   };
   const fetchRedesignedFormData = async () => {
     try {
-      console.log(maturedID);
+      //console.log(maturedID);
       const response = await axios.get(
         `${secretKey}/redesigned-final-leadData`
       );
       const data = response.data.find((obj) => obj.company === maturedID);
-      console.log(data);
+      //console.log(data);
       setCurrentForm(data);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
   };
   useEffect(() => {
-    console.log("Matured ID Changed", maturedID);
+    //console.log("Matured ID Changed", maturedID);
     if (maturedID) {
       fetchRedesignedFormData();
     }
@@ -1570,7 +1621,7 @@ function EmployeePanel() {
 
 
 
-  console.log("Current Form:", currentForm);
+  //console.log("Current Form:", currentForm);
   const formatDateAndTime = (AssignDate) => {
     // Convert AssignDate to a Date object
     const date = new Date(AssignDate);
@@ -1618,7 +1669,7 @@ function EmployeePanel() {
     }
   }, [data]);
 
-  console.log(companies);
+  //console.log(companies);
 
   // const handleProjectionSubmit = async () => {
   //   try {
@@ -1981,8 +2032,8 @@ function EmployeePanel() {
         const month = new Date(
           data["Company Incorporation Date  "]
         ).toLocaleString("default", { month: "short" });
-        console.log("Year :", year, selectedYear.toString());
-        console.log("Month :", month, selectedMonth.toString());
+        //console.log("Year :", year, selectedYear.toString());
+        //console.log("Month :", month, selectedMonth.toString());
         return (
           year === selectedYear.toString() && month === selectedMonth.toString()
         );
@@ -2008,20 +2059,20 @@ function EmployeePanel() {
     }
   };
 
-  console.log("filtetredremarks", filteredRemarks);
+  //console.log("filtetredremarks", filteredRemarks);
 
   // -----------------------------------------------------delete-projection-data-------------------------------
 
   const handleDelete = async (company) => {
     const companyName = company;
-    console.log(companyName);
+    //console.log(companyName);
 
     try {
       // Send a DELETE request to the backend API endpoint
       const response = await axios.delete(
         `${secretKey}/delete-followup/${companyName}`
       );
-      console.log(response.data.message); // Log the response message
+      //console.log(response.data.message); // Log the response message
       // Show a success message after successful deletion
       console.log("Deleted!", "Your data has been deleted.", "success");
       setCurrentProjection({
@@ -2195,7 +2246,7 @@ function EmployeePanel() {
     setFeedbackCompany(companyName)
   }
 
-  console.log(feedbakPoints)
+  //console.log(feedbakPoints)
 
   const closeFeedbackPopup = () => {
     setFeedbackPopupOpen(false)
@@ -2369,7 +2420,7 @@ function EmployeePanel() {
     ename,
     bdmAcceptStatus
   ) => {
-    console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
+    //console.log(companyName, companyStatus, ename, bdmAcceptStatus, companyId);
 
     if (
       companyStatus === "Interested" ||
@@ -2401,7 +2452,7 @@ function EmployeePanel() {
     const selectedDataWithBdm = currentData.filter(
       (company) => company["Company Name"] === forwardedCompany
     );
-    console.log("selecteddatawithbdm", selectedDataWithBdm);
+    //console.log("selecteddatawithbdm", selectedDataWithBdm);
   
     try {
       const response = await axios.post(`${secretKey}/forwardtobdmdata`, {
@@ -2428,7 +2479,7 @@ function EmployeePanel() {
   const [openBdmNamePopup, setOpenBdmNamePopoup] = useState(false)
   const [selectedBDM, setSelectedBDM] = useState("")
 
-  console.log("selectedbdm", selectedBDM)
+  //.log("selectedbdm", selectedBDM)
 
 
   // const handleConfirmAssign = ()=>{
@@ -2595,7 +2646,7 @@ function EmployeePanel() {
       );
       Swal.fire("Accepted!", "Successfully Accepted the Request", "success");
       setOpenbdmRequest(false);
-      console.log(response.data); // Log the response data if needed
+      //console.log(response.data); // Log the response data if needed
       // Optionally, you can update the UI or perform any other actions after the request is successful
     } catch (error) {
       Swal.fire("Error!", "Error Accepting the Request", "error");
@@ -2615,7 +2666,7 @@ function EmployeePanel() {
       );
       Swal.fire("Rejected!", "Successfully Denied the Request", "success");
       setOpenbdmRequest(false);
-      console.log(response.data); // Log the response data if needed
+      //console.log(response.data); // Log the response data if needed
       // Optionally, you can update the UI or perform any other actions after the request is successful
     } catch (error) {
       Swal.fire("Error!", "Error Rejecting the Request", "error");
@@ -2634,7 +2685,7 @@ function EmployeePanel() {
 
       setOpenbdmRequest(false);
       fetchBDMbookingRequests()
-      console.log(response.data); // Log the response data if needed
+      //console.log(response.data); // Log the response data if needed
       // Optionally, you can update the UI or perform any other actions after the request is successful
     } catch (error) {
       Swal.fire("Error!", "Error Rejecting the Request", "error");
@@ -2655,7 +2706,7 @@ function EmployeePanel() {
     try {
       const resposne = await axios.post(`${secretKey}/post-bdenextfollowupdate/${companyId}`, data)
 
-      console.log(resposne.data)
+      //console.log(resposne.data)
       fetchNewData(companyStatus)
 
     } catch (error) {
@@ -2664,7 +2715,7 @@ function EmployeePanel() {
 
   }
 
-  console.log(feedbackRemarks, feedbakPoints)
+  //console.log(feedbackRemarks, feedbakPoints)
 
 
   return (
@@ -3259,8 +3310,8 @@ function EmployeePanel() {
                           setEmployeeData(
                             moreEmpData.filter(
                               (obj) =>
-                                obj.Status === "Busy" ||
-                                obj.Status === "Not Picked Up" ||
+                                //obj.Status === "Busy" ||
+                                //obj.Status === "Not Picked Up" ||
                                 obj.Status === "Untouched"
                             )
                           );
@@ -3277,8 +3328,8 @@ function EmployeePanel() {
                           {
                             moreEmpData.filter(
                               (obj) =>
-                                obj.Status === "Busy" ||
-                                obj.Status === "Not Picked Up" ||
+                                // obj.Status === "Busy" ||
+                                // obj.Status === "Not Picked Up" ||
                                 obj.Status === "Untouched"
                             ).length
                           }
@@ -3445,7 +3496,8 @@ function EmployeePanel() {
                           setEmployeeData(
                             moreEmpData.filter(
                               (obj) =>
-                                (obj.Status === "Not Interested" ||
+                                (obj.Status === "Not Interested" || obj.Status === "Busy" ||
+                                obj.Status === "Not Picked Up" ||
                                   obj.Status === "Junk") &&
                                 (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                             )
@@ -3463,7 +3515,8 @@ function EmployeePanel() {
                           {
                             moreEmpData.filter(
                               (obj) =>
-                                (obj.Status === "Not Interested" ||
+                                (obj.Status === "Not Interested" ||obj.Status === "Busy" ||
+                              obj.Status === "Not Picked Up" ||
                                   obj.Status === "Junk") &&
                                 (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                             ).length
@@ -3781,7 +3834,8 @@ function EmployeePanel() {
                                                 "Company Incorporation Date  "
                                                 ],
                                                 company["Company Number"],
-                                                company["Status"]
+                                                company["Status"],
+                                                company.bdmAcceptStatus
                                               )
                                             }
                                           >
@@ -3828,24 +3882,6 @@ function EmployeePanel() {
                                             )}
                                           </select>
                                         )}
-                                      {/* {(company.bdmAcceptStatus !== "NotForwarded" && company.Status !== "Not Interested") && (
-                                        // <select
-                                        //   disabled
-                                        //   style={{
-                                        //     background: "none",
-                                        //     padding: ".4375rem .75rem",
-                                        //     border: "1px solid var(--tblr-border-color)",
-                                        //     borderRadius: "var(--tblr-border-radius)",
-                                        //   }}
-                                        // >
-                                        //   {company.Status === "Interested" && (<option value="Interested">Interested</option>)}
-                                        //   {company.Status === "FollowUp" && (<option value="FollowUp">FollowUp</option>)}
-                                        //   {company.Status === "Not Interested" && (<option value="Not Interested">Not Interested</option>)}
-                                        //   {company.Status === "Junk" && (<option value="Junk">Junk</option>)}
-                                        //   {company.Status === "Busy" && (<option value="Busy">Busy</option>)}
-                                        // </select>
-                                        <span>{company.bdeOldStatus}</span>
-                                      )} */}
                                       {(company.bdmAcceptStatus !==
                                         "NotForwarded") &&
                                         (company.Status === "Interested" ||
@@ -3876,7 +3912,8 @@ function EmployeePanel() {
                                                 "Company Incorporation Date  "
                                                 ],
                                                 company["Company Number"],
-                                                company["Status"]
+                                                company["Status"],
+                                                company.bdmAcceptStatus
                                               )
                                             }
                                           >
@@ -3888,6 +3925,8 @@ function EmployeePanel() {
                                             <option value="Not Interested">
                                               Not Interested
                                             </option>
+                                        <option value="Interested">Interested</option>
+                                        <option value="FollowUp">Follow Up</option>
                                           </select>
                                         )}
                                     </>

@@ -1183,7 +1183,6 @@ app.post("/api/bdm-status-change/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 app.post(`/api/teamleads-reversedata/:id`, async (req, res) => {
   const id = req.params.id; // Corrected params extraction
   const { companyName, bdmAcceptStatus, bdmName } = req.body;
@@ -1267,12 +1266,30 @@ app.delete(`/api/delete-bdmTeam/:teamId`, async (req, res) => {
   }
 });
 
-app.delete(`/api/delete-bdm-busy/:companyId`, async (req, res) => {
+// app.delete(`/api/delete-bdm-busy/:companyId`, async (req, res) => {
+//   const companyId = req.params.companyId; // Correctly access teamId from req.params
+
+//   try {
+//     const existingData = await TeamLeadsModel.findById(companyId);
+//     console.log(existingData);
+
+//     if (existingData) {
+//       await TeamLeadsModel.findByIdAndDelete(companyId); // Use findByIdAndDelete to delete by ID
+//       res.status(200).json({ message: "Deleted Successfully" });
+//     } else {
+//       res.status(400).json({ error: "Team Does Not Exist" }); // Correct typo in error message
+//     }
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+app.delete(`/api/post-deletecompany-interested/:companyId`, async (req, res) => {
   const companyId = req.params.companyId; // Correctly access teamId from req.params
 
   try {
     const existingData = await TeamLeadsModel.findById(companyId);
-    console.log(existingData);
+    //console.log(existingData);
 
     if (existingData) {
       await TeamLeadsModel.findByIdAndDelete(companyId); // Use findByIdAndDelete to delete by ID
@@ -1284,6 +1301,43 @@ app.delete(`/api/delete-bdm-busy/:companyId`, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.post("/api/post-bdmAcceptStatusupate/:id", async (req, res) => {
+  const { id } = req.params;
+  const { bdmAcceptStatus } = req.body; // Destructure the required properties from req.body
+
+  try {
+    // Update the status field in the database based on the employee id
+    await CompanyModel.findByIdAndUpdate(id, { bdmAcceptStatus : bdmAcceptStatus });
+
+    // Create and save a new document in the RecentUpdatesModel collectio
+
+    res.status(200).json({ message: "Status updated successfully" });
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post(`/api/post-update-bdmstatusfrombde/:companyId`, async (req, res) => {
+  const companyId = req.params.companyId;
+
+  //console.log(companyId)
+  const { newStatus } = req.body; 
+  //console.log(newStatus)                // Assuming the new status is under the key 'bdmStatus' in the request body
+  try {
+    const update = await TeamLeadsModel.findByIdAndUpdate(companyId, { bdmStatus: newStatus , Status : newStatus });
+    
+    //console.log(update)
+
+    res.status(200).json({ message: "Data updated successfully" });
+  } catch (error) {
+    console.error("Error updating data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 app.put("/api/teaminfo/:teamId", async (req, res) => {
   const teamId = req.params.teamId;
@@ -1900,6 +1954,43 @@ app.post("/api/assign-new", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+// Define the route handler for deleting companies
+// Assuming you have already set up your Express app and imported necessary modules
+
+// Import the TeamLeadsModel
+// Define the route handler for deleting companies
+
+
+app.post('/api/delete-companies-teamleads-assignednew', async (req, res) => {
+  try {
+    // Extract the companyIds from the request body
+    const { companyIds } = req.body;
+
+    console.log("companycom" , companyIds )
+
+    // Validate that companyIds is an array
+    if (!Array.isArray(companyIds)) {
+      return res.status(400).json({ error: 'Invalid input: companyIds must be an array' });
+    }
+
+    // Delete companies from the TeamLeadsModel using the companyIds
+    const deleteResult = await TeamLeadsModel.deleteMany({ _id: { $in: companyIds } });
+
+    // Check if any companies were deleted
+    if (deleteResult.deletedCount === 0) {
+      return res.status(404).json({ error: 'No companies found with the provided IDs' });
+    }
+
+    // Respond with success message
+    res.status(200).json({ message: 'Companies deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting companies:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
 app.post("/api/assign-leads-newbdm", async (req, res) => {
   const { newemployeeSelection, data, bdmAcceptStatus } = req.body;

@@ -255,8 +255,8 @@ function EmployeeParticular() {
       setEmployeeData(
         response.data.filter(
           (obj) =>
-            obj.Status === "Busy" ||
-            obj.Status === "Not Picked Up" ||
+            //obj.Status === "Busy" ||
+            //obj.Status === "Not Picked Up" ||
             obj.Status === "Untouched"
         )
       );
@@ -388,6 +388,7 @@ function EmployeeParticular() {
   // }, [employeeName]);
 
   const [selectedRows, setSelectedRows] = useState([]);
+
   const handleCheckboxChange = (id, event) => {
     // If the id is 'all', toggle all checkboxes
     if (id === "all") {
@@ -538,6 +539,7 @@ function EmployeeParticular() {
       });
     }
   };
+
   const closeProjection = () => {
     setOpenProjection(false);
     setProjectingCompany("");
@@ -552,12 +554,96 @@ function EmployeeParticular() {
     });
   };
 
+  const [companyId , setCompanyId] = useState("")
+
+  // const handleUploadData = async (e) => {
+  //   //console.log("Uploading data");
+
+  //   const currentDate = new Date().toLocaleDateString();
+  //   const currentTime = new Date().toLocaleTimeString();
+
+  //   const csvdata = employeeData
+  //     .filter((employee) => selectedRows.includes(employee._id))
+  //     .map((employee) => {
+  //       //setCompanyId(employee._id)
+  //       //console.log("company" , companyId)
+  //       if (
+  //         employee.Status === "Interested" ||
+  //         employee.Status === "FollowUp"
+  //       ) {
+  //         // If Status is "Interested" or "FollowUp", don't change Status and Remarks
+  //         return { ...employee };
+  //       } else {
+  //         // For other Status values, update Status to "Untouched" and Remarks to "No Remarks Added"
+  //         return {
+  //           ...employee,
+  //           Status: "Untouched",
+  //           Remarks: "No Remarks Added",
+  //           bdmAcceptStatus : "NotForwarded"
+  //         };
+  //       }
+  //     });
+
+  //     console.log("csvdata" , csvdata)
+
+  //   // Create an array to store promises for updating CompanyModel
+  //   const updatePromises = [];
+
+  //   for (const data of csvdata) {
+  //     const updatedObj = {
+  //       ...data,
+  //       date: currentDate,
+  //       time: currentTime,
+  //       ename: newemployeeSelection,
+  //       companyName: data["Company Name"],
+  //     };
+
+  //     console.log("updatedObj" , updatedObj)
+
+  //     // Add the promise for updating CompanyModel to the array
+  //     updatePromises.push(
+  //       axios.post(`${secretKey}/assign-new`, {
+  //         newemployeeSelection,
+  //         data: updatedObj,
+  //       })
+  //     );
+  //   }
+
+  //   try {
+  //     // Wait for all update promises to resolve
+  //     await Promise.all(updatePromises);
+  //     //console.log("Employee data updated!");
+
+  //     // Clear the selection
+  //     setnewEmployeeSelection("Not Alloted");
+
+  //     Swal.fire({
+  //       title: "Data Sent!",
+  //       text: "Data sent successfully!",
+  //       icon: "success",
+  //     });
+
+  //     // Fetch updated employee details and new data
+  //     fetchEmployeeDetails();
+  //     fetchNewData();
+  //     closepopupAssign();
+  //   } catch (error) {
+  //     console.error("Error updating employee data:", error);
+
+  //     Swal.fire({
+  //       title: "Error!",
+  //       text: "Failed to update employee data. Please try again later.",
+  //       icon: "error",
+  //     });
+  //   }
+  // };
+
   const handleUploadData = async (e) => {
     //console.log("Uploading data");
-
+  
     const currentDate = new Date().toLocaleDateString();
     const currentTime = new Date().toLocaleTimeString();
-
+  
     const csvdata = employeeData
       .filter((employee) => selectedRows.includes(employee._id))
       .map((employee) => {
@@ -573,14 +659,19 @@ function EmployeeParticular() {
             ...employee,
             Status: "Untouched",
             Remarks: "No Remarks Added",
+            bdmAcceptStatus: "NotForwarded",
           };
         }
       });
-
+  
+    console.log("csvdata", csvdata);
+  
     // Create an array to store promises for updating CompanyModel
     const updatePromises = [];
-
+    const deleteCompanyIds = []; // Store company IDs to be deleted
+  
     for (const data of csvdata) {
+      console.log("data", data);
       const updatedObj = {
         ...data,
         date: currentDate,
@@ -588,7 +679,9 @@ function EmployeeParticular() {
         ename: newemployeeSelection,
         companyName: data["Company Name"],
       };
-
+  
+      console.log("updatedObj", updatedObj);
+  
       // Add the promise for updating CompanyModel to the array
       updatePromises.push(
         axios.post(`${secretKey}/assign-new`, {
@@ -596,29 +689,40 @@ function EmployeeParticular() {
           data: updatedObj,
         })
       );
+  
+      // Push company ID to the array for deletion if it's not null, empty, or length 0
+      if (data.bdmAcceptStatus === "Accept") {
+        deleteCompanyIds.push(data._id);
+      }
     }
-
+  
     try {
       // Wait for all update promises to resolve
       await Promise.all(updatePromises);
-      //console.log("Employee data updated!");
-
+  
+      // Make an API call to delete companies from Team Leads Model if deleteCompanyIds is not empty
+      if (deleteCompanyIds.length > 0) {
+        await axios.post(`${secretKey}/delete-companies-teamleads-assignednew`, {
+          companyIds: deleteCompanyIds,
+        });
+      }
+  
       // Clear the selection
       setnewEmployeeSelection("Not Alloted");
-
+  
       Swal.fire({
         title: "Data Sent!",
         text: "Data sent successfully!",
         icon: "success",
       });
-
+  
       // Fetch updated employee details and new data
       fetchEmployeeDetails();
       fetchNewData();
       closepopupAssign();
     } catch (error) {
       console.error("Error updating employee data:", error);
-
+  
       Swal.fire({
         title: "Error!",
         text: "Failed to update employee data. Please try again later.",
@@ -626,6 +730,15 @@ function EmployeeParticular() {
       });
     }
   };
+  
+
+
+
+
+
+
+
+
 
   //console.log(loginDetails);
 
@@ -1658,8 +1771,8 @@ function EmployeeParticular() {
                         setEmployeeData(
                           moreEmpData.filter(
                             (obj) =>
-                              obj.Status === "Busy" ||
-                              obj.Status === "Not Picked Up" ||
+                              //obj.Status === "Busy" ||
+                              //obj.Status === "Not Picked Up" ||
                               obj.Status === "Untouched"
                           )
                         );
@@ -1676,8 +1789,8 @@ function EmployeeParticular() {
                         {
                           moreEmpData.filter(
                             (obj) =>
-                              obj.Status === "Busy" ||
-                              obj.Status === "Not Picked Up" ||
+                              //obj.Status === "Busy" ||
+                              //obj.Status === "Not Picked Up" ||
                               obj.Status === "Untouched"
                           ).length
                         }
@@ -1847,8 +1960,10 @@ function EmployeeParticular() {
                           moreEmpData.filter(
                             (obj) =>
                               (obj.Status === "Not Interested" ||
-                                obj.Status === "Junk") &&
-                              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                            obj.Status === "Busy" ||
+                            obj.Status === "Not Picked Up" ||
+                             obj.Status === "Junk") &&
+                           (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                           )
                         );
                       }}
@@ -1865,6 +1980,8 @@ function EmployeeParticular() {
                           moreEmpData.filter(
                             (obj) =>
                               (obj.Status === "Not Interested" ||
+                               obj.Status === "Busy" ||
+                               obj.Status === "Not Picked Up" ||
                                 obj.Status === "Junk") &&
                               (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                           ).length
@@ -1928,17 +2045,6 @@ function EmployeeParticular() {
                                 cursor: "pointer",
                                 marginLeft: "4px",
                               }}
-                              // onClick={() => {
-                              //   setEmployeeData(
-                              //     [...moreEmpData].sort((a, b) =>
-                              //       b[
-                              //         "Company Incorporation Date  "
-                              //       ].localeCompare(
-                              //         a["Company Incorporation Date  "]
-                              //       )
-                              //     )
-                              //   );
-                              // }}
                               onClick={handleFilterIncoDate}
                             />
                             {openIncoDate && (
@@ -2080,6 +2186,7 @@ function EmployeeParticular() {
                                       }
                                       onMouseDown={() =>
                                         handleMouseDown(company._id)
+                                        
                                       }
                                       onMouseEnter={() =>
                                         handleMouseEnter(company._id)

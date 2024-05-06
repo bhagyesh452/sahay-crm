@@ -478,39 +478,85 @@ function EmployeeTeamLeads() {
         }
     }
 
-    //console.log("bdmNewStatus", bdmNewStatus)
+    // const handlebdmStatusChange = async (
+    //     companyId,
+    //     bdmnewstatus,
+    //     cname,
+    //     cemail,
+    //     cindate,
+    //     cnum,
+    //     bdeStatus,
+    //     bdmOldStatus,
+    //     bdeName
+    // ) => {
+    //     const title = `${data.ename} changed ${cname} status from ${bdmOldStatus} to ${bdmnewstatus}`;
+    //     const DT = new Date();
+    //     const date = DT.toLocaleDateString();
+    //     const time = DT.toLocaleTimeString();
+    //     const bdmStatusChangeDate = new Date();
+    //     //console.log("bdmnewstatus", bdmnewstatus , date,time , bdmStatusChangeDate)
+    //     try {
+
+    //         if (bdmnewstatus !== "Matured" && bdmnewstatus !== "Busy" && bdmnewstatus !== "Not Picked Up") {
+    //             const response = await axios.post(
+    //                 `${secretKey}/bdm-status-change/${companyId}`,
+    //                 {
+    //                     bdeStatus,
+    //                     bdmnewstatus,
+    //                     title,
+    //                     date,
+    //                     time,
+    //                     bdmStatusChangeDate,
+    //                 }
+    //             )
+    //             //console.log("yahan dikha ", bdmnewstatus)
+    //             // Check if the API call was successful
+    //             if (response.status === 200) {
+    //                 // Assuming fetchData is a function to fetch updated employee data
+
+    //                 fetchTeamLeadsData(bdmnewstatus);
+    //                 setBdmNewStatus(bdmnewstatus)
+    //                 setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmnewstatus).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
+
+
+    //             } else {
+    //                 // Handle the case where the API call was not successful
+    //                 console.error("Failed to update status:", response.data.message);
+    //             }
+
+    //         } else if (bdmnewstatus === "Busy" || bdmnewstatus === "Not Picked Up") {
+
+    //             const response = await axios.delete(
+    //                 `${secretKey}/delete-bdm-busy/${companyId}`)
+    //             //console.log("yahan dikha", bdmnewstatus)
+    //             // Check if the API call was successful
+    //             if (response.status === 200) {
+    //                 // Assuming fetchData is a function to fetch updated employee data
+
+    //                 fetchTeamLeadsData(bdmnewstatus);
+    //                 setBdmNewStatus(bdmnewstatus)
+    //                 setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmnewstatus).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
+
+
+    //             } else {
+    //                 // Handle the case where the API call was not successful
+    //                 console.error("Failed to update status:", response.data.message);
+    //             }
 
 
 
-    // const handleRejectData = async (companyId) => {
-    //   setIsDeleted(true)
+    //         } else {
+    //             const currentObject = teamData.find(obj => obj["Company Name"] === cname);
+    //             setMaturedBooking(currentObject);
+    //             setFormOpen(true)
 
+    //         }
 
-    //   try {
-    //     const response = await axios.post(`${secretKey}/teamleads-rejectdata/${companyId}`, {
-    //       bdmAcceptStatus: "NotForwarded",
-    //     })
-    //     console.log("response", response.data);
-    //     fetchTeamLeadsData();
-    //     Swal.fire("Data Rejected");
-    //   } catch (error) {
-    //     console.log("error reversing bdm forwarded data", error.message);
-    //     Swal.fire("Error rekecting data")
-    //   }
-    // }
+    //     } catch (error) {
+    //         // Handle any errors that occur during the API call
+    //         console.error("Error updating status:", error.message);
+    //     }
 
-
-
-    // try {
-    //   const response = await axios.post(`${secretKey}/teamleads-rejectdata/${companyId}`, {
-    //     bdmAcceptStatus: "NotForwarded",
-    //   })
-    //   console.log("response", response.data);
-    //   fetchTeamLeadsData();
-    //   Swal.fire("Data Rejected");
-    // } catch (error) {
-    //   console.log("error reversing bdm forwarded data", error.message);
-    //   Swal.fire("Error rekecting data")
     // }
 
 
@@ -530,10 +576,10 @@ function EmployeeTeamLeads() {
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const bdmStatusChangeDate = new Date();
-        //console.log("bdmnewstatus", bdmnewstatus , date,time , bdmStatusChangeDate)
+        console.log("bdmnewstatus", bdmnewstatus , date,time , bdmStatusChangeDate)
         try {
 
-            if (bdmnewstatus !== "Matured" && bdmnewstatus !== "Busy" && bdmnewstatus !== "Not Picked Up") {
+            if (bdmnewstatus !== "Matured") {
                 const response = await axios.post(
                     `${secretKey}/bdm-status-change/${companyId}`,
                     {
@@ -545,7 +591,7 @@ function EmployeeTeamLeads() {
                         bdmStatusChangeDate,
                     }
                 )
-                //console.log("yahan dikha ", bdmnewstatus)
+                
                 // Check if the API call was successful
                 if (response.status === 200) {
                     // Assuming fetchData is a function to fetch updated employee data
@@ -559,27 +605,6 @@ function EmployeeTeamLeads() {
                     // Handle the case where the API call was not successful
                     console.error("Failed to update status:", response.data.message);
                 }
-
-            } else if (bdmnewstatus === "Busy" || bdmnewstatus === "Not Picked Up") {
-
-                const response = await axios.delete(
-                    `${secretKey}/delete-bdm-busy/${companyId}`)
-                //console.log("yahan dikha", bdmnewstatus)
-                // Check if the API call was successful
-                if (response.status === 200) {
-                    // Assuming fetchData is a function to fetch updated employee data
-
-                    fetchTeamLeadsData(bdmnewstatus);
-                    setBdmNewStatus(bdmnewstatus)
-                    setTeamLeadsData(teamData.filter((obj) => obj.bdmStatus === bdmnewstatus).sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate)))
-
-
-                } else {
-                    // Handle the case where the API call was not successful
-                    console.error("Failed to update status:", response.data.message);
-                }
-
-
 
             } else {
                 const currentObject = teamData.find(obj => obj["Company Name"] === cname);
@@ -594,6 +619,9 @@ function EmployeeTeamLeads() {
         }
 
     }
+
+    //console.log("bdmNewStatus" , bdmNewStatus)
+
 
     const handleDeleteRemarks = async (remarks_id, remarks_value) => {
         const mainRemarks = remarks_value === currentRemarks ? true : false;
@@ -1656,38 +1684,6 @@ function EmployeeTeamLeads() {
                                                 ).length
                                             }
                                         </span>
-
-                                        {/* <span className="no_badge">
-                      <li class="nav-item">
-                        <a
-                          href="#tabs-activity-5"
-                          // onClick={() => {
-                          //   setdataStatus("FollowUp");
-                          //   setCurrentPage(0);
-                          //   setTeamLeadsData(
-                          //     teamData.filter(
-                          //       (obj) => obj.Status === "FollowUp"
-                          //     )
-                          //   );
-                          // }}
-                          className={
-                            dataStatus === "FollowUp"
-                              ? "nav-link active item-act"
-                              : "nav-link"
-                          }
-                          data-bs-toggle="tab"
-                        >
-                           Follow Up{" "} 
-                          <span className="no_badge">
-                            {
-                              teamData.filter(
-                                (obj) => obj.Status === "FollowUp"
-                              ).length
-                            }
-                          </span>
-                        </a>
-                      </li>
-                    </span> */}
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -1758,7 +1754,9 @@ function EmployeeTeamLeads() {
                                             setTeamLeadsData(
                                                 teamData.filter(
                                                     (obj) =>
-                                                        obj.bdmStatus === "Not Interested" ||
+                                                        obj.bdmStatus === "Not Interested" || 
+                                                        obj.bdmStatus === "Busy" || 
+                                                        obj.bdmStatus === "Not Picked Up" ||
                                                         obj.bdmStatus === "Junk"
                                                 )
                                             );
@@ -1775,7 +1773,9 @@ function EmployeeTeamLeads() {
                                             {
                                                 teamData.filter(
                                                     (obj) =>
-                                                        obj.bdmStatus === "Not Interested" ||
+                                                        obj.bdmStatus === "Not Interested" || 
+                                                        obj.bdmStatus === "Busy" || 
+                                                        obj.bdmStatus === "Not Picked Up" ||
                                                         obj.bdmStatus === "Junk"
                                                 ).length
                                             }
@@ -1971,6 +1971,12 @@ function EmployeeTeamLeads() {
                                                                                     </option>
                                                                                 </>
                                                                             )}
+                                                                            {bdmNewStatus === "NotInterested" && (
+                                                                                <>
+                                                                                <option value="Interested">Interested</option>
+                                                                                <option value="FollowUp">Follow Up</option>
+                                                                                </>
+                                                                            )}
                                                                         </select>
                                                                     )}
                                                                 </td>
@@ -2081,7 +2087,6 @@ function EmployeeTeamLeads() {
                                                                     style={{ marginRight: "5px" }}
                                                                     onClick={() => {
                                                                         setMaturedID(company._id);
-
                                                                         functionopenAnchor();
                                                                     }}
                                                                 >

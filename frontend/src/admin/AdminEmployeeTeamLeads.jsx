@@ -2038,38 +2038,6 @@ function AdminEmployeeTeamLeads() {
                                                 ).length
                                             }
                                         </span>
-
-                                        {/* <span className="no_badge">
-                      <li class="nav-item">
-                        <a
-                          href="#tabs-activity-5"
-                          // onClick={() => {
-                          //   setdataStatus("FollowUp");
-                          //   setCurrentPage(0);
-                          //   setEmployeeData(
-                          //     moreEmpData.filter(
-                          //       (obj) => obj.Status === "FollowUp"
-                          //     )
-                          //   );
-                          // }}
-                          className={
-                            dataStatus === "FollowUp"
-                              ? "nav-link active item-act"
-                              : "nav-link"
-                          }
-                          data-bs-toggle="tab"
-                        >
-                           Follow Up{" "} 
-                          <span className="no_badge">
-                            {
-                              teamData.filter(
-                                (obj) => obj.Status === "FollowUp"
-                              ).length
-                            }
-                          </span>
-                        </a>
-                      </li>
-                    </span> */}
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -2141,6 +2109,8 @@ function AdminEmployeeTeamLeads() {
                                                 teamData.filter(
                                                     (obj) =>
                                                         obj.bdmStatus === "Not Interested" ||
+                                                       obj.bdmStatus === "Busy" ||
+                                                       obj.bdmStatus === "Not Picked Up"||
                                                         obj.bdmStatus === "Junk"
                                                 )
                                             );
@@ -2158,6 +2128,8 @@ function AdminEmployeeTeamLeads() {
                                                 teamData.filter(
                                                     (obj) =>
                                                         obj.bdmStatus === "Not Interested" ||
+                                                       obj.bdmStatus === "Busy" ||
+                                                       obj.bdmStatus === "Not Picked Up"||
                                                         obj.bdmStatus === "Junk"
                                                 ).length
                                             }
@@ -2325,7 +2297,8 @@ function AdminEmployeeTeamLeads() {
                                                         bdmNewStatus === "NotInterested") && (
                                                             <>
                                                                 <td>
-                                                                    {company.bdmStatus === "Matured"  ? (
+                                                                    <span>{company.bdmStatus}</span>
+                                                                    {/* {company.bdmStatus === "Matured"  ? (
                                                                         <span>{company.bdmStatus} </span>
                                                                     ) : (
                                                                         <select
@@ -2387,7 +2360,7 @@ function AdminEmployeeTeamLeads() {
                                                                                 </>
                                                                             )}
                                                                         </select>
-                                                                    )}
+                                                                    )} */}
                                                                 </td>
                                                                 <td>
                                                                     <div

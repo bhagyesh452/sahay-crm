@@ -393,6 +393,8 @@ function BdmLeads() {
         setLoading(true);
       }
 
+      console.log("status", status)
+
       const response = await axios.get(`${secretKey}/employees/${data.ename}`);
       const tempData = response.data;
       //console.log("tempData", tempData)
@@ -407,8 +409,8 @@ function BdmLeads() {
       setEmployeeData(
         tempData.filter(
           (obj) =>
-            obj.Status === "Busy" ||
-            obj.Status === "Not Picked Up" ||
+            //obj.Status === "Busy" ||
+            //obj.Status === "Not Picked Up" ||
             obj.Status === "Untouched"
         )
       );
@@ -417,7 +419,8 @@ function BdmLeads() {
         setEmployeeData(
           sortedData
             .filter((data) =>
-              ["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
+              //["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
+              ["Untouched"].includes(data.Status)
             )
             .sort((a, b) => {
               if (a.Status === "Untouched") return -1;
@@ -430,7 +433,8 @@ function BdmLeads() {
         setEmployeeData(
           sortedData
             .filter((data) =>
-              ["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
+              //["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
+              ["Busy","Not Picked Up"].includes(data.Status)
             )
             .sort((a, b) => {
               if (a.Status === "Busy") return -1;
@@ -441,22 +445,37 @@ function BdmLeads() {
       }
 
       if (!status && sortStatus !== "") {
+
       }
-      if (status === "Not Interested" || status === "Junk") {
+
+
+      if (status === "Not Interested" || status === "Junk" || status === "Busy" || status === "Not Picked Up") {
         setEmployeeData(
           tempData.filter(
-            (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
+            (obj) => obj.Status === "Not Interested" || obj.Status === "Junk" ||status === "Busy" || status === "Not Picked Up"
           )
         );
         setdataStatus("NotInterested");
       }
       if (status === "FollowUp") {
-        setEmployeeData(tempData.filter((obj) => obj.Status === "FollowUp"));
+        setEmployeeData(tempData.filter((obj) => obj.Status === "FollowUp" && obj.bdmAcceptStatus === "NotForwarded"));
         setdataStatus("FollowUp");
       }
       if (status === "Interested") {
-        setEmployeeData(tempData.filter((obj) => obj.Status === "Interested"));
+        setEmployeeData(tempData.filter((obj) => obj.Status === "Interested" && obj.bdmAcceptStatus === "NotForwarded"));
         setdataStatus("Interested");
+      }
+      if (status === "Forwarded") {
+        console.log("yahan chala")
+        setEmployeeData(
+          moreEmpData
+            .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && (obj.Status === "Interested" || obj.Status === "FollowUp"))
+        );
+        console.log(moreEmpData
+          .filter((obj) => obj.bdmAcceptStatus !== "NotForwarded" && (obj.Status === "Interested" || obj.Status === "FollowUp"))
+          .sort((a, b) => new Date(b.bdeForwardDate) - new Date(a.bdeForwardDate))
+        )
+        setdataStatus("Forwarded");
       }
       // setEmployeeData(tempData.filter(obj => obj.Status === "Busy" || obj.Status === "Not Picked Up" || obj.Status === "Untouched"))
     } catch (error) {
@@ -699,6 +718,56 @@ function BdmLeads() {
 
   console.log("currentData", currentData)
 
+  // const handleStatusChange = async (
+  //   employeeId,
+  //   newStatus,
+  //   cname,
+  //   cemail,
+  //   cindate,
+  //   cnum,
+  //   oldStatus
+  // ) => {
+  //   if (newStatus === "Matured") {
+  //     setCompanyName(cname);
+  //     setCompanyEmail(cemail);
+  //     setCompanyInco(cindate);
+  //     setCompanyId(employeeId);
+  //     setCompanyNumber(cnum);
+  //     setFormOpen(true);
+  //     return true;
+  //   }
+  //   const title = `${data.ename} changed ${cname} status from ${oldStatus} to ${newStatus}`;
+  //   const DT = new Date();
+  //   const date = DT.toLocaleDateString();
+  //   const time = DT.toLocaleTimeString();
+  //   try {
+  //     // Make an API call to update the employee status in the database
+  //     const response = await axios.post(
+  //       `${secretKey}/update-status/${employeeId}`,
+  //       {
+  //         newStatus,
+  //         title,
+  //         date,
+  //         time,
+  //       }
+  //     );
+
+  //     // Check if the API call was successful
+  //     if (response.status === 200) {
+  //       // Assuming fetchData is a function to fetch updated employee data
+
+  //       fetchNewData(oldStatus);
+  //     } else {
+  //       // Handle the case where the API call was not successful
+  //       console.error("Failed to update status:", response.data.message);
+  //     }
+  //   } catch (error) {
+  //     // Handle any errors that occur during the API call
+  //     console.error("Error updating status:", error.message);
+  //   }
+  // };
+
+
   const handleStatusChange = async (
     employeeId,
     newStatus,
@@ -706,9 +775,11 @@ function BdmLeads() {
     cemail,
     cindate,
     cnum,
-    oldStatus
+    oldStatus,
+    bdmAcceptStatus
   ) => {
     if (newStatus === "Matured") {
+      // Assuming these are setter functions to update state or perform some action
       setCompanyName(cname);
       setCompanyEmail(cemail);
       setCompanyInco(cindate);
@@ -717,26 +788,71 @@ function BdmLeads() {
       setFormOpen(true);
       return true;
     }
+  
+    // Assuming `data` is defined somewhere in your code
     const title = `${data.ename} changed ${cname} status from ${oldStatus} to ${newStatus}`;
     const DT = new Date();
     const date = DT.toLocaleDateString();
     const time = DT.toLocaleTimeString();
+  
+    //console.log(bdmAcceptStatus, "bdmAcceptStatus");
+  
     try {
-      // Make an API call to update the employee status in the database
-      const response = await axios.post(
-        `${secretKey}/update-status/${employeeId}`,
-        {
-          newStatus,
-          title,
-          date,
-          time,
-        }
-      );
+      let response;
+  
+      if (bdmAcceptStatus === "Accept") {
+        if (newStatus === "Interested" || newStatus === "FollowUp") {
+          response = await axios.delete(`${secretKey}/post-deletecompany-interested/${employeeId}`);
+          const response2 = await axios.post(
+            `${secretKey}/update-status/${employeeId}`,
+            {
+              newStatus,
+              title,
+              date,
+              time,
+              
+            })
+            const response3 = await axios.post(`${secretKey}/post-bdmAcceptStatusupate/${employeeId}` , {
+              bdmAcceptStatus : "NotForwarded"
+            })
+          
+          
+        } else if (newStatus === "Busy" || newStatus === "Junk" || newStatus === "Not Picked Up") {
+          response = await axios.post(`${secretKey}/post-update-bdmstatusfrombde/${employeeId}` , {
+            newStatus
+          });
 
+          //console.log(response.data)
+         
+          const response2 = await axios.post(
+            `${secretKey}/update-status/${employeeId}`,
+            {
+              newStatus,
+              title,
+              date,
+              time,
+            }
+          );
+          
+        }
+      }
+  
+      // If response is not already defined, make the default API call
+      if (!response) {
+        response = await axios.post(
+          `${secretKey}/update-status/${employeeId}`,
+          {
+            newStatus,
+            title,
+            date,
+            time,
+          }
+        );
+      }
+  
       // Check if the API call was successful
       if (response.status === 200) {
-        // Assuming fetchData is a function to fetch updated employee data
-
+        // Assuming `fetchNewData` is a function to fetch updated employee data
         fetchNewData(oldStatus);
       } else {
         // Handle the case where the API call was not successful
@@ -747,6 +863,8 @@ function BdmLeads() {
       console.error("Error updating status:", error.message);
     }
   };
+  
+
   const fetchBookingDeleteRequests = async () => {
     try {
       const response = await axios.get(`${secretKey}/deleterequestbybde`);
@@ -2866,7 +2984,8 @@ function BdmLeads() {
                                             "Company Incorporation Date  "
                                             ],
                                             company["Company Number"],
-                                            company["Status"]
+                                            company["Status"],
+                                            company.bdmAcceptStatus
                                           )
                                         }
                                       >
@@ -2878,6 +2997,8 @@ function BdmLeads() {
                                         <option value="Not Interested">
                                           Not Interested
                                         </option>
+                                        <option value="Interested">Interested</option>
+                                        <option value="FollowUp">Follow Up</option>
                                         {dataStatus === "All" && (
                                           <>
                                             <option value="Untouched">

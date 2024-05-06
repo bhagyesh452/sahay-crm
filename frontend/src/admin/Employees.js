@@ -182,7 +182,10 @@ function Employees({ onEyeButtonClick }) {
 
     // Filter the data based on the search query (case-insensitive partial match)
     const filtered = data.filter((item) =>
-      item.email.toLowerCase().includes(query.toLowerCase())
+      item.email.toLowerCase().includes(query.toLowerCase()) ||
+      item.ename.toLowerCase().includes(query.toLowerCase()) ||
+      item.number.includes(query)||
+      item.branchOffice.toLowerCase().includes(query.toLowerCase())
     );
 
     setFilteredData(filtered);
@@ -996,7 +999,7 @@ function Employees({ onEyeButtonClick }) {
             </div>
             <div style={{ width: "20vw" }} className="input-icon">
               <span className="input-icon-addon">
-                {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
+                
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="icon"
