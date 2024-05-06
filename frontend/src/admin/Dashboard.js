@@ -2722,7 +2722,7 @@ let generatedTotalRevenue = 0;
                 <AnnouncementIcon />
               </IconButton>
             </div> */}
-            <div className="page-header d-print-none">
+            <div className="page-header d-print-none" >
               <div className="container-xl">
                 <div className="row">
                   <div
@@ -2801,12 +2801,7 @@ let generatedTotalRevenue = 0;
                         </div>
                       </div>
                       <div className="card-body">
-                        <div className="row" style={{
-                            overflowX: "auto",
-                            overflowY: "auto",
-                            maxHeight: "60vh",
-                            lineHeight: "32px",
-                          }}>
+                        <div className="row">
                           <table  className="table-vcenter table-nowrap admin-dash-tbl">
                             <thead className="admin-dash-tbl-thead">
                               <tr  >
@@ -3203,27 +3198,8 @@ let generatedTotalRevenue = 0;
                           </LocalizationProvider>
                         </div>
                       </div>
-
-                      {/* {displayDateRangeEmployee && (
-                        <div ref={dateRangePickerEmployeeRef} className="position-absolute " style={{ zIndex: "1000", top: "13%", left: "73%" }} >
-                          <DateRangePicker
-                            ranges={[selectionRangeEmployee]}
-                            onClose={() => setDateRangeDisplayEmployee(false)}
-                            onChange={handleSelectEmployee}
-                          />
-                        </div>
-                      )} */}
-
                       <div className="card-body">
-                        <div
-                          className="row"
-                          style={{
-                            overflowX: "auto",
-                            overflowY: "auto",
-                            maxHeight: "60vh",
-                            lineHeight: "32px",
-                          }}
-                        >
+                        <div className="row"  >
                           <table className="table-vcenter table-nowrap admin-dash-tbl">
                             <thead className="admin-dash-tbl-thead" >
                               <tr>
@@ -4035,13 +4011,7 @@ let generatedTotalRevenue = 0;
                         </div>
                       </div>
                       <div className='card-body'>
-                        <div className="row"
-                          style={{
-                            overflowX: "auto",
-                            overflowY: "auto",
-                            maxHeight: "60vh",
-                            lineHeight: "32px",
-                          }}>
+                        <div className="row">
                           <table className="table-vcenter table-nowrap admin-dash-tbl">
                             <thead className="admin-dash-tbl-thead">
                               <tr>
@@ -4137,6 +4107,359 @@ let generatedTotalRevenue = 0;
                       </div>
                     </div>
                   </div>
+
+                  <div className="container-xl mt-2 mb-4 projectionsummaryadmin"
+                    id="projectionsummaryadmin"   >
+                    <div className="card">
+                      <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+                        <div className="dashboard-title pl-1"  >
+                          <h2 className="m-0">
+                            Projection Summary
+                          </h2>
+                        </div>
+                        <div className="d-flex align-items-center pr-1">
+                          <div  className="filter-booking mr-1 d-flex align-items-center">
+                            <div className="filter-title mr-1">
+                              <h2 className="m-0">
+                                Filter Branch :
+                              </h2>
+                            </div>
+                            <div className="filter-main">
+                              <select
+                                className="form-select"
+                                id={`branch-filter`}
+                                onChange={(e) => {
+                                  handleFilterBranchOffice(e.target.value)
+                                }}
+                              >
+                                <option value="" disabled selected>
+                                  Select Branch
+                                </option>
+
+                                <option value={"Gota"}>Gota</option>
+                                <option value={"Sindhu Bhawan"}>
+                                  Sindhu Bhawan
+                                </option>
+                                <option value={"none"}>None</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div className="date-filter">
+                            <LocalizationProvider
+                              dateAdapter={AdapterDayjs}
+                              style={{ padding: "0px" }}
+                            >
+                              <DemoContainer components={["SingleInputDateRangeField"]}>
+                                <DateRangePicker  className="form-control my-date-picker form-control-sm p-0"
+                                  onChange={(values) => {
+                                    const startDate = moment(values[0]).format(
+                                      "DD/MM/YYYY"
+                                    );
+                                    const endDate = moment(values[1]).format(
+                                      "DD/MM/YYYY"
+                                    );
+                                    setSelectedDateRange([startDate, endDate]);
+                                    handleSelect(values); // Call handleSelect with the selected values
+                                  }}
+                                  slots={{ field: SingleInputDateRangeField }}
+                                  slotProps={{
+                                    shortcuts: {
+                                      items: shortcutsItems,
+                                    },
+                                    actionBar: { actions: [] },
+                                    textField: {
+                                      InputProps: { endAdornment: <Calendar /> },
+                                    },
+                                  }}
+                                //calendars={1}
+                                />
+                              </DemoContainer>
+                            </LocalizationProvider>
+                          </div>
+
+
+                        </div>
+                        {/* <div className="form-control date-range-picker d-flex align-items-center justify-content-between">
+                          <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
+                          <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                            <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                          </button>
+                        </div> */}
+                      </div>
+                      <div className="card-body">
+                        <div id="table-default" className="row" >
+                          <table className="table-vcenter table-nowrap admin-dash-tbl"  >
+                            <thead className="admin-dash-tbl-thead">
+                              <tr>
+                                <th>
+                                  Sr. No
+                                </th>
+                                <th>Employee Name</th>
+                                <th>
+                                  Total Companies
+                                  <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => {
+                                      let newSortType;
+                                      if (sortTypeProjection === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortTypeProjection === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortTotalCompanies(newSortType);
+                                    }}
+                                  />
+                                </th>
+                                <th>
+                                  Offered Services
+                                  <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => {
+                                      let newSortType;
+                                      if (sortTypeServices === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortTypeServices === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortOfferedServices(newSortType);
+                                    }}
+                                  />
+                                </th>
+                                <th>
+                                  Total Offered Price
+                                  <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => {
+                                      let newSortType;
+                                      if (sortTypePrice === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortTypePrice === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortOffredPrize(newSortType);
+                                    }}
+                                  />
+                                </th>
+                                <th>
+                                  Expected Amount
+                                  <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => {
+                                      let newSortType;
+                                      if (sortTypeExpectedPayment === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (
+                                        sortTypeExpectedPayment === "descending"
+                                      ) {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortExpectedPayment(newSortType);
+                                    }}
+                                  />
+                                </th>
+                                {/* <th>Est. Payment Date</th> */}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {sortedData && sortedData.length !== 0 ? (
+                                <>
+                                  {sortedData.map((obj, index) => (
+                                    <tr key={`row-${index}`}>
+                                      <td>{index + 1}</td>
+                                      <td>{obj}</td>
+                                      <td>
+                                        {
+                                          followDataToday.filter(
+                                            (partObj) => partObj.ename === obj
+                                          ).length
+                                        }
+                                        <FcDatabase
+                                          onClick={() => {
+                                            functionOpenProjectionTable(obj);
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            marginRight: "-71px",
+                                            marginLeft: "58px",
+                                          }}
+                                        />
+                                      </td>
+                                      <td>
+                                        {followDataToday.reduce(
+                                          (totalServices, partObj) => {
+                                            if (partObj.ename === obj) {
+                                              totalServices += partObj.offeredServices.length;
+                                            }
+                                            return totalServices;
+                                          },
+                                          0
+                                        )}
+                                      </td>
+                                      <td>
+                                        {followDataToday
+                                          .reduce((totalOfferedPrize, partObj) => {
+                                            if (partObj.ename === obj) {
+                                              totalOfferedPrize += partObj.offeredPrize;
+                                            }
+                                            return totalOfferedPrize;
+                                          }, 0)
+                                          .toLocaleString("en-IN", numberFormatOptions)}
+                                      </td>
+                                      <td>
+                                        {followDataToday
+                                          .reduce((totalPaymentSum, partObj) => {
+                                            if (partObj.ename === obj) {
+                                              totalPaymentSum += partObj.totalPayment;
+                                            }
+                                            return totalPaymentSum;
+                                          }, 0)
+                                          .toLocaleString("en-IN", numberFormatOptions)}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                  {/* Map employeeData with default fields */}
+                                  {employeeData
+                                    .filter((employee) => (employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
+                                    .map((employee, index) => (
+                                      <tr key={`employee-row-${index}`}>
+                                        <td>{sortedData.length + index + 1}</td>
+                                        <td>{employee.ename}</td>
+                                        <td>0 <FcDatabase
+                                          onClick={() => {
+                                            functionOpenProjectionTable(employee.ename);
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            marginRight: "-71px",
+                                            marginLeft: "58px",
+                                          }}
+                                        /></td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                      </tr>
+                                    ))}
+                                </>
+                              ) : (
+                                employeeData
+                                  .filter((employee) => !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
+                                  .map((employee, index) => (
+
+                                    <tr key={`employee-row-${index}`}>
+                                      <td>{index + 1}</td>
+                                      <td>{employee.ename}</td>
+                                      <td>0 <FcDatabase
+                                        onClick={() => {
+                                          functionOpenProjectionTable(employee.ename);
+                                        }}
+                                        style={{
+                                          cursor: "pointer",
+                                          marginRight: "-71px",
+                                          marginLeft: "58px",
+                                        }}
+                                      /></td>
+                                      <td>0</td>
+                                      <td>0</td>
+                                      <td>0</td>
+                                    </tr>
+
+                                  ))
+                              )}
+                            </tbody>
+                            {sortedData && sortedData.length !== 0 && (
+                              <tfoot className="admin-dash-tbl-tfoot"    >
+                                <tr style={{ fontWeight: 500 }}>
+                                  <td colSpan="2">
+                                    Total
+                                  </td>
+                                  <td>
+                                    {
+                                      followDataToday.filter((partObj) => partObj.ename)
+                                        .length
+                                    }
+                                    <FcDatabase
+                                      onClick={() => {
+                                        functionCompleteProjectionTable();
+                                      }}
+                                      style={{
+                                        cursor: "pointer",
+                                        marginRight: "-71px",
+                                        marginLeft: "55px",
+                                      }}
+                                    />
+                                  </td>
+                                  <td>
+                                    {followDataToday.reduce(
+                                      (totalServices, partObj) => {
+                                        totalServices += partObj.offeredServices.length;
+                                        return totalServices;
+                                      },
+                                      0
+                                    )}
+                                  </td>
+                                  <td>
+                                    {followDataToday
+                                      .reduce((totalOfferedPrize, partObj) => {
+                                        totalOfferedPrize += partObj.offeredPrize;
+                                        return totalOfferedPrize;
+                                      }, 0)
+                                      .toLocaleString("en-IN", numberFormatOptions)}
+                                  </td>
+                                  <td>
+                                    {followDataToday
+                                      .reduce((totalPaymentSum, partObj) => {
+                                        totalPaymentSum += partObj.totalPayment;
+                                        return totalPaymentSum;
+                                      }, 0)
+                                      .toLocaleString("en-IN", numberFormatOptions)}
+                                  </td>
+                                </tr>
+                              </tfoot>
+                            )}
+
+                            {/* {sortedData && sortedData.length === 0 && (
+                              <tbody>
+                                <tr>
+                                  <td className="particular" colSpan={9}>
+                                    <Nodata />
+                                  </td>
+                                </tr>
+                              </tbody>
+                            )} */}
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -4733,374 +5056,6 @@ let generatedTotalRevenue = 0;
           </Dialog>
 
           {/* -------------------------------------projection-dashboard--------------------------------------------- */}
-
-          <div className="container-xl mt-2 mb-4 projectionsummaryadmin"
-            id="projectionsummaryadmin"   >
-            <div className="card">
-              <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
-                <div className="dashboard-title pl-1"  >
-                  <h2 className="m-0">
-                    Projection Summary
-                  </h2>
-                </div>
-                <div className="d-flex align-items-center pr-1">
-                  <div  className="filter-booking mr-1 d-flex align-items-center">
-                    <div className="filter-title mr-1">
-                      <h2 className="m-0">
-                        Filter Branch :
-                      </h2>
-                    </div>
-                    <div className="filter-main">
-                      <select
-                        className="form-select"
-                        id={`branch-filter`}
-                        onChange={(e) => {
-                          handleFilterBranchOffice(e.target.value)
-                        }}
-                      >
-                        <option value="" disabled selected>
-                          Select Branch
-                        </option>
-
-                        <option value={"Gota"}>Gota</option>
-                        <option value={"Sindhu Bhawan"}>
-                          Sindhu Bhawan
-                        </option>
-                        <option value={"none"}>None</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="date-filter">
-                    <LocalizationProvider
-                      dateAdapter={AdapterDayjs}
-                      style={{ padding: "0px" }}
-                    >
-                      <DemoContainer components={["SingleInputDateRangeField"]}>
-                        <DateRangePicker  className="form-control my-date-picker form-control-sm p-0"
-                          onChange={(values) => {
-                            const startDate = moment(values[0]).format(
-                              "DD/MM/YYYY"
-                            );
-                            const endDate = moment(values[1]).format(
-                              "DD/MM/YYYY"
-                            );
-                            setSelectedDateRange([startDate, endDate]);
-                            handleSelect(values); // Call handleSelect with the selected values
-                          }}
-                          slots={{ field: SingleInputDateRangeField }}
-                          slotProps={{
-                            shortcuts: {
-                              items: shortcutsItems,
-                            },
-                            actionBar: { actions: [] },
-                            textField: {
-                              InputProps: { endAdornment: <Calendar /> },
-                            },
-                          }}
-                        //calendars={1}
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
-                  </div>
-
-
-                </div>
-                {/* <div className="form-control date-range-picker d-flex align-items-center justify-content-between">
-                  <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
-                  <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                    <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
-                  </button>
-                </div> */}
-              </div>
-              {/* {displayDateRange && (
-                <div ref={dateRangePickerProhectionRef} className="position-absolute " style={{ zIndex: "1", top: "15%", left: "75%" }} >
-                  <DateRangePicker
-                    ranges={[selectionRange]}
-                    //onClose={() => setDateRangeDisplay(false)}
-                    onChange={handleSelect}
-                  />
-                </div>
-              )} */}
-              <div className="card-body">
-                <div
-                  id="table-default"
-                  style={{
-                    overflowX: "auto",
-                    overflowY: "auto",
-                    maxHeight: "60vh",
-                  }}
-                >
-                  <table  className="table-vcenter table-nowrap admin-dash-tbl"  >
-                    <thead className="admin-dash-tbl-thead">
-                      <tr>
-                        <th>
-                          Sr. No
-                        </th>
-                        <th>Employee Name</th>
-                        <th>
-                          Total Companies
-                          <SwapVertIcon
-                            style={{
-                              height: "15px",
-                              width: "15px",
-                              cursor: "pointer",
-                              marginLeft: "4px",
-                            }}
-                            onClick={() => {
-                              let newSortType;
-                              if (sortTypeProjection === "ascending") {
-                                newSortType = "descending";
-                              } else if (sortTypeProjection === "descending") {
-                                newSortType = "none";
-                              } else {
-                                newSortType = "ascending";
-                              }
-                              handleSortTotalCompanies(newSortType);
-                            }}
-                          />
-                        </th>
-                        <th>
-                          Offered Services
-                          <SwapVertIcon
-                            style={{
-                              height: "15px",
-                              width: "15px",
-                              cursor: "pointer",
-                              marginLeft: "4px",
-                            }}
-                            onClick={() => {
-                              let newSortType;
-                              if (sortTypeServices === "ascending") {
-                                newSortType = "descending";
-                              } else if (sortTypeServices === "descending") {
-                                newSortType = "none";
-                              } else {
-                                newSortType = "ascending";
-                              }
-                              handleSortOfferedServices(newSortType);
-                            }}
-                          />
-                        </th>
-                        <th>
-                          Total Offered Price
-                          <SwapVertIcon
-                            style={{
-                              height: "15px",
-                              width: "15px",
-                              cursor: "pointer",
-                              marginLeft: "4px",
-                            }}
-                            onClick={() => {
-                              let newSortType;
-                              if (sortTypePrice === "ascending") {
-                                newSortType = "descending";
-                              } else if (sortTypePrice === "descending") {
-                                newSortType = "none";
-                              } else {
-                                newSortType = "ascending";
-                              }
-                              handleSortOffredPrize(newSortType);
-                            }}
-                          />
-                        </th>
-                        <th>
-                          Expected Amount
-                          <SwapVertIcon
-                            style={{
-                              height: "15px",
-                              width: "15px",
-                              cursor: "pointer",
-                              marginLeft: "4px",
-                            }}
-                            onClick={() => {
-                              let newSortType;
-                              if (sortTypeExpectedPayment === "ascending") {
-                                newSortType = "descending";
-                              } else if (
-                                sortTypeExpectedPayment === "descending"
-                              ) {
-                                newSortType = "none";
-                              } else {
-                                newSortType = "ascending";
-                              }
-                              handleSortExpectedPayment(newSortType);
-                            }}
-                          />
-                        </th>
-                        {/* <th>Est. Payment Date</th> */}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedData && sortedData.length !== 0 ? (
-                        <>
-                          {sortedData.map((obj, index) => (
-                            <tr key={`row-${index}`}>
-                              <td>{index + 1}</td>
-                              <td>{obj}</td>
-                              <td>
-                                {
-                                  followDataToday.filter(
-                                    (partObj) => partObj.ename === obj
-                                  ).length
-                                }
-                                <FcDatabase
-                                  onClick={() => {
-                                    functionOpenProjectionTable(obj);
-                                  }}
-                                  style={{
-                                    cursor: "pointer",
-                                    marginRight: "-71px",
-                                    marginLeft: "58px",
-                                  }}
-                                />
-                              </td>
-                              <td>
-                                {followDataToday.reduce(
-                                  (totalServices, partObj) => {
-                                    if (partObj.ename === obj) {
-                                      totalServices += partObj.offeredServices.length;
-                                    }
-                                    return totalServices;
-                                  },
-                                  0
-                                )}
-                              </td>
-                              <td>
-                                {followDataToday
-                                  .reduce((totalOfferedPrize, partObj) => {
-                                    if (partObj.ename === obj) {
-                                      totalOfferedPrize += partObj.offeredPrize;
-                                    }
-                                    return totalOfferedPrize;
-                                  }, 0)
-                                  .toLocaleString("en-IN", numberFormatOptions)}
-                              </td>
-                              <td>
-                                {followDataToday
-                                  .reduce((totalPaymentSum, partObj) => {
-                                    if (partObj.ename === obj) {
-                                      totalPaymentSum += partObj.totalPayment;
-                                    }
-                                    return totalPaymentSum;
-                                  }, 0)
-                                  .toLocaleString("en-IN", numberFormatOptions)}
-                              </td>
-                            </tr>
-                          ))}
-                          {/* Map employeeData with default fields */}
-                          {employeeData
-                            .filter((employee) => (employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
-                            .map((employee, index) => (
-                              <tr key={`employee-row-${index}`}>
-                                <td>{sortedData.length + index + 1}</td>
-                                <td>{employee.ename}</td>
-                                <td>0 <FcDatabase
-                                  onClick={() => {
-                                    functionOpenProjectionTable(employee.ename);
-                                  }}
-                                  style={{
-                                    cursor: "pointer",
-                                    marginRight: "-71px",
-                                    marginLeft: "58px",
-                                  }}
-                                /></td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                              </tr>
-                            ))}
-                        </>
-                      ) : (
-                        employeeData
-                          .filter((employee) => !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
-                          .map((employee, index) => (
-
-                            <tr key={`employee-row-${index}`}>
-                              <td>{index + 1}</td>
-                              <td>{employee.ename}</td>
-                              <td>0 <FcDatabase
-                                onClick={() => {
-                                  functionOpenProjectionTable(employee.ename);
-                                }}
-                                style={{
-                                  cursor: "pointer",
-                                  marginRight: "-71px",
-                                  marginLeft: "58px",
-                                }}
-                              /></td>
-                              <td>0</td>
-                              <td>0</td>
-                              <td>0</td>
-                            </tr>
-
-                          ))
-                      )}
-                    </tbody>
-                    {sortedData && sortedData.length !== 0 && (
-                      <tfoot className="admin-dash-tbl-tfoot"    >
-                        <tr style={{ fontWeight: 500 }}>
-                          <td colSpan="2">
-                            Total
-                          </td>
-                          <td>
-                            {
-                              followDataToday.filter((partObj) => partObj.ename)
-                                .length
-                            }
-                            <FcDatabase
-                              onClick={() => {
-                                functionCompleteProjectionTable();
-                              }}
-                              style={{
-                                cursor: "pointer",
-                                marginRight: "-71px",
-                                marginLeft: "55px",
-                              }}
-                            />
-                          </td>
-                          <td>
-                            {followDataToday.reduce(
-                              (totalServices, partObj) => {
-                                totalServices += partObj.offeredServices.length;
-                                return totalServices;
-                              },
-                              0
-                            )}
-                          </td>
-                          <td>
-                            {followDataToday
-                              .reduce((totalOfferedPrize, partObj) => {
-                                totalOfferedPrize += partObj.offeredPrize;
-                                return totalOfferedPrize;
-                              }, 0)
-                              .toLocaleString("en-IN", numberFormatOptions)}
-                          </td>
-                          <td>
-                            {followDataToday
-                              .reduce((totalPaymentSum, partObj) => {
-                                totalPaymentSum += partObj.totalPayment;
-                                return totalPaymentSum;
-                              }, 0)
-                              .toLocaleString("en-IN", numberFormatOptions)}
-                          </td>
-                        </tr>
-                      </tfoot>
-                    )}
-
-                    {/* {sortedData && sortedData.length === 0 && (
-                      <tbody>
-                        <tr>
-                          <td className="particular" colSpan={9}>
-                            <Nodata />
-                          </td>
-                        </tr>
-                      </tbody>
-                    )} */}
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <Dialog
             open={openProjectionTable}
