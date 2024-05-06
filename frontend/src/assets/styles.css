@@ -1826,7 +1826,6 @@ color: #4e884e;
 }
 .admin-dash-tbl {
   border-radius: 10px !important;
-  overflow: hidden;
   border: 1px solid #ccc;
 }
 .my-date-picker input
