@@ -31,6 +31,8 @@ import {
 
 function ManagerBookings() {
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const [tempUpdateMode, setTempUpdateMode] = useState(false);
   const [sendingIndex, setSendingIndex] = useState(0);
   const [EditBookingOpen, setEditBookingOpen] = useState(false);
   const [addFormOpen, setAddFormOpen] = useState(false);
@@ -46,6 +48,7 @@ function ManagerBookings() {
   const [selectedFile, setSelectedFile] = useState();
   const [selectedDocuments, setSelectedDocuments] = useState([]);
   const [openPaymentReceipt, setOpenPaymentReceipt] = useState(false);
+  const [openAddExpanse , setOpenAddExpanse] = useState(false);
   const [openOtherDocs, setOpenOtherDocs] = useState(false);
   const [data, setData] = useState([]);
   const [companyName, setCompanyName] = "";
@@ -312,6 +315,8 @@ function ManagerBookings() {
   };
 
   // --------------------------------------------------  ADD REMAINING PAYMENT SECTION ----------------------------------------------------------
+
+
   const [remainingObject, setRemainingObject] = useState({
     "Company Name": "",
     paymentCount: "",
@@ -330,8 +335,10 @@ function ManagerBookings() {
     object,
     paymentNumber,
     companyName,
-    bookingIndex
+    bookingIndex,
+    existingObject
   ) => {
+    
     const serviceName = object.serviceName;
     let pendingPayment;
     let paymentRemarks;
@@ -345,18 +352,36 @@ function ManagerBookings() {
       pendingPayment = object.fourthPayment;
       paymentRemarks = object.fourthPaymentRemarks;
     }
-
-    setRemainingObject({
-      "Company Name": companyName,
-      paymentCount: paymentNumber,
-      bookingIndex: bookingIndex,
-      serviceName: serviceName,
-      pendingAmount: pendingPayment,
-      receivedAmount: pendingPayment,
-      remainingAmount: 0,
-      paymentRemarks,
-    });
-    setOpenRemainingPayment(true);
+    
+    if(existingObject){
+      console.log("Existing Object",existingObject)
+      setRemainingObject({
+        "Company Name": companyName,
+        paymentCount: paymentNumber,
+        bookingIndex: bookingIndex,
+        serviceName: serviceName,
+        pendingAmount: existingObject.pendingPayment,
+        receivedAmount: existingObject.receivedPayment,
+        remainingAmount: existingObject.remainingAmount,
+        paymentMethod : existingObject.paymentMethod,
+        paymentDate:new Date(existingObject.paymentDate).toISOString().slice(0, 10),
+        extraRemarks:existingObject.extraRemarks, 
+        paymentRemarks,
+      });
+      setOpenRemainingPayment(true);
+    }else{
+      setRemainingObject({
+        "Company Name": companyName,
+        paymentCount: paymentNumber,
+        bookingIndex: bookingIndex,
+        serviceName: serviceName,
+        pendingAmount: pendingPayment,
+        receivedAmount: pendingPayment,
+        remainingAmount: 0,
+        paymentRemarks,
+      });
+      setOpenRemainingPayment(true);
+    }
   };
 
   const formData = new FormData();
@@ -375,30 +400,72 @@ function ManagerBookings() {
   formData.append("paymentRemarks", remainingObject["paymentRemarks"]);
   formData.append("paymentReceipt", remainingObject["remainingPaymentReceipt"]);
   const handleSubmitMorePayments = async () => {
-    try {
-      const response = await axios.post(
-        `${secretKey}/redesigned-submit-morePayments/${remainingObject["Company Name"]}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      Swal.fire(
-        "Payment Updated",
-        "Thank you, your payment has been updated successfully!",
-        "success"
-      );
-      setOpenRemainingPayment(false);
-    } catch (error) {
-      Swal.fire(
-        "Error Updating Payment!",
-        "Sorry, Unable to update the payment",
-        "error"
-      );
+    if(!remainingObject.paymentDate || !remainingObject.paymentMethod   ){
+      Swal.fire("Incorrect Details!" , "Please Enter Details Properly" , "warning");
+      return true;
+    }
+    if(!tempUpdateMode){
+      try {
+        const response = await axios.post(
+          `${secretKey}/redesigned-submit-morePayments/${remainingObject["Company Name"]}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        Swal.fire(
+          "Payment Updated",
+          "Thank you, your payment has been updated successfully!",
+          "success"
+        );
+        setOpenRemainingPayment(false);
+      } catch (error) {
+        Swal.fire(
+          "Error Updating Payment!",
+          "Sorry, Unable to update the payment",
+          "error"
+        );
+      }
+    }else{
+      try {
+        const response = await axios.post(
+          `${secretKey}/redesigned-update-morePayments/${remainingObject["Company Name"]}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        Swal.fire(
+          "Payment Updated",
+          "Thank you, your payment has been updated successfully!",
+          "success"
+        );
+        setOpenRemainingPayment(false);
+        setTempUpdateMode(false);
+      } catch (error) {
+        Swal.fire(
+          "Error Updating Payment!",
+          "Sorry, Unable to update the payment",
+          "error"
+        );
+      }
     }
   };
+
+  console.log("Remaining Object", remainingObject)
+  const [expanseObject, setExpanseObject] = useState({
+    "Company Name":"",
+    bookingIndex:0,
+    expanse:0
+  })
+  const functionOpenAddExpanse = (serviceObject)=>{
+      const serviceName = serviceObject.serviceName ;
+
+  }
   return (
     <div>
       <Header name={dataManagerName} />
@@ -1010,11 +1077,47 @@ function ManagerBookings() {
                                                 : "Without GST"}
                                               {")"}
                                             </div>
-                                            <div>
-                                              <button className="btn btn-link btn-small">
-                                                + Expanse
-                                              </button>
-                                            </div>
+                                           
+                                              {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
+                                                <div>
+                                                  <button onClick={()=>functionOpenAddExpanse(obj)} className="btn btn-link btn-small">
+                                                    + Expanse
+                                                  </button>
+                                                </div>
+             
+                                                  <Dialog open={openAddExpanse}  onClose={()=>setOpenAddExpanse(false)}
+                                                    fullWidth
+                                                    maxWidth="xs">
+                                                    <DialogTitle>
+                                                      <div className="d-flex align-items-center justify-content-between">
+                                                          <div className="expanse-heading">
+                                                          <h2>Service Name</h2>
+                                                          </div>
+                                                          <div className="expanse-close">
+                                                            <IconButton onClick={()=>setOpenAddExpanse(false)}>
+                                                              <CloseIcon/>
+                                                            </IconButton>
+                                                          </div>
+                                                      </div>
+                                                     
+
+                                                    </DialogTitle>
+                                                    <DialogContent>
+                                                      <div className="expanse-content">
+                                                        <label className="mb-2" htmlFor="expansee-input"> <b>ADD Expanse</b></label>
+                                                        <input type="number" className="form-control" id="expanse-input" placeholder="Add expanse here"/>
+                                                      </div>
+                                                      
+
+                                                    </DialogContent>
+                                                    <div className="expanse-footer">
+                                                      <button className="btn btn-primary w-100">
+                                                          Submit
+                                                      </button>
+                                                    </div>
+                                                  </Dialog>
+
+                                             {/* -------------------------------------   Expanse Section Ends Here  -------------------------------------------------- */}
                                           </div>
                                         </div>
                                       </div>
@@ -1143,6 +1246,23 @@ function ManagerBookings() {
                                                   +
                                                 </div>
                                               </div>
+                                              {currentLeadform.remainingPayments.length === 1 && <div className="edit-remaining">
+                                                  <IconButton onClick={() => {
+                                                        setIsUpdateMode(true)
+                                                        setTempUpdateMode(true)
+                                                        functionOpenRemainingPayment(
+                                                          obj,
+                                                          "secondPayment",
+                                                          currentLeadform[
+                                                          "Company Name"
+                                                          ],0,
+                                                          currentLeadform.remainingPayments[0],                                                          
+                                                        )
+                                                  }
+                                                      }>
+                                                    <MdModeEdit style={{height:'14px' , width:'14px'}}/>
+                                                  </IconButton>
+                                              </div>}
                                             </div>
                                           </div>
                                         </div>
@@ -1204,6 +1324,23 @@ function ManagerBookings() {
                                                   +
                                                 </div>
                                               </div>
+                                              {currentLeadform.remainingPayments.length === 2 && <div className="edit-remaining">
+                                                  <IconButton onClick={() => {
+                                                        setIsUpdateMode(true)
+                                                        setTempUpdateMode(true)
+                                                        functionOpenRemainingPayment(
+                                                          obj,
+                                                          "thirdPayment",
+                                                          currentLeadform[
+                                                          "Company Name"
+                                                          ],0,
+                                                          currentLeadform.remainingPayments[1],                                                          
+                                                        )
+                                                  }
+                                                      }>
+                                                    <MdModeEdit style={{height:'14px' , width:'14px'}}/>
+                                                  </IconButton>
+                                              </div>}
                                             </div>
                                           </div>
                                         </div>
@@ -1263,6 +1400,23 @@ function ManagerBookings() {
                                                   +
                                                 </div>
                                               </div>
+                                            {currentLeadform.remainingPayments.length === 3 && <div className="edit-remaining">
+                                                  <IconButton onClick={() => {
+                                                        setIsUpdateMode(true)
+                                                        setTempUpdateMode(true)
+                                                        functionOpenRemainingPayment(
+                                                          obj,
+                                                          "fourthPayment",
+                                                          currentLeadform[
+                                                          "Company Name"
+                                                          ],0,
+                                                          currentLeadform.remainingPayments[2],                                                          
+                                                        )
+                                                  }
+                                                      }>
+                                                    <MdModeEdit style={{height:'14px' , width:'14px'}}/>
+                                                  </IconButton>
+                                              </div>}
                                             </div>
                                           </div>
                                         </div>
@@ -1645,54 +1799,35 @@ function ManagerBookings() {
                                   0 &&
                                   currentLeadform.remainingPayments.some(
                                     (obj) => obj.paymentReceipt.length !== 0
-                                  ).length !== 0 &&
-                                  currentLeadform.remainingPayments.map(
-                                    (remainingObject, index) => (
-                                      <div className="col-sm-2 mb-1">
+                                  ) &&
+                                  currentLeadform.remainingPayments.map((remainingObject, index) => (
+                                    remainingObject.paymentReceipt.length !== 0 && (
+                                      <div className="col-sm-2 mb-1" key={index}>
                                         <div className="booking-docs-preview">
                                           <div
                                             className="booking-docs-preview-img"
                                             onClick={() =>
                                               handleViewPdfReciepts(
-                                                remainingObject
-                                                  .paymentReceipt[0].filename,
+                                                remainingObject.paymentReceipt[0].filename,
                                                 currentLeadform["Company Name"]
                                               )
                                             }
                                           >
-                                            {remainingObject.paymentReceipt[0].filename.endsWith(
-                                              ".pdf"
-                                            ) ? (
+                                            {remainingObject.paymentReceipt[0].filename.endsWith(".pdf") ? (
                                               <PdfImageViewerAdmin
                                                 type="paymentrecieptpdf"
-                                                path={
-                                                  remainingObject
-                                                    .paymentReceipt[0].filename
-                                                }
-                                                companyName={
-                                                  currentLeadform[
-                                                  "Company Name"
-                                                  ]
-                                                }
+                                                path={remainingObject.paymentReceipt[0].filename}
+                                                companyName={currentLeadform["Company Name"]}
                                               />
-                                            ) : remainingObject.paymentReceipt[0].filename.endsWith(
-                                              ".png"
-                                            ) ||
-                                              remainingObject.paymentReceipt[0].filename.endsWith(
-                                                ".jpg"
-                                              ) ||
-                                              remainingObject.paymentReceipt[0].filename.endsWith(
-                                                ".jpeg"
-                                              ) ? (
+                                            ) : remainingObject.paymentReceipt[0].filename.endsWith(".png") ||
+                                              remainingObject.paymentReceipt[0].filename.endsWith(".jpg") ||
+                                              remainingObject.paymentReceipt[0].filename.endsWith(".jpeg") ? (
                                               <img
                                                 src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${remainingObject.paymentReceipt[0].filename}`}
                                                 alt="Receipt Image"
                                               />
                                             ) : (
-                                              <img
-                                                src={wordimg}
-                                                alt="Default Image"
-                                              />
+                                              <img src={wordimg} alt="Default Image" />
                                             )}
                                           </div>
                                           <div className="booking-docs-preview-text">
@@ -1703,7 +1838,8 @@ function ManagerBookings() {
                                         </div>
                                       </div>
                                     )
-                                  )}
+                                  ))}
+                                  
                                 {currentLeadform &&
                                   currentLeadform.otherDocs.map((obj) => (
                                     <div className="col-sm-2 mb-1">
@@ -2060,11 +2196,37 @@ function ManagerBookings() {
                                                     : "Without GST"}
                                                   {")"}
                                                 </div>
+                                                  {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
                                                 <div>
-                                                  <button className="btn btn-link btn-small">
+                                                  <button onClick={()=>setOpenAddExpanse(true)} className="btn btn-link btn-small">
                                                     + Expanse
                                                   </button>
                                                 </div>
+             
+                                                  <Dialog open={openAddExpanse}  onClose={()=>setOpenAddExpanse(false)}
+                                                    fullWidth
+                                                    maxWidth="sm">
+                                                    <DialogTitle>
+                                                      <div className="d-flex align-items-center justify-content-between">
+                                                          <div className="expanse-heading">
+                                                          <h2>Service Name</h2>
+                                                          </div>
+                                                          <div className="expanse-close">
+                                                            <IconButton onClick={()=>setOpenAddExpanse(false)}>
+                                                              <CloseIcon/>
+                                                            </IconButton>
+                                                          </div>
+                                                      </div>
+                                                     
+
+                                                    </DialogTitle>
+                                                    <DialogContent>
+
+
+                                                    </DialogContent>
+                                                  </Dialog>
+
+                                             {/* -------------------------------------   Expanse Section Ends Here  -------------------------------------------------- */}
                                               </div>
                                             </div>
                                           </div>
@@ -2717,6 +2879,9 @@ function ManagerBookings() {
               <h2 className="m-0"> Remaining Payment</h2>
             </div>
             <div className="remaining-payment-close">
+              {tempUpdateMode && <IconButton onClick={()=>setIsUpdateMode(false)}>
+                <MdModeEdit/>
+              </IconButton>}
               <IconButton onClick={() => setOpenRemainingPayment(false)}>
                 <CloseIcon />
               </IconButton>
@@ -2776,6 +2941,7 @@ function ManagerBookings() {
                     }
                     type="number"
                     className="form-control"
+                    disabled={isUpdateMode}
                     name="remaining-payment-proper"
                     id="remaining-payment-proper"
                     placeholder="Remaining Payment"
@@ -2786,7 +2952,7 @@ function ManagerBookings() {
             <div className="row mt-2">
               <div className="col-sm-6">
                 <label htmlFor="remaining-paymentmethod" className="form-label">
-                  Payment Method :
+                  Payment Method {<span style={{ color: "red" }}>*</span>} :
                 </label>
                 <div className="col">
                   <select
@@ -2797,6 +2963,7 @@ function ManagerBookings() {
                     }
                     id="remaining-paymentmethod"
                     className="form-select"
+                    disabled={isUpdateMode}
                     onChange={(e) =>
                       setRemainingObject({
                         ...remainingObject,
@@ -2838,13 +3005,15 @@ function ManagerBookings() {
             <div className="row mt-2">
               <div className="mb-3 col-sm-6">
                 <label htmlFor="remainingDate" className="form-label">
-                  Payment Date
+                  Payment Date {<span style={{ color: "red" }}>*</span>} :
                 </label>
                 <input
                   className="form-control"
+                  value={remainingObject.paymentDate}
                   type="date"
                   name="remainingDate"
                   id="remainingDate"
+                  disabled={isUpdateMode}
                   onChange={(e) =>
                     setRemainingObject({
                       ...remainingObject,
@@ -2862,6 +3031,7 @@ function ManagerBookings() {
                 <div className="col form-control">
                   <input
                     type="file"
+                    disabled={isUpdateMode}
                     name="upload-remaining-receipt"
                     id="upload-remaining-receipt"
                     onChange={(e) =>
@@ -2894,6 +3064,7 @@ function ManagerBookings() {
                       extraRemarks: e.target.value,
                     })
                   }
+                  disabled={isUpdateMode}
                 ></textarea>
               </div>
             </div>
@@ -2903,6 +3074,7 @@ function ManagerBookings() {
           <button
             className="btn btn-primary w-100"
             onClick={handleSubmitMorePayments}
+            disabled={isUpdateMode}
           >
             {" "}
             Submit

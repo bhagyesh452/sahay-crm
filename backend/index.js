@@ -8494,7 +8494,7 @@ const totalPaymentHtml = newData.services.length <2 ? ` <div class="table-data">
             setTimeout(() => {
               const mainBuffer = fs.readFileSync(pdfFilePath);
               sendMail2(
-                ["nimesh@incscale.in", "bhagyesh@startupsahay.com"],
+                ["nimesh@incscale.in", "bhagyesh@startupsahay.com","kumarronak597@gmail.com"],
                 `${newData["Company Name"]} | ${serviceNames} | ${newData.bookingDate}`,
                 ``,
                 `
@@ -8578,6 +8578,7 @@ app.post(
       step4changed,
       otherDocs,
       paymentReceipt,
+      remainingPayments,
       ...updatedDocs
     } = req.body;
     const newOtherDocs = req.files["otherDocs"] || [];
@@ -8740,6 +8741,84 @@ app.post(
           { $push: { remainingPayments: sendingObject } },
           { new: true }
         );
+
+        return res.status(200).send("Successfully submitted more payments.");
+      } else {
+        return res.status(400).send("Invalid booking index.");
+      }
+    } catch (error) {
+      console.error("Error submitting more payments:", error);
+      return res.status(500).send("Internal Server Error.");
+    }
+  }
+);
+app.post(
+  "/api/redesigned-update-morePayments/:CompanyName",
+  upload.fields([
+    { name: "otherDocs", maxCount: 50 },
+    { name: "paymentReceipt", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const objectData = req.body;
+      console.log("Object Data:", objectData);
+
+      const newPaymentReceipt = req.files["paymentReceipt"] || [];
+      const companyName = objectData["Company Name"];
+      const bookingIndex = objectData.bookingIndex;
+      const currentDate = new Date();
+      const sendingObject = {
+        serviceName: objectData.serviceName,
+        remainingAmount: objectData.remainingAmount,
+        paymentMethod: objectData.paymentMethod,
+        extraRemarks: objectData.extraRemarks,
+        totalPayment: objectData.pendingAmount,
+        receivedPayment: objectData.receivedAmount,
+        pendingPayment: objectData.remainingAmount,
+        paymentReceipt: newPaymentReceipt,
+        paymentDate:currentDate
+      };
+      console.log("Sending Object:", sendingObject, bookingIndex);
+
+      if (bookingIndex == 0) {
+        console.log("Hi guyz"); 
+        const findObject = await RedesignedLeadformModel.findOne({
+          "Company Name": companyName,
+        });
+        const paymentObject = findObject.remainingPayments[findObject.remainingPayments.length - 1];
+        const newReceivedAmount = parseInt(findObject.receivedAmount) - parseInt(paymentObject.receivedPayment) + parseInt(sendingObject.receivedPayment);
+        const newPendingAmount = parseInt(findObject.pendingAmount) + parseInt(paymentObject.receivedPayment) - parseInt(sendingObject.receivedPayment);
+        const findService = findObject.services.find((obj)=>obj.serviceName === objectData.serviceName);
+        // const newReceivedAmount = parseInt(findObject.receivedAmount) + parseInt(objectData.receivedAmount);
+        // const newPendingAmount = parseInt(findObject.pendingAmount) - parseInt(objectData.receivedAmount);
+
+        const newGeneratedReceivedAmount = findService.withGST ? parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment)/1.18+ parseInt(objectData.receivedAmount)/1.18 :  parseInt(findObject.generatedReceivedAmount) - parseInt(paymentObject.receivedPayment)/1.18 + parseInt(objectData.receivedAmount);
+      
+       
+        console.log(newReceivedAmount , newPendingAmount)
+        // Handle updating RedesignedLeadformModel for bookingIndex 0
+        // Example code: Uncomment and replace with your logic
+      
+        findObject.remainingPayments[findObject.remainingPayments.length-1] = sendingObject;
+        const updateResult = await findObject.save();
+        await RedesignedLeadformModel.updateOne(
+          { "Company Name": companyName },
+          {
+            $set: {
+              receivedAmount: newReceivedAmount,
+              pendingAmount: newPendingAmount,
+              generatedReceivedAmount : newGeneratedReceivedAmount,
+
+            },
+          }
+        );
+      
+        // Push sendingObject into remainingPayments array
+        // const updatedObject = await RedesignedLeadformModel.findOneAndUpdate(
+        //   { "Company Name": companyName },
+        //   { $push: { remainingPayments: sendingObject } },
+        //   { new: true }
+        // );
 
         return res.status(200).send("Successfully submitted more payments.");
       } else {

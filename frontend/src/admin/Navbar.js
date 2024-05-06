@@ -14,6 +14,7 @@ import { AiOutlineTeam } from "react-icons/ai";
 function Navbar() {
   // const active = number;
   const location = useLocation();
+  const adminName = localStorage.getItem("adminName")
   return (
     <div>
       <header className="navbar-expand-md">
@@ -93,7 +94,7 @@ function Navbar() {
                     </a>
                   </Link>
                 </li> */}
-                <li
+               {(adminName === "Nimesh" || adminName==="Ronak" || adminName === "Aakash" || adminName === "shivangi") && <li
                   className={
                     location.pathname === "/admin/leads"
                       ? "nav-item active"
@@ -111,7 +112,7 @@ function Navbar() {
                       <span className="nav-link-title"> Leads</span>
                     </a>
                   </Link>
-                </li>
+                </li>}
                 <li
                   className={
                     location.pathname === "/admin/bookings"

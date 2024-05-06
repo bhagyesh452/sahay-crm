@@ -2708,7 +2708,7 @@ let generatedTotalRevenue = 0;
 
 
   return (
-    <div>
+    <div className="admin-dashboard">
       <Header />
       <Navbar />
       <div className="page-wrapper">
@@ -2722,7 +2722,7 @@ let generatedTotalRevenue = 0;
                 <AnnouncementIcon />
               </IconButton>
             </div> */}
-            <div className="page-header d-print-none">
+            <div className="page-header d-print-none" >
               <div className="container-xl">
                 <div className="row">
                   <div
@@ -2730,7 +2730,7 @@ let generatedTotalRevenue = 0;
                     className="col-sm-4 card recent-updates m-2"
                   >
                     <div className="card-header">
-                      <h2>Recent Updates</h2>
+                      <h2 className="m-0">Recent Updates</h2>
                     </div>
 
                     <div className="card-body">
@@ -2759,36 +2759,24 @@ let generatedTotalRevenue = 0;
                     </div>
                   </div>
                   {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
-                  <div className="employee-dashboard">
-                    <div
-                      className="card todays-booking m-2 totalbooking"
-                      id="totalbooking"
-                    >
-                      <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-                        <div className="d-flex justify-content-between">
-                          <div
-                            style={{ minWidth: "14vw" }}
-                            className="dashboard-title"
-                          >
-                            <h2 style={{ marginBottom: "5px" }}>
-                              THIS MONTH BOOKINGS
-                            </h2>
-                          </div>
+                  <div className="employee-dashboard mt-2">
+                    <div  className="card todays-booking totalbooking"   id="totalbooking"   >
+                      <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
+                        <div className="dashboard-title">
+                          <h2 className="m-0 pl-1">
+                            This Month's Bookings
+                          </h2>
                         </div>
-
-                        <div
-                          style={{ m: 1, padding: "0px", marginRight: "30px" }}
-                          className="filter-booking d-flex align-items-center"
-                        >
-                          <div className="filter-title mr-1">
-                            <h2 style={{ marginBottom: "5px" }}>
+                        <div className="filter-booking d-flex align-items-center pr-1" >
+                          <div className="filter-title">
+                            <h2 className="m-0 mr-2">
                               {" "}
                               Filter Branch : {"  "}
                             </h2>
                           </div>
-                          <div className="filter-main">
+                          <div className="filter-main ml-2">
                             <select
-                              className="form-select mt-1"
+                              className="form-select"
                               id={`branch-filter`}
                               onChange={(e) => {
                                 if (e.target.value === "none") {
@@ -2811,92 +2799,13 @@ let generatedTotalRevenue = 0;
                             </select>
                           </div>
                         </div>
-                        {/* <LocalizationProvider dateAdapter={AdapterDayjs} style={{ padding: "0px" }}>
-                            <DemoContainer components={['SingleInputDateRangeField']}>
-                              <DateRangePicker
-                                onChange={(values) => {
-                                  const startDate = moment(values[0]).format('DD/MM/YYYY');
-                                  const endDate = moment(values[1]).format('DD/MM/YYYY');
-                                  //setSelectedDateRange([startDate, endDate]);
-                                  handleSelectAnother(values); // Call handleSelect with the selected values
-                                }}
-                                slots={{ field: SingleInputDateRangeField }}
-                                slotProps={{
-                                  shortcuts: {
-                                    items: shortcutsItems,
-                                  },
-                                  actionBar: { actions: [] },
-                                  textField: { InputProps: { endAdornment: <Calendar /> } }
-                                }}
-                              //calendars={1}
-                              />
-                            </DemoContainer>
-                          </LocalizationProvider> */}
-
-                        {/* <div className=" form-control date-range-picker d-flex align-items-center justify-content-between">
-                          <div style={{ cursor: 'pointer' }} onClick={() => setShowBookingDate(!showBookingDate)}>
-                            {`${formatDate(startDateAnother)} - ${formatDate(endDateAnother)}`}
-                          </div>
-                          <button onClick={() => setShowBookingDate(!showBookingDate)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                            <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
-                          </button>
-                        </div> */}
                       </div>
-                      {/* {showBookingDate && <div
-                      ref={dateRangePickerRef}
-                      style={{
-                        position: "absolute",
-                        top: "65px",
-                        zIndex: 9,
-                        right: "157px",
-                      }}
-                      className="booking-filter"
-                    >
-                      <DateRangePicker
-                        ranges={[selectionRangeAnother]}
-                        onChange={handleSelectAnother}
-                        onClose={() => setShowBookingDate(false)}
-                      />
-                    </div>} */}
                       <div className="card-body">
-                        <div
-                          className="row"
-                          style={{
-                            overflowX: "auto",
-                            overflowY: "auto",
-                            maxHeight: "60vh",
-                            lineHeight: "32px",
-                          }}>
-                          <table
-                            style={{
-                              position: "sticky",
-                              width: "100%",
-                              borderCollapse: "collapse",
-                              border: "1px solid #ddd",
-                              marginBottom: "5px",
-                              lineHeight: "32px",
-                            }}
-                            className="table-vcenter table-nowrap"
-                          >
-                            <thead
-                              style={{
-                                position: "sticky", // Make the header sticky
-                                top: "-1px", // Stick it at the top
-                                backgroundColor: "#ffb900",
-                                color: "black",
-                                fontWeight: "bold",
-                                lineHeight: "32px",
-                                zIndex: 1, // Ensure it's above other content
-                              }}
-                            >
-                              <tr
-                                style={{
-                                  backgroundColor: "#ffb900",
-                                  color: "black",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                <th style={{ lineHeight: "32px" }}>SR.NO</th>
+                        <div className="row">
+                          <table  className="table-vcenter table-nowrap admin-dash-tbl">
+                            <thead className="admin-dash-tbl-thead">
+                              <tr  >
+                                <th>SR.NO</th>
                                 <th>BDE/BDM NAME</th>
                                 <th>BRANCH</th>
                                 <th>MATURED CASES</th>
@@ -2921,7 +2830,7 @@ let generatedTotalRevenue = 0;
                                         <>
                                           <tr>
                                             <td>{index + 1}</td>
-                                            <td style={{ lineHeight: "32px" }}>
+                                            <td>
                                               {obj.ename}
                                             </td>
                                             <td>{obj.branchOffice}</td>
@@ -3096,20 +3005,11 @@ let generatedTotalRevenue = 0;
                                     </>
                                   ))} */}
                                 </tbody>
-                                <tfoot
-                                  style={{
-                                    position: "sticky", // Make the footer sticky
-                                    bottom: -1, // Stick it at the bottom
-                                    backgroundColor: "#f6f2e9",
-                                    color: "black",
-                                    fontWeight: 500,
-                                    zIndex: 2, // Ensure it's above the content
-                                  }}
-                                >
-                                  <tr style={{ fontWeight: "500" }}>
+                                <tfoot className="admin-dash-tbl-tfoot">
+                                  <tr>
                                     <td
                                       colSpan={2}
-                                      style={{ lineHeight: "32px" }}
+                                    
                                     >
                                       Total:
                                     </td>
@@ -3230,75 +3130,45 @@ let generatedTotalRevenue = 0;
                   </div>
 
                   {/* Employee side Dashboard Analysis */}
-                  <div
-                    className="employee-dashboard"
-                    id="employeedashboardadmin">
+                  <div className="employee-dashboard mt-3" id="employeedashboardadmin">
                     <div className="card">
-                      <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-                        <div className="d-flex justify-content-between">
-                          <div
-                            style={{ minWidth: "14vw" }}
-                            className="dashboard-title"
-                          >
-                            <h2 style={{ marginBottom: "5px" }}>
-                              Employees Data Report
-                            </h2>
-                          </div>
+                      <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+                        <div className="dashboard-title pl-1"  >
+                          <h2 className="m-0">
+                            Employees Data Report
+                          </h2>
                         </div>
-                        <div className="d-flex gap-2">
-                          <div className="general-searchbar form-control d-flex justify-content-center align-items-center input-icon">
-                            <span className="input-icon-addon">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="icon"
-                                width="20"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                stroke-width="2"
-                                stroke="currentColor"
-                                fill="none"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                              >
-                                <path
-                                  stroke="none"
-                                  d="M0 0h24v24H0z"
-                                  fill="none"
-                                />
-                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                                <path d="M21 21l-6 -6" />
+                        <div className="d-flex align-items-center pr-1">
+                          <div class="input-icon mr-1">
+                            <span class="input-icon-addon">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                <path d="M21 21l-6 -6"></path>
                               </svg>
                             </span>
+                          
                             <input
-                              value={searchTerm}
-                              onChange={(e) =>
-                                debouncedFilterSearch(e.target.value)
-                              }
-                              placeholder="Enter BDE Name..."
-                              style={{
-                                border: "none",
-                                padding: "0px 0px 0px 21px",
-                                width: "100%",
-                              }}
-                              type="text"
-                              name="bdeName-search"
-                              id="bdeName-search"
-                            />
+                            value={searchTerm}
+                            onChange={(e) =>
+                              debouncedFilterSearch(e.target.value)
+                            }
+                            className="form-control"
+                            placeholder="Enter BDE Name..."
+                            type="text"
+                            name="bdeName-search"
+                            id="bdeName-search"  />
                           </div>
-                          {/* <div className="form-control d-flex align-items-center justify-content-between date-range-picker">
-                            <div>{`${formatDate(startDateEmployee)} - ${formatDate(endDateEmployee)}`}</div>
-                            <button onClick={() => setDateRangeDisplayEmployee(!displayDateRangeEmployee)} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                              <FaRegCalendar style={{ width: "17px", height: "17px", color: "#bcbaba", color: "grey" }} />
-                            </button>
-                          </div> */}
                           <LocalizationProvider
                             dateAdapter={AdapterDayjs}
-                            style={{ padding: "0px" }}
+                            sx={{
+                              padding:'0px'
+                            }}
                           >
                             <DemoContainer
-                              components={["SingleInputDateRangeField"]}
+                              components={["SingleInputDateRangeField"]} className="ddddd"
                             >
-                              <DateRangePicker
+                              <DateRangePicker  className="form-control my-date-picker form-control-sm p-0"
                                 onChange={(values) => {
                                   const startDateEmp = moment(values[0]).format(
                                     "DD/MM/YYYY"
@@ -3328,56 +3198,12 @@ let generatedTotalRevenue = 0;
                           </LocalizationProvider>
                         </div>
                       </div>
-
-                      {/* {displayDateRangeEmployee && (
-                        <div ref={dateRangePickerEmployeeRef} className="position-absolute " style={{ zIndex: "1000", top: "13%", left: "73%" }} >
-                          <DateRangePicker
-                            ranges={[selectionRangeEmployee]}
-                            onClose={() => setDateRangeDisplayEmployee(false)}
-                            onChange={handleSelectEmployee}
-                          />
-                        </div>
-                      )} */}
-
                       <div className="card-body">
-                        <div
-                          className="row"
-                          style={{
-                            overflowX: "auto",
-                            overflowY: "auto",
-                            maxHeight: "60vh",
-                            lineHeight: "32px",
-                          }}
-                        >
-                          <table
-                            style={{
-                              width: "100%",
-                              borderCollapse: "collapse",
-                              border: "1px solid #ddd",
-                              marginBottom: "5px",
-                              lineHeight: "32px",
-                              position: "relative", // Make the table container relative
-                            }}
-                            className="table-vcenter table-nowrap"
-                          >
-                            <thead
-                              style={{
-                                position: "sticky", // Make the header sticky
-                                top: "-1px", // Stick it at the top
-                                backgroundColor: "#ffb900",
-                                color: "black",
-                                fontWeight: "bold",
-                                zIndex: 1, // Ensure it's above other content
-                              }}
-                            >
+                        <div className="row"  >
+                          <table className="table-vcenter table-nowrap admin-dash-tbl">
+                            <thead className="admin-dash-tbl-thead" >
                               <tr>
-                                <th
-                                  style={{
-                                    lineHeight: "32px",
-                                  }}
-                                >
-                                  Sr. No
-                                </th>
+                                <th> Sr. No </th>
                                 <th>BDE/BDM Name</th>
                                 <th
                                   style={{ cursor: "pointer" }}
@@ -3395,26 +3221,27 @@ let generatedTotalRevenue = 0;
                                     handleSortUntouched(newSortType);
                                   }}
                                 >
-                                  Untouched
-                                  <ArrowDropUpIcon
-                                    style={{
-                                      color:
-                                        sortType.untouched === "descending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginRight: "-24px",
-                                      marginTop: "-11px",
-                                    }}
-                                  />
-                                  <ArrowDropDownIcon
-                                    style={{
-                                      color:
-                                        sortType.untouched === "ascending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginTop: "3px",
-                                    }}
-                                  />
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <div>Untouched</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
                                 </th>
                                 <th
                                   style={{ cursor: "pointer" }}
@@ -3432,26 +3259,27 @@ let generatedTotalRevenue = 0;
                                     handleSortbusy(newSortType);
                                   }}
                                 >
-                                  Busy
-                                  <ArrowDropUpIcon
-                                    style={{
-                                      color:
-                                        sortType.busy === "descending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginRight: "-24px",
-                                      marginTop: "-11px",
-                                    }}
-                                  />
-                                  <ArrowDropDownIcon
-                                    style={{
-                                      color:
-                                        sortType.busy === "ascending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginTop: "3px",
-                                    }}
-                                  />
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <div>Busy</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
                                 </th>
                                 <th
                                   style={{ cursor: "pointer" }}
@@ -3469,26 +3297,27 @@ let generatedTotalRevenue = 0;
                                     handleSortNotPickedUp(newSortType);
                                   }}
                                 >
-                                  Not Picked Up
-                                  <ArrowDropUpIcon
-                                    style={{
-                                      color:
-                                        sortType.notPickedUp === "descending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginRight: "-24px",
-                                      marginTop: "-11px",
-                                    }}
-                                  />
-                                  <ArrowDropDownIcon
-                                    style={{
-                                      color:
-                                        sortType.notPickedUp === "ascending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginTop: "3px",
-                                    }}
-                                  />
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <div>Not Picked Up</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
                                 </th>
                                 <th
                                   style={{ cursor: "pointer" }}
@@ -3504,26 +3333,27 @@ let generatedTotalRevenue = 0;
                                     handleSortJunk(newSortType);
                                   }}
                                 >
-                                  Junk
-                                  <ArrowDropUpIcon
-                                    style={{
-                                      color:
-                                        sortType.junk === "descending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginRight: "-24px",
-                                      marginTop: "-11px",
-                                    }}
-                                  />
-                                  <ArrowDropDownIcon
-                                    style={{
-                                      color:
-                                        sortType.junk === "ascending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginTop: "3px",
-                                    }}
-                                  />
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <div>Junk</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
                                 </th>
                                 <th
                                   style={{ cursor: "pointer" }}
@@ -3541,26 +3371,27 @@ let generatedTotalRevenue = 0;
                                     handleSortFollowUp(newSortType);
                                   }}
                                 >
-                                  Follow Up
-                                  <ArrowDropUpIcon
-                                    style={{
-                                      color:
-                                        sortType.followUp === "descending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginRight: "-24px",
-                                      marginTop: "-11px",
-                                    }}
-                                  />
-                                  <ArrowDropDownIcon
-                                    style={{
-                                      color:
-                                        sortType.followUp === "ascending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginTop: "3px",
-                                    }}
-                                  />
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <div> Follow Up</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
                                 </th>
                                 <th
                                   style={{ cursor: "pointer" }}
@@ -3578,26 +3409,27 @@ let generatedTotalRevenue = 0;
                                     handleSortInterested(newSortType);
                                   }}
                                 >
-                                  Interested
-                                  <ArrowDropUpIcon
-                                    style={{
-                                      color:
-                                        sortType.interested === "descending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginRight: "-24px",
-                                      marginTop: "-11px",
-                                    }}
-                                  />
-                                  <ArrowDropDownIcon
-                                    style={{
-                                      color:
-                                        sortType.interested === "ascending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginTop: "3px",
-                                    }}
-                                  />
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <div>Interested</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
                                 </th>
                                 <th
                                   style={{ cursor: "pointer" }}
@@ -3617,26 +3449,27 @@ let generatedTotalRevenue = 0;
                                     handleSortNotInterested(newSortType);
                                   }}
                                 >
-                                  Not Interested
-                                  <ArrowDropUpIcon
-                                    style={{
-                                      color:
-                                        sortType.notInterested === "descending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginRight: "-24px",
-                                      marginTop: "-11px",
-                                    }}
-                                  />
-                                  <ArrowDropDownIcon
-                                    style={{
-                                      color:
-                                        sortType.notInterested === "ascending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginTop: "3px",
-                                    }}
-                                  />
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <div>Not Interested</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
                                 </th>
                                 <th
                                   style={{ cursor: "pointer" }}
@@ -3654,26 +3487,27 @@ let generatedTotalRevenue = 0;
                                     handleSortMatured(newSortType);
                                   }}
                                 >
-                                  Matured
-                                  <ArrowDropUpIcon
-                                    style={{
-                                      color:
-                                        sortType.matured === "descending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginRight: "-24px",
-                                      marginTop: "-11px",
-                                    }}
-                                  />
-                                  <ArrowDropDownIcon
-                                    style={{
-                                      color:
-                                        sortType.matured === "ascending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginTop: "3px",
-                                    }}
-                                  />
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <div>Matured</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
                                 </th>
                                 <th
                                   style={{ cursor: "pointer" }}
@@ -3691,26 +3525,27 @@ let generatedTotalRevenue = 0;
                                     handleSortTotalLeads(newSortType);
                                   }}
                                 >
-                                  Total Leads
-                                  <ArrowDropUpIcon
-                                    style={{
-                                      color:
-                                        sortType.totalLeads === "descending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginRight: "-24px",
-                                      marginTop: "-11px",
-                                    }}
-                                  />
-                                  <ArrowDropDownIcon
-                                    style={{
-                                      color:
-                                        sortType.totalLeads === "ascending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginTop: "3px",
-                                    }}
-                                  />
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <div>Total Leads</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
                                 </th>
                                 <th
                                   style={{ cursor: "pointer" }}
@@ -3728,26 +3563,27 @@ let generatedTotalRevenue = 0;
                                     handleSortLastLead(newSortType);
                                   }}
                                 >
-                                  Last lead Assign Date
-                                  <ArrowDropUpIcon
-                                    style={{
-                                      color:
-                                        sortType.lastLead === "descending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginRight: "-24px",
-                                      marginTop: "-11px",
-                                    }}
-                                  />
-                                  <ArrowDropDownIcon
-                                    style={{
-                                      color:
-                                        sortType.lastLead === "ascending"
-                                          ? "black"
-                                          : "#9d8f8f",
-                                      marginTop: "3px",
-                                    }}
-                                  />
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <div>Last lead Assign Date</div>
+                                    <div className="short-arrow-div">
+                                      <ArrowDropUpIcon className="up-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "descending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                      <ArrowDropDownIcon className="down-short-arrow"
+                                        style={{
+                                          color:
+                                            sortType.untouched === "ascending"
+                                              ? "black"
+                                              : "#9d8f8f",
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
                                 </th>
                               </tr>
                             </thead>
@@ -3758,11 +3594,6 @@ let generatedTotalRevenue = 0;
                                   <React.Fragment key={index}>
                                     <tr>
                                       <td
-                                        style={{
-                                          lineHeight: "32px",
-                                          color: "black",
-                                          textDecoration: "none",
-                                        }}
                                         key={`row-${index}-1`}
                                       >
                                         {index + 1}
@@ -3980,19 +3811,9 @@ let generatedTotalRevenue = 0;
                             </tbody>
                             {employeeData.length !== 0 &&
                               companyData.length !== 0 && (
-                                <tfoot
-                                  style={{
-                                    position: "sticky", // Make the footer sticky
-                                    bottom: -1, // Stick it at the bottom
-                                    backgroundColor: "#f6f2e9",
-                                    color: "black",
-                                    fontWeight: 500,
-                                    zIndex: 2, // Ensure it's above the content
-                                  }}
-                                >
+                                <tfoot    className="admin-dash-tbl-tfoot"    >
                                   <tr style={{ fontWeight: 500 }}>
                                     <td
-                                      style={{ lineHeight: "32px" }}
                                       colSpan="2"
                                     >
                                       Total
@@ -4074,66 +3895,39 @@ let generatedTotalRevenue = 0;
 
                   {/* ----------------------------------Employees Forwarded Data Report Section----------------------------------------------- */}
 
-                  <div className="employee-dashboard">
+                  <div className="employee-dashboard mt-3">
                     <div className="card">
-                      <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-                        <div className="d-flex justify-content-between">
-                          <div
-                            style={{ minWidth: "14vw" }}
-                            className="dashboard-title"
-                          >
-                            <h2 style={{ marginBottom: "5px" }}>
-                              Employees Forwaded Data Report
-                            </h2>
-                          </div>
+                      <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+                        <div className="dashboard-title pl-1"  >
+                          <h2 className="m-0">
+                          Employees Forwaded Data Report
+                          </h2>
                         </div>
-                        <div className="d-flex gap-2">
-                          <div className="general-searchbar form-control d-flex justify-content-center align-items-center input-icon mt-1">
-                            <span className="input-icon-addon">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="icon"
-                                width="20"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                stroke-width="2"
-                                stroke="currentColor"
-                                fill="none"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                              >
-                                <path
-                                  stroke="none"
-                                  d="M0 0h24v24H0z"
-                                  fill="none"
-                                />
-                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                                <path d="M21 21l-6 -6" />
+                        <div className="d-flex align-items-center pr-1">
+                          <div class="input-icon mr-1">
+                            <span class="input-icon-addon">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                                <path d="M21 21l-6 -6"></path>
                               </svg>
                             </span>
+                          
                             <input
-                              value={searchTermForwardData}
-                              onChange={(e) =>
-                                debouncedFilterSearchForwardData(e.target.value)
-                              }
-                              placeholder="Enter BDE Name..."
-                              style={{
-                                border: "none",
-                                padding: "0px 0px 0px 21px",
-                                width: "100%",
-                              }}
-                              type="text"
-                              name="bdeName-search"
-                              id="bdeName-search"
-                            />
+                            value={searchTerm}
+                            onChange={(e) =>
+                              debouncedFilterSearchForwardData(e.target.value)
+                            }
+                            className="form-control"
+                            placeholder="Enter BDE Name..."
+                            type="text"
+                            name="bdeName-search"
+                            id="bdeName-search"  />
                           </div>
-                          <div
-                            style={{ m: 1, padding: "0px" }}
-                            className="filter-booking d-flex align-items-center"
-                          >
+                          <div className="filter-booking d-flex align-items-center">
                             <div className="filter-main">
                               <select
-                                className="form-select mt-1"
+                                className="form-select"
                                 id={`branch-filter`}
                                 value={selectedValue}
                                 onChange={(e) => {
@@ -4201,7 +3995,7 @@ let generatedTotalRevenue = 0;
                               ))}
                             </select>
                           </div> */}
-                          <div className="services mt-1 mr-3" style={{zIndex:"9999"}}>
+                          <div className="services mt-1 mr-3" style={{zIndex:"9999", display:"none"}}>
                             <Select
                               isMulti
                               options={options}
@@ -4217,34 +4011,11 @@ let generatedTotalRevenue = 0;
                         </div>
                       </div>
                       <div className='card-body'>
-                        <div className="row"
-                          style={{
-                            overflowX: "auto",
-                            overflowY: "auto",
-                            maxHeight: "60vh",
-                            lineHeight: "32px",
-                          }}>
-                          <table style={{
-                            width: "100%",
-                            borderCollapse: "collapse",
-                            border: "1px solid #ddd",
-                            marginBottom: "5px",
-                            lineHeight: "32px",
-                            position: "relative", // Make the table container relative
-                          }}
-                            className="table-vcenter table-nowrap">
-                            <thead style={{
-                              position: "sticky", // Make the header sticky
-                              top: "-1px", // Stick it at the top
-                              backgroundColor: "#ffb900",
-                              color: "black",
-                              fontWeight: "bold",
-                              zIndex: 1, // Ensure it's above other content
-                            }}>
+                        <div className="row">
+                          <table className="table-vcenter table-nowrap admin-dash-tbl">
+                            <thead className="admin-dash-tbl-thead">
                               <tr>
-                                <th style={{
-                                  lineHeight: "32px",
-                                }}>
+                                <th>
                                   Sr.No
                                 </th>
                                 <th>BDE/BDM Name</th>
@@ -4262,7 +4033,6 @@ let generatedTotalRevenue = 0;
                                 forwardEmployeeData.map((obj, index) => (
                                   <tr key={`row-${index}`}>
                                     <td style={{
-                                      lineHeight: "32px",
                                       color: "black",
                                       textDecoration: "none",
                                     }} >{index + 1}</td>
@@ -4290,74 +4060,405 @@ let generatedTotalRevenue = 0;
                                   </tr>
                                 ))}
                             </tbody>
-                            
-                                <tfoot
-                                  style={{
-                                    position: "sticky", // Make the footer sticky
-                                    bottom: -1, // Stick it at the bottom
-                                    backgroundColor: "#f6f2e9",
-                                    color: "black",
-                                    fontWeight: 500,
-                                    zIndex: 2, // Ensure it's above the content
-                                  }}
+                            <tfoot className="admin-dash-tbl-tfoot"    >
+                              <tr>
+                                <td
+                                  colSpan="3"
                                 >
-                                  <tr style={{ fontWeight: 500 }}>
-                                    <td
-                                      style={{ lineHeight: "32px" }}
-                                      colSpan="3"
-                                    >
-                                      Total
-                                    </td>
-                                    <td>
-                                      {companyData.filter(company => company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept").length}
-                                    </td>
-                                    <td>
-                                      {teamLeadsData.length}
-                                    </td>
-                                    <td>₹{companyData
-                                      .filter(company => company.bdmAcceptStatus === "Accept" || company.bdmAcceptStatus === "Pending")
-                                      .reduce((total, company) => {
-                                        const totalPayment = followData
-                                          .filter(followCompany => followCompany.companyName === company["Company Name"] && followCompany.bdeName)
-                                          .reduce((sum, obj) => sum + obj.totalPayment, 0);
-                                        return total + totalPayment;
-                                      }, 0)
-                                    }
-                                    </td>
-                                    <td>
-                                      ₹{companyData
-                                        .filter(company => company.bdmAcceptStatus === "Accept")
-                                        .reduce((total, company) => {
-                                          const totalPayment = followDataNew
-                                            .filter(followCompany => followCompany.companyName === company["Company Name"])
-                                            .reduce((sum, obj) => sum + obj.totalPayment, 0);
-                                          return total + totalPayment;
-                                        }, 0)
-                                      }
-                                    </td>
-                                    <td>
-                                      {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
-                                    </td>
-                                    <td>
-                                    ₹ {parseInt(generatedTotalRevenue).toLocaleString()}
-                                    </td>
-                                  </tr>
-                                </tfoot>
+                                  Total
+                                </td>
+                                <td>
+                                  {companyData.filter(company => company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept").length}
+                                </td>
+                                <td>
+                                  {teamLeadsData.length}
+                                </td>
+                                <td>₹{companyData
+                                  .filter(company => company.bdmAcceptStatus === "Accept" || company.bdmAcceptStatus === "Pending")
+                                  .reduce((total, company) => {
+                                    const totalPayment = followData
+                                      .filter(followCompany => followCompany.companyName === company["Company Name"] && followCompany.bdeName)
+                                      .reduce((sum, obj) => sum + obj.totalPayment, 0);
+                                    return total + totalPayment;
+                                  }, 0)
+                                }
+                                </td>
+                                <td>
+                                  ₹{companyData
+                                    .filter(company => company.bdmAcceptStatus === "Accept")
+                                    .reduce((total, company) => {
+                                      const totalPayment = followDataNew
+                                        .filter(followCompany => followCompany.companyName === company["Company Name"])
+                                        .reduce((sum, obj) => sum + obj.totalPayment, 0);
+                                      return total + totalPayment;
+                                    }, 0)
+                                  }
+                                </td>
+                                <td>
+                                  {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
+                                </td>
+                                <td>
+                                ₹ {parseInt(generatedTotalRevenue).toLocaleString()}
+                                </td>
+                              </tr>
+                            </tfoot>
                           </table>
-
                         </div>
-
                       </div>
-
                     </div>
-
                   </div>
 
+                  <div className="container-xl mt-2 mb-4 projectionsummaryadmin"
+                    id="projectionsummaryadmin"   >
+                    <div className="card">
+                      <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+                        <div className="dashboard-title pl-1"  >
+                          <h2 className="m-0">
+                            Projection Summary
+                          </h2>
+                        </div>
+                        <div className="d-flex align-items-center pr-1">
+                          <div  className="filter-booking mr-1 d-flex align-items-center">
+                            <div className="filter-title mr-1">
+                              <h2 className="m-0">
+                                Filter Branch :
+                              </h2>
+                            </div>
+                            <div className="filter-main">
+                              <select
+                                className="form-select"
+                                id={`branch-filter`}
+                                onChange={(e) => {
+                                  handleFilterBranchOffice(e.target.value)
+                                }}
+                              >
+                                <option value="" disabled selected>
+                                  Select Branch
+                                </option>
+
+                                <option value={"Gota"}>Gota</option>
+                                <option value={"Sindhu Bhawan"}>
+                                  Sindhu Bhawan
+                                </option>
+                                <option value={"none"}>None</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div className="date-filter">
+                            <LocalizationProvider
+                              dateAdapter={AdapterDayjs}
+                              style={{ padding: "0px" }}
+                            >
+                              <DemoContainer components={["SingleInputDateRangeField"]}>
+                                <DateRangePicker  className="form-control my-date-picker form-control-sm p-0"
+                                  onChange={(values) => {
+                                    const startDate = moment(values[0]).format(
+                                      "DD/MM/YYYY"
+                                    );
+                                    const endDate = moment(values[1]).format(
+                                      "DD/MM/YYYY"
+                                    );
+                                    setSelectedDateRange([startDate, endDate]);
+                                    handleSelect(values); // Call handleSelect with the selected values
+                                  }}
+                                  slots={{ field: SingleInputDateRangeField }}
+                                  slotProps={{
+                                    shortcuts: {
+                                      items: shortcutsItems,
+                                    },
+                                    actionBar: { actions: [] },
+                                    textField: {
+                                      InputProps: { endAdornment: <Calendar /> },
+                                    },
+                                  }}
+                                //calendars={1}
+                                />
+                              </DemoContainer>
+                            </LocalizationProvider>
+                          </div>
 
 
+                        </div>
+                        {/* <div className="form-control date-range-picker d-flex align-items-center justify-content-between">
+                          <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
+                          <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
+                            <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
+                          </button>
+                        </div> */}
+                      </div>
+                      <div className="card-body">
+                        <div id="table-default" className="row" >
+                          <table className="table-vcenter table-nowrap admin-dash-tbl"  >
+                            <thead className="admin-dash-tbl-thead">
+                              <tr>
+                                <th>
+                                  Sr. No
+                                </th>
+                                <th>Employee Name</th>
+                                <th>
+                                  Total Companies
+                                  <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => {
+                                      let newSortType;
+                                      if (sortTypeProjection === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortTypeProjection === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortTotalCompanies(newSortType);
+                                    }}
+                                  />
+                                </th>
+                                <th>
+                                  Offered Services
+                                  <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => {
+                                      let newSortType;
+                                      if (sortTypeServices === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortTypeServices === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortOfferedServices(newSortType);
+                                    }}
+                                  />
+                                </th>
+                                <th>
+                                  Total Offered Price
+                                  <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => {
+                                      let newSortType;
+                                      if (sortTypePrice === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (sortTypePrice === "descending") {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortOffredPrize(newSortType);
+                                    }}
+                                  />
+                                </th>
+                                <th>
+                                  Expected Amount
+                                  <SwapVertIcon
+                                    style={{
+                                      height: "15px",
+                                      width: "15px",
+                                      cursor: "pointer",
+                                      marginLeft: "4px",
+                                    }}
+                                    onClick={() => {
+                                      let newSortType;
+                                      if (sortTypeExpectedPayment === "ascending") {
+                                        newSortType = "descending";
+                                      } else if (
+                                        sortTypeExpectedPayment === "descending"
+                                      ) {
+                                        newSortType = "none";
+                                      } else {
+                                        newSortType = "ascending";
+                                      }
+                                      handleSortExpectedPayment(newSortType);
+                                    }}
+                                  />
+                                </th>
+                                {/* <th>Est. Payment Date</th> */}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {sortedData && sortedData.length !== 0 ? (
+                                <>
+                                  {sortedData.map((obj, index) => (
+                                    <tr key={`row-${index}`}>
+                                      <td>{index + 1}</td>
+                                      <td>{obj}</td>
+                                      <td>
+                                        {
+                                          followDataToday.filter(
+                                            (partObj) => partObj.ename === obj
+                                          ).length
+                                        }
+                                        <FcDatabase
+                                          onClick={() => {
+                                            functionOpenProjectionTable(obj);
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            marginRight: "-71px",
+                                            marginLeft: "58px",
+                                          }}
+                                        />
+                                      </td>
+                                      <td>
+                                        {followDataToday.reduce(
+                                          (totalServices, partObj) => {
+                                            if (partObj.ename === obj) {
+                                              totalServices += partObj.offeredServices.length;
+                                            }
+                                            return totalServices;
+                                          },
+                                          0
+                                        )}
+                                      </td>
+                                      <td>
+                                        {followDataToday
+                                          .reduce((totalOfferedPrize, partObj) => {
+                                            if (partObj.ename === obj) {
+                                              totalOfferedPrize += partObj.offeredPrize;
+                                            }
+                                            return totalOfferedPrize;
+                                          }, 0)
+                                          .toLocaleString("en-IN", numberFormatOptions)}
+                                      </td>
+                                      <td>
+                                        {followDataToday
+                                          .reduce((totalPaymentSum, partObj) => {
+                                            if (partObj.ename === obj) {
+                                              totalPaymentSum += partObj.totalPayment;
+                                            }
+                                            return totalPaymentSum;
+                                          }, 0)
+                                          .toLocaleString("en-IN", numberFormatOptions)}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                  {/* Map employeeData with default fields */}
+                                  {employeeData
+                                    .filter((employee) => (employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
+                                    .map((employee, index) => (
+                                      <tr key={`employee-row-${index}`}>
+                                        <td>{sortedData.length + index + 1}</td>
+                                        <td>{employee.ename}</td>
+                                        <td>0 <FcDatabase
+                                          onClick={() => {
+                                            functionOpenProjectionTable(employee.ename);
+                                          }}
+                                          style={{
+                                            cursor: "pointer",
+                                            marginRight: "-71px",
+                                            marginLeft: "58px",
+                                          }}
+                                        /></td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                      </tr>
+                                    ))}
+                                </>
+                              ) : (
+                                employeeData
+                                  .filter((employee) => !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
+                                  .map((employee, index) => (
 
+                                    <tr key={`employee-row-${index}`}>
+                                      <td>{index + 1}</td>
+                                      <td>{employee.ename}</td>
+                                      <td>0 <FcDatabase
+                                        onClick={() => {
+                                          functionOpenProjectionTable(employee.ename);
+                                        }}
+                                        style={{
+                                          cursor: "pointer",
+                                          marginRight: "-71px",
+                                          marginLeft: "58px",
+                                        }}
+                                      /></td>
+                                      <td>0</td>
+                                      <td>0</td>
+                                      <td>0</td>
+                                    </tr>
 
+                                  ))
+                              )}
+                            </tbody>
+                            {sortedData && sortedData.length !== 0 && (
+                              <tfoot className="admin-dash-tbl-tfoot"    >
+                                <tr style={{ fontWeight: 500 }}>
+                                  <td colSpan="2">
+                                    Total
+                                  </td>
+                                  <td>
+                                    {
+                                      followDataToday.filter((partObj) => partObj.ename)
+                                        .length
+                                    }
+                                    <FcDatabase
+                                      onClick={() => {
+                                        functionCompleteProjectionTable();
+                                      }}
+                                      style={{
+                                        cursor: "pointer",
+                                        marginRight: "-71px",
+                                        marginLeft: "55px",
+                                      }}
+                                    />
+                                  </td>
+                                  <td>
+                                    {followDataToday.reduce(
+                                      (totalServices, partObj) => {
+                                        totalServices += partObj.offeredServices.length;
+                                        return totalServices;
+                                      },
+                                      0
+                                    )}
+                                  </td>
+                                  <td>
+                                    {followDataToday
+                                      .reduce((totalOfferedPrize, partObj) => {
+                                        totalOfferedPrize += partObj.offeredPrize;
+                                        return totalOfferedPrize;
+                                      }, 0)
+                                      .toLocaleString("en-IN", numberFormatOptions)}
+                                  </td>
+                                  <td>
+                                    {followDataToday
+                                      .reduce((totalPaymentSum, partObj) => {
+                                        totalPaymentSum += partObj.totalPayment;
+                                        return totalPaymentSum;
+                                      }, 0)
+                                      .toLocaleString("en-IN", numberFormatOptions)}
+                                  </td>
+                                </tr>
+                              </tfoot>
+                            )}
 
+                            {/* {sortedData && sortedData.length === 0 && (
+                              <tbody>
+                                <tr>
+                                  <td className="particular" colSpan={9}>
+                                    <Nodata />
+                                  </td>
+                                </tr>
+                              </tbody>
+                            )} */}
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
                 </div>
               </div>
@@ -4956,426 +5057,6 @@ let generatedTotalRevenue = 0;
 
           {/* -------------------------------------projection-dashboard--------------------------------------------- */}
 
-          <div
-            className="container-xl mt-2 projectionsummaryadmin"
-            id="projectionsummaryadmin"
-          >
-            <div className="card">
-              <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-                <div>
-                  <h2>Projection Summary</h2>
-                </div>
-
-                <div
-                  style={{
-                    m: 1,
-
-                    padding: "0px",
-                    marginRight: "30px",
-                  }}
-                  className="d-flex"
-                >
-                  <div
-                    style={{ m: 1, padding: "0px", marginRight: "30px" }}
-                    className="filter-booking d-flex align-items-center"
-                  >
-                    <div className="filter-title mr-1">
-                      <h2 style={{ marginBottom: "5px" }}>
-                        {" "}
-                        Filter Branch : {"  "}
-                      </h2>
-                    </div>
-                    <div className="filter-main">
-                      <select
-                        className="form-select mt-1"
-                        id={`branch-filter`}
-                        onChange={(e) => {
-                          handleFilterBranchOffice(e.target.value)
-
-                        }}
-                      >
-                        <option value="" disabled selected>
-                          Select Branch
-                        </option>
-
-                        <option value={"Gota"}>Gota</option>
-                        <option value={"Sindhu Bhawan"}>
-                          Sindhu Bhawan
-                        </option>
-                        <option value={"none"}>None</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="date-filter">
-                    <LocalizationProvider
-                      dateAdapter={AdapterDayjs}
-                      style={{ padding: "0px" }}
-                    >
-                      <DemoContainer components={["SingleInputDateRangeField"]}>
-                        <DateRangePicker
-                          onChange={(values) => {
-                            const startDate = moment(values[0]).format(
-                              "DD/MM/YYYY"
-                            );
-                            const endDate = moment(values[1]).format(
-                              "DD/MM/YYYY"
-                            );
-                            setSelectedDateRange([startDate, endDate]);
-                            handleSelect(values); // Call handleSelect with the selected values
-                          }}
-                          slots={{ field: SingleInputDateRangeField }}
-                          slotProps={{
-                            shortcuts: {
-                              items: shortcutsItems,
-                            },
-                            actionBar: { actions: [] },
-                            textField: {
-                              InputProps: { endAdornment: <Calendar /> },
-                            },
-                          }}
-                        //calendars={1}
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
-                  </div>
-
-
-                </div>
-                {/* <div className="form-control date-range-picker d-flex align-items-center justify-content-between">
-                  <div>{`${formatDate(startDate)} - ${formatDate(endDate)}`}</div>
-                  <button onClick={handleIconClick} style={{ border: "none", padding: "0px", backgroundColor: "white" }}>
-                    <FaRegCalendar style={{ width: "20px", height: "20px", color: "#bcbaba", color: "black" }} />
-                  </button>
-                </div> */}
-              </div>
-              {/* {displayDateRange && (
-                <div ref={dateRangePickerProhectionRef} className="position-absolute " style={{ zIndex: "1", top: "15%", left: "75%" }} >
-                  <DateRangePicker
-                    ranges={[selectionRange]}
-                    //onClose={() => setDateRangeDisplay(false)}
-                    onChange={handleSelect}
-                  />
-                </div>
-              )} */}
-              <div className="card-body">
-                <div
-                  id="table-default"
-                  style={{
-                    overflowX: "auto",
-                    overflowY: "auto",
-                    maxHeight: "60vh",
-                  }}
-                >
-                  <table
-                    style={{
-                      width: "100%",
-                      borderCollapse: "collapse",
-                      border: "1px solid #ddd",
-                      marginBottom: "10px",
-                    }}
-                    className="table-vcenter table-nowrap"
-                  >
-                    <thead
-                      style={{
-                        position: "sticky", // Make the header sticky
-                        top: "-1px", // Stick it at the top
-                        backgroundColor: "#ffb900",
-                        color: "black",
-                        fontWeight: "bold",
-                        zIndex: 1, // Ensure it's above other content
-                      }}
-                    >
-                      <tr
-                        style={{
-                          backgroundColor: "#ffb900",
-                          color: "white",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        <th
-                          style={{
-                            lineHeight: "32px",
-                          }}
-                        >
-                          Sr. No
-                        </th>
-                        <th>Employee Name</th>
-                        <th>
-                          Total Companies
-                          <SwapVertIcon
-                            style={{
-                              height: "15px",
-                              width: "15px",
-                              cursor: "pointer",
-                              marginLeft: "4px",
-                            }}
-                            onClick={() => {
-                              let newSortType;
-                              if (sortTypeProjection === "ascending") {
-                                newSortType = "descending";
-                              } else if (sortTypeProjection === "descending") {
-                                newSortType = "none";
-                              } else {
-                                newSortType = "ascending";
-                              }
-                              handleSortTotalCompanies(newSortType);
-                            }}
-                          />
-                        </th>
-                        <th>
-                          Offered Services
-                          <SwapVertIcon
-                            style={{
-                              height: "15px",
-                              width: "15px",
-                              cursor: "pointer",
-                              marginLeft: "4px",
-                            }}
-                            onClick={() => {
-                              let newSortType;
-                              if (sortTypeServices === "ascending") {
-                                newSortType = "descending";
-                              } else if (sortTypeServices === "descending") {
-                                newSortType = "none";
-                              } else {
-                                newSortType = "ascending";
-                              }
-                              handleSortOfferedServices(newSortType);
-                            }}
-                          />
-                        </th>
-                        <th>
-                          Total Offered Price
-                          <SwapVertIcon
-                            style={{
-                              height: "15px",
-                              width: "15px",
-                              cursor: "pointer",
-                              marginLeft: "4px",
-                            }}
-                            onClick={() => {
-                              let newSortType;
-                              if (sortTypePrice === "ascending") {
-                                newSortType = "descending";
-                              } else if (sortTypePrice === "descending") {
-                                newSortType = "none";
-                              } else {
-                                newSortType = "ascending";
-                              }
-                              handleSortOffredPrize(newSortType);
-                            }}
-                          />
-                        </th>
-                        <th>
-                          Expected Amount
-                          <SwapVertIcon
-                            style={{
-                              height: "15px",
-                              width: "15px",
-                              cursor: "pointer",
-                              marginLeft: "4px",
-                            }}
-                            onClick={() => {
-                              let newSortType;
-                              if (sortTypeExpectedPayment === "ascending") {
-                                newSortType = "descending";
-                              } else if (
-                                sortTypeExpectedPayment === "descending"
-                              ) {
-                                newSortType = "none";
-                              } else {
-                                newSortType = "ascending";
-                              }
-                              handleSortExpectedPayment(newSortType);
-                            }}
-                          />
-                        </th>
-                        {/* <th>Est. Payment Date</th> */}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedData && sortedData.length !== 0 ? (
-                        <>
-                          {sortedData.map((obj, index) => (
-                            <tr key={`row-${index}`}>
-                              <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                              <td>{obj}</td>
-                              <td>
-                                {
-                                  followDataToday.filter(
-                                    (partObj) => partObj.ename === obj
-                                  ).length
-                                }
-                                <FcDatabase
-                                  onClick={() => {
-                                    functionOpenProjectionTable(obj);
-                                  }}
-                                  style={{
-                                    cursor: "pointer",
-                                    marginRight: "-71px",
-                                    marginLeft: "58px",
-                                  }}
-                                />
-                              </td>
-                              <td>
-                                {followDataToday.reduce(
-                                  (totalServices, partObj) => {
-                                    if (partObj.ename === obj) {
-                                      totalServices += partObj.offeredServices.length;
-                                    }
-                                    return totalServices;
-                                  },
-                                  0
-                                )}
-                              </td>
-                              <td>
-                                {followDataToday
-                                  .reduce((totalOfferedPrize, partObj) => {
-                                    if (partObj.ename === obj) {
-                                      totalOfferedPrize += partObj.offeredPrize;
-                                    }
-                                    return totalOfferedPrize;
-                                  }, 0)
-                                  .toLocaleString("en-IN", numberFormatOptions)}
-                              </td>
-                              <td>
-                                {followDataToday
-                                  .reduce((totalPaymentSum, partObj) => {
-                                    if (partObj.ename === obj) {
-                                      totalPaymentSum += partObj.totalPayment;
-                                    }
-                                    return totalPaymentSum;
-                                  }, 0)
-                                  .toLocaleString("en-IN", numberFormatOptions)}
-                              </td>
-                            </tr>
-                          ))}
-                          {/* Map employeeData with default fields */}
-                          {employeeData
-                            .filter((employee) => (employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
-                            .map((employee, index) => (
-                              <tr key={`employee-row-${index}`}>
-                                <td style={{ lineHeight: "32px" }}>{sortedData.length + index + 1}</td>
-                                <td>{employee.ename}</td>
-                                <td>0 <FcDatabase
-                                  onClick={() => {
-                                    functionOpenProjectionTable(employee.ename);
-                                  }}
-                                  style={{
-                                    cursor: "pointer",
-                                    marginRight: "-71px",
-                                    marginLeft: "58px",
-                                  }}
-                                /></td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                              </tr>
-                            ))}
-                        </>
-                      ) : (
-                        employeeData
-                          .filter((employee) => !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
-                          .map((employee, index) => (
-
-                            <tr key={`employee-row-${index}`}>
-                              <td style={{ lineHeight: "32px" }}>{index + 1}</td>
-                              <td>{employee.ename}</td>
-                              <td>0 <FcDatabase
-                                onClick={() => {
-                                  functionOpenProjectionTable(employee.ename);
-                                }}
-                                style={{
-                                  cursor: "pointer",
-                                  marginRight: "-71px",
-                                  marginLeft: "58px",
-                                }}
-                              /></td>
-                              <td>0</td>
-                              <td>0</td>
-                              <td>0</td>
-                            </tr>
-
-                          ))
-                      )}
-                    </tbody>
-
-
-
-                    {sortedData && sortedData.length !== 0 && (
-                      <tfoot
-                        style={{
-                          position: "sticky", // Make the footer sticky
-                          bottom: -1, // Stick it at the bottom
-                          backgroundColor: "#f6f2e9",
-                          color: "black",
-                          fontWeight: 500,
-                          zIndex: 2, // Ensure it's above the content
-                        }}
-                      >
-                        <tr style={{ fontWeight: 500 }}>
-                          <td style={{ lineHeight: "32px" }} colSpan="2">
-                            Total
-                          </td>
-                          <td>
-                            {
-                              followDataToday.filter((partObj) => partObj.ename)
-                                .length
-                            }
-                            <FcDatabase
-                              onClick={() => {
-                                functionCompleteProjectionTable();
-                              }}
-                              style={{
-                                cursor: "pointer",
-                                marginRight: "-71px",
-                                marginLeft: "55px",
-                              }}
-                            />
-                          </td>
-                          <td>
-                            {followDataToday.reduce(
-                              (totalServices, partObj) => {
-                                totalServices += partObj.offeredServices.length;
-                                return totalServices;
-                              },
-                              0
-                            )}
-                          </td>
-                          <td>
-                            {followDataToday
-                              .reduce((totalOfferedPrize, partObj) => {
-                                totalOfferedPrize += partObj.offeredPrize;
-                                return totalOfferedPrize;
-                              }, 0)
-                              .toLocaleString("en-IN", numberFormatOptions)}
-                          </td>
-                          <td>
-                            {followDataToday
-                              .reduce((totalPaymentSum, partObj) => {
-                                totalPaymentSum += partObj.totalPayment;
-                                return totalPaymentSum;
-                              }, 0)
-                              .toLocaleString("en-IN", numberFormatOptions)}
-                          </td>
-                        </tr>
-                      </tfoot>
-                    )}
-
-                    {/* {sortedData && sortedData.length === 0 && (
-                      <tbody>
-                        <tr>
-                          <td className="particular" colSpan={9}>
-                            <Nodata />
-                          </td>
-                        </tr>
-                      </tbody>
-                    )} */}
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
           <Dialog
             open={openProjectionTable}
             onClose={closeProjectionTable}
