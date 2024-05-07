@@ -52,6 +52,10 @@ const CompanySchema = new mongoose.Schema({
   bdmName:{
     type:String
   },
+  caseType:{
+    type:String,
+    deafult:"NotForwarded"
+  },
   history: [{
     modifiedAt: { type: String, default: Date.now() },
     data: {

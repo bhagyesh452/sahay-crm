@@ -184,9 +184,9 @@ function BdmTeamLeads() {
 
   }
 
-  const [filteredRemarksBde , setfilteredRemarksBde] = useState([])
+  const [filteredRemarksBde, setfilteredRemarksBde] = useState([])
 
-  const functionopenpopupremarks = (companyID, companyStatus, companyName,bdmName , ename) => {
+  const functionopenpopupremarks = (companyID, companyStatus, companyName, bdmName, ename) => {
     setOpenRemarks(true);
     setfilteredRemarksBde(
       remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
@@ -205,7 +205,7 @@ function BdmTeamLeads() {
   const [remarksBdmName, setRemarksBdmName] = useState("")
   const [bdeNameReject, setBdeNameReject] = useState("")
 
-  const functionopenpopupremarksEdit = (companyID, companyStatus, companyName, bdmName ,bdeName) => {
+  const functionopenpopupremarksEdit = (companyID, companyStatus, companyName, bdmName, bdeName) => {
     setOpenRemarksEdit(true);
     setFilteredRemarks(
       remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
@@ -288,10 +288,10 @@ function BdmTeamLeads() {
           bdeName: bdeNameReject,
           currentCompanyName
 
-      }
-      )
+        }
+        )
 
-        
+
 
         console.log("remarks", Remarks)
         if (response.status === 200) {
@@ -476,7 +476,7 @@ function BdmTeamLeads() {
           console.error("Failed to update status:", response.data.message);
         }
 
-      }else {
+      } else {
         const currentObject = teamData.find(obj => obj["Company Name"] === cname);
         setMaturedBooking(currentObject);
         setFormOpen(true)
@@ -1039,10 +1039,10 @@ function BdmTeamLeads() {
                       setTeamLeadsData(
                         teamData.filter(
                           (obj) =>
-                            obj.bdmStatus === "Not Interested" || 
-                          obj.bdmStatus === "Busy" || 
-                          obj.bdmStatus === "Not Picked Up" ||
-                          obj.bdmStatus === "Junk"
+                            obj.bdmStatus === "Not Interested" ||
+                            obj.bdmStatus === "Busy" ||
+                            obj.bdmStatus === "Not Picked Up" ||
+                            obj.bdmStatus === "Junk"
                         )
                       );
                     }}
@@ -1058,8 +1058,8 @@ function BdmTeamLeads() {
                       {
                         teamData.filter(
                           (obj) =>
-                            obj.bdmStatus === "Not Interested" || 
-                            obj.bdmStatus === "Busy" || 
+                            obj.bdmStatus === "Not Interested" ||
+                            obj.bdmStatus === "Busy" ||
                             obj.bdmStatus === "Not Picked Up" ||
                             obj.bdmStatus === "Junk"
                         ).length
@@ -1252,11 +1252,11 @@ function BdmTeamLeads() {
                                         </>
                                       )}
                                       {bdmNewStatus === "NotInterested" && (
-                                                                                <>
-                                                                                <option value="Interested">Interested</option>
-                                                                                <option value="FollowUp">Follow Up</option>
-                                                                                </>
-                                                                            )}
+                                        <>
+                                          <option value="Interested">Interested</option>
+                                          <option value="FollowUp">Follow Up</option>
+                                        </>
+                                      )}
                                     </select>
                                   )}
                                 </td>
@@ -1350,8 +1350,8 @@ function BdmTeamLeads() {
                                     company.Status,
                                     company["Company Name"],
                                     company.bdmName,
-                                  company.ename
-                                )
+                                    company.ename
+                                  )
                                   handleRejectData(company._id)
                                 }}>
                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>

@@ -1319,7 +1319,7 @@ app.post("/api/post-bdmAcceptStatusupate/:id", async (req, res) => {
   }
 });
 
-app.post(`/api/post-update-bdmstatusfrombde/:companyId`, async (req, res) => {
+app.post(`/api/update-bdmstatusfrombde/:companyId`, async (req, res) => {
   const companyId = req.params.companyId;
 
   //console.log(companyId)
@@ -1336,6 +1336,28 @@ app.post(`/api/post-update-bdmstatusfrombde/:companyId`, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.post(`/api/post-followup-forwardeddata/:cname`, async (req, res) => {
+  const companyName = req.params.cname;
+  const { caseType, bdmName } = req.body;
+  try {
+    const updatedFollowUp = await FollowUpModel.findOneAndUpdate(
+      { companyName: companyName },
+      {
+        $set: {
+          caseType: caseType,
+          bdmName: bdmName
+        }
+      },
+      { new: true }
+    );
+    res.status(200).json(updatedFollowUp); // Assuming you want to send the updated data back
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 
 

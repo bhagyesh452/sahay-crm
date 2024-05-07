@@ -255,8 +255,8 @@ function EmployeeParticular() {
       setEmployeeData(
         response.data.filter(
           (obj) =>
-            //obj.Status === "Busy" ||
-            //obj.Status === "Not Picked Up" ||
+            obj.Status === "Busy" ||
+            obj.Status === "Not Picked Up" ||
             obj.Status === "Untouched"
         )
       );
@@ -1771,8 +1771,8 @@ function EmployeeParticular() {
                         setEmployeeData(
                           moreEmpData.filter(
                             (obj) =>
-                              //obj.Status === "Busy" ||
-                              //obj.Status === "Not Picked Up" ||
+                              obj.Status === "Busy" ||
+                              obj.Status === "Not Picked Up" ||
                               obj.Status === "Untouched"
                           )
                         );
@@ -1789,8 +1789,8 @@ function EmployeeParticular() {
                         {
                           moreEmpData.filter(
                             (obj) =>
-                              //obj.Status === "Busy" ||
-                              //obj.Status === "Not Picked Up" ||
+                              obj.Status === "Busy" ||
+                              obj.Status === "Not Picked Up" ||
                               obj.Status === "Untouched"
                           ).length
                         }
@@ -1960,8 +1960,6 @@ function EmployeeParticular() {
                           moreEmpData.filter(
                             (obj) =>
                               (obj.Status === "Not Interested" ||
-                            obj.Status === "Busy" ||
-                            obj.Status === "Not Picked Up" ||
                              obj.Status === "Junk") &&
                            (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                           )
@@ -1980,8 +1978,6 @@ function EmployeeParticular() {
                           moreEmpData.filter(
                             (obj) =>
                               (obj.Status === "Not Interested" ||
-                               obj.Status === "Busy" ||
-                               obj.Status === "Not Picked Up" ||
                                 obj.Status === "Junk") &&
                               (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                           ).length

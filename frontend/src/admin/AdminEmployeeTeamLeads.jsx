@@ -300,7 +300,7 @@ function AdminEmployeeTeamLeads() {
         setOpenRemarksEdit(false)
 
     }
-    const functionopenpopupremarks = (companyID, companyStatus, companyName ,ename) => {
+    const functionopenpopupremarks = (companyID, companyStatus, companyName, ename) => {
         setOpenRemarks(true);
         setFilteredRemarks(
             remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
@@ -317,7 +317,7 @@ function AdminEmployeeTeamLeads() {
 
     const [openRemarksEdit, setOpenRemarksEdit] = useState(false)
     const [remarksBdmName, setRemarksBdmName] = useState("")
-    const [filteredRemarksBdm , setFilteredRemarksBdm] = useState([])
+    const [filteredRemarksBdm, setFilteredRemarksBdm] = useState([])
 
     const functionopenpopupremarksEdit = (companyID, companyStatus, companyName, bdmName) => {
         setOpenRemarksEdit(true);
@@ -782,26 +782,26 @@ function AdminEmployeeTeamLeads() {
     };
     const closeAnchor = () => {
         setOpenAnchor(false);
-      };
-      const fetchRedesignedFormData = async () => {
+    };
+    const fetchRedesignedFormData = async () => {
         try {
-          console.log(maturedID);
-          const response = await axios.get(
-            `${secretKey}/redesigned-final-leadData`
-          );
-          const data = response.data.find((obj) => obj.company === maturedID);
-          console.log(data);
-          setCurrentForm(data);
+            console.log(maturedID);
+            const response = await axios.get(
+                `${secretKey}/redesigned-final-leadData`
+            );
+            const data = response.data.find((obj) => obj.company === maturedID);
+            console.log(data);
+            setCurrentForm(data);
         } catch (error) {
-          console.error("Error fetching data:", error.message);
+            console.error("Error fetching data:", error.message);
         }
-      };
-      useEffect(() => {
+    };
+    useEffect(() => {
         console.log("Matured ID Changed", maturedID);
         if (maturedID) {
-          fetchRedesignedFormData();
+            fetchRedesignedFormData();
         }
-      }, [maturedID]);
+    }, [maturedID]);
 
     const handleDelete = async (company) => {
         const companyName = company;
@@ -932,8 +932,8 @@ function AdminEmployeeTeamLeads() {
     const [feedbackRemarks, setFeedbackRemarks] = useState("")
     const [companyFeedbackId, setCompanyFeedbackId] = useState("")
     const [isEditFeedback, setIsEditFeedback] = useState(false)
-    const [feedbackPoints , setFeedbackPoints] = useState([])
-    
+    const [feedbackPoints, setFeedbackPoints] = useState([])
+
 
     const handleOpenFeedback = (companyName, companyId, companyFeedbackPoints, companyFeedbackRemarks, bdmStatus) => {
         setOpenFeedback(true)
@@ -950,7 +950,7 @@ function AdminEmployeeTeamLeads() {
         setBdmNewStatus(bdmStatus)
         //setIsEditFeedback(true)
     }
-    console.log("yahan locha h" , feedbackPoints.length)
+    console.log("yahan locha h", feedbackPoints.length)
 
 
 
@@ -2109,8 +2109,8 @@ function AdminEmployeeTeamLeads() {
                                                 teamData.filter(
                                                     (obj) =>
                                                         obj.bdmStatus === "Not Interested" ||
-                                                       obj.bdmStatus === "Busy" ||
-                                                       obj.bdmStatus === "Not Picked Up"||
+                                                        obj.bdmStatus === "Busy" ||
+                                                        obj.bdmStatus === "Not Picked Up" ||
                                                         obj.bdmStatus === "Junk"
                                                 )
                                             );
@@ -2128,8 +2128,8 @@ function AdminEmployeeTeamLeads() {
                                                 teamData.filter(
                                                     (obj) =>
                                                         obj.bdmStatus === "Not Interested" ||
-                                                       obj.bdmStatus === "Busy" ||
-                                                       obj.bdmStatus === "Not Picked Up"||
+                                                        obj.bdmStatus === "Busy" ||
+                                                        obj.bdmStatus === "Not Picked Up" ||
                                                         obj.bdmStatus === "Junk"
                                                 ).length
                                             }
@@ -2398,10 +2398,10 @@ function AdminEmployeeTeamLeads() {
                                                                                 style={{
                                                                                     width: "12px",
                                                                                     height: "12px",
-                                                                                    color:"#fbb900"
+                                                                                    color: "#fbb900"
                                                                                 }}
-                                                                    
-                                                                                
+
+
                                                                             />
                                                                         </IconButton>
                                                                     </div>
@@ -2447,28 +2447,28 @@ function AdminEmployeeTeamLeads() {
                                                             </td>
                                                         )
                                                     } */}
-                                                     {
+                                                    {
                                                         bdmNewStatus === "Matured" && <>
-                                                        <td>
-                                                        <IconButton
-                                          style={{ marginRight: "5px" }}
-                                          onClick={() => {
-                                            setMaturedID(company._id);
+                                                            <td>
+                                                                <IconButton
+                                                                    style={{ marginRight: "5px" }}
+                                                                    onClick={() => {
+                                                                        setMaturedID(company._id);
 
-                                            functionopenAnchor();
-                                          }}
-                                        >
-                                          <IconEye
-                                            style={{
-                                              width: "14px",
-                                              height: "14px",
-                                              color: "#d6a10c",
-                                              cursor: "pointer",
-                                            }}
-                                          />
-                                        </IconButton>
+                                                                        functionopenAnchor();
+                                                                    }}
+                                                                >
+                                                                    <IconEye
+                                                                        style={{
+                                                                            width: "14px",
+                                                                            height: "14px",
+                                                                            color: "#d6a10c",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    />
+                                                                </IconButton>
 
-                                                        </td>
+                                                            </td>
                                                         </>
                                                     }
                                                     {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
@@ -3343,33 +3343,33 @@ function AdminEmployeeTeamLeads() {
                     </div>
                 </Drawer>
             </div>
-              {/*  --------------------------------     Bookings View Sidebar   --------------------------------------------- */}
-              <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
-        <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
-          <div className="LeadFormPreviewDrawar-header">
-            <div className="Container">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <h2 className="title m-0 ml-1">
-                    {currentForm ? currentForm["Company Name"] : "Company Name"}
-                  </h2>
+            {/*  --------------------------------     Bookings View Sidebar   --------------------------------------------- */}
+            <Drawer anchor="right" open={openAnchor} onClose={closeAnchor}>
+                <div style={{ minWidth: "60vw" }} className="LeadFormPreviewDrawar">
+                    <div className="LeadFormPreviewDrawar-header">
+                        <div className="Container">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h2 className="title m-0 ml-1">
+                                        {currentForm ? currentForm["Company Name"] : "Company Name"}
+                                    </h2>
+                                </div>
+                                <div>
+                                    <IconButton onClick={closeAnchor}>
+                                        <CloseIcon />
+                                    </IconButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <LeadFormPreview
+                            setOpenAnchor={setOpenAnchor}
+                            currentLeadForm={currentForm}
+                        />
+                    </div>
                 </div>
-                <div>
-                  <IconButton onClick={closeAnchor}>
-                    <CloseIcon />
-                  </IconButton>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <LeadFormPreview
-              setOpenAnchor={setOpenAnchor}
-              currentLeadForm={currentForm}
-            />
-          </div>
-        </div>
-      </Drawer>
+            </Drawer>
 
 
 

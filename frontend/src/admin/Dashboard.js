@@ -2712,7 +2712,7 @@ let generatedTotalRevenue = 0;
       <Header />
       <Navbar />
       <div className="page-wrapper">
-        <div>
+        <div className="mb-3">
           <div className="">
             {/* <div className="recent-updates-icon">
               <IconButton

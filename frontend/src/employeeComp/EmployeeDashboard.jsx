@@ -3015,42 +3015,8 @@ function EmployeeDashboard() {
                         </DemoContainer>
                       </LocalizationProvider>
                     </div>
-
-                    {/* <div
-                      className="form-control d-flex align-items-center justify-content-between date-range-picker">
-                      <div>{`${formatDate(startDateTotalSummary)} - ${formatDate(endDateTotalSummary)}`}</div>
-                      <button
-                        onClick={handleIconClickTotalSummary}
-                        style={{
-                          border: "none",
-                          padding: "0px",
-                          backgroundColor: "white",
-                        }}
-                      >
-                        <FaRegCalendar
-                          style={{
-                            width: "17px",
-                            height: "17px",
-                            color: "#bcbaba",
-                            color: "grey",
-                          }}
-                        />
-                      </button>
-                    </div> */}
                   </div>
                 </div>
-                {/* {dateRangeTotalSummary && (
-                  <div
-                    ref={dateRangePickerProhectionSummaryRef}
-                    className="position-absolute "
-                    style={{ zIndex: "1000", top: "14%", left: "75%" }}>
-                    <DateRangePicker
-                      ranges={[selectionRangeTotalSummary]}
-                      onClose={() => setdateRangeTotalSummary(false)}
-                      onChange={handleSelectTotalSummary}
-                    />
-                  </div>
-                )} */}
                 <div className="card-body">
                   <div
                     id="table-default"
