@@ -1808,7 +1808,7 @@ color: #4e884e;
 {
   position: -webkit-sticky;
   position: sticky;
-  top: -0.5px;
+  top: 0px;
   z-index: 1;
 }
 .admin-dash-tbl-thead th
