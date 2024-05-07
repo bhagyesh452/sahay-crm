@@ -1800,6 +1800,9 @@ color: #4e884e;
 .admin-dashboard table
 {
   width: 100%;
+  border-spacing: 0;
+  border-collapse: separate;
+  border-radius: 10px;
 }
 .admin-dash-tbl-thead
 {
@@ -1813,7 +1816,6 @@ color: #4e884e;
   background: #e0e0e0;
   color: #000;
   font-weight: 700;
-  border: none;
 }
 .admin-dash-tbl-thead th:first-child
 {
@@ -1826,6 +1828,7 @@ color: #4e884e;
 .admin-dash-tbl td
 {
   padding: 5px 10px !important;
+  border: 1px solid #ededed !important;
 }
 .admin-dash-tbl-tfoot
 {
@@ -1838,7 +1841,6 @@ color: #4e884e;
   background: #f6f2e9;
   color: black;
   font-weight: 500;
-  border: none  !important;
 }
 .admin-dash-tbl-tfoot td:first-child
 {
