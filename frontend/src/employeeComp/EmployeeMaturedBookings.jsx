@@ -1105,7 +1105,7 @@ function EmployeeMaturedBookings() {
                                                         <div class="col-sm-6 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                             {
-                                                              paymentObj.extraRemarks
+                                                              paymentObj.extraRemarks ? paymentObj.extraRemarks : "N/A"
                                                             }
                                                           </div>
                                                         </div>

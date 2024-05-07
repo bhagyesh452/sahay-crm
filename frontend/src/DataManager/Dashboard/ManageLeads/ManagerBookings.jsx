@@ -1825,7 +1825,7 @@ function ManagerBookings() {
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                       {currentLeadform &&
-                                        currentLeadform.extraNotes}
+                                        currentLeadform.extraNotes!=="undefined" ? currentLeadform.extraNotes : "N/A"}
                                     </div>
                                   </div>
                                 </div>
