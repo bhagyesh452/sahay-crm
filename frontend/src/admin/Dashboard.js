@@ -4108,7 +4108,7 @@ let generatedTotalRevenue = 0;
                     </div>
                   </div>
 
-                  <div className="container-xl mt-2 mb-4 projectionsummaryadmin"
+                  <div className="employee-dashboard mt-3"
                     id="projectionsummaryadmin"   >
                     <div className="card">
                       <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
