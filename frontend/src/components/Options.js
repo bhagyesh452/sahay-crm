@@ -1,7 +1,7 @@
 export const options = [
   
   { value: "Start-Up India Certificate", label: "Start-Up India Certificate" },
-  { value: "MSME/UYDAM Certificate", label: "MSME/UYDAM Certificate 3" },
+  { value: "MSME/UDYAM Certificate", label: "MSME/UDYAM Certificate 3" },
   { value: "ISO Certificate", label: "ISO Certificate" },
   { value: "IEC CODE Certificate", label: "IEC CODE Certificate" },
   { value: "BIS Certificate", label: "BIS Certificate" },
