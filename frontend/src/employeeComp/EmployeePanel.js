@@ -599,8 +599,8 @@ function EmployeePanel() {
       setEmployeeData(
         tempData.filter(
           (obj) =>
-            //obj.Status === "Busy" ||
-            //obj.Status === "Not Picked Up" ||
+            obj.Status === "Busy" ||
+            obj.Status === "Not Picked Up" ||
             obj.Status === "Untouched"
         )
       );
@@ -609,8 +609,7 @@ function EmployeePanel() {
         setEmployeeData(
           sortedData
             .filter((data) =>
-              //["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
-              ["Untouched"].includes(data.Status)
+              ["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
             )
             .sort((a, b) => {
               if (a.Status === "Untouched") return -1;
@@ -623,8 +622,8 @@ function EmployeePanel() {
         setEmployeeData(
           sortedData
             .filter((data) =>
-              //["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
-              ["Busy","Not Picked Up"].includes(data.Status)
+              ["Busy", "Untouched", "Not Picked Up"].includes(data.Status)
+              
             )
             .sort((a, b) => {
               if (a.Status === "Busy") return -1;
@@ -639,10 +638,10 @@ function EmployeePanel() {
       }
 
 
-      if (status === "Not Interested" || status === "Junk" || status === "Busy" || status === "Not Picked Up") {
+      if (status === "Not Interested" || status === "Junk") {
         setEmployeeData(
           tempData.filter(
-            (obj) => obj.Status === "Not Interested" || obj.Status === "Junk" ||status === "Busy" || status === "Not Picked Up"
+            (obj) => obj.Status === "Not Interested" || obj.Status === "Junk"
           )
         );
         setdataStatus("NotInterested");
@@ -2465,6 +2464,10 @@ function EmployeePanel() {
         companyName:forwardedCompany,
         // Assuming bdmName is defined elsewhere in your component
       });
+      const response2 = await axios.post(`${secretKey}/post-followup-forwardeddata/${forwardedCompany}`,{
+        caseType:"Forwarded",
+        bdmName:selectedBDM
+      })
       Swal.fire("Company Forwarded", "", "success");
      //console.log("bdeoldstatus", bdeOldStatus);
       fetchNewData(bdeOldStatus);
@@ -3310,8 +3313,8 @@ function EmployeePanel() {
                           setEmployeeData(
                             moreEmpData.filter(
                               (obj) =>
-                                //obj.Status === "Busy" ||
-                                //obj.Status === "Not Picked Up" ||
+                                obj.Status === "Busy" ||
+                                obj.Status === "Not Picked Up" ||
                                 obj.Status === "Untouched"
                             )
                           );
@@ -3328,8 +3331,8 @@ function EmployeePanel() {
                           {
                             moreEmpData.filter(
                               (obj) =>
-                                // obj.Status === "Busy" ||
-                                // obj.Status === "Not Picked Up" ||
+                                obj.Status === "Busy" ||
+                                obj.Status === "Not Picked Up" ||
                                 obj.Status === "Untouched"
                             ).length
                           }
@@ -3496,8 +3499,7 @@ function EmployeePanel() {
                           setEmployeeData(
                             moreEmpData.filter(
                               (obj) =>
-                                (obj.Status === "Not Interested" || obj.Status === "Busy" ||
-                                obj.Status === "Not Picked Up" ||
+                                (obj.Status === "Not Interested"||
                                   obj.Status === "Junk") &&
                                 (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                             )
@@ -3515,8 +3517,7 @@ function EmployeePanel() {
                           {
                             moreEmpData.filter(
                               (obj) =>
-                                (obj.Status === "Not Interested" ||obj.Status === "Busy" ||
-                              obj.Status === "Not Picked Up" ||
+                                (obj.Status === "Not Interested" ||
                                   obj.Status === "Junk") &&
                                 (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                             ).length

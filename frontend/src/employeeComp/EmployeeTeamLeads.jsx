@@ -576,7 +576,7 @@ function EmployeeTeamLeads() {
         const date = DT.toLocaleDateString();
         const time = DT.toLocaleTimeString();
         const bdmStatusChangeDate = new Date();
-        console.log("bdmnewstatus", bdmnewstatus , date,time , bdmStatusChangeDate)
+        console.log("bdmnewstatus", bdmnewstatus, date, time, bdmStatusChangeDate)
         try {
 
             if (bdmnewstatus !== "Matured") {
@@ -591,7 +591,7 @@ function EmployeeTeamLeads() {
                         bdmStatusChangeDate,
                     }
                 )
-                
+
                 // Check if the API call was successful
                 if (response.status === 200) {
                     // Assuming fetchData is a function to fetch updated employee data
@@ -677,14 +677,14 @@ function EmployeeTeamLeads() {
             companyBdeProjection = response.data
             setBdeProjection(response.data)
             //console.log("responseprojection", response.data)
-    
+
         } catch (error) {
             console.log("error fetching details", error.message)
         }
-    
+
         const getBdeName = teamleadsData.filter((company) => company["Company Name"] === comName);
         //console.log(getBdeName)
-    
+
         if (getBdeName.length > 0) {
             const bdeName = getBdeName[0].ename;
             setBdeNameProjection(bdeName) // Accessing the 'ename' field from the first (and only) object
@@ -694,9 +694,9 @@ function EmployeeTeamLeads() {
         }
         setProjectingCompany(comName);
         setOpenProjection(true);
-    
+
         //console.log("bdeprojection", bdeProjection)
-        
+
         if (companyBdeProjection && companyBdeProjection.length !== 0) {
             const findOneprojection = companyBdeProjection[0]
             setIsEditProjection(false)
@@ -755,7 +755,7 @@ function EmployeeTeamLeads() {
             }
         }
     };
-    
+
 
 
     const closeProjection = () => {
@@ -1754,8 +1754,8 @@ function EmployeeTeamLeads() {
                                             setTeamLeadsData(
                                                 teamData.filter(
                                                     (obj) =>
-                                                        obj.bdmStatus === "Not Interested" || 
-                                                        obj.bdmStatus === "Busy" || 
+                                                        obj.bdmStatus === "Not Interested" ||
+                                                        obj.bdmStatus === "Busy" ||
                                                         obj.bdmStatus === "Not Picked Up" ||
                                                         obj.bdmStatus === "Junk"
                                                 )
@@ -1773,8 +1773,8 @@ function EmployeeTeamLeads() {
                                             {
                                                 teamData.filter(
                                                     (obj) =>
-                                                        obj.bdmStatus === "Not Interested" || 
-                                                        obj.bdmStatus === "Busy" || 
+                                                        obj.bdmStatus === "Not Interested" ||
+                                                        obj.bdmStatus === "Busy" ||
                                                         obj.bdmStatus === "Not Picked Up" ||
                                                         obj.bdmStatus === "Junk"
                                                 ).length
@@ -1973,8 +1973,8 @@ function EmployeeTeamLeads() {
                                                                             )}
                                                                             {bdmNewStatus === "NotInterested" && (
                                                                                 <>
-                                                                                <option value="Interested">Interested</option>
-                                                                                <option value="FollowUp">Follow Up</option>
+                                                                                    <option value="Interested">Interested</option>
+                                                                                    <option value="FollowUp">Follow Up</option>
                                                                                 </>
                                                                             )}
                                                                         </select>
@@ -2610,7 +2610,7 @@ function EmployeeTeamLeads() {
                                 Projection Form
                             </h1>
                             <div>
-                                {(bdeProjection && bdeProjection.some((item)=> item.companyName === projectingCompany)) || (projectingCompany &&
+                                {(bdeProjection && bdeProjection.some((item) => item.companyName === projectingCompany)) || (projectingCompany &&
                                     projectionData &&
                                     projectionData.some(
                                         (item) => item.companyName === projectingCompany
