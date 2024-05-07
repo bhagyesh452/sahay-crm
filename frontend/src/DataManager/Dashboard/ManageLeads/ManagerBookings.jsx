@@ -824,9 +824,9 @@ function ManagerBookings() {
                                   </div>
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
-                                  <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                    ₹ 2,00,000
-                                  </div>
+                                  {currentLeadform && <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                    ₹ {calculateTotalAmount(currentLeadform)}
+                                  </div>}
                                 </div>
                               </div>
                             </div>
@@ -838,9 +838,9 @@ function ManagerBookings() {
                                   </div>
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
-                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    ₹ 50,000
-                                  </div>
+                                  {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                    ₹ {calculateReceivedAmount(currentLeadform)}
+                                  </div>}
                                 </div>
                               </div>
                             </div>
@@ -852,9 +852,9 @@ function ManagerBookings() {
                                   </div>
                                 </div>
                                 <div class="col-sm-8 align-self-stretc p-0">
-                                  <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                    ₹ 50,000
-                                  </div>
+                                  {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                    ₹ {calculatePendingAmount(currentLeadform)}
+                                  </div>}
                                 </div>
                               </div>
                             </div>
