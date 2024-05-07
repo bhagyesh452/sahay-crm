@@ -1803,6 +1803,7 @@ color: #4e884e;
   border-spacing: 0;
   border-collapse: separate;
   border-radius: 10px;
+  padding: 0px;
 }
 .admin-dash-tbl-thead
 {
@@ -1897,6 +1898,7 @@ color: #4e884e;
 {
   max-height: 300px;
   overflow-y: scroll;
+  border-radius: 10px;
 }
 /******************** Dashboard End ********************/
 
