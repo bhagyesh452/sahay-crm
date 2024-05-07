@@ -1803,13 +1803,25 @@ color: #4e884e;
 }
 .admin-dash-tbl-thead
 {
-  background: #e0e0e0;
-  color: #000;
-  font-weight: 700;
   position: -webkit-sticky;
   position: sticky;
   top: -1px;
   z-index: 1;
+}
+.admin-dash-tbl-thead th
+{
+  background: #e0e0e0;
+  color: #000;
+  font-weight: 700;
+  border: none;
+}
+.admin-dash-tbl-thead th:first-child
+{
+  border-radius: 10px 0 0 0 ;
+}
+.admin-dash-tbl-thead th:last-child
+{
+  border-radius: 0  10px 0px 0 ;
 }
 .admin-dash-tbl td
 {
@@ -1819,14 +1831,25 @@ color: #4e884e;
 {
   position: sticky;
   bottom: -1px;
+  z-index:  1;
+}
+.admin-dash-tbl-tfoot td
+{
   background: #f6f2e9;
   color: black;
   font-weight: 500;
-  z-index:  1;
+  border: none  !important;
+}
+.admin-dash-tbl-tfoot td:first-child
+{
+  border-radius: 0 0 0 10px ;
+}
+.admin-dash-tbl-tfoot td:last-child
+{
+  border-radius: 0 0 10px 0  ;
 }
 .admin-dash-tbl {
   border-radius: 10px !important;
-  border: 1px solid #ccc;
 }
 .my-date-picker input
 {
