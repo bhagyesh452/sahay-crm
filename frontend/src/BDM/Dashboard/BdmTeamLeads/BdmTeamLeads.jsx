@@ -657,7 +657,9 @@ function BdmTeamLeads() {
         ename: data.ename,
         bdeName: bdeNameProjection ? bdeNameProjection : data.ename,
         offeredServices: selectedValues,
-        editCount: currentProjection.editCount + 1, // Increment editCount
+        editCount: currentProjection.editCount + 1,
+        caseType:"Recieved",
+        bdmName : data.ename // Increment editCount
       };
 
       if (finalData.offeredServices.length === 0) {

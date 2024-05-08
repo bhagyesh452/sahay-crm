@@ -1019,6 +1019,7 @@ function BdmDashboard() {
       <Header bdmName={data.ename} />
       <Navbar userId={userId} />
       {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
+
       <div className='container-xl' style={{display:"none"}}>
         <div className="employee-dashboard mt-2">
           <div className="card todays-booking totalbooking" id="totalbooking"   >
@@ -1150,6 +1151,9 @@ function BdmDashboard() {
           </div>
         </div>
       </div>
+
+      {/* ----------------------------------------------bdm recieved cases report-------------------------------------------------------------- */}
+
       <div className="as-bde-bdm-daSH mt-4 mb-2">
         <div className="container-xl">
           <div className="as-bde-bdm-daSH-inner">
@@ -1161,10 +1165,6 @@ function BdmDashboard() {
               </li>)}
             </ul>
             <div class="tab-content" id="myTabContent">
-
-
-              {/* ------------------------recieved as bdm report------------------------------------------- */}
-
               <div class="tab-pane fade show active" id="receivedAsBDM" role="tabpanel" aria-labelledby="receivedAsBDM-tab">
                 <div className="mt-3 mb-3">
                   <div className="row m-0">
@@ -1253,7 +1253,7 @@ function BdmDashboard() {
                               {/* ₹{(followDataToday
                                 .filter(obj => obj.ename === data.ename)
                                 .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
-
+                               ₹{handleFilterFollowDataTodayRecievedCase()}
                             </div>
                           </div>
                         </div>
@@ -1305,6 +1305,7 @@ function BdmDashboard() {
                           /> */}
                       </div>
                     </div>
+
                     {/* recieved bdm report total */}
                     <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                       <div className="dash-card-2">
