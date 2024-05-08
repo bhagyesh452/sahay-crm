@@ -2563,16 +2563,16 @@ function Dashboard() {
     moreFilteredData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
+          achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.generatedReceivedAmount);
+          achievedAmount += Math.round(obj.generatedReceivedAmount);
         }
       } else {
         if (obj.bdeName === bdeName || obj.bdmName === bdeName) {
           if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-            achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
+            achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
           } else {
-            achievedAmount += parseInt(obj.generatedReceivedAmount);
+            achievedAmount += Math.round(obj.generatedReceivedAmount);
           }
         }
         obj.moreBookings.forEach((booking) => {
@@ -2581,16 +2581,16 @@ function Dashboard() {
               booking.bdeName !== booking.bdmName &&
               booking.bdmType === "Close-by"
             ) {
-              achievedAmount += parseInt(booking.generatedReceivedAmount / 2);
+              achievedAmount += Math.round(booking.generatedReceivedAmount / 2);
             } else {
-              achievedAmount += parseInt(booking.generatedReceivedAmount);
+              achievedAmount += Math.round(booking.generatedReceivedAmount);
             }
           }
         });
       }
     });
     totalAchievedAmount =
-      parseInt(totalAchievedAmount) + parseInt(achievedAmount);
+      Math.round(totalAchievedAmount) + Math.round(achievedAmount);
     return achievedAmount;
   };
 
@@ -2600,11 +2600,11 @@ function Dashboard() {
     if (object.targetDetails.length !== 0) {
       const foundObject = object.targetDetails.find(
         (item) =>
-          parseInt(item.year) === currentYear && item.month === currentMonth
+          Math.round(item.year) === currentYear && item.month === currentMonth
       );
       totalTargetAmount =
         foundObject &&
-        parseInt(totalTargetAmount) + parseInt(foundObject.amount);
+        Math.round(totalTargetAmount) + Math.round(foundObject.amount);
       console.log(
         "This is total Amount",
         foundObject && foundObject.amount,
@@ -2652,7 +2652,7 @@ function Dashboard() {
     });
 
     // Return the formatted date string or an empty string if lastBookingDate is null
-    return lastBookingDate ? formatDateFinal(lastBookingDate) : "N/A";
+    return lastBookingDate ? formatDateFinal(lastBookingDate) : "No Booking";
   }
 
   let generatedTotalRevenue = 0;
@@ -2712,7 +2712,7 @@ function Dashboard() {
       <Header />
       <Navbar />
       <div className="page-wrapper">
-        <div>
+        <div className="mb-3">
           <div className="">
             {/* <div className="recent-updates-icon">
               <IconButton
@@ -2841,7 +2841,7 @@ function Dashboard() {
                                             </td>
                                             <td>
                                               ₹{" "}
-                                              {parseInt(
+                                              {Math.round(
                                                 functionGetAmount(obj)
                                               ).toLocaleString()}
                                             </td>
@@ -4061,7 +4061,7 @@ function Dashboard() {
                                     <td>
                                       {companyData.filter((company) => company.ename === obj.ename && company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                                     </td>
-                                    <td>₹ {parseInt(functionCalculateGeneratedTotalRevenue(obj.ename)).toLocaleString()}</td>
+                                    <td>₹ {Math.round(functionCalculateGeneratedTotalRevenue(obj.ename)).toLocaleString()}</td>
                                   </tr>
                                 ))}
                             </tbody>
@@ -4107,7 +4107,11 @@ function Dashboard() {
                                   {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                                 </td>
                                 <td>
+<<<<<<< HEAD
                                   ₹ {parseInt(generatedTotalRevenue).toLocaleString()}
+=======
+                                ₹ {Math.round(generatedTotalRevenue).toLocaleString()}
+>>>>>>> 4ebe4863ffb9f9766945afc23422f23e7ab98179
                                 </td>
                               </tr>
                             </tfoot>

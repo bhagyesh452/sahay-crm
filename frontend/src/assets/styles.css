@@ -1803,6 +1803,7 @@ color: #4e884e;
   border-spacing: 0;
   border-collapse: separate;
   border-radius: 10px;
+  padding: 0px;
 }
 .admin-dash-tbl-thead
 {
@@ -1855,7 +1856,7 @@ color: #4e884e;
 }
 .my-date-picker input
 {
-  padding: 7px !important;
+  padding: 8px !important;
   font-size: 14px;
 }
 .my-date-picker fieldset
@@ -1897,6 +1898,7 @@ color: #4e884e;
 {
   max-height: 300px;
   overflow-y: scroll;
+  border-radius: 10px;
 }
 /******************** Dashboard End ********************/
 
@@ -1904,3 +1906,8 @@ color: #4e884e;
   color: transparent !important;
 }
 
+td input
+{
+  background: none;
+  border: none;
+}

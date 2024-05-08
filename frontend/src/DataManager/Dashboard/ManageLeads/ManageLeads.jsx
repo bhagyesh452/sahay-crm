@@ -2790,7 +2790,7 @@ const debouncedSetCompanyName = debounce((value) => {
                 </Box>
             )}
             <div className="page-wrapper">
-                <div className="page-header d-print-none">
+                <div className="page-header mb-3">
                     <div className="container-xl">
                         <div className="row g-2 align-items-center">
                             <div
