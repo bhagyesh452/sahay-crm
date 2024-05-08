@@ -3549,11 +3549,12 @@ function EmployeePanel() {
                             <th className="th-sticky">Sr.No</th>
                             <th className="th-sticky1">Company Name</th>
                             <th>Company Number</th>
-                            {dataStatus === "Forwarded" ? (<th>BDE Status</th>) : (<th>Status</th>)}
-                            {dataStatus === "Forwarded" ? (<th>BDE Remarks</th>) : (<th>Remarks</th>)}
-                            {dataStatus === "Forwarded" && <th>BDM Status</th>}
-                            {dataStatus === "Forwarded" && <th>BDM Remarks</th>}
+                            <th>Status</th>
                             {dataStatus === "FollowUp" && (<th>Next FollowUp Date</th>)}
+                            {dataStatus === "Forwarded" && <th>Bdm Status</th>}
+                            {dataStatus === "Forwarded" ? (<th>BDE Remarks</th>) : (<th>Remarks</th>)}
+                            {dataStatus === "Forwarded" && <th>BDM Remarks</th>}
+
                             <th>
                               Incorporation Date
                               <FilterListIcon
@@ -3772,7 +3773,7 @@ function EmployeePanel() {
                         {loading ? (
                           <tbody>
                             <tr>
-                              <td colSpan="16" className="LoaderTDSatyle">
+                              <td colSpan="11" className="LoaderTDSatyle">
                                 <ClipLoader
                                   color="lightgrey"
                                   loading
@@ -4466,7 +4467,7 @@ function EmployeePanel() {
                         {currentData.length === 0 && !loading && (
                           <tbody>
                             <tr>
-                              <td colSpan="16" className="p-2 particular">
+                              <td colSpan="11" className="p-2 particular">
                                 <Nodata />
                               </td>
                             </tr>
