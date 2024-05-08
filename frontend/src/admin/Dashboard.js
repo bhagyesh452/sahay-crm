@@ -2592,16 +2592,16 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
     moreFilteredData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
+          achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.generatedReceivedAmount);
+          achievedAmount += Math.round(obj.generatedReceivedAmount);
         }
       } else {
         if (obj.bdeName === bdeName || obj.bdmName === bdeName) {
           if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-            achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
+            achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
           } else {
-            achievedAmount += parseInt(obj.generatedReceivedAmount);
+            achievedAmount += Math.round(obj.generatedReceivedAmount);
           }
         }
         obj.moreBookings.forEach((booking) => {
@@ -2610,16 +2610,16 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
               booking.bdeName !== booking.bdmName &&
               booking.bdmType === "Close-by"
             ) {
-              achievedAmount += parseInt(booking.generatedReceivedAmount / 2);
+              achievedAmount += Math.round(booking.generatedReceivedAmount / 2);
             } else {
-              achievedAmount += parseInt(booking.generatedReceivedAmount);
+              achievedAmount += Math.round(booking.generatedReceivedAmount);
             }
           }
         });
       }
     });
     totalAchievedAmount =
-      parseInt(totalAchievedAmount) + parseInt(achievedAmount);
+      Math.round(totalAchievedAmount) + Math.round(achievedAmount);
     return achievedAmount;
   };
 
@@ -2629,11 +2629,11 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
     if (object.targetDetails.length !== 0) {
       const foundObject = object.targetDetails.find(
         (item) =>
-          parseInt(item.year) === currentYear && item.month === currentMonth
+          Math.round(item.year) === currentYear && item.month === currentMonth
       );
       totalTargetAmount =
         foundObject &&
-        parseInt(totalTargetAmount) + parseInt(foundObject.amount);
+        Math.round(totalTargetAmount) + Math.round(foundObject.amount);
       console.log(
         "This is total Amount",
         foundObject && foundObject.amount,
@@ -2681,7 +2681,7 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
     });
 
     // Return the formatted date string or an empty string if lastBookingDate is null
-    return lastBookingDate ? formatDateFinal(lastBookingDate) : "N/A";
+    return lastBookingDate ? formatDateFinal(lastBookingDate) : "No Booking";
   }
 
 let generatedTotalRevenue = 0;
@@ -2841,7 +2841,7 @@ let generatedTotalRevenue = 0;
                                             </td>
                                             <td>
                                               ₹{" "}
-                                              {parseInt(
+                                              {Math.round(
                                                 functionGetAmount(obj)
                                               ).toLocaleString()}
                                             </td>
@@ -4056,7 +4056,7 @@ let generatedTotalRevenue = 0;
                                     <td>
                                       {companyData.filter((company) => company.ename === obj.ename && company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                                     </td>
-                                    <td>₹ {parseInt(functionCalculateGeneratedTotalRevenue(obj.ename)).toLocaleString()}</td>
+                                    <td>₹ {Math.round(functionCalculateGeneratedTotalRevenue(obj.ename)).toLocaleString()}</td>
                                   </tr>
                                 ))}
                             </tbody>
@@ -4098,7 +4098,7 @@ let generatedTotalRevenue = 0;
                                   {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                                 </td>
                                 <td>
-                                ₹ {parseInt(generatedTotalRevenue).toLocaleString()}
+                                ₹ {Math.round(generatedTotalRevenue).toLocaleString()}
                                 </td>
                               </tr>
                             </tfoot>

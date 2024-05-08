@@ -1067,7 +1067,7 @@ function ManagerBookings() {
                                           <div className="d-flex align-items-center justify-content-between">
                                             <div>
                                               ₹{" "}
-                                              {parseInt(
+                                              {Math.round(
                                                 obj.totalPaymentWGST
                                               ).toLocaleString()}{" "}
                                               {"("}
@@ -1184,7 +1184,7 @@ function ManagerBookings() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             ₹{" "}
-                                            {parseInt(
+                                            {Math.round(
                                               obj.firstPayment
                                             ).toLocaleString()}
                                           </div>
@@ -1205,7 +1205,7 @@ function ManagerBookings() {
                                             <div className="d-flex align-items-center justify-content-between">
                                               <div>
                                                 ₹
-                                                {parseInt(
+                                                {Math.round(
                                                   obj.secondPayment
                                                 ).toLocaleString()}
                                                 {"("}
@@ -1258,7 +1258,7 @@ function ManagerBookings() {
                                                     currentLeadform[
                                                     "Company Name"
                                                     ], 0,
-                                                    currentLeadform.remainingPayments[0],
+                                                    currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[0],
                                                   )
                                                 }
                                                 }>
@@ -1286,7 +1286,7 @@ function ManagerBookings() {
                                             <div className="d-flex align-items-center justify-content-between">
                                               <div>
                                                 ₹{" "}
-                                                {parseInt(
+                                                {Math.round(
                                                   obj.thirdPayment
                                                 ).toLocaleString()}
                                                 {"("}
@@ -1305,12 +1305,14 @@ function ManagerBookings() {
                                                   className="add-remaining-amnt"
                                                   style={{
                                                     display:
-                                                      currentLeadform
-                                                        .remainingPayments
-                                                        .length > 1
+                                                      currentLeadform.remainingPayments.length !== 0 &&
+                                                        currentLeadform.remainingPayments.filter(
+                                                          (item) => item.serviceName === obj.serviceName
+                                                        ).length > 1
                                                         ? "none"
                                                         : "block",
                                                   }}
+
                                                   title="Add Remaining Payment"
                                                   onClick={() =>
                                                     functionOpenRemainingPayment(
@@ -1326,7 +1328,7 @@ function ManagerBookings() {
                                                   +
                                                 </div>
                                               </div>
-                                              {currentLeadform.remainingPayments.length === 2 && <div className="edit-remaining">
+                                              {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length > 1 && <div className="edit-remaining">
                                                 <IconButton onClick={() => {
                                                   setIsUpdateMode(true)
                                                   setTempUpdateMode(true)
@@ -1336,7 +1338,7 @@ function ManagerBookings() {
                                                     currentLeadform[
                                                     "Company Name"
                                                     ], 0,
-                                                    currentLeadform.remainingPayments[1],
+                                                    currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[1],
                                                   )
                                                 }
                                                 }>
@@ -1362,7 +1364,7 @@ function ManagerBookings() {
                                             <div className="d-flex align-items-center justify-content-between">
                                               <div>
                                                 ₹{" "}
-                                                {parseInt(
+                                                {Math.round(
                                                   obj.fourthPayment
                                                 ).toLocaleString()}{" "}
                                                 {"("}
@@ -1382,9 +1384,10 @@ function ManagerBookings() {
                                                   title="Add Remaining Payment"
                                                   style={{
                                                     display:
-                                                      currentLeadform
-                                                        .remainingPayments
-                                                        .length === 3
+                                                      currentLeadform.remainingPayments.length !== 0 &&
+                                                        currentLeadform.remainingPayments.filter(
+                                                          (item) => item.serviceName === obj.serviceName
+                                                        ).length === 3
                                                         ? "none"
                                                         : "block",
                                                   }}
@@ -1402,7 +1405,7 @@ function ManagerBookings() {
                                                   +
                                                 </div>
                                               </div>
-                                              {currentLeadform.remainingPayments.length === 3 && <div className="edit-remaining">
+                                              {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length === 3 && <div className="edit-remaining">
                                                 <IconButton onClick={() => {
                                                   setIsUpdateMode(true)
                                                   setTempUpdateMode(true)
@@ -1412,7 +1415,7 @@ function ManagerBookings() {
                                                     currentLeadform[
                                                     "Company Name"
                                                     ], 0,
-                                                    currentLeadform.remainingPayments[2],
+                                                    currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[2],
                                                   )
                                                 }
                                                 }>
@@ -1460,8 +1463,7 @@ function ManagerBookings() {
                                     // Add a unique key prop for each rendered element
                                     >
                                       {currentLeadform.remainingPayments
-                                        .length !== 0 &&
-                                        currentLeadform.remainingPayments.map(
+                                        .length !== 0 && currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName).map(
                                           (paymentObj, index) =>
                                             paymentObj.serviceName ===
                                               obj.serviceName ? (
@@ -1473,17 +1475,13 @@ function ManagerBookings() {
                                                         <div>
                                                           {currentLeadform.remainingPayments.length !== 0 &&
                                                             (() => {
-                                                              const filteredPayments = currentLeadform.remainingPayments.filter(
-                                                                (pay) => pay.serviceName === obj.serviceName
-                                                              );
-                                                              const filteredLength = filteredPayments.length;
-                                                              if (filteredLength === 1) return "Second ";
-                                                              else if (filteredLength === 2) return "Third ";
-                                                              else if (filteredLength === 3) return "Fourth ";
+                                                            
+                                                              if (index === 0) return "Second ";
+                                                              else if (index === 1) return "Third ";
+                                                              else if (index === 2) return "Fourth ";
                                                               // Add more conditions as needed
                                                               return ""; // Return default value if none of the conditions match
                                                             })()}
-
                                                           Remaining Payment
                                                         </div>
                                                         <div>
@@ -1525,18 +1523,19 @@ function ManagerBookings() {
                                                                 const filteredPayments = currentLeadform.remainingPayments.filter(
                                                                   (pay) => pay.serviceName === obj.serviceName
                                                                 );
+                                                               
                                                                 const filteredLength = filteredPayments.length;
-                                                                if (filteredLength === 1) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment);
-                                                                else if (filteredLength === 2) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(currentLeadform.remainingPayments[0].receivedPayment);
-                                                                else if (filteredLength === 3) return parseInt(currentLeadform.pendingAmount);
+                                                                if (index === 0) return Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment);
+                                                                else if (index === 1) return Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment) - Math.round(filteredPayments[0].receivedPayment);
+                                                                else if (index === 2) return Math.round(currentLeadform.pendingAmount);
                                                                 // Add more conditions as needed
                                                                 return ""; // Return default value if none of the conditions match
-                                                              })()}
+                                                              })()} 
                                                             {/* {index === 0
-                                                              ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment)
+                                                              ? Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment)
                                                               : index === 1
-                                                              ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(currentLeadform.remainingPayments[0].receivedPayment)
-                                                              : parseInt(currentLeadform.pendingAmount)} */}
+                                                              ? Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment) - Math.round(currentLeadform.remainingPayments[0].receivedPayment)
+                                                              : Math.round(currentLeadform.pendingAmount)} */}
                                                           </div>
 
                                                         </div>
@@ -1665,7 +1664,7 @@ function ManagerBookings() {
 
                         <div className="my-card">
                           <div className="my-card-body">
-                            {currentLeadform && currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.map((payObj, index) => (
+                            {/* {currentLeadform && currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.map((payObj, index) => (
                               <div className="row m-0 bdr-btm-eee">
                                 <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
                                   <div class="row m-0 h-100">
@@ -1687,7 +1686,7 @@ function ManagerBookings() {
                                       <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                         ₹{" "}
                                         {currentLeadform &&
-                                          parseInt(
+                                          Math.round(
                                             currentLeadform.totalAmount
                                           ).toLocaleString()}
                                       </div>
@@ -1704,10 +1703,10 @@ function ManagerBookings() {
                                     {<div class="col-sm-7 align-self-stretch p-0">
                                       <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                         ₹{" "}
-                                        {(parseInt(currentLeadform.receivedAmount) -
+                                        {(Math.round(currentLeadform.receivedAmount) -
                                           currentLeadform.remainingPayments
                                             .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
-                                            .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
+                                            .reduce((total, pay) => total + Math.round(pay.receivedPayment), 0)).toLocaleString()}
                                       </div>
                                     </div>}
 
@@ -1724,18 +1723,18 @@ function ManagerBookings() {
                                     <div class="col-sm-6 align-self-stretch p-0">
                                       <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                         ₹{" "}
-                                        {(parseInt(currentLeadform.pendingAmount) +
+                                        {(Math.round(currentLeadform.pendingAmount) +
                                           currentLeadform.remainingPayments
                                             .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
-                                            .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
+                                            .reduce((total, pay) => total + Math.round(pay.receivedPayment), 0)).toLocaleString()}
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            ))}
+                            ))} */}
                             <div className="row m-0 bdr-btm-eee">
-                              <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
+                              {/* <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
                                 <div class="row m-0 h-100">
                                   <div class="col align-self-stretch p-0">
                                     <div class="booking_inner_dtl_h h-100 text-center">
@@ -1743,7 +1742,7 @@ function ManagerBookings() {
                                     </div>
                                   </div>
                                 </div>
-                              </div>
+                              </div> */}
                               <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
                                 <div class="row m-0 h-100">
                                   <div class="col-sm-5 align-self-stretch p-0">
@@ -1755,7 +1754,7 @@ function ManagerBookings() {
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                       ₹{" "}
                                       {currentLeadform &&
-                                        parseInt(
+                                        Math.round(
                                           currentLeadform.totalAmount
                                         ).toLocaleString()}
                                     </div>
@@ -1773,14 +1772,14 @@ function ManagerBookings() {
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       ₹{" "}
                                       {currentLeadform &&
-                                        parseInt(
+                                        Math.round(
                                           currentLeadform.receivedAmount
                                         ).toLocaleString()}
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                              <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
+                              <div className="col-lg-4 col-sm-5 p-0 align-self-stretch">
                                 <div class="row m-0 h-100">
                                   <div class="col-sm-6 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_h bdr-left-eee h-100">
@@ -1791,7 +1790,7 @@ function ManagerBookings() {
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       ₹{" "}
                                       {currentLeadform &&
-                                        parseInt(
+                                        Math.round(
                                           currentLeadform.pendingAmount
                                         ).toLocaleString()}
                                     </div>
@@ -2289,7 +2288,7 @@ function ManagerBookings() {
                                               <div className="d-flex align-item-center justify-content-between">
                                                 <div>
                                                   ₹{" "}
-                                                  {parseInt(
+                                                  {Math.round(
                                                     obj.totalPaymentWGST
                                                   ).toLocaleString()}
                                                   {"("}
@@ -2394,7 +2393,7 @@ function ManagerBookings() {
                                             <div class="col-sm-8 align-self-stretch p-0">
                                               <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                                 ₹{" "}
-                                                {parseInt(
+                                                {Math.round(
                                                   obj.firstPayment
                                                 ).toLocaleString()}
                                                 /-
@@ -2416,7 +2415,7 @@ function ManagerBookings() {
                                                 <div className="d-flex align-items-center justify-content-between">
                                                   <div>
                                                     ₹
-                                                    {parseInt(
+                                                    {Math.round(
                                                       obj.secondPayment
                                                     ).toLocaleString()}
                                                     /- {"("}
@@ -2469,7 +2468,7 @@ function ManagerBookings() {
                                                 <div className="d-flex align-items-center justify-content-between">
                                                   <div>
                                                     ₹{" "}
-                                                    {parseInt(
+                                                    {Math.round(
                                                       obj.thirdPayment
                                                     ).toLocaleString()}
                                                     /- {"("}
@@ -2520,7 +2519,7 @@ function ManagerBookings() {
                                                 <div className="d-flex align-items-center justify-content-between">
                                                   <div>
                                                     ₹{" "}
-                                                    {parseInt(
+                                                    {Math.round(
                                                       obj.fourthPayment
                                                     ).toLocaleString()}{" "}
                                                     /- {"("}
@@ -2648,7 +2647,7 @@ function ManagerBookings() {
                                         <div class="col-sm-7 align-self-stretchh p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                             ₹{" "}
-                                            {parseInt(
+                                            {Math.round(
                                               objMain.totalAmount
                                             ).toLocaleString()}
                                           </div>
@@ -2665,7 +2664,7 @@ function ManagerBookings() {
                                         <div class="col-sm-7 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             ₹{" "}
-                                            {parseInt(
+                                            {Math.round(
                                               objMain.receivedAmount
                                             ).toLocaleString()}
                                           </div>
@@ -2682,7 +2681,7 @@ function ManagerBookings() {
                                         <div class="col-sm-7 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             ₹{" "}
-                                            {parseInt(
+                                            {Math.round(
                                               objMain.pendingAmount
                                             ).toLocaleString()}
                                           </div>

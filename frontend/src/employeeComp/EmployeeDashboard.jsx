@@ -1639,24 +1639,24 @@ function EmployeeDashboard() {
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.generatedTotalAmount / 2);
+          achievedAmount += Math.round(obj.generatedTotalAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.generatedTotalAmount);
+          achievedAmount += Math.round(obj.generatedTotalAmount);
         }
       } else {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.generatedTotalAmount / 2);
+          achievedAmount += Math.round(obj.generatedTotalAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.generatedTotalAmount);
+          achievedAmount += Math.round(obj.generatedTotalAmount);
         }
         obj.moreBookings.forEach((booking) => {
           if (
             booking.bdeName !== booking.bdmName &&
             booking.bdmType === "Close-by"
           ) {
-            achievedAmount += parseInt(obj.generatedTotalAmount / 2);
+            achievedAmount += Math.round(obj.generatedTotalAmount / 2);
           } else {
-            achievedAmount += parseInt(obj.generatedTotalAmount);
+            achievedAmount += Math.round(obj.generatedTotalAmount);
           }
         });
       }
@@ -1675,30 +1675,31 @@ function EmployeeDashboard() {
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
+          achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.generatedReceivedAmount);
+          achievedAmount += Math.round(obj.generatedReceivedAmount);
         }
       } else {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
+          achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.generatedReceivedAmount);
+          achievedAmount += Math.round(obj.generatedReceivedAmount);
         }
         obj.moreBookings.forEach((booking) => {
           if (
             booking.bdeName !== booking.bdmName &&
             booking.bdmType === "Close-by"
           ) {
-            achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
+            achievedAmount += Math.round(obj.generatedReceivedAmount / 2);
           } else {
-            achievedAmount += parseInt(obj.generatedReceivedAmount);
+            achievedAmount += Math.round(obj.generatedReceivedAmount);
           }
         });
       }
     });
-    return achievedAmount
-  };
+    return achievedAmount;
+};
+
   const functionCalculateYesterdayRevenue = () => {
     let achievedAmount = 0;
     const boom = new Date();
@@ -1711,24 +1712,24 @@ function EmployeeDashboard() {
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.receivedAmount / 2);
+          achievedAmount += Math.round(obj.receivedAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.receivedAmount);
+          achievedAmount += Math.round(obj.receivedAmount);
         }
       } else {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.receivedAmount / 2);
+          achievedAmount += Math.round(obj.receivedAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.receivedAmount);
+          achievedAmount += Math.round(obj.receivedAmount);
         }
         obj.moreBookings.forEach((booking) => {
           if (
             booking.bdeName !== booking.bdmName &&
             booking.bdmType === "Close-by"
           ) {
-            achievedAmount += parseInt(obj.receivedAmount / 2);
+            achievedAmount += Math.round(obj.receivedAmount / 2);
           } else {
-            achievedAmount += parseInt(obj.receivedAmount);
+            achievedAmount += Math.round(obj.receivedAmount);
           }
         });
       }
@@ -1744,24 +1745,24 @@ function EmployeeDashboard() {
     todayData.forEach((obj) => {
       if (obj.moreBookings.length === 0) {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.pendingAmount / 2);
+          achievedAmount += Math.round(obj.pendingAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.pendingAmount);
+          achievedAmount += Math.round(obj.pendingAmount);
         }
       } else {
         if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
-          achievedAmount += parseInt(obj.pendingAmount / 2);
+          achievedAmount += Math.round(obj.pendingAmount / 2);
         } else {
-          achievedAmount += parseInt(obj.pendingAmount);
+          achievedAmount += Math.round(obj.pendingAmount);
         }
         obj.moreBookings.forEach((booking) => {
           if (
             booking.bdeName !== booking.bdmName &&
             booking.bdmType === "Close-by"
           ) {
-            achievedAmount += parseInt(obj.pendingAmount / 2);
+            achievedAmount += Math.round(obj.pendingAmount / 2);
           } else {
-            achievedAmount += parseInt(obj.pendingAmount);
+            achievedAmount += Math.round(obj.pendingAmount);
           }
         });
       }
@@ -1887,14 +1888,14 @@ function EmployeeDashboard() {
     }
 
     const foundObject = targetDetails.find(
-      (item) => parseInt(item.year) === currentYear && item.month === currentMonth
+      (item) => Math.round(item.year) === currentYear && item.month === currentMonth
     );
 
     if (!foundObject) {
       return 0; // Return 0 if no matching object is found
     }
 
-    const amount = parseInt(foundObject.amount);
+    const amount = Math.round(foundObject.amount);
     totalTargetAmount += amount; // Increment totalTargetAmount by amount
 
 

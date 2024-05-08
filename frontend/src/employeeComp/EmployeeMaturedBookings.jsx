@@ -40,6 +40,7 @@ import PdfImageViewerAdmin from "../admin/PdfViewerAdmin";
 function EmployeeMaturedBookings() {
 
   const [data, setData] = useState([])
+  const [searchText, setSearchText] = useState("");
   const [fetch, setFetch] = useState(false);
   const { userId } = useParams();
   const secretKey = process.env.REACT_APP_SECRET_KEY;
@@ -74,6 +75,13 @@ function EmployeeMaturedBookings() {
 
   const [formData, setFormData] = useState([])
   const [openBooking, setOpenBooking] = useState(false);
+  const [infiniteBooking , setInfiniteBooking] = useState([]);
+
+
+
+
+
+
 
   const fetchRedesignedFormData1 = async () => {
     try {
@@ -84,6 +92,7 @@ function EmployeeMaturedBookings() {
       const redesignedData = response.data.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
       console.log(redesignedData);
       setFormData(redesignedData.reverse());
+      setInfiniteBooking(redesignedData.reverse())
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -94,8 +103,14 @@ function EmployeeMaturedBookings() {
     fetchRedesignedFormData1();
     console.log("bhoom")
   }, [data.ename]);
+  useEffect(() => {
+    setFormData(
+      infiniteBooking.filter((obj) =>
+        obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())
+      )
+    );
+  }, [searchText]);
 
-  console.log("formData", formData)
   const [currentCompanyName, setCurrentCompanyName] = useState("");
 
   useEffect(() => {
@@ -327,6 +342,51 @@ function EmployeeMaturedBookings() {
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !editMoreOpen && (
         <div className="booking-list-main">
+           <div className="booking_list_Filter">
+            <div className="container-xl">
+              <div className="row justify-content-between">
+                <div className="col-2">
+                  <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
+                    <div class="input-icon">
+                      <span class="input-icon-addon">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="icon"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          stroke-width="2"
+                          stroke="currentColor"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path
+                            stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none"
+                          ></path>
+                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                          <path d="M21 21l-6 -6"></path>
+                        </svg>
+                      </span>
+                      <input
+                        type="text"
+                        value={searchText}
+                        class="form-control"
+                        placeholder="Search Company"
+                        aria-label="Search in website"
+                        onChange={(e) => setSearchText(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="col-6">
+                 
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="container-xl">
             <div className="booking_list_Dtl_box">
               <div className="row m-0">
@@ -997,8 +1057,7 @@ function EmployeeMaturedBookings() {
                                     // Add a unique key prop for each rendered element
                                     >
                                       {currentLeadform.remainingPayments
-                                        .length !== 0 &&
-                                        currentLeadform.remainingPayments.map(
+                                        .length !== 0 && currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName).map(
                                           (paymentObj, index) =>
                                             paymentObj.serviceName ===
                                               obj.serviceName ? (
@@ -1010,17 +1069,13 @@ function EmployeeMaturedBookings() {
                                                         <div>
                                                           {currentLeadform.remainingPayments.length !== 0 &&
                                                             (() => {
-                                                              const filteredPayments = currentLeadform.remainingPayments.filter(
-                                                                (pay) => pay.serviceName === obj.serviceName
-                                                              );
-                                                              const filteredLength = filteredPayments.length;
-                                                              if (filteredLength === 1) return "Second ";
-                                                              else if (filteredLength === 2) return "Third ";
-                                                              else if (filteredLength === 3) return "Fourth ";
+                                                            
+                                                              if (index === 0) return "Second ";
+                                                              else if (index === 1) return "Third ";
+                                                              else if (index === 2) return "Fourth ";
                                                               // Add more conditions as needed
                                                               return ""; // Return default value if none of the conditions match
                                                             })()}
-
                                                           Remaining Payment
                                                         </div>
                                                         <div>
@@ -1062,13 +1117,14 @@ function EmployeeMaturedBookings() {
                                                                 const filteredPayments = currentLeadform.remainingPayments.filter(
                                                                   (pay) => pay.serviceName === obj.serviceName
                                                                 );
+                                                               
                                                                 const filteredLength = filteredPayments.length;
-                                                                if (filteredLength === 1) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment);
-                                                                else if (filteredLength === 2) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(currentLeadform.remainingPayments[0].receivedPayment);
-                                                                else if (filteredLength === 3) return parseInt(currentLeadform.pendingAmount);
+                                                                if (index === 0) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment);
+                                                                else if (index === 1) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(filteredPayments[0].receivedPayment);
+                                                                else if (index === 2) return parseInt(currentLeadform.pendingAmount);
                                                                 // Add more conditions as needed
                                                                 return ""; // Return default value if none of the conditions match
-                                                              })()}
+                                                              })()} 
                                                             {/* {index === 0
                                                               ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment)
                                                               : index === 1
@@ -1105,7 +1161,7 @@ function EmployeeMaturedBookings() {
                                                         <div class="col-sm-6 align-self-stretc p-0">
                                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                                             {
-                                                              paymentObj.extraRemarks ? paymentObj.extraRemarks : "N/A"
+                                                              paymentObj.extraRemarks
                                                             }
                                                           </div>
                                                         </div>
@@ -1201,7 +1257,7 @@ function EmployeeMaturedBookings() {
                         </div>
                         <div className="my-card">
                           <div className="my-card-body">
-                            {currentLeadform && currentLeadform.remainingPayments.length!==0 && currentLeadform.remainingPayments.map((payObj , index)=>(
+                            {/* {currentLeadform && currentLeadform.remainingPayments.length!==0 && currentLeadform.remainingPayments.map((payObj , index)=>(
                               <div className="row m-0 bdr-btm-eee">
                                 <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
                                   <div class="row m-0 h-100">
@@ -1269,9 +1325,9 @@ function EmployeeMaturedBookings() {
                                   </div>
                                 </div>
                               </div>
-                            )) }
+                            )) } */}
                             <div className="row m-0 bdr-btm-eee">
-                              <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
+                              {/* <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
                                 <div class="row m-0 h-100">
                                   <div class="col align-self-stretch p-0">
                                     <div class="booking_inner_dtl_h h-100 text-center">
@@ -1279,7 +1335,7 @@ function EmployeeMaturedBookings() {
                                     </div>
                                   </div>
                                 </div>
-                              </div>
+                              </div> */}
                               <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
                                 <div class="row m-0 h-100">
                                   <div class="col-sm-5 align-self-stretch p-0">
@@ -1316,7 +1372,7 @@ function EmployeeMaturedBookings() {
                                   </div>
                                 </div>
                               </div>
-                              <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
+                              <div className="col-lg-4 col-sm-5 p-0 align-self-stretch">
                                 <div class="row m-0 h-100">
                                   <div class="col-sm-6 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_h bdr-left-eee h-100">
