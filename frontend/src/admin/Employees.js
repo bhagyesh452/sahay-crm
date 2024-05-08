@@ -1134,7 +1134,7 @@ function Employees({ onEyeButtonClick }) {
                         Branch Office
                       </button>
                     </th>
-                    <th>
+                    {(adminName === "Nimesh" || adminName==="Ronak" || adminName === "Aakash" || adminName === "shivangi")  && <> <th>
                       <button
                         onClick={sortDateByAddedOn}
                         className="table-sort"
@@ -1159,7 +1159,7 @@ function Employees({ onEyeButtonClick }) {
                       >
                         Action
                       </button>
-                    </th>
+                    </th> </>}
                   </tr>
                 </thead>
                 {filteredData.length == 0 ? (
@@ -1185,65 +1185,15 @@ function Employees({ onEyeButtonClick }) {
                         <td>{formatDateFinal(item.jdate)}</td>
                         <td>{item.designation}</td>
                         <td>{item.branchOffice}</td>
-                        <td>
+                       {(adminName === "Nimesh" || adminName==="Ronak" || adminName === "Aakash" || adminName === "shivangi")
+                        && 
+                       
+<>
+                       <td>
                           {formatDate(item.AddedOn) === "Invalid Date"
                             ? "06/02/2024"
                             : formatDateFinal(item.AddedOn)}
                         </td>
-                        {/* {item.designation !== "Admin Team" ? (
-                          <td>
-                            {item.Active && item.Active.includes("GMT") ? (
-                              <div>
-                                <span
-                                  style={{ color: "red", marginRight: "5px" }}
-                                >
-                                  ●
-                                </span>
-                                <span
-                                  style={{
-                                    fontWeight: "bold",
-                                    color: "rgb(170 144 144)",
-                                  }}
-                                >
-                                  {formatDateWP(item.Active)}
-                                </span>
-                              </div>
-                            ) : (
-                              <div>
-                                <span
-                                  style={{ color: "green", marginRight: "5px" }}
-                                >
-                                  ●
-                                </span>
-                                <span
-                                  style={{ fontWeight: "bold", color: "green" }}
-                                >
-                                  Online
-                                </span>
-                              </div>
-                            )}
-                          </td>
-                        ) : (
-                          <td>
-                            <div>
-                              <span
-                                style={{ color: "red", marginRight: "5px" }}
-                              >
-                                ●
-                              </span>
-                              <span
-                                style={{
-                                  fontWeight: "bold",
-                                  color: "rgb(170 144 144)",
-                                }}
-                              >
-                                {formatDateWP(
-                                  "Mon Mar 01 2024 18:25:58 GMT+0530 (India Standard Time)"
-                                )}
-                              </span>
-                            </div>
-                          </td>
-                        )} */}
 
                         <td>
                           {/* {teamData
@@ -1264,7 +1214,7 @@ function Employees({ onEyeButtonClick }) {
                         </td>
                         <td>
                           <div className="d-flex justify-content-center align-items-center">
-                            {(adminName === "Nimesh" || adminName==="Ronak" || adminName === "Aakash" || adminName === "shivangi")  &&<div className="icons-btn">
+                            {<div className="icons-btn">
                               <IconButton
                                 onClick={() =>
                                   handleDeleteClick(item._id, item.ename)
@@ -1330,7 +1280,7 @@ function Employees({ onEyeButtonClick }) {
                               </Link> */}
                             </div>
                           </div>
-                        </td>
+                        </td></>}
                       </tr>
                     ))}
                   </tbody>
