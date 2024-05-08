@@ -249,7 +249,7 @@ function Dashboard() {
     uniqueBDE.size !== 0 &&
     employeeData.filter((obj) => Array.from(uniqueBDE).includes(obj.ename));
 
-  console.log("Employee Data:- ", uniqueBDEobjects);
+  //console.log("Employee Data:- ", uniqueBDEobjects);
   useEffect(() => {
     // Call the fetchData function when the component mounts
 
@@ -469,22 +469,6 @@ function Dashboard() {
   // ----------------------------------projection-dashboard-----------------------------------------------
 
   const [followDataToday, setfollowDataToday] = useState([]);
-  //   const[historyFollowUpData , setHistoryFollowUpData] = useState([])
-
-  //   useEffect(() => {
-  //     const fetchDataProjectionHistory = async () => {
-  //       const ename = projectionEname
-  //       try {
-  //         const response = await axios.get(`${secretKey}/followUp-historydata/${ename}`); // Fetch main document data
-  //         setHistoryFollowUpData(response.data);
-  //       } catch (error) {
-  //         console.error('Error fetching data:', error);
-  //       }
-  //     };
-  //     fetchDataProjectionHistory();
-  //   }, []);
-
-  // console.log(projectionEname)
   const [followDataFilter, setFollowDataFilter] = useState([])
   const [followDataNew, setFollowDataNew] = useState([])
 
@@ -556,16 +540,9 @@ function Dashboard() {
 
       const filteredFollowDataforwarded = followDataFilter.filter((obj) =>
         forwardEmployeeDataNew.some((empObj) =>
-          empObj.branchOffice === branchName &&
-          (empObj.ename === obj.bdeName)
+          empObj.branchOffice === branchName)
         )
-      );
-
-
-
       //console.log(filteredFollowData)
-
-
       const filteredCompanyData = companyDataFilter.filter(obj => (
         (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
         forwardEmployeeDataNew.some(empObj => empObj.branchOffice === branchName && empObj.ename === obj.ename)
@@ -583,11 +560,12 @@ function Dashboard() {
   }
 
 
-  const debouncedFilterSearchForwardData = debounce(filterSearchForwardData, 100);
+  
   const [searchTermForwardData, setSearchTermForwardData] = useState("")
 
   // Modified filterSearch function with debounce
-  function filterSearchForwardData(searchTerm) {
+  const filterSearchForwardData=(searchTerm)=> {
+    console.log(searchTerm)
     setSearchTermForwardData(searchTerm);
 
     setForwardEmployeeData(
@@ -629,35 +607,36 @@ function Dashboard() {
   //console.log("followData", followData, followDataFilter)
 
   const [selectedValues, setSelectedValues] = useState([]);
+  const debouncedFilterSearchForwardData = debounce(filterSearchForwardData, 100);
 
-const options = forwardEmployeeDataNew.map((obj) => ({ value: obj.ename, label: obj.ename }));
+  const options = forwardEmployeeDataNew.map((obj) => ({ value: obj.ename, label: obj.ename }));
 
-console.log("options", options);
+  console.log("options", options);
 
-const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
-  console.log(selectedEmployeeNames, "selected employees");
-  // Assuming you have forwardEmployeeDataFilter, companyDataFilter, and teamLeadsDataFilter defined somewhere
+  const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
+    console.log(selectedEmployeeNames, "selected employees");
+    // Assuming you have forwardEmployeeDataFilter, companyDataFilter, and teamLeadsDataFilter defined somewhere
 
-  const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) =>
-    selectedEmployeeNames.includes(company.ename)
-  );
+    const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) =>
+      selectedEmployeeNames.includes(company.ename)
+    );
 
-  setForwardEmployeeData(filteredForwardEmployeeData);
+    setForwardEmployeeData(filteredForwardEmployeeData);
 
-  const filteredCompanyData = companyDataFilter.filter(
-    (obj) =>
-      (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
-      forwardEmployeeDataNew.some((empObj) => empObj.ename === obj.ename && selectedEmployeeNames.includes(empObj.ename))
-  );
+    const filteredCompanyData = companyDataFilter.filter(
+      (obj) =>
+        (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
+        forwardEmployeeDataNew.some((empObj) => empObj.ename === obj.ename && selectedEmployeeNames.includes(empObj.ename))
+    );
 
-  setCompanyData(filteredCompanyData);
+    setCompanyData(filteredCompanyData);
 
-  const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj) =>
-    selectedEmployeeNames.includes(obj.bdmName)
-  );
+    const filteredTeamLeadsData = teamLeadsDataFilter.filter((obj) =>
+      selectedEmployeeNames.includes(obj.bdmName)
+    );
 
-  setTeamLeadsData(filteredTeamLeadsData);
-};
+    setTeamLeadsData(filteredTeamLeadsData);
+  };
 
   // const handleSelectForwardedEmployeeData = (employeeName) => {
 
@@ -688,7 +667,7 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
   //   )
   // }
 
-  
+
 
 
 
@@ -2415,13 +2394,6 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
         }, 0)
       );
     }
-
-    // Sorting logic for total offered price
-    // if (sortTypePrice === "ascending") {
-    //   return getTotalOfferedPrice(a) - getTotalOfferedPrice(b);
-    // } else if (sortTypePrice === "descending") {
-    //   return getTotalOfferedPrice(b) - getTotalOfferedPrice(a);
-    // }
     if (sortTypePrice === "ascending") {
       return (
         followDataToday.reduce((totalOfferedPriceA, partObj) => {
@@ -2453,7 +2425,6 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
         }, 0)
       );
     }
-
     // Sorting logic for expected amount
     if (sortTypeExpectedPayment === "ascending") {
       return (
@@ -2562,8 +2533,6 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
             maturedCount += 1;
           }
         }
-
-
         obj.moreBookings.forEach((booking) => {
           if (booking.bdeName === bdeName || booking.bdmName === bdeName) {
             if (
@@ -2581,6 +2550,8 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
     totalMaturedCount = totalMaturedCount + maturedCount;
     return maturedCount;
   };
+
+
   const functionCalculateAchievedAmount = (bdeName) => {
     let achievedAmount = 0;
     const filteredRedesignedData = redesignedData.filter(
@@ -2684,7 +2655,7 @@ const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
     return lastBookingDate ? formatDateFinal(lastBookingDate) : "No Booking";
   }
 
-let generatedTotalRevenue = 0;
+  let generatedTotalRevenue = 0;
 
 
   function functionCalculateGeneratedTotalRevenue(ename) {
@@ -2698,11 +2669,40 @@ let generatedTotalRevenue = 0;
       }
 
     });
-    generatedTotalRevenue = generatedTotalRevenue+ generatedRevenue;
+    generatedTotalRevenue = generatedTotalRevenue + generatedRevenue;
     return generatedRevenue;
     //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
     //  console.log("This is generated Revenue",requiredObj);
 
+  }
+
+  // -----------------------------------employees forwarded case functions--------------------------------------------
+  let generatedTotalProjection = 0;
+  const functionCaluclateTotalForwardedProjection=(isBdm , employeeName)=>{
+    
+    const filteredFollowDataForward = isBdm ? followData.filter((company)=>company.ename === employeeName && company.bdmName !== employeeName &&  company.caseType === "Forwarded" ) : followData.filter((company)=>company.ename === employeeName && company.caseType === "Forwarded")
+    const filteredFollowDataRecieved = isBdm ? followData.filter((company)=>company.ename === employeeName && company.bdmName !== employeeName &&  company.caseType === "Recieved" ) : followData.filter((company)=>(company.ename === employeeName || company.bdeName === employeeName) && company.caseType === "Recieved")
+    const totalPaymentForwarded = filteredFollowDataForward.reduce((total , obj)=> total+obj.totalPayment , 0)
+    const totalPaymentRecieved = filteredFollowDataRecieved.reduce((total , obj)=> total+obj.totalPayment/2 , 0)
+    const finalPayment = totalPaymentForwarded + totalPaymentRecieved
+
+    generatedTotalProjection = generatedTotalProjection + finalPayment;
+
+    return finalPayment.toLocaleString();
+
+  }
+
+  let generatedTotalProjectionRecieved = 0;
+
+  const functionCalculateTotalProjectionRecieved=(employeeName)=>{
+    const filterFollowDataRecieved = followData.filter((company)=>company.bdmName === employeeName && company.caseType === "Recieved")
+    const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
+    const finalPayment = totalPaymentRecieved
+    //console.log(finalPayment)
+    //console.log( filterFollowDataRecieved)
+    generatedTotalProjectionRecieved = generatedTotalProjectionRecieved + finalPayment
+
+    return finalPayment.toLocaleString();
   }
 
 
@@ -2760,7 +2760,7 @@ let generatedTotalRevenue = 0;
                   </div>
                   {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
                   <div className="employee-dashboard mt-2">
-                    <div  className="card todays-booking totalbooking"   id="totalbooking"   >
+                    <div className="card todays-booking totalbooking" id="totalbooking"   >
                       <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
                         <div className="dashboard-title">
                           <h2 className="m-0 pl-1">
@@ -2802,7 +2802,7 @@ let generatedTotalRevenue = 0;
                       </div>
                       <div className="card-body">
                         <div className="row tbl-scroll">
-                          <table  className="table-vcenter table-nowrap admin-dash-tbl">
+                          <table className="table-vcenter table-nowrap admin-dash-tbl">
                             <thead className="admin-dash-tbl-thead">
                               <tr  >
                                 <th>SR.NO</th>
@@ -3009,7 +3009,7 @@ let generatedTotalRevenue = 0;
                                   <tr>
                                     <td
                                       colSpan={2}
-                                    
+
                                     >
                                       Total:
                                     </td>
@@ -3147,28 +3147,28 @@ let generatedTotalRevenue = 0;
                                 <path d="M21 21l-6 -6"></path>
                               </svg>
                             </span>
-                          
+
                             <input
-                            value={searchTerm}
-                            onChange={(e) =>
-                              debouncedFilterSearch(e.target.value)
-                            }
-                            className="form-control"
-                            placeholder="Enter BDE Name..."
-                            type="text"
-                            name="bdeName-search"
-                            id="bdeName-search"  />
+                              value={searchTerm}
+                              onChange={(e) =>
+                                debouncedFilterSearch(e.target.value)
+                              }
+                              className="form-control"
+                              placeholder="Enter BDE Name..."
+                              type="text"
+                              name="bdeName-search"
+                              id="bdeName-search" />
                           </div>
                           <LocalizationProvider
                             dateAdapter={AdapterDayjs}
                             sx={{
-                              padding:'0px'
+                              padding: '0px'
                             }}
                           >
                             <DemoContainer
                               components={["SingleInputDateRangeField"]} className="ddddd"
                             >
-                              <DateRangePicker  className="form-control my-date-picker form-control-sm p-0"
+                              <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
                                 onChange={(values) => {
                                   const startDateEmp = moment(values[0]).format(
                                     "DD/MM/YYYY"
@@ -3811,7 +3811,7 @@ let generatedTotalRevenue = 0;
                             </tbody>
                             {employeeData.length !== 0 &&
                               companyData.length !== 0 && (
-                                <tfoot    className="admin-dash-tbl-tfoot"    >
+                                <tfoot className="admin-dash-tbl-tfoot"    >
                                   <tr style={{ fontWeight: 500 }}>
                                     <td
                                       colSpan="2"
@@ -3900,7 +3900,7 @@ let generatedTotalRevenue = 0;
                       <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
                         <div className="dashboard-title pl-1"  >
                           <h2 className="m-0">
-                          Employees Forwaded Data Report
+                            Employees Forwaded Data Report
                           </h2>
                         </div>
                         <div className="d-flex align-items-center pr-1">
@@ -3912,17 +3912,16 @@ let generatedTotalRevenue = 0;
                                 <path d="M21 21l-6 -6"></path>
                               </svg>
                             </span>
-                          
                             <input
-                            value={searchTerm}
-                            onChange={(e) =>
-                              debouncedFilterSearchForwardData(e.target.value)
-                            }
-                            className="form-control"
-                            placeholder="Enter BDE Name..."
-                            type="text"
-                            name="bdeName-search"
-                            id="bdeName-search"  />
+                              value={searchTermForwardData}
+                              onChange={(e) =>
+                                debouncedFilterSearchForwardData(e.target.value)
+                              }
+                              className="form-control"
+                              placeholder="Enter BDE Name..."
+                              type="text"
+                              name="bdeName-search"
+                              id="bdeName-search" />
                           </div>
                           <div className="filter-booking d-flex align-items-center">
                             <div className="filter-main">
@@ -3995,7 +3994,7 @@ let generatedTotalRevenue = 0;
                               ))}
                             </select>
                           </div> */}
-                          <div className="services mt-1 mr-3" style={{zIndex:"9999", display:"none"}}>
+                          <div className="services mt-1 mr-3" style={{ zIndex: "9999", display: "none" }}>
                             <Select
                               isMulti
                               options={options}
@@ -4044,14 +4043,20 @@ let generatedTotalRevenue = 0;
                                     <td >
                                       {teamLeadsData.filter((company) => company.bdmName === obj.ename).length}
                                     </td>
-                                    <td>₹{(followData
+                                    <td>
+                                      {/* ₹{(followData
                                       .filter(company => company.bdeName === obj.ename)
-                                      .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}</td>
+                                      .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
+                                     {obj.bdmWork ? `₹${functionCaluclateTotalForwardedProjection(true , obj.ename)}` : `₹${functionCaluclateTotalForwardedProjection(false , obj.ename)}`}
 
-                                    <td>₹{followDataNew
+                                    </td>
+
+                                    <td>
+                                      {/* ₹{followDataNew
                                       .filter(company => company.ename === obj.ename && company.bdeName)
-                                      .reduce((total, obj) => total + obj.totalPayment, 0).toLocaleString()
-                                    }</td>
+                                      .reduce((total, obj) => total + obj.totalPayment, 0).toLocaleString()} */}
+                                      ₹{functionCalculateTotalProjectionRecieved(obj.ename)}
+                                    </td>
 
                                     <td>
                                       {companyData.filter((company) => company.ename === obj.ename && company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
@@ -4073,7 +4078,8 @@ let generatedTotalRevenue = 0;
                                 <td>
                                   {teamLeadsData.length}
                                 </td>
-                                <td>₹{companyData
+                                <td>
+                                  {/* ₹{companyData
                                   .filter(company => company.bdmAcceptStatus === "Accept" || company.bdmAcceptStatus === "Pending")
                                   .reduce((total, company) => {
                                     const totalPayment = followData
@@ -4081,10 +4087,12 @@ let generatedTotalRevenue = 0;
                                       .reduce((sum, obj) => sum + obj.totalPayment, 0);
                                     return total + totalPayment;
                                   }, 0)
-                                }
+                                } */}
+                                ₹{generatedTotalProjection}
+
                                 </td>
                                 <td>
-                                  ₹{companyData
+                                  {/* ₹{companyData
                                     .filter(company => company.bdmAcceptStatus === "Accept")
                                     .reduce((total, company) => {
                                       const totalPayment = followDataNew
@@ -4092,13 +4100,14 @@ let generatedTotalRevenue = 0;
                                         .reduce((sum, obj) => sum + obj.totalPayment, 0);
                                       return total + totalPayment;
                                     }, 0)
-                                  }
+                                  } */}
+                                  ₹{generatedTotalProjectionRecieved}
                                 </td>
                                 <td>
                                   {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                                 </td>
                                 <td>
-                                ₹ {Math.round(generatedTotalRevenue).toLocaleString()}
+                                 ₹ {Math.round(generatedTotalRevenue).toLocaleString()}
                                 </td>
                               </tr>
                             </tfoot>
@@ -4107,6 +4116,8 @@ let generatedTotalRevenue = 0;
                       </div>
                     </div>
                   </div>
+
+                  {/* ------------------------projection-summary--------------------------------------------- */}
 
                   <div className="employee-dashboard mt-3"
                     id="projectionsummaryadmin"   >
@@ -4118,7 +4129,7 @@ let generatedTotalRevenue = 0;
                           </h2>
                         </div>
                         <div className="d-flex align-items-center pr-1">
-                          <div  className="filter-booking mr-1 d-flex align-items-center">
+                          <div className="filter-booking mr-1 d-flex align-items-center">
                             <div className="filter-title mr-1">
                               <h2 className="m-0">
                                 Filter Branch :
@@ -4150,7 +4161,7 @@ let generatedTotalRevenue = 0;
                               style={{ padding: "0px" }}
                             >
                               <DemoContainer components={["SingleInputDateRangeField"]}>
-                                <DateRangePicker  className="form-control my-date-picker form-control-sm p-0"
+                                <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
                                   onChange={(values) => {
                                     const startDate = moment(values[0]).format(
                                       "DD/MM/YYYY"

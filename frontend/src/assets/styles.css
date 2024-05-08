@@ -1906,3 +1906,8 @@ color: #4e884e;
   color: transparent !important;
 }
 
+td input
+{
+  background: none;
+  border: none;
+}
