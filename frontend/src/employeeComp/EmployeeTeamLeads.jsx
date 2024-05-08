@@ -881,7 +881,7 @@ function EmployeeTeamLeads() {
                 bdmName : data.ename // Increment editCount
             };
 
-            console.log(finalData)
+            //console.log(finalData)
 
             if (finalData.offeredServices.length === 0) {
                 Swal.fire({ title: "Services is required!", icon: "warning" });
