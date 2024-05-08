@@ -1143,11 +1143,11 @@ function Employees({ onEyeButtonClick }) {
                         Added on
                       </button>
                     </th>
-                    {/* <th>
+                    <th>
                       <button className="table-sort" data-sort="sort-date">
                         Status
                       </button>
-                    </th> */}
+                    </th>
                     {/* <th>Team Name</th> */}
                     <th>
                       BDM Work
@@ -1194,6 +1194,41 @@ function Employees({ onEyeButtonClick }) {
                             ? "06/02/2024"
                             : formatDateFinal(item.AddedOn)}
                         </td>
+                        {item.designation === "Sales Executive" && <td>
+                            {(item.Active && item.Active.includes("GMT")) ? (
+                              <div>
+                                <span
+                                  style={{ color: "red", marginRight: "5px" }}
+                                >
+                                  ●
+                                </span>
+                                <span
+                                  style={{
+                                    fontWeight: "bold",
+                                    color: "rgb(170 144 144)",
+                                  }}
+                                >
+                                  {formatDateWP(item.Active)}
+                                </span>
+                              </div>
+                            ) : (
+                              <div>
+                                <span
+                                  style={{ color: "green", marginRight: "5px" }}
+                                >
+                                  ●
+                                </span>
+                                <span
+                                  style={{ fontWeight: "bold", color: "green" }}
+                                >
+                                  Online
+                                </span>
+                              </div>
+                            )}
+                          </td>}
+                          {item.designation !== "Sales Executive" && <td>
+                            N/A
+                            </td>}
 
                         <td>
                           {/* {teamData

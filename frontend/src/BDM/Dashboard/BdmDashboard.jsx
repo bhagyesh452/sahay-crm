@@ -190,11 +190,10 @@ function BdmDashboard() {
       setCompleteProjectionData(followdata);
       setCompleteProjectionDataNew(followdata)
       const filteredFollowData = followdata.filter((obj)=>employeeData.some((empObj)=>empObj.ename === obj.ename))
+      console.log(filteredFollowData,"fileteredfollowdata")
       setCompleteProjectionDataToday(filteredFollowData.filter((obj) => {
         const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
-        return obj.estPaymentDate === today
-
-      }))
+        return obj.estPaymentDate === today}))
       setCompleteProjectionDataTodayNew(filteredFollowData.filter((obj) => {
         const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
         return obj.estPaymentDate === today
@@ -257,8 +256,6 @@ function BdmDashboard() {
         }
       });
       setUniqueBDE(getBDEnames);
-
-
       setRedesignedData(bookingsData);
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
@@ -791,6 +788,8 @@ function BdmDashboard() {
 
   const uniqueEnames = [...new Set(completeProjectionDataToday.map((item) => item.ename))];
 
+  console.log(uniqueEnames,"unique")
+
   const sortedData = uniqueEnames.slice().sort((a, b) => {
     // Sorting logic for total companies
     if (sortTypeProjection === "ascending") {
@@ -1010,6 +1009,8 @@ function BdmDashboard() {
 
     setCompleteProjectionDataToday(filteredDataDateRange);
   }, [startDate, endDate]);
+
+  console.log("sortedData" , sortedData)
 
   console.log("unique" , uniqueBDEobjects)
 

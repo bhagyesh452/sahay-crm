@@ -381,9 +381,9 @@ function EmployeeDashboard() {
       setDateRangeDisplay(false);
     }
   };
-
+// -------------------------------------------- socket.io section ------------------------------------------------
   useEffect(() => {
-    const socket = io("/socket.io");
+    const socket = io("http://localhost:3001");
     socket.on("connect", () => {
       console.log("Socket connected with ID:", socket.id);
       setSocketID(socket.id);
@@ -417,7 +417,7 @@ function EmployeeDashboard() {
       clearTimeout(timerId);
     };
   }, [socketID]);
-
+// ----------------------------------------  Socket.io Section End  -------------------------------------------------------
   const selectionRangeAnother = {
     startDate: startDateAnother,
     endDate: endDateAnother,
