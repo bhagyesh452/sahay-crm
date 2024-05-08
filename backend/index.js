@@ -1369,7 +1369,7 @@ app.post(`/api/post-updaterejectedfollowup/:cname`, async (req, res) => {
           caseType: caseType,
         },
         $unset:{
-          bdmName
+          bdmName:" "
         }
       },
       { new: true }
