@@ -49,6 +49,7 @@ import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePi
 import dayjs from "dayjs";
 import { IoClose } from "react-icons/io5";
 import Select from "react-select";
+
 // import { LicenseInfo } from '@mui/x-date-pickers-pro';
 
 // LicenseInfo.setLicenseKey(
@@ -120,6 +121,8 @@ function Dashboard() {
   const dateRangePickerProhectionRef = useRef(null);
   const dateRangePickerEmployeeRef = useRef(null);
 
+  const [companyDataTotal , setCompanyDataTotal] = useState([])
+
   // https://startupsahay.in/api
   const fetchCompanyData = async () => {
     fetch(`${secretKey}/leads`)
@@ -127,6 +130,7 @@ function Dashboard() {
       .then((data) => {
         setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
         setcompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted"));
+        setCompanyDataTotal(data.filter((obj) => obj.ename !== "Not Alloted"));
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -525,12 +529,9 @@ function Dashboard() {
   const [selectedValue, setSelectedValue] = useState("")
 
   const handleFilterForwardCaseBranchOffice = (branchName) => {
-
-    console.log(branchName)
-
     if (branchName === "none") {
       setForwardEmployeeData(forwardEmployeeDataFilter)
-      setCompanyData(companyDataFilter)
+      setCompanyDataTotal(companyDataFilter)
       setfollowData(followDataFilter)
       setTeamLeadsData(teamLeadsDataFilter)
     } else {
@@ -552,7 +553,7 @@ function Dashboard() {
 
 
       setForwardEmployeeData(filteredData)
-      setCompanyData(filteredCompanyData)
+      setCompanyDataTotal(filteredCompanyData)
       setfollowData(filteredFollowDataforwarded)
       setFollowDataNew(filteredFollowDataforwarded)
       setTeamLeadsData(filteredTeamLeadsData)
@@ -565,7 +566,7 @@ function Dashboard() {
 
   // Modified filterSearch function with debounce
   const filterSearchForwardData=(searchTerm)=> {
-    console.log(searchTerm)
+    //console.log(searchTerm)
     setSearchTermForwardData(searchTerm);
 
     setForwardEmployeeData(
@@ -574,15 +575,17 @@ function Dashboard() {
       )
     );
 
-    // setCompanyData(
-    //   companyDataFilter.filter(
-    //     (obj) =>
-    //       (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
-    //       forwardEmployeeDataNew.some((empObj) => (obj.ename === empObj.ename) &&
-    //         empObj.ename.toLowerCase().includes(searchTerm.toLowerCase())
-    //       )
-    //   )
-    // );
+  
+
+    setCompanyDataTotal(
+      companyDataFilter.filter(
+        (obj) =>
+          (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
+          forwardEmployeeDataNew.some((empObj) => (obj.ename === empObj.ename) &&
+            empObj.ename.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+      )
+    );
 
     setTeamLeadsData(
       teamLeadsDataFilter.filter((obj) =>
@@ -611,7 +614,7 @@ function Dashboard() {
 
   const options = forwardEmployeeDataNew.map((obj) => ({ value: obj.ename, label: obj.ename }));
 
-  console.log("options", options);
+  //console.log("options", options);
 
   const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
 
@@ -4036,7 +4039,7 @@ function Dashboard() {
                                     <td >{obj.ename}</td>
                                     <td>{obj.branchOffice}</td>
                                     <td >
-                                      {companyData.filter((company) => company.ename === obj.ename && (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept")).length}
+                                      {companyDataTotal.filter((company) => company.ename === obj.ename && (company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept")).length}
                                     </td>
                                     <td >
                                       {teamLeadsData.filter((company) => company.bdmName === obj.ename).length}
@@ -4057,7 +4060,7 @@ function Dashboard() {
                                     </td>
 
                                     <td>
-                                      {companyData.filter((company) => company.ename === obj.ename && company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
+                                      {companyDataTotal.filter((company) => company.ename === obj.ename && company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                                     </td>
                                     <td>₹ {Math.round(functionCalculateGeneratedTotalRevenue(obj.ename)).toLocaleString()}</td>
                                   </tr>
@@ -4071,7 +4074,7 @@ function Dashboard() {
                                   Total
                                 </td>
                                 <td>
-                                  {companyData.filter(company => company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept").length}
+                                  {companyDataTotal.filter(company => company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept").length}
                                 </td>
                                 <td>
                                   {teamLeadsData.length}

@@ -58,8 +58,8 @@ function BdmDashboard() {
       .then((response) => response.json())
       .then((data) => {
         setEmployeeData(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
-        setEmployeeDataFilter(data.filter((employee) =>  (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
-        setEmployeeDataNew(data.filter((employee) =>  (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
+        setEmployeeDataFilter(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
+        setEmployeeDataNew(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
       })
       .catch((error) => {
         console.error(`Error Fetching Employee Data `, error);
@@ -71,7 +71,7 @@ function BdmDashboard() {
     fetchEmployeeInfo()
   }, [])
 
-  console.log("employeedata" , employeeDataNew)
+  console.log("employeedata", employeeDataNew)
 
   const [moreEmpData, setmoreEmpData] = useState([])
   const [tempData, setTempData] = useState([]);
@@ -192,8 +192,8 @@ function BdmDashboard() {
       const followdata = await response.json();
       setCompleteProjectionData(followdata);
       setCompleteProjectionDataNew(followdata)
-      const filteredFollowData = followdata.filter((obj)=>employeeDataNew.some((empObj)=>empObj.ename === obj.ename))
-      console.log("filetered" , filteredFollowData)
+      const filteredFollowData = followdata.filter((obj) => employeeDataNew.some((empObj) => empObj.ename === obj.ename))
+      console.log("filetered", filteredFollowData)
       setCompleteProjectionDataToday(filteredFollowData.filter((obj) => {
         const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
         return obj.estPaymentDate === today
@@ -240,8 +240,11 @@ function BdmDashboard() {
 
   useEffect(() => {
     fetchFollowUpData();
-    fetchCompleteProjectionData()
   }, [data]);
+
+  useEffect(() => {
+    fetchCompleteProjectionData();
+  }, [employeeDataNew]);
 
   const [redesignedData, setRedesignedData] = useState([]);
 
@@ -1017,7 +1020,7 @@ function BdmDashboard() {
     <div>
       <Header bdmName={data.ename} />
       <Navbar userId={userId} />
-     
+
 
       {/* ----------------------------------------------bdm recieved cases report-------------------------------------------------------------- */}
 
@@ -1120,7 +1123,7 @@ function BdmDashboard() {
                               {/* ₹{(followDataToday
                                 .filter(obj => obj.ename === data.ename)
                                 .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
-                               ₹{handleFilterFollowDataTodayRecievedCase()}
+                              ₹{handleFilterFollowDataTodayRecievedCase()}
                             </div>
                           </div>
                         </div>
@@ -1281,9 +1284,9 @@ function BdmDashboard() {
         </div>
       </div>
 
-       {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
+      {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
 
-       <div className='container-xl'>
+      <div className='container-xl'>
         <div className="employee-dashboard mt-2">
           <div className="card todays-booking totalbooking" id="totalbooking"   >
             <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
@@ -1316,7 +1319,7 @@ function BdmDashboard() {
                             .filter(
                               (item) =>
                                 (item.designation ===
-                                "Sales Executive" || item.designation === "Sales Manager") && item.branchOffice === "Sindhu Bhawan" &&
+                                  "Sales Executive" || item.designation === "Sales Manager") && item.branchOffice === "Sindhu Bhawan" &&
                                 item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
                             )
                             .map((obj, index) => (
