@@ -540,7 +540,10 @@ function EmployeeMaturedBookings() {
                     <div className="booking-deatils-body">
                       {/* --------Basic Information Which is Common For all bookingdd  ---------*/}
                       <div className="my-card mt-2">
-                        <div className="my-card-head">Basic Informations:</div>
+                        <div className="my-card-head">  <div className="d-flex align-items-center justify-content-between">
+                            <div>Basic Informations</div>
+                            <div>Total Services: {currentLeadform && currentLeadform.services.length}</div>
+                          </div></div>
                         <div className="my-card-body">
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
@@ -668,6 +671,50 @@ function EmployeeMaturedBookings() {
                                 </div>
                               </div>
                             </div> */}
+                          </div>
+                          <div className="row m-0 bdr-btm-eee">
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_h h-100">
+                                    Total
+                                  </div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                  {currentLeadform && <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                    ₹ {calculateTotalAmount(currentLeadform)}
+                                  </div>}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                    Received
+                                  </div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                  {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                    ₹ {calculateReceivedAmount(currentLeadform)}
+                                  </div>}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-sm-6 p-0">
+                              <div class="row m-0">
+                                <div class="col-sm-4 align-self-stretc p-0">
+                                  <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                    Pending
+                                  </div>
+                                </div>
+                                <div class="col-sm-8 align-self-stretc p-0">
+                                  {currentLeadform && <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                    ₹ {calculatePendingAmount(currentLeadform)}
+                                  </div>}
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -98,6 +98,26 @@ function Navbar({userId}) {
                                         </a>
                                     </Link>
                                 </li>
+                                <li
+                                    className={
+                                        location.pathname === `/bdm/bdmBookings/${userId}`
+                                            ? "nav-item active"
+                                            : "nav-item"
+                                    }>
+                                    <Link
+                                        style={{ textDecoration: "none", color: "black" }}
+                                        to={{
+                                            pathname:`/bdm/bdmBookings/${userId}`
+                                        }}
+                                    >
+                                        <a className="nav-link" href="./">
+                                            <span className="nav-link-icon d-md-none d-lg-inline-block">
+                                                <BsFillPersonVcardFill style={{ width: "19px", height: "23px" }} />
+                                            </span>
+                                            <span className="nav-link-title active">MyBookings</span>
+                                        </a>
+                                    </Link>
+                                </li>
                             </ul>
                         </div>
                     </div>

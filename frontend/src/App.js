@@ -49,6 +49,7 @@ import AdminEmployeeLeads from "./admin/AdminEmployeeLeads.jsx";
 import AdminEmployeeTeamLeads from "./admin/AdminEmployeeTeamLeads.jsx";
 import NotificationDM from "./DataManager/Dashboard/ManageLeads/NotificationDM.jsx";
 import EmployeeMaturedBookings from "./employeeComp/EmployeeMaturedBookings.jsx";
+import BdmBookings from "./BDM/Dashboard/BdmBookings.jsx";
 
 
 
@@ -98,6 +99,7 @@ function App() {
           <Route path="/bdmdashboard/:userId/" element={<BdmDashboard/>}></Route>
           <Route path="/bdm/bdmleads/:userId/" element={<BdmLeads/>}></Route>
           <Route path="/bdm/bdmteamleads/:userId/" element={<BdmTeamLeads/>}></Route>
+          <Route path="/bdm/bdmBookings/:userId/" element={<BdmBookings/>}></Route>
          
 
 {/* --------------------------------------------------bdm components---------------------------------------------------------- */}

@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from "react";
-import Header from "../../Components/Header/Header.jsx";
-import Navbar from "../../Components/Navbar/Navbar.jsx";
-import AdminBookingForm from "../../../admin/AdminBookingForm.jsx";
-import axios from "axios";
-import Swal from "sweetalert2";
-import PdfImageViewerAdmin from "../../../admin/PdfViewerAdmin.jsx";
-import pdfimg from "../../../static/my-images/pdf.png";
-import { FcList } from "react-icons/fc";
-import wordimg from "../../../static/my-images/word.png";
-import Nodata from "../../../components/Nodata.jsx";
+import React, { useState, useEffect } from 'react';
+import Header from '../Components/Header/Header.jsx'
+import Navbar from '../Components/Navbar/Navbar.jsx';
+import { useParams } from "react-router-dom";
+import axios from 'axios';
+import Nodata from '../../components/Nodata.jsx';
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
-import EditableMoreBooking from "../../../admin/EditableMoreBooking.jsx";
-import AddLeadForm from "../../../admin/AddLeadForm.jsx";
 import { FaPlus } from "react-icons/fa6";
 import { IoAdd } from "react-icons/io5";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconX } from "@tabler/icons-react";
+import EditableMoreBooking from '../../admin/EditableMoreBooking.jsx';
+import AddLeadForm from '../../admin/AddLeadForm.jsx';
+import pdfimg from "../../static/my-images/pdf.png"
+import { FcList } from "react-icons/fc";
+import wordimg from "../../static/my-images/word.png";
+import Swal from "sweetalert2";
 import {
   Button,
   Dialog,
@@ -29,103 +28,121 @@ import {
   FormControl,
 } from "@mui/material";
 
-function ManagerBookings() {
-  const [bookingFormOpen, setBookingFormOpen] = useState(false);
-  const [isUpdateMode, setIsUpdateMode] = useState(false);
-  const [tempUpdateMode, setTempUpdateMode] = useState(false);
-  const [sendingIndex, setSendingIndex] = useState(0);
-  const [EditBookingOpen, setEditBookingOpen] = useState(false);
-  const [addFormOpen, setAddFormOpen] = useState(false);
-  const [openRemainingPayment, setOpenRemainingPayment] = useState(false);
-  const [infiniteBooking, setInfiniteBooking] = useState([]);
-  const [bookingIndex, setbookingIndex] = useState(-1);
-  const [currentCompanyName, setCurrentCompanyName] = useState("");
-  const [searchText, setSearchText] = useState("");
-  const [nowToFetch, setNowToFetch] = useState(false);
-  const [leadFormData, setLeadFormData] = useState([]);
-  const [currentLeadform, setCurrentLeadform] = useState(null);
-  const [currentDataLoading, setCurrentDataLoading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState();
-  const [selectedDocuments, setSelectedDocuments] = useState([]);
-  const [openPaymentReceipt, setOpenPaymentReceipt] = useState(false);
-  const [openAddExpanse, setOpenAddExpanse] = useState(false);
-  const [openOtherDocs, setOpenOtherDocs] = useState(false);
-  const [data, setData] = useState([]);
-  const [companyName, setCompanyName] = "";
-  const secretKey = process.env.REACT_APP_SECRET_KEY;
-  const isAdmin = true;
-  const fetchDatadebounce = async () => {
-    try {
-      // Set isLoading to true while fetching data
-      //setIsLoading(true);
-      //setCurrentDataLoading(true)
 
-      const response = await axios.get(`${secretKey}/leads`);
+import PdfImageViewerAdmin from '../../admin/PdfViewerAdmin.jsx';
+
+
+
+
+
+
+function BdmBookings() {
+
+  const [data, setData] = useState([])
+  const [searchText, setSearchText] = useState("");
+  const [fetch, setFetch] = useState(false);
+  const { userId } = useParams();
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+  const frontendKey = process.env.REACT_APP_FRONTEND_KEY;
+
+
+
+  console.log(userId)
+
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${secretKey}/einfo`);
 
       // Set the retrieved data in the state
-      setData(response.data);
-      //setmainData(response.data.filter((item) => item.ename === "Not Alloted"));
-
-      // Set isLoading back to false after data is fetched
-      //setIsLoading(false);
+      const tempData = response.data;
+      //console.log("tempData:", tempData); // Log tempData to check its content
+      const userData = response.data.find((item) => item._id === userId);
+      //console.log("userData:", userData); // Log userData to check if it's null or contains the expected data
+      setData(userData);
     } catch (error) {
       console.error("Error fetching data:", error.message);
-      // Set isLoading back to false if an error occurs
-      //setIsLoading(false);
-    } finally {
-      setCurrentDataLoading(false);
     }
   };
-  useEffect(() => {
-    if (currentCompanyName === "") {
-      setCurrentLeadform(leadFormData[0]);
-    } else {
-      setCurrentLeadform(
-        leadFormData.find((obj) => obj["Company Name"] === currentCompanyName)
-      );
-    }
-  }, [leadFormData]);
+
+  console.log("data:", data); // Log data to see if it's updated after fetching
 
   useEffect(() => {
-    setLeadFormData(
+    fetchData();
+
+  }, [userId]);
+
+  const [formData, setFormData] = useState([])
+  const [openBooking, setOpenBooking] = useState(false);
+  const [infiniteBooking , setInfiniteBooking] = useState([]);
+
+
+
+
+
+
+
+  const fetchRedesignedFormData1 = async () => {
+    try {
+      
+      const response = await axios.get(
+        `${secretKey}/redesigned-final-leadData`
+      );
+      const redesignedData = response.data.filter((obj) => obj.bdeName === data.ename || obj.bdmName === data.ename || (obj.moreBookings.length !== 0 && obj.moreBookings.some((boom) => boom.bdeName === data.ename || boom.bdmName === data.ename)))
+     
+      setFormData(redesignedData.reverse());
+      setInfiniteBooking(redesignedData.reverse())
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+
+  useEffect(() => {
+
+    fetchRedesignedFormData1();
+   
+  }, [data.ename]);
+  useEffect(() => {
+    setFormData(
       infiniteBooking.filter((obj) =>
         obj["Company Name"].toLowerCase().includes(searchText.toLowerCase())
       )
     );
   }, [searchText]);
 
-  const fetchRedesignedFormData = async () => {
-    try {
-      const response = await axios.get(
-        `${secretKey}/redesigned-final-leadData`
-      );
-      const sortedData = response.data.reverse(); // Reverse the order of data
+  const [currentCompanyName, setCurrentCompanyName] = useState("");
 
-      setInfiniteBooking(sortedData);
-      setLeadFormData(sortedData); // Set both states with the sorted data
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
+  useEffect(() => {
+    if (currentCompanyName === "") {
+      setCurrentLeadform(formData[0]);
+    } else {
+      setCurrentLeadform(formData.find(obj => obj["Company Name"] === currentCompanyName));
     }
-  };
 
-  useEffect(() => {
-    fetchRedesignedFormData();
-  }, [nowToFetch]);
+  }, [formData]);
 
-  useEffect(() => {
-    // if (data.companyName) {
-    //   console.log("Company Found");
-    fetchDatadebounce();
-    fetchRedesignedFormData();
-    // } else {
-    //   console.log("No Company Found");
-    // }
-  }, []);
+  const [bookingFormOpen, setBookingFormOpen] = useState(false);
+  const [sendingIndex, setSendingIndex] = useState(0);
+  const [open, openchange] = useState(false);
+  const [EditBookingOpen, setEditBookingOpen] = useState(false);
+  const [addFormOpen, setAddFormOpen] = useState(false);
+  const [currentLeadform, setCurrentLeadform] = useState(null);
+  const [nowToFetch, setNowToFetch] = useState(false);
+  //const [bookingIndex, setbookingIndex] = useState(-1);
+  const [openOtherDocs, setOpenOtherDocs] = useState(false);
+  const [companyName, setCompanyName] = useState("");
 
-  const functionOpenBookingForm = () => {
-    setBookingFormOpen(true);
-    //setCompanyName(data.companyName)
-  };
+
+
+  function formatDatePro(inputDate) {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    const formattedDate = new Date(inputDate).toLocaleDateString(
+      "en-US",
+      options
+    );
+    return formattedDate;
+  }
+
   const calculateTotalAmount = (obj) => {
     let total = Number(obj.totalAmount);
     if (obj.moreBookings && obj.moreBookings.length > 0) {
@@ -158,20 +175,90 @@ function ManagerBookings() {
     }
     return pending.toFixed(2);
   };
-  function formatDatePro(inputDate) {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    const formattedDate = new Date(inputDate).toLocaleDateString(
-      "en-US",
-      options
-    );
-    return formattedDate;
-  }
+
   const getOrdinal = (number) => {
     const suffixes = ["th", "st", "nd", "rd"];
     const lastDigit = number % 10;
     const suffix = suffixes[lastDigit <= 3 ? lastDigit : 0];
     return `${number}${suffix}`;
   };
+
+
+  console.log("currentLeadForm", currentLeadform)
+
+  const handleRequestDelete = async (Id, companyID, companyName , index) => {
+    const confirmDelete = await Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to send a delete request. Are you sure you want to proceed?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, proceed!",
+      cancelButtonText: "No, cancel",
+    });
+
+    if (confirmDelete.isConfirmed) {
+      try {
+        const sendingData = {
+          companyName,
+          Id,
+          companyID,
+          time: new Date().toLocaleTimeString(),
+          date: new Date().toLocaleDateString(),
+          ename: data.ename,
+
+          bookingIndex : index // Replace 'Your Ename Value' with the actual value
+        };
+          
+        // const response = await fetch(`${secretKey}/deleterequestbybde`, {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify(sendingData),
+        // });
+        const response = await axios.post(`${secretKey}/deleterequestbybde` , sendingData);
+       
+       
+        Swal.fire({ title: "Delete Request Sent", icon: "success" });
+        // Log the response message
+      } catch (error) {
+      
+        Swal.fire({ title: "Request Already Exists!", icon: "error" });
+        console.error("Error creating delete request:", error);
+        // Handle the error as per your application's requirements
+      }
+    } else {
+      console.log("No, cancel");
+    }
+  };
+
+  const [currentForm, setCurrentForm] = useState(null);
+  const [bookingIndex, setBookingIndex] = useState(0);
+  const [editMoreOpen, setEditMoreOpen] = useState(false);
+
+  const handleEditClick = async (company , index) => {
+    try {
+      const response = await axios.get(
+        `${secretKey}/redesigned-final-leadData`
+      );
+      const data = response.data.find((obj) => obj.company === company);
+      setCurrentForm(data);
+      setBookingIndex(index)
+      setEditMoreOpen(true)
+      // setOpenBooking(true);
+
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  };
+
+  const handleOpenEditForm = () => {
+    setOpenBooking(false);
+    setEditMoreOpen(true);
+  };
+
   const handleViewPdfReciepts = (paymentreciept, companyName) => {
     const pathname = paymentreciept;
     //console.log(pathname);
@@ -183,73 +270,14 @@ function ManagerBookings() {
     console.log(pathname);
     window.open(`${secretKey}/otherpdf/${companyName}/${pathname}`, "_blank");
   };
-  const dataManagerName = localStorage.getItem("dataManagerName");
-  // ------------------------------------------------- Delete booking ----------------------------------------------
 
-  const handleDeleteBooking = async (company, id) => {
-    const confirmation = await Swal.fire({
-      title: "Are you sure?",
-      text: `Do you want to delete the booking?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel!",
-      reverseButtons: true,
-    });
-
-    if (confirmation.isConfirmed) {
-      if (id) {
-        fetch(
-          `${secretKey}/redesigned-delete-particular-booking/${company}/${id}`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        )
-          .then((response) => {
-            if (response.ok) {
-              Swal.fire("Success!", "Booking Deleted", "success");
-            } else {
-              Swal.fire("Error!", "Failed to Delete Booking", "error");
-            }
-          })
-          .catch((error) => {
-            console.error("Error during delete request:", error);
-          });
-      } else {
-        fetch(`${secretKey}/redesigned-delete-booking/${company}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => {
-            if (response.ok) {
-              Swal.fire("Success!", "Booking Deleted", "success");
-              fetchRedesignedFormData();
-            } else {
-              Swal.fire("Error!", "Failed to Delete Company", "error");
-            }
-          })
-          .catch((error) => {
-            console.error("Error during delete request:", error);
-          });
-      }
-    } else if (confirmation.dismiss === Swal.DismissReason.cancel) {
-      console.log("Cancellation or closed without confirming");
-    }
-  };
-
-  // ----------------------------------------- Upload documents Section -----------------------------------------------------
+  const [selectedDocuments, setSelectedDocuments] = useState([]);
 
   const handleOtherDocsUpload = (updatedFiles) => {
     setSelectedDocuments((prevSelectedDocuments) => {
       return [...prevSelectedDocuments, ...updatedFiles];
     });
   };
-
   const handleRemoveFile = (index) => {
     setSelectedDocuments((prevSelectedDocuments) => {
       // Create a copy of the array of selected documents
@@ -260,10 +288,10 @@ function ManagerBookings() {
       return updatedDocuments;
     });
   };
-
   const closeOtherDocsPopup = () => {
     setOpenOtherDocs(false);
   };
+
   const handleotherdocsAttachment = async () => {
     try {
       const files = selectedDocuments;
@@ -278,16 +306,13 @@ function ManagerBookings() {
       for (let i = 0; i < files.length; i++) {
         formData.append("otherDocs", files[i]);
       }
-      console.log(formData);
-      setCurrentCompanyName(currentLeadform["Company Name"]);
-      const response = await fetch(
+      console.log(currentLeadform["Company Name"] , sendingIndex);
+      setCurrentCompanyName(currentLeadform["Company Name"])
+      const response = await axios.post(
         `${secretKey}/uploadotherdocsAttachment/${currentLeadform["Company Name"]}/${sendingIndex}`,
-        {
-          method: "POST",
-          body: formData,
-        }
+       formData
       );
-      if (response.ok) {
+      
         Swal.fire({
           title: "Success!",
           html: `<small> File Uploaded successfully </small>
@@ -296,15 +321,10 @@ function ManagerBookings() {
         });
         setSelectedDocuments([]);
         setOpenOtherDocs(false);
-        fetchRedesignedFormData();
-      } else {
-        Swal.fire({
-          title: "Error uploading file",
+        fetchRedesignedFormData1();
 
-          icon: "error",
-        });
-        console.error("Error uploading file");
-      }
+
+      
     } catch (error) {
       Swal.fire({
         title: "Error uploading file",
@@ -314,165 +334,14 @@ function ManagerBookings() {
     }
   };
 
-  // --------------------------------------------------  ADD REMAINING PAYMENT SECTION ----------------------------------------------------------
 
-
-  const [remainingObject, setRemainingObject] = useState({
-    "Company Name": "",
-    paymentCount: "",
-    bookingIndex: 0,
-    serviceName: "",
-    paymentMethod: "",
-    extraRemarks: "",
-    paymentDate: null,
-    paymentRemarks: "",
-    pendingAmount: 0,
-    receivedAmount: 0,
-    remainingAmount: 0,
-    remainingPaymentReceipt: null,
-  });
-  const functionOpenRemainingPayment = (
-    object,
-    paymentNumber,
-    companyName,
-    bookingIndex,
-    existingObject
-  ) => {
-
-    const serviceName = object.serviceName;
-    let pendingPayment;
-    let paymentRemarks;
-    if (paymentNumber === "secondPayment") {
-      pendingPayment = object.secondPayment;
-      paymentRemarks = object.secondPaymentRemarks;
-    } else if (paymentNumber === "thirdPayment") {
-      pendingPayment = object.thirdPayment;
-      paymentRemarks = object.thirdPaymentRemarks;
-    } else {
-      pendingPayment = object.fourthPayment;
-      paymentRemarks = object.fourthPaymentRemarks;
-    }
-
-    if (existingObject) {
-      console.log("Existing Object", existingObject)
-      setRemainingObject({
-        "Company Name": companyName,
-        paymentCount: paymentNumber,
-        bookingIndex: bookingIndex,
-        serviceName: serviceName,
-        pendingAmount: existingObject.pendingPayment,
-        receivedAmount: existingObject.receivedPayment,
-        remainingAmount: existingObject.remainingAmount,
-        paymentMethod: existingObject.paymentMethod,
-        paymentDate: new Date(existingObject.paymentDate).toISOString().slice(0, 10),
-        extraRemarks: existingObject.extraRemarks,
-        paymentRemarks,
-      });
-      setOpenRemainingPayment(true);
-    } else {
-      setRemainingObject({
-        "Company Name": companyName,
-        paymentCount: paymentNumber,
-        bookingIndex: bookingIndex,
-        serviceName: serviceName,
-        pendingAmount: pendingPayment,
-        receivedAmount: pendingPayment,
-        remainingAmount: 0,
-        paymentRemarks,
-      });
-      setOpenRemainingPayment(true);
-    }
-  };
-
-  const formData = new FormData();
-  const moreRemainingPayment =
-    remainingObject.pendingAmount - remainingObject.receivedAmount;
-
-  formData.append("Company Name", remainingObject["Company Name"]);
-  formData.append("paymentCount", remainingObject["paymentCount"]);
-  formData.append("bookingIndex", remainingObject["bookingIndex"]);
-  formData.append("serviceName", remainingObject["serviceName"]);
-  formData.append("pendingAmount", remainingObject["pendingAmount"]);
-  formData.append("receivedAmount", remainingObject["receivedAmount"]);
-  formData.append("remainingAmount", moreRemainingPayment);
-  formData.append("paymentMethod", remainingObject["paymentMethod"]);
-  formData.append("extraRemarks", remainingObject["extraRemarks"]);
-  formData.append("paymentRemarks", remainingObject["paymentRemarks"]);
-  formData.append("paymentReceipt", remainingObject["remainingPaymentReceipt"]);
-  const handleSubmitMorePayments = async () => {
-    if (!remainingObject.paymentDate || !remainingObject.paymentMethod) {
-      Swal.fire("Incorrect Details!", "Please Enter Details Properly", "warning");
-      return true;
-    }
-    if (!tempUpdateMode) {
-      try {
-        const response = await axios.post(
-          `${secretKey}/redesigned-submit-morePayments/${remainingObject["Company Name"]}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        Swal.fire(
-          "Payment Updated",
-          "Thank you, your payment has been updated successfully!",
-          "success"
-        );
-        setOpenRemainingPayment(false);
-      } catch (error) {
-        Swal.fire(
-          "Error Updating Payment!",
-          "Sorry, Unable to update the payment",
-          "error"
-        );
-      }
-    } else {
-      try {
-        const response = await axios.post(
-          `${secretKey}/redesigned-update-morePayments/${remainingObject["Company Name"]}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        Swal.fire(
-          "Payment Updated",
-          "Thank you, your payment has been updated successfully!",
-          "success"
-        );
-        setOpenRemainingPayment(false);
-        setTempUpdateMode(false);
-      } catch (error) {
-        Swal.fire(
-          "Error Updating Payment!",
-          "Sorry, Unable to update the payment",
-          "error"
-        );
-      }
-    }
-  };
-
-  console.log("Remaining Object", remainingObject)
-  const [expanseObject, setExpanseObject] = useState({
-    "Company Name": "",
-    bookingIndex: 0,
-    expanse: 0
-  })
-  const functionOpenAddExpanse = (serviceObject) => {
-    const serviceName = serviceObject.serviceName;
-
-  }
   return (
     <div>
-      <Header name={dataManagerName} />
-      <Navbar name={dataManagerName} />
-      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && (
+    <Header bdmName={data.ename} />
+      <Navbar userId={userId} />
+      {!bookingFormOpen && !EditBookingOpen && !addFormOpen && !editMoreOpen && (
         <div className="booking-list-main">
-          <div className="booking_list_Filter">
+           <div className="booking_list_Filter">
             <div className="container-xl">
               <div className="row justify-content-between">
                 <div className="col-2">
@@ -512,20 +381,7 @@ function ManagerBookings() {
                   </div>
                 </div>
                 <div className="col-6">
-                  <div className="d-flex justify-content-end">
-                    <button className="btn btn-primary mr-1" disabled>
-                      Import CSV
-                    </button>
-                    <button className="btn btn-primary mr-1" disabled>
-                      Export CSV
-                    </button>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => functionOpenBookingForm()}
-                    >
-                      Add Booking
-                    </button>
-                  </div>
+                 
                 </div>
               </div>
             </div>
@@ -542,8 +398,8 @@ function ManagerBookings() {
                       </div>
                     </div>
                     <div className="booking-list-body">
-                      {leadFormData.length !== 0 &&
-                        leadFormData.map((obj, index) => (
+                      {formData.length !== 0 &&
+                        formData.map((obj, index) => (
                           <div
                             className={
                               currentLeadform &&
@@ -552,13 +408,15 @@ function ManagerBookings() {
                                 ? "bookings_Company_Name activeBox"
                                 : "bookings_Company_Name"
                             }
-                            onClick={() =>
+                            onClick={() => {
+                              setFetch(true)
                               setCurrentLeadform(
-                                leadFormData.find(
+                                formData.find(
                                   (data) =>
                                     data["Company Name"] === obj["Company Name"]
                                 )
                               )
+                            }
                             }
                           >
                             <div className="d-flex justify-content-between align-items-center">
@@ -632,20 +490,20 @@ function ManagerBookings() {
                             <div className="d-flex justify-content-between align-items-center mt-2">
                               <div className="b_Services_amount d-flex">
                                 <div className="amount total_amount_bg">
-                                  Total: ₹ {calculateTotalAmount(obj)}
+                                  Total: ₹ {parseInt(calculateTotalAmount(obj)).toLocaleString()}
                                 </div>
                                 <div className="amount receive_amount_bg">
-                                  Receive: ₹ {calculateReceivedAmount(obj)}
+                                  Receive: ₹ {parseInt(calculateReceivedAmount(obj)).toLocaleString()}
                                 </div>
                                 <div className="amount pending_amount_bg">
-                                  Pending: ₹ {calculatePendingAmount(obj)}
+                                  Pending: ₹ {parseInt(calculatePendingAmount(obj)).toLocaleString()}
                                 </div>
                               </div>
                               <div className="b_BDE_name">{obj.bdeName}</div>
                             </div>
                           </div>
                         ))}
-                      {leadFormData.length === 0 && (
+                      {formData.length === 0 && (
                         <div
                           className="d-flex align-items-center justify-content-center"
                           style={{ height: "inherit" }}
@@ -665,8 +523,8 @@ function ManagerBookings() {
                           {currentLeadform &&
                             Object.keys(currentLeadform).length !== 0
                             ? currentLeadform["Company Name"]
-                            : leadFormData && leadFormData.length !== 0
-                              ? leadFormData[0]["Company Name"]
+                            : formData && formData.length !== 0
+                              ? formData[0]["Company Name"]
                               : "-"}
                         </div>
                         <div
@@ -681,12 +539,10 @@ function ManagerBookings() {
                     <div className="booking-deatils-body">
                       {/* --------Basic Information Which is Common For all bookingdd  ---------*/}
                       <div className="my-card mt-2">
-                        <div className="my-card-head">
-                          <div className="d-flex align-items-center justify-content-between">
+                        <div className="my-card-head">  <div className="d-flex align-items-center justify-content-between">
                             <div>Basic Informations</div>
                             <div>Total Services: {currentLeadform && currentLeadform.services.length}</div>
-                          </div>
-                        </div>
+                          </div></div>
                         <div className="my-card-body">
                           <div className="row m-0 bdr-btm-eee">
                             <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
@@ -701,9 +557,9 @@ function ManagerBookings() {
                                     {currentLeadform &&
                                       Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Name"]
-                                      : leadFormData &&
-                                        leadFormData.length !== 0
-                                        ? leadFormData[0]["Company Name"]
+                                      : formData &&
+                                        formData.length !== 0
+                                        ? formData[0]["Company Name"]
                                         : "-"}
                                   </div>
                                 </div>
@@ -721,9 +577,9 @@ function ManagerBookings() {
                                     {currentLeadform &&
                                       Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Email"]
-                                      : leadFormData &&
-                                        leadFormData.length !== 0
-                                        ? leadFormData[0]["Company Email"]
+                                      : formData &&
+                                        formData.length !== 0
+                                        ? formData[0]["Company Email"]
                                         : "-"}
                                   </div>
                                 </div>
@@ -743,9 +599,9 @@ function ManagerBookings() {
                                     {currentLeadform &&
                                       Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform["Company Number"]
-                                      : leadFormData &&
-                                        leadFormData.length !== 0
-                                        ? leadFormData[0]["Company Number"]
+                                      : formData &&
+                                        formData.length !== 0
+                                        ? formData[0]["Company Number"]
                                         : "-"}
                                   </div>
                                 </div>
@@ -765,9 +621,9 @@ function ManagerBookings() {
                                         Object.keys(currentLeadform).length !==
                                           0
                                           ? currentLeadform.incoDate
-                                          : leadFormData &&
-                                            leadFormData.length !== 0
-                                            ? leadFormData[0].incoDate
+                                          : formData &&
+                                            formData.length !== 0
+                                            ? formData[0].incoDate
                                             : "-"
                                       )}
                                   </div>
@@ -786,9 +642,9 @@ function ManagerBookings() {
                                     {currentLeadform &&
                                       Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform.panNumber
-                                      : leadFormData &&
-                                        leadFormData.length !== 0
-                                        ? leadFormData[0].panNumber
+                                      : formData &&
+                                        formData.length !== 0
+                                        ? formData[0].panNumber
                                         : "-"}
                                   </div>
                                 </div>
@@ -804,12 +660,12 @@ function ManagerBookings() {
                                 <div class="col-sm-8 align-self-stretch p-0">
                                   <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                     {currentLeadform &&
-                                      Object.keys(currentLeadform).length !== 0
+                                    Object.keys(currentLeadform).length !== 0
                                       ? currentLeadform.gstNumber
                                       : leadFormData &&
                                         leadFormData.length !== 0
-                                        ? leadFormData[0].gstNumber
-                                        : "-"}
+                                      ? leadFormData[0].gstNumber
+                                      : "-"}
                                   </div>
                                 </div>
                               </div>
@@ -884,15 +740,14 @@ function ManagerBookings() {
                             <div
                               className="Services_Preview_action_edit mr-1"
                               onClick={() => {
-                                setbookingIndex(0);
-                                setEditBookingOpen(true);
+                                handleEditClick(currentLeadform._id , 0  )
                               }}
                             >
                               <MdModeEdit />
                             </div>
                             <div
                               onClick={() =>
-                                handleDeleteBooking(currentLeadform.company)
+                                handleRequestDelete(currentLeadform._id, currentLeadform.company , currentLeadform["Company Name"] , 0)
                               }
                               className="Services_Preview_action_delete"
                             >
@@ -943,10 +798,8 @@ function ManagerBookings() {
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       <span>
-                                        <i>
-                                          {currentLeadform &&
-                                            currentLeadform.bdmType}
-                                        </i>
+                                        <i>  {currentLeadform &&
+                                          currentLeadform.bdmType === "Close-by" ? "Closed-by" : "Supported-by"}</i>
                                       </span>{" "}
                                       {currentLeadform &&
                                         currentLeadform.bdmName}
@@ -1049,7 +902,7 @@ function ManagerBookings() {
                                           {obj.serviceName}{" "}
                                           {obj.withDSC &&
                                             obj.serviceName ===
-                                            "Start Up Certificate" &&
+                                            "Start-Up India Certificate" &&
                                             "With DSC"}
                                         </div>
                                       </div>
@@ -1064,68 +917,23 @@ function ManagerBookings() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                          <div className="d-flex align-items-center justify-content-between">
-                                            <div>
-                                              ₹{" "}
-                                              {Math.round(
-                                                obj.totalPaymentWGST
-                                              ).toLocaleString()}{" "}
-                                              {"("}
-                                              {obj.totalPaymentWGST !==
-                                                obj.totalPaymentWOGST
-                                                ? "With GST"
-                                                : "Without GST"}
-                                              {")"}
-                                            </div>
-
-                                            {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
-                                            <div>
-                                              <button onClick={() => functionOpenAddExpanse(obj)} className="btn btn-link btn-small">
-                                                + Expanse
-                                              </button>
-                                            </div>
-
-                                            <Dialog open={openAddExpanse} onClose={() => setOpenAddExpanse(false)}
-                                              fullWidth
-                                              maxWidth="xs">
-                                              <DialogTitle>
-                                                <div className="d-flex align-items-center justify-content-between">
-                                                  <div className="expanse-heading">
-                                                    <h2>Service Name</h2>
-                                                  </div>
-                                                  <div className="expanse-close">
-                                                    <IconButton onClick={() => setOpenAddExpanse(false)}>
-                                                      <CloseIcon />
-                                                    </IconButton>
-                                                  </div>
-                                                </div>
-
-
-                                              </DialogTitle>
-                                              <DialogContent>
-                                                <div className="expanse-content">
-                                                  <label className="mb-2" htmlFor="expansee-input"> <b>ADD Expanse</b></label>
-                                                  <input type="number" className="form-control" id="expanse-input" placeholder="Add expanse here" />
-                                                </div>
-
-
-                                              </DialogContent>
-                                              <div className="expanse-footer">
-                                                <button className="btn btn-primary w-100">
-                                                  Submit
-                                                </button>
-                                              </div>
-                                            </Dialog>
-
-                                            {/* -------------------------------------   Expanse Section Ends Here  -------------------------------------------------- */}
-                                          </div>
+                                          ₹{" "}
+                                          {parseInt(
+                                            obj.totalPaymentWGST
+                                          ).toLocaleString()}{" "}
+                                          {"("}
+                                          {obj.totalPaymentWGST !==
+                                            obj.totalPaymentWOGST
+                                            ? "With GST"
+                                            : "Without GST"}
+                                          {")"}
                                         </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                                 <div className="row m-0 bdr-btm-eee">
-                                  <div className="col-lg-5 col-sm-5 p-0">
+                                  <div className="col-lg-6 col-sm-6 p-0">
                                     <div class="row m-0">
                                       <div class="col-sm-4 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h h-100">
@@ -1134,39 +942,23 @@ function ManagerBookings() {
                                       </div>
                                       <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                          {obj.paymentTerms === "two-part"
-                                            ? "Part-Payment"
-                                            : "Full Advanced"}
+                                          {obj.paymentTerms === "two-part" ? "Part Payment" : "Full Advanced"}
                                         </div>
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="col-lg-5 col-sm-5 p-0">
+                                  <div className="col-lg-6 col-sm-6 p-0">
                                     <div class="row m-0">
-                                      <div class="col-sm-3 align-self-stretch p-0">
+                                      <div class="col-sm-4 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_h h-100 bdr-left-eee">
                                           Notes
                                         </div>
                                       </div>
-                                      <div class="col-sm-9 align-self-stretch p-0">
+                                      <div class="col-sm-8 align-self-stretch p-0">
                                         <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                           {obj.paymentRemarks
                                             ? obj.paymentRemarks
                                             : "N/A"}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="col-lg-2 col-sm-2 p-0">
-                                    <div class="row m-0">
-                                      <div class="col-sm-6 align-self-stretch p-0">
-                                        <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                          Expanses
-                                        </div>
-                                      </div>
-                                      <div class="col-sm-6 align-self-stretch p-0">
-                                        <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                          - ₹ 500
                                         </div>
                                       </div>
                                     </div>
@@ -1184,7 +976,7 @@ function ManagerBookings() {
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                             ₹{" "}
-                                            {Math.round(
+                                            {parseInt(
                                               obj.firstPayment
                                             ).toLocaleString()}
                                           </div>
@@ -1202,70 +994,19 @@ function ManagerBookings() {
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            <div className="d-flex align-items-center justify-content-between">
-                                              <div>
-                                                ₹
-                                                {Math.round(
-                                                  obj.secondPayment
-                                                ).toLocaleString()}
-                                                {"("}
-                                                {isNaN(
-                                                  new Date(
-                                                    obj.secondPaymentRemarks
-                                                  )
-                                                )
-                                                  ? obj.secondPaymentRemarks
-                                                  : "On " +
-                                                  obj.secondPaymentRemarks +
-                                                  ")"}
-                                                {")"}
-                                              </div>
-                                              <div>
-                                                <div
-                                                  className="add-remaining-amnt"
-                                                  style={{
-                                                    display:
-                                                      currentLeadform.remainingPayments.length !== 0 &&
-                                                        currentLeadform.remainingPayments.filter(
-                                                          (item) => item.serviceName === obj.serviceName
-                                                        ).length > 0
-                                                        ? "none"
-                                                        : "block",
-                                                  }}
-
-                                                  title="Add Remaining Payment"
-                                                  onClick={() =>
-                                                    functionOpenRemainingPayment(
-                                                      obj,
-                                                      "secondPayment",
-                                                      currentLeadform[
-                                                      "Company Name"
-                                                      ],
-                                                      0
-                                                    )
-                                                  }
-                                                >
-                                                  +
-                                                </div>
-                                              </div>
-                                              {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length > 0 && <div className="edit-remaining">
-                                                <IconButton onClick={() => {
-                                                  setIsUpdateMode(true)
-                                                  setTempUpdateMode(true)
-                                                  functionOpenRemainingPayment(
-                                                    obj,
-                                                    "secondPayment",
-                                                    currentLeadform[
-                                                    "Company Name"
-                                                    ], 0,
-                                                    currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[0],
-                                                  )
-                                                }
-                                                }>
-                                                  <MdModeEdit style={{ height: '14px', width: '14px' }} />
-                                                </IconButton>
-                                              </div>}
-                                            </div>
+                                            ₹
+                                            {parseInt(
+                                              obj.secondPayment
+                                            ).toLocaleString()}
+                                            {"("}
+                                            {isNaN(
+                                              new Date(obj.secondPaymentRemarks)
+                                            )
+                                              ? obj.secondPaymentRemarks
+                                              : "On " +
+                                              obj.secondPaymentRemarks +
+                                              ")"}
+                                            {")"}
                                           </div>
                                         </div>
                                       </div>
@@ -1283,69 +1024,18 @@ function ManagerBookings() {
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            <div className="d-flex align-items-center justify-content-between">
-                                              <div>
-                                                ₹{" "}
-                                                {Math.round(
-                                                  obj.thirdPayment
-                                                ).toLocaleString()}
-                                                {"("}
-                                                {isNaN(
-                                                  new Date(
-                                                    obj.thirdPaymentRemarks
-                                                  )
-                                                )
-                                                  ? obj.thirdPaymentRemarks
-                                                  : "On " +
-                                                  obj.thirdPaymentRemarks +
-                                                  ")"}
-                                              </div>
-                                              <div>
-                                                <div
-                                                  className="add-remaining-amnt"
-                                                  style={{
-                                                    display:
-                                                      currentLeadform.remainingPayments.length !== 0 &&
-                                                        currentLeadform.remainingPayments.filter(
-                                                          (item) => item.serviceName === obj.serviceName
-                                                        ).length > 1
-                                                        ? "none"
-                                                        : "block",
-                                                  }}
-
-                                                  title="Add Remaining Payment"
-                                                  onClick={() =>
-                                                    functionOpenRemainingPayment(
-                                                      obj,
-                                                      "thirdPayment",
-                                                      currentLeadform[
-                                                      "Company Name"
-                                                      ],
-                                                      0
-                                                    )
-                                                  }
-                                                >
-                                                  +
-                                                </div>
-                                              </div>
-                                              {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length > 1 && <div className="edit-remaining">
-                                                <IconButton onClick={() => {
-                                                  setIsUpdateMode(true)
-                                                  setTempUpdateMode(true)
-                                                  functionOpenRemainingPayment(
-                                                    obj,
-                                                    "thirdPayment",
-                                                    currentLeadform[
-                                                    "Company Name"
-                                                    ], 0,
-                                                    currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[1],
-                                                  )
-                                                }
-                                                }>
-                                                  <MdModeEdit style={{ height: '14px', width: '14px' }} />
-                                                </IconButton>
-                                              </div>}
-                                            </div>
+                                            ₹{" "}
+                                            {parseInt(
+                                              obj.thirdPayment
+                                            ).toLocaleString()}
+                                            {"("}
+                                            {isNaN(
+                                              new Date(obj.thirdPaymentRemarks)
+                                            )
+                                              ? obj.thirdPaymentRemarks
+                                              : "On " +
+                                              obj.thirdPaymentRemarks +
+                                              ")"}
                                           </div>
                                         </div>
                                       </div>
@@ -1361,68 +1051,18 @@ function ManagerBookings() {
                                         </div>
                                         <div class="col-sm-8 align-self-stretch p-0">
                                           <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            <div className="d-flex align-items-center justify-content-between">
-                                              <div>
-                                                ₹{" "}
-                                                {Math.round(
-                                                  obj.fourthPayment
-                                                ).toLocaleString()}{" "}
-                                                {"("}
-                                                {isNaN(
-                                                  new Date(
-                                                    obj.fourthPaymentRemarks
-                                                  )
-                                                )
-                                                  ? obj.fourthPaymentRemarks
-                                                  : "On " +
-                                                  obj.fourthPaymentRemarks +
-                                                  ")"}
-                                              </div>
-                                              <div>
-                                                <div
-                                                  className="add-remaining-amnt"
-                                                  title="Add Remaining Payment"
-                                                  style={{
-                                                    display:
-                                                      currentLeadform.remainingPayments.length !== 0 &&
-                                                        currentLeadform.remainingPayments.filter(
-                                                          (item) => item.serviceName === obj.serviceName
-                                                        ).length === 3
-                                                        ? "none"
-                                                        : "block",
-                                                  }}
-                                                  onClick={() =>
-                                                    functionOpenRemainingPayment(
-                                                      obj,
-                                                      "fourthPayment",
-                                                      currentLeadform[
-                                                      "Company Name"
-                                                      ],
-                                                      0
-                                                    )
-                                                  }
-                                                >
-                                                  +
-                                                </div>
-                                              </div>
-                                              {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.filter((pay) => pay.serviceName === obj.serviceName).length === 3 && <div className="edit-remaining">
-                                                <IconButton onClick={() => {
-                                                  setIsUpdateMode(true)
-                                                  setTempUpdateMode(true)
-                                                  functionOpenRemainingPayment(
-                                                    obj,
-                                                    "fourthPayment",
-                                                    currentLeadform[
-                                                    "Company Name"
-                                                    ], 0,
-                                                    currentLeadform.remainingPayments.filter(boom => boom.serviceName === obj.serviceName)[2],
-                                                  )
-                                                }
-                                                }>
-                                                  <MdModeEdit style={{ height: '14px', width: '14px' }} />
-                                                </IconButton>
-                                              </div>}
-                                            </div>
+                                            ₹{" "}
+                                            {parseInt(
+                                              obj.fourthPayment
+                                            ).toLocaleString()}{" "}
+                                            {"("}
+                                            {isNaN(
+                                              new Date(obj.fourthPaymentRemarks)
+                                            )
+                                              ? obj.fourthPaymentRemarks
+                                              : "On " +
+                                              obj.fourthPaymentRemarks +
+                                              ")"}
                                           </div>
                                         </div>
                                       </div>
@@ -1430,8 +1070,8 @@ function ManagerBookings() {
                                   )}
                                 </div>
                               </div>
-                              {/* Remaining Payment Viwe Sections */}
-                              {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.some((boom) => boom.serviceName === obj.serviceName) &&
+                                 {/* Remaining Payment Viwe Sections */}
+                                 {currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.some((boom) => boom.serviceName === obj.serviceName) &&
                                 <div
                                   className="my-card-body accordion"
                                   id={`accordionExample${index}`}
@@ -1525,17 +1165,17 @@ function ManagerBookings() {
                                                                 );
                                                                
                                                                 const filteredLength = filteredPayments.length;
-                                                                if (index === 0) return Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment);
-                                                                else if (index === 1) return Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment) - Math.round(filteredPayments[0].receivedPayment);
-                                                                else if (index === 2) return Math.round(currentLeadform.pendingAmount);
+                                                                if (index === 0) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment);
+                                                                else if (index === 1) return parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(filteredPayments[0].receivedPayment);
+                                                                else if (index === 2) return parseInt(currentLeadform.pendingAmount);
                                                                 // Add more conditions as needed
                                                                 return ""; // Return default value if none of the conditions match
                                                               })()} 
                                                             {/* {index === 0
-                                                              ? Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment)
+                                                              ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment)
                                                               : index === 1
-                                                              ? Math.round(obj.totalPaymentWGST) - Math.round(obj.firstPayment) - Math.round(paymentObj.receivedPayment) - Math.round(currentLeadform.remainingPayments[0].receivedPayment)
-                                                              : Math.round(currentLeadform.pendingAmount)} */}
+                                                              ? parseInt(obj.totalPaymentWGST) - parseInt(obj.firstPayment) - parseInt(paymentObj.receivedPayment) - parseInt(currentLeadform.remainingPayments[0].receivedPayment)
+                                                              : parseInt(currentLeadform.pendingAmount)} */}
                                                           </div>
 
                                                         </div>
@@ -1661,16 +1301,15 @@ function ManagerBookings() {
                         <div className="mb-2 mt-3 mul-booking-card-inner-head">
                           <b>Payment Summary:</b>
                         </div>
-
                         <div className="my-card">
                           <div className="my-card-body">
-                            {/* {currentLeadform && currentLeadform.remainingPayments.length !== 0 && currentLeadform.remainingPayments.map((payObj, index) => (
+                            {/* {currentLeadform && currentLeadform.remainingPayments.length!==0 && currentLeadform.remainingPayments.map((payObj , index)=>(
                               <div className="row m-0 bdr-btm-eee">
                                 <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
                                   <div class="row m-0 h-100">
                                     <div class="col align-self-stretch p-0">
                                       <div class="booking_inner_dtl_h h-100 text-center">
-                                        {index + 1}
+                                        {index+1}
                                       </div>
                                     </div>
                                   </div>
@@ -1686,7 +1325,7 @@ function ManagerBookings() {
                                       <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                         ₹{" "}
                                         {currentLeadform &&
-                                          Math.round(
+                                          parseInt(
                                             currentLeadform.totalAmount
                                           ).toLocaleString()}
                                       </div>
@@ -1700,17 +1339,17 @@ function ManagerBookings() {
                                         Received Amount
                                       </div>
                                     </div>
-                                    {<div class="col-sm-7 align-self-stretch p-0">
+                                  {<div class="col-sm-7 align-self-stretch p-0">
                                       <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                         ₹{" "}
-                                        {(Math.round(currentLeadform.receivedAmount) -
-                                          currentLeadform.remainingPayments
-                                            .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
-                                            .reduce((total, pay) => total + Math.round(pay.receivedPayment), 0)).toLocaleString()}
+                                        {(parseInt(currentLeadform.receivedAmount) -
+          currentLeadform.remainingPayments
+            .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
+            .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
                                       </div>
                                     </div>}
-
-
+                                 
+                                 
                                   </div>
                                 </div>
                                 <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
@@ -1723,22 +1362,22 @@ function ManagerBookings() {
                                     <div class="col-sm-6 align-self-stretch p-0">
                                       <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                         ₹{" "}
-                                        {(Math.round(currentLeadform.pendingAmount) +
-                                          currentLeadform.remainingPayments
-                                            .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
-                                            .reduce((total, pay) => total + Math.round(pay.receivedPayment), 0)).toLocaleString()}
+                                        {(parseInt(currentLeadform.pendingAmount) +
+          currentLeadform.remainingPayments
+            .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
+            .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            ))} */}
+                            )) } */}
                             <div className="row m-0 bdr-btm-eee">
                               {/* <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
                                 <div class="row m-0 h-100">
                                   <div class="col align-self-stretch p-0">
                                     <div class="booking_inner_dtl_h h-100 text-center">
-                                      {currentLeadform && (currentLeadform.remainingPayments.length + 1)}
+                                      {currentLeadform && (currentLeadform.remainingPayments.length + 1) }
                                     </div>
                                   </div>
                                 </div>
@@ -1754,7 +1393,7 @@ function ManagerBookings() {
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                       ₹{" "}
                                       {currentLeadform &&
-                                        Math.round(
+                                        parseInt(
                                           currentLeadform.totalAmount
                                         ).toLocaleString()}
                                     </div>
@@ -1772,7 +1411,7 @@ function ManagerBookings() {
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       ₹{" "}
                                       {currentLeadform &&
-                                        Math.round(
+                                        parseInt(
                                           currentLeadform.receivedAmount
                                         ).toLocaleString()}
                                     </div>
@@ -1790,7 +1429,7 @@ function ManagerBookings() {
                                     <div class="booking_inner_dtl_b bdr-left-eee h-100">
                                       ₹{" "}
                                       {currentLeadform &&
-                                        Math.round(
+                                        parseInt(
                                           currentLeadform.pendingAmount
                                         ).toLocaleString()}
                                     </div>
@@ -1824,7 +1463,809 @@ function ManagerBookings() {
                                   <div class="col-sm-8 align-self-stretch p-0">
                                     <div class="booking_inner_dtl_b h-100 bdr-left-eee">
                                       {currentLeadform &&
-                                        currentLeadform.extraNotes!=="undefined" ? currentLeadform.extraNotes : "N/A"}
+                                        currentLeadform.extraNotes}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {currentLeadform &&
+                          (currentLeadform.paymentReceipt.length !== 0 ||
+                            currentLeadform.otherDocs !== 0) && (
+                            <>
+                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                                <b>Payment Receipt and Additional Documents:</b>
+                              </div>
+                              <div className="row">
+                                {currentLeadform.paymentReceipt.length !==
+                                  0 && (
+                                    <div className="col-sm-2 mb-1">
+                                      <div className="booking-docs-preview">
+                                        <div
+                                          className="booking-docs-preview-img"
+                                          onClick={() =>
+                                            handleViewPdfReciepts(
+
+                                              currentLeadform.paymentReceipt[0]
+                                                .filename, currentLeadform["Company Name"]
+                                            )
+                                          }
+                                        >
+                                          {currentLeadform &&
+                                            currentLeadform.paymentReceipt[0] &&
+                                            (currentLeadform.paymentReceipt[0].filename.endsWith(
+                                              ".pdf"
+                                            ) ? (
+                                              <PdfImageViewerAdmin
+                                                type="paymentrecieptpdf"
+                                                path={
+                                                  currentLeadform
+                                                    .paymentReceipt[0].filename
+                                                }
+                                                companyName={currentLeadform["Company Name"]}
+                                              />
+                                            ) : currentLeadform.paymentReceipt[0].filename.endsWith(
+                                              ".png"
+                                            ) ||
+                                              currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                ".jpg"
+                                              ) ||
+                                              currentLeadform.paymentReceipt[0].filename.endsWith(
+                                                ".jpeg"
+                                              ) ? (
+                                              <img
+                                                src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${currentLeadform.paymentReceipt[0].filename}`}
+                                                alt="Receipt Image"
+                                              />
+                                            ) : (
+                                              <img
+                                                src={wordimg}
+                                                alt="Default Image"
+                                              />
+                                            ))}
+                                        </div>
+                                        <div className="booking-docs-preview-text">
+                                          <p className="booking-img-name-txtwrap text-wrap m-auto m-0">
+                                            Receipt
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                {currentLeadform &&
+                                  currentLeadform.otherDocs.map((obj) => (
+                                    <div className="col-sm-2 mb-1">
+                                      <div className="booking-docs-preview">
+                                        <div
+                                          className="booking-docs-preview-img"
+                                          onClick={() =>
+                                            handleViewPdOtherDocs(obj.filename, currentLeadform["Company Name"])
+                                          }
+                                        >
+                                          {obj.filename.endsWith(".pdf") ? (
+                                            <PdfImageViewerAdmin
+                                              type="pdf"
+                                              path={obj.filename}
+                                              companyName={currentLeadform["Company Name"]}
+                                            />
+                                          ) : (
+                                            <img
+                                              src={`${secretKey}/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
+                                              alt={pdfimg}
+                                            ></img>
+                                          )}
+                                        </div>
+                                        <div className="booking-docs-preview-text">
+                                          <p
+                                            className="booking-img-name-txtwrap text-wrap m-auto m-0 text-wrap m-auto m-0"
+                                            title={obj.originalname}
+                                          >
+                                            {obj.originalname}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                {/* ---------- Upload Documents From Preview -----------*/}
+                                <div className="col-sm-2 mb-1">
+                                  <div
+                                    className="booking-docs-preview"
+                                    title="Upload More Documents"
+                                  >
+                                    <div
+                                      className="upload-Docs-BTN"
+                                      onClick={() => {
+                                        setOpenOtherDocs(true);
+                                        setSendingIndex(0);
+                                      }}
+                                    >
+                                      <IoAdd />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <Dialog
+                                  open={openOtherDocs}
+                                  onClose={closeOtherDocsPopup}
+                                  fullWidth
+                                  maxWidth="sm"
+                                >
+                                  <DialogTitle>
+                                    Upload Your Attachments
+                                    <IconButton
+                                      onClick={closeOtherDocsPopup}
+                                      style={{ float: "right" }}
+                                    >
+                                      <CloseIcon color="primary"></CloseIcon>
+                                    </IconButton>{" "}
+                                  </DialogTitle>
+                                  <DialogContent>
+                                    <div className="maincon">
+
+                                      <div
+                                        style={{
+                                          justifyContent: "space-between",
+                                        }}
+                                        className="con1 d-flex"
+                                      >
+                                        <div
+                                          style={{ paddingTop: "9px" }}
+                                          className="uploadcsv"
+                                        >
+                                          <label
+                                            style={{
+                                              margin: "0px 0px 6px 0px",
+                                            }}
+                                            htmlFor="attachmentfile"
+                                          >
+                                            Upload Files
+                                          </label>
+                                        </div>
+                                      </div>
+                                      <div
+                                        style={{ margin: "5px 0px 0px 0px" }}
+                                        className="form-control"
+                                      >
+                                        <input
+                                          type="file"
+                                          name="attachmentfile"
+                                          id="attachmentfile"
+                                          onChange={(e) => {
+                                            handleOtherDocsUpload(
+                                              e.target.files
+                                            );
+                                          }}
+                                          multiple
+                                        />
+                                        {selectedDocuments &&
+                                          selectedDocuments.length > 0 && (
+                                            <div className="uploaded-filename-main d-flex flex-wrap">
+                                              {selectedDocuments.map(
+                                                (file, index) => (
+                                                  <div
+                                                    className="uploaded-fileItem d-flex align-items-center"
+                                                    key={index}
+                                                  >
+                                                    <p className="m-0">
+                                                      {file.name}
+                                                    </p>
+                                                    <button
+                                                      className="fileItem-dlt-btn"
+                                                      onClick={() =>
+                                                        handleRemoveFile(index)
+                                                      }
+                                                    >
+                                                      <IconX className="close-icon" />
+                                                    </button>
+                                                  </div>
+                                                )
+                                              )}
+                                            </div>
+                                          )}
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                  <button
+                                    className="btn btn-primary"
+                                    onClick={handleotherdocsAttachment}
+                                  >
+                                    Submit
+                                  </button>
+                                </Dialog>
+                              </div>
+                            </>
+                          )}
+                      </div>
+
+                      {/* ------------------------------------------ Multiple Booking Section Starts here ----------------------------- */}
+                      {currentLeadform &&
+                        currentLeadform.moreBookings.length !== 0 &&
+                        currentLeadform.moreBookings.map((objMain, index) => (
+                          <>
+                            <div className="row align-items-center m-0 justify-content-between mb-1 mt-3">
+                              <div className="mul_booking_heading col-6">
+                                <b>Booking {index + 2}</b>
+                              </div>
+                              <div className="mul_booking_date col-6">
+                                <b>{formatDatePro(objMain.bookingDate)}</b>
+                              </div>
+                            </div>
+                            <div className="mul-booking-card mt-2">
+                              {/* -------- Step 2 ---------*/}
+                              <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
+                                <b>Booking Details:</b>
+                                <div className="Services_Preview_action d-flex">
+                                  <div
+                                    className="Services_Preview_action_edit mr-2"
+                                    onClick={() => {
+                                      handleEditClick(currentLeadform._id , index+1)
+                                    }}
+                                  >
+                                    <MdModeEdit />
+                                  </div>
+                                  <div
+                                    onClick={() =>
+                                      handleRequestDelete(currentLeadform._id, currentLeadform.company , currentLeadform["Company Name"] , index+1)
+                                    }
+                                    className="Services_Preview_action_delete"
+                                  >
+                                    <MdDelete />
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="my-card">
+                                <div className="my-card-body">
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100">
+                                            BDE Name
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            {objMain.bdeName}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                            BDE Email
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            {objMain.bdeEmail}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                            BDM Name
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            <span>
+                                              <i>{objMain.bdmType === "Close-by" ? "Closed-by" : "Supported-by"}</i>
+                                            </span>{" "}
+                                            {objMain.bdmName}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100">
+                                            BDM Email
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            {objMain.bdmEmail}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                            Booking Date{" "}
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            {objMain.bookingDate}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                            Lead Source
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                            {objMain.bookingSource === "Other"
+                                              ? objMain.otherBookingSource
+                                              : objMain.bookingSource}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              {/* -------- Step 3 ---------*/}
+                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                                <b>Services And Payment Details:</b>
+                              </div>
+                              <div className="my-card">
+                                <div className="my-card-body">
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-6 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-4 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_h h-100">
+                                            No. Of Services
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-8 align-self-stretch p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            {objMain.services.length}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              {objMain.services.map((obj, index) => (
+                                <div className="my-card mt-1">
+                                  <div className="my-card-body">
+                                    <div className="row m-0 bdr-btm-eee">
+                                      <div className="col-lg-6 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h h-100">
+                                              {getOrdinal(index + 1)} Services
+                                              Name
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">
+                                              {obj.serviceName}{" "}
+                                              {obj.withDSC &&
+                                                obj.serviceName ===
+                                                "Start Up Certificate" &&
+                                                "With DSC"}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-6 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                              Total Amount
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                              ₹{" "}
+                                              {parseInt(
+                                                obj.totalPaymentWGST
+                                              ).toLocaleString()}
+                                              {"("}
+                                              {obj.totalPaymentWGST !==
+                                                obj.totalPaymentWOGST
+                                                ? "With GST"
+                                                : "Without GST"}
+                                              {")"}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0 bdr-btm-eee">
+                                      <div className="col-lg-6 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h h-100">
+                                              Payment Terms
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              {obj.paymentTerms}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-6 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                              Notes
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretch p-0">
+                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                              {obj.paymentRemarks
+                                                ? obj.paymentRemarks
+                                                : "N/A"}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="row m-0 bdr-btm-eee">
+                                      {obj.firstPayment !== 0 && (
+                                        <div className="col-lg-6 col-sm-6 p-0">
+                                          <div class="row m-0">
+                                            <div class="col-sm-4 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_h h-100">
+                                                First payment
+                                              </div>
+                                            </div>
+                                            <div class="col-sm-8 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                                ₹{" "}
+                                                {parseInt(
+                                                  obj.firstPayment
+                                                ).toLocaleString()}
+                                                /-
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                      {obj.secondPayment !== 0 && (
+                                        <div className="col-lg-6 col-sm-6 p-0">
+                                          <div class="row m-0">
+                                            <div class="col-sm-4 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                Second Payment
+                                              </div>
+                                            </div>
+                                            <div class="col-sm-8 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                ₹
+                                                {parseInt(
+                                                  obj.secondPayment
+                                                ).toLocaleString()}
+                                                /- {"("}
+                                                {isNaN(
+                                                  new Date(
+                                                    obj.secondPaymentRemarks
+                                                  )
+                                                )
+                                                  ? obj.secondPaymentRemarks
+                                                  : "On " +
+                                                  obj.secondPaymentRemarks +
+                                                  ")"}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="row m-0 bdr-btm-eee">
+                                      {obj.thirdPayment !== 0 && (
+                                        <div className="col-lg-6 col-sm-6 p-0">
+                                          <div class="row m-0">
+                                            <div class="col-sm-4 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_h h-100">
+                                                Third Payment
+                                              </div>
+                                            </div>
+                                            <div class="col-sm-8 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                ₹{" "}
+                                                {parseInt(
+                                                  obj.thirdPayment
+                                                ).toLocaleString()}
+                                                /- {"("}
+                                                {isNaN(
+                                                  new Date(
+                                                    obj.thirdPaymentRemarks
+                                                  )
+                                                )
+                                                  ? obj.thirdPaymentRemarks
+                                                  : "On " +
+                                                  obj.thirdPaymentRemarks +
+                                                  ")"}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                      {obj.fourthPayment !== 0 && (
+                                        <div className="col-lg-6 col-sm-6 p-0">
+                                          <div class="row m-0">
+                                            <div class="col-sm-4 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                                Fourth Payment
+                                              </div>
+                                            </div>
+                                            <div class="col-sm-8 align-self-stretch p-0">
+                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                                ₹{" "}
+                                                {parseInt(
+                                                  obj.fourthPayment
+                                                ).toLocaleString()}{" "}
+                                                /- {"("}
+                                                {isNaN(
+                                                  new Date(
+                                                    obj.fourthPaymentRemarks
+                                                  )
+                                                )
+                                                  ? obj.fourthPaymentRemarks
+                                                  : "On " +
+                                                  obj.fourthPaymentRemarks +
+                                                  ")"}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+
+                              {/* -------- CA Case -------- */}
+                              <div className="my-card mt-1">
+                                <div className="my-card-body">
+                                  <div className="row m-0 bdr-btm-eee">
+                                    <div className="col-lg-12 col-sm-6 p-0">
+                                      <div class="row m-0">
+                                        <div class="col-sm-2 align-self-stretc p-0">
+                                          <div class="booking_inner_dtl_h h-100">
+                                            CA Case
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-10 align-self-stretc p-0">
+                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                            {objMain.caCase}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {objMain.caCase !== "No" && (
+                                    <div className="row m-0 bdr-btm-eee">
+                                      <div className="col-lg-4 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-5 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h h-100">
+                                              CA's Number
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-7 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              {objMain.caNumber}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-4 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-4 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                              CA's Email
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-8 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              {objMain.caEmail}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-4 col-sm-6 p-0">
+                                        <div class="row m-0">
+                                          <div class="col-sm-5 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                              CA's Commission
+                                            </div>
+                                          </div>
+                                          <div class="col-sm-7 align-self-stretc p-0">
+                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                              ₹ {objMain.caCommission}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* -------- Step 4 ---------*/}
+                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
+                          <b>Payment Summary:</b>
+                        </div>
+
+                        <div className="my-card">
+                          <div className="my-card-body">
+                            {currentLeadform && currentLeadform.remainingPayments.length!==0 && currentLeadform.remainingPayments.map((payObj , index)=>(
+                              <div className="row m-0 bdr-btm-eee">
+                                <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
+                                  <div class="row m-0 h-100">
+                                    <div class="col align-self-stretch p-0">
+                                      <div class="booking_inner_dtl_h h-100 text-center">
+                                        {index+1}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
+                                  <div class="row m-0 h-100">
+                                    <div class="col-sm-5 align-self-stretch p-0">
+                                      <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                        Total Amount
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-7 align-self-stretch p-0">
+                                      <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                        ₹{" "}
+                                        {currentLeadform &&
+                                          parseInt(
+                                            currentLeadform.totalAmount
+                                          ).toLocaleString()}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
+                                  <div class="row m-0 h-100">
+                                    <div class="col-sm-5 align-self-stretch p-0">
+                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                        Received Amount
+                                      </div>
+                                    </div>
+                                  {<div class="col-sm-7 align-self-stretch p-0">
+                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                        ₹{" "}
+                                        {(parseInt(currentLeadform.receivedAmount) -
+          currentLeadform.remainingPayments
+            .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
+            .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
+                                      </div>
+                                    </div>}
+                                 
+                                 
+                                  </div>
+                                </div>
+                                <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
+                                  <div class="row m-0 h-100">
+                                    <div class="col-sm-6 align-self-stretch p-0">
+                                      <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                        Pending Amount
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-6 align-self-stretch p-0">
+                                      <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                        ₹{" "}
+                                        {(parseInt(currentLeadform.pendingAmount) +
+          currentLeadform.remainingPayments
+            .slice(index, currentLeadform.remainingPayments.length) // Consider objects up to the current index
+            .reduce((total, pay) => total + parseInt(pay.receivedPayment), 0)).toLocaleString()}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )) }
+                            <div className="row m-0 bdr-btm-eee">
+                              <div className="col-lg-1 col-sm-1 p-0 align-self-stretch">
+                                <div class="row m-0 h-100">
+                                  <div class="col align-self-stretch p-0">
+                                    <div class="booking_inner_dtl_h h-100 text-center">
+                                      {currentLeadform && (currentLeadform.remainingPayments.length + 1) }
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
+                                <div class="row m-0 h-100">
+                                  <div class="col-sm-5 align-self-stretch p-0">
+                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                      Total Amount
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-7 align-self-stretch p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                      ₹{" "}
+                                      {currentLeadform &&
+                                        parseInt(
+                                          currentLeadform.totalAmount
+                                        ).toLocaleString()}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col-lg-4 col-sm-6 p-0 align-self-stretch">
+                                <div class="row m-0 h-100">
+                                  <div class="col-sm-5 align-self-stretch p-0">
+                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                      Received Amount
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-7 align-self-stretch p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                      ₹{" "}
+                                      {currentLeadform &&
+                                        parseInt(
+                                          currentLeadform.receivedAmount
+                                        ).toLocaleString()}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col-lg-3 col-sm-5 p-0 align-self-stretch">
+                                <div class="row m-0 h-100">
+                                  <div class="col-sm-6 align-self-stretch p-0">
+                                    <div class="booking_inner_dtl_h bdr-left-eee h-100">
+                                      Pending Amount
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-6 align-self-stretch p-0">
+                                    <div class="booking_inner_dtl_b bdr-left-eee h-100">
+                                      ₹{" "}
+                                      {currentLeadform &&
+                                        parseInt(
+                                          currentLeadform.pendingAmount
+                                        ).toLocaleString()}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="row m-0 bdr-btm-eee">
+                              <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
+                                <div class="row m-0 h-100">
+                                  <div class="col-sm-4 align-self-stretch p-0">
+                                    <div class="booking_inner_dtl_h h-100">
+                                      Payment Method
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-8 align-self-stretch p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                      {currentLeadform &&
+                                        currentLeadform.paymentMethod}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col-lg-6 col-sm-6 p-0 align-self-stretch">
+                                <div class="row m-0 h-100">
+                                  <div class="col-sm-4 align-self-stretch p-0">
+                                    <div class="booking_inner_dtl_h h-100 bdr-left-eee">
+                                      Extra Remarks
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-8 align-self-stretch p-0">
+                                    <div class="booking_inner_dtl_b h-100 bdr-left-eee">
+                                      {currentLeadform &&
+                                        currentLeadform.extraNotes}
                                     </div>
                                   </div>
                                 </div>
@@ -1941,7 +2382,7 @@ function ManagerBookings() {
                                       </div>
                                     )
                                   ))}
-
+                                  
                                 {currentLeadform &&
                                   currentLeadform.otherDocs.map((obj) => (
                                     <div className="col-sm-2 mb-1">
@@ -2090,640 +2531,11 @@ function ManagerBookings() {
                               </div>
                             </>
                           )}
-                      </div>
-
-                      {/* ------------------------------------------ Multiple Booking Section Starts here ----------------------------- */}
-                      {currentLeadform &&
-                        currentLeadform.moreBookings.length !== 0 &&
-                        currentLeadform.moreBookings.map((objMain, index) => (
-                          <>
-                            <div className="row align-items-center m-0 justify-content-between mb-1 mt-3">
-                              <div className="mul_booking_heading col-6">
-                                <b>Booking {index + 2}</b>
-                              </div>
-                              <div className="mul_booking_date col-6">
-                                <b>{formatDatePro(objMain.bookingDate)}</b>
-                              </div>
-                            </div>
-                            <div className="mul-booking-card mt-2">
-                              {/* -------- Step 2 ---------*/}
-                              <div className="mb-2 mul-booking-card-inner-head d-flex justify-content-between">
-                                <b>Booking Details:</b>
-                                <div className="Services_Preview_action d-flex">
-                                  <div
-                                    className="Services_Preview_action_edit mr-2"
-                                    onClick={() => {
-                                      setbookingIndex(index + 1);
-                                      setEditBookingOpen(true);
-                                    }}
-                                  >
-                                    <MdModeEdit />
-                                  </div>
-                                  <div
-                                    onClick={() =>
-                                      handleDeleteBooking(
-                                        currentLeadform.company,
-                                        objMain._id
-                                      )
-                                    }
-                                    className="Services_Preview_action_delete"
-                                  >
-                                    <MdDelete />
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="my-card">
-                                <div className="my-card-body">
-                                  <div className="row m-0 bdr-btm-eee">
-                                    <div className="col-lg-4 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-4 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_h h-100">
-                                            BDE Name
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            {objMain.bdeName}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-lg-4 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-4 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                            BDE Email
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                            {objMain.bdeEmail}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-lg-4 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-4 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                            BDM Name
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                            <span>
-                                              <i>Support By</i>
-                                            </span>{" "}
-                                            {objMain.bdmName}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="row m-0 bdr-btm-eee">
-                                    <div className="col-lg-4 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-4 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_h h-100">
-                                            BDM Email
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                            {objMain.bdmEmail}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-lg-4 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-4 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                            Booking Date{" "}
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            {objMain.bookingDate}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-lg-4 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-4 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                            Lead Source
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                            {objMain.bookingSource === "Other"
-                                              ? objMain.otherBookingSource
-                                              : objMain.bookingSource}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              {/* -------- Step 3 ---------*/}
-                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                                <b>Services And Payment Details:</b>
-                              </div>
-                              <div className="my-card">
-                                <div className="my-card-body">
-                                  <div className="row m-0 bdr-btm-eee">
-                                    <div className="col-lg-6 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-4 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_h h-100">
-                                            No. Of Services
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            {objMain.services.length}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              {objMain.services.map((obj, index) => (
-                                <div className="my-card mt-1">
-                                  <div className="my-card-body">
-                                    <div className="row m-0 bdr-btm-eee">
-                                      <div className="col-lg-6 col-sm-6 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-4 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_h h-100">
-                                              {getOrdinal(index + 1)} Services
-                                              Name
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-8 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100 services-name">
-                                              {obj.serviceName}{" "}
-                                              {obj.withDSC &&
-                                                obj.serviceName ===
-                                                "Start Up Certificate" &&
-                                                "With DSC"}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="col-lg-6 col-sm-6 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-4 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                              Total Amount
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-8 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                              <div className="d-flex align-item-center justify-content-between">
-                                                <div>
-                                                  ₹{" "}
-                                                  {Math.round(
-                                                    obj.totalPaymentWGST
-                                                  ).toLocaleString()}
-                                                  {"("}
-                                                  {obj.totalPaymentWGST !==
-                                                    obj.totalPaymentWOGST
-                                                    ? "With GST"
-                                                    : "Without GST"}
-                                                  {")"}
-                                                </div>
-                                                {/* --------------------------------------------------------------   ADD Expanses Section  --------------------------------------------------- */}
-                                                <div>
-                                                  <button onClick={() => setOpenAddExpanse(true)} className="btn btn-link btn-small">
-                                                    + Expanse
-                                                  </button>
-                                                </div>
-
-                                                <Dialog open={openAddExpanse} onClose={() => setOpenAddExpanse(false)}
-                                                  fullWidth
-                                                  maxWidth="sm">
-                                                  <DialogTitle>
-                                                    <div className="d-flex align-items-center justify-content-between">
-                                                      <div className="expanse-heading">
-                                                        <h2>Service Name</h2>
-                                                      </div>
-                                                      <div className="expanse-close">
-                                                        <IconButton onClick={() => setOpenAddExpanse(false)}>
-                                                          <CloseIcon />
-                                                        </IconButton>
-                                                      </div>
-                                                    </div>
-
-
-                                                  </DialogTitle>
-                                                  <DialogContent>
-
-
-                                                  </DialogContent>
-                                                </Dialog>
-
-                                                {/* -------------------------------------   Expanse Section Ends Here  -------------------------------------------------- */}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="row m-0 bdr-btm-eee">
-                                      <div className="col-lg-5 col-sm-5 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-4 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_h h-100">
-                                              Payment Terms
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-8 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                              {obj.paymentTerms}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="col-lg-5 col-sm-5 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-3 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                              Notes
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-9 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                              {obj.paymentRemarks
-                                                ? obj.paymentRemarks
-                                                : "N/A"}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="col-lg-2 col-sm-2 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-6 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                              Expanses
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-6 align-self-stretch p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                              - ₹ 500
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="row m-0 bdr-btm-eee">
-                                      {obj.firstPayment !== 0 && (
-                                        <div className="col-lg-6 col-sm-6 p-0">
-                                          <div class="row m-0">
-                                            <div class="col-sm-4 align-self-stretch p-0">
-                                              <div class="booking_inner_dtl_h h-100">
-                                                First payment
-                                              </div>
-                                            </div>
-                                            <div class="col-sm-8 align-self-stretch p-0">
-                                              <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                                ₹{" "}
-                                                {Math.round(
-                                                  obj.firstPayment
-                                                ).toLocaleString()}
-                                                /-
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
-                                      {obj.secondPayment !== 0 && (
-                                        <div className="col-lg-6 col-sm-6 p-0">
-                                          <div class="row m-0">
-                                            <div class="col-sm-4 align-self-stretch p-0">
-                                              <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                                Second Payment
-                                              </div>
-                                            </div>
-                                            <div class="col-sm-8 align-self-stretch p-0">
-                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                <div className="d-flex align-items-center justify-content-between">
-                                                  <div>
-                                                    ₹
-                                                    {Math.round(
-                                                      obj.secondPayment
-                                                    ).toLocaleString()}
-                                                    /- {"("}
-                                                    {isNaN(
-                                                      new Date(
-                                                        obj.secondPaymentRemarks
-                                                      )
-                                                    )
-                                                      ? obj.secondPaymentRemarks
-                                                      : "On " +
-                                                      obj.secondPaymentRemarks +
-                                                      ")"}
-                                                  </div>
-                                                  <div>
-                                                    <div
-                                                      className="add-remaining-amnt"
-                                                      title="Add Remaining Payment"
-                                                      onClick={() =>
-                                                        functionOpenRemainingPayment(
-                                                          obj,
-                                                          "secondPayment",
-                                                          currentLeadform[
-                                                          "Company Name"
-                                                          ],
-                                                          index + 1
-                                                        )
-                                                      }
-                                                    >
-                                                      +
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div className="row m-0 bdr-btm-eee">
-                                      {obj.thirdPayment !== 0 && (
-                                        <div className="col-lg-6 col-sm-6 p-0">
-                                          <div class="row m-0">
-                                            <div class="col-sm-4 align-self-stretch p-0">
-                                              <div class="booking_inner_dtl_h h-100">
-                                                Third Payment
-                                              </div>
-                                            </div>
-                                            <div class="col-sm-8 align-self-stretch p-0">
-                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                <div className="d-flex align-items-center justify-content-between">
-                                                  <div>
-                                                    ₹{" "}
-                                                    {Math.round(
-                                                      obj.thirdPayment
-                                                    ).toLocaleString()}
-                                                    /- {"("}
-                                                    {isNaN(
-                                                      new Date(
-                                                        obj.thirdPaymentRemarks
-                                                      )
-                                                    )
-                                                      ? obj.thirdPaymentRemarks
-                                                      : "On " +
-                                                      obj.thirdPaymentRemarks +
-                                                      ")"}
-                                                  </div>
-                                                  <div>
-                                                    <div
-                                                      className="add-remaining-amnt"
-                                                      title="Add Remaining Payment"
-                                                      onClick={() =>
-                                                        functionOpenRemainingPayment(
-                                                          obj,
-                                                          "thirdPayment",
-                                                          currentLeadform[
-                                                          "Company Name"
-                                                          ],
-                                                          index + 1
-                                                        )
-                                                      }
-                                                    >
-                                                      +
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
-                                      {obj.fourthPayment !== 0 && (
-                                        <div className="col-lg-6 col-sm-6 p-0">
-                                          <div class="row m-0">
-                                            <div class="col-sm-4 align-self-stretch p-0">
-                                              <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                                Fourth Payment
-                                              </div>
-                                            </div>
-                                            <div class="col-sm-8 align-self-stretch p-0">
-                                              <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                                <div className="d-flex align-items-center justify-content-between">
-                                                  <div>
-                                                    ₹{" "}
-                                                    {Math.round(
-                                                      obj.fourthPayment
-                                                    ).toLocaleString()}{" "}
-                                                    /- {"("}
-                                                    {isNaN(
-                                                      new Date(
-                                                        obj.fourthPaymentRemarks
-                                                      )
-                                                    )
-                                                      ? obj.fourthPaymentRemarks
-                                                      : "On " +
-                                                      obj.fourthPaymentRemarks +
-                                                      ")"}
-                                                  </div>
-                                                  <div>
-                                                    <div
-                                                      className="add-remaining-amnt"
-                                                      title="Add Remaining Payment"
-                                                      onClick={() =>
-                                                        functionOpenRemainingPayment(
-                                                          obj,
-                                                          "fourthPayment",
-                                                          currentLeadform[
-                                                          "Company Name"
-                                                          ],
-                                                          index + 1
-                                                        )
-                                                      }
-                                                    >
-                                                      +
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-
-                              {/* -------- CA Case -------- */}
-                              <div className="my-card mt-1">
-                                <div className="my-card-body">
-                                  <div className="row m-0 bdr-btm-eee">
-                                    <div className="col-lg-12 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-2 align-self-stretc p-0">
-                                          <div class="booking_inner_dtl_h h-100">
-                                            CA Case
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-10 align-self-stretc p-0">
-                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            {objMain.caCase}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {objMain.caCase !== "No" && (
-                                    <div className="row m-0 bdr-btm-eee">
-                                      <div className="col-lg-4 col-sm-6 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-5 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_h h-100">
-                                              CA's Number
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-7 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                              {objMain.caNumber}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="col-lg-4 col-sm-6 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-4 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                              CA's Email
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-8 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                              {objMain.caEmail}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="col-lg-4 col-sm-6 p-0">
-                                        <div class="row m-0">
-                                          <div class="col-sm-5 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                              CA's Commission
-                                            </div>
-                                          </div>
-                                          <div class="col-sm-7 align-self-stretc p-0">
-                                            <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                              ₹ {objMain.caCommission}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-
-                              {/* -------- Step 4 ---------*/}
-                              <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                                <b>Payment Summary:</b>
-                              </div>
-                              <div className="my-card">
-                                <div className="my-card-body">
-                                  <div className="row m-0 bdr-btm-eee">
-                                    <div className="col-lg-4 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-5 align-self-stretchh p-0">
-                                          <div class="booking_inner_dtl_h h-100">
-                                            Total Amount
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-7 align-self-stretchh p-0">
-                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            ₹{" "}
-                                            {Math.round(
-                                              objMain.totalAmount
-                                            ).toLocaleString()}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-lg-4 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-5 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                            Received Amount
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-7 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                            ₹{" "}
-                                            {Math.round(
-                                              objMain.receivedAmount
-                                            ).toLocaleString()}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-lg-4 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-5 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_h bdr-left-eee h-100">
-                                            Pending Amount
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-7 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b bdr-left-eee h-100">
-                                            ₹{" "}
-                                            {Math.round(
-                                              objMain.pendingAmount
-                                            ).toLocaleString()}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="row m-0 bdr-btm-eee">
-                                    <div className="col-lg-6 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-4 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_h h-100">
-                                            Payment Method
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            {objMain.paymentMethod}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-lg-6 col-sm-6 p-0">
-                                      <div class="row m-0">
-                                        <div class="col-sm-4 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_h h-100 bdr-left-eee">
-                                            Extra Remarks
-                                          </div>
-                                        </div>
-                                        <div class="col-sm-8 align-self-stretch p-0">
-                                          <div class="booking_inner_dtl_b h-100 bdr-left-eee">
-                                            {objMain.extraNotes}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
 
                               <div className="mb-2 mt-3 mul-booking-card-inner-head">
-                                <b>Payment Receipt and Additional Documents:</b>
+                                <b>
+                                  Payment Receipt and Additional Documents:
+                                </b>
                               </div>
 
                               <div className="row">
@@ -2733,27 +2545,24 @@ function ManagerBookings() {
                                       <div className="booking-docs-preview">
                                         <div
                                           className="booking-docs-preview-img"
-                                          onClick={() =>
-                                            handleViewPdfReciepts(
-                                              objMain.paymentReceipt[0]
-                                                .filename,
-                                              currentLeadform["Company Name"]
-                                            )
-                                          }
+                                        // onClick={() =>
+                                        //   handleViewPdfReciepts(
+                                        //     objMain.paymentReceipt[0]
+                                        //       .filename, currentLeadform["Company Name"]
+                                        //   )
+                                        // }
                                         >
                                           {objMain.paymentReceipt[0].filename.endsWith(
                                             ".pdf"
-                                          ) ? (
-                                            <PdfImageViewerAdmin
-                                              type="paymentrecieptpdf"
-                                              path={
-                                                objMain.paymentReceipt[0]
-                                                  .filename
-                                              }
-                                              companyName={
-                                                currentLeadform["Company Name"]
-                                              }
-                                            />
+                                          ) ? (<></>
+                                            // <PdfImageViewerAdmin
+                                            //   type="paymentrecieptpdf"
+                                            //   path={
+                                            //     objMain.paymentReceipt[0]
+                                            //       .filename
+                                            //   }
+                                            //   companyName={currentLeadform["Company Name"]}
+                                            // />
                                           ) : (
                                             <img
                                               src={`${secretKey}/recieptpdf/${currentLeadform["Company Name"]}/${objMain.paymentReceipt[0].filename}`}
@@ -2774,25 +2583,22 @@ function ManagerBookings() {
                                     <div className="booking-docs-preview">
                                       <div
                                         className="booking-docs-preview-img"
-                                        onClick={() =>
-                                          handleViewPdOtherDocs(
-                                            obj.filename,
-                                            currentLeadform["Company Name"]
-                                          )
-                                        }
+                                      // onClick={() =>
+                                      //   handleViewPdOtherDocs(
+                                      //     obj.filename, currentLeadform["Company Name"]
+                                      //   )
+                                      // }
                                       >
-                                        {obj.filename.endsWith(".pdf") ? (
-                                          <PdfImageViewerAdmin
-                                            type="pdf"
-                                            path={obj.filename}
-                                            companyName={
-                                              currentLeadform["Company Name"]
-                                            }
-                                          />
+                                        {obj.filename.endsWith(".pdf") ? (<></>
+                                          // <PdfImageViewerAdmin
+                                          //   type="pdf"
+                                          //   path={obj.filename}
+                                          //   companyName={currentLeadform["Company Name"]}
+                                          // />
                                         ) : (
                                           <img
                                             src={`${secretKey}/otherpdf/${currentLeadform["Company Name"]}/${obj.filename}`}
-                                            alt={pdfimg}
+                                          //alt={pdfimg}
                                           ></img>
                                         )}
                                       </div>
@@ -2842,7 +2648,7 @@ function ManagerBookings() {
                                   </DialogTitle>
                                   <DialogContent>
                                     <div className="maincon">
-                                      {/* Single file input for multiple documents */}
+
                                       <div
                                         style={{
                                           justifyContent: "space-between",
@@ -2914,6 +2720,7 @@ function ManagerBookings() {
                                   </button>
                                 </Dialog>
                               </div>
+
                             </div>
                           </>
                         ))}
@@ -2926,29 +2733,13 @@ function ManagerBookings() {
         </div>
       )}
 
-      {bookingFormOpen && (
-        <>
-          <AdminBookingForm
-            // matured={true}
-            // companysId={companyId}
-            //setDataStatus={setdataStatus}
-            setFormOpen={setBookingFormOpen}
-            //companysName={companyName}
-            // companysEmail={companyEmail}
-            // companyNumber={companyNumber}
-            setNowToFetch={setNowToFetch}
-          // companysInco={companyInco}
-          // employeeName={data.ename}
-          // employeeEmail={data.email}
-          />
-        </>
-      )}
-      {EditBookingOpen && bookingIndex !== -1 && (
+     
+      {editMoreOpen && bookingIndex !== -1 && (
         <>
           <EditableMoreBooking
-            setFormOpen={setEditBookingOpen}
+            setFormOpen={setEditMoreOpen}
             bookingIndex={bookingIndex}
-            isAdmin={isAdmin}
+            //isAdmin={isAdmin}
             setNowToFetch={setNowToFetch}
             companysName={currentLeadform["Company Name"]}
             companysEmail={currentLeadform["Company Email"]}
@@ -2969,230 +2760,72 @@ function ManagerBookings() {
           />
         </>
       )}
+
       <Dialog
-        open={openRemainingPayment}
+        open={openBooking}
         onClose={() => {
-          setOpenRemainingPayment(false)
-          setIsUpdateMode(false)
-          setTempUpdateMode(false)
+          setOpenBooking(false);
+          setCurrentForm(null);
         }}
         fullWidth
-        maxWidth="sm"
-      >
+        maxWidth="sm">
         <DialogTitle>
-          <div className="d-flex align-items-center justify-content-between">
-            <div className="remaining-payment-heading">
-              <h2 className="m-0"> Remaining Payment</h2>
-            </div>
-            <div className="remaining-payment-close">
-              {tempUpdateMode && <IconButton onClick={() => setIsUpdateMode(false)}>
-                <MdModeEdit />
-              </IconButton>}
-              <IconButton onClick={() => {
-                setOpenRemainingPayment(false)
-                setIsUpdateMode(false)
-                setTempUpdateMode(false)
-              }}>
-                <CloseIcon />
-              </IconButton>
-            </div>
-          </div>
+          Choose Booking{" "}
+          <IconButton
+            onClick={() => {
+              setOpenBooking(false);
+              setCurrentForm(null);
+            }}
+            style={{ float: "right" }}
+          >
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
         </DialogTitle>
-        <DialogContent>
-          <div className="container">
-            <div className="row mb-1">
-              <div className="col-sm-6">
-                <label htmlFor="remaining-service-name" className="form-label">
-                  Service Name :
-                </label>
-                <div className="col">
-                  <select
-                    value={
-                      remainingObject["Company Name"] !== "" &&
-                      remainingObject.serviceName
-                    }
-                    name="remaining-service-name"
-                    id="remaining-service-name"
-                    className="form-select"
-                    disabled
-                  >
-                    <option
-                      value={
-                        remainingObject["Company Name"] !== "" &&
-                        remainingObject.serviceName
-                      }
-                      selected
-                      disabled
-                    >
-                      {remainingObject["Company Name"] !== "" &&
-                        remainingObject.serviceName}
-                    </option>
-                  </select>
-                </div>
-              </div>
-              <div className="col-sm-6">
-                <label
-                  htmlFor="remaining-payment-proper"
-                  className="form-label"
-                >
-                  Remaining Payment :
-                </label>
-                <div className="col">
-                  <input
-                    value={
-                      remainingObject["Company Name"] !== "" &&
-                      remainingObject.receivedAmount
-                    }
-                    onChange={(e) =>
-                      setRemainingObject({
-                        ...remainingObject,
-                        receivedAmount: e.target.value,
-                      })
-                    }
-                    type="number"
-                    className="form-control"
-                    disabled={isUpdateMode}
-                    name="remaining-payment-proper"
-                    id="remaining-payment-proper"
-                    placeholder="Remaining Payment"
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col-sm-6">
-                <label htmlFor="remaining-paymentmethod" className="form-label">
-                  Payment Method {<span style={{ color: "red" }}>*</span>} :
-                </label>
-                <div className="col">
-                  <select
-                    name="remaining-paymentmethod"
-                    value={
-                      remainingObject["Company Name"] !== "" &&
-                      remainingObject.paymentMethod
-                    }
-                    id="remaining-paymentmethod"
-                    className="form-select"
-                    disabled={isUpdateMode}
-                    onChange={(e) =>
-                      setRemainingObject({
-                        ...remainingObject,
-                        paymentMethod: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="" disabled selected>
-                      Select Payment Option
-                    </option>
-                    <option value="ICICI Bank">ICICI Bank</option>
-                    <option value="SRK Seedfund(Non GST)/IDFC first Bank">
-                      SRK Seedfund(Non GST)/IDFC first Bank
-                    </option>
-                    <option value="STARTUP SAHAY SERVICES/ADVISORY(Non GST)/ IDFC First Bank">
-                      STARTUP SAHAY SERVICES/ADVISORY(Non GST)/ IDFC First Bank
-                    </option>
-                    <option value="Razorpay">Razorpay</option>
-                    <option value="PayU">PayU</option>
-                    <option value="Cashfree">Cashfree</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-              </div>
-              <div className="col-sm-6">
-                <label
-                  htmlFor="remaining-payment-remarks"
-                  className="form-label"
-                >
-                  Payment Remarks :
-                </label>
-                <div className="form-control">
-                  {remainingObject["Company Name"] !== "" &&
-                    remainingObject.paymentRemarks}
-                </div>
-              </div>
-            </div>
 
-            <div className="row mt-2">
-              <div className="mb-3 col-sm-6">
-                <label htmlFor="remainingDate" className="form-label">
-                  Payment Date {<span style={{ color: "red" }}>*</span>} :
-                </label>
+        <DialogContent>
+          <div className="bookings-content">
+            <div className="open-bookings d-flex align-items-center justify-content-around">
+              <div className="booking-1">
+                <label for="open-bookings "> Booking 1 </label>
                 <input
-                  className="form-control"
-                  value={remainingObject.paymentDate}
-                  type="date"
-                  name="remainingDate"
-                  id="remainingDate"
-                  disabled={isUpdateMode}
-                  onChange={(e) =>
-                    setRemainingObject({
-                      ...remainingObject,
-                      paymentDate: e.target.value,
-                    })
-                  }
+                  onChange={() => setBookingIndex(0)}
+                  className="form-check-input ml-1"
+                  type="radio"
+                  name="open-bookings"
+                  id="open-bookings-1"
                 />
               </div>
-              <div className="col-sm-6">
-                <div className="mb-1 col">
-                  <label htmlFor="remaining-paymentmethod">
-                    <b>Upload Receipt :</b>
-                  </label>
-                </div>
-                <div className="col form-control">
-                  <input
-                    type="file"
-                    disabled={isUpdateMode}
-                    name="upload-remaining-receipt"
-                    id="upload-remaining-receipt"
-                    onChange={(e) =>
-                      setRemainingObject({
-                        ...remainingObject,
-                        remainingPaymentReceipt: e.target.files[0],
-                      })
-                    }
-                  />
-                </div>
-              </div>
+              {currentForm &&
+                currentForm.moreBookings.map((obj, index) => (
+                  <div className="booking-2">
+                    <label for="open-bookings"> Booking {index + 2} </label>
+                    <input
+                      onChange={() => setBookingIndex(index + 1)}
+                      className="form-check-input ml-1"
+                      type="radio"
+                      name="open-bookings"
+                      id={`open-booking-${index + 2}`}
+                    />
+                  </div>
+                ))}
             </div>
-            <div className="row mt-2">
-              <div className="mb-3">
-                <label
-                  htmlFor="remainingControlTextarea1"
-                  className="form-label"
-                >
-                  Any Remarks
-                </label>
-                <textarea
-                  className="form-control"
-                  id="remainingControlTextarea1"
-                  rows="3"
-                  placeholder="Write your remarks here..."
-                  value={remainingObject.extraRemarks}
-                  onChange={(e) =>
-                    setRemainingObject({
-                      ...remainingObject,
-                      extraRemarks: e.target.value,
-                    })
-                  }
-                  disabled={isUpdateMode}
-                ></textarea>
-              </div>
+
+            <div className="open-bookings-footer mt-2 d-flex justify-content-center">
+              <button
+                onClick={handleOpenEditForm}
+                style={{ textAlign: "center" }}
+                className="btn btn-primary"
+              >
+                Confirm Booking
+              </button>
             </div>
           </div>
         </DialogContent>
-        <div className="remaining-footer">
-          <button
-            className="btn btn-primary w-100"
-            onClick={handleSubmitMorePayments}
-            disabled={isUpdateMode}
-          >
-            {" "}
-            Submit
-          </button>
-        </div>
       </Dialog>
+
+
     </div>
-  );
+  )
 }
 
-export default ManagerBookings;
+export default BdmBookings
