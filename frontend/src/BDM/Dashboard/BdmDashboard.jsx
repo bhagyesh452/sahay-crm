@@ -56,8 +56,8 @@ function BdmDashboard() {
     fetch(`${secretKey}/einfo`)
       .then((response) => response.json())
       .then((data) => {
-        setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.branchOffice === "Sindhu Bhawan"));
-        setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.branchOffice === "Sindhu Bhawan"));
+        setEmployeeData(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
+        setEmployeeDataFilter(data.filter((employee) =>  (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
         // setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive"))
         // setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
         // setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
@@ -277,6 +277,8 @@ function BdmDashboard() {
     { value: 'last_month', label: 'Last Month' },
     { value: 'total', label: 'Total' }
   ];
+
+  console.log("redesigneddata" , redesignedData)
 
 
   const filterTeamLeadsDataByMonth = (teamData, followData, selectedMonthOption) => {
@@ -1013,6 +1015,8 @@ function BdmDashboard() {
     setCompleteProjectionDataToday(filteredDataDateRange);
   }, [startDate, endDate]);
 
+  console.log("unique" , uniqueBDEobjects)
+
 
   return (
     <div>
@@ -1020,7 +1024,7 @@ function BdmDashboard() {
       <Navbar userId={userId} />
       {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
 
-      <div className='container-xl' style={{display:"none"}}>
+      <div className='container-xl'>
         <div className="employee-dashboard mt-2">
           <div className="card todays-booking totalbooking" id="totalbooking"   >
             <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
@@ -1052,8 +1056,8 @@ function BdmDashboard() {
                           employeeData
                             .filter(
                               (item) =>
-                                item.designation ===
-                                "Sales Executive" &&
+                                (item.designation ===
+                                "Sales Executive" || item.designation === "Sales Manager") && item.branchOffice === "Sindhu Bhawan" &&
                                 item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
                             )
                             .map((obj, index) => (
