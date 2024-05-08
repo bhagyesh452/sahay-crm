@@ -1563,6 +1563,7 @@ function EmployeeDashboard() {
     { label: "Reset", getValue: () => [null, null] },
   ];
   const [redesignedData, setRedesignedData] = useState([]);
+  const [permanentFormData, setPermanentFormData] = useState([]);
 
   const fetchRedesignedBookings = async () => {
     try {
@@ -1573,6 +1574,7 @@ function EmployeeDashboard() {
 
 
       setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by")));
+      setPermanentFormData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by")));
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
     }
@@ -1950,6 +1952,7 @@ function EmployeeDashboard() {
           const objDate = new Date(obj.estPaymentDate);
           return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
         });
+        setRedesignedData(permanentFormData.filter(obj=> new Date(obj.bookingDate).getMonth() === currentMonth && new Date(obj.bookingDate).getFullYear() === currentYear))
         break;
       case 'last_month':
         const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
@@ -1962,10 +1965,12 @@ function EmployeeDashboard() {
           const objDate = new Date(obj.estPaymentDate);
           return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
         })
+        setRedesignedData(permanentFormData.filter(obj=> new Date(obj.bookingDate).getMonth() === lastMonth && new Date(obj.bookingDate).getFullYear() === lastMonthYear))
         break;
       case 'total':
         filteredTeamData = teamData;
         filteredFollowData = followData;
+        setRedesignedData(permanentFormData)
         break;
       default:
         filteredTeamData = teamData;

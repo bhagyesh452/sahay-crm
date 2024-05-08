@@ -55,6 +55,7 @@ export default function AdminBookingForm({
   employeeName,
   employeeEmail,
   setNowToFetch,
+  IamAdmin
 }) {
   const [totalServices, setTotalServices] = useState(1);
 
@@ -210,6 +211,7 @@ export default function AdminBookingForm({
           paymentReceipt: data.paymentReceipt,
           paymentMethod: data.paymentMethod,
           extraNotes: data.extraNotes,
+          isAdmin : IamAdmin
         }));
       } else if (Step5Status === true) {
         setCompleted({ 0: true, 1: true, 2: true, 3: true, 4: true });
@@ -535,6 +537,7 @@ export default function AdminBookingForm({
         formData.append("pendingAmount", pendingAmount);
         formData.append("paymentMethod", leadData.paymentMethod);
         formData.append("extraNotes", leadData.extraNotes);
+     
 
         // Append payment receipt files to formData
         for (let i = 0; i < leadData.paymentReceipt.length; i++) {

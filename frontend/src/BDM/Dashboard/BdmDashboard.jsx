@@ -194,7 +194,7 @@ function BdmDashboard() {
       setCompleteProjectionData(followdata);
       setCompleteProjectionDataNew(followdata)
       const filteredFollowData = followdata.filter((obj)=>employeeDataNew.some((empObj)=>empObj.ename === obj.ename))
-      console.log("filetered" , filteredFollowData)
+      console.log("filetered" , followData)
       setCompleteProjectionDataToday(filteredFollowData.filter((obj) => {
         const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
         return obj.estPaymentDate === today}))
@@ -243,6 +243,7 @@ function BdmDashboard() {
   }, [data]);
 
   const [redesignedData, setRedesignedData] = useState([]);
+  const [permanentFormData, setPermanentFormData] = useState([]);
 
   const fetchRedesignedBookings = async () => {
     try {
@@ -261,6 +262,7 @@ function BdmDashboard() {
       });
       setUniqueBDE(getBDEnames);
       setRedesignedData(bookingsData);
+      setPermanentFormData(bookingsData);
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
     }
@@ -296,6 +298,8 @@ function BdmDashboard() {
           const objDate = new Date(obj.estPaymentDate);
           return objDate.getMonth() === currentMonth && objDate.getFullYear() === currentYear;
         });
+
+        setRedesignedData(permanentFormData.filter(obj=> new Date(obj.bookingDate).getMonth() === currentMonth && new Date(obj.bookingDate).getFullYear() === currentYear))
         break;
       case 'last_month':
         const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
@@ -308,10 +312,12 @@ function BdmDashboard() {
           const objDate = new Date(obj.estPaymentDate);
           return objDate.getMonth() === lastMonth && objDate.getFullYear() === lastMonthYear;
         })
+        setRedesignedData(permanentFormData.filter(obj=> new Date(obj.bookingDate).getMonth() === lastMonth && new Date(obj.bookingDate).getFullYear() === lastMonthYear))
         break;
       case 'total':
         filteredTeamData = teamData;
         filteredFollowData = followData;
+        setRedesignedData(permanentFormData);
         break;
       default:
         filteredTeamData = teamData;
