@@ -17,6 +17,10 @@ export const options = [
   { value: "Company Brochure", label: "Company Brochure" },
   { value: "Product Catalog", label: "Product Catalog" },
   { value: "Logo Design", label: "Logo Design" },
+  { value: "Business Card Design", label: "Business Card Design" },
+  { value: "Letter Head Design", label: "Letter Head Design" },
+  { value: "Broucher Design", label: "Broucher Design" },
+  { value: "Business Profile", label: "Business Profile" },
   { value: "Seed Funding Support", label: "Seed Funding Support" },
   { value: "Angel Funding Support", label: "Angel Funding Support" },
   { value: "VC Funding Support", label: "VC Funding Support" },
@@ -70,6 +74,7 @@ export const options = [
   { value: "Director DSC", label: "Director DSC" },
   { value: "Self Certification", label: "Self Certification" },
   { value: "GeM", label: "GeM" },
+  { value: "Other Design Service", label: "Other Design Service" },
 
   // Add more options as needed
 ];
