@@ -56,8 +56,8 @@ function BdmDashboard() {
     fetch(`${secretKey}/einfo`)
       .then((response) => response.json())
       .then((data) => {
-        setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.branchOffice === "Sindhu Bhawan"));
-        setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.branchOffice === "Sindhu Bhawan"));
+        setEmployeeData(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
+        setEmployeeDataFilter(data.filter((employee) =>  (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
         // setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive"))
         // setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
         // setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
@@ -263,7 +263,7 @@ function BdmDashboard() {
       setUniqueBDE(getBDEnames);
 
 
-      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by")));
+      setRedesignedData(bookingsData);
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
     }
@@ -277,6 +277,8 @@ function BdmDashboard() {
     { value: 'last_month', label: 'Last Month' },
     { value: 'total', label: 'Total' }
   ];
+
+  console.log("redesigneddata" , redesignedData)
 
 
   const filterTeamLeadsDataByMonth = (teamData, followData, selectedMonthOption) => {
@@ -1013,12 +1015,15 @@ function BdmDashboard() {
     setCompleteProjectionDataToday(filteredDataDateRange);
   }, [startDate, endDate]);
 
+  console.log("unique" , uniqueBDEobjects)
+
 
   return (
     <div>
       <Header bdmName={data.ename} />
       <Navbar userId={userId} />
       {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
+
       <div className='container-xl'>
         <div className="employee-dashboard mt-2">
           <div className="card todays-booking totalbooking" id="totalbooking"   >
@@ -1051,8 +1056,8 @@ function BdmDashboard() {
                           employeeData
                             .filter(
                               (item) =>
-                                item.designation ===
-                                "Sales Executive" && item.branchOffice==="Sindhu Bhawan" &&
+                                (item.designation ===
+                                "Sales Executive" || item.designation === "Sales Manager") && item.branchOffice === "Sindhu Bhawan" &&
                                 item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
                             )
                             .map((obj, index) => (
@@ -1150,6 +1155,9 @@ function BdmDashboard() {
           </div>
         </div>
       </div>
+
+      {/* ----------------------------------------------bdm recieved cases report-------------------------------------------------------------- */}
+
       <div className="as-bde-bdm-daSH mt-4 mb-2">
         <div className="container-xl">
           <div className="as-bde-bdm-daSH-inner">
@@ -1161,10 +1169,6 @@ function BdmDashboard() {
               </li>)}
             </ul>
             <div class="tab-content" id="myTabContent">
-
-
-              {/* ------------------------recieved as bdm report------------------------------------------- */}
-
               <div class="tab-pane fade show active" id="receivedAsBDM" role="tabpanel" aria-labelledby="receivedAsBDM-tab">
                 <div className="mt-3 mb-3">
                   <div className="row m-0">
@@ -1253,7 +1257,7 @@ function BdmDashboard() {
                               {/* ₹{(followDataToday
                                 .filter(obj => obj.ename === data.ename)
                                 .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
-
+                               ₹{handleFilterFollowDataTodayRecievedCase()}
                             </div>
                           </div>
                         </div>
@@ -1305,6 +1309,7 @@ function BdmDashboard() {
                           /> */}
                       </div>
                     </div>
+
                     {/* recieved bdm report total */}
                     <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                       <div className="dash-card-2">

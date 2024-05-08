@@ -617,8 +617,6 @@ function Dashboard() {
   console.log("options", options);
 
   const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
-    console.log(selectedEmployeeNames, "selected employees");
-    // Assuming you have forwardEmployeeDataFilter, companyDataFilter, and teamLeadsDataFilter defined somewhere
 
     const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) =>
       selectedEmployeeNames.includes(company.ename)
