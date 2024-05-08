@@ -58,11 +58,6 @@ function BdmDashboard() {
       .then((data) => {
         setEmployeeData(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
         setEmployeeDataFilter(data.filter((employee) =>  (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
-        // setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive"))
-        // setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-        // setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-        // setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
-        // setEmployeeDataFilter(data.filter)
       })
       .catch((error) => {
         console.error(`Error Fetching Employee Data `, error);
@@ -194,12 +189,13 @@ function BdmDashboard() {
       const followdata = await response.json();
       setCompleteProjectionData(followdata);
       setCompleteProjectionDataNew(followdata)
-      setCompleteProjectionDataToday(followdata.filter((obj) => {
+      const filteredFollowData = followdata.filter((obj)=>employeeData.some((empObj)=>empObj.ename === obj.ename))
+      setCompleteProjectionDataToday(filteredFollowData.filter((obj) => {
         const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
         return obj.estPaymentDate === today
 
       }))
-      setCompleteProjectionDataTodayNew(followdata.filter((obj) => {
+      setCompleteProjectionDataTodayNew(filteredFollowData.filter((obj) => {
         const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
         return obj.estPaymentDate === today
 

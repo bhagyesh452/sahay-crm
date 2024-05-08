@@ -263,9 +263,11 @@ function BdmTeamLeads() {
   const [maturedId, setMaturedId] = useState("")
   const [maturedNumber, setMaturedNumber] = useState("")
   const [maturedOpen, setMaturedOpen] = useState(false)
+  const [currentBdmName, setCurrentBdmName] = useState(false)
 
-  const handleRejectData = async (companyId) => {
+  const handleRejectData = async (companyId , currentbdmname) => {
     setIsDeleted(true)
+    setCurrentBdmName(currentbdmname)
   }
 
   const handleUpdate = async () => {
@@ -298,12 +300,14 @@ function BdmTeamLeads() {
           bdeName: bdeNameReject,
           currentCompanyName
 
-        }
-        )
+        })
+        // const response5 = await axios.post(`${secretKey}/post-updaterejectedfollowup/${currentCompanyName}`,{
+        //   caseType:"NotForwarded"
+        // })
 
 
 
-        console.log("remarks", Remarks)
+        //console.log("remarks", Remarks)
         if (response.status === 200) {
           Swal.fire("Remarks updated!");
           setChangeRemarks("");
@@ -1864,7 +1868,7 @@ const handleDateChange = (e) => {
                                     company.bdmName,
                                     company.ename
                                   )
-                                  handleRejectData(company._id)
+                                  handleRejectData(company._id , company.bdmName)
                                 }}>
                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="red" style={{ width: "12px", height: "12px", color: "red" }}><path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" /></svg></IconButton>
                               </td>
