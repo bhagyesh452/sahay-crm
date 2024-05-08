@@ -2115,7 +2115,7 @@ function EmployeeDashboard() {
 
 
   return (
-    <div>
+    <div className="admin-dashboard">
       <Header name={data.ename} designation={data.designation} />
       <EmpNav userId={userId} bdmWork={data.bdmWork} />
       <div className="page-wrapper">
@@ -2449,11 +2449,7 @@ function EmployeeDashboard() {
             </div>
           </div>
         </div>
-
-
-
         {/* AS BDE AND BDM DASHBOARD */}
-
         <div className="as-bde-bdm-daSH mt-4 mb-2">
           <div className="container-xl">
             <div className="as-bde-bdm-daSH-inner">
@@ -2983,73 +2979,43 @@ function EmployeeDashboard() {
             </div>
           </div>
         </div>
-
-        {/* --------------------------------------------------projection dashboard new------------------------------------ */}
+        {/* -----projection dashboard new---*/}
         <div className="container-xl mt-4">
           <div className="row">
             <div className="col-12" id="projectiontotalsummary">
               <div className="card">
-                <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-                  <div className="dashboard-title">
-                    <h2 style={{ marginBottom: "5px" }}>
+                <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+                  <div className="dashboard-title pl-1"  >
+                    <h2  className="m-0">
                       Total Projection Summary
                     </h2>
                   </div>
-                  <div
-                    className="d-flex justify-content-between"
-                    style={{ gap: "10px" }}
-                  >
-                    <div
-                      className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
-                      style={{ width: "50%" }}
-                    >
-                      <span className="input-icon-addon">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="icon"
-                          width="20"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          stroke-width="2"
-                          stroke="currentColor"
-                          fill="none"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                          <path d="M21 21l-6 -6" />
+                  <div className="d-flex align-items-center pr-1">
+                    <div class="input-icon mr-1">
+                      <span class="input-icon-addon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                          <path d="M21 21l-6 -6"></path>
                         </svg>
                       </span>
                       <input
-                        className=""
+                        className="form-control"
                         value={searchTermTotalSummary}
                         onChange={(e) => filterSearchTotalSummary(e.target.value)}
                         placeholder="Search here....."
-                        style={{
-                          border: "none",
-                          padding: "0px 0px 0px 21px",
-                          // Add a bottom border for the input field itself
-                        }}
                         type="text"
                         name="bdeName-search"
                         id="bdeName-search"
                       />
                     </div>
-                    <div
-                      style={{
-                        m: 1,
-                        width: "40ch",
-                        padding: "0px",
-                        marginRight: "30px",
-                      }}
-                    >
+                    <div>
                       <LocalizationProvider
                         dateAdapter={AdapterDayjs}
                         style={{ padding: "0px" }}
                       >
                         <DemoContainer components={["SingleInputDateRangeField"]}>
-                          <DateRangePicker
+                          <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
                             onChange={(values) => {
                               const startDate = moment(values[0]).format(
                                 "DD/MM/YYYY"
@@ -3078,25 +3044,9 @@ function EmployeeDashboard() {
                   </div>
                 </div>
                 <div className="card-body">
-                  <div
-                    id="table-default"
-                    style={{
-                      overflowX: "auto",
-                      overflowY: "auto",
-                      maxHeight: "60vh",
-                      height: "30vh",
-                    }}
-                  >
-                    <table
-                      style={{
-                        width: "100%",
-                        borderCollapse: "collapse",
-                        border: "1px solid #ddd",
-                        marginBottom: "10px",
-                      }}
-                      className="table-vcenter table-nowrap"
-                    >
-                      <thead style={{ backgroundColor: "grey" }}>
+                  <div id="row tbl-scroll table-default">
+                    <table className="table-vcenter table-nowrap admin-dash-tbl">
+                      <thead className="admin-dash-tbl-thead" >
                         <tr
                           className="tr-sticky"
                           style={{
@@ -3105,16 +3055,12 @@ function EmployeeDashboard() {
                             fontWeight: "bold",
                           }}
                         >
-                          <th
-                            style={{
-                              lineHeight: "32px",
-                            }}
-                          >
+                          <th>
                             Sr. No
                           </th>
                           <th>Company Name</th>
                           <th>Offered Services</th>
-                          <th> Offered Price</th>
+                          <th>Offered Price</th>
                           <th>Expected Amount</th>
                           <th>Remarks</th>
                           <th>Last FollowUp Date</th>
@@ -3143,11 +3089,7 @@ function EmployeeDashboard() {
                               <tbody>
                                 {followDataFilter.map((obj, index) => (
                                   <tr key={`row-${index}`}>
-                                    <td
-                                      style={{
-                                        lineHeight: "32px",
-                                      }}
-                                    >
+                                    <td>
                                       {index + 1}
                                     </td>
                                     <td>{obj.companyName}</td>
@@ -3165,9 +3107,9 @@ function EmployeeDashboard() {
                                     <td>{obj.remarks}</td>
                                     <td>{obj.lastFollowUpdate}</td>
                                     <td>{obj.estPaymentDate}</td>
-                                    <td>
+                                    <td className="p-0">
                                       {obj.ename && obj.bdeName && obj.ename !== obj.bdeName ? (
-                                        <IconButton
+                                        <IconButton className="p-0"
                                           onClick={() => {
                                             functionopenprojection(obj.companyName, obj.bdeName, obj.ename);
                                             setIsEditProjection(false)
@@ -3181,10 +3123,9 @@ function EmployeeDashboard() {
                                             }}
                                           ></RiEditCircleFill>
                                         </IconButton>) : (
-                                        <IconButton
+                                        <IconButton className="p-0"
                                           onClick={() => {
                                             functionopenprojection(obj.companyName);
-
                                           }}
                                         >
                                           <RiEditCircleFill
@@ -3201,13 +3142,12 @@ function EmployeeDashboard() {
                                 ))}
                               </tbody>
                               {followDataFilter && (
-                                <tfoot>
+                                <tfoot className="admin-dash-tbl-tfoot">
                                   <tr
                                     style={{ fontWeight: 500 }}
                                     className="tf-sticky"
                                   >
                                     <td
-                                      style={{ lineHeight: "32px" }}
                                       colSpan="2"
                                     >
                                       Total
@@ -3239,49 +3179,28 @@ function EmployeeDashboard() {
             </div>
             <div className="col-12 mt-2" id="projectiondashboardemployee">
               <div className="card">
-                <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-                  <div className="dashboard-title">
-                    <h2 style={{ marginBottom: "5px" }}>
+                <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+                  <div className="dashboard-title pl-1">
+                    <h2 className="m-0">
                       Todays's Projection Summary
                     </h2>
                   </div>
-                  <div
-                    className="d-flex justify-content-between"
-                    style={{ gap: "10px" }}
-                  >
-                    <div
-                      className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
-                      style={{ marginRight: "26px", width: "100%" }}
-                    >
-                      <span className="input-icon-addon">
-                        {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="icon"
-                          width="20"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          stroke-width="2"
-                          stroke="currentColor"
-                          fill="none"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                          <path d="M21 21l-6 -6" />
+                  <div className="d-flex align-items-center pr-1">
+                    <div class="input-icon mr-1">
+                      <span class="input-icon-addon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                          <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                          <path d="M21 21l-6 -6"></path>
                         </svg>
                       </span>
+
                       <input
-                        className=""
+                        className="form-control"
                         value={searchTerm}
                         onChange={(e) => filterSearch(e.target.value)}
                         placeholder="Search here....."
-                        style={{
-                          border: "none",
-                          padding: "0px 0px 0px 21px",
-                          // Add a bottom border for the input field itself
-                        }}
+                                  
                         type="text"
                         name="bdeName-search"
                         id="bdeName-search"
@@ -3290,23 +3209,9 @@ function EmployeeDashboard() {
                   </div>
                 </div>
                 <div className="card-body">
-                  <div
-                    id="table-default"
-                    style={{
-                      overflowX: "auto",
-                      overflowY: "auto",
-                    }}
-                  >
-                    <table
-                      style={{
-                        width: "100%",
-                        borderCollapse: "collapse",
-                        border: "1px solid #ddd",
-                        marginBottom: "10px",
-                      }}
-                      className="table-vcenter table-nowrap"
-                    >
-                      <thead stSyle={{ backgroundColor: "grey" }}>
+                  <div  id="table-default" className="row tbl-scroll">
+                    <table className="table-vcenter table-nowrap admin-dash-tbl">
+                      <thead className="admin-dash-tbl-thead">
                         <tr
                           className="tr-sticky"
                           style={{
@@ -3315,11 +3220,7 @@ function EmployeeDashboard() {
                             fontWeight: "bold",
                           }}
                         >
-                          <th
-                            style={{
-                              lineHeight: "32px",
-                            }}
-                          >
+                          <th>
                             Sr. No
                           </th>
                           <th>Company Name</th>
@@ -3355,11 +3256,7 @@ function EmployeeDashboard() {
                               <tbody>
                                 {followDataTodayFilter.map((obj, index) => (
                                   <tr key={`row-${index}`}>
-                                    <td
-                                      style={{
-                                        lineHeight: "32px",
-                                      }}
-                                    >
+                                    <td >
                                       {index + 1}
                                     </td>
                                     <td>{obj.companyName}</td>
@@ -3420,12 +3317,12 @@ function EmployeeDashboard() {
                                   </tr>
                                 ))}
                               </tbody>
-                              <tfoot>
+                              <tfoot className="admin-dash-tbl-tfoot"  >
                                 <tr
                                   style={{ fontWeight: 500 }}
                                   className="tf-sticky"
                                 >
-                                  <td style={{ lineHeight: "32px" }} colSpan="2">
+                                  <td colSpan="2">
                                     Total
                                   </td>
                                   <td>-</td>
@@ -3462,71 +3359,41 @@ function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* -----------------------------------------------Booking dashboard-------------------------------------------------- */}
+        {/* -----Booking dashboard---*/}
 
         <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard">
           <div className="card">
-            <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-              <div>
-                <h2>Matured Clients Summary</h2>
+            <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+              <div className="dashboard-title pl-1">
+                <h2 className="m-0">Matured Clients Summary</h2>
               </div>
-              <div
-                className="d-flex justify-content-between"
-                style={{ gap: "10px" }}
-              >
-                <div
-                  className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
-                  style={{ width: "50%" }}
-                >
-                  <span className="input-icon-addon">
-                    {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="icon"
-                      width="20"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                      <path d="M21 21l-6 -6" />
+              <div className="d-flex align-items-center pr-1">
+                <div class="input-icon mr-1">
+                  <span class="input-icon-addon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                      <path d="M21 21l-6 -6"></path>
                     </svg>
                   </span>
+                  
                   <input
-                    className=""
+                    className="form-control"
                     value={newSearchTerm}
                     onChange={(e) => filterSearchBooking(e.target.value)}
                     placeholder="Search here....."
-                    style={{
-                      border: "none",
-                      padding: "0px 0px 0px 21px",
-                      // Add a bottom border for the input field itself
-                    }}
                     type="text"
                     name="bdeName-search"
                     id="bdeName-search"
                   />
-                  {/* <CiSearch
-                    style={{
-                      width: "19px",
-                      height: "20px",
-                      marginRight: "5px",
-                      color: "grey"
-                    }} 
-                  /> */}
                 </div>
-                <div style={{ m: 1, padding: "0px", marginRight: "30px" }}>
+                <div>
                   <LocalizationProvider
                     dateAdapter={AdapterDayjs}
                     style={{ padding: "0px" }}
                   >
                     <DemoContainer components={["SingleInputDateRangeField"]}>
-                      <DateRangePicker
+                      <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
                         onChange={(values) => {
                           const startDate = moment(values[0]).format(
                             "DD/MM/YYYY"
@@ -3580,32 +3447,11 @@ function EmployeeDashboard() {
               />
             </div>} */}
             <div className="card-body">
-              <div
-                id="table-default"
-                style={{
-                  overflowX: "auto",
-                  overflowY: "auto",
-                  maxHeight: "60vh",
-                }}
-              >
-                <table
-                  style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    border: "1px solid #ddd",
-                    marginBottom: "10px",
-                  }}
-                  className="table-vcenter table-nowrap"
-                >
-                  <thead stSyle={{ backgroundColor: "grey" }}>
-                    <tr
-                      style={{
-                        backgroundColor: "#ffb900",
-                        color: "white",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      <th style={{ lineHeight: "32px" }}>SR.NO</th>
+              <div  id="table-default" className="row tbl-scroll"  >
+                <table className="table-vcenter table-nowrap admin-dash-tbl">
+                  <thead className="admin-dash-tbl-thead" >
+                    <tr>
+                      <th>SR.NO</th>
                       <th>BOOKING DATE & TIME</th>
                       <th>COMPANY NAME</th>
                       <th>COMPANY NUMBER</th>
@@ -3624,7 +3470,7 @@ function EmployeeDashboard() {
                       <tbody>
                         {filteredBooking.map((mainObj, index) => (
                           <tr key={index}>
-                            <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                            <td>{index + 1}</td>
                             <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
                               })`}</td>
                             <td>{mainObj.companyName}</td>
@@ -3675,7 +3521,7 @@ function EmployeeDashboard() {
                           </tr>
                         ))}
                       </tbody>
-                      <tfoot>
+                      <tfoot className="admin-dash-tbl-tfoot">
                         <tr>
                           <th colSpan={3}>
                             <strong>Total</strong>
@@ -3765,50 +3611,31 @@ function EmployeeDashboard() {
           </div>
         </div>
 
-        {/* ------------------------------------------------------------- Todays Follow Up date Data------------------------------------------------------ */}
+        {/* --- Todays Follow Up date Data---*/}
 
         <div className="container-xl mt-2 bookingdashboard" id="bookingdashboard">
           <div className="card">
-            <div className="card-header employeedashboard d-flex align-items-center justify-content-between">
-              <div>
-                <h2>Todays FollowUp Leads</h2>
+            <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+              <div className="dashboard-title pl-1"  >
+                <h2 className="m-0">
+                  Todays FollowUp Leads
+                </h2>
               </div>
-              <div
-                className="d-flex justify-content-between"
-                style={{ gap: "10px" }}
-              >
-                <div
-                  className=" form-control d-flex justify-content-center align-items-center general-searchbar input-icon"
-                  style={{ width: "100%", marginRight: "30px" }} >
-                  <span className="input-icon-addon">
-                    {/* <!-- Download SVG icon from http://tabler-icons.io/i/search --> */}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="icon"
-                      width="20"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                      <path d="M21 21l-6 -6" />
+              <div className="d-flex align-items-center pr-1">
+                <div class="input-icon mr-1">
+                  <span class="input-icon-addon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                      <path d="M21 21l-6 -6"></path>
                     </svg>
                   </span>
+
                   <input
-                    className=""
+                    className="form-control"
                     value={newSearchTermFollow}
                     onChange={(e) => filterSearchBookingFollow(e.target.value)}
                     placeholder="Search here....."
-                    style={{
-                      border: "none",
-                      padding: "0px 0px 0px 21px",
-                      // Add a bottom border for the input field itself
-                    }}
                     type="text"
                     name="bdeName-search"
                     id="bdeName-search"
@@ -3817,24 +3644,9 @@ function EmployeeDashboard() {
               </div>
             </div>
             <div className="card-body">
-              <div
-                id="table-default"
-                style={{
-                  overflowX: "auto",
-                  overflowY: "auto",
-                  maxHeight: "60vh",
-                }}
-              >
-                <table
-                  style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    border: "1px solid #ddd",
-                    marginBottom: "10px",
-                  }}
-                  className="table-vcenter table-nowrap"
-                >
-                  <thead stSyle={{ backgroundColor: "grey" }}>
+              <div  id="table-default" className="row tbl-scroll">
+                <table className="table-vcenter table-nowrap admin-dash-tbl">
+                  <thead className="admin-dash-tbl-thead">
                     <tr
                       style={{
                         backgroundColor: "#ffb900",
@@ -3842,7 +3654,7 @@ function EmployeeDashboard() {
                         fontWeight: "bold",
                       }}
                     >
-                      <th style={{ lineHeight: "32px" }}>SR.NO</th>
+                      <th>SR.NO</th>
                       {/* <th>BOOKING DATE & TIME</th> */}
                       <th>COMPANY NAME</th>
                       <th>COMPANY NUMBER</th>
@@ -3862,7 +3674,7 @@ function EmployeeDashboard() {
                       <tbody>
                         {todayFollowUpDateData.map((mainObj, index) => (
                           <tr key={index}>
-                            <td style={{ lineHeight: "32px" }}>{index + 1}</td>
+                            <td>{index + 1}</td>
                             {/* <td>{`${formatDate(mainObj.bookingDate)}(${mainObj.bookingTime
                                 })`}</td> */}
                             <td>{mainObj["Company Name"]}</td>
