@@ -4107,7 +4107,7 @@ function Dashboard() {
                                   {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                                 </td>
                                 <td>
-                                ₹ {Math.round(generatedTotalRevenue).toLocaleString()}
+                                 ₹ {Math.round(generatedTotalRevenue).toLocaleString()}
                                 </td>
                               </tr>
                             </tfoot>

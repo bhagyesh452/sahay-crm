@@ -447,7 +447,7 @@ function EmployeeParticular() {
       console.error("Error fetching data:", error.message);
     }
   };
-//console.log("empData" , newempData)
+  //console.log("empData" , newempData)
 
   const handleFilterIncoDate = () => {
     setOpenIncoDate(!openIncoDate);
@@ -554,7 +554,7 @@ function EmployeeParticular() {
     });
   };
 
-  const [companyId , setCompanyId] = useState("")
+  const [companyId, setCompanyId] = useState("")
 
   // const handleUploadData = async (e) => {
   //   //console.log("Uploading data");
@@ -640,10 +640,10 @@ function EmployeeParticular() {
 
   const handleUploadData = async (e) => {
     //console.log("Uploading data");
-  
+
     const currentDate = new Date().toLocaleDateString();
     const currentTime = new Date().toLocaleTimeString();
-  
+
     const csvdata = employeeData
       .filter((employee) => selectedRows.includes(employee._id))
       .map((employee) => {
@@ -663,13 +663,13 @@ function EmployeeParticular() {
           };
         }
       });
-  
+
     console.log("csvdata", csvdata);
-  
+
     // Create an array to store promises for updating CompanyModel
     const updatePromises = [];
     const deleteCompanyIds = []; // Store company IDs to be deleted
-  
+
     for (const data of csvdata) {
       console.log("data", data);
       const updatedObj = {
@@ -679,9 +679,9 @@ function EmployeeParticular() {
         ename: newemployeeSelection,
         companyName: data["Company Name"],
       };
-  
+
       console.log("updatedObj", updatedObj);
-  
+
       // Add the promise for updating CompanyModel to the array
       updatePromises.push(
         axios.post(`${secretKey}/assign-new`, {
@@ -689,40 +689,40 @@ function EmployeeParticular() {
           data: updatedObj,
         })
       );
-  
+
       // Push company ID to the array for deletion if it's not null, empty, or length 0
       if (data.bdmAcceptStatus === "Accept") {
         deleteCompanyIds.push(data._id);
       }
     }
-  
+
     try {
       // Wait for all update promises to resolve
       await Promise.all(updatePromises);
-  
+
       // Make an API call to delete companies from Team Leads Model if deleteCompanyIds is not empty
       if (deleteCompanyIds.length > 0) {
         await axios.post(`${secretKey}/delete-companies-teamleads-assignednew`, {
           companyIds: deleteCompanyIds,
         });
       }
-  
+
       // Clear the selection
       setnewEmployeeSelection("Not Alloted");
-  
+
       Swal.fire({
         title: "Data Sent!",
         text: "Data sent successfully!",
         icon: "success",
       });
-  
+
       // Fetch updated employee details and new data
       fetchEmployeeDetails();
       fetchNewData();
       closepopupAssign();
     } catch (error) {
       console.error("Error updating employee data:", error);
-  
+
       Swal.fire({
         title: "Error!",
         text: "Failed to update employee data. Please try again later.",
@@ -730,7 +730,7 @@ function EmployeeParticular() {
       });
     }
   };
-  
+
 
 
 
@@ -794,10 +794,10 @@ function EmployeeParticular() {
       console.error("Error fetching remarks history:", error);
     }
   };
-  const functionopenpopupremarks = (companyID, companyStatus,ename) => {
+  const functionopenpopupremarks = (companyID, companyStatus, ename) => {
     openchangeRemarks(true);
     setFilteredRemarks(
-      remarksHistory.filter((obj) => obj.companyID === companyID  && obj.bdeName === ename)
+      remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdeName === ename)
     );
     // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
 
@@ -1118,8 +1118,8 @@ function EmployeeParticular() {
   // ---------------------------bdmpopupremarks----------------------------
 
   const [openRemarksBdm, setOpenRemarksBdm] = useState(false)
-  const[filteredRemarksBdm , setFilteredRemarksBdm] = useState([])
-  const[currentCompanyName , setCurrentCompanyName] = useState("")
+  const [filteredRemarksBdm, setFilteredRemarksBdm] = useState([])
+  const [currentCompanyName, setCurrentCompanyName] = useState("")
 
   const functionopenpopupremarksBdm = (
     companyID,
@@ -1127,14 +1127,14 @@ function EmployeeParticular() {
     companyName,
     bdmName
   ) => {
-      setOpenRemarksBdm(true);
-      setFilteredRemarksBdm(
-        remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
-      );
-      // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
-      //setcid(companyID);
-      //setCstat(companyStatus);
-      setCurrentCompanyName(companyName);
+    setOpenRemarksBdm(true);
+    setFilteredRemarksBdm(
+      remarksHistory.filter((obj) => obj.companyID === companyID && obj.bdmName === bdmName)
+    );
+    // console.log(remarksHistory.filter((obj) => obj.companyID === companyID))
+    //setcid(companyID);
+    //setCstat(companyStatus);
+    setCurrentCompanyName(companyName);
 
   };
 
@@ -1394,50 +1394,50 @@ function EmployeeParticular() {
             </div>
           </div>
         </div>
-        <div className="container-xl card mt-2 mb-2" style={{width:"95%"}}>
+        <div className="container-xl card mt-2 mb-2" style={{ width: "95%" }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-            <a
-                      href="#tabs-home-5"
-                      onClick={() => {
-                        setCurrentTab("Leads")
-                        window.location.pathname = `/admin/employees/${id}`
-                      }}
-                      className={
-                        currentTab === "Leads"
-                          ? "nav-link"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                    ><Tab  label={
+              <a
+                href="#tabs-home-5"
+                onClick={() => {
+                  setCurrentTab("Leads")
+                  window.location.pathname = `/admin/employees/${id}`
+                }}
+                className={
+                  currentTab === "Leads"
+                    ? "nav-link"
+                    : "nav-link"
+                }
+                data-bs-toggle="tab"
+              ><Tab label={
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <MdOutlinePersonPin style={{ height: "24px", width: "19px", marginRight: "5px" }} />
                   <span style={{ fontSize: "12px" }}>
-                   Leads </span>
+                    Leads </span>
                 </div>
               } {...a11yProps(0)} /></a>
-                {bdmWorkOn && (<a
-                      href="#tabs-activity-5"
-                      onClick={() => {
-                        setCurrentTab("TeamLeads")
-                        window.location.pathname = `/admin/employeeleads/${id}`
-                      }}
-                      className={
-                        currentTab === "TeamLeads"
-                          ? "nav-link"
-                          : "nav-link"
-                      }
-                      data-bs-toggle="tab"
-                    ><Tab
-                label={
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
-                    <span style={{ fontSize: "12px" }}> 
-                  Team Leads</span>
-                  </div>
+              {bdmWorkOn && (<a
+                href="#tabs-activity-5"
+                onClick={() => {
+                  setCurrentTab("TeamLeads")
+                  window.location.pathname = `/admin/employeeleads/${id}`
+                }}
+                className={
+                  currentTab === "TeamLeads"
+                    ? "nav-link"
+                    : "nav-link"
                 }
-                {...a11yProps(1)}
-              /></a>)}
+                data-bs-toggle="tab"
+              ><Tab
+                  label={
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <AiOutlineTeam style={{ height: "24px", width: "19px", marginRight: "5px" }} />
+                      <span style={{ fontSize: "12px" }}>
+                        Team Leads</span>
+                    </div>
+                  }
+                  {...a11yProps(1)}
+                /></a>)}
             </Tabs>
           </Box>
         </div>
@@ -1960,8 +1960,8 @@ function EmployeeParticular() {
                           moreEmpData.filter(
                             (obj) =>
                               (obj.Status === "Not Interested" ||
-                             obj.Status === "Junk") &&
-                           (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
+                                obj.Status === "Junk") &&
+                              (obj.bdmAcceptStatus === "NotForwarded" || obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept")
                           )
                         );
                       }}
@@ -2019,10 +2019,9 @@ function EmployeeParticular() {
                           <th className="th-sticky">Sr.No</th>
                           <th className="th-sticky1">Company Name</th>
                           <th>Company Number</th>
-                          <th>Status</th>
-                          {dataStatus === "FollowUp" && <th>Next FollowUp Date</th>}
-                          {dataStatus === "Forwarded" && <th>Bdm Status</th>}
-                          <th>Remarks</th>
+                          {dataStatus === "Forwarded" ? (<th>BDE Status</th>) : (<th>Status</th>)}
+                          {dataStatus === "Forwarded" ? (<th>BDE Remarks</th>) : (<th>Remarks</th>)}
+                          {dataStatus === "Forwarded" && <th>BDM Status</th>}
                           {dataStatus === "Forwarded" &&
                             (dataStatus !== "Interested" ||
                               dataStatus !== "FollowUp" ||
@@ -2031,7 +2030,7 @@ function EmployeeParticular() {
                               dataStatus !== "Not Interested") && (
                               <th>BDM Remarks</th>
                             )}
-
+                          {dataStatus === "FollowUp" && <th>Next FollowUp Date</th>}
                           <th>
                             Incorporation Date
                             <FilterListIcon
@@ -2182,7 +2181,7 @@ function EmployeeParticular() {
                                       }
                                       onMouseDown={() =>
                                         handleMouseDown(company._id)
-                                        
+
                                       }
                                       onMouseEnter={() =>
                                         handleMouseEnter(company._id)
@@ -2202,24 +2201,6 @@ function EmployeeParticular() {
                                     <span>{company["Status"]}</span>
                                   </td>
                                   {dataStatus === "FollowUp" && (<td>{formatDateNew(company.bdeNextFollowUpDate)}</td>)}
-                                  {dataStatus === "Forwarded" && (
-                                    <td>
-                                      {company.Status === "Interested" && (
-                                        <span>Interested</span>
-                                      )}
-                                      {company.Status === "FollowUp" && (
-                                        <span>FollowUp</span>
-                                      )}
-                                      {/* {company.Status === "Matured" && (
-                                      <span>Matured</span>
-                                    )}
-                                    {(company.Status === "Not Interested" ||
-                                      company.Status === "Junk" ||
-                                      company.Status === "Busy") && (
-                                      <span></span>
-                                    )} */}
-                                    </td>
-                                  )}
                                   <td>
                                     <div
                                       key={company._id}
@@ -2255,47 +2236,100 @@ function EmployeeParticular() {
                                       </span>
                                     </div>
                                   </td>
-                                  {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && ( 
+                                  {dataStatus === "Forwarded" && (
                                     <td>
-                                    <div    key={company._id}
+                                      {company.Status === "Interested" && (
+                                        <span>Interested</span>
+                                      )}
+                                      {company.Status === "FollowUp" && (
+                                        <span>FollowUp</span>
+                                      )}
+                                      {/* {company.Status === "Matured" && (
+                                      <span>Matured</span>
+                                    )}
+                                    {(company.Status === "Not Interested" ||
+                                      company.Status === "Junk" ||
+                                      company.Status === "Busy") && (
+                                      <span></span>
+                                    )} */}
+                                    </td>
+                                  )}
+                                  {/* <td>
+                                    <div
+                                      key={company._id}
                                       style={{
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "space-between",
-                                        width: "100px",
-                                      }}>
-                                    <p
-                                      className="rematkText text-wrap m-0"
-                                      title={company.bdmRemarks}
-                                    >
-                                      {!company.bdmRemarks
-                                        ? "No Remarks"
-                                        : company.bdmRemarks}
-                                    </p>
-                                    <IconButton
-                                      onClick={() => {
-                                        functionopenpopupremarksBdm(
-                                          company._id,
-                                          company.Status,
-                                          company["Company Name"],
-                                          company.bdmName
-                                        );
-                                        //setOpenPopupByBdm(true);
-                                        //setCurrentRemarks(company.Remarks);
-                                        //setCompanyId(company._id);
                                       }}
                                     >
-                                      <IconEye
-                                        style={{
-                                          width: "14px",
-                                          height: "14px",
-                                          color: "#d6a10c",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    </IconButton>
+                                      <p
+                                        className="rematkText text-wrap m-0"
+                                        title={company.Remarks}
+                                      >
+                                        {company.Remarks}
+                                      </p>
+                                      <span>
+                                        <IconButton
+                                          onClick={() => {
+                                            functionopenpopupremarks(
+                                              company._id,
+                                              company.Status,
+                                              company.ename
+                                            );
+                                          }}
+                                        >
+                                          <HiOutlineEye
+                                            style={{
+                                              fontSize: "14px",
+                                              color: "#fbb900",
+                                            }}
+                                          />
+                                        </IconButton>
+                                      </span>
                                     </div>
-                                  </td>
+                                  </td> */}
+                                  {(dataStatus === "Forwarded") && (company.bdmAcceptStatus !== "NotForwarded") && (
+                                    <td>
+                                      <div key={company._id}
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          justifyContent: "space-between",
+                                          width: "100px",
+                                        }}>
+                                        <p
+                                          className="rematkText text-wrap m-0"
+                                          title={company.bdmRemarks}
+                                        >
+                                          {!company.bdmRemarks
+                                            ? "No Remarks"
+                                            : company.bdmRemarks}
+                                        </p>
+                                        <IconButton
+                                          onClick={() => {
+                                            functionopenpopupremarksBdm(
+                                              company._id,
+                                              company.Status,
+                                              company["Company Name"],
+                                              company.bdmName
+                                            );
+                                            //setOpenPopupByBdm(true);
+                                            //setCurrentRemarks(company.Remarks);
+                                            //setCompanyId(company._id);
+                                          }}
+                                        >
+                                          <IconEye
+                                            style={{
+                                              width: "14px",
+                                              height: "14px",
+                                              color: "#d6a10c",
+                                              cursor: "pointer",
+                                            }}
+                                          />
+                                        </IconButton>
+                                      </div>
+                                    </td>
 
                                   )}
 
@@ -2916,9 +2950,9 @@ function EmployeeParticular() {
           <div className="d-flex align-items-center justify-content-between">
             <div className="m-0" style={{ fontSize: "16px" }}>Feedback Of <span className="text-wrap" > {feedbackCompany}</span></div>
             <div>
-            <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
-              <CloseIcon color="primary"></CloseIcon>
-            </IconButton>{" "}
+              <IconButton onClick={closeFeedbackPopup} style={{ float: "right" }}>
+                <CloseIcon color="primary"></CloseIcon>
+              </IconButton>{" "}
             </div>
           </div>
         </DialogTitle>
