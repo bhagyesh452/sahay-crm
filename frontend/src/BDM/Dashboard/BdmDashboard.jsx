@@ -1019,7 +1019,7 @@ function BdmDashboard() {
       <Header bdmName={data.ename} />
       <Navbar userId={userId} />
       {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
-      <div className='container-xl'>
+      <div className='container-xl' style={{display:"none"}}>
         <div className="employee-dashboard mt-2">
           <div className="card todays-booking totalbooking" id="totalbooking"   >
             <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
