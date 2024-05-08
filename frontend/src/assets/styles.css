@@ -399,6 +399,10 @@ th {
     font-weight: 500 !important;
     padding: 7px 10px !important;
 }
+.p-0
+{
+  padding: 0px !important;
+}
 .login-card
 {
     width: 800px;
