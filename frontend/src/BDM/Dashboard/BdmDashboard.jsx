@@ -38,7 +38,7 @@ function BdmDashboard() {
       // Set the retrieved data in the state
       const tempData = response.data;
       const userData = tempData.find((item) => item._id === userId);
-      console.log(tempData);
+      //console.log(tempData);
       setData(userData);
       setForwardEmployeeData(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"))
       setForwardEmployeeDataFilter(tempData.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"))
@@ -51,6 +51,7 @@ function BdmDashboard() {
 
   const [employeeData, setEmployeeData] = useState([]);
   const [employeeDataFilter, setEmployeeDataFilter] = useState([]);
+  const [employeeDataNew, setEmployeeDataNew] = useState([]);
 
   const fetchEmployeeInfo = async () => {
     fetch(`${secretKey}/einfo`)
@@ -58,6 +59,7 @@ function BdmDashboard() {
       .then((data) => {
         setEmployeeData(data.filter((employee) => (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
         setEmployeeDataFilter(data.filter((employee) =>  (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
+        setEmployeeDataNew(data.filter((employee) =>  (employee.designation === "Sales Executive" || employee.designation === "Sales Manager") && employee.branchOffice === "Sindhu Bhawan"));
       })
       .catch((error) => {
         console.error(`Error Fetching Employee Data `, error);
@@ -69,6 +71,8 @@ function BdmDashboard() {
     fetchEmployeeInfo()
 
   }, [])
+
+  console.log("employeedata" , employeeDataNew)
 
   const [moreEmpData, setmoreEmpData] = useState([])
   const [tempData, setTempData] = useState([]);
@@ -139,7 +143,7 @@ function BdmDashboard() {
     fetchCompanyData()
   }, []);
 
-  console.log(teamLeadsData)
+  //console.log(teamLeadsData)
 
   useEffect(() => {
     fetchTeamLeadsData()
@@ -189,7 +193,8 @@ function BdmDashboard() {
       const followdata = await response.json();
       setCompleteProjectionData(followdata);
       setCompleteProjectionDataNew(followdata)
-      const filteredFollowData = followdata.filter((obj)=>employeeData.some((empObj)=>empObj.ename === obj.ename))
+      const filteredFollowData = followdata.filter((obj)=>employeeDataNew.some((empObj)=>empObj.ename === obj.ename))
+      console.log("filetered" , filteredFollowData)
       setCompleteProjectionDataToday(filteredFollowData.filter((obj) => {
         const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
         return obj.estPaymentDate === today
@@ -274,7 +279,7 @@ function BdmDashboard() {
     { value: 'total', label: 'Total' }
   ];
 
-  console.log("redesigneddata" , redesignedData)
+  //console.log("redesigneddata" , redesignedData)
 
 
   const filterTeamLeadsDataByMonth = (teamData, followData, selectedMonthOption) => {
@@ -322,7 +327,7 @@ function BdmDashboard() {
   };
 
   const handleChangeForBdm = (selectedOption) => {
-    console.log(selectedOption);
+    //console.log(selectedOption);
     setSelectedMonthOptionForBdm(selectedOption.value);
 
     if (selectedOption === "current_month" || selectedOption === "last_month") {
@@ -383,7 +388,7 @@ function BdmDashboard() {
   };
 
   const handleChange = (selectedOption) => {
-    console.log(selectedOption);
+    //console.log(selectedOption);
     setSelectedMonthOptionForBdm(selectedOption.value);
 
     if (selectedOption === "current_month" || selectedOption === "last_month") {
@@ -440,7 +445,7 @@ function BdmDashboard() {
 
   const handleFilterForwardCaseBranchOffice = (branchName) => {
 
-    console.log(branchName)
+    //console.log(branchName)
 
     if (branchName === "none") {
       setForwardEmployeeData(forwardEmployeeDataFilter)
@@ -525,10 +530,10 @@ function BdmDashboard() {
 
   const options = forwardEmployeeDataNew.map((obj) => ({ value: obj.ename, label: obj.ename }));
 
-  console.log("options", options);
+  //console.log("options", options);
 
   const handleSelectForwardedEmployeeData = (selectedEmployeeNames) => {
-    console.log(selectedEmployeeNames, "selected employees");
+    //console.log(selectedEmployeeNames, "selected employees");
     // Assuming you have forwardEmployeeDataFilter, companyDataFilter, and teamLeadsDataFilter defined somewhere
 
     const filteredForwardEmployeeData = forwardEmployeeDataFilter.filter((company) =>
@@ -610,11 +615,6 @@ function BdmDashboard() {
       totalTargetAmount =
         foundObject &&
         parseInt(totalTargetAmount) + parseInt(foundObject.amount);
-      console.log(
-        "This is total Amount",
-        foundObject && foundObject.amount,
-        totalTargetAmount
-      );
       return foundObject ? foundObject.amount : 0;
     } else {
       return 0;
@@ -785,7 +785,7 @@ function BdmDashboard() {
   };
 
   const handleSortExpectedPayment = (newSortType) => {
-    console.log(newSortType);
+    //console.log(newSortType);
     setSortTypeExpectedPayment(newSortType);
   };
 
@@ -1011,7 +1011,7 @@ function BdmDashboard() {
     setCompleteProjectionDataToday(filteredDataDateRange);
   }, [startDate, endDate]);
 
-  console.log("unique" , uniqueBDEobjects)
+  //console.log("unique" , uniqueBDEobjects)
 
 
   return (
