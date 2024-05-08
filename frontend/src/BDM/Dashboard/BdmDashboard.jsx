@@ -259,7 +259,7 @@ function BdmDashboard() {
       setUniqueBDE(getBDEnames);
 
 
-      setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by")));
+      setRedesignedData(bookingsData);
     } catch (error) {
       console.log("Error Fetching Bookings Data", error);
     }

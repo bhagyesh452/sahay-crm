@@ -8774,6 +8774,7 @@ app.post(
         receivedPayment: objectData.receivedAmount,
         pendingPayment: objectData.remainingAmount,
         paymentReceipt: newPaymentReceipt,
+        withGST: objectData.withGST,
         paymentDate:currentDate
       };
       console.log("Sending Object:", sendingObject, bookingIndex);
@@ -8844,6 +8845,7 @@ app.post(
         receivedPayment: objectData.receivedAmount,
         pendingPayment: objectData.remainingAmount,
         paymentReceipt: newPaymentReceipt,
+        withGST:objectData.withGST,
         paymentDate:currentDate
       };
       console.log("Sending Object:", sendingObject, bookingIndex);

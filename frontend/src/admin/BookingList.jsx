@@ -755,7 +755,7 @@ function BookingList() {
                         <div className="my-card-head">
                           <div className="d-flex align-items-center justify-content-between">
                             <div>Basic Informations</div>
-                            <div>Total Services: 4</div>
+                            <div>Total Services: {currentLeadform && currentLeadform.services.length}</div>
                           </div>
                         </div>
                         <div className="my-card-body">
