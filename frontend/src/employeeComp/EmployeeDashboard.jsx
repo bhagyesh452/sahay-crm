@@ -443,6 +443,7 @@ function EmployeeDashboard() {
   const [followDataTodayFilter, setfollowDataTodayFilter] = useState([]);
 
   const fetchFollowUpData = async () => {
+    
     try {
       setprojectionLoading(true);
       const response = await fetch(
@@ -473,7 +474,7 @@ function EmployeeDashboard() {
     }
   };
 
-  console.log("ajki", followDataToday)
+  //console.log("ajki", followDataToday)
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -1819,7 +1820,7 @@ function EmployeeDashboard() {
 
   }
 
-  
+
   function functionCalculateGeneratedTotalRevenue(isBdm) {
     let generatedRevenue = 0;
     const requiredObj = moreEmpData.filter((obj) => (obj.bdmAcceptStatus === "Accept") && obj.Status === "Matured");
@@ -2049,7 +2050,58 @@ function EmployeeDashboard() {
       setmoreEmpData(tempData);
       setFollowData(followDataFilter);
     }
-}
+  }
+
+  const handleFilterFollowDataToday = (isBdm) => {
+    const filterFollowDataForwarded = isBdm ? followDataToday.filter((company)=> company.bdmName !== data.ename && company.caseType === "Forwarded" ) : followDataToday.filter((company) => company.caseType === "Forwarded")
+    const filterFollowDataRecieved = isBdm ? followDataToday.filter((company)=> company.bdmName !== data.ename && company.caseType === "Recieved" ) : followDataToday.filter((company) => company.caseType === "Recieved")
+    const totalPaymentForwarded = filterFollowDataForwarded.reduce((total, obj) => total + obj.totalPayment, 0)
+    const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
+    const finalPayment = totalPaymentForwarded + totalPaymentRecieved
+
+    // console.log(filterFollowDataForwarded , filterFollowDataRecieved)
+    // console.log(totalPaymentForwarded , totalPaymentRecieved)
+    // console.log(finalPayment)
+
+    return finalPayment.toLocaleString();
+  }
+  const handleFilterFollowData = (isBdm) => {
+    const filterFollowDataForwarded = isBdm ? followData.filter((company)=> company.bdmName !== data.ename && company.caseType === "Forwarded" ) : followData.filter((company) => company.caseType === "Forwarded")
+    const filterFollowDataRecieved = isBdm ? followData.filter((company)=> company.bdmName !== data.ename && company.caseType === "Recieved" ) : followData.filter((company) => company.caseType === "Recieved")
+    const totalPaymentForwarded = filterFollowDataForwarded.reduce((total, obj) => total + obj.totalPayment, 0)
+    const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
+    const finalPayment = totalPaymentForwarded + totalPaymentRecieved
+    // console.log(totalPaymentForwarded, totalPaymentRecieved)
+    // console.log(finalPayment)
+    // console.log(filterFollowDataForwarded, filterFollowDataRecieved)
+
+    return finalPayment.toLocaleString();
+  }
+
+  const handleFilterFollowDataTodayRecievedCase = () => {
+
+    const filterFollowDataRecieved = followDataToday.filter((company) => company.bdmName === data.ename && company.caseType === "Recieved")
+    const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
+    const finalPayment = totalPaymentRecieved
+    //console.log(finalPayment)
+    //console.log( filterFollowDataRecieved)
+
+    return finalPayment.toLocaleString();
+  }
+
+  const handleFilterFollowDataRecievedCase = () => {
+
+    const filterFollowDataRecieved = followData.filter((company) => company.bdmName === data.ename && company.caseType === "Recieved")
+    const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
+    const finalPayment = totalPaymentRecieved
+    //console.log(finalPayment)
+    //console.log( filterFollowDataRecieved)
+
+    return finalPayment.toLocaleString();
+  }
+
+  //console.log(followData)
+
 
 
 
@@ -2507,9 +2559,13 @@ function EmployeeDashboard() {
                           <div className="dash-card-2-head">PROJECTED REVENUE</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              ₹{(followDataToday
+                              {/* ₹{(followDataToday
                                 .filter(obj => (obj.bdeName === data.ename || obj.ename === data.ename || obj.ename === data.bdmName))
-                                .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
+                                .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
+                              <div>
+                                {data.bdmWork ? `₹${handleFilterFollowDataToday(true)}` : `₹${handleFilterFollowDataToday()}`}
+                              </div>
+
                             </div>
                           </div>
                         </div>
@@ -2536,22 +2592,22 @@ function EmployeeDashboard() {
                         <h3 className="m-0">Total Report</h3>
                       </div>
                       <div className="pr-1">
-                      <select
-                        style={{
-                          border: "none",
-                          outline: "none",
-                         
-                        }}
-                        value={monthOptions.find(option => option.value === selectedMonthOption)}
-                        onChange={(e) => handleChange(e.target.value)}
-                      >
-                        <option disabled value="">Select...</option>
-                        {monthOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
+                        <select
+                          style={{
+                            border: "none",
+                            outline: "none",
+
+                          }}
+                          value={monthOptions.find(option => option.value === selectedMonthOption)}
+                          onChange={(e) => handleChange(e.target.value)}
+                        >
+                          <option disabled value="">Select...</option>
+                          {monthOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
                       </div>
 
                       {/* 
@@ -2648,9 +2704,10 @@ function EmployeeDashboard() {
                           <div className="dash-card-2-head">PROJECTED REVENUE</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num clr-1cba19">
-                              ₹{(followData
+                              {/* ₹{(followData
                                 .filter(obj => (obj.bdeName === data.ename || obj.ename === data.ename) && obj.bdmName)
-                                .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
+                                .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
+                              {data.bdmWork ? `₹${handleFilterFollowData(true)}` : `₹${handleFilterFollowData()}`}
                             </div>
                           </div>
                         </div>
@@ -2759,9 +2816,10 @@ function EmployeeDashboard() {
                             <div className="dash-card-2-head">PROJECTED REVENUE</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                                ₹{(followDataToday
+                                {/* ₹{(followDataToday
                                   .filter(obj => obj.ename === data.ename)
-                                  .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
+                                  .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
+                                ₹{handleFilterFollowDataTodayRecievedCase()}
                               </div>
                             </div>
                           </div>
@@ -2789,22 +2847,22 @@ function EmployeeDashboard() {
                           <h3 className="m-0">Total Report</h3>
                         </div>
                         <div className="pr-1">
-                        <select className="pr-2"
-                        style={{
-                          border: "none",
-                          outline: "none",
-                         
-                        }}
-                        value={monthOptions.find(option => option.value === selectedMonthOption)}
-                        onChange={(e) => handleChangeForBdm(e.target.value)}
-                      >
-                        <option disabled value="">Select...</option>
-                        {monthOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
+                          <select className="pr-2"
+                            style={{
+                              border: "none",
+                              outline: "none",
+
+                            }}
+                            value={monthOptions.find(option => option.value === selectedMonthOption)}
+                            onChange={(e) => handleChangeForBdm(e.target.value)}
+                          >
+                            <option disabled value="">Select...</option>
+                            {monthOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
 
                           {/* <Select
                             options={monthOptions}
@@ -2896,9 +2954,10 @@ function EmployeeDashboard() {
                             <div className="dash-card-2-head">PROJECTED REVENUE</div>
                             <div className="dash-card-2-body">
                               <div className="dash-card-2-num">
-                                ₹{(followData
+                                {/* ₹{(followData
                                   .filter(obj => obj.ename === data.ename && obj.bdeName)
-                                  .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
+                                  .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
+                                ₹{handleFilterFollowDataRecievedCase()}
                               </div>
                             </div>
                           </div>

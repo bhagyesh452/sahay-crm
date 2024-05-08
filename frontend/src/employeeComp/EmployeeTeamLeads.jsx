@@ -138,6 +138,8 @@ function EmployeeTeamLeads() {
     const [subFilterValue, setSubFilterValue] = useState("");
     const [month, setMonth] = useState(0);
     const [year, setYear] = useState(0);
+    const [projectionDataNew, setProjectionDataNew] = useState([])
+
 
 
 
@@ -175,6 +177,23 @@ function EmployeeTeamLeads() {
             console.error("Error fetching data:", error);
         }
     };
+
+    const fetchProjections = async () => {
+        try {
+            const response = await axios.get(
+                `${secretKey}/projection-data/${data.ename}`
+            );
+            const response2 = await axios.get(`${secretKey}/projection-data`)
+            setProjectionData(response.data);
+            setProjectionDataNew(response2.data)
+        } catch (error) {
+            console.error("Error fetching Projection Data:", error.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchProjections();
+    }, [data]);
 
     const fetchTeamLeadsData = async (status) => {
         const bdmName = data.ename
@@ -438,12 +457,7 @@ function EmployeeTeamLeads() {
         //   // After updating, you can disable the button
     };
 
-
-
-
-
-
-
+    console.log(projectionDataNew)
 
     const handleAcceptClick = async (
         companyId,
@@ -465,7 +479,15 @@ function EmployeeTeamLeads() {
                 bdmStatusChangeDate: new Date(),
                 bdmStatusChangeTime: DT.toLocaleTimeString()
             })
+            
+            const filteredProjectionData = projectionDataNew.filter((company)=> company.companyName === cName)
+            console.log(filteredProjectionData)
 
+            if(filteredProjectionData.length !== 0){
+                const response2 = await axios.post(`${secretKey}/post-followupupdate-bdmaccepted/${cName}` , {
+                    caseType :"Recieved"
+                })  
+            }
             if (response.status === 200) {
                 Swal.fire("Accepted");
                 fetchTeamLeadsData(oldStatus);
@@ -854,8 +876,12 @@ function EmployeeTeamLeads() {
                 ename: data.ename,
                 bdeName: bdeNameProjection ? bdeNameProjection : data.ename,
                 offeredServices: selectedValues,
-                editCount: currentProjection.editCount + 1, // Increment editCount
+                editCount: currentProjection.editCount + 1,
+                caseType : "Recieved",
+                bdmName : data.ename // Increment editCount
             };
+
+            console.log(finalData)
 
             if (finalData.offeredServices.length === 0) {
                 Swal.fire({ title: "Services is required!", icon: "warning" });
@@ -891,6 +917,8 @@ function EmployeeTeamLeads() {
                     finalData
                 );
 
+                console.log(response.data)
+
                 //console.log(response.data)
                 Swal.fire({ title: "Projection Submitted!", icon: "success" });
                 setOpenProjection(false);
@@ -914,22 +942,6 @@ function EmployeeTeamLeads() {
             console.error("Error updating or adding data:", error.message);
         }
     };
-
-    const fetchProjections = async () => {
-        try {
-            const response = await axios.get(
-                `${secretKey}/projection-data/${data.ename}`
-            );
-            setProjectionData(response.data);
-        } catch (error) {
-            console.error("Error fetching Projection Data:", error.message);
-        }
-    };
-
-    useEffect(() => {
-        fetchProjections();
-    }, [data]);
-
 
     const [openFeedback, setOpenFeedback] = useState(false)
     const [feedbackCompanyName, setFeedbackCompanyName] = useState("")

@@ -381,6 +381,14 @@ function BdmTeamLeads() {
         bdmStatusChangeDate: new Date(),
         bdmStatusChangeTime: DT.toLocaleTimeString()
       })
+      const filteredProjectionData = projectionDataNew.filter((company) => company.companyName === cName)
+      console.log(filteredProjectionData)
+
+      if (filteredProjectionData.length !== 0) {
+        const response2 = await axios.post(`${secretKey}/post-followupupdate-bdmaccepted/${cName}`, {
+          caseType: "Recieved"
+        })
+      }
 
       if (response.status === 200) {
         Swal.fire("Accepted");
@@ -698,12 +706,15 @@ function BdmTeamLeads() {
     }
   };
 
+  const [projectionDataNew , setProjectionDataNew] = useState()
+
   const fetchProjections = async () => {
     try {
       const response = await axios.get(
         `${secretKey}/projection-data/${data.ename}`
       );
       setProjectionData(response.data);
+      setProjectionDataNew(response.data)
     } catch (error) {
       console.error("Error fetching Projection Data:", error.message);
     }

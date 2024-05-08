@@ -5,6 +5,19 @@ import Navbar from '../Components/Navbar/Navbar.jsx';
 import axios from "axios";
 import { debounce } from "lodash";
 import Select from "react-select";
+import Nodata from '../Components/NoData/NoData.jsx';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
+import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import moment from "moment";
+import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
+import dayjs from "dayjs";
+import { IoClose } from "react-icons/io5";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
+import { FcDatabase } from "react-icons/fc";
+import Calendar from "@mui/icons-material/Event";
 
 function BdmDashboard() {
   const { userId } = useParams();
@@ -36,8 +49,29 @@ function BdmDashboard() {
     }
   };
 
+  const [employeeData, setEmployeeData] = useState([]);
+  const [employeeDataFilter, setEmployeeDataFilter] = useState([]);
+
+  const fetchEmployeeInfo = async () => {
+    fetch(`${secretKey}/einfo`)
+      .then((response) => response.json())
+      .then((data) => {
+        setEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.branchOffice === "Sindhu Bhawan"));
+        setEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.branchOffice === "Sindhu Bhawan"));
+        // setEmployeeInfo(data.filter((employee) => employee.designation === "Sales Executive"))
+        // setForwardEmployeeData(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+        // setForwardEmployeeDataFilter(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+        // setForwardEmployeeDataNew(data.filter((employee) => employee.designation === "Sales Executive" || employee.designation === "Sales Manager"))
+        // setEmployeeDataFilter(data.filter)
+      })
+      .catch((error) => {
+        console.error(`Error Fetching Employee Data `, error);
+      });
+  };
+
   useEffect(() => {
     fetchData()
+    fetchEmployeeInfo()
 
   }, [])
 
@@ -79,7 +113,7 @@ function BdmDashboard() {
     try {
       const response = await axios.get(`${secretKey}/forwardedbybdedata/${data.ename}`)
       const response2 = await axios.get(`${secretKey}/teamleadsdata`)
-      
+
       setTeamLeadsData(response.data)
       setTeamData(response.data)
       setTeamData2(response2.data)
@@ -116,12 +150,65 @@ function BdmDashboard() {
     fetchTeamLeadsData()
   }, [data.ename])
 
+
+
   const [followDataToday, setfollowDataToday] = useState([]);
   const [followDataTodayFilter, setfollowDataTodayFilter] = useState([]);
   const [FollowData, setfollowData] = useState([]);
   const [followData, setFollowData] = useState([]);
   const [followDataFilter, setFollowDataFilter] = useState([]);
-  const [followDataNew, setFollowDataNew] = useState([])
+  const [followDataNew, setFollowDataNew] = useState([]);
+  const [uniqueBDE, setUniqueBDE] = useState([]);
+  const currentYear = new Date().getFullYear();
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const currentMonth = monthNames[new Date().getMonth()];
+  function formatDateFinal(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  const [completeProjectionData, setCompleteProjectionData] = useState([])
+  const [completeProjectionDataNew, setCompleteProjectionDataNew] = useState([])
+  const [completeProjectionDataToday, setCompleteProjectionDataToday] = useState([])
+  const [completeProjectionDataTodayNew, setCompleteProjectionDataTodayNew] = useState([])
+
+  const fetchCompleteProjectionData = async () => {
+    try {
+      const response = await fetch(`${secretKey}/projection-data`);
+      const followdata = await response.json();
+      setCompleteProjectionData(followdata);
+      setCompleteProjectionDataNew(followdata)
+      setCompleteProjectionDataToday(followdata.filter((obj) => {
+        const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+        return obj.estPaymentDate === today
+
+      }))
+      setCompleteProjectionDataTodayNew(followdata.filter((obj) => {
+        const today = new Date().toISOString().split("T")[0]; // Get today's date in the format 'YYYY-MM-DD'
+        return obj.estPaymentDate === today
+
+      }))
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return { error: "Error fetching data" };
+    }
+  }
 
   const fetchFollowUpData = async () => {
     try {
@@ -153,6 +240,7 @@ function BdmDashboard() {
 
   useEffect(() => {
     fetchFollowUpData();
+    fetchCompleteProjectionData()
   }, [data]);
 
   const [redesignedData, setRedesignedData] = useState([]);
@@ -163,6 +251,16 @@ function BdmDashboard() {
         `${secretKey}/redesigned-final-leadData`
       );
       const bookingsData = response.data;
+      const getBDEnames = new Set();
+      bookingsData.forEach((obj) => {
+        // Check if the bdeName is already in the Set
+
+        if (!getBDEnames.has(obj.bdeName)) {
+          // If not, add it to the Set and push the object to the final array
+          getBDEnames.add(obj.bdeName);
+        }
+      });
+      setUniqueBDE(getBDEnames);
 
 
       setRedesignedData(bookingsData.filter(obj => obj.bdeName === data.ename || (obj.bdmName === data.ename && obj.bdmType === "Close-by")));
@@ -302,6 +400,8 @@ function BdmDashboard() {
     }
   }
 
+  let generatedTotalRevenue = 0;
+
   function functionCalculateGeneratedRevenue(isBdm) {
 
     let generatedRevenue = 0;
@@ -330,6 +430,7 @@ function BdmDashboard() {
       }
 
     });
+    generatedTotalRevenue = generatedTotalRevenue + generatedRevenue;
 
     return generatedRevenue;
     //  const generatedRevenue =  redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0);
@@ -359,12 +460,6 @@ function BdmDashboard() {
           (empObj.ename === obj.bdeName)
         )
       );
-
-
-
-      //console.log(filteredFollowData)
-
-
       const filteredCompanyData = companyDataFilter.filter(obj => (
         (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
         forwardEmployeeDataNew.some(empObj => empObj.branchOffice === branchName && empObj.ename === obj.ename)
@@ -459,12 +554,602 @@ function BdmDashboard() {
     setTeamLeadsData(filteredTeamLeadsData);
   };
 
+  let totalMaturedCount = 0;
+  let totalTargetAmount = 0;
+  let totalAchievedAmount = 0;
+
+  const functionCalculateMatured = (bdeName) => {
+    let maturedCount = 0;
+    const filteredRedesignedData = redesignedData.filter(
+      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
+    );
+
+    const moreFilteredData = filteredRedesignedData.filter(obj => monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth)
+    moreFilteredData.forEach((obj) => {
+      if (obj.moreBookings.length === 0) {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          maturedCount += 0.5;
+        } else {
+          maturedCount += 1;
+        }
+      } else {
+        if (obj.bdeName === bdeName || obj.bdmName === bdeName) {
+          if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+            maturedCount += 0.5;
+          } else {
+            maturedCount += 1;
+          }
+        }
+        obj.moreBookings.forEach((booking) => {
+          if (booking.bdeName === bdeName || booking.bdmName === bdeName) {
+            if (
+              booking.bdeName !== booking.bdmName &&
+              booking.bdmType === "Close-by"
+            ) {
+              maturedCount += 0.5;
+            } else if (booking.bdeName === bdeName) {
+              maturedCount += 1;
+            }
+          }
+        });
+      }
+    });
+    totalMaturedCount = totalMaturedCount + maturedCount;
+    return maturedCount;
+  };
+
+  const uniqueBDEobjects =
+    employeeData.length !== 0 &&
+    uniqueBDE.size !== 0 &&
+    employeeData.filter((obj) => Array.from(uniqueBDE).includes(obj.ename));
+
+  const functionGetAmount = (object) => {
+    if (object.targetDetails.length !== 0) {
+      const foundObject = object.targetDetails.find(
+        (item) =>
+          parseInt(item.year) === currentYear && item.month === currentMonth
+      );
+      totalTargetAmount =
+        foundObject &&
+        parseInt(totalTargetAmount) + parseInt(foundObject.amount);
+      console.log(
+        "This is total Amount",
+        foundObject && foundObject.amount,
+        totalTargetAmount
+      );
+      return foundObject ? foundObject.amount : 0;
+    } else {
+      return 0;
+    }
+  };
+
+  const functionCalculateAchievedAmount = (bdeName) => {
+    let achievedAmount = 0;
+    const filteredRedesignedData = redesignedData.filter(
+      (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
+    );
+
+    const moreFilteredData = filteredRedesignedData.filter(obj => monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth)
+
+    moreFilteredData.forEach((obj) => {
+      if (obj.moreBookings.length === 0) {
+        if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+          achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
+        } else {
+          achievedAmount += parseInt(obj.generatedReceivedAmount);
+        }
+      } else {
+        if (obj.bdeName === bdeName || obj.bdmName === bdeName) {
+          if (obj.bdeName !== obj.bdmName && obj.bdmType === "Close-by") {
+            achievedAmount += parseInt(obj.generatedReceivedAmount / 2);
+          } else {
+            achievedAmount += parseInt(obj.generatedReceivedAmount);
+          }
+        }
+        obj.moreBookings.forEach((booking) => {
+          if (booking.bdeName === bdeName || booking.bdmName === bdeName) {
+            if (
+              booking.bdeName !== booking.bdmName &&
+              booking.bdmType === "Close-by"
+            ) {
+              achievedAmount += parseInt(booking.generatedReceivedAmount / 2);
+            } else {
+              achievedAmount += parseInt(booking.generatedReceivedAmount);
+            }
+          }
+        });
+      }
+    });
+    totalAchievedAmount =
+      parseInt(totalAchievedAmount) + parseInt(achievedAmount);
+    return achievedAmount;
+  };
+
+  function functionGetLastBookingDate(bdeName) {
+    // Filter objects based on bdeName
+
+    const filteredRedesignedData = redesignedData.filter(
+      (obj) => (obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by")) && monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth
+    );
+
+    // Initialize variable to store the latest booking date
+    let lastBookingDate = null;
+
+    // Iterate through filtered data
+    filteredRedesignedData.forEach((obj) => {
+      if (obj.moreBookings && obj.moreBookings.length > 0) {
+        // If moreBookings exist, find the latest bookingDate
+        const latestBookingDate = obj.moreBookings.reduce(
+          (latestDate, booking) => {
+            const bookingDate = new Date(booking.bookingDate);
+            return bookingDate > latestDate ? bookingDate : latestDate;
+          },
+          new Date(0)
+        ); // Initialize with minimum date
+
+        // Update lastBookingDate if latestBookingDate is later
+        if (latestBookingDate > lastBookingDate || !lastBookingDate) {
+          lastBookingDate = latestBookingDate;
+        }
+      } else {
+        // If no moreBookings, directly consider bookingDate
+        const bookingDate = new Date(obj.bookingDate);
+        if (bookingDate > lastBookingDate || !lastBookingDate) {
+          lastBookingDate = bookingDate;
+        }
+      }
+    });
+
+    // Return the formatted date string or an empty string if lastBookingDate is null
+    return lastBookingDate ? formatDateFinal(lastBookingDate) : "N/A";
+  }
+
+  const handleFilterFollowDataTodayRecievedCase = () => {
+
+    const filterFollowDataRecieved = followDataToday.filter((company) => company.bdmName === data.ename && company.caseType === "Recieved")
+    const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
+    const finalPayment = totalPaymentRecieved
+    //console.log(finalPayment)
+    //console.log( filterFollowDataRecieved)
+
+    return finalPayment.toLocaleString();
+  }
+
+  const handleFilterFollowDataRecievedCase = () => {
+
+
+    const filterFollowDataRecieved = FollowData.filter((company) => company.bdmName === data.ename && company.caseType === "Recieved")
+    const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
+    const finalPayment = totalPaymentRecieved
+    //console.log(finalPayment)
+    //console.log( filterFollowDataRecieved)
+
+    return finalPayment.toLocaleString();
+  }
+
+  // -----------------------------------employees forwarded case functions--------------------------------------------
+  let generatedTotalProjection = 0;
+
+  const functionCaluclateTotalForwardedProjection = (isBdm, employeeName) => {
+
+    const filteredFollowDataForward = isBdm ? completeProjectionData.filter((company) => company.ename === employeeName && company.bdmName !== employeeName && company.caseType === "Forwarded") : completeProjectionData.filter((company) => company.ename === employeeName && company.caseType === "Forwarded")
+    const filteredFollowDataRecieved = isBdm ? completeProjectionData.filter((company) => company.ename === employeeName && company.bdmName !== employeeName && company.caseType === "Recieved") : completeProjectionData.filter((company) => (company.ename === employeeName || company.bdeName === employeeName) && company.caseType === "Recieved")
+    const totalPaymentForwarded = filteredFollowDataForward.reduce((total, obj) => total + obj.totalPayment, 0)
+    const totalPaymentRecieved = filteredFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
+    const finalPayment = totalPaymentForwarded + totalPaymentRecieved
+
+    generatedTotalProjection = generatedTotalProjection + finalPayment;
+
+    return finalPayment.toLocaleString();
+
+  }
+
+  let generatedTotalProjectionRecieved = 0;
+
+  const functionCalculateTotalProjectionRecieved = (employeeName) => {
+    const filterFollowDataRecieved = completeProjectionData.filter((company) => company.bdmName === employeeName && company.caseType === "Recieved")
+    const totalPaymentRecieved = filterFollowDataRecieved.reduce((total, obj) => total + obj.totalPayment / 2, 0)
+    const finalPayment = totalPaymentRecieved
+    //console.log(finalPayment)
+    //console.log( filterFollowDataRecieved)
+    generatedTotalProjectionRecieved = generatedTotalProjectionRecieved + finalPayment
+
+    return finalPayment.toLocaleString();
+  }
+
+  // ---------------------------------functions for projection summary------------------------------------------
+
+  const [sortTypeProjection, setSortTypeProjection] = useState({
+    totalCompanies: "ascending",
+  });
+  const [sortTypeServices, setSortTypeServices] = useState({
+    offeredServices: "ascending",
+  });
+
+  const [sortTypePrice, setSortTypePrice] = useState({
+    offeredPrice: "ascending",
+  });
+
+  const [sortTypeExpectedPayment, setSortTypeExpectedPayment] = useState({
+    expectedPayment: "ascending",
+  });
+
+  const handleSortTotalCompanies = (newSortType) => {
+    setSortTypeProjection(newSortType);
+  };
+
+  const handleSortOfferedServices = (newSortType) => {
+    setSortTypeServices(newSortType);
+  };
+
+  const handleSortOffredPrize = (newSortType) => {
+    setSortTypePrice(newSortType);
+  };
+
+  const handleSortExpectedPayment = (newSortType) => {
+    console.log(newSortType);
+    setSortTypeExpectedPayment(newSortType);
+  };
+
+  const uniqueEnames = [...new Set(completeProjectionDataToday.map((item) => item.ename))];
+
+  const sortedData = uniqueEnames.slice().sort((a, b) => {
+    // Sorting logic for total companies
+    if (sortTypeProjection === "ascending") {
+      return (
+        completeProjectionDataToday.filter((partObj) => partObj.ename === a).length -
+        completeProjectionDataToday.filter((partObj) => partObj.ename === b).length
+      );
+    } else if (sortTypeProjection === "descending") {
+      return (
+        completeProjectionDataToday.filter((partObj) => partObj.ename === b).length -
+        completeProjectionDataToday.filter((partObj) => partObj.ename === a).length
+      );
+    }
+
+    // Sorting logic for offered services
+    if (sortTypeServices === "ascending") {
+      return (
+        completeProjectionDataToday.reduce((totalServicesA, partObj) => {
+          if (partObj.ename === a) {
+            totalServicesA += partObj.offeredServices.length;
+          }
+          return totalServicesA;
+        }, 0) -
+        completeProjectionDataToday.reduce((totalServicesB, partObj) => {
+          if (partObj.ename === b) {
+            totalServicesB += partObj.offeredServices.length;
+          }
+          return totalServicesB;
+        }, 0)
+      );
+    } else if (sortTypeServices === "descending") {
+      return (
+        completeProjectionDataToday.reduce((totalServicesB, partObj) => {
+          if (partObj.ename === b) {
+            totalServicesB += partObj.offeredServices.length;
+          }
+          return totalServicesB;
+        }, 0) -
+        completeProjectionDataToday.reduce((totalServicesA, partObj) => {
+          if (partObj.ename === a) {
+            totalServicesA += partObj.offeredServices.length;
+          }
+          return totalServicesA;
+        }, 0)
+      );
+    }
+    if (sortTypePrice === "ascending") {
+      return (
+        completeProjectionDataToday.reduce((totalOfferedPriceA, partObj) => {
+          if (partObj.ename === a) {
+            totalOfferedPriceA += partObj.offeredPrize;
+          }
+          return totalOfferedPriceA;
+        }, 0) -
+        completeProjectionDataToday.reduce((totalOfferedPriceB, partObj) => {
+          if (partObj.ename === b) {
+            totalOfferedPriceB += partObj.offeredPrize;
+          }
+          return totalOfferedPriceB;
+        }, 0)
+      );
+    } else if (sortTypePrice === "descending") {
+      return (
+        completeProjectionDataToday.reduce((totalOfferedPriceB, partObj) => {
+          if (partObj.ename === b) {
+            totalOfferedPriceB += partObj.offeredPrize;
+          }
+          return totalOfferedPriceB;
+        }, 0) -
+        completeProjectionDataToday.reduce((totalOfferedPriceA, partObj) => {
+          if (partObj.ename === a) {
+            totalOfferedPriceA += partObj.offeredPrize;
+          }
+          return totalOfferedPriceA;
+        }, 0)
+      );
+    }
+    // Sorting logic for expected amount
+    if (sortTypeExpectedPayment === "ascending") {
+      return (
+        completeProjectionDataToday.reduce((totalExpectedPaymentA, partObj) => {
+          if (partObj.ename === a) {
+            totalExpectedPaymentA += partObj.totalPayment;
+          }
+          return totalExpectedPaymentA;
+        }, 0) -
+        completeProjectionDataToday.reduce((totalExpectedPaymentB, partObj) => {
+          if (partObj.ename === b) {
+            totalExpectedPaymentB += partObj.totalPayment;
+          }
+          return totalExpectedPaymentB;
+        }, 0)
+      );
+    } else if (sortTypeExpectedPayment === "descending") {
+      return (
+        completeProjectionDataToday.reduce((totalExpectedPaymentB, partObj) => {
+          if (partObj.ename === b) {
+            totalExpectedPaymentB += partObj.totalPayment;
+          }
+          return totalExpectedPaymentB;
+        }, 0) -
+        completeProjectionDataToday.reduce((totalExpectedPaymentA, partObj) => {
+          if (partObj.ename === a) {
+            totalExpectedPaymentA += partObj.totalPayment;
+          }
+          return totalExpectedPaymentA;
+        }, 0)
+      );
+    }
+
+    // If sortType is "none", return original order
+    return 0;
+  });
+
+  const numberFormatOptions = {
+    style: "currency",
+    currency: "INR", // Use the currency code for Indian Rupee (INR)
+    minimumFractionDigits: 0, // Minimum number of fraction digits (adjust as needed)
+    maximumFractionDigits: 2, // Maximum number of fraction digits (adjust as needed)
+  };
+  const shortcutsItems = [
+    {
+      label: "This Week",
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf("week"), today.endOf("week")];
+      },
+    },
+    {
+      label: "Last Week",
+      getValue: () => {
+        const today = dayjs();
+        const prevWeek = today.subtract(7, "day");
+        return [prevWeek.startOf("week"), prevWeek.endOf("week")];
+      },
+    },
+    {
+      label: "Last 7 Days",
+      getValue: () => {
+        const today = dayjs();
+        return [today.subtract(7, "day"), today];
+      },
+    },
+    {
+      label: "Current Month",
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf("month"), today.endOf("month")];
+      },
+    },
+    {
+      label: "Next Month",
+      getValue: () => {
+        const today = dayjs();
+        const startOfNextMonth = today.endOf("month").add(1, "day");
+        return [startOfNextMonth, startOfNextMonth.endOf("month")];
+      },
+    },
+    { label: "Reset", getValue: () => [null, null] },
+  ];
+
+  const [selectedDateRange, setSelectedDateRange] = useState([]);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [filteredDataDateRange, setFilteredDataDateRange] = useState([]);
+
+  const handleSelect = (values) => {
+    // Extract startDate and endDate from the values array
+    const startDate = values[0];
+    const endDate = values[1];
+
+    // Filter followData based on the selected date range
+    const filteredDataDateRange = completeProjectionData.filter((product) => {
+      const productDate = new Date(product["estPaymentDate"]);
+
+      // Check if the productDate is within the selected date range
+      return productDate >= startDate && productDate <= endDate;
+    });
+
+    // Set the startDate, endDate, and filteredDataDateRange states
+    setStartDate(startDate);
+    setEndDate(endDate);
+    setFilteredDataDateRange(filteredDataDateRange);
+  };
+
+  useEffect(() => {
+    // Filter followData based on the selected date range
+    const filteredDataDateRange = completeProjectionData.filter((product) => {
+      const productDate = new Date(product["estPaymentDate"]);
+
+      // Convert productDate to the sameformat as startDate and endDate
+      const formattedProductDate = dayjs(productDate).startOf("day");
+      const formattedStartDate = startDate
+        ? dayjs(startDate).startOf("day")
+        : null;
+      const formattedEndDate = endDate ? dayjs(endDate).endOf("day") : null;
+
+      // Check if the formatted productDate is within the selected date range
+      if (
+        formattedStartDate &&
+        formattedEndDate &&
+        formattedStartDate.isSame(formattedEndDate)
+      ) {
+        // If both startDate and endDate are the same, filter for transactions on that day
+        return formattedProductDate.isSame(formattedStartDate);
+      } else if (formattedStartDate && formattedEndDate) {
+        // If different startDate and endDate, filter within the range
+        return (
+          formattedProductDate >= formattedStartDate &&
+          formattedProductDate <= formattedEndDate
+        );
+      } else {
+        // If either startDate or endDate is null, return false
+        return false;
+      }
+    });
+
+    setCompleteProjectionDataToday(filteredDataDateRange);
+  }, [startDate, endDate]);
 
 
   return (
     <div>
       <Header bdmName={data.ename} />
       <Navbar userId={userId} />
+      {/*------------------------------------------------------ Bookings Dashboard ------------------------------------------------------------ */}
+      <div className='container-xl'>
+        <div className="employee-dashboard mt-2">
+          <div className="card todays-booking totalbooking" id="totalbooking"   >
+            <div className="card-header employeedashboard d-flex align-items-center justify-content-between p-1">
+              <div className="dashboard-title">
+                <h2 className="m-0 pl-1">
+                  This Month's Bookings
+                </h2>
+              </div>
+            </div>
+            <div className="card-body">
+              <div className="row tbl-scroll">
+                <table className="table-vcenter table-nowrap admin-dash-tbl">
+                  <thead className="admin-dash-tbl-thead">
+                    <tr  >
+                      <th>SR.NO</th>
+                      <th>BDE/BDM NAME</th>
+                      <th>BRANCH</th>
+                      <th>MATURED CASES</th>
+                      <th>TARGET AMOUNT</th>
+                      <th>ACHIEVED AMOUNT</th>
+                      <th>TARGET/ACHIEVED RATIO</th>
+                      <th>LAST BOOKING DATE</th>
+                    </tr>
+                  </thead>
+                  {uniqueBDEobjects ? (
+                    <>
+                      <tbody>
+                        {employeeData &&
+                          employeeData
+                            .filter(
+                              (item) =>
+                                item.designation ===
+                                "Sales Executive" &&
+                                item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
+                            )
+                            .map((obj, index) => (
+                              <>
+                                <tr>
+                                  <td>{index + 1}</td>
+                                  <td>
+                                    {obj.ename}
+                                  </td>
+                                  <td>{obj.branchOffice}</td>
+                                  <td>
+                                    {functionCalculateMatured(
+                                      obj.ename
+                                    )}
+                                  </td>
+                                  <td>
+                                    ₹{" "}
+                                    {parseInt(
+                                      functionGetAmount(obj)
+                                    ).toLocaleString()}
+                                  </td>
+                                  <td>
+                                    ₹{" "}
+                                    {functionCalculateAchievedAmount(
+                                      obj.ename
+                                    ).toLocaleString()}
+                                  </td>
+                                  <td>
+                                    {" "}
+                                    {(
+                                      (functionCalculateAchievedAmount(
+                                        obj.ename
+                                      ) /
+                                        functionGetAmount(obj)) *
+                                      100
+                                    ).toFixed(2)}{" "}
+                                    %
+                                  </td>
+                                  <td>
+                                    {functionGetLastBookingDate(
+                                      obj.ename
+                                    )}
+                                  </td>
+                                </tr>
+                              </>
+                            ))}
+                      </tbody>
+                      <tfoot className="admin-dash-tbl-tfoot">
+                        <tr>
+                          <td
+                            colSpan={2}
+
+                          >
+                            Total:
+                          </td>
+                          <td>-</td>
+                          <td>
+                            {" "}
+                            {totalMaturedCount.toLocaleString()}
+                          </td>
+                          <td>
+                            ₹{" "}
+                            {(totalTargetAmount / 2).toLocaleString()}
+                          </td>
+                          <td>
+                            ₹{" "}
+                            {(
+                              totalAchievedAmount / 2
+                            ).toLocaleString()}
+                          </td>
+                          <td>
+                            {(
+                              (totalAchievedAmount /
+                                totalTargetAmount) *
+                              100
+                            ).toFixed(2)}{" "}
+                            %
+                          </td>
+                          <td>-</td>
+                        </tr>
+                      </tfoot>
+                    </>
+                  ) : (
+                    <tbody>
+                      <tr>
+                        <td className="particular" colSpan={9}>
+                          <Nodata />
+                        </td>
+                      </tr>
+                    </tbody>
+                  )}
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="as-bde-bdm-daSH mt-4 mb-2">
         <div className="container-xl">
           <div className="as-bde-bdm-daSH-inner">
@@ -565,9 +1250,10 @@ function BdmDashboard() {
                           <div className="dash-card-2-head">PROJECTED REVENUE</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              ₹{(followDataToday
+                              {/* ₹{(followDataToday
                                 .filter(obj => obj.ename === data.ename)
-                                .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
+                                .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
+
                             </div>
                           </div>
                         </div>
@@ -580,7 +1266,7 @@ function BdmDashboard() {
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
                               ₹ {functionCalculateGeneratedRevenue(true).toLocaleString()}
-                              {/* ₹{(redesignedData.reduce((total, obj) => total + obj.receivedAmount, 0)).toLocaleString()} */}
+
                             </div>
                           </div>
                         </div>
@@ -611,7 +1297,6 @@ function BdmDashboard() {
                             </option>
                           ))}
                         </select>
-
                         {/* <Select
                             options={monthOptions}
                             placeholder="Select..."
@@ -620,9 +1305,6 @@ function BdmDashboard() {
                           /> */}
                       </div>
                     </div>
-
-
-
                     {/* recieved bdm report total */}
                     <div className="col-lg-2 col-md-4 col-sm-6 col-12">
                       <div className="dash-card-2">
@@ -702,9 +1384,10 @@ function BdmDashboard() {
                           <div className="dash-card-2-head">PROJECTED REVENUE</div>
                           <div className="dash-card-2-body">
                             <div className="dash-card-2-num">
-                              ₹{(FollowData
+                              {/* ₹{(FollowData
                                 .filter(obj => (obj.ename === data.ename) && obj.bdeName)
-                                .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}
+                                .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
+                              ₹{handleFilterFollowDataRecievedCase()}
                             </div>
                           </div>
                         </div>
@@ -729,6 +1412,9 @@ function BdmDashboard() {
           </div>
         </div>
       </div>
+
+      {/* ------------------------------------------------employess forwarded data report------------------------------------------------ */}
+
       <div className='container-xl'>
         <div className="employee-dashboard">
           <div className="card">
@@ -929,22 +1615,28 @@ function BdmDashboard() {
                           </td>
                           <td >
                             {
-                            teamLeadsData2.filter((company) =>
-                              company.bdmName === obj.ename &&
-                              forwardEmployeeDataNew.some(empObj =>
-                                empObj.companyId === company.id
-                              )
-                            ).length
-}
+                              teamLeadsData2.filter((company) =>
+                                company.bdmName === obj.ename &&
+                                forwardEmployeeDataNew.some(empObj =>
+                                  empObj.companyId === company.id
+                                )
+                              ).length
+                            }
                           </td>
-                          <td>₹{(FollowData
+                          <td>
+                            {/* ₹{(FollowData
                             .filter(company => company.bdeName === obj.ename)
-                            .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()}</td>
+                            .reduce((total, obj) => total + obj.totalPayment, 0)).toLocaleString()} */}
+                            {obj.bdmWork ? `₹${functionCaluclateTotalForwardedProjection(true, obj.ename)}` : `₹${functionCaluclateTotalForwardedProjection(false, obj.ename)}`}
+                          </td>
 
-                          <td>₹{followDataNew
+                          <td>
+                            {/* ₹{followDataNew
                             .filter(company => company.ename === obj.ename && company.bdeName)
                             .reduce((total, obj) => total + obj.totalPayment, 0).toLocaleString()
-                          }</td>
+                          } */}
+                            ₹{functionCalculateTotalProjectionRecieved(obj.ename)}
+                          </td>
 
                           <td>
                             {companyData.filter((company) => company.ename === obj.ename && company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
@@ -984,7 +1676,8 @@ function BdmDashboard() {
                         ).length}
 
                       </td>
-                      <td>₹{companyData
+                      <td>
+                        {/* ₹{companyData
                         .filter(company => company.bdmAcceptStatus === "Accept" || company.bdmAcceptStatus === "Pending")
                         .reduce((total, company) => {
                           const totalPayment = followData
@@ -992,10 +1685,11 @@ function BdmDashboard() {
                             .reduce((sum, obj) => sum + obj.totalPayment, 0);
                           return total + totalPayment;
                         }, 0)
-                      }
+                      } */}
+                        ₹{generatedTotalProjection.toLocaleString()}
                       </td>
                       <td>
-                        ₹{companyData
+                        {/* ₹{companyData
                           .filter(company => company.bdmAcceptStatus === "Accept")
                           .reduce((total, company) => {
                             const totalPayment = followDataNew
@@ -1003,13 +1697,14 @@ function BdmDashboard() {
                               .reduce((sum, obj) => sum + obj.totalPayment, 0);
                             return total + totalPayment;
                           }, 0)
-                        }
+                        } */}
+                        ₹{generatedTotalProjectionRecieved.toLocaleString()}
                       </td>
                       <td>
                         {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                       </td>
                       <td>
-                        -
+                        ₹{generatedTotalRevenue}
                       </td>
                     </tr>
                   </tfoot>
@@ -1019,9 +1714,330 @@ function BdmDashboard() {
           </div>
         </div>
       </div>
+      {/* -------------------------------------------------projection summary------------------------------------------------------------ */}
+      <div className='container-xl'>
+        <div className="employee-dashboard mt-3"
+          id="projectionsummaryadmin"   >
+          <div className="card">
+            <div className="card-header p-1 employeedashboard d-flex align-items-center justify-content-between">
+              <div className="dashboard-title pl-1"  >
+                <h2 className="m-0">
+                  Projection Summary
+                </h2>
+              </div>
+              <div className="d-flex align-items-center pr-1">
+                <div className="date-filter">
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    style={{ padding: "0px" }}
+                  >
+                    <DemoContainer components={["SingleInputDateRangeField"]}>
+                      <DateRangePicker className="form-control my-date-picker form-control-sm p-0"
+                        onChange={(values) => {
+                          const startDate = moment(values[0]).format(
+                            "DD/MM/YYYY"
+                          );
+                          const endDate = moment(values[1]).format(
+                            "DD/MM/YYYY"
+                          );
+                          setSelectedDateRange([startDate, endDate]);
+                          handleSelect(values); // Call handleSelect with the selected values
+                        }}
+                        slots={{ field: SingleInputDateRangeField }}
+                        slotProps={{
+                          shortcuts: {
+                            items: shortcutsItems,
+                          },
+                          actionBar: { actions: [] },
+                          textField: {
+                            InputProps: { endAdornment: <Calendar /> },
+                          },
+                        }}
+                      //calendars={1}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
+                </div>
+              </div>
+            </div>
+            <div className="card-body">
+              <div id="table-default" className="row tbl-scroll" >
+                <table className="table-vcenter table-nowrap admin-dash-tbl"  >
+                  <thead className="admin-dash-tbl-thead">
+                    <tr>
+                      <th>
+                        Sr. No
+                      </th>
+                      <th>Employee Name</th>
+                      <th>
+                        Total Companies
+                        <SwapVertIcon
+                          style={{
+                            height: "15px",
+                            width: "15px",
+                            cursor: "pointer",
+                            marginLeft: "4px",
+                          }}
+                          onClick={() => {
+                            let newSortType;
+                            if (sortTypeProjection === "ascending") {
+                              newSortType = "descending";
+                            } else if (sortTypeProjection === "descending") {
+                              newSortType = "none";
+                            } else {
+                              newSortType = "ascending";
+                            }
+                            handleSortTotalCompanies(newSortType);
+                          }}
+                        />
+                      </th>
+                      <th>
+                        Offered Services
+                        <SwapVertIcon
+                          style={{
+                            height: "15px",
+                            width: "15px",
+                            cursor: "pointer",
+                            marginLeft: "4px",
+                          }}
+                          onClick={() => {
+                            let newSortType;
+                            if (sortTypeServices === "ascending") {
+                              newSortType = "descending";
+                            } else if (sortTypeServices === "descending") {
+                              newSortType = "none";
+                            } else {
+                              newSortType = "ascending";
+                            }
+                            handleSortOfferedServices(newSortType);
+                          }}
+                        />
+                      </th>
+                      <th>
+                        Total Offered Price
+                        <SwapVertIcon
+                          style={{
+                            height: "15px",
+                            width: "15px",
+                            cursor: "pointer",
+                            marginLeft: "4px",
+                          }}
+                          onClick={() => {
+                            let newSortType;
+                            if (sortTypePrice === "ascending") {
+                              newSortType = "descending";
+                            } else if (sortTypePrice === "descending") {
+                              newSortType = "none";
+                            } else {
+                              newSortType = "ascending";
+                            }
+                            handleSortOffredPrize(newSortType);
+                          }}
+                        />
+                      </th>
+                      <th>
+                        Expected Amount
+                        <SwapVertIcon
+                          style={{
+                            height: "15px",
+                            width: "15px",
+                            cursor: "pointer",
+                            marginLeft: "4px",
+                          }}
+                          onClick={() => {
+                            let newSortType;
+                            if (sortTypeExpectedPayment === "ascending") {
+                              newSortType = "descending";
+                            } else if (
+                              sortTypeExpectedPayment === "descending"
+                            ) {
+                              newSortType = "none";
+                            } else {
+                              newSortType = "ascending";
+                            }
+                            handleSortExpectedPayment(newSortType);
+                          }}
+                        />
+                      </th>
+                      {/* <th>Est. Payment Date</th> */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedData && sortedData.length !== 0 ? (
+                      <>
+                        {sortedData.map((obj, index) => (
+                          <tr key={`row-${index}`}>
+                            <td>{index + 1}</td>
+                            <td>{obj}</td>
+                            <td>
+                              {
+                                completeProjectionDataToday.filter(
+                                  (partObj) => partObj.ename === obj
+                                ).length
+                              }
+                              {/* <FcDatabase
+                              onClick={() => {
+                                functionOpenProjectionTable(obj);
+                              }}
+                              style={{
+                                cursor: "pointer",
+                                marginRight: "-71px",
+                                marginLeft: "58px",
+                              }}
+                            /> */}
+                            </td>
+                            <td>
+                              {completeProjectionDataToday.reduce(
+                                (totalServices, partObj) => {
+                                  if (partObj.ename === obj) {
+                                    totalServices += partObj.offeredServices.length;
+                                  }
+                                  return totalServices;
+                                },
+                                0
+                              )}
+                            </td>
+                            <td>
+                              {completeProjectionDataToday
+                                .reduce((totalOfferedPrize, partObj) => {
+                                  if (partObj.ename === obj) {
+                                    totalOfferedPrize += partObj.offeredPrize;
+                                  }
+                                  return totalOfferedPrize;
+                                }, 0)
+                                .toLocaleString("en-IN", numberFormatOptions)}
+                            </td>
+                            <td>
+                              {completeProjectionDataToday
+                                .reduce((totalPaymentSum, partObj) => {
+                                  if (partObj.ename === obj) {
+                                    totalPaymentSum += partObj.totalPayment;
+                                  }
+                                  return totalPaymentSum;
+                                }, 0)
+                                .toLocaleString("en-IN", numberFormatOptions)}
+                            </td>
+                          </tr>
+                        ))}
+                        {/* Map employeeData with default fields */}
+                        {employeeData
+                          .filter((employee) => (employee.designation === "Sales Executive") && !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
+                          .map((employee, index) => (
+                            <tr key={`employee-row-${index}`}>
+                              <td>{sortedData.length + index + 1}</td>
+                              <td>{employee.ename}</td>
+                              <td>0
+                                {/* <FcDatabase
+                              onClick={() => {
+                                functionOpenProjectionTable(employee.ename);
+                              }}
+                              style={{
+                                cursor: "pointer",
+                                marginRight: "-71px",
+                                marginLeft: "58px",
+                              }}
+                            /> */}
+                              </td>
+                              <td>0</td>
+                              <td>0</td>
+                              <td>0</td>
+                            </tr>
+                          ))}
+                      </>
+                    ) : (
+                      employeeData
+                        .filter((employee) => !sortedData.includes(employee.ename)) // Filter out enames already included in sortedData
+                        .map((employee, index) => (
 
+                          <tr key={`employee-row-${index}`}>
+                            <td>{index + 1}</td>
+                            <td>{employee.ename}</td>
+                            <td>0
+                              {/* <FcDatabase
+                            onClick={() => {
+                              functionOpenProjectionTable(employee.ename);
+                            }}
+                            style={{
+                              cursor: "pointer",
+                              marginRight: "-71px",
+                              marginLeft: "58px",
+                            }}
+                          /> */}
+                            </td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                          </tr>
 
+                        ))
+                    )}
+                  </tbody>
+                  {sortedData && sortedData.length !== 0 && (
+                    <tfoot className="admin-dash-tbl-tfoot"    >
+                      <tr style={{ fontWeight: 500 }}>
+                        <td colSpan="2">
+                          Total
+                        </td>
+                        <td>
+                          {
+                            completeProjectionDataToday.filter((partObj) => partObj.ename)
+                              .length
+                          }
+                          {/* <FcDatabase
+                          onClick={() => {
+                            functionCompleteProjectionTable();
+                          }}
+                          style={{
+                            cursor: "pointer",
+                            marginRight: "-71px",
+                            marginLeft: "55px",
+                          }}
+                        /> */}
+                        </td>
+                        <td>
+                          {completeProjectionDataToday.reduce(
+                            (totalServices, partObj) => {
+                              totalServices += partObj.offeredServices.length;
+                              return totalServices;
+                            },
+                            0
+                          )}
+                        </td>
+                        <td>
+                          {completeProjectionDataToday
+                            .reduce((totalOfferedPrize, partObj) => {
+                              totalOfferedPrize += partObj.offeredPrize;
+                              return totalOfferedPrize;
+                            }, 0)
+                            .toLocaleString("en-IN", numberFormatOptions)}
+                        </td>
+                        <td>
+                          {completeProjectionDataToday
+                            .reduce((totalPaymentSum, partObj) => {
+                              totalPaymentSum += partObj.totalPayment;
+                              return totalPaymentSum;
+                            }, 0)
+                            .toLocaleString("en-IN", numberFormatOptions)}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  )}
 
+                  {/* {sortedData && sortedData.length === 0 && (
+                  <tbody>
+                    <tr>
+                      <td className="particular" colSpan={9}>
+                        <Nodata />
+                      </td>
+                    </tr>
+                  </tbody>
+                )} */}
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
