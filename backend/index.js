@@ -1358,6 +1358,29 @@ app.post(`/api/post-followup-forwardeddata/:cname`, async (req, res) => {
   }
 });
 
+app.post(`/api/post-updaterejectedfollowup/:cname`, async (req, res) => {
+  const companyName = req.params.cname;
+  const { caseType} = req.body;
+  try {
+    const updatedFollowUp = await FollowUpModel.findOneAndUpdate(
+      { companyName: companyName },
+      {
+        $set: {
+          caseType: caseType,
+        },
+        $unset:{
+          bdmName
+        }
+      },
+      { new: true }
+    );
+    res.status(200).json(updatedFollowUp); // Assuming you want to send the updated data back
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 app.post(`/api/post-followupupdate-bdmaccepted/:cname`, async (req, res) => {
   const companyName = req.params.cname;
   const { caseType } = req.body;
