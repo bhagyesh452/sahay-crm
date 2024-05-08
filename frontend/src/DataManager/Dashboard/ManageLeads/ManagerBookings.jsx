@@ -322,6 +322,7 @@ function ManagerBookings() {
     paymentCount: "",
     bookingIndex: 0,
     serviceName: "",
+    withGST:false,
     paymentMethod: "",
     extraRemarks: "",
     paymentDate: null,
@@ -359,6 +360,7 @@ function ManagerBookings() {
         "Company Name": companyName,
         paymentCount: paymentNumber,
         bookingIndex: bookingIndex,
+        withGST:existingObject.withGST,
         serviceName: serviceName,
         pendingAmount: existingObject.pendingPayment,
         receivedAmount: existingObject.receivedPayment,
@@ -398,6 +400,7 @@ function ManagerBookings() {
   formData.append("paymentMethod", remainingObject["paymentMethod"]);
   formData.append("extraRemarks", remainingObject["extraRemarks"]);
   formData.append("paymentRemarks", remainingObject["paymentRemarks"]);
+  formData.append("withGST", remainingObject.withGST);
   formData.append("paymentReceipt", remainingObject["remainingPaymentReceipt"]);
   const handleSubmitMorePayments = async () => {
     if (!remainingObject.paymentDate || !remainingObject.paymentMethod) {

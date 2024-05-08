@@ -1052,7 +1052,7 @@ function BdmDashboard() {
                             .filter(
                               (item) =>
                                 item.designation ===
-                                "Sales Executive" &&
+                                "Sales Executive" && item.branchOffice==="Sindhu Bhawan" &&
                                 item.targetDetails.length !== 0 && item.targetDetails.find(target => target.year === (currentYear).toString() && target.month === (currentMonth.toString()))
                             )
                             .map((obj, index) => (

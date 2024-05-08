@@ -106,6 +106,7 @@ function Dashboard() {
   });
 
   const [searchOption, setSearchOption] = useState(false);
+  const [totalCompanyData, setTotalCompanyData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sideBar, setsideBar] = useState(false);
   const [displayArrow, setDisplayArrow] = useState(true);
@@ -126,6 +127,8 @@ function Dashboard() {
       .then((response) => response.json())
       .then((data) => {
         setCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
+        setTotalCompanyData(data.filter((obj) => obj.ename !== "Not Alloted"));
+
         setcompanyDataFilter(data.filter((obj) => obj.ename !== "Not Alloted"));
       })
       .catch((error) => {
@@ -574,7 +577,7 @@ function Dashboard() {
       )
     );
 
-    setCompanyData(
+    setTotalCompanyData(
       companyDataFilter.filter(
         (obj) =>
           (obj.bdmAcceptStatus === "Pending" || obj.bdmAcceptStatus === "Accept") &&
@@ -583,7 +586,7 @@ function Dashboard() {
           )
       )
     );
-
+  
     setTeamLeadsData(
       teamLeadsDataFilter.filter((obj) =>
         forwardEmployeeDataNew.some(
@@ -2494,6 +2497,7 @@ function Dashboard() {
   let totalMaturedCount = 0;
   let totalTargetAmount = 0;
   let totalAchievedAmount = 0;
+  let totalRemainingAmount = 0;
   const currentYear = new Date().getFullYear();
   const monthNames = [
     "January",
@@ -2554,10 +2558,21 @@ function Dashboard() {
 
   const functionCalculateAchievedAmount = (bdeName) => {
     let achievedAmount = 0;
+    let remainingAmount = 0;
     const filteredRedesignedData = redesignedData.filter(
       (obj) => obj.bdeName === bdeName || (obj.bdmName === bdeName && obj.bdmType === "Close-by") || (obj.moreBookings.length !== 0 && obj.moreBookings.some(mainObj => mainObj.bdmName === bdeName && mainObj.bdmType === "Close-by"))
     );
-
+    const remainingData = filteredRedesignedData.filter(obj=> obj.remainingPayments.lenth!==0 && obj.remainingPayments.some(moreobj => monthNames[new Date(moreobj.paymentDate).getMonth()] === currentMonth));
+   
+    remainingData.length!==0 && remainingData.forEach((obj)=>{
+      obj.remainingPayments.forEach((booking)=>{
+        if(monthNames[new Date(booking.paymentDate).getMonth()] === currentMonth){
+          const findService = obj.services.find((services)=>services.serviceName === booking.serviceName)
+          const tempAmount = findService.withGST ? Math.round(booking.receivedPayment)/1.18 : Math.round(booking.receivedPayment);
+          remainingAmount = obj.bdeName === obj.bdmName ? remainingAmount + tempAmount : remainingAmount + tempAmount/2
+        }
+      })
+    })
     const moreFilteredData = filteredRedesignedData.filter(obj => monthNames[new Date(obj.bookingDate).getMonth()] === currentMonth)
 
     moreFilteredData.forEach((obj) => {
@@ -2590,8 +2605,9 @@ function Dashboard() {
       }
     });
     totalAchievedAmount =
-      Math.round(totalAchievedAmount) + Math.round(achievedAmount);
-    return achievedAmount;
+      Math.round(totalAchievedAmount) + Math.round(achievedAmount) + Math.round(remainingAmount);
+     
+    return achievedAmount + Math.round(remainingAmount);
   };
 
 
@@ -4073,7 +4089,7 @@ function Dashboard() {
                                   Total
                                 </td>
                                 <td>
-                                  {companyData.filter(company => company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept").length}
+                                  {totalCompanyData.filter(company => company.bdmAcceptStatus === "Pending" || company.bdmAcceptStatus === "Accept").length}
                                 </td>
                                 <td>
                                   {teamLeadsData.length}
@@ -4104,7 +4120,7 @@ function Dashboard() {
                                   ₹{generatedTotalProjectionRecieved}
                                 </td>
                                 <td>
-                                  {companyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
+                                  {totalCompanyData.filter(company => company.bdmAcceptStatus === "Accept" && company.Status === "Matured").length}
                                 </td>
                                 <td>
                                  ₹ {Math.round(generatedTotalRevenue).toLocaleString()}
