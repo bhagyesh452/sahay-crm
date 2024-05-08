@@ -1577,7 +1577,7 @@ function AdminEmployeeTeamLeads() {
                                             <option value="FollowUp">Follow Up</option>
                                             <option value="Interested">Interested</option>
                                             <option value="Not Interested">Not Interested</option>
-                                            <option value="BdeForwardDate">Bde Forward Date</option>
+                                            <option value="BdeForwardDate">BDE Forward Date</option>
                                             <option value="Company Incorporation Date  ">
                                                 C.Inco. Date
                                             </option>
@@ -2168,7 +2168,7 @@ function AdminEmployeeTeamLeads() {
                                                 <th>Company Number</th>
                                                 <th>BDE Status</th>
                                                 {bdmNewStatus === "FollowUp" && (<th>Next FollowUp Date</th>)}
-                                                <th>Bde Remarks</th>
+                                                <th>BDE Remarks</th>
                                                 {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "NotInterested") && (
                                                     <>
                                                         <th>BDM Status</th>
@@ -2182,7 +2182,7 @@ function AdminEmployeeTeamLeads() {
                                                 <th>State</th>
                                                 <th>Company Email</th>
                                                 <th>
-                                                    Bde Forward Date
+                                                    BDE Forward Date
                                                 </th>
                                                 {(bdmNewStatus === "Untouched" || bdmNewStatus === "Matured") && <th>Action</th>}
                                                 {/* {bdmNewStatus === "Untouched" && <th>Action</th>} */}

@@ -3549,11 +3549,11 @@ function EmployeePanel() {
                             <th className="th-sticky">Sr.No</th>
                             <th className="th-sticky1">Company Name</th>
                             <th>Company Number</th>
-                            <th>Status</th>
-                            {dataStatus === "FollowUp" && (<th>Next FollowUp Date</th>)}
-                            {dataStatus === "Forwarded" && <th>Bdm Status</th>}
+                            {dataStatus === "Forwarded" ? (<th>BDE Status</th>):(<th>Status</th>)}
                             {dataStatus === "Forwarded" ? (<th>BDE Remarks</th>) : (<th>Remarks</th>)}
+                            {dataStatus === "Forwarded" && <th>BDM Status</th>}
                             {dataStatus === "Forwarded" && <th>BDM Remarks</th>}
+                            {dataStatus === "FollowUp" && (<th>Next FollowUp Date</th>)}
 
                             <th>
                               Incorporation Date
@@ -3933,37 +3933,6 @@ function EmployeePanel() {
                                     </>
                                   )}
                                 </td>
-                                {dataStatus === "Forwarded" && (
-                                  <td>
-                                    {company.Status === "Interested" && (
-                                      <span>Interested</span>
-                                    )}
-                                    {company.Status === "FollowUp" && (
-                                      <span>FollowUp</span>
-                                    )}
-                                    {/* {company.Status === "Matured" && (
-                                      <span>Matured</span>
-                                    )}
-                                    {(company.Status === "Not Interested" ||
-                                      company.Status === "Junk" ||
-                                      company.Status === "Busy") && (
-                                      <span></span>
-                                    )} */}
-                                  </td>
-                                )}
-                                {dataStatus === "FollowUp" && <td>
-                                  <input style={{ border: "none" }}
-                                    type="date"
-                                    value={formatDateNow(company.bdeNextFollowUpDate)}
-                                    onChange={(e) => {
-                                      //setNextFollowUpDate(e.target.value);
-                                      functionSubmitNextFollowUpDate(e.target.value,
-                                        company._id,
-                                        company["Status"]
-                                      );
-                                    }}
-                                  //className="hide-placeholder"
-                                  /></td>}
                                 <td>
                                   <div
                                     key={company._id}
@@ -4041,6 +4010,114 @@ function EmployeePanel() {
                                     )}
                                   </div>
                                 </td>
+                                {dataStatus === "Forwarded" && (
+                                  <td>
+                                    {company.Status === "Interested" && (
+                                      <span>Interested</span>
+                                    )}
+                                    {company.Status === "FollowUp" && (
+                                      <span>FollowUp</span>
+                                    )}
+                                    {/* {company.Status === "Matured" && (
+                                      <span>Matured</span>
+                                    )}
+                                    {(company.Status === "Not Interested" ||
+                                      company.Status === "Junk" ||
+                                      company.Status === "Busy") && (
+                                      <span></span>
+                                    )} */}
+                                  </td>
+                                )}
+                                {dataStatus === "FollowUp" && <td>
+                                  <input style={{ border: "none" }}
+                                    type="date"
+                                    value={formatDateNow(company.bdeNextFollowUpDate)}
+                                    onChange={(e) => {
+                                      //setNextFollowUpDate(e.target.value);
+                                      functionSubmitNextFollowUpDate(e.target.value,
+                                        company._id,
+                                        company["Status"]
+                                      );
+                                    }}
+                                  //className="hide-placeholder"
+                                  /></td>}
+                                {/* <td>
+                                  <div
+                                    key={company._id}
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                      width: "100px",
+                                    }}
+                                  >
+                                    <p
+                                      className="rematkText text-wrap m-0"
+                                      title={company.Remarks}
+                                    >
+                                      {!company["Remarks"]
+                                        ? "No Remarks"
+                                        : company.Remarks}
+                                    </p>
+
+                                    {(company.bdmAcceptStatus !== "Accept" || (company.Status === "Matured" || company.Status === "Not Interested" || company.Status === "Busy" || company.Status === "Busy" || company.Status === "Not Picked Up" || company.Status === "Junk")) && (
+                                      <IconButton
+                                        onClick={() => {
+                                          functionopenpopupremarks(
+                                            company._id,
+                                            company.Status,
+                                            company["Company Name"],
+                                            company.ename
+                                          );
+                                          //setOpenPopupByBdm(false);
+                                          setCurrentRemarks(company.Remarks);
+                                          setCompanyId(company._id);
+                                        }}
+                                      >
+                                        <EditIcon
+                                          onClick={() => {
+                                            functionopenpopupremarks(
+                                              company._id,
+                                              company.Status,
+                                              company["Company Name"]
+                                            );
+                                            //setOpenPopupByBdm(false);
+                                            setCurrentRemarks(company.Remarks);
+                                            setCompanyId(company._id);
+                                          }}
+                                          style={{
+                                            width: "12px",
+                                            height: "12px",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    )}
+                                    {company.bdmAcceptStatus === "Accept" && (company.Status !== "Matured" && company.Status !== "Not Interested" && company.Status !== "Busy" && company.Status !== "Busy" && company.Status !== "Not Picked Up" && company.Status !== "Junk") && (
+                                      <IconButton
+                                        onClick={() => {
+                                          functionopenpopupremarksEdit(
+                                            company._id,
+                                            company.Status,
+                                            company["Company Name"],
+                                            company.ename
+                                          );
+                                          //setOpenPopupByBdm(false);
+                                          //setCurrentRemarks(company.Remarks);
+                                          setCompanyId(company._id);
+                                        }}
+                                      >
+                                        <IconEye
+                                          style={{
+                                            width: "14px",
+                                            height: "14px",
+                                            color: "#d6a10c",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                      </IconButton>
+                                    )}
+                                  </div>
+                                </td> */}
                                 {dataStatus === "Forwarded" && <td>
                                   <div    key={company._id}
                                     style={{

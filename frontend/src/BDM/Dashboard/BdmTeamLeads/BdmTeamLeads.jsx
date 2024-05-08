@@ -1596,14 +1596,14 @@ const handleDateChange = (e) => {
                       <tr className="tr-sticky">
                         <th className="th-sticky">Sr.No</th>
                         <th className="th-sticky1">Company Name</th>
-                        <th>Bde Name</th>
+                        <th>BDE Name</th>
                         <th>Company Number</th>
-                        <th>Bde Status</th>
-                        <th>Bde Remarks</th>
+                        <th>BDE Status</th>
+                        <th>BDE Remarks</th>
                         {(bdmNewStatus === "Interested" || bdmNewStatus === "FollowUp" || bdmNewStatus === "Matured" || bdmNewStatus === "NotInterested") && (
                           <>
-                            <th>Bdm Status</th>
-                            <th>Bdm Remarks</th>
+                            <th>BDM Status</th>
+                            <th>BDM Remarks</th>
                           </>
                         )}
                         {bdmNewStatus === "FollowUp" && (
@@ -1616,7 +1616,7 @@ const handleDateChange = (e) => {
                         <th>State</th>
                         <th>Company Email</th>
                         <th>
-                          Bde Forward Date
+                          BDE Forward Date
                         </th>
                         {bdmNewStatus === "Untouched" && <th>Action</th>}
                         {(bdmNewStatus === "FollowUp" || bdmNewStatus === "Interested") && (<>
